@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@Profile("app")
+@Profile("api")
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	/*@Override
@@ -26,12 +26,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	}*/
 
 	@Bean
-	public IPBasedAuthentificateService getIPBasedAuthentificateService() {
-		return new IPBasedAuthentificateService();
+	public CustomAuthentificateService getIPBasedAuthentificateService() {
+		return new CustomAuthentificateService();
 	}
 	@Bean
-	public IPBasedAuthentificateEntryPoint getIPBasedAuthentificateEntryPoint() {
-		return new IPBasedAuthentificateEntryPoint();
+	public CustomAuthentificateEntryPoint getIPBasedAuthentificateEntryPoint() {
+		return new CustomAuthentificateEntryPoint();
 	}
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -68,9 +68,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 				"/**/*.js",
 				"/**/*.favicon.ico"
 			).permitAll()
-			.antMatchers("/BkrApp/setservicekey.do").permitAll()
-			.antMatchers("/BkrApp/gettoken.do").permitAll()
-			.antMatchers("/BkrApi/*").permitAll()
+			//.antMatchers("/BkrApp/setservicekey.do").permitAll()
+			.antMatchers("/getToken.do").permitAll()
+			.antMatchers("/Api/*").permitAll()
 			.antMatchers("/API/*").permitAll()
 			.anyRequest().authenticated();
 		

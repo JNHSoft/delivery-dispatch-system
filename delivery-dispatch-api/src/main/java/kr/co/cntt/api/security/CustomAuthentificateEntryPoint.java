@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-public class IPBasedAuthentificateEntryPoint implements AuthenticationEntryPoint, Serializable{
+public class CustomAuthentificateEntryPoint implements AuthenticationEntryPoint, Serializable{
 
 	private static final long serialVersionUID = -1249032248563695540L;
 

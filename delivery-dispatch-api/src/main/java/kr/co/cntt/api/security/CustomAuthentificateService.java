@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 // TODO : service key property로 읽어서 list로 가지고 있자!!
-public class IPBasedAuthentificateService extends ServiceSupport implements UserDetailsService {
+public class CustomAuthentificateService extends ServiceSupport implements UserDetailsService {
 
 	protected static ConcurrentHashMap<String, ActorDetails> userDataBase = new ConcurrentHashMap<String, ActorDetails>();
 	@Value("${app.servicekeys.key}")
@@ -28,15 +28,16 @@ public class IPBasedAuthentificateService extends ServiceSupport implements User
 			log.debug("service key array {} : {}", i, serviceKeyArr[i]);
 		}
 	}
-	public Actor createActor(String ip, String serviceKey) throws Exception {
+	public Actor createActor(String loginId, String loginPw, String ip, String serviceKey) throws Exception {
 		if (!isExistKey(serviceKey)) {
 			throw new AppTrException(getMessage(ErrorCodeEnum.A0001), ErrorCodeEnum.A0001.name());
 		}
-		Actor actor = new Actor(ip, serviceKey);
+		Actor actor = new Actor(loginId, loginPw, ip, serviceKey);
 		ActorDetails actorDetails = new ActorDetails(actor, null);
 		actorDetails.setPassword(new BCryptPasswordEncoder().encode(actorDetails.getPassword()));
-		userDataBase.put(ip, actorDetails);
-		log.info("[IPBasedAuthentificateService][createActor][userDataBase size] : {}", userDataBase.keySet().size());
+		//userDataBase.put(ip, actorDetails);
+		userDataBase.put(loginId, actorDetails);
+		log.info("[CustomAuthentificateService][createActor][userDataBase size] : {}", userDataBase.keySet().size());
 		return actor;
 	}
 

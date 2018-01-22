@@ -1,0 +1,121 @@
+---
+spring:
+  profiles: api
+  application.name: delivery-dispatch-api
+  mvc:
+    locale: ko_KR
+    favicon.enabled: false
+  messages:
+    cache-seconds: -1
+    basename: classpath:/META-INF/messages/exceptions
+    encoding: UTF-8
+    #fallback-to-system-locale: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    multipart:
+      enabled: true
+
+# logging
+logging:
+  config: classpath:logback-spring.xml
+
+# datasource
+datasource:
+  deliveryDispatch:
+    initialize: true
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://nanum-taiwan-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/nanum
+    username: nanum
+    password: snaskzhf
+    initial-size: 10
+    max-active: 10
+    max-idle: 10
+    min-idle: 10
+    max-wait: 3000
+    test-on-borrow: true
+    validation-query: select 1
+
+# concurrent 설정
+cntt.concurrent.enable: true
+cntt.concurrent.threadCount: 8
+
+# spring security and actuator management
+security.basic.enabled: false
+management.security.enabled: false
+
+---
+spring:
+  profiles: local
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    scheme: http
+    host: localhost
+    port: 8091
+    maxPerRoute: 20
+
+api.server : http://localhost:8091
+# Logger 설정
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.cntt.api
+
+---
+spring:
+  profiles: dev
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    scheme: http
+    host: localhost
+    port: 8085
+    maxPerRoute: 20
+
+api.server : http://localhost:8084
+# Logger 설정
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.cntt.api
+
+---
+spring:
+  profiles: oper
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    scheme: http
+    host: oper.co.kr
+    port: 8081
+    maxPerRoute: 20
+
+api.server : https://oper.kr:9443
+
+# Logger 설정
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.cntt.api
+
+
+spring:
+  profiles: api
+server:
+  port: 8091
+  tomcat:
+    uri-encoding: UTF-8
+  jsp-servlet:
+    init-parameters:
+      development: true
+api.token.serviceKey : testkey
+api.token.expiration : 600

@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthentificationTokenFilter extends OncePerRequestFilter {
 
 	@Autowired
-	private IPBasedAuthentificateService ipBasedAuthentificateService;
+	private CustomAuthentificateService customAuthentificateService;
 
 	@Autowired
 	private TokenManager tokenManager;
@@ -33,13 +33,14 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 		RequestWrapper request;
 		String requestUri= servletRequest.getRequestURI();
 		log.debug("app api request uri : {}", requestUri);
-		if (requestUri.startsWith("/BkrApp") && !(requestUri.contains("setservicekey.do") || requestUri.contains("gettoken.do"))) {
+		//if (requestUri.startsWith("/api") && !(requestUri.contains("setservicekey.do") || requestUri.contains("gettoken.do"))) {
+		if (requestUri.startsWith("/api") && !(requestUri.contains("gettoken.do"))) {
 			try {
 				request = new RequestWrapper(servletRequest);
 				String authToken = extractToken(request.getJsonBody());
 				String username = tokenManager.getUsernameFromToken(authToken);
 				if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-					ActorDetails actorDetails = this.ipBasedAuthentificateService.loadUserByUsername(username);
+					ActorDetails actorDetails = this.customAuthentificateService.loadUserByUsername(username);
 					if (tokenManager.validateToken(authToken, actorDetails)) {
 						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 								actorDetails, null, actorDetails.getAuthorities());
