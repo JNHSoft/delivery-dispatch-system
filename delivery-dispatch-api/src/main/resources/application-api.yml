@@ -36,9 +36,9 @@ datasource:
     min-idle: 10
     max-wait: 3000
     test-on-borrow: true
-    validation-query: select 1
+    #validation-query: select 1
 
-# concurrent ¼³Á¤
+# concurrent ì„¤ì •
 cntt.concurrent.enable: true
 cntt.concurrent.threadCount: 8
 
@@ -62,7 +62,7 @@ cntt.restPool:
     maxPerRoute: 20
 
 api.server : http://localhost:8091
-# Logger ¼³Á¤
+# Logger ì„¤ì •
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.cntt.api
 
@@ -82,7 +82,7 @@ cntt.restPool:
     maxPerRoute: 20
 
 api.server : http://localhost:8084
-# Logger ¼³Á¤
+# Logger ì„¤ì •
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.cntt.api
 
@@ -103,11 +103,11 @@ cntt.restPool:
 
 api.server : https://oper.kr:9443
 
-# Logger ¼³Á¤
+# Logger ì„¤ì •
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.cntt.api
 
-
+---
 spring:
   profiles: api
 server:

@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import javax.servlet.ServletException;
 
+import kr.co.cntt.core.config.DeliveryDispatchDatabaseConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -42,7 +43,7 @@ import kr.co.cntt.rest.custom.mapper.RestObjectMapper;
  *
  */
 @Configuration
-//@Import({DatabaseConfig.class})
+@Import({DeliveryDispatchDatabaseConfig.class})
 public class ApiConfig {
 	/**
 	 * web mvc configuration
