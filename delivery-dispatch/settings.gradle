@@ -1,0 +1,11 @@
+include 'delivery-dispatch-core', 'delivery-dispatch-api', 'delivery-dispatch-mvc', 'delivery-dispatch-admin'
+include 'delivery-dispatch-core'
+include 'delivery-dispatch-core-api'
+include 'delivery-dispatch-core-admin'
+
+project(':delivery-dispatch-core').projectDir = new File('../delivery-dispatch-core')
+project(':delivery-dispatch-api').projectDir = new File('../delivery-dispatch-api')
+project(':delivery-dispatch-mvc').projectDir = new File('../delivery-dispatch-mvc')
+project(':delivery-dispatch-admin').projectDir = new File('../delivery-dispatch-admin')
+project(':delivery-dispatch-core-admin').projectDir = new File('../delivery-dispatch-core-admin')
+project(':delivery-dispatch-core-api').projectDir = new File('../delivery-dispatch-core-api')

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="/layout">
+
+	<!-- container -->
+	<div id="container" layout:fragment="content" class="full">
+		<!-- lnb -->
+		<aside id="lnb" class="hide">
+			<div>
+				<h1>error</h1>
+			</div>
+		</aside>
+		<!-- //lnb -->
+		<!-- contents -->
+		<section id="contents">
+			<ul id="location">
+				<li><a class="home" href="/main">HOME</a></li>
+				<li><strong>Error</strong></li>
+			</ul>
+			<div id="cont_tit">
+				<h1>페이지 오류 안내</h1>
+			</div>
+			<div class="service_info bg1">
+				<p>홈페이지 이용에 불편을 드려 죄송합니다.</p>
+				<p>
+					<strong class="t_blue">새로고침(F5)을 누르시거나 , 잠시 후에 이용해 주십시오.</strong>
+				</p>
+				<!--
+				<p>주문 오류 시 결제가 정상적으로 이뤄지지 않을 수 있습니다.</p>
+				<p>마이페이지 내 주문확인에서 주문내역을 확인해주세요.</p>
+				-->
+				<!--
+				<div>
+					<a href="/main" class="button h50 w200 red">메인페이지로 이동</a> 
+					<a href="/mypage/main" class="button h50 w200 ml6">마이페이지로 이동</a>
+				</div>
+				-->
+			</div>
+		</section>
+		<!-- //contents -->
+	</div>
+	<!-- //container -->
+</html>

@@ -1,0 +1,228 @@
+package kr.co.cntt.core.exception;
+
+public class ViewResolveException extends Exception{
+	/** default serial ID */
+	private static final long serialVersionUID = 1L;
+	/** forward URL **/
+	private String forwardUrl;
+	/** error code */
+	private String errorCode;
+
+	/**
+	 * <code>KCPException</code> is the superclass of those RuntimeExceptions
+	 * that can be thrown during the normal operation of the Java Virtual
+	 * Machine.<br>
+	 * A method is not required to declare in its <code>throws</code> clause any
+	 * subclasses of <code>ViewResolveException</code> that might be thrown
+	 * during the execution of the method but not caught.
+	 */
+	public static class Builder {
+		/** 오류 메시지 */
+		private String message;
+		/** 발생원인 예외 객체 */
+		private Throwable cause;
+		/** forward URL **/
+		private String forwardUrl;
+		/** error code */
+		private String errorCode;
+
+		/**
+		 * Constructs a new runtime exception with <code>null</code> as its
+		 * detail message. The cause is not initialized, and may subsequently be
+		 * initialized by a call to {@link #initCause}.
+		 */
+		public Builder() {
+		}
+
+		/**
+		 * Constructs a new runtime exception with the specified detail message.
+		 * The cause is not initialized, and may subsequently be initialized by
+		 * a call to {@link #initCause}.
+		 * 
+		 * @param message
+		 *            the detail message
+		 */
+		public Builder(final String message) {
+			this.message = message;
+		}
+
+		/**
+		 * Constructs a new runtime exception with the specified detail message
+		 * and cause.
+		 * 
+		 * @param message
+		 *            the detail message
+		 * @param cause
+		 *            cause the cause
+		 */
+		public Builder(final String message, final Throwable cause) {
+			this.message = message;
+			this.cause = cause;
+		}
+
+		/**
+		 * Constructs a new runtime exception with the specified detail message
+		 * and cause.
+		 * 
+		 * @param cause
+		 *            cause the cause
+		 */
+		public Builder(final Throwable cause) {
+			this.cause = cause;
+		}
+
+		/**
+		 * forward URL 정보를 설정한 Builder class 반환한다.
+		 * 
+		 * @param forwardUrl
+		 *            forward URL
+		 * @return Builder class
+		 */
+		public Builder forwardUrl(final String forwardUrl) {
+			this.forwardUrl = forwardUrl;
+			return this;
+		}
+
+		/**
+		 * error code 값을 설정한 Builder class 반환한다.
+		 * 
+		 * @param responseCode
+		 *            HTTP response code
+		 * @return Builder class
+		 */
+		public Builder responseCode(final String errorCode) {
+			this.errorCode = errorCode;
+			return this;
+		}
+
+		/**
+		 * Builder class 이용하여 KCPException class 생성한다.
+		 * 
+		 * @return ViewResolveException class
+		 */
+		public ViewResolveException build() {
+			if (this.message != null && this.cause != null) {
+				return new ViewResolveException(this.message, this.cause, this);
+			} else if (this.message != null) {
+				return new ViewResolveException(this.message, this);
+			} else if (this.cause != null) {
+				return new ViewResolveException(this.cause, this);
+			} else {
+				return new ViewResolveException(this);
+			}
+		}
+	}
+
+	/**
+	 * Constructs a new runtime exception with <code>null</code> as its detail
+	 * message.
+	 * 
+	 * @param builder
+	 */
+	private ViewResolveException(final Builder builder) {
+		super();
+		this.setBuilder(builder);
+	}
+
+	/**
+	 * Constructs a new runtime exception with the specified detail message.
+	 * 
+	 * @param message
+	 *            오류 메시지
+	 * @param builder
+	 */
+	private ViewResolveException(final String message, final Builder builder) {
+		super(message);
+		this.setBuilder(builder);
+	}
+
+	/**
+	 * Constructs a new runtime exception with the specified detail message and
+	 * cause.
+	 * 
+	 * @param message
+	 *            오류 메시지
+	 * @param cause
+	 *            발생원인 예외 객체
+	 * @param builder
+	 */
+	private ViewResolveException(final String message, final Throwable cause, final Builder builder) {
+		super(message, cause);
+		this.setBuilder(builder);
+	}
+
+	/**
+	 * Constructs a new runtime exception with the specified detail message and
+	 * cause.
+	 * 
+	 * @param cause
+	 *            발생원인 예외 객체
+	 * @param builder
+	 */
+	private ViewResolveException(final Throwable cause, final Builder builder) {
+		super(cause);
+		this.setBuilder(builder);
+	}
+
+	/**
+	 * local field setting
+	 * 
+	 * @param builder
+	 */
+	private final void setBuilder(final Builder builder) {
+		this.forwardUrl = builder.forwardUrl;
+		this.errorCode = builder.errorCode;
+	}
+
+	/** constructor */
+	@SuppressWarnings("unused")
+	private ViewResolveException() {
+	}
+
+	/**
+	 * 생성자 (RuntimeException의 생성자를 호출)
+	 *
+	 * @param message
+	 *            에러 메세지
+	 * @param forwardUrl
+	 *            이동할 url
+	 * @param responseCode
+	 *            응답 코드
+	 */
+	public ViewResolveException(final String message, final String forwardUrl, final String errorCode) {
+		super(message);
+		this.forwardUrl = forwardUrl;
+		this.errorCode = errorCode;
+	}
+
+	/**
+	 * 생성자 (RuntimeException의 생성자를 호출)
+	 *
+	 * @param message
+	 *            에러 메세지
+	 * @param responseCode
+	 *            응답 코드
+	 */
+	public ViewResolveException(final String message, final String errorCode) {
+		super(message);
+		this.errorCode = errorCode;
+	}
+
+	/**
+	 * 화면으로 넘겨줄 전환 URL 정보를 반환한다.
+	 * 
+	 * @return 화면으로 넘겨줄 전환 URL
+	 */
+	public String getForwardUrl() {
+		return forwardUrl;
+	}
+
+	/**
+	 * HTTP response code 반환한다.
+	 * 
+	 * @return HTTP response code
+	 */
+	public String getErrorCode() {
+		return errorCode;
+	}
+}
