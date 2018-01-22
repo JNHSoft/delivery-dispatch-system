@@ -145,21 +145,22 @@ public class MonitorAspect {
 		executor.doTask(new LogTask<TrLog>(new ILogSupport<TrLog>() {
 			@Override
 			public void insertLog() {
-				LogService logService = (LogService) SpringApplicationContext.getBean("logService");
-				try {
-					logService.insertTrLog(trLog);
-				} catch (Exception e) {
-					// 에러 무시
-					if (log.isDebugEnabled()) {
-						log.debug("insertErrorLog error occured");
-					}
-				}
+//				LogService logService = (LogService) SpringApplicationContext.getBean("logService");
+//				try {
+//					logService.insertTrLog(trLog);
+//				} catch (Exception e) {
+//					// 에러 무시
+//					if (log.isDebugEnabled()) {
+//						log.debug("insertErrorLog error occured");
+//					}
+//				}
 			}
 			@Override
 			public void traceLog() {
 				if (log.isDebugEnabled()) {
 					log.debug("#################################################### TRLOG TRACE ####################################################");
 					log.debug("request : {}", new Gson().toJson(trLog, TrLog.class));
+					log.debug(trLog.toString());
 					log.debug("#########################################################################################################################");
 				}
 			}
@@ -170,21 +171,22 @@ public class MonitorAspect {
 		executor.doTask(new LogTask<ErrorLog>(new ILogSupport<ErrorLog>() {
 			@Override
 			public void insertLog() {
-				LogService logService = (LogService) SpringApplicationContext.getBean("logService");
-				try {
-					logService.insertErrorLog(errorLog);
-				} catch (Exception e) {
-					// 에러 무시
-					if (log.isDebugEnabled()) {
-						log.debug("insertErrorLog error occured");
-					}
-				}
+//				LogService logService = (LogService) SpringApplicationContext.getBean("logService");
+//				try {
+//					logService.insertErrorLog(errorLog);
+//				} catch (Exception e) {
+//					// 에러 무시
+//					if (log.isDebugEnabled()) {
+//						log.debug("insertErrorLog error occured");
+//					}
+//				}
 			}
 			@Override
 			public void traceLog() {
 				if (log.isDebugEnabled()) {
 					log.debug("#################################################### TRLOG ERROR TRACE ####################################################");
 					log.debug("request : {}", new Gson().toJson(errorLog, ErrorLog.class));
+					log.debug(errorLog.toString());
 					log.debug("#########################################################################################################################");
 				}
 			}

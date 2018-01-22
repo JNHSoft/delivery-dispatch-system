@@ -40,6 +40,7 @@ public class ErrorLog extends AbstractPagination implements ILog {
 	/** 에러발생시간 */
 	private String stime;
 
+
 	public ErrorLog(HttpServletRequest req) {
 		this.ip = AgentUtil.getIp(req);
 		this.channel = AgentUtil.getChannel(req);

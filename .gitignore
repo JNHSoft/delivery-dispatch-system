@@ -1,2 +1,6 @@
 /delivery-dispatch/.gradle
 /delivery-dispatch/.idea
+/delivery-dispatch-api/out
+/delivery-dispatch-core/out
+/delivery-dispatch-mvc/out
+/delivery-dispatch-core-api/out

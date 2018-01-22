@@ -54,21 +54,24 @@ public class CnttExceptionAdvice extends CnttBaseExceptionHandler {
 			executor.doTask(new LogTask<ErrorLog>(new ILogSupport<ErrorLog>() {
 				@Override
 				public void insertLog() {
-					LogService logService = (LogService) context.getBean("logService");
-					try {
-						logService.insertErrorLog(error);
-					} catch (Exception e) {
-						// 에러 무시
-						if (log.isDebugEnabled()) {
-							log.debug("insertErrorLog error occured");
-						}
-					}
+//					LogService logService = (LogService) context.getBean("logService");
+//					try {
+//						logService.insertErrorLog(error);
+//					} catch (Exception e) {
+//						// 에러 무시
+//						if (log.isDebugEnabled()) {
+//							log.debug("insertErrorLog error occured");
+//						}
+//					}
 				}
 				@Override
 				public void traceLog() {
 					if (log.isDebugEnabled()) {
+
 						log.debug("#################################################### CNT ERROR TRACE ####################################################");
 						log.debug("ErrorLog : {}", new Gson().toJson(error, ErrorLog.class));
+						log.debug(error.toString());
+						log.debug(ex.toString());
 						log.debug("#########################################################################################################################");
 					}
 				}

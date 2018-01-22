@@ -1,4 +1,4 @@
-package kr.co.cntt.core.config.api;
+package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 

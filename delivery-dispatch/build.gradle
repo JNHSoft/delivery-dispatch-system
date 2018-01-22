@@ -92,6 +92,9 @@ subprojects {
         compile "org.springframework.boot:spring-boot-starter-cache"
         compile 'org.springframework.boot:spring-boot-starter-jdbc'
         compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
+        compile 'org.springframework:spring-jdbc:+'
+        compile 'commons-dbcp:commons-dbcp:1.4'
+        compile 'mysql:mysql-connector-java:5.0.8'
         compile 'org.mybatis:mybatis:3.4.4'
         compile 'org.mybatis:mybatis-spring:1.3.0'
         compile 'com.github.pagehelper:pagehelper:5.0.0'
