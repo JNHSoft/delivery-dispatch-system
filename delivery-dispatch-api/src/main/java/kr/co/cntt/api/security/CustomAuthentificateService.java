@@ -19,15 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomAuthentificateService extends ServiceSupport implements UserDetailsService {
 
 	protected static ConcurrentHashMap<String, ActorDetails> userDataBase = new ConcurrentHashMap<String, ActorDetails>();
-	@Value("${app.servicekeys.key}")
-	private String[] serviceKeyArr;
 
-	@PostConstruct
-	public void serviceKeys() {
-		for (int i=0; i < serviceKeyArr.length;i++) {
-			log.debug("service key array {} : {}", i, serviceKeyArr[i]);
-		}
-	}
+
 	public Actor createActor(String loginId, String loginPw) throws Exception {
 		/*
 		if (!isExistKey(serviceKey)) {
@@ -58,17 +51,5 @@ public class CustomAuthentificateService extends ServiceSupport implements UserD
 		}
 		return actorDetails;
 	}
-	
-	public boolean isExistKey(final String serviceKey) {
-		boolean isExist = false;
-		for (int i=0; i < serviceKeyArr.length;i++) {
-			log.debug("service key array {} : {}", i, serviceKeyArr[i]);
-			if (serviceKey.equals(serviceKeyArr[i])) {
-				isExist = true;
-				break;
-			}
-		}
-		log.debug("is valid service key : {}", isExist);
-		return isExist;
-	}
+
 }

@@ -67,44 +67,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
     }
 
     /**
-     * 서비스 키등록
-     * 오류시 body 전문이 다른 전문과 상이하게 규약되어있음(기회가 되면 맞추시길...). 맞춰줘야함.
-     * @param reqeust : serviceKey 토큰에 생성 시 사용할 서비스키
-     * @param device
-     * @return List<R_TR_A0001> json string
-     * @throws Exception
-     */
-    //@GetMapping(value = SET_SERVICE_KEY)
-    @RequestMapping(value = SET_SERVICE_KEY)
-    public ResponseEntity<String> setServiceKey(HttpServletRequest reqeust, @RequestParam String keyname, Device device) throws Exception {
-        //List<R_TR_A0001> response = new ArrayList<R_TR_A0001>();
-        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
-        Map<String, Object> result = new HashMap<String, Object>();
-        Map<String, Object> data = new HashMap<String, Object>();
-        try {
-            if (keyname == null) {
-                throw new AppTrException(getMessage(ErrorCodeEnum.A0002), ErrorCodeEnum.A0002.name());
-            }
-            result.put("result", CODE_SUCCESS);
-            // proerty에 등록된 서비스 키만 허용한다. 이 api는 의미없다.
-            //data.put("servicekey", ipBasedAuthentificateService.registerServiceKey(keyname));
-            response.add(result);
-            response.add(data);
-            //response.add(new R_TR_A0001(CODE_SUCCESS, ipBasedAuthentificateService.registerServiceKey(keyname)));
-            // Return the token
-            return ResponseEntity.ok(new Gson().toJson(response).toString());
-        } catch (Exception e) {
-            result.put("result", CODE_ERROR);
-            data.put("servicekey", keyname);
-            data.put("msg", e.getLocalizedMessage());
-            response.add(result);
-            response.add(data);
-            //response.add(new R_TR_A0001(CODE_ERROR, keyname, e.getLocalizedMessage()));
-            return ResponseEntity.ok(new Gson().toJson(response).toString());
-        }
-    }
-
-    /**
      * 토큰 생성 요청 전문
      * @param request
      * @param loginId
@@ -127,10 +89,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
             User user = new User();
             user.setLoginId(loginId);
             user.setLoginPw(loginPw);
-            log.info("###############@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
             String userLoginId = userService.selectLoginRider(user);
-
-            log.info("************************************** ");
 
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
             log.info("===> [createAuthenticate RequestParam][loginPw : {}]", loginPw);

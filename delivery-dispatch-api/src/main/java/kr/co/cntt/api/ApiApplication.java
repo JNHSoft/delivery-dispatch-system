@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @ComponentScan(basePackages={"kr.co.cntt.api", "kr.co.cntt.core"})
 @EnableCaching
 @Import({ApiConfig.class, ConcurrentConfig.class, SecurityConfigurer.class, RestConfig.class})
-@PropertySource("classpath:servicekey.properties")
+//@PropertySource("classpath:servicekey.properties")
 @EnableAspectJAutoProxy
 public class ApiApplication extends SpringBootServletInitializer {
     @Override
