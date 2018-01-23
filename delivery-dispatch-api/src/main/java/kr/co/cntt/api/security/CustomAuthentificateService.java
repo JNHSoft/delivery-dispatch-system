@@ -54,7 +54,7 @@ public class CustomAuthentificateService extends ServiceSupport implements UserD
 			}
 		}
 		if (actorDetails == null) {
-			throw new UsernameNotFoundException("No user found for username " + uuid);
+			throw new UsernameNotFoundException("No Rider found for username " + uuid);
 		}
 		return actorDetails;
 	}

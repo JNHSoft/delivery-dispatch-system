@@ -39,7 +39,7 @@ public class AgentUtil {
 	public static String getOs(HttpServletRequest request) {
 		try {
 			String os;
-			String userAgent = request.getHeader("User-Agent");
+			String userAgent = request.getHeader("Rider-Agent");
 			if (userAgent.toLowerCase().indexOf("android") >= 0) {
 				os = "Android";
 			} else if (userAgent.toLowerCase().indexOf("iphone") >= 0) {

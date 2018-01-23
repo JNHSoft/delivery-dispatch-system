@@ -160,7 +160,6 @@ public class MonitorAspect {
 				if (log.isDebugEnabled()) {
 					log.debug("#################################################### TRLOG TRACE ####################################################");
 					log.debug("request : {}", new Gson().toJson(trLog, TrLog.class));
-					log.debug(trLog.toString());
 					log.debug("#########################################################################################################################");
 				}
 			}
@@ -186,7 +185,7 @@ public class MonitorAspect {
 				if (log.isDebugEnabled()) {
 					log.debug("#################################################### TRLOG ERROR TRACE ####################################################");
 					log.debug("request : {}", new Gson().toJson(errorLog, ErrorLog.class));
-					log.debug(errorLog.toString());
+					log.debug("traceLog errorLog : {}",errorLog.getMessage());
 					log.debug("#########################################################################################################################");
 				}
 			}

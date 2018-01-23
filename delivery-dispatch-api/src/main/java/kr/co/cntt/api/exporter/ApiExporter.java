@@ -11,6 +11,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
@@ -46,6 +48,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
     /**
      * 객체 주입
      */
+    private UserService userService;
     private CustomAuthentificateService customAuthentificateService;
     private AuthenticationManager authenticationManager;
     private TokenManager tokenManager;
@@ -55,10 +58,12 @@ public class ApiExporter extends ExporterSupportor implements Api {
     @Autowired
     public ApiExporter(CustomAuthentificateService customAuthentificateService
             , AuthenticationManager authenticationManager
-            , TokenManager tokenManager) {
+            , TokenManager tokenManager
+            , UserService userService){
         this.customAuthentificateService = customAuthentificateService;
         this.authenticationManager = authenticationManager;
         this.tokenManager = tokenManager;
+        this.userService = userService;
     }
 
     /**
@@ -101,7 +106,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
     /**
      * 토큰 생성 요청 전문
-     * @param request : serviceKey 토큰에 생성 시 사용할 서비스키
+     * @param request
+     * @param loginId
+     * @param loginPw
      * @param device
      * @return
      * @throws Exception
@@ -109,10 +116,33 @@ public class ApiExporter extends ExporterSupportor implements Api {
     //@GetMapping(value = GET_TOKEN)
     @RequestMapping(value = GET_TOKEN)
     public ResponseEntity<?> createAuthenticate(HttpServletRequest request, @RequestParam String loginId, @RequestParam String loginPw, Device device) throws Exception {
+
+        log.info("===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===> ");
+
         List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
+        log.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ");
         try {
+            User user = new User();
+            user.setLoginId(loginId);
+            user.setLoginPw(loginPw);
+            log.info("###############@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
+            String userLoginId = userService.selectLoginRider(user);
+
+            log.info("************************************** ");
+
+            log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
+            log.info("===> [createAuthenticate RequestParam][loginPw : {}]", loginPw);
+            log.info("===> [createAuthenticate RequestParam][userLoginId : {}]", userLoginId);
+
+
+            if (!loginId.equals(userLoginId)) {
+                // 로그인 정보가 다르다.
+                //throw new AppTrException(getMessage(ErrorCodeEnum.S0001), ErrorCodeEnum.S0001.name());
+                throw new AppTrException("로그인정보가 다릅니다.", "LOERR");
+            }
+
             /*
             if ("".equals(keyname)) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.A0002), ErrorCodeEnum.A0002.name());

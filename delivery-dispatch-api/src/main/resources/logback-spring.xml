@@ -6,7 +6,7 @@
 			<property value="/home/logs/delivery-dispatch/api_application" name="LOG_FILE_PREFIX" />
 		</springProfile>
 		<springProfile name="oper">
-			<property value="/web/app_brk/tomcat_delivery-dispatch/logs/application" name="LOG_FILE_PREFIX" />
+			<property value="/web/app/tomcat_delivery-dispatch/logs/application" name="LOG_FILE_PREFIX" />
 		</springProfile>
 	</springProfile>
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
