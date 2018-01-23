@@ -32,15 +32,23 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		RequestWrapper request;
 		String requestUri= servletRequest.getRequestURI();
-		log.debug("app api request uri : {}", requestUri);
+		log.debug("======= api request uri : {}", requestUri);
 		//if (requestUri.startsWith("/api") && !(requestUri.contains("setservicekey.do") || requestUri.contains("gettoken.do"))) {
-		if (requestUri.startsWith("/api") && !(requestUri.contains("gettoken.do"))) {
+
+//		log.debug("======= requestUri.startsWith(\"/api\")  : {} ", requestUri.startsWith("/API") );
+//		log.debug("======= requestUri.contains(\"gettoken.do\") : {}", requestUri.contains("gettoken.do"));
+		if (requestUri.startsWith("/API") && !(requestUri.contains("gettoken.do"))) {
 			try {
+//				log.debug("======= try");
 				request = new RequestWrapper(servletRequest);
+//				log.debug("======= request.getJsonBody() : {}", request.getJsonBody());
 				String authToken = extractToken(request.getJsonBody());
+//				log.debug("======= authToken : {}", authToken);
 				String username = tokenManager.getUsernameFromToken(authToken);
+//				log.debug("======= username : {}", username);
 				if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 					ActorDetails actorDetails = this.customAuthentificateService.loadUserByUsername(username);
+//					log.debug("======= actorDetails : {}", actorDetails);
 					if (tokenManager.validateToken(authToken, actorDetails)) {
 						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 								actorDetails, null, actorDetails.getAuthorities());

@@ -24,7 +24,7 @@ public class ActorDetails implements UserDetails {
 		return this.actor;
 	}
 	public ActorDetails bindRequestInfo(HttpServletRequest request) {
-		actor.setIp(request.getRemoteAddr());
+		//actor.setIp(request.getRemoteAddr());
 		return this;
 	}
 

@@ -70,8 +70,8 @@ public class CnttExceptionAdvice extends CnttBaseExceptionHandler {
 
 						log.debug("#################################################### CNT ERROR TRACE ####################################################");
 						log.debug("ErrorLog : {}", new Gson().toJson(error, ErrorLog.class));
-						log.debug(error.toString());
-						log.debug(ex.toString());
+						log.debug("error.getMessage : {} ", error.getMessage());
+						log.debug("ex : {}",ex.toString());
 						log.debug("#########################################################################################################################");
 					}
 				}

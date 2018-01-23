@@ -7,20 +7,15 @@ public class Actor {
 	private String loginId;
 	private String loginPw;
 	private String uuid;
-	private String ip;
 	private String time;
-	private String mainKey;
 	private String token;
 	
-	public Actor(String loginId, String loginPw, String ip, String serviceKey) {
+	public Actor(String loginId, String loginPw) {
 		this.loginId = loginId;
 		this.loginPw = loginPw;
 		this.uuid = UUID.randomUUID().toString().replaceAll("-", "");
-		this.ip = ip;
 		this.time = String.valueOf(System.currentTimeMillis());
-		this.mainKey = serviceKey;
-		this.token = getIp() + getTime() + getMainKey();
-		
+		this.token = getTime();
 	}
 
 	public String getLoginId() {
@@ -31,14 +26,6 @@ public class Actor {
 		return loginPw;
 	}
 
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public void setLoginPw(String loginPw) {
-		this.loginPw = loginPw;
-	}
-
 	public String getUsername() {
 		return this.uuid;
 	}
@@ -46,21 +33,9 @@ public class Actor {
 	public String getPassword() {
 		return this.token;
 	}
-	
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-	
-	public String getIp() {
-		return ip;
-	}
 
 	public String getTime() {
 		return this.time;
-	}
-
-	public String getMainKey() {
-		return mainKey;
 	}
 
 	public String getUuid() {

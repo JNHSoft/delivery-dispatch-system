@@ -28,11 +28,13 @@ public class CustomAuthentificateService extends ServiceSupport implements UserD
 			log.debug("service key array {} : {}", i, serviceKeyArr[i]);
 		}
 	}
-	public Actor createActor(String loginId, String loginPw, String ip, String serviceKey) throws Exception {
+	public Actor createActor(String loginId, String loginPw) throws Exception {
+		/*
 		if (!isExistKey(serviceKey)) {
 			throw new AppTrException(getMessage(ErrorCodeEnum.A0001), ErrorCodeEnum.A0001.name());
 		}
-		Actor actor = new Actor(loginId, loginPw, ip, serviceKey);
+		*/
+		Actor actor = new Actor(loginId, loginPw);
 		ActorDetails actorDetails = new ActorDetails(actor, null);
 		actorDetails.setPassword(new BCryptPasswordEncoder().encode(actorDetails.getPassword()));
 		//userDataBase.put(ip, actorDetails);
@@ -43,6 +45,7 @@ public class CustomAuthentificateService extends ServiceSupport implements UserD
 
 	@Override
 	public ActorDetails loadUserByUsername(String uuid) throws UsernameNotFoundException {
+		log.debug("=========== loadUserByUsername");
 		ActorDetails actorDetails = null;
 		for (String key : userDataBase.keySet()) {
 			actorDetails = userDataBase.get(key);
