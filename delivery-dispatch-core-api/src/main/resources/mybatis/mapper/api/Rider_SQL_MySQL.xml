@@ -1,0 +1,66 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cntt.core.mapper.RiderMapper">
+
+	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="String">
+		SELECT login_id FROM rider
+		WHERE 1=1
+		AND login_id = #{loginId}
+		<!--AND login_pw = #{loginPw}-->
+		limit 1
+	</select>
+
+
+	<!-- insertRiderSession -->
+	<insert id="insertRiderSession" parameterType="kr.co.cntt.core.model.rider.Rider">
+		<![CDATA[
+		INSERT INTO rider_session(rider_id, access_token, created_datetime)
+		SELECT
+			id,
+			#{accessToken},
+			now()
+		FROM rider
+		WHERE login_id = #{loginId}
+		]]>
+	</insert>
+
+
+	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.R_Rider" resultType="kr.co.cntt.core.model.rider.Rider">
+		SELECT
+			created_datetime,
+			modified_datetime,
+			last_access,
+			chat_user_id,
+			admin_id,
+			branch_id,
+			id,
+			name,
+			phone,
+			login_id,
+			login_pw,
+			position,
+			gender,
+			employment_type,
+			address,
+			working,
+			status,
+			delay,
+			latitude,
+			longitude,
+			location_updated,
+			insurance_phone,
+			vehicle_number,
+			emergency_phone,
+			entire_order_list,
+			show_call,
+			assignment_limit,
+			distance,
+			has_right,
+			comment,
+			deleted
+		FROM rider
+		WHERE id = #{currentRiderId}
+	</select>
+
+
+</mapper>
+ 

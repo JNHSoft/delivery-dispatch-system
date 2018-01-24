@@ -12,13 +12,6 @@ import kr.co.cntt.core.model.login.User;
 @DeliveryDispatchMapper
 public interface UserMapper {
     /**
-     * <p> selectLoginRider
-     *
-     * @return loginId String
-     */
-    public String selectLoginRider(User user);
-
-    /**
      * <p> selectLoginStore
      *
      * @return loginId String

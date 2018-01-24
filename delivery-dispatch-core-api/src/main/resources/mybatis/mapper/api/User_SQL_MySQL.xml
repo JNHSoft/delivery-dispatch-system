@@ -1,16 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.UserMapper">
 
-	<!-- selectLoginRider -->
-	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.login.User" resultType="String">
-		SELECT login_id FROM rider
-		WHERE 1=1
-			AND login_id = #{loginId}
-			<!--AND login_pw = #{loginPw}-->
-		limit 1
-	</select>
-
-
 	<!-- selectLoginStore -->
 	<select id="selectLoginStore" parameterType="kr.co.cntt.core.model.login.User" resultType="String">
 		SELECT login_id FROM store

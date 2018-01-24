@@ -20,6 +20,9 @@ public class GenericRequest<T> implements Dto {
 	private static final long serialVersionUID = 7002091651554613826L;
 
 	// array로 규약됨. data구조 개 썅~~~cBody 지랄같네~~
-	List<RequestHeader> header;
-	List<T> body;
+//	List<RequestHeader> header;
+//	List<T> body;
+
+	RequestHeader header;
+	T body;
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import kr.co.cntt.api.security.RequestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -26,6 +27,8 @@ import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.rest.custom.mapper.RestObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
 public abstract class ExporterSupportor extends ControllerSupport implements ApplicationContextAware {
 
@@ -42,15 +45,17 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
     private RestObjectMapper mapper;
     /**
      * generic service invoker
-     * @param <T>
-     * @param in
+     * @param router
+     * @param jsonStr
      * @return
      * @throws Exception
      */
-    protected ResponseEntity<?> trServiceInvoker(IServiceRouter router, String jsonStr) {
+    protected ResponseEntity<?> trServiceInvoker(IServiceRouter router, String jsonStr, HttpServletRequest servletRequest) {
         if (router == null) {
             return responseError(null, new AppTrException(getMessage(ErrorCodeEnum.S0001), ErrorCodeEnum.S0001.name()));
         }
+        RequestWrapper requestWrapper;
+
         Object service = context.getBean(router.getQualifierName());
         Method[] methods = service.getClass().getMethods();
         GenericRequest<?> requestVo;
@@ -60,12 +65,16 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
                     // body string to vo object
                     JavaType reqType = mapper.getTypeFactory().constructParametrizedType(GenericRequest.class, GenericRequest.class, router.getIn());
                     requestVo = mapper.readValue(jsonStr, reqType);
-                    RequestHeader requestHeader = requestVo.getHeader().get(0);
-                    String token = requestHeader.getToken();
+                    //RequestHeader requestHeader = requestVo.getHeader().get(0);
+                    //String token = requestHeader.getToken();
+                    requestWrapper  = new RequestWrapper(servletRequest);
+                    String token = requestWrapper.getHeader("token");
+
                     return response(() -> {
                         try {
                             return m.invoke(service, requestVo.getBody());
                         } catch (Exception e) {
+                            e.printStackTrace();
                             throw new RuntimeException(e.getCause());
                         }
                     }, token);
@@ -80,15 +89,18 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
     /**
      * response success
      * @param command
+     * @param token
      * @return
      */
     protected <T> ResponseEntity<?> response(Supplier<T> command, String token) throws Exception {
         kr.co.cntt.core.api.model.GenericResponse<CommonBody<T>> response = new kr.co.cntt.core.api.model.GenericResponse<CommonBody<T>>();
         kr.co.cntt.core.api.model.ResponseHeader header = new kr.co.cntt.core.api.model.ResponseHeader();
-        header.setToken(token);
+        //header.setToken(token);
         header.setDate(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()));
         CommonBody<T> cBody = new CommonBody<T>(CODE_SUCCESS);
+
         cBody.setCode(command.get());
+
         response.setBody(cBody);
         response.setHeader(header);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -96,7 +108,6 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
 
     /**
      * reponse error
-     * @param <T>
      * @param token
      * @param e
      * @return
@@ -104,7 +115,7 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
     protected ResponseEntity<?> responseError(String token, Throwable e) {
         kr.co.cntt.core.api.model.GenericResponse<CommonBody<Map<String, String>>> response = new kr.co.cntt.core.api.model.GenericResponse<CommonBody<Map<String, String>>>();
         kr.co.cntt.core.api.model.ResponseHeader header = new kr.co.cntt.core.api.model.ResponseHeader();
-        header.setToken(token);
+        //header.setToken(token);
         header.setDate(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()));
         CommonBody<Map<String, String>> cBody = new CommonBody<Map<String, String>>(CODE_ERROR);
         Map<String, String> errorMap = new HashMap<String, String>();

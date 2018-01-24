@@ -15,6 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseHeader {
-	private String token;
+	//private String token;
 	private String date;
 }

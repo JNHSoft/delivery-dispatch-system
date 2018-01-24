@@ -2,7 +2,6 @@ package kr.co.cntt.api.exporter;
 
 import static kr.co.cntt.api.exporter.Api.GET_TOKEN;
 import static kr.co.cntt.api.exporter.Api.Path;
-import static kr.co.cntt.api.exporter.Api.SET_SERVICE_KEY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.service.api.RiderService;
 import kr.co.cntt.core.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
     /**
      * 객체 주입
      */
-    private UserService userService;
+    private RiderService riderService;
     private CustomAuthentificateService customAuthentificateService;
     private AuthenticationManager authenticationManager;
     private TokenManager tokenManager;
@@ -59,11 +60,11 @@ public class ApiExporter extends ExporterSupportor implements Api {
     public ApiExporter(CustomAuthentificateService customAuthentificateService
             , AuthenticationManager authenticationManager
             , TokenManager tokenManager
-            , UserService userService){
+            , RiderService riderService){
         this.customAuthentificateService = customAuthentificateService;
         this.authenticationManager = authenticationManager;
         this.tokenManager = tokenManager;
-        this.userService = userService;
+        this.riderService = riderService;
     }
 
     /**
@@ -78,18 +79,15 @@ public class ApiExporter extends ExporterSupportor implements Api {
     //@GetMapping(value = GET_TOKEN)
     @RequestMapping(value = GET_TOKEN)
     public ResponseEntity<?> createAuthenticate(HttpServletRequest request, @RequestParam String loginId, @RequestParam String loginPw, Device device) throws Exception {
-
-        log.info("===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===>===> ");
-
         List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
-        log.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ");
+
         try {
-            User user = new User();
-            user.setLoginId(loginId);
-            user.setLoginPw(loginPw);
-            String userLoginId = userService.selectLoginRider(user);
+            Rider riderInfo = new Rider();
+            riderInfo.setLoginId(loginId);
+            riderInfo.setLoginPw(loginPw);
+            String userLoginId = riderService.selectLoginRider(riderInfo);
 
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
             log.info("===> [createAuthenticate RequestParam][loginPw : {}]", loginPw);
@@ -129,6 +127,11 @@ public class ApiExporter extends ExporterSupportor implements Api {
             response.add(data);
             //response.add(new R_TR_A0002(CODE_SUCCESS, token));
             // Return the token
+
+            // Token을 Insert
+            riderInfo.setAccessToken(token);
+            riderService.insertRiderSession(riderInfo);
+
             return ResponseEntity.ok(new Gson().toJson(response).toString());
         } catch(Exception e) {
             result.put("result", CODE_ERROR);
@@ -174,9 +177,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
      * @return
      */
     @PostMapping(value = "/{service}")
-    public ResponseEntity<?> execute(@PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
+    public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
         try {
-            return trServiceInvoker(ApiServiceRouter.service(service), jsonStr);
+            return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
         } catch (Exception e) {
             return responseError(null, e);
         }

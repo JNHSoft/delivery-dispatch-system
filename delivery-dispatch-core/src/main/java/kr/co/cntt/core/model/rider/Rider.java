@@ -1,17 +1,21 @@
 package kr.co.cntt.core.model.rider;
 
 import kr.co.cntt.core.model.Dto;
-import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.ibatis.type.Alias;
+
+import java.util.List;
 
 @Getter
 @Setter
-@Alias("rider")
-public class Rider extends User implements Dto {
+public class Rider implements Dto {
     private static final long serialVersionUID = 6384739497543017734L;
 
+    private String id;
+    private String loginId;
+    private String loginPw;
+    private String name;
+    private String accessToken;
     private String createdDatetime;
     private String modifiedDatetime;
     private String lastAccess;
@@ -39,5 +43,7 @@ public class Rider extends User implements Dto {
     private String hasRight;
     private String comment;
     private String deleted;
+
+    private List<RiderSession> riderSession;
 }
 

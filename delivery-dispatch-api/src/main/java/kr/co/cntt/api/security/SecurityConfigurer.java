@@ -69,9 +69,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 				"/**/*.favicon.ico"
 			).permitAll()
 			//.antMatchers("/BkrApp/setservicekey.do").permitAll()
-			.antMatchers("/getToken.do").permitAll()
-			.antMatchers("/Api/*").permitAll()
-			.antMatchers("/API/*").permitAll()
+			.antMatchers("/API/getToken.do").permitAll()
+			.antMatchers("/POS/*").permitAll()
+//			.antMatchers("/API/*").permitAll()
 			.anyRequest().authenticated();
 		
 		http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);

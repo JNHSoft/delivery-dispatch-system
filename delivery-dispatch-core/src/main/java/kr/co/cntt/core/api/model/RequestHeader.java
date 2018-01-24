@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestHeader {
-	private String token;
+	//private String token;
 	private String date;
-	private String serviceKey;
+	//private String serviceKey;
 }

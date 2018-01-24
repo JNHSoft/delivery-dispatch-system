@@ -19,7 +19,7 @@ public class Store extends User implements Dto {
 	private String chatUserId;
 	private String adminId;
 	private String branchId;
-	private String id;
+
 	private String code;
 	private String phone;
 	private String storeName;

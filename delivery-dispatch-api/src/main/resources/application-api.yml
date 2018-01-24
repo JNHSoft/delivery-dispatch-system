@@ -118,4 +118,4 @@ server:
     init-parameters:
       development: true
 api.token.serviceKey : testkey
-api.token.expiration : 600
+api.token.expiration : 6000

@@ -26,11 +26,6 @@ public class UserServiceImpl extends ServiceSupport implements UserService {
     }
 
     @Override
-    public String selectLoginRider(User user) {
-        return userMapper.selectLoginRider(user);
-    }
-
-    @Override
     public String selectLoginStore(User user) {
         return userMapper.selectLoginStore(user);
     }

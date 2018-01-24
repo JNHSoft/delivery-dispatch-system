@@ -35,13 +35,14 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 		log.debug("======= api request uri : {}", requestUri);
 		//if (requestUri.startsWith("/api") && !(requestUri.contains("setservicekey.do") || requestUri.contains("gettoken.do"))) {
 
-		if (requestUri.startsWith("/API") && !(requestUri.contains("gettoken.do"))) {
+		if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do"))) {
 			try {
 				//log.debug("======= try");
 				request = new RequestWrapper(servletRequest);
 				//log.debug("======= request.getJsonBody() : {}", request.getJsonBody());
 				//String authToken = extractToken(request.getJsonBody());
-				String authToken = getHeadersToken(servletRequest);
+				//String authToken = getHeadersToken(servletRequest);
+				String authToken = request.getHeader("token");
 
 				log.debug("======= authToken : {}", authToken);
 				String username = tokenManager.getUsernameFromToken(authToken);
@@ -66,17 +67,6 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 			chain.doFilter(servletRequest, response);
 		}
 	}
-
-	public static String getHeadersToken(HttpServletRequest servletRequest){
-		if (servletRequest == null) {
-			return "";
-		}
-
-		String accessToken = servletRequest.getHeader("token");
-
-		return accessToken;
-	}
-
 
 	public static String extractToken(String request) {
 		if (request == null || "".equals(request)) {
