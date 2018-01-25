@@ -12,10 +12,6 @@ import java.util.List;
 public class Rider extends User implements Dto {
     private static final long serialVersionUID = 6384739497543017734L;
 
-    private String loginId;
-    private String loginPw;
-    private String name;
-    private String accessToken;
     private String createdDatetime;
     private String modifiedDatetime;
     private String lastAccess;
