@@ -1,6 +1,7 @@
 package kr.co.cntt.core.model.rider;
 
 import kr.co.cntt.core.model.Dto;
+import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,10 +9,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Rider implements Dto {
+public class Rider extends User implements Dto {
     private static final long serialVersionUID = 6384739497543017734L;
 
-    private String id;
     private String loginId;
     private String loginPw;
     private String name;

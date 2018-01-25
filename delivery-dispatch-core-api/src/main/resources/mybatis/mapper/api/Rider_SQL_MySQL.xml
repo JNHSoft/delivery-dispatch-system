@@ -24,7 +24,7 @@
 	</insert>
 
 
-	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.R_Rider" resultType="kr.co.cntt.core.model.rider.Rider">
+	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.rider.Rider">
 		SELECT
 			created_datetime,
 			modified_datetime,
@@ -58,7 +58,7 @@
 			comment,
 			deleted
 		FROM rider
-		WHERE id = #{currentRiderId}
+		WHERE id = #{id}
 	</select>
 
 

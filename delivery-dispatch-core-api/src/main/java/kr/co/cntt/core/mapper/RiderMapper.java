@@ -36,7 +36,7 @@ public interface RiderMapper {
      *
      * @return Rider Info 조회 결과값
      */
-    public List<Rider> getRiderInfo(R_Rider rider);
+    public List<Rider> getRiderInfo(Rider rider);
 
 
 

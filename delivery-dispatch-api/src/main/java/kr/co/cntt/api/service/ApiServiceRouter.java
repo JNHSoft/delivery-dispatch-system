@@ -10,7 +10,7 @@ import lombok.Getter;
 public enum ApiServiceRouter implements IServiceRouter {
 	
 	/** Rider 정보조회 */
-	RIDER_INFO("riderService", "getRiderInfo", R_Rider.class),
+	RIDER_INFO("riderService", "getRiderInfo", Rider.class),
 
 //	/** 주문요청2 */
 //	SET_ORDER2("TRO001SV_APP", "setorder2", R_TRO001_1.class),

@@ -27,5 +27,5 @@ public interface RiderService {
      *
      * @return
      */
-    public List<Rider> getRiderInfo(R_Rider rider) throws AppTrException;;
+    public List<Rider> getRiderInfo(Rider rider) throws AppTrException;;
 }

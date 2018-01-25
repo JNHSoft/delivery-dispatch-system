@@ -41,7 +41,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
     @Override
-    public List<Rider> getRiderInfo(R_Rider rider) throws AppTrException{
+    public List<Rider> getRiderInfo(Rider rider) throws AppTrException{
 
         List<Rider> S_Rider = riderMapper.getRiderInfo(rider);
 
