@@ -3,7 +3,7 @@
 
 	<!-- selectLoginStore -->
 	<select id="selectLoginStore" parameterType="kr.co.cntt.core.model.login.User" resultType="String">
-		SELECT login_id FROM store
+		SELECT login_id FROM TB_STORE
 		WHERE 1=1
 			AND login_id = #{loginId}
 			AND login_pw = #{loginPw}

@@ -54,7 +54,6 @@
 			phone,
 			login_id,
 			login_pw,
-			phone,
 			comment,
 			deleted
 		FROM TB_RIDER
