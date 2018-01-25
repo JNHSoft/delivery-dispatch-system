@@ -36,6 +36,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
     @Override
+    public int selectRiderTokenCheck(Rider rider) {
+        return riderMapper.selectRiderTokenCheck(rider);
+    }
+
+    @Override
     public int insertRiderSession(Rider rider) {
         return riderMapper.insertRiderSession(rider);
     }

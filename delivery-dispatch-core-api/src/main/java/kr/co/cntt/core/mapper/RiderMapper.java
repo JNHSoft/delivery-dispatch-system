@@ -24,6 +24,13 @@ public interface RiderMapper {
     public String selectLoginRider(Rider rider);
 
     /**
+     * <p> selectRiderTokenCheck
+     *
+     * @return Count Int
+     */
+    public int selectRiderTokenCheck(Rider rider);
+
+    /**
      * <p> Rider Session Insert
      *
      * @return Insert 결과값

@@ -2,23 +2,41 @@
 <mapper namespace="kr.co.cntt.core.mapper.RiderMapper">
 
 	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="String">
-		SELECT login_id FROM rider
+		SELECT login_id FROM TB_RIDER
 		WHERE 1=1
 		AND login_id = #{loginId}
 		<!--AND login_pw = #{loginPw}-->
 		limit 1
 	</select>
 
+	<!--
+		- login ID  및 Aceess 토근 값체크
+		- expiry_datetime 이 NULL 이거나 금일 datetime 보다 큰 값
+	-->
+	<select id="selectRiderTokenCheck" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="int">
+		<![CDATA[
+		SELECT
+			COUNT(*)
+		FROM TB_RIDER A JOIN TB_RIDER_SESSION B
+		ON A.id = B.rider_id
+		WHERE 1=1
+			AND A.login_id = #{loginId}
+			AND B.access_token = #{accessToken}
+			AND (expiry_datetime IS NULL OR expiry_datetime > now())
+		]]>
+	</select>
+
+
 
 	<!-- insertRiderSession -->
 	<insert id="insertRiderSession" parameterType="kr.co.cntt.core.model.rider.Rider">
 		<![CDATA[
-		INSERT INTO rider_session(rider_id, access_token, created_datetime)
+		INSERT INTO TB_RIDER_SESSION(rider_id, access_token, created_datetime)
 		SELECT
 			id,
 			#{accessToken},
 			now()
-		FROM rider
+		FROM TB_RIDER
 		WHERE login_id = #{loginId}
 		]]>
 	</insert>
@@ -31,36 +49,17 @@
 			last_access,
 			chat_user_id,
 			admin_id,
-			branch_id,
 			id,
 			name,
 			phone,
 			login_id,
 			login_pw,
-			position,
-			gender,
-			employment_type,
-			address,
-			working,
-			status,
-			delay,
-			latitude,
-			longitude,
-			location_updated,
-			insurance_phone,
-			vehicle_number,
-			emergency_phone,
-			entire_order_list,
-			show_call,
-			assignment_limit,
-			distance,
-			has_right,
+			phone,
 			comment,
 			deleted
-		FROM rider
+		FROM TB_RIDER
 		WHERE id = #{id}
 	</select>
-
 
 </mapper>
  

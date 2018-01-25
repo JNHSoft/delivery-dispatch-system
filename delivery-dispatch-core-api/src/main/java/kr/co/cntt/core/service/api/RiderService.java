@@ -16,6 +16,13 @@ public interface RiderService {
     public String selectLoginRider(Rider rider);
 
     /**
+     * <p> selectRiderTokenCheck
+     *
+     * @return
+     */
+    public int selectRiderTokenCheck(Rider rider);
+
+    /**
      * <p> insertRiderSession
      *
      * @return

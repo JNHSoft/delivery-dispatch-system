@@ -27,7 +27,8 @@ datasource:
   deliveryDispatch:
     initialize: true
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://nanum-taiwan-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/nanum
+    #url: jdbc:mysql://nanum-taiwan-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/nanum
+    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde
     username: nanum
     password: snaskzhf
     initial-size: 10
@@ -118,4 +119,5 @@ server:
     init-parameters:
       development: true
 api.token.serviceKey : testkey
+api.token.secretKey : ATE6OLdQuouPbqyZ5qt1H++taImbDhqSPw53ClPT7+k=
 api.token.expiration : 6000

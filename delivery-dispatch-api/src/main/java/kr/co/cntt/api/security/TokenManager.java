@@ -34,11 +34,16 @@ public class TokenManager implements Serializable {
 	static final String AUDIENCE_MOBILE = "mobile";
 	static final String AUDIENCE_TABLET = "tablet";
 
+	/*
+	  -  키값 고정...(임시).. 다중 접속 및 WAS 재시작 할 경우에도 동일 secret값을 써야하는 상황..
+	  - createSecretKey() 값 주석 처리 했음..
+	*/
+	@Value("${api.token.secretKey}")
 	private String secret;
 
 	@PostConstruct
 	public void createSecretKey() throws NoSuchAlgorithmException {
-		this.secret = TextCodec.BASE64.encode(MacProvider.generateKey(SignatureAlgorithm.HS256).getEncoded());
+		//this.secret = TextCodec.BASE64.encode(MacProvider.generateKey(SignatureAlgorithm.HS256).getEncoded());
 	}
 
 	@Value("${api.token.expiration}")
@@ -91,7 +96,6 @@ public class TokenManager implements Serializable {
 	private Claims getClaimsFromToken(String token) {
 		Claims claims;
 		try {
-			System.out.println("token parse with this key : " + secret );
 			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 		} catch (Exception e) {
 			claims = null;
@@ -137,10 +141,27 @@ public class TokenManager implements Serializable {
 		return doGenerateToken(claims);
 	}
 
+	public String generateCustomToken(UserDetails userDetails, Device device) {
+		Map<String, Object> claims = new HashMap<>();
+
+		claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+		claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
+
+		final Date createdDate = TimeProvider.now();
+		claims.put(CLAIM_KEY_CREATED, createdDate);
+
+		return doGenerateCustomToken(claims);
+	}
+
 	private String doGenerateToken(Map<String, Object> claims) {
 		final Date createdDate = (Date) claims.get(CLAIM_KEY_CREATED);
 		final Date expirationDate = new Date(createdDate.getTime() + expiration * 1000);
 		return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS256, secret)
+				.compact();
+	}
+
+	private String doGenerateCustomToken(Map<String, Object> claims) {
+		return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS256, secret)
 				.compact();
 	}
 
@@ -168,6 +189,14 @@ public class TokenManager implements Serializable {
 		final Date created = getCreatedDateFromToken(token);
 		// final Date expiration = getExpirationDateFromToken(token);
 		return (username.equals(actorDetails.getUsername()) && !isTokenExpired(token));
+	}
+
+	public Boolean validateCustomToken(String token, UserDetails userDetails) {
+		ActorDetails actorDetails = (ActorDetails) userDetails;
+		final String username = getUsernameFromToken(token);
+		final Date created = getCreatedDateFromToken(token);
+
+		return (username.equals(actorDetails.getUsername()));
 	}
 
 	public static class TimeProvider implements Serializable {

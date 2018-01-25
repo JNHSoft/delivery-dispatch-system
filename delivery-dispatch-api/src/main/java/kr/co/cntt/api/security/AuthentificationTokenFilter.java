@@ -2,6 +2,9 @@ package kr.co.cntt.api.security;
 
 import java.io.IOException;
 
+import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.service.api.RiderService;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,13 +31,15 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private TokenManager tokenManager;
 
+	@Autowired
+	private RiderService riderService;
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse response, FilterChain chain)
-			throws ServletException, IOException {
+			throws ServletException, IOException, UsernameNotFoundException {
 		RequestWrapper request;
 		String requestUri= servletRequest.getRequestURI();
 		log.debug("======= api request uri : {}", requestUri);
-		//if (requestUri.startsWith("/api") && !(requestUri.contains("setservicekey.do") || requestUri.contains("gettoken.do"))) {
 
 		if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do"))) {
 			try {
@@ -43,21 +49,45 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 				//String authToken = extractToken(request.getJsonBody());
 				//String authToken = getHeadersToken(servletRequest);
 				String authToken = request.getHeader("token");
-
 				log.debug("======= authToken : {}", authToken);
+
 				String username = tokenManager.getUsernameFromToken(authToken);
-				//log.debug("======= username : {}", username);
+
+				log.debug("======= username : {}", username);
 				if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-					ActorDetails actorDetails = this.customAuthentificateService.loadUserByUsername(username);
-					//log.debug("======= actorDetails : {}", actorDetails);
-					if (tokenManager.validateToken(authToken, actorDetails)) {
-						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-								actorDetails, null, actorDetails.getAuthorities());
-						authentication.setDetails(new WebAuthenticationDetailsSource(). buildDetails(request));
-						logger.info("authenticated device " + username + ", setting security context");
-						SecurityContextHolder.getContext().setAuthentication(authentication);
+
+					// Rider 쪽 Login ID  및 AccessToken 값 체크 Start
+					Rider riderInfo = new Rider();
+					riderInfo.setAccessToken(authToken);
+					riderInfo.setLoginId(username);
+
+					int checkRiderCount = riderService.selectRiderTokenCheck(riderInfo);
+
+//					if(checkRiderCount < 1){
+//						throw new UsernameNotFoundException("No found for username or token ");
+//					}
+					// Rider 쪽 Login ID  및 AccessToken 값 체크 End
+
+					log.debug("=======> checkRiderCount : {}", checkRiderCount);
+					if(checkRiderCount > 0) {
+						ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
+
+						if (actorDetails == null) {
+							Actor actor = new Actor(username, username);
+							actorDetails = new ActorDetails(actor, null);
+						}
+
+						log.debug("======= actorDetails : {}", actorDetails);
+						if (tokenManager.validateCustomToken(authToken, actorDetails)) {
+							UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+									actorDetails, null, actorDetails.getAuthorities());
+							authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+							logger.info("authenticated device " + username + ", setting security context");
+							SecurityContextHolder.getContext().setAuthentication(authentication);
+						}
 					}
 				}
+
 				// TODO : filter chain stop 시점을 찾아야한다. 오류인 경우 어떻게 할지.. exception 공통구현 필요
 				chain.doFilter(request, response);
 			} catch (Exception e) {

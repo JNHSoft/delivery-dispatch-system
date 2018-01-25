@@ -100,16 +100,24 @@ public class ApiExporter extends ExporterSupportor implements Api {
                 throw new AppTrException("로그인정보가 다릅니다.", "LOERR");
             }
 
-            /*
-            if ("".equals(keyname)) {
-                throw new AppTrException(getMessage(ErrorCodeEnum.A0002), ErrorCodeEnum.A0002.name());
-            }
-            */
-            //Actor actor = customAuthentificateService.createActor(loginId, loginPw, AgentUtil.getIp(request), keyname);
             Actor actor = customAuthentificateService.createActor(loginId, loginPw);
+
             if (actor == null) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.A0003), ErrorCodeEnum.A0003.name());
             }
+            final Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(actor.getLoginId(), actor.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            final ActorDetails actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
+            final String token = tokenManager.generateCustomToken(actorDetails, device);
+            log.info("[AppApiExporter][createAuthenticate][actor][loginId : {}]", actor.getLoginId());
+            log.info("[AppApiExporter][createAuthenticate][actor][loginPw : {}]", actor.getLoginPw());
+            log.info("[AppApiExporter][createAuthenticate][actor][uuid : {}]", actor.getUsername());
+            //log.info("[AppApiExporter][createAuthenticate][actor][ip : {}]", actor.getIp());
+            log.info("[AppApiExporter][createAuthenticate][actor][time : {}]", actor.getTime());
+            log.info("[AppApiExporter][createAuthenticate][actor][token : {}]", token);
+
+            /*
             final Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(actor.getUuid(), actor.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -121,8 +129,10 @@ public class ApiExporter extends ExporterSupportor implements Api {
             //log.info("[AppApiExporter][createAuthenticate][actor][ip : {}]", actor.getIp());
             log.info("[AppApiExporter][createAuthenticate][actor][time : {}]", actor.getTime());
             log.info("[AppApiExporter][createAuthenticate][actor][token : {}]", token);
+            */
             result.put("result", CODE_SUCCESS);
             data.put("token", token);
+
             response.add(result);
             response.add(data);
             //response.add(new R_TR_A0002(CODE_SUCCESS, token));

@@ -37,17 +37,29 @@ public class CustomAuthentificateService extends ServiceSupport implements UserD
 	}
 
 	@Override
-	public ActorDetails loadUserByUsername(String uuid) throws UsernameNotFoundException {
-		log.debug("=========== loadUserByUsername");
+	public ActorDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
+		log.debug("=========== loadUserByUsername param: "+loginId);
 		ActorDetails actorDetails = null;
 		for (String key : userDataBase.keySet()) {
 			actorDetails = userDataBase.get(key);
-			if (uuid.equals(actorDetails.getActor().getUuid())) {
+			if (loginId.equals(actorDetails.getActor().getLoginId())) {
 				return actorDetails;
 			}
 		}
 		if (actorDetails == null) {
-			throw new UsernameNotFoundException("No Rider found for username " + uuid);
+			throw new UsernameNotFoundException("No Rider found for username " + loginId);
+		}
+		return actorDetails;
+	}
+
+	public ActorDetails loadUserCustomByUsername(String loginId) throws UsernameNotFoundException {
+		log.debug("=========== loadUserByUsername param: "+loginId);
+		ActorDetails actorDetails = null;
+		for (String key : userDataBase.keySet()) {
+			actorDetails = userDataBase.get(key);
+			if (loginId.equals(actorDetails.getActor().getLoginId())) {
+				return actorDetails;
+			}
 		}
 		return actorDetails;
 	}

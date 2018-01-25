@@ -27,11 +27,13 @@ public class Actor {
 	}
 
 	public String getUsername() {
-		return this.uuid;
+		//return this.uuid;
+		return this.loginId;
 	}
 	
 	public String getPassword() {
-		return this.token;
+		//return this.token;
+		return this.loginPw;
 	}
 
 	public String getTime() {
