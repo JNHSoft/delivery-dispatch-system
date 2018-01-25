@@ -11,6 +11,9 @@ public interface Api {
     /** Rider 정보 조회 */
     String RIDER_INFO = "/getRiderInfo.json";
 
+    /** Order 등록 */
+    String ORDER_POST = "/postOrder.json";
+
     // ############################################################################################ //
 
     // MVC || ADMIN || Call Center -> CNT APP API SERVER

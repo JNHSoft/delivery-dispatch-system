@@ -2,6 +2,7 @@ package kr.co.cntt.api.service;
 
 import kr.co.cntt.api.config.IServiceRouter;
 
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.R_Rider;
 import kr.co.cntt.core.model.rider.Rider;
 import lombok.Getter;
@@ -11,6 +12,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	
 	/** Rider 정보조회 */
 	RIDER_INFO("riderService", "getRiderInfo", Rider.class),
+
+	/** Order 등록 */
+	ORDER_POST("orderService", "postOrder", Order.class),
 
 //	/** 주문요청2 */
 //	SET_ORDER2("TRO001SV_APP", "setorder2", R_TRO001_1.class),

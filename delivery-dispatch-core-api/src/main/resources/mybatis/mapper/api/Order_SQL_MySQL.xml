@@ -1,0 +1,48 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cntt.core.mapper.OrderMapper">
+
+    <!-- insertOrder -->
+    <insert id="insertOrder" parameterType="kr.co.cntt.core.model.order.Order">
+		INSERT INTO TB_ORDER (
+			admin_id,
+			store_id,
+			address,
+			detail_address,
+			latitude,
+			longitude,
+			menu_name,
+			menu_price,
+			cooking_time,
+			to_be_paid,
+			message,
+			phone,
+			reservation,
+			reservation_datetime,
+			required_gender,
+			device_os,
+			status,
+			created_datetime
+		) VALUES(
+			1,
+			1,
+			#{address},
+			#{detailAddress},
+			#{latitude},
+			#{longitude},
+			#{menuName},
+			#{menuPrice},
+			#{cookingTime},
+			#{toBePaid},
+			#{message},
+			#{phone},
+			#{reservation},
+			#{reservationDatetime},
+			#{requiredGender},
+			#{deviceOs},
+			#{status},
+			now()
+	  	)
+	</insert>
+
+</mapper>
+ 
