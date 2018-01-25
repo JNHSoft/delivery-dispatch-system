@@ -21,7 +21,6 @@ public class Rider extends User implements Dto {
     private String lastAccess;
     private String chatUserId;
     private String adminId;
-    private String branchId;
     private String phone;
     private String position;
     private String gender;
@@ -29,18 +28,12 @@ public class Rider extends User implements Dto {
     private String address;
     private String working;
     private String status;
-    private String delay;
     private String latitude;
     private String longitude;
     private String locationUpdated;
-    private String insurancePhone;
     private String vehicleNumber;
     private String emergencyPhone;
-    private String entireOrderList;
-    private String showCall;
     private String assignmentLimit;
-    private String distance;
-    private String hasRight;
     private String comment;
     private String deleted;
 

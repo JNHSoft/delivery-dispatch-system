@@ -14,9 +14,7 @@ public class RiderSession implements Dto {
     private String createdDatetime;
     private String modifiedDatetime;
     private String accessToken;
-    private String refreshToken;
     private String expiryDatetime;
-    private String uniqueId;
     private String os;
     private String pushToken;
     private String device;
