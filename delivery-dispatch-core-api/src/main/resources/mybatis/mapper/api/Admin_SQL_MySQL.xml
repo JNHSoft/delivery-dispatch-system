@@ -53,7 +53,7 @@
 			login_pw,
 			state
 		FROM TB_ADMIN
-		WHERE id = #{id}
+		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
 	</select>
 
 </mapper>
