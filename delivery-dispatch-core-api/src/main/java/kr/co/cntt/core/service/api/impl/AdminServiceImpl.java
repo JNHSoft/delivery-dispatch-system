@@ -30,7 +30,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     }
 
     @Override
-    public String selectLoginAdmin(Admin admin) {
+    public Admin selectLoginAdmin(Admin admin) {
         return adminMapper.selectLoginAdmin(admin);
     }
 
@@ -47,6 +47,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Override
     public List<Admin> getAdminInfo(Admin admin) throws AppTrException {
 
+        log.info("@@@@@@@@@@@@@@@ " + admin.getAccessToken());
         List<Admin> S_Admin = adminMapper.getAdminInfo(admin);
 
         if (S_Admin.size() == 0) {

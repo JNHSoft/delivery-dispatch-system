@@ -12,7 +12,7 @@ public interface StoreService {
      *
      * @return
      */
-    public String selectLoginStore(Store store);
+    public Store selectLoginStore(Store store);
 
     /**
      * <p> selectStoreTokenCheck

@@ -13,7 +13,7 @@ public interface RiderService {
      *
      * @return
      */
-    public String selectLoginRider(Rider rider);
+    public Rider selectLoginRider(Rider rider);
 
     /**
      * <p> selectRiderTokenCheck

@@ -21,7 +21,7 @@ public interface StoreMapper {
      *
      * @return loginId String
      */
-    public String selectLoginStore(Store store);
+    public Store selectLoginStore(Store store);
 
     /**
      * <p> selectStoreTokenCheck

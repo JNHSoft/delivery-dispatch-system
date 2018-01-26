@@ -21,7 +21,7 @@ public interface AdminMapper {
      *
      * @return loginId String
      */
-    public String selectLoginAdmin(Admin admin);
+    public Admin selectLoginAdmin(Admin admin);
 
     /**
      * <p> selectAdminTokenCheck

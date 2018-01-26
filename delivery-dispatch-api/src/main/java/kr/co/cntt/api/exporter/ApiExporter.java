@@ -94,6 +94,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Map<String, Object> data = new HashMap<String, Object>();
 
         String userLoginId = null;
+        String userId = null;
         Rider riderInfo = new Rider();
         Store storeInfo = new Store();
         Admin adminInfo = new Admin();
@@ -102,20 +103,27 @@ public class ApiExporter extends ExporterSupportor implements Api {
             if (level.equals("rider")) {
                 riderInfo.setLoginId(loginId);
                 riderInfo.setLoginPw(loginPw);
-                userLoginId = riderService.selectLoginRider(riderInfo);
+                Rider userLoginInfo = riderService.selectLoginRider(riderInfo);
+                userLoginId = userLoginInfo.getLoginId();
+                userId = userLoginInfo.getId();
             } else if (level.equals("store")) {
                 storeInfo.setLoginId(loginId);
                 storeInfo.setLoginPw(loginPw);
-                userLoginId = storeService.selectLoginStore(storeInfo);
+                Store userLoginInfo = storeService.selectLoginStore(storeInfo);
+                userLoginId = userLoginInfo.getLoginId();
+                userId = userLoginInfo.getId();
             } else if (level.equals("admin")) {
                 adminInfo.setLoginId(loginId);
                 adminInfo.setLoginPw(loginPw);
-                userLoginId = adminService.selectLoginAdmin(adminInfo);
+                Admin userLoginInfo = adminService.selectLoginAdmin(adminInfo);
+                userLoginId = userLoginInfo.getLoginId();
+                userId = userLoginInfo.getId();
             }
 
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
             log.info("===> [createAuthenticate RequestParam][loginPw : {}]", loginPw);
             log.info("===> [createAuthenticate RequestParam][userLoginId : {}]", userLoginId);
+            log.info("===> [createAuthenticate RequestParam][userId : {}]", userId);
 
 
             if (!loginId.equals(userLoginId)) {
@@ -156,6 +164,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
             */
             result.put("result", CODE_SUCCESS);
             data.put("token", token);
+            data.put("id", userId);
 
             response.add(result);
             response.add(data);
@@ -178,6 +187,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         } catch(Exception e) {
             result.put("result", CODE_ERROR);
             data.put("token", "");
+            data.put("id", "");
             data.put("msg", e.getLocalizedMessage());
             response.add(result);
             response.add(data);
