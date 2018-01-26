@@ -2,6 +2,7 @@ package kr.co.cntt.api.service;
 
 import kr.co.cntt.api.config.IServiceRouter;
 
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.R_Rider;
 import kr.co.cntt.core.model.rider.Rider;
@@ -11,6 +12,9 @@ import lombok.Getter;
 @Getter
 public enum ApiServiceRouter implements IServiceRouter {
 	
+	/** Admin 정보조회 */
+	ADMIN_INFO("adminService", "getAdminInfo", Admin.class),
+
 	/** Rider 정보조회 */
 	RIDER_INFO("riderService", "getRiderInfo", Rider.class),
 

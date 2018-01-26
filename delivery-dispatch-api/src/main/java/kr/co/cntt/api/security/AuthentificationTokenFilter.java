@@ -2,8 +2,10 @@ package kr.co.cntt.api.security;
 
 import java.io.IOException;
 
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.service.api.RiderService;
 
 import javax.servlet.FilterChain;
@@ -39,6 +41,9 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private StoreService storeService;
 
+	@Autowired
+	private AdminService adminService;
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException, UsernameNotFoundException {
@@ -66,6 +71,7 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 					// Rider 쪽 Login ID  및 AccessToken 값 체크 Start
 					Rider riderInfo = new Rider();
 					Store storeInfo = new Store();
+					Admin adminInfo = new Admin();
 					int checkUserCount = 0;
 
 					if (authLevel.equals("rider")) {
@@ -83,6 +89,11 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 						storeInfo.setLoginId(username);
 
 						checkUserCount = storeService.selectStoreTokenCheck(storeInfo);
+					} else if (authLevel.equals("admin")) {
+						adminInfo.setAccessToken(authToken);
+						adminInfo.setLoginId(username);
+
+						checkUserCount = adminService.selectAdminTokenCheck(adminInfo);
 					}
 
 					log.debug("=======> checkUserCount : {}", checkUserCount);

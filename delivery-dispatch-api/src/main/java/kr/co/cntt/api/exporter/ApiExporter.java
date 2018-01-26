@@ -10,9 +10,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.service.api.RiderService;
 import kr.co.cntt.core.service.api.StoreService;
 import kr.co.cntt.core.service.api.UserService;
@@ -53,6 +55,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
      */
     private RiderService riderService;
     private StoreService storeService;
+    private AdminService adminService;
     private CustomAuthentificateService customAuthentificateService;
     private AuthenticationManager authenticationManager;
     private TokenManager tokenManager;
@@ -64,12 +67,14 @@ public class ApiExporter extends ExporterSupportor implements Api {
             , AuthenticationManager authenticationManager
             , TokenManager tokenManager
             , RiderService riderService
-            , StoreService storeService){
+            , StoreService storeService
+            , AdminService adminService){
         this.customAuthentificateService = customAuthentificateService;
         this.authenticationManager = authenticationManager;
         this.tokenManager = tokenManager;
         this.riderService = riderService;
         this.storeService = storeService;
+        this.adminService = adminService;
     }
 
     /**
@@ -91,6 +96,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         String userLoginId = null;
         Rider riderInfo = new Rider();
         Store storeInfo = new Store();
+        Admin adminInfo = new Admin();
 
         try {
             if (level.equals("rider")) {
@@ -101,6 +107,10 @@ public class ApiExporter extends ExporterSupportor implements Api {
                 storeInfo.setLoginId(loginId);
                 storeInfo.setLoginPw(loginPw);
                 userLoginId = storeService.selectLoginStore(storeInfo);
+            } else if (level.equals("admin")) {
+                adminInfo.setLoginId(loginId);
+                adminInfo.setLoginPw(loginPw);
+                userLoginId = adminService.selectLoginAdmin(adminInfo);
             }
 
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
@@ -159,6 +169,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
             } else if (level.equals("store")) {
                 storeInfo.setAccessToken(token);
                 storeService.insertStoreSession(storeInfo);
+            } else if (level.equals("admin")) {
+                adminInfo.setAccessToken(token);
+                adminService.insertAdminSession(adminInfo);
             }
 
             return ResponseEntity.ok(new Gson().toJson(response).toString());

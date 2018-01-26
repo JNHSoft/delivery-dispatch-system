@@ -1,0 +1,60 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cntt.core.mapper.AdminMapper">
+
+	<select id="selectLoginAdmin" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="String">
+		SELECT login_id FROM TB_ADMIN
+		WHERE 1=1
+		AND login_id = #{loginId}
+		<!--AND login_pw = #{loginPw}-->
+		limit 1
+	</select>
+
+	<!--
+		- login ID  및 Aceess 토근 값체크
+		- expiry_datetime 이 NULL 이거나 금일 datetime 보다 큰 값
+	-->
+	<select id="selectAdminTokenCheck" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="int">
+		<![CDATA[
+		SELECT
+			COUNT(*)
+		FROM TB_ADMIN A JOIN TB_ADMIN_SESSION B
+		ON A.id = B.admin_id
+		WHERE 1=1
+			AND A.login_id = #{loginId}
+			AND B.access_token = #{accessToken}
+			AND (expiry_datetime IS NULL OR expiry_datetime > now())
+		]]>
+	</select>
+
+
+
+	<!-- insertAdminSession -->
+	<insert id="insertAdminSession" parameterType="kr.co.cntt.core.model.admin.Admin">
+		<![CDATA[
+		INSERT INTO TB_ADMIN_SESSION(admin_id, access_token, created_datetime)
+		SELECT
+			id,
+			#{accessToken},
+			now()
+		FROM TB_ADMIN
+		WHERE login_id = #{loginId}
+		]]>
+	</insert>
+
+
+	<select id="getAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
+		SELECT
+			created_datetime,
+			modified_datetime,
+			chat_user_id,
+			id,
+			name,
+			login_id,
+			login_pw,
+			state
+		FROM TB_ADMIN
+		WHERE id = #{id}
+	</select>
+
+</mapper>
+ 

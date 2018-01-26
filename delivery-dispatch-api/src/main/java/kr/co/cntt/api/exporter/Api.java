@@ -8,6 +8,9 @@ public interface Api {
     /** 토큰발행 */
     String GET_TOKEN = "/getToken.do";
 
+    /** Admin 정보 조회 */
+    String ADMIN_INFO = "/getAdminInfo.json";
+
     /** Rider 정보 조회 */
     String RIDER_INFO = "/getRiderInfo.json";
 
