@@ -29,110 +29,141 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthentificationTokenFilter extends OncePerRequestFilter {
 
-	@Autowired
-	private CustomAuthentificateService customAuthentificateService;
+    @Autowired
+    private CustomAuthentificateService customAuthentificateService;
 
-	@Autowired
-	private TokenManager tokenManager;
+    @Autowired
+    private TokenManager tokenManager;
 
-	@Autowired
-	private RiderService riderService;
+    @Autowired
+    private RiderService riderService;
 
-	@Autowired
-	private StoreService storeService;
+    @Autowired
+    private StoreService storeService;
 
-	@Autowired
-	private AdminService adminService;
+    @Autowired
+    private AdminService adminService;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse response, FilterChain chain)
-			throws ServletException, IOException, UsernameNotFoundException {
-		RequestWrapper request;
-		String requestUri= servletRequest.getRequestURI();
-		log.debug("======= api request uri : {}", requestUri);
+    @Override
+    protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException, UsernameNotFoundException {
+        RequestWrapper request;
+        String requestUri = servletRequest.getRequestURI();
+        log.debug("======= api request uri : {}", requestUri);
 
-		if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do"))) {
-			try {
-				//log.debug("======= try");
-				request = new RequestWrapper(servletRequest);
-				//log.debug("======= request.getJsonBody() : {}", request.getJsonBody());
-				//String authToken = extractToken(request.getJsonBody());
-				//String authToken = getHeadersToken(servletRequest);
-				String authToken = request.getHeader("token");
-				String authLevel = request.getHeader("level");
-				log.debug("======= authToken : {}", authToken);
-				log.debug("======= authLevel : {}", authLevel);
+        if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do"))) {
+            try {
+                //log.debug("======= try");
+                request = new RequestWrapper(servletRequest);
+                //log.debug("======= request.getJsonBody() : {}", request.getJsonBody());
+                JsonObject extractJbody = extractJbody(request.getJsonBody());
+                String authToken = extractJbody.get("token").getAsString();
+                String authLevel = extractJbody.get("level").getAsString();
 
-				String username = tokenManager.getUsernameFromToken(authToken);
+//                String authToken = extractToken(request.getJsonBody());
+//                String authToken = getHeadersToken(servletRequest);
+//				String authToken = request.getHeader("token");
+//                String authLevel = request.getHeader("level");
+                log.debug("======= authToken : {}", authToken);
+                log.debug("======= authLevel : {}", authLevel);
 
-				log.debug("======= username : {}", username);
-				if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String username = tokenManager.getUsernameFromToken(authToken);
 
-					// Rider 쪽 Login ID  및 AccessToken 값 체크 Start
-					Rider riderInfo = new Rider();
-					Store storeInfo = new Store();
-					Admin adminInfo = new Admin();
-					int checkUserCount = 0;
+                log.debug("======= username : {}", username);
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-					if (authLevel.equals("rider")) {
-						riderInfo.setAccessToken(authToken);
-						riderInfo.setLoginId(username);
+                    // Rider 쪽 Login ID  및 AccessToken 값 체크 Start
+                    Rider riderInfo = new Rider();
+                    Store storeInfo = new Store();
+                    Admin adminInfo = new Admin();
+                    int checkUserCount = 0;
 
-						checkUserCount = riderService.selectRiderTokenCheck(riderInfo);
+                    if (authLevel.equals("rider")) {
+                        riderInfo.setAccessToken(authToken);
+                        riderInfo.setLoginId(username);
 
-						//					if(checkRiderCount < 1){
-						//						throw new UsernameNotFoundException("No found for username or token ");
-						//					}
-						// Rider 쪽 Login ID  및 AccessToken 값 체크 End
-					} else if (authLevel.equals("store")) {
-						storeInfo.setAccessToken(authToken);
-						storeInfo.setLoginId(username);
+                        checkUserCount = riderService.selectRiderTokenCheck(riderInfo);
 
-						checkUserCount = storeService.selectStoreTokenCheck(storeInfo);
-					} else if (authLevel.equals("admin")) {
-						adminInfo.setAccessToken(authToken);
-						adminInfo.setLoginId(username);
+                        //					if(checkRiderCount < 1){
+                        //						throw new UsernameNotFoundException("No found for username or token ");
+                        //					}
+                        // Rider 쪽 Login ID  및 AccessToken 값 체크 End
+                    } else if (authLevel.equals("store")) {
+                        storeInfo.setAccessToken(authToken);
+                        storeInfo.setLoginId(username);
 
-						checkUserCount = adminService.selectAdminTokenCheck(adminInfo);
-					}
+                        checkUserCount = storeService.selectStoreTokenCheck(storeInfo);
+                    } else if (authLevel.equals("admin")) {
+                        adminInfo.setAccessToken(authToken);
+                        adminInfo.setLoginId(username);
 
-					log.debug("=======> checkUserCount : {}", checkUserCount);
-					if(checkUserCount > 0) {
-						ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
+                        checkUserCount = adminService.selectAdminTokenCheck(adminInfo);
+                    }
 
-						if (actorDetails == null) {
-							Actor actor = new Actor(username, username);
-							actorDetails = new ActorDetails(actor, null);
-						}
+                    log.debug("=======> checkUserCount : {}", checkUserCount);
+                    if (checkUserCount > 0) {
+                        ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
 
-						log.debug("======= actorDetails : {}", actorDetails);
-						if (tokenManager.validateCustomToken(authToken, actorDetails)) {
-							UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-									actorDetails, null, actorDetails.getAuthorities());
-							authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-							logger.info("authenticated device " + username + ", setting security context");
-							SecurityContextHolder.getContext().setAuthentication(authentication);
-						}
-					}
-				}
+                        if (actorDetails == null) {
+                            Actor actor = new Actor(username, username);
+                            actorDetails = new ActorDetails(actor, null);
+                        }
 
-				// TODO : filter chain stop 시점을 찾아야한다. 오류인 경우 어떻게 할지.. exception 공통구현 필요
-				chain.doFilter(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			chain.doFilter(servletRequest, response);
-		}
-	}
+                        log.debug("======= actorDetails : {}", actorDetails);
+                        if (tokenManager.validateCustomToken(authToken, actorDetails)) {
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                    actorDetails, null, actorDetails.getAuthorities());
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            logger.info("authenticated device " + username + ", setting security context");
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
+                    }
+                }
 
-	public static String extractToken(String request) {
-		if (request == null || "".equals(request)) {
-			return request;
-		}
-		log.debug("request : {}", request);
-		JsonObject json = new JsonParser().parse(request).getAsJsonObject();
-		JsonObject jheader = json.getAsJsonArray("header").get(0).getAsJsonObject();
-		return jheader.get("token").getAsString();
-	}
+                // TODO : filter chain stop 시점을 찾아야한다. 오류인 경우 어떻게 할지.. exception 공통구현 필요
+                chain.doFilter(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            chain.doFilter(servletRequest, response);
+        }
+    }
+
+//    public static String getHeadersToken(HttpServletRequest servletRequest) {
+//        if (servletRequest == null) {
+//            return "";
+//        }
+//
+//        String accessToken = servletRequest.getHeader("token");
+//
+//        return accessToken;
+//    }
+
+
+//    public static String extractToken(String request) {
+//        if (request == null || "".equals(request)) {
+//            return request;
+//        }
+//        log.debug("request : {}", request);
+//        JsonObject json = new JsonParser().parse(request).getAsJsonObject();
+//
+//        JsonObject jheader = json.getAsJsonArray("header").get(0).getAsJsonObject();
+//        return jheader.get("token").getAsString();
+//    }
+
+    public static JsonObject extractJbody(String request) {
+        if (request == null || "".equals(request)) {
+            return null;
+        }
+        log.debug("request : {}", request);
+        JsonObject json = new JsonParser().parse(request).getAsJsonObject();
+
+        JsonObject jbody = json.getAsJsonObject("body").getAsJsonObject();
+
+        JsonObject jheader_obj = new JsonObject();
+        jheader_obj.addProperty("token", jbody.get("token").getAsString());
+        jheader_obj.addProperty("level", jbody.get("level").getAsString());
+        return jheader_obj;
+    }
 }

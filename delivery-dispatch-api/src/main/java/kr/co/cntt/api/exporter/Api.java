@@ -9,7 +9,7 @@ public interface Api {
     String GET_TOKEN = "/getToken.do";
 
     /** Admin 정보 조회 */
-    String ADMIN_INFO = "/getAdminInfo.json";
+    String ADMIN_INFO = "/admin/getAdminInfo.json";
 
     /** Rider 정보 조회 */
     String RIDER_INFO = "/getRiderInfo.json";

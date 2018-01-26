@@ -15,5 +15,6 @@ public class User implements Dto {
     private String name;
     private String level;
     private String accessToken;
+    private String token;
 
 }

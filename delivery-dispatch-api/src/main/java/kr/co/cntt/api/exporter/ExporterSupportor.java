@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import kr.co.cntt.api.security.RequestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -65,10 +67,17 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
                     // body string to vo object
                     JavaType reqType = mapper.getTypeFactory().constructParametrizedType(GenericRequest.class, GenericRequest.class, router.getIn());
                     requestVo = mapper.readValue(jsonStr, reqType);
+
+//                    RequestHeader requestHeader = requestVo.getHeader();
                     //RequestHeader requestHeader = requestVo.getHeader().get(0);
-                    //String token = requestHeader.getToken();
+//                    String token = requestHeader.getToken();
                     requestWrapper  = new RequestWrapper(servletRequest);
-                    String token = requestWrapper.getHeader("token");
+//                    String token = requestWrapper.getHeader("token");
+
+                    JsonObject json = new JsonParser().parse(requestWrapper.getJsonBody()).getAsJsonObject();
+                    JsonObject jbody = json.getAsJsonObject("body").getAsJsonObject();
+
+                    String token = jbody.get("token").getAsString();
 
                     return response(() -> {
                         try {

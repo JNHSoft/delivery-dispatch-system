@@ -5,13 +5,14 @@ import lombok.Setter;
 
 /**
  * App Api전용 request header
- * @author su
  *
+ * @author su
  */
 @Getter
 @Setter
 public class RequestHeader {
-	//private String token;
-	private String date;
-	//private String serviceKey;
+    private String date;
+    private String token;
+    private String level;
+    //private String serviceKey;
 }
