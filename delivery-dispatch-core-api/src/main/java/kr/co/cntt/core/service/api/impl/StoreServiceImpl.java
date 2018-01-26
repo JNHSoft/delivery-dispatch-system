@@ -29,24 +29,35 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         this.storeMapper = storeMapper;
     }
 
+    // login_id 체크하는 함수
     @Override
     public String selectLoginStore(Store store) {
         return storeMapper.selectLoginStore(store);
     }
 
+    // login_id 에 맞는 token 값 체크 하는 함수
     @Override
     public int selectStoreTokenCheck(Store store) {
         return storeMapper.selectStoreTokenCheck(store);
     }
 
+    // token 값 insert 해주는 함수
     @Override
     public int insertStoreSession(Store store) {
         return storeMapper.insertStoreSession(store);
     }
 
+    // store 정보 조회
     @Override
     public List<Store> getStoreInfo(Store store) throws AppTrException {
+        // token 값 선언
+        store.setAccessToken(store.getToken());
 
+        // log 확인
+        log.info(">>> token: " + store.getAccessToken());
+        log.info(">>> token: " + store.getToken());
+
+        // 리스트
         List<Store> S_Store = storeMapper.getStoreInfo(store);
 
         if (S_Store.size() == 0) {

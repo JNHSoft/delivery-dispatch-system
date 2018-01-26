@@ -17,31 +17,31 @@ import java.util.List;
 public interface StoreMapper {
 
     /**
-     * <p> selectLoginStore
-     *
-     * @return loginId String
+     * login id 확인
+     * @param store
+     * @return
      */
     public String selectLoginStore(Store store);
 
     /**
-     * <p> selectStoreTokenCheck
-     *
-     * @return Count Int
+     * token 값 확인
+     * @param store
+     * @return
      */
     public int selectStoreTokenCheck(Store store);
 
     /**
-     * <p> Store Session Insert
-     *
-     * @return Insert 결과값
+     * insert token
+     * @param store
+     * @return
      */
     public int insertStoreSession(Store store);
 
 
     /**
-     * <p> Store 정보 조회
-     *
-     * @return Store Info 조회 결과값
+     * store 정보 조회
+     * @param store
+     * @return
      */
     public List<Store> getStoreInfo(Store store);
 

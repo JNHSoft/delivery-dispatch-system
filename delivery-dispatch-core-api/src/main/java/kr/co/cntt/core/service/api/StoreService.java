@@ -6,32 +6,46 @@ import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
 
+/**
+ * <per>
+ * kr.co.cntt.core.service.api
+ *    └─ StoreService.java
+ * </per>
+ * service impl 를 호출하기 위한 interface 임
+ * @author Nick
+ * @since  2018-01-26
+ *
+ */
 public interface StoreService {
-    /**
-     * <p> selectLoginStore
-     *
-     * @return
-     */
+  /**
+   * login_id 확인
+   * @author Nick
+   * @since  2018-01-26
+   *
+   */
     public String selectLoginStore(Store store);
 
-    /**
-     * <p> selectStoreTokenCheck
-     *
-     * @return
-     */
+   /**
+    * token 값 확인
+    * @author Nick
+    * @since  2018-01-26
+    *
+    */
     public int selectStoreTokenCheck(Store store);
 
     /**
-     * <p> insertStoreSession
+     * token 값 insert
+     * @author Nick
+     * @since  2018-01-26
      *
-     * @return
      */
     public int insertStoreSession(Store store);
 
-    /**
-     * <p> selectStoreInfo
-     *
-     * @return
-     */
+  /**
+   * store 정보 조회
+   * @author Nick
+   * @since  2018-01-26
+   *
+   */
     public List<Store> getStoreInfo(Store store) throws AppTrException;
 }

@@ -1,6 +1,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.StoreMapper">
 
+
+	<!--로그인 ID 확인 -->
 	<select id="selectLoginStore" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">
 		SELECT login_id FROM TB_STORE
 		WHERE 1=1
@@ -28,7 +30,7 @@
 
 
 
-	<!-- insertStoreSession -->
+	<!-- insertStoreSession 토큰값을 넣어준다.-->
 	<insert id="insertStoreSession" parameterType="kr.co.cntt.core.model.store.Store">
 		<![CDATA[
 		INSERT INTO TB_STORE_SESSION(store_id, access_token, created_datetime)
@@ -41,10 +43,10 @@
 		]]>
 	</insert>
 
-
+	<!--store 정보 조회-->
 	<select id="getStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
-		SELECT
-			created_datetime,
+			SELECT
+			created_datetime ,
 			modified_datetime,
 			last_access,
 			chat_user_id,
@@ -56,8 +58,18 @@
 			login_pw,
 			comment,
 			deleted
-		FROM TB_STORE
-		WHERE id = #{id}
+
+        FROM TB_STORE
+
+		WHERE 1=1
+        and id=(
+			select
+			store_id
+			from
+			TB_STORE_SESSION
+			where
+			access_token=#{accessToken}
+			)
 	</select>
 
 </mapper>
