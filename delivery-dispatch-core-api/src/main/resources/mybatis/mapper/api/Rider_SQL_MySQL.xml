@@ -1,7 +1,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.RiderMapper">
 
-	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="String">
+	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.store.Store">
 		SELECT login_id FROM TB_RIDER
 		WHERE 1=1
 		AND login_id = #{loginId}
