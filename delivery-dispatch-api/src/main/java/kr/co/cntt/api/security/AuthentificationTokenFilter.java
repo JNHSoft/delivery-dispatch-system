@@ -3,6 +3,7 @@ package kr.co.cntt.api.security;
 import java.io.IOException;
 
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.api.RiderService;
 
 import javax.servlet.FilterChain;
@@ -10,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kr.co.cntt.core.service.api.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +36,9 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private RiderService riderService;
 
+	@Autowired
+	private StoreService storeService;
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException, UsernameNotFoundException {
@@ -49,7 +54,9 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 				//String authToken = extractToken(request.getJsonBody());
 				//String authToken = getHeadersToken(servletRequest);
 				String authToken = request.getHeader("token");
+				String authLevel = request.getHeader("level");
 				log.debug("======= authToken : {}", authToken);
+				log.debug("======= authLevel : {}", authLevel);
 
 				String username = tokenManager.getUsernameFromToken(authToken);
 
@@ -58,18 +65,28 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 
 					// Rider 쪽 Login ID  및 AccessToken 값 체크 Start
 					Rider riderInfo = new Rider();
-					riderInfo.setAccessToken(authToken);
-					riderInfo.setLoginId(username);
+					Store storeInfo = new Store();
+					int checkUserCount = 0;
 
-					int checkRiderCount = riderService.selectRiderTokenCheck(riderInfo);
+					if (authLevel.equals("rider")) {
+						riderInfo.setAccessToken(authToken);
+						riderInfo.setLoginId(username);
 
-//					if(checkRiderCount < 1){
-//						throw new UsernameNotFoundException("No found for username or token ");
-//					}
-					// Rider 쪽 Login ID  및 AccessToken 값 체크 End
+						checkUserCount = riderService.selectRiderTokenCheck(riderInfo);
 
-					log.debug("=======> checkRiderCount : {}", checkRiderCount);
-					if(checkRiderCount > 0) {
+						//					if(checkRiderCount < 1){
+						//						throw new UsernameNotFoundException("No found for username or token ");
+						//					}
+						// Rider 쪽 Login ID  및 AccessToken 값 체크 End
+					} else if (authLevel.equals("store")) {
+						storeInfo.setAccessToken(authToken);
+						storeInfo.setLoginId(username);
+
+						checkUserCount = storeService.selectStoreTokenCheck(storeInfo);
+					}
+
+					log.debug("=======> checkUserCount : {}", checkUserCount);
+					if(checkUserCount > 0) {
 						ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
 
 						if (actorDetails == null) {

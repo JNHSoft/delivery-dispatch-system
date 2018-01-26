@@ -13,6 +13,7 @@ public class User implements Dto {
     private String loginId;
     private String loginPw;
     private String name;
+    private String level;
     private String accessToken;
 
 }

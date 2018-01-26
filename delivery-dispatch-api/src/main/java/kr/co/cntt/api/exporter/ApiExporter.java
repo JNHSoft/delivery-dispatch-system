@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.api.RiderService;
+import kr.co.cntt.core.service.api.StoreService;
 import kr.co.cntt.core.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +52,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
      * 객체 주입
      */
     private RiderService riderService;
+    private StoreService storeService;
     private CustomAuthentificateService customAuthentificateService;
     private AuthenticationManager authenticationManager;
     private TokenManager tokenManager;
@@ -60,11 +63,13 @@ public class ApiExporter extends ExporterSupportor implements Api {
     public ApiExporter(CustomAuthentificateService customAuthentificateService
             , AuthenticationManager authenticationManager
             , TokenManager tokenManager
-            , RiderService riderService){
+            , RiderService riderService
+            , StoreService storeService){
         this.customAuthentificateService = customAuthentificateService;
         this.authenticationManager = authenticationManager;
         this.tokenManager = tokenManager;
         this.riderService = riderService;
+        this.storeService = storeService;
     }
 
     /**
@@ -78,16 +83,25 @@ public class ApiExporter extends ExporterSupportor implements Api {
      */
     //@GetMapping(value = GET_TOKEN)
     @RequestMapping(value = GET_TOKEN)
-    public ResponseEntity<?> createAuthenticate(HttpServletRequest request, @RequestParam String loginId, @RequestParam String loginPw, Device device) throws Exception {
+    public ResponseEntity<?> createAuthenticate(HttpServletRequest request, @RequestParam String level, @RequestParam String loginId, @RequestParam String loginPw, Device device) throws Exception {
         List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
+        String userLoginId = null;
+        Rider riderInfo = new Rider();
+        Store storeInfo = new Store();
+
         try {
-            Rider riderInfo = new Rider();
-            riderInfo.setLoginId(loginId);
-            riderInfo.setLoginPw(loginPw);
-            String userLoginId = riderService.selectLoginRider(riderInfo);
+            if (level.equals("rider")) {
+                riderInfo.setLoginId(loginId);
+                riderInfo.setLoginPw(loginPw);
+                userLoginId = riderService.selectLoginRider(riderInfo);
+            } else if (level.equals("store")) {
+                storeInfo.setLoginId(loginId);
+                storeInfo.setLoginPw(loginPw);
+                userLoginId = storeService.selectLoginStore(storeInfo);
+            }
 
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
             log.info("===> [createAuthenticate RequestParam][loginPw : {}]", loginPw);
@@ -139,8 +153,13 @@ public class ApiExporter extends ExporterSupportor implements Api {
             // Return the token
 
             // Token을 Insert
-            riderInfo.setAccessToken(token);
-            riderService.insertRiderSession(riderInfo);
+            if (level.equals("rider")) {
+                riderInfo.setAccessToken(token);
+                riderService.insertRiderSession(riderInfo);
+            } else if (level.equals("store")) {
+                storeInfo.setAccessToken(token);
+                storeService.insertStoreSession(storeInfo);
+            }
 
             return ResponseEntity.ok(new Gson().toJson(response).toString());
         } catch(Exception e) {
