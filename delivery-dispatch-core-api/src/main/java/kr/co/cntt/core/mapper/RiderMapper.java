@@ -1,7 +1,6 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
-import kr.co.cntt.core.model.rider.R_Rider;
 import kr.co.cntt.core.model.rider.Rider;
 
 import java.util.List;

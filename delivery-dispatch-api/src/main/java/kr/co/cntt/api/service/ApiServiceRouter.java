@@ -4,7 +4,6 @@ import kr.co.cntt.api.config.IServiceRouter;
 
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.order.Order;
-import kr.co.cntt.core.model.rider.R_Rider;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import lombok.Getter;

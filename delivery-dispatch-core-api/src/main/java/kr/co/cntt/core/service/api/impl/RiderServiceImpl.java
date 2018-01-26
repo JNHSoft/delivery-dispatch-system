@@ -3,7 +3,6 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
-import kr.co.cntt.core.model.rider.R_Rider;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
