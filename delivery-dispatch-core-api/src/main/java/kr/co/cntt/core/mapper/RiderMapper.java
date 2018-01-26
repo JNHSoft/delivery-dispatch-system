@@ -21,7 +21,7 @@ public interface RiderMapper {
      *
      * @return loginId String
      */
-    public Rider selectLoginRider(Rider rider);
+    public String selectLoginRider(Rider rider);
 
     /**
      * <p> selectRiderTokenCheck

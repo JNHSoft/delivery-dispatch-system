@@ -30,7 +30,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     }
 
     @Override
-    public Store selectLoginStore(Store store) {
+    public String selectLoginStore(Store store) {
         return storeMapper.selectLoginStore(store);
     }
 

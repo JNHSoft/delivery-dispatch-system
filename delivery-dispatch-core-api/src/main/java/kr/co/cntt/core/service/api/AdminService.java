@@ -12,7 +12,7 @@ public interface AdminService {
      *
      * @return
      */
-    public Admin selectLoginAdmin(Admin admin);
+    public String selectLoginAdmin(Admin admin);
 
     /**
      * <p> selectAdminTokenCheck

@@ -30,7 +30,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     }
 
     @Override
-    public Admin selectLoginAdmin(Admin admin) {
+    public String selectLoginAdmin(Admin admin) {
         return adminMapper.selectLoginAdmin(admin);
     }
 
