@@ -46,9 +46,11 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
     @Override
     public List<Admin> getAdminInfo(Admin admin) throws AppTrException {
-
         log.info(">>> token: " + admin.getAccessToken());
+        log.info(">>> token: " + admin.getToken());
+
         List<Admin> S_Admin = adminMapper.getAdminInfo(admin);
+        S_Admin.get(0).setAccessToken(admin.getToken());
 
         if (S_Admin.size() == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
