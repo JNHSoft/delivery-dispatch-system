@@ -1,11 +1,14 @@
 package kr.co.cntt.api.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class ActorDetails implements UserDetails {
@@ -64,6 +67,14 @@ public class ActorDetails implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// add Role
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		if (actor.getLevel().equals("admin")) {
+			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+		} else {
+			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+		}
+
 		return authorities;
 	}
 

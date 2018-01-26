@@ -8,6 +8,7 @@ import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         return adminMapper.insertAdminSession(admin);
     }
 
+    @Secured("ROLE_ADMIN")
     @Override
     public List<Admin> getAdminInfo(Admin admin) throws AppTrException {
         admin.setAccessToken(admin.getToken());

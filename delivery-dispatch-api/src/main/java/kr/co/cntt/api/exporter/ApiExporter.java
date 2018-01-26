@@ -124,7 +124,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
                 throw new AppTrException("로그인정보가 다릅니다.", "LOERR");
             }
 
-            Actor actor = customAuthentificateService.createActor(loginId, loginPw);
+//            Actor actor = customAuthentificateService.createActor(loginId, loginPw);
+            Actor actor = customAuthentificateService.createActor(loginId, loginPw, level);
 
             if (actor == null) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.A0003), ErrorCodeEnum.A0003.name());

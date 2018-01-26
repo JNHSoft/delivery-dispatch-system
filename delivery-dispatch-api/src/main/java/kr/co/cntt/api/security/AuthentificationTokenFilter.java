@@ -105,7 +105,8 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                         ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
 
                         if (actorDetails == null) {
-                            Actor actor = new Actor(username, username);
+//                            Actor actor = new Actor(username, username);
+                            Actor actor = new Actor(username, username, authLevel);
                             actorDetails = new ActorDetails(actor, null);
                         }
 

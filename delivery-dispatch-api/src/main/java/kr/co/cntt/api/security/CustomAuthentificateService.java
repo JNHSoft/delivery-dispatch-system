@@ -21,13 +21,14 @@ public class CustomAuthentificateService extends ServiceSupport implements UserD
 	protected static ConcurrentHashMap<String, ActorDetails> userDataBase = new ConcurrentHashMap<String, ActorDetails>();
 
 
-	public Actor createActor(String loginId, String loginPw) throws Exception {
+	public Actor createActor(String loginId, String loginPw, String level) throws Exception {
 		/*
 		if (!isExistKey(serviceKey)) {
 			throw new AppTrException(getMessage(ErrorCodeEnum.A0001), ErrorCodeEnum.A0001.name());
 		}
 		*/
-		Actor actor = new Actor(loginId, loginPw);
+//		Actor actor = new Actor(loginId, loginPw);
+		Actor actor = new Actor(loginId, loginPw, level);
 		ActorDetails actorDetails = new ActorDetails(actor, null);
 		actorDetails.setPassword(new BCryptPasswordEncoder().encode(actorDetails.getPassword()));
 		//userDataBase.put(ip, actorDetails);

@@ -2,31 +2,31 @@ buildscript {
     ext {
         springBootVersion = '1.5.4.RELEASE'
     }
-    ext["hibernate.version"] = "5.2.10.Final"
+    ext['hibernate.version'] = '5.2.10.Final'
     repositories {
         maven {
-            url "http://192.168.170.112:9999/content/groups/public"
+            url 'http://192.168.170.112:9999/content/groups/public'
         }
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "io.spring.gradle:dependency-management-plugin:0.5.1.RELEASE"
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}'
+        classpath 'io.spring.gradle:dependency-management-plugin:0.5.1.RELEASE'
     }
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = "3.5"
+    gradleVersion = '3.5'
 }
 
 allprojects {
-    version = "0.0.2"
+    version = '0.0.2'
 }
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'eclipse-wtp'
-    apply plugin: "org.springframework.boot"
+    apply plugin: 'org.springframework.boot'
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
@@ -40,7 +40,7 @@ subprojects {
     }
 
     //test {
-    //	include "**/model/**", "**/controller/**"
+    //	include '**/model/**', '**/controller/**'
     //}
 
     /*
@@ -51,17 +51,17 @@ subprojects {
     */
     repositories {
         maven {
-            url "http://192.168.170.112:9999/content/groups/public"
+            url 'http://192.168.170.112:9999/content/groups/public'
         }
     }
 
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+            mavenBom 'org.springframework.boot:spring-boot-starter-parent:${springBootVersion}'
         }
     }
     eclipse {
-        project.natures "org.springsource.ide.eclipse.gradle.core.nature"
+        project.natures 'org.springsource.ide.eclipse.gradle.core.nature'
         wtp {
             facet {
                 facet name: 'jst.web', version: '3.1.0'
@@ -80,16 +80,16 @@ subprojects {
         }
     }
     dependencies {
-        compileOnly "org.projectlombok:lombok:1.16.16"
+        compileOnly 'org.projectlombok:lombok:1.16.16'
         /** hot swapper */
-        //compile("org.springframework.boot:spring-boot-devtools")
+        //compile('org.springframework.boot:spring-boot-devtools')
         compile 'org.springframework.boot:spring-boot-starter-web'
-        compile "org.apache.tomcat:tomcat-jdbc:7.0.28"
+        compile 'org.apache.tomcat:tomcat-jdbc:7.0.28'
         compile 'org.apache.tomcat.embed:tomcat-embed-jasper'
         compile 'javax.servlet:jstl'
-        compile "org.springframework.boot:spring-boot-starter-security"
-        compile "org.springframework.boot:spring-boot-starter-aop"
-        compile "org.springframework.boot:spring-boot-starter-cache"
+        compile 'org.springframework.boot:spring-boot-starter-security'
+        compile 'org.springframework.boot:spring-boot-starter-aop'
+        compile 'org.springframework.boot:spring-boot-starter-cache'
         compile 'org.springframework.boot:spring-boot-starter-jdbc'
         compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
         compile 'org.springframework:spring-jdbc:+'
@@ -103,12 +103,13 @@ subprojects {
         compile 'commons-collections:commons-collections'
         compile 'io.jsonwebtoken:jjwt:0.7.0'
         compile 'net.sf.ehcache:ehcache:2.10.4'
-        compile "org.apache.poi:poi:3.16"
+        compile 'org.apache.poi:poi:3.16'
         compile 'org.apache.poi:poi-ooxml:3.16'
-        compile "org.jolokia:jolokia-core:1.3.6"
+        compile 'org.jolokia:jolokia-core:1.3.6'
+//        compile 'cglib:cglib:3.2.6'
         compile 'com.google.maps:google-maps-services:0.2.6'
-        testCompileOnly "org.projectlombok:lombok:1.16.16"
-        testCompile "org.springframework.boot:spring-boot-starter-test"
+        testCompileOnly 'org.projectlombok:lombok:1.16.16'
+        testCompile 'org.springframework.boot:spring-boot-starter-test'
     }
 }
 
@@ -119,7 +120,7 @@ project(':delivery-dispatch-core') {
         compile 'kr.co.cntt.common:std-cntt-common-trace:1.0.3'
         compile 'kr.co.cntt.common:std-cntt-common-rest:1.0.6'
         compile 'kr.co.cntt.common:std-cntt-common-mail:1.0.2'
-        //compileOnly "kr.co.cntt.common:std-cntt-common-payment-kcp:1.0.6"
+        //compileOnly 'kr.co.cntt.common:std-cntt-common-payment-kcp:1.0.6'
     }
 }
 
@@ -139,8 +140,8 @@ project(':delivery-dispatch-core-api') {
 
 
 project(':delivery-dispatch-api') {
-    apply plugin: "war"
-    war.archiveName "ROOT.war"
+    apply plugin: 'war'
+    war.archiveName 'ROOT.war'
     build.dependsOn ':delivery-dispatch-core:build'
     build.dependsOn ':delivery-dispatch-core-api:build'
 
@@ -153,8 +154,8 @@ project(':delivery-dispatch-api') {
 }
 
 project(':delivery-dispatch-admin') {
-    apply plugin: "war"
-    war.archiveName "ROOT.war"
+    apply plugin: 'war'
+    war.archiveName 'ROOT.war'
     build.dependsOn ':delivery-dispatch-core:build'
     build.dependsOn ':delivery-dispatch-core-admin:build'
 
@@ -168,8 +169,8 @@ project(':delivery-dispatch-admin') {
 
 
 project(':delivery-dispatch-mvc') {
-    apply plugin: "war"
-    war.archiveName "ROOT.war"
+    apply plugin: 'war'
+    war.archiveName 'ROOT.war'
     build.dependsOn ':delivery-dispatch-core:build'
 
     dependencies {

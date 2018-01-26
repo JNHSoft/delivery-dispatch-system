@@ -9,13 +9,15 @@ public class Actor {
 	private String uuid;
 	private String time;
 	private String token;
-	
-	public Actor(String loginId, String loginPw) {
+	private String level;
+
+	public Actor(String loginId, String loginPw, String level) {
 		this.loginId = loginId;
 		this.loginPw = loginPw;
 		this.uuid = UUID.randomUUID().toString().replaceAll("-", "");
 		this.time = String.valueOf(System.currentTimeMillis());
 		this.token = getTime();
+		this.level = level;
 	}
 
 	public String getLoginId() {
@@ -43,4 +45,9 @@ public class Actor {
 	public String getUuid() {
 		return this.uuid;
 	}
+
+	public String getLevel() {
+		return level;
+	}
+
 }
