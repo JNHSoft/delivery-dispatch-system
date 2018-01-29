@@ -15,7 +15,6 @@ public class Rider extends User implements Dto {
     private String createdDatetime;
     private String modifiedDatetime;
     private String lastAccess;
-    private String chatUserId;
     private String adminId;
     private String phone;
     private String position;

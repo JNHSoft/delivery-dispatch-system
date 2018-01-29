@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 
@@ -39,7 +40,6 @@ public interface AdminMapper {
      */
     public int insertAdminSession(Admin admin);
 
-
     /**
      * <p> Admin 정보 조회
      *
@@ -48,12 +48,44 @@ public interface AdminMapper {
     public List<Admin> selectAdminInfo(Admin admin);
 
     /**
+     * <p> chatUser 등록
+     *
+     * @param user
+     * @return
+     */
+    public int insertChatUser(User user);
+
+    /**
+     * <p> chatRoom 등록
+     *
+     * @param user
+     * @return
+     */
+    public int insertChatRoom(User user);
+
+    /**
+     * <p> chatUserChatRoomRel 등록
+     *
+     * @param user
+     * @return
+     */
+    public int insertChatUserChatRoomRel(User user);
+
+    /**
      * <p> 기사 목록 조회
      *
      * @param admin
      * @return
      */
     public List<Rider> selectRiders(Admin admin);
+
+    /**
+     * <p> 기사 등록
+     *
+     * @param rider
+     * @return
+     */
+    public int insertRider(Rider rider);
 
     /**
      * <p> 상점 목록 조회

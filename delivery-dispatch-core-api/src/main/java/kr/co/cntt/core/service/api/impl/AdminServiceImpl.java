@@ -77,6 +77,20 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
     @Secured("ROLE_ADMIN")
     @Override
+    public int postRider(Rider rider) {
+        adminMapper.insertChatUser(rider);
+        adminMapper.insertChatRoom(rider);
+        if (rider.getChatUserId() != null && rider.getChatRoomId() != null) {
+            adminMapper.insertChatUserChatRoomRel(rider);
+            return adminMapper.insertRider(rider);
+        } else {
+            // TODO : chatUser or chatRoom deleted
+            return 0;
+        }
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
     public List<Store> getStores(Admin admin) throws AppTrException {
         admin.setAccessToken(admin.getToken());
 

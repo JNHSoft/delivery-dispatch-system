@@ -58,6 +58,46 @@
 	</select>
 
 
+	<!-- insertChatUser -->
+	<insert id="insertChatUser" parameterType="kr.co.cntt.core.model.login.User">
+		INSERT INTO TB_CHAT_USER (
+			created_datetime,
+			type
+		) VALUES (
+			now(),
+			3
+		)
+		<selectKey keyProperty="chatUserId" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<!-- insertChatRoom -->
+	<insert id="insertChatRoom" parameterType="kr.co.cntt.core.model.login.User">
+		INSERT INTO TB_CHATROOM (
+			created_datetime
+		) VALUES (
+			now()
+		)
+		<selectKey keyProperty="chatRoomId" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<!-- insertChatUserChatRoomRel -->
+	<insert id="insertChatUserChatRoomRel" parameterType="kr.co.cntt.core.model.login.User">
+		INSERT INTO TB_CHAT_USER_CHATROOM_REL (
+			chat_user_id,
+			chatroom_id
+		) VALUES (
+			#{chatUserId},
+			#{chatRoomId}
+		)
+	</insert>
+
+
 	<!-- selectRiders -->
 	<select id="selectRiders" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.rider.Rider">
 		SELECT
@@ -73,6 +113,72 @@
 		FROM TB_RIDER
 		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
 	</select>
+
+
+	<!-- insertRider -->
+	<insert id="insertRider" parameterType="kr.co.cntt.core.model.rider.Rider">
+		INSERT INTO TB_RIDER (
+			created_datetime,
+			chat_user_id,
+			admin_id,
+			name,
+			phone,
+			login_id,
+			login_pw,
+			position,
+			gender,
+			employment_type,
+			address,
+			vehicle_number,
+			emergency_phone,
+			comment
+		) VALUES (
+			now(),
+			#{chatUserId},
+			(SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token}),
+			#{name},
+			#{phone},
+			#{loginId},
+			#{loginPw},
+			#{position},
+			<if test="gender != null and gender != ''">
+				#{gender},
+			</if>
+			<if test="gender == null || gender == ''">
+				0,
+			</if>
+			<if test="employmentType != null and employmentType != ''">
+				#{employmentType},
+			</if>
+			<if test="employmentType == null || employmentType == ''">
+				0,
+			</if>
+			<if test="address != address and address != ''">
+				#{address},
+			</if>
+			<if test="address == null || address == ''">
+				NULL,
+			</if>
+			<if test="vehicleNumber != null and vehicleNumber != ''">
+				#{vehicleNumber},
+			</if>
+			<if test="vehicleNumber == null || vehicleNumber == ''">
+				NULL,
+			</if>
+			<if test="emergencyPhone != null and emergencyPhone != ''">
+				#{emergencyPhone},
+			</if>
+			<if test="emergencyPhone == null || emergencyPhone == ''">
+				NULL,
+			</if>
+			<if test="comment != null and comment != ''">
+				#{comment},
+			</if>
+			<if test="comment == null || comment == ''">
+				NULL
+			</if>
+		)
+	</insert>
 
 
 	<!-- selectStores -->
@@ -91,6 +197,6 @@
 		FROM TB_STORE
 		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
 	</select>
-	
+
 </mapper>
  

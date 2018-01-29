@@ -16,6 +16,9 @@ public interface Api {
     /** [Admin] 기사 목록 조회 */
     String ADMIN_RIDERS_LIST = "/admin/getRiders.json";
 
+    /** [Admin] 기사 등록 */
+    String ADMIN_RIDER_POST = "/admin/postRider.json";
+
     /** [Admin] 상점 목록 조회 */
     String ADMIN_STORES_LIST = "/admin/getStores.json";
 
@@ -25,7 +28,6 @@ public interface Api {
     String RIDER_INFO = "/getRiderInfo.json";
 
     /** 해당 스토어 Rider 목록*/
-
     String STORE_RIDERS= "/getStoreRiders.json";
 
     // ############################################################################################ //

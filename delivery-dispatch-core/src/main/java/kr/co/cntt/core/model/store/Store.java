@@ -16,7 +16,6 @@ public class Store extends User implements Dto {
 	private String modifiedDatetime;
 	private String expirationDate;
 	private String lastAccess;
-	private String chatUserId;
 	private String adminId;
 
 	private String code;

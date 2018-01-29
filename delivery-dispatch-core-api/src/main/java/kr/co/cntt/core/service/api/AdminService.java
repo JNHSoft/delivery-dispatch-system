@@ -49,6 +49,14 @@ public interface AdminService {
     public List<Rider> getRiders(Admin admin) throws AppTrException;
 
     /**
+     * <p> postRider
+     *
+     * @param rider
+     * @return
+     */
+    public int postRider(Rider rider);
+
+    /**
      * <p> getStores
      *
      * @param admin
