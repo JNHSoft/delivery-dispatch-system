@@ -60,5 +60,24 @@
 		WHERE id = #{id}
 	</select>
 
+	<!-- -->
+	<select id="getStoreRiders" parameterType="kr.co.cntt.core.model.store.StoreRiderRel" resultType="kr.co.cntt.core.model.rider.Rider">
+        SELECT
+            rid.created_datetime,
+            rid.modified_datetime,
+	    	last_access,
+	    	chat_user_id,
+	    	rid.admin_id,
+	    	rid.id,
+	    	name,
+	    	phone,
+            login_id,
+            login_pw,
+            comment,
+            rid.deleted
+        FROM TB_RIDER as rid
+        JOIN TB_STORE_RIDER_REL as rel
+        WHERE rel.admin_id = #{adminId} and rel.store_id = #{storeId} and rid.admin_id = rel.admin_id
+    </select>
 </mapper>
  

@@ -24,6 +24,10 @@ public interface Api {
     /** Rider 정보 조회 */
     String RIDER_INFO = "/getRiderInfo.json";
 
+    /** 해당 스토어 Rider 목록*/
+
+    String STORE_RIDERS= "/getStoreRiders.json";
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */

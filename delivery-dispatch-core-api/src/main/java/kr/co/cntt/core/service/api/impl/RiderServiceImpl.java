@@ -4,6 +4,7 @@ import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.StoreRiderRel;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     public List<Rider> getRiderInfo(Rider rider) throws AppTrException{
 
         List<Rider> S_Rider = riderMapper.getRiderInfo(rider);
+
+        if(S_Rider.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Rider;
+    }
+
+    @Override
+    public List<Rider> getStoreRiders(StoreRiderRel storeRiderRel) throws AppTrException{
+        List<Rider> S_Rider = riderMapper.getStoreRiders(storeRiderRel);
 
         if(S_Rider.size() == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
