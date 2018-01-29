@@ -58,11 +58,11 @@
 			deleted
 		FROM TB_RIDER
 		WHERE id =(
-			select
+			SELECT
 			rider_id
-			from
+			FROM
 			TB_RIDER_SESSION
-			where
+			WHERE
 			access_token = #{accessToken}
 			)
 	</select>
@@ -82,18 +82,25 @@
 			rid.login_pw,
 			rid.comment,
 			rid.deleted
-		FROM TB_RIDER as rid
-		inner join TB_STORE_RIDER_REL as rel
-			on rid.id = rel.rider_id
+		FROM TB_RIDER AS rid
+		INNER JOIN TB_STORE_RIDER_REL AS rel
+			ON rid.id = rel.rider_id
 			WHERE
-			rel.store_id =(
+			<choose>
+			<when test="id != null and id != ''">
+				rel.store_id = #{id}
+			</when>
+			<otherwise>
+				rel.store_id =(
 				SELECT store_id
 				FROM TB_STORE_SESSION
 				WHERE access_token = #{accessToken})
-			and
+			</otherwise>
+			</choose>
+			AND
 			rel.admin_id =
 				(SELECT admin_id
-				FROM TB_STORE as st
+				FROM TB_STORE AS st
 				WHERE st.id = rel.store_id)
     </select>
 
