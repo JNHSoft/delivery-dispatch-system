@@ -6,7 +6,6 @@ import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.store.StoreRiderRel;
 import lombok.Getter;
 
 @Getter
@@ -19,7 +18,7 @@ public enum ApiServiceRouter implements IServiceRouter {
 	RIDER_INFO("riderService", "getRiderInfo", Rider.class),
 
 	/** 해당 스토어 Rider 목록 */
-	STORE_RIDERS("riderService", "getStoreRiders", StoreRiderRel.class),
+	STORE_RIDERS("riderService", "getStoreRiders", Store.class),
 
 	/** Store 정보조회 */
 	STORE_INFO("storeService", "getStoreInfo", Store.class),
