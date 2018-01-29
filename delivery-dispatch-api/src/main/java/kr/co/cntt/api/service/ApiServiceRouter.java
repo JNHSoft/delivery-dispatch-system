@@ -11,8 +11,14 @@ import lombok.Getter;
 @Getter
 public enum ApiServiceRouter implements IServiceRouter {
 	
-	/** Admin 정보조회 */
+	/** [Admin] 정보조회 */
 	ADMIN_INFO("adminService", "getAdminInfo", Admin.class),
+
+	/** [Admin] 기사 목록 조회 */
+	ADMIN_RIDERS_LIST("adminService", "getRiders", Admin.class),
+
+	/** [Admin] 상점 목록 조회 */
+	ADMIN_STORES_LIST("adminService", "getStores", Admin.class),
 
 	/** Rider 정보조회 */
 	RIDER_INFO("riderService", "getRiderInfo", Rider.class),

@@ -9,6 +9,7 @@
 		limit 1
 	</select>
 
+
 	<!--
 		- login ID  및 Aceess 토근 값체크
 		- expiry_datetime 이 NULL 이거나 금일 datetime 보다 큰 값
@@ -27,7 +28,6 @@
 	</select>
 
 
-
 	<!-- insertAdminSession -->
 	<insert id="insertAdminSession" parameterType="kr.co.cntt.core.model.admin.Admin">
 		<![CDATA[
@@ -42,7 +42,8 @@
 	</insert>
 
 
-	<select id="getAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
+	<!-- selectAdminInfo -->
+	<select id="selectAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
 		SELECT
 			created_datetime,
 			modified_datetime,
@@ -56,5 +57,40 @@
 		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
 	</select>
 
+
+	<!-- selectRiders -->
+	<select id="selectRiders" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.rider.Rider">
+		SELECT
+			id,
+			name,
+			phone,
+			login_id,
+			position,
+			gender,
+			employment_type,
+			working,
+			status
+		FROM TB_RIDER
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
+	</select>
+
+
+	<!-- selectStores -->
+	<select id="selectStores" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.store.Store">
+		SELECT
+			id,
+			code,
+			name,
+			phone,
+			store_name,
+			ch_store_name,
+			store_phone,
+			login_id,
+			store_status,
+			assignment_status
+		FROM TB_STORE
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
+	</select>
+	
 </mapper>
  
