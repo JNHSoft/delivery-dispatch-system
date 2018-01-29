@@ -1,35 +1,32 @@
 package kr.co.cntt.api.exporter;
 
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-
+import com.fasterxml.jackson.databind.JavaType;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import kr.co.cntt.api.config.IServiceRouter;
 import kr.co.cntt.api.security.RequestWrapper;
+import kr.co.cntt.core.api.model.CommonBody;
+import kr.co.cntt.core.api.model.GenericRequest;
+import kr.co.cntt.core.controller.ControllerSupport;
+import kr.co.cntt.core.enums.ErrorCodeEnum;
+import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.rest.custom.mapper.RestObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import com.fasterxml.jackson.databind.JavaType;
-
-import kr.co.cntt.api.config.IServiceRouter;
-import kr.co.cntt.core.api.model.CommonBody;
-import kr.co.cntt.core.api.model.GenericRequest;
-import kr.co.cntt.core.api.model.RequestHeader;
-import kr.co.cntt.core.controller.ControllerSupport;
-import kr.co.cntt.core.enums.ErrorCodeEnum;
-import kr.co.cntt.core.exception.AppTrException;
-import kr.co.cntt.rest.custom.mapper.RestObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
 @Slf4j
 public abstract class ExporterSupportor extends ControllerSupport implements ApplicationContextAware {
@@ -39,6 +36,7 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
     protected final static String CODE_SUCCESS_MESSAGE = "success";
     protected final static String CODE_ERROR_MESSAGE = "failed";
     protected final static String CODE_SYSTEM_ERROR = "System Error";
+    protected final static String CODE_ACCESS_DENIED = "Access Denied Error";
 
     private ApplicationContext context;
 
@@ -133,8 +131,11 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
         }
         String errorLocalizedMessage = e.getLocalizedMessage();
         if (e instanceof AppTrException) {
-            errorMap.put("error_code", ((AppTrException)e).getErrorCode());
+            errorMap.put("error_code", ((AppTrException) e).getErrorCode());
             errorMap.put("error", errorLocalizedMessage);
+        } else if (e instanceof AccessDeniedException) {
+            log.info("[AppExporterSupportor][response][!AppTrException][errorCause : {}]", errorLocalizedMessage);
+            errorMap.put("error", CODE_ACCESS_DENIED);
         } else {
             log.info("[AppExporterSupportor][response][!AppTrException][errorCause : {}]", errorLocalizedMessage);
             errorMap.put("error", CODE_SYSTEM_ERROR);
