@@ -10,13 +10,23 @@ public interface Api {
 
     // ############################################################################################ //
 
-    /** Admin 정보 조회 */
+    /** [Admin] 정보 조회 */
     String ADMIN_INFO = "/admin/getAdminInfo.json";
+
+    /** [Admin] 기사 목록 조회 */
+    String ADMIN_RIDERS_LIST = "/admin/getRiders.json";
+
+    /** [Admin] 상점 목록 조회 */
+    String ADMIN_STORES_LIST = "/admin/getStores.json";
 
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
     String RIDER_INFO = "/getRiderInfo.json";
+
+    /** 해당 스토어 Rider 목록*/
+
+    String STORE_RIDERS= "/getStoreRiders.json";
 
     // ############################################################################################ //
 

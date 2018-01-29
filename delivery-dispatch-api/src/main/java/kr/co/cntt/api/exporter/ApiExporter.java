@@ -1,39 +1,6 @@
 package kr.co.cntt.api.exporter;
 
-import static kr.co.cntt.api.exporter.Api.GET_TOKEN;
-import static kr.co.cntt.api.exporter.Api.Path;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import kr.co.cntt.core.model.admin.Admin;
-import kr.co.cntt.core.model.login.User;
-import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.service.api.AdminService;
-import kr.co.cntt.core.service.api.RiderService;
-import kr.co.cntt.core.service.api.StoreService;
-import kr.co.cntt.core.service.api.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mobile.device.Device;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.google.gson.Gson;
-
 import kr.co.cntt.api.security.Actor;
 import kr.co.cntt.api.security.ActorDetails;
 import kr.co.cntt.api.security.CustomAuthentificateService;
@@ -42,8 +9,29 @@ import kr.co.cntt.api.service.ApiServiceRouter;
 import kr.co.cntt.core.api.model.CommonBody;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
-import kr.co.cntt.core.util.AgentUtil;
+import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.service.api.AdminService;
+import kr.co.cntt.core.service.api.RiderService;
+import kr.co.cntt.core.service.api.StoreService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mobile.device.Device;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static kr.co.cntt.api.exporter.Api.Path;
 
 
 @Slf4j
@@ -219,7 +207,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
      * @param jsonStr
      * @return
      */
-    @PostMapping(value = "/{service}")
+    @PostMapping(value = {"/{service}", "/admin/{service}"})
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);

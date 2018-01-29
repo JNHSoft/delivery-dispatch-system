@@ -2,6 +2,8 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
 
@@ -43,7 +45,21 @@ public interface AdminMapper {
      *
      * @return Admin Info 조회 결과값
      */
-    public List<Admin> getAdminInfo(Admin admin);
+    public List<Admin> selectAdminInfo(Admin admin);
 
+    /**
+     * <p> 기사 목록 조회
+     *
+     * @param admin
+     * @return
+     */
+    public List<Rider> selectRiders(Admin admin);
 
+    /**
+     * <p> 상점 목록 조회
+     *
+     * @param admin
+     * @return
+     */
+    public List<Store> selectStores(Admin admin);
 }
