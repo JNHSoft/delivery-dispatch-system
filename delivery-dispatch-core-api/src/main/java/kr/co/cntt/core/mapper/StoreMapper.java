@@ -45,5 +45,13 @@ public interface StoreMapper {
      */
     public List<Store> getStoreInfo(Store store);
 
+    /**
+     * Store 정보 수정
+     * @param store
+     * @return
+     */
+    public int updateStoreInfo(Store store);
+
+
 
 }

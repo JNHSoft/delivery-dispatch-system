@@ -48,4 +48,15 @@ public interface StoreService {
    *
    */
     public List<Store> getStoreInfo(Store store) throws AppTrException;
+
+    /**
+     * store 정보 수정
+     * @author Nick
+     * @param store
+     * @return
+     */
+    public int updateStoreInfo(Store store);
+
+
+
 }

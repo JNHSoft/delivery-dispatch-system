@@ -3,8 +3,9 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
+import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.store.StoreRiderRel;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
      * Rider DAO
      */
     private RiderMapper riderMapper;
-
     /**
      * @param riderMapper USER D A O
      */
@@ -47,7 +47,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
     @Override
     public List<Rider> getRiderInfo(Rider rider) throws AppTrException{
-
+        rider.setAccessToken(rider.getToken());
         List<Rider> S_Rider = riderMapper.getRiderInfo(rider);
 
         if(S_Rider.size() == 0) {
@@ -58,8 +58,9 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
     @Override
-    public List<Rider> getStoreRiders(StoreRiderRel storeRiderRel) throws AppTrException{
-        List<Rider> S_Rider = riderMapper.getStoreRiders(storeRiderRel);
+    public List<Rider> getStoreRiders(Store store) throws AppTrException{
+        store.setAccessToken(store.getToken());
+        List<Rider> S_Rider = riderMapper.getStoreRiders(store);
 
         if(S_Rider.size() == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());

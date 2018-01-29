@@ -57,27 +57,46 @@
 			comment,
 			deleted
 		FROM TB_RIDER
-		WHERE id = #{id}
+		WHERE id =(
+			select
+			rider_id
+			from
+			TB_RIDER_SESSION
+			where
+			access_token = #{accessToken}
+			)
 	</select>
 
-	<!-- -->
-	<select id="getStoreRiders" parameterType="kr.co.cntt.core.model.store.StoreRiderRel" resultType="kr.co.cntt.core.model.rider.Rider">
-        SELECT
-            rid.created_datetime,
-            rid.modified_datetime,
-	    	last_access,
-	    	chat_user_id,
-	    	rid.admin_id,
-	    	rid.id,
-	    	name,
-	    	phone,
-            login_id,
-            login_pw,
-            comment,
-            rid.deleted
-        FROM TB_RIDER as rid
-        JOIN TB_STORE_RIDER_REL as rel
-        WHERE rel.admin_id = #{adminId} and rel.store_id = #{storeId} and rid.admin_id = rel.admin_id
+	<!-- getStoreRiders -->
+	<select id="getStoreRiders" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.rider.Rider">
+		SELECT
+			rid.created_datetime,
+			rid.modified_datetime,
+			rid.last_access,
+			rid.chat_user_id,
+			rid.admin_id,
+			rid.id,
+			rid.name,
+			rid.phone,
+			rid.login_id,
+			rid.login_pw,
+			rid.comment,
+			rid.deleted
+		FROM TB_RIDER as rid
+		inner join TB_STORE_RIDER_REL as rel
+			on rid.id = rel.rider_id
+			WHERE
+			rel.store_id =(
+				SELECT store_id
+				FROM TB_STORE_SESSION
+				WHERE access_token = #{accessToken})
+			and
+			rel.admin_id =
+				(SELECT admin_id
+				FROM TB_STORE as st
+				WHERE st.id = rel.store_id)
     </select>
+
+	<!-- -->
 </mapper>
  

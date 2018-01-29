@@ -23,6 +23,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
     /**
      * @param storeMapper USER D A O
+     * @author Nick
      */
     @Autowired
     public StoreServiceImpl(StoreMapper storeMapper) {
@@ -66,5 +67,18 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
         return S_Store;
     }
+
+    // store 정보 수정
+    @Override
+    public int updateStoreInfo(Store store){
+        // token 값 선언
+        store.setAccessToken(store.getToken());
+
+
+        return storeMapper.updateStoreInfo(store);
+    }
+
+
+
 
 }

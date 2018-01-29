@@ -32,6 +32,10 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Store 정보조회 */
 	STORE_INFO("storeService", "getStoreInfo", Store.class),
 
+	/** Store 정보수정 */
+	STORE_UPDATE_INFO("storeService", "updateStoreInfo", Store.class),
+
+
 	/** Order 등록 */
 	ORDER_POST("orderService", "postOrder", Order.class),
 
