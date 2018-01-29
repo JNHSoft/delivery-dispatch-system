@@ -23,6 +23,9 @@ public interface Api {
     /** Store 정보 조회 */
     String STORE_INFO = "/getStoreInfo.json";
 
+    /** Store 정보 수정  */
+    String STORE_UPDATE_INFO = "/updateStoreInfo.json";
+
     // ############################################################################################ //
 
     /** Order 등록 */

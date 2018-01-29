@@ -62,15 +62,130 @@
         FROM TB_STORE
 
 		WHERE 1=1
-        and id=(
-			select
+		<choose>
+		<when test="id != null and id != ''">
+		AND id = #{id}
+		</when>
+
+		<otherwise>
+		AND id=(
+			SELECT
 			store_id
-			from
+			FROM
 			TB_STORE_SESSION
-			where
+			WHERE
 			access_token=#{accessToken}
 			)
+		</otherwise>
+		</choose>
 	</select>
+
+	<!-- store 정보 수정 -->
+	<update id="updateStoreInfo" parameterType="kr.co.cntt.core.model.store.Store">
+		UPDATE TB_STORE
+		SET
+
+		modified_datetime = now()
+
+		<if test="expirationDate != null and expirationDate != ''">
+			, expiration_date = #{expirationDate}
+		</if>
+
+		<if test="lastAccess != null and lastAccess != ''">
+		    , last_access = #{lastAccess}
+		</if>
+		<if test="name != null and name != ''">
+			, name=#{name}
+		</if>
+
+		<if test="phone != null and phone != ''">
+			, phone=#{phone}
+		</if>
+
+		<if test="storeName != null and storeName != ''">
+			, store_name=#{storeName}
+		</if>
+
+		<if test="chStoreName != null and chStoreName != ''">
+			, ch_store_name=#{chStoreName}
+		</if>
+
+		<if test="storePhone != null and storePhone != ''">
+			, store_phone=#{storePhone}
+		</if>
+
+		<if test="loginPw != null and loginPw != ''">
+			, login_pw=#{loginPw}
+		</if>
+
+		<if test="email != null and email != ''">
+			, email=#{email}
+		</if>
+
+		<if test="address != null and address != ''">
+			, address = #{address}
+		</if>
+
+		<if test="detailAddress != null and detailAddress != ''">
+			, detail_address=#{detailAddress}
+		</if>
+
+		<if test="chAddress != null and chAddress != ''">
+			, ch_address=#{chAddress}
+		</if>
+
+		<if test="chDetailAddress != null and chDetailAddress != ''">
+			, ch_detail_address=#{chDetailAddress}
+		</if>
+
+		<if test="latitude != null and latitude != ''">
+			, latitude=#{latitude}
+		</if>
+
+		<if test="longitude != null  and longitude != ''">
+			, longitude=#{longitude}
+		</if>
+
+		<if test="comment != null  and comment != ''">
+			, comment=#{comment}
+		</if>
+
+		<if test="storeStatus != null  and storeStatus != ''">
+			, store_status=#{storeStatus}
+		</if>
+
+		<if test="radius != null  and radius != ''">
+			, radius=#{radius}
+		</if>
+
+		<if test="storeDistanceSort != null  and storeDistanceSort != ''">
+			, store_distance_sort=#{storeDistanceSort}
+		</if>
+
+		<if test="assignmentStatus != null  and assignmentStatus != ''">
+			, assignment_status=#{assignmentStatus}
+		</if>
+
+		<if test="deleted != null  and deleted != ''">
+			, deleted=#{deleted}
+		</if>
+
+		where
+		id=(
+		SELECT
+		store_id
+		FROM
+		TB_STORE_SESSION
+		WHERE
+		access_token=#{accessToken}
+		)
+
+	</update>
+
+
+
+
+
 
 </mapper>
  
