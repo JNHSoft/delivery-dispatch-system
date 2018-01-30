@@ -12,73 +12,78 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class ActorDetails implements UserDetails {
-	private static final long serialVersionUID = 1L;
-	private Actor actor;
-	private String password;
-	private Collection<GrantedAuthority> authorities;
+    private static final long serialVersionUID = 1L;
+    private Actor actor;
+    private String password;
+    private Collection<GrantedAuthority> authorities;
 
-	public ActorDetails(Actor actor, Collection<GrantedAuthority> authorities) {
-		this.actor = actor;
-		this.password = actor.getPassword();
-		this.authorities = authorities;
-	}
+    public ActorDetails(Actor actor, Collection<GrantedAuthority> authorities) {
+        this.actor = actor;
+        this.password = actor.getPassword();
+        this.authorities = authorities;
+    }
 
-	public Actor getActor() {
-		return this.actor;
-	}
-	public ActorDetails bindRequestInfo(HttpServletRequest request) {
-		//actor.setIp(request.getRemoteAddr());
-		return this;
-	}
+    public Actor getActor() {
+        return this.actor;
+    }
 
-	@Override
-	public String getPassword() {
-		return password;
-	}
+    public ActorDetails bindRequestInfo(HttpServletRequest request) {
+        //actor.setIp(request.getRemoteAddr());
+        return this;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    @Override
+    public String getPassword() {
+        return password;
+    }
 
-	@Override
-	public String getUsername() {
-		return actor.getUsername();
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
+    @Override
+    public String getUsername() {
+        return actor.getUsername();
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// add Role
-		List<GrantedAuthority> authorities = new ArrayList<>();
-		if (actor.getLevel().equals("admin")) {
-			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-		} else {
-			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-		}
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
-		return authorities;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // add Role
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (actor.getLevel().equals("admin")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else if (actor.getLevel().equals("store")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_STORE"));
+        } else if (actor.getLevel().equals("rider")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_RIDER"));
+        } else {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
 
-	public Collection<String> getAuthorityIds() {
-		return authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-	}
+        return authorities;
+    }
+
+    public Collection<String> getAuthorityIds() {
+        return authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+    }
 }
