@@ -17,8 +17,9 @@ public class Misc {
      * @param lat2
      * @param lon2
      * @return
+     * @throws Exception
      */
-    public int getHaversine(String lat1, String lon1, String lat2, String lon2) {
+    public int getHaversine(String lat1, String lon1, String lat2, String lon2) throws Exception {
         double radiansLat1 = Math.toRadians(Double.parseDouble(lat1));
         double radiansLon1 = Math.toRadians(Double.parseDouble(lon1));
         double radiansLat2 = Math.toRadians(Double.parseDouble(lat2));
