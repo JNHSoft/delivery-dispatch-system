@@ -22,6 +22,9 @@ public interface Api {
     /** [Admin] 상점 목록 조회 */
     String ADMIN_STORES_LIST = "/admin/getStores.json";
 
+    /** [Admin] 상점 등록 */
+    String ADMIN_STORE_POST = "/admin/postStore.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */

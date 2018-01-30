@@ -8,12 +8,14 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.AdminService;
+import kr.co.cntt.core.util.Geocoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service("adminService")
@@ -78,6 +80,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Secured("ROLE_ADMIN")
     @Override
     public int postRider(Rider rider) {
+        rider.setType("3");
         adminMapper.insertChatUser(rider);
         adminMapper.insertChatRoom(rider);
         if (rider.getChatUserId() != null && rider.getChatRoomId() != null) {
@@ -102,4 +105,31 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
         return S_Store;
     }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int postStore(Store store) {
+        if ((store.getLatitude() == null || store.getLatitude() == "") || (store.getLongitude() == null || store.getLongitude() == "")) {
+            Geocoder geocoder = new Geocoder();
+            try {
+                Map<String, String> geo = geocoder.getLatLng(store.getAddress());
+                store.setLatitude(geo.get("lat"));
+                store.setLongitude(geo.get("lng"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        store.setType("2");
+        adminMapper.insertChatUser(store);
+        adminMapper.insertChatRoom(store);
+        if (store.getChatUserId() != null && store.getChatRoomId() != null) {
+            adminMapper.insertChatUserChatRoomRel(store);
+            return adminMapper.insertStore(store);
+        } else {
+            // TODO : chatUser or chatRoom deleted
+            return 0;
+        }
+    }
+
 }

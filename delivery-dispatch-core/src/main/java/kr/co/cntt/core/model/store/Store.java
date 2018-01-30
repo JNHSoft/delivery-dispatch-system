@@ -17,6 +17,8 @@ public class Store extends User implements Dto {
 	private String expirationDate;
 	private String lastAccess;
 	private String adminId;
+	private String type;
+
 
 	private String code;
 	private String phone;

@@ -23,6 +23,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 상점 목록 조회 */
 	ADMIN_STORES_LIST("adminService", "getStores", Admin.class),
 
+	/** [Admin] 상점 등록 */
+	ADMIN_STORE_POST("adminService", "postStore", Store.class),
+
 	/** Rider 정보조회 */
 	RIDER_INFO("riderService", "getRiderInfo", Rider.class),
 

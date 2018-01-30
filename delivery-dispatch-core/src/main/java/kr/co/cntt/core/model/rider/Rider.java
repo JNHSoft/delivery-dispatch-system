@@ -16,6 +16,8 @@ public class Rider extends User implements Dto {
     private String modifiedDatetime;
     private String lastAccess;
     private String adminId;
+    private String type;
+
     private String phone;
     private String position;
     private String gender;
