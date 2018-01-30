@@ -1,5 +1,6 @@
 package kr.co.cntt.core.model.store;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
@@ -17,8 +18,8 @@ public class Store extends User implements Dto {
 	private String expirationDate;
 	private String lastAccess;
 	private String adminId;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String type;
-
 
 	private String code;
 	private String phone;
