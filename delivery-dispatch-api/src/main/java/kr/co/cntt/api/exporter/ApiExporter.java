@@ -207,7 +207,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
      * @param jsonStr
      * @return
      */
-    @PostMapping(value = {"/{service}", "/admin/{service}"})
+//    @PostMapping(value = {"/{service}", "/admin/{service}"})
+    @PostMapping(value = {"/*/{service}"})
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);

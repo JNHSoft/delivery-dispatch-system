@@ -23,8 +23,8 @@
 			status,
 			created_datetime
 		) VALUES(
-			1,
-			1,
+			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})),
+			(SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}),
 			#{address},
 			#{detailAddress},
 			#{latitude},
