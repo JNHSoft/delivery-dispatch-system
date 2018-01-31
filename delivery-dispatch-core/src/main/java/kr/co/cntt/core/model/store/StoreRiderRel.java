@@ -1,6 +1,7 @@
 package kr.co.cntt.core.model.store;
 
 import kr.co.cntt.core.model.Dto;
+import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,5 +14,8 @@ public class StoreRiderRel implements Dto{
     private String id;
     private String adminId;
     private String riderId;
+    private String riderName;
+    private String riderPhone;
     private String storeId;
+    private String storeName;
 }

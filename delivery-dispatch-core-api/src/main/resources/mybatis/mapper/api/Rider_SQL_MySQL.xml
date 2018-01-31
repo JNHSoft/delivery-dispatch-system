@@ -75,44 +75,74 @@
 		</choose>
 	</select>
 
+
 	<!-- getStoreRiders -->
-	<select id="getStoreRiders" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.rider.Rider">
+	<select id="getStoreRiders" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
 		SELECT
-			rid.created_datetime,
-			rid.modified_datetime,
-			rid.last_access,
-			rid.chat_user_id,
-			rid.admin_id,
-			rid.id,
-			rid.name,
-			rid.phone,
-			rid.login_id,
-			rid.login_pw,
-			rid.comment,
-			rid.deleted
-		FROM TB_RIDER AS rid
-		INNER JOIN TB_STORE_RIDER_REL AS rel
-			ON rid.id = rel.rider_id
-			WHERE
-			<choose>
+		rel.created_datetime,
+		rel.modified_datetime,
+		rel.id,
+		rel.rider_id,
+		ri.name AS rider_name,
+		ri.phone AS rider_phone,
+		rel.store_id,
+		st.store_name
+		FROM TB_STORE_RIDER_REL AS rel
+		INNER JOIN TB_STORE AS st
+		ON rel.store_id = st.id
+		INNER JOIN TB_RIDER AS ri
+		ON rel.rider_id = ri.id
+		WHERE rel.admin_id = (SELECT admin_id FROM TB_STORE AS st WHERE st.id = rel.store_id)
+		<choose>
 			<when test="id != null and id != ''">
-				rel.store_id = #{id}
+				AND rel.store_id = #{id}
 			</when>
 			<otherwise>
-				rel.store_id =(
+				AND rel.store_id =(
 				SELECT store_id
 				FROM TB_STORE_SESSION
 				WHERE access_token = #{accessToken})
 			</otherwise>
-			</choose>
-			AND
-			rel.admin_id =
-				(SELECT admin_id
-				FROM TB_STORE AS st
-				WHERE st.id = rel.store_id)
-    </select>
+		</choose>
+	</select>
 
-	<!-- -->
+
+	<!-- getStoreRiders -->
+	<!--<select id="getStoreRiders" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.rider.Rider">-->
+		<!--SELECT-->
+			<!--rid.created_datetime,-->
+			<!--rid.modified_datetime,-->
+			<!--rid.last_access,-->
+			<!--rid.chat_user_id,-->
+			<!--rid.admin_id,-->
+			<!--rid.id,-->
+			<!--rid.name,-->
+			<!--rid.phone,-->
+			<!--rid.login_id,-->
+			<!--rid.login_pw,-->
+			<!--rid.comment,-->
+			<!--rid.deleted-->
+		<!--FROM TB_RIDER AS rid-->
+		<!--INNER JOIN TB_STORE_RIDER_REL AS rel-->
+			<!--ON rid.id = rel.rider_id-->
+			<!--WHERE-->
+			<!--<choose>-->
+			<!--<when test="id != null and id != ''">-->
+				<!--rel.store_id = #{id}-->
+			<!--</when>-->
+			<!--<otherwise>-->
+				<!--rel.store_id =(-->
+				<!--SELECT store_id-->
+				<!--FROM TB_STORE_SESSION-->
+				<!--WHERE access_token = #{accessToken})-->
+			<!--</otherwise>-->
+			<!--</choose>-->
+			<!--AND-->
+			<!--rel.admin_id =-->
+				<!--(SELECT admin_id-->
+				<!--FROM TB_STORE AS st-->
+				<!--WHERE st.id = rel.store_id)-->
+    <!--</select>-->
 
 
 	<!-- rider 정보 수정 -->

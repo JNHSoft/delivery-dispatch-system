@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreRiderRel;
 
 import java.util.List;
 
@@ -102,5 +103,13 @@ public interface AdminMapper {
      * @return
      */
     public int insertStore(Store store);
+
+    /**
+     * <p> 상점 기사 전체 소속 목록
+     *
+     * @param user
+     * @return
+     */
+    public List<StoreRiderRel> selectStoreRiderRel(User user);
 
 }

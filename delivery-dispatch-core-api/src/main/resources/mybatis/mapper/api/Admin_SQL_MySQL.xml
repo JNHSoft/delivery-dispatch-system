@@ -319,5 +319,25 @@
 		)
 	</insert>
 
+
+	<!-- selectStoreRiderRel -->
+	<select id="selectStoreRiderRel" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
+		SELECT
+		rel.created_datetime,
+		rel.modified_datetime,
+		rel.id,
+		rel.rider_id,
+		ri.name AS rider_name,
+		ri.phone AS rider_phone,
+		rel.store_id,
+		st.store_name
+		FROM TB_STORE_RIDER_REL AS rel
+		INNER JOIN TB_STORE AS st
+		ON rel.store_id = st.id
+		INNER JOIN TB_RIDER AS ri
+		ON rel.rider_id = ri.id
+		WHERE rel.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	</select>
+
 </mapper>
  

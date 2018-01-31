@@ -11,52 +11,55 @@ public interface Api {
     // ############################################################################################ //
 
     /** [Admin] 정보 조회 */
-    String ADMIN_INFO = "/admin/getAdminInfo.json";
+    String ADMIN_INFO = "/getAdminInfo.json";
 
     /** [Admin] 기사 목록 조회 */
-    String ADMIN_RIDERS_LIST = "/admin/getRiders.json";
+    String ADMIN_RIDERS_LIST = "/getRiders.json";
 
     /** [Admin] 기사 등록 */
-    String ADMIN_RIDER_POST = "/admin/postRider.json";
+    String ADMIN_RIDER_POST = "/postRider.json";
 
     /** [Admin] 상점 목록 조회 */
-    String ADMIN_STORES_LIST = "/admin/getStores.json";
+    String ADMIN_STORES_LIST = "/getStores.json";
 
     /** [Admin] 상점 등록 */
-    String ADMIN_STORE_POST = "/admin/postStore.json";
+    String ADMIN_STORE_POST = "/postStore.json";
+
+    /** [Admin] 상점 기사 전체 소속 목록 */
+    String ADMIN_STORE_RIDER_REL = "/getStoreRiderRel.json";
 
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
-    String RIDER_INFO = "/v1/getRiderInfo.json";
+    String RIDER_INFO = "/getRiderInfo.json";
 
     /** 해당 스토어 Rider 목록*/
-    String STORE_RIDERS= "/v1/getStoreRiders.json";
+    String STORE_RIDERS= "/getStoreRiders.json";
 
     /** Rider 정보 수정  */
-    String RIDER_UPDATE_INFO = "/v1/updateRiderInfo.json";
+    String RIDER_UPDATE_INFO = "/updateRiderInfo.json";
 
     // ############################################################################################ //
 
     /** Store 정보 조회 */
-    String STORE_INFO = "/v1/getStoreInfo.json";
+    String STORE_INFO = "/getStoreInfo.json";
 
     /** Store 정보 수정  */
-    String STORE_UPDATE_INFO = "/v1/updateStoreInfo.json";
+    String STORE_UPDATE_INFO = "/updateStoreInfo.json";
 
     // ############################################################################################ //
 
     /** Order 등록 */
-    String ORDER_POST = "/v1/postOrder.json";
+    String ORDER_POST = "/postOrder.json";
 
     // ############################################################################################ //
 
 
     /** 공지사항 등록 */
-    String NOTICE_POST = "/v1/postNotice.json";
+    String NOTICE_POST = "/postNotice.json";
 
     /** 공지사항 수정 */
-    String NOTICE_UPDATE = "/v1/updateNotice.json";
+    String NOTICE_UPDATE = "/updateNotice.json";
 
     /** 공지사항 삭제 */
 

@@ -1,8 +1,10 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreRiderRel;
 
 import java.util.List;
 
@@ -50,7 +52,7 @@ public interface RiderMapper {
      *
      * @return 해당 스토어 Rider 목록 조회 결과값
      */
-    public List<Rider> getStoreRiders(Store store);
+    public List<StoreRiderRel> getStoreRiders(User user);
 
 
     /**

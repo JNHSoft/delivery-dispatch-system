@@ -2,8 +2,10 @@ package kr.co.cntt.core.service.api;
 
 
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreRiderRel;
 
 import java.util.List;
 
@@ -41,10 +43,11 @@ public interface RiderService {
      *
      * @return
      */
-    public List<Rider> getStoreRiders(Store store) throws AppTrException;
+    public List<StoreRiderRel> getStoreRiders(User user) throws AppTrException;
 
     /**
-     * rider Á¤º¸ ¼öÁ¤     *
+     * rider ì •ë³´ ìˆ˜ì •
+     *
      * @param rider
      * @return
      */

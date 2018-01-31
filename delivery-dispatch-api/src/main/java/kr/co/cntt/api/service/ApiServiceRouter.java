@@ -28,6 +28,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 상점 등록 */
 	ADMIN_STORE_POST("adminService", "postStore", Store.class),
 
+	/** [Admin] 상점 기사 전체 소속 목록 */
+	ADMIN_STORE_RIDER_REL("adminService", "getStoreRiderRel", User.class),
+
 	/** Rider 정보조회 */
 	RIDER_INFO("riderService", "getRiderInfo", Rider.class),
 
@@ -35,7 +38,7 @@ public enum ApiServiceRouter implements IServiceRouter {
 	RIDER_UPDATE_INFO("riderService", "updateRiderInfo", Rider.class),
 
 	/** 해당 스토어 Rider 목록 */
-	STORE_RIDERS("riderService", "getStoreRiders", Store.class),
+	STORE_RIDERS("riderService", "getStoreRiders", User.class),
 
 	/** Store 정보조회 */
 	STORE_INFO("storeService", "getStoreInfo", Store.class),

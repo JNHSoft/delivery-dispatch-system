@@ -7,6 +7,7 @@ import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreRiderRel;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.util.Geocoder;
@@ -146,6 +147,17 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
             // TODO : chatUser or chatRoom deleted
             return 0;
         }
+    }
+
+    @Override
+    public List<StoreRiderRel> getStoreRiderRel(User user) throws AppTrException {
+        List<StoreRiderRel> S_Rel = adminMapper.selectStoreRiderRel(user);
+
+        if (S_Rel.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Rel;
     }
 
 }
