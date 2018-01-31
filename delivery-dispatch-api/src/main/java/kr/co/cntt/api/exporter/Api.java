@@ -45,6 +45,22 @@ public interface Api {
 
     // ############################################################################################ //
 
+
+    /** 공지사항 등록 */
+    String NOTICE_POST = "/notice/postNotice.json";
+
+    /** 공지사항 수정 */
+    String NOTICE_UPDATE = "/notice/updateNotice.json";
+
+    /** 공지사항 삭제 */
+
+    /** 공지사항 상세보기 */
+
+    /** 공지사항 리스트 */
+
+
+    // ############################################################################################ //
+
     // MVC || ADMIN || Call Center -> CNT APP API SERVER
     /** base uri */
     String INSIDE_PATH = "/API";
