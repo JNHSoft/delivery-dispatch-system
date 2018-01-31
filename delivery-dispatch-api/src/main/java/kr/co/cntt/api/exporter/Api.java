@@ -50,10 +50,10 @@ public interface Api {
 
 
     /** 공지사항 등록 */
-    String NOTICE_POST = "/notice/postNotice.json";
+    String NOTICE_POST = "/v1/postNotice.json";
 
     /** 공지사항 수정 */
-    String NOTICE_UPDATE = "/notice/updateNotice.json";
+    String NOTICE_UPDATE = "/v1/updateNotice.json";
 
     /** 공지사항 삭제 */
 
