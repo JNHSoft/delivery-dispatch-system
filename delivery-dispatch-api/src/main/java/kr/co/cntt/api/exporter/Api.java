@@ -33,6 +33,9 @@ public interface Api {
     /** 해당 스토어 Rider 목록*/
     String STORE_RIDERS= "/v1/getStoreRiders.json";
 
+    /** Rider 정보 수정  */
+    String RIDER_UPDATE_INFO = "/v1/updateRiderInfo.json";
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */

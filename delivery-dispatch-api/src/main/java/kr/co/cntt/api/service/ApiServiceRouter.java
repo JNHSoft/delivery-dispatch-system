@@ -31,6 +31,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 정보조회 */
 	RIDER_INFO("riderService", "getRiderInfo", Rider.class),
 
+	/** Rider 정보수정 */
+	RIDER_UPDATE_INFO("riderService", "updateRiderInfo", Rider.class),
+
 	/** 해당 스토어 Rider 목록 */
 	STORE_RIDERS("riderService", "getStoreRiders", Store.class),
 
@@ -39,7 +42,6 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** Store 정보수정 */
 	STORE_UPDATE_INFO("storeService", "updateStoreInfo", Store.class),
-
 
 	/** Order 등록 */
 	ORDER_POST("orderService", "postOrder", Order.class),

@@ -51,4 +51,12 @@ public interface RiderMapper {
      * @return 해당 스토어 Rider 목록 조회 결과값
      */
     public List<Rider> getStoreRiders(Store store);
+
+
+    /**
+     * Rider 정보 업데이트
+     * @param rider
+     * @return
+     */
+    public int updateRiderInfo(Rider rider);
 }

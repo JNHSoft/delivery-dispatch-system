@@ -42,4 +42,11 @@ public interface RiderService {
      * @return
      */
     public List<Rider> getStoreRiders(Store store) throws AppTrException;
+
+    /**
+     * rider 정보 수정     *
+     * @param rider
+     * @return
+     */
+    public int updateRiderInfo(Rider rider) throws AppTrException;
 }
