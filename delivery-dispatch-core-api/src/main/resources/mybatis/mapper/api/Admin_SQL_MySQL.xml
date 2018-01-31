@@ -65,7 +65,7 @@
 			type
 		) VALUES (
 			now(),
-			3
+			#{type}
 		)
 		<selectKey keyProperty="chatUserId" resultType="String">
 			SELECT LAST_INSERT_ID()
@@ -144,37 +144,37 @@
 			<if test="gender != null and gender != ''">
 				#{gender},
 			</if>
-			<if test="gender == null || gender == ''">
+			<if test="gender == null or gender == ''">
 				0,
 			</if>
 			<if test="employmentType != null and employmentType != ''">
 				#{employmentType},
 			</if>
-			<if test="employmentType == null || employmentType == ''">
+			<if test="employmentType == null or employmentType == ''">
 				0,
 			</if>
 			<if test="address != address and address != ''">
 				#{address},
 			</if>
-			<if test="address == null || address == ''">
+			<if test="address == null or address == ''">
 				NULL,
 			</if>
 			<if test="vehicleNumber != null and vehicleNumber != ''">
 				#{vehicleNumber},
 			</if>
-			<if test="vehicleNumber == null || vehicleNumber == ''">
+			<if test="vehicleNumber == null or vehicleNumber == ''">
 				NULL,
 			</if>
 			<if test="emergencyPhone != null and emergencyPhone != ''">
 				#{emergencyPhone},
 			</if>
-			<if test="emergencyPhone == null || emergencyPhone == ''">
+			<if test="emergencyPhone == null or emergencyPhone == ''">
 				NULL,
 			</if>
 			<if test="comment != null and comment != ''">
 				#{comment},
 			</if>
-			<if test="comment == null || comment == ''">
+			<if test="comment == null or comment == ''">
 				NULL
 			</if>
 		)
@@ -197,6 +197,125 @@
 		FROM TB_STORE
 		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
 	</select>
+
+
+	<!-- insertStore -->
+	<insert id="insertStore" parameterType="kr.co.cntt.core.model.store.Store">
+		INSERT INTO TB_STORE (
+		created_datetime,
+		expiration_date,
+		chat_user_id,
+		admin_id,
+		login_id,
+		login_pw,
+		code,
+		name,
+		phone,
+		store_name,
+		ch_store_name,
+		store_phone,
+		email,
+		address,
+		detail_address,
+		ch_address,
+		ch_detail_address,
+		latitude,
+		longitude,
+		comment,
+		radius,
+		store_distance_sort,
+		assignment_status
+		) VALUES (
+		now(),
+		<if test="expirationDate != null and expirationDate != ''">
+			#{expirationDate},
+		</if>
+		<if test="expirationDate == null or expirationDate == ''">
+			'3000-01-01',
+		</if>
+  		#{chatUserId},
+		(SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token}),
+		#{loginId},
+		#{loginPw},
+		<if test="code != null and code != ''">
+			#{code},
+		</if>
+		<if test="code == null or code == ''">
+			NULL,
+		</if>
+		<if test="name != null and name != ''">
+			#{name},
+		</if>
+		<if test="name == null or name == ''">
+			NULL,
+		</if>
+		<if test="phone != null and phone != ''">
+			#{phone},
+		</if>
+		<if test="phone == null or phone == ''">
+			NULL,
+		</if>
+		#{storeName},
+		<if test="chStoreName != null and chStoreName != ''">
+			#{chStoreName},
+		</if>
+		<if test="chStoreName == null or chStoreName == ''">
+			NULL,
+		</if>
+		#{storePhone},
+		<if test="email != null and email != ''">
+			#{email},
+		</if>
+		<if test="email == null or email == ''">
+			NULL,
+		</if>
+		#{address},
+		<if test="detailAddress != null and detailAddress != ''">
+			#{detailAddress},
+		</if>
+		<if test="detailAddress == null or detailAddress == ''">
+			NULL,
+		</if>
+		<if test="chAddress != null and chAddress != ''">
+			#{chAddress},
+		</if>
+		<if test="chAddress == null or chAddress == ''">
+			NULL,
+		</if>
+		<if test="chDetailAddress != null and chDetailAddress != ''">
+			#{chDetailAddress},
+		</if>
+		<if test="chDetailAddress == null or chDetailAddress == ''">
+			NULL,
+		</if>
+		#{latitude},
+		#{longitude},
+		<if test="comment != null and comment != ''">
+			#{comment},
+		</if>
+		<if test="comment == null or comment == ''">
+			NULL,
+		</if>
+		<if test="radius != null and radius != ''">
+			#{radius},
+		</if>
+		<if test="radius == null or radius == ''">
+			1,
+		</if>
+		<if test="storeDistanceSort != null and storeDistanceSort != ''">
+			#{storeDistanceSort},
+		</if>
+		<if test="storeDistanceSort == null or storeDistanceSort == ''">
+			NULL,
+		</if>
+		<if test="assignmentStatus != null and assignmentStatus != ''">
+			#{assignmentStatus}
+		</if>
+		<if test="assignmentStatus == null or assignmentStatus == ''">
+			0
+		</if>
+		)
+	</insert>
 
 </mapper>
  

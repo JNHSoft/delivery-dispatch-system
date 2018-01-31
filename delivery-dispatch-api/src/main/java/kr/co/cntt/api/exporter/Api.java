@@ -22,26 +22,29 @@ public interface Api {
     /** [Admin] 상점 목록 조회 */
     String ADMIN_STORES_LIST = "/admin/getStores.json";
 
+    /** [Admin] 상점 등록 */
+    String ADMIN_STORE_POST = "/admin/postStore.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
-    String RIDER_INFO = "/rider/getRiderInfo.json";
+    String RIDER_INFO = "/v1/getRiderInfo.json";
 
     /** 해당 스토어 Rider 목록*/
-    String STORE_RIDERS= "/rider/getStoreRiders.json";
+    String STORE_RIDERS= "/v1/getStoreRiders.json";
 
     // ############################################################################################ //
 
     /** Store 정보 조회 */
-    String STORE_INFO = "/store/getStoreInfo.json";
+    String STORE_INFO = "/v1/getStoreInfo.json";
 
     /** Store 정보 수정  */
-    String STORE_UPDATE_INFO = "/store/updateStoreInfo.json";
+    String STORE_UPDATE_INFO = "/v1/updateStoreInfo.json";
 
     // ############################################################################################ //
 
     /** Order 등록 */
-    String ORDER_POST = "/order/postOrder.json";
+    String ORDER_POST = "/v1/postOrder.json";
 
     // ############################################################################################ //
 

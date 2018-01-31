@@ -94,4 +94,13 @@ public interface AdminMapper {
      * @return
      */
     public List<Store> selectStores(Admin admin);
+
+    /**
+     * <p> 상점 등록
+     *
+     * @param store
+     * @return
+     */
+    public int insertStore(Store store);
+
 }

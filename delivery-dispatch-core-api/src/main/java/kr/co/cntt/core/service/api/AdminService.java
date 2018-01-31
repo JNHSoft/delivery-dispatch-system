@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.store.Store;
 import java.util.List;
 
 public interface AdminService {
+
     /**
      * <p> selectLoginAdmin
      *
@@ -64,4 +65,13 @@ public interface AdminService {
      * @throws AppTrException
      */
     public List<Store> getStores(Admin admin) throws AppTrException;
+
+    /**
+     * <p> postStore
+     *
+     * @param store
+     * @return
+     */
+    public int postStore(Store store);
+
 }
