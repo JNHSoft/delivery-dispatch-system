@@ -4,16 +4,21 @@ import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.util.Geocoder;
+import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -94,10 +99,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
     @Secured("ROLE_ADMIN")
     @Override
-    public List<Store> getStores(Admin admin) throws AppTrException {
-        admin.setAccessToken(admin.getToken());
-
-        List<Store> S_Store = adminMapper.selectStores(admin);
+    public List<Store> getStores(User user) throws AppTrException {
+        List<Store> S_Store = adminMapper.selectStores(user);
 
         if (S_Store.size() == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
@@ -120,7 +123,20 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
             }
         }
 
+        Misc misc = new Misc();
+        Map<String, Integer> storeHaversineMap = new HashMap<>();
+        List<Store> S_Store = adminMapper.selectStores(store);
+        for (Store s : S_Store) {
+            try {
+                storeHaversineMap.put(s.getId(), misc.getHaversine(store.getLatitude(), store.getLongitude(), s.getLatitude(), s.getLongitude()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        store.setStoreDistanceSort(StringUtils.arrayToDelimitedString(misc.sortByValue(storeHaversineMap).toArray(), ","));
         store.setType("2");
+
         adminMapper.insertChatUser(store);
         adminMapper.insertChatRoom(store);
         if (store.getChatUserId() != null && store.getChatRoomId() != null) {

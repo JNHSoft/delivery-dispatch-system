@@ -90,10 +90,10 @@ public interface AdminMapper {
     /**
      * <p> 상점 목록 조회
      *
-     * @param admin
+     * @param user
      * @return
      */
-    public List<Store> selectStores(Admin admin);
+    public List<Store> selectStores(User user);
 
     /**
      * <p> 상점 등록

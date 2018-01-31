@@ -182,7 +182,7 @@
 
 
 	<!-- selectStores -->
-	<select id="selectStores" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.store.Store">
+	<select id="selectStores" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
 		SELECT
 			id,
 			code,
@@ -192,10 +192,12 @@
 			ch_store_name,
 			store_phone,
 			login_id,
+			latitude,
+			longitude,
 			store_status,
 			assignment_status
 		FROM TB_STORE
-		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>
 
 

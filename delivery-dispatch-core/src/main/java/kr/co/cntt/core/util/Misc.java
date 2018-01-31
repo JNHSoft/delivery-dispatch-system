@@ -1,5 +1,7 @@
 package kr.co.cntt.core.util;
 
+import java.util.*;
+
 /**
  * <p> kr.co.cntt.core.util </p>
  * <p> Misc.java </p>
@@ -34,6 +36,29 @@ public class Misc {
         int m = Integer.parseInt(String.valueOf(Math.round(6367 * c * 1000)));
 
         return m;
+    }
+
+    /**
+     * <p> Map Value 정렬
+     *
+     * @param map
+     * @return
+     */
+    public List sortByValue(Map map) {
+        List<String> list = new ArrayList<>();
+        list.addAll(map.keySet());
+
+        Collections.sort(list, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                Object v1 = map.get(o1);
+                Object v2 = map.get(o2);
+                return ((Comparable) v2).compareTo(v1);
+            }
+        });
+        Collections.reverse(list);
+        
+        return list;
     }
 
 }

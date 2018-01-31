@@ -3,6 +3,7 @@ package kr.co.cntt.api.service;
 import kr.co.cntt.api.config.IServiceRouter;
 
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
@@ -22,7 +23,7 @@ public enum ApiServiceRouter implements IServiceRouter {
 	ADMIN_RIDER_POST("adminService", "postRider", Rider.class),
 
 	/** [Admin] 상점 목록 조회 */
-	ADMIN_STORES_LIST("adminService", "getStores", Admin.class),
+	ADMIN_STORES_LIST("adminService", "getStores", User.class),
 
 	/** [Admin] 상점 등록 */
 	ADMIN_STORE_POST("adminService", "postStore", Store.class),
