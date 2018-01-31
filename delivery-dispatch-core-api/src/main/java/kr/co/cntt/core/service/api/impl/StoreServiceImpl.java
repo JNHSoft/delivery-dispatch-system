@@ -8,6 +8,8 @@ import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.StoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,8 +53,15 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     // store 정보 조회
     @Override
     public List<Store> getStoreInfo(Store store) throws AppTrException {
-        // token 값 선언
-        store.setAccessToken(store.getToken());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            // token 값 선언
+            store.setAccessToken(store.getToken());
+            store.setId("");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
+            store.setAccessToken(null);
+            store.setId("");
+        }
 
         // log 확인
         log.info(">>> token: " + store.getAccessToken());
@@ -74,11 +83,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         // token 값 선언
         store.setAccessToken(store.getToken());
 
-
         return storeMapper.updateStoreInfo(store);
     }
-
-
-
 
 }

@@ -57,7 +57,13 @@
 			comment,
 			deleted
 		FROM TB_RIDER
-		WHERE id =(
+		WHERE
+		<choose>
+		<when test="id != null and id != ''">
+			id = #{id}
+		</when>
+		<otherwise>
+			id =(
 			SELECT
 			rider_id
 			FROM
@@ -65,6 +71,8 @@
 			WHERE
 			access_token = #{accessToken}
 			)
+		</otherwise>
+		</choose>
 	</select>
 
 	<!-- getStoreRiders -->
