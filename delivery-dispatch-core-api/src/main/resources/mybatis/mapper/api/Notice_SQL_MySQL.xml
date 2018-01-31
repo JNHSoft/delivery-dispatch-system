@@ -1,0 +1,106 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cntt.core.mapper.NoticeMapper">
+
+    <!-- insert Notice 공지사항 등록  -->
+    <insert id="insertNotice" parameterType="kr.co.cntt.core.model.notice.Notice">
+        INSERT INTO TB_NOTICE (
+        created_datetime
+        , admin_id
+        , writer_id
+        , writer_type
+        , title
+        , content
+        , to_rider
+        , to_store
+        ) VALUES(
+          now()
+        , #{adminId}
+        , #{writerId}
+        , #{writerType}
+        , #{title}
+        , #{content}
+
+        <if test="toRider != null and toRider != ''">
+          , #{toRider}
+        </if>
+
+        <if test="toRider == null or toRider == ''">
+          , 0
+        </if>
+
+        <if test="toStore != null and toStore != ''">
+          , #{toStore}
+        </if>
+
+        <if test="toStore == null or toStore == ''">
+          , 0
+        </if>
+
+        )
+    </insert>
+
+    <!--AdminID 관리자가 작성 -->
+    <select id="selectAdminId" parameterType="kr.co.cntt.core.model.notice.Notice"  resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+        admin_id
+        FROM
+        TB_ADMIN_SESSION
+        WHERE
+        access_token=#{token}
+    </select>
+
+    <!--StoreID 상점 작성 -->
+    <select id="selectStoreAdminId" parameterType="kr.co.cntt.core.model.notice.Notice"  resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+        st.admin_id
+        , se.store_id    AS writer_id
+        FROM
+        TB_STORE_SESSION AS se
+        INNER JOIN
+        TB_STORE AS st
+        ON se.store_id = st.id
+
+        WHERE
+        access_token = #{token}
+
+    </select>
+
+    <!--공지사항 수정-->
+    <update id="updateNotice" parameterType="kr.co.cntt.core.model.notice.Notice">
+      UPDATE TB_NOTICE
+      SET
+      modified_datetime = now()
+        , id = #{id}
+
+
+        , admin_id = #{adminId}
+
+
+        , writer_id = #{writerId}
+
+        , writer_type = #{writerType}
+
+      <if test="title != null and title != ''">
+        , title = #{title}
+      </if>
+
+      <if test="title != null and title != ''">
+        , content = #{content}
+      </if>
+
+      <if test="toRider != null and toRider != ''">
+        , to_rider = #{toRider}
+      </if>
+
+      <if test="toStore != null and toStore != ''">
+        , to_store = #{toStore}
+      </if>
+
+
+    </update>
+
+
+
+
+
+</mapper>
