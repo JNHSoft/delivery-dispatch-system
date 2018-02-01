@@ -149,6 +149,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         }
     }
 
+    @Secured("ROLE_ADMIN")
     @Override
     public List<StoreRiderRel> getStoreRiderRel(User user) throws AppTrException {
         List<StoreRiderRel> S_Rel = adminMapper.selectStoreRiderRel(user);
@@ -160,6 +161,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         return S_Rel;
     }
 
+    @Secured("ROLE_ADMIN")
     @Override
     public int putStoreRiderRel(StoreRiderRel storeRiderRel) {
         adminMapper.updateStoreRiderRel(storeRiderRel);
