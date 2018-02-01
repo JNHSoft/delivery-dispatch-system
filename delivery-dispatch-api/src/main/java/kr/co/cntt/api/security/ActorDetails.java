@@ -70,11 +70,11 @@ public class ActorDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // add Role
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (actor.getLevel().equals("admin")) {
+        if (actor.getLevel().equals("1")) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else if (actor.getLevel().equals("store")) {
+        } else if (actor.getLevel().equals("2")) {
             authorities.add(new SimpleGrantedAuthority("ROLE_STORE"));
-        } else if (actor.getLevel().equals("rider")) {
+        } else if (actor.getLevel().equals("3")) {
             authorities.add(new SimpleGrantedAuthority("ROLE_RIDER"));
         } else {
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));

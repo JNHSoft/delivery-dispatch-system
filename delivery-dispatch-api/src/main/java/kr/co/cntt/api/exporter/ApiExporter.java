@@ -87,15 +87,15 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Admin adminInfo = new Admin();
 
         try {
-            if (level.equals("rider")) {
+            if (level.equals("3")) {
                 riderInfo.setLoginId(loginId);
                 riderInfo.setLoginPw(loginPw);
                 userLoginId = riderService.selectLoginRider(riderInfo);
-            } else if (level.equals("store")) {
+            } else if (level.equals("2")) {
                 storeInfo.setLoginId(loginId);
                 storeInfo.setLoginPw(loginPw);
                 userLoginId = storeService.selectLoginStore(storeInfo);
-            } else if (level.equals("admin")) {
+            } else if (level.equals("1")) {
                 adminInfo.setLoginId(loginId);
                 adminInfo.setLoginPw(loginPw);
                 userLoginId = adminService.selectLoginAdmin(adminInfo);
@@ -152,13 +152,13 @@ public class ApiExporter extends ExporterSupportor implements Api {
             // Return the token
 
             // Token을 Insert
-            if (level.equals("rider")) {
+            if (level.equals("3")) {
                 riderInfo.setAccessToken(token);
                 riderService.insertRiderSession(riderInfo);
-            } else if (level.equals("store")) {
+            } else if (level.equals("2")) {
                 storeInfo.setAccessToken(token);
                 storeService.insertStoreSession(storeInfo);
-            } else if (level.equals("admin")) {
+            } else if (level.equals("1")) {
                 adminInfo.setAccessToken(token);
                 adminService.insertAdminSession(adminInfo);
             }

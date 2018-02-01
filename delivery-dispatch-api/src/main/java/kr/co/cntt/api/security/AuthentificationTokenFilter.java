@@ -78,7 +78,7 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                     Admin adminInfo = new Admin();
                     int checkUserCount = 0;
 
-                    if (authLevel.equals("rider")) {
+                    if (authLevel.equals("3")) {
                         riderInfo.setAccessToken(authToken);
                         riderInfo.setLoginId(username);
 
@@ -88,12 +88,12 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                         //						throw new UsernameNotFoundException("No found for username or token ");
                         //					}
                         // Rider 쪽 Login ID  및 AccessToken 값 체크 End
-                    } else if (authLevel.equals("store")) {
+                    } else if (authLevel.equals("2")) {
                         storeInfo.setAccessToken(authToken);
                         storeInfo.setLoginId(username);
 
                         checkUserCount = storeService.selectStoreTokenCheck(storeInfo);
-                    } else if (authLevel.equals("admin")) {
+                    } else if (authLevel.equals("1")) {
                         adminInfo.setAccessToken(authToken);
                         adminInfo.setLoginId(username);
 
