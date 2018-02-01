@@ -43,5 +43,17 @@ public interface NoticeMapper {
      */
     public int updateNotice(Notice notice);
 
+    /**
+     * 공지사항 삭제
+     * @param notice
+     * @return
+     */
+    public int deleteNotice(Notice notice);
 
+    /**
+     * 공지사항 상세보기
+     * @param notice
+     * @return
+     */
+    public Notice detailNotice(Notice notice);
 }
