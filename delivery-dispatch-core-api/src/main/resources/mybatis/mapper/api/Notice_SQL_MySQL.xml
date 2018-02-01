@@ -39,7 +39,7 @@
         )
     </insert>
 
-    <!--AdminID 관리자가 작성 -->
+    <!--AdminID 관리자가 공지사항 작성 -->
     <select id="selectAdminId" parameterType="kr.co.cntt.core.model.notice.Notice"  resultType="kr.co.cntt.core.model.notice.Notice">
         SELECT
         admin_id
@@ -49,7 +49,7 @@
         access_token=#{token}
     </select>
 
-    <!--StoreID 상점 작성 -->
+    <!--StoreID 상점 공지사항 작성 -->
     <select id="selectStoreAdminId" parameterType="kr.co.cntt.core.model.notice.Notice"  resultType="kr.co.cntt.core.model.notice.Notice">
         SELECT
         st.admin_id
@@ -70,11 +70,7 @@
       UPDATE TB_NOTICE
       SET
       modified_datetime = now()
-        , id = #{id}
-
-
         , admin_id = #{adminId}
-
 
         , writer_id = #{writerId}
 
@@ -95,12 +91,41 @@
       <if test="toStore != null and toStore != ''">
         , to_store = #{toStore}
       </if>
-
+      WHERE id = #{id}
 
     </update>
 
+    <!--공지사항 삭제-->
+    <update id="deleteNotice" parameterType="kr.co.cntt.core.model.notice.Notice">
+        UPDATE TB_NOTICE
+        SET
+        deleted = now()
+        WHERE id = #{id}
+        AND admin_id = #{adminId}
+        <if test="writerType == '2'">
+            AND writer_id = #{writerId}
+        </if>
+    </update>
 
+    <!--공지사항 상세 보기 -->
+    <select id="detailNotice" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+        created_datetime
+        , modified_datetime
+        , id
+        , title
+        , content
 
+        from
+        TB_NOTICE
+        WHERE
+        id = #{id}
+
+          AND admin_id = #{adminId}
+          AND writer_id = #{writerId}
+          AND writer_type = #{writerType}
+
+    </select>
 
 
 </mapper>
