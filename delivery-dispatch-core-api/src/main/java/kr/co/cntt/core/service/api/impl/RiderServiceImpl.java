@@ -70,7 +70,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
     @Override
-    public List<StoreRiderRel> getStoreRiders(User user) throws AppTrException {
+    public List<Rider> getStoreRiders(User user) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             user.setAccessToken(user.getToken());
@@ -80,7 +80,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             user.setId("");
         }
 
-        List<StoreRiderRel> S_Rider = riderMapper.getStoreRiders(user);
+        List<Rider> S_Rider = riderMapper.getStoreRiders(user);
 
         if (S_Rider.size() == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());

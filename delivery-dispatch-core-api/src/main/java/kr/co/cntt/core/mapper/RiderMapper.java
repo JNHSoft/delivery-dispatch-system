@@ -52,7 +52,7 @@ public interface RiderMapper {
      *
      * @return 해당 스토어 Rider 목록 조회 결과값
      */
-    public List<StoreRiderRel> getStoreRiders(User user);
+    public List<Rider> getStoreRiders(User user);
 
 
     /**

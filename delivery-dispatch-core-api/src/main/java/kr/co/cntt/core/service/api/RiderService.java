@@ -43,7 +43,7 @@ public interface RiderService {
      *
      * @return
      */
-    public List<StoreRiderRel> getStoreRiders(User user) throws AppTrException;
+    public List<Rider> getStoreRiders(User user) throws AppTrException;
 
     /**
      * rider 정보 수정
