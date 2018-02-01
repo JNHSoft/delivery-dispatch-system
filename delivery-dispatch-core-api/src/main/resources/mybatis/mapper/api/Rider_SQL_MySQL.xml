@@ -57,7 +57,13 @@
 			comment,
 			deleted
 		FROM TB_RIDER
-		WHERE id =(
+		WHERE
+		<choose>
+		<when test="id != null and id != ''">
+			id = #{id}
+		</when>
+		<otherwise>
+			id =(
 			SELECT
 			rider_id
 			FROM
@@ -65,7 +71,10 @@
 			WHERE
 			access_token = #{accessToken}
 			)
+		</otherwise>
+		</choose>
 	</select>
+
 
 	<!-- getStoreRiders -->
 	<select id="getStoreRiders" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.rider.Rider">
@@ -104,6 +113,95 @@
 				WHERE st.id = rel.store_id)
     </select>
 
-	<!-- -->
+
+	<!-- rider 정보 수정 -->
+	<update id="updateRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_RIDER
+		SET
+
+		modified_datetime = now()
+
+		<if test="lastAccess != null and lastAccess != ''">
+			, last_access = #{lastAccess}
+		</if>
+		<if test="name != null and name != ''">
+			, name=#{name}
+		</if>
+
+		<if test="phone != null and phone != ''">
+			, phone=#{phone}
+		</if>
+
+		<if test="position != null and position != ''">
+			, position=#{position}
+		</if>
+
+		<if test="gender != null and gender != ''">
+			, gender=#{gender}
+		</if>
+
+		<!--<if test="login_pw != null and login_pw != ''">
+			, login_pw=#{login_pw}
+		</if>
+
+		<if test="employment_type != null and employment_type != ''">
+			, employment_type=#{employment_type}
+		</if>-->
+
+		<if test="working != null and working != ''">
+			, working=#{working}
+		</if>
+
+		<if test="address != null and address != ''">
+			, address = #{address}
+		</if>
+
+		<if test="status != null and status != ''">
+			, status=#{status}
+		</if>
+
+		<if test="vehicleNumber != null and vehicleNumber != ''">
+			, vehicle_number=#{vehicleNumber}
+		</if>
+
+		<if test="emergencyPhone != null and emergencyPhone != ''">
+			, emergency_phone=#{emergencyPhone}
+		</if>
+
+		<if test="latitude != null and latitude != ''">
+			, latitude=#{latitude}
+		</if>
+
+		<if test="longitude != null  and longitude != ''">
+			, longitude=#{longitude}
+		</if>
+
+		<if test="comment != null  and comment != ''">
+			, comment=#{comment}
+		</if>
+
+		<if test="assignmentLimit != null  and assignmentLimit != ''">
+			, assignment_limit=#{assignmentLimit}
+		</if>
+
+		<if test="deleted != null  and deleted != ''">
+			, deleted=#{deleted}
+		</if>
+
+		<if test="locationUpdated != null  and locationUpdated != ''">
+			, location_updated=#{locationUpdated}
+		</if>
+
+		where
+		id =(
+		SELECT
+		rider_id
+		FROM
+		TB_RIDER_SESSION
+		WHERE
+		access_token = #{accessToken}
+		)
+
+	</update>
 </mapper>
  

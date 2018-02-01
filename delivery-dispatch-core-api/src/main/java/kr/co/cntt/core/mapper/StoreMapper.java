@@ -18,6 +18,7 @@ public interface StoreMapper {
 
     /**
      * login id 확인
+     *
      * @param store
      * @return
      */
@@ -25,6 +26,7 @@ public interface StoreMapper {
 
     /**
      * token 값 확인
+     *
      * @param store
      * @return
      */
@@ -32,6 +34,7 @@ public interface StoreMapper {
 
     /**
      * insert token
+     *
      * @param store
      * @return
      */
@@ -40,6 +43,7 @@ public interface StoreMapper {
 
     /**
      * store 정보 조회
+     *
      * @param store
      * @return
      */
@@ -47,11 +51,18 @@ public interface StoreMapper {
 
     /**
      * Store 정보 수정
+     *
      * @param store
      * @return
      */
     public int updateStoreInfo(Store store);
 
-
+    /**
+     * <p> 상점 목록 조회
+     *
+     * @param store
+     * @return
+     */
+    public List<Store> selectStores(Store store);
 
 }

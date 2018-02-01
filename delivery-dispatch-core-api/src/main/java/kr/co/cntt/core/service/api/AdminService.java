@@ -3,8 +3,10 @@ package kr.co.cntt.core.service.api;
 
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreRiderRel;
 
 import java.util.List;
 
@@ -60,11 +62,11 @@ public interface AdminService {
     /**
      * <p> getStores
      *
-     * @param admin
+     * @param user
      * @return
      * @throws AppTrException
      */
-    public List<Store> getStores(Admin admin) throws AppTrException;
+    public List<Store> getStores(User user) throws AppTrException;
 
     /**
      * <p> postStore
@@ -73,5 +75,15 @@ public interface AdminService {
      * @return
      */
     public int postStore(Store store);
+
+
+    /**
+     * <p> getStoreRiderRel
+     *
+     * @param user
+     * @return
+     * @throws AppTrException
+     */
+    public List<StoreRiderRel> getStoreRiderRel(User user) throws AppTrException;
 
 }

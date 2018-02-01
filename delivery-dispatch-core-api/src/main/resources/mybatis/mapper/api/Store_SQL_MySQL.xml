@@ -56,6 +56,8 @@
 			phone,
 			login_id,
 			login_pw,
+			latitude,
+			longitude,
 			comment,
 			deleted
 
@@ -183,6 +185,17 @@
 	</update>
 
 
+	<!-- selectStores -->
+	<select id="selectStores" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
+        SELECT
+        	id,
+        	latitude,
+        	longitude
+        FROM TB_STORE
+        WHERE admin_id = (
+        	SELECT admin_id FROM TB_STORE WHERE id = (
+        		SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{accessToken}));
+	</select>
 
 
 
