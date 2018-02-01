@@ -160,4 +160,11 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         return S_Rel;
     }
 
+    @Override
+    public int putStoreRiderRel(StoreRiderRel storeRiderRel) {
+        adminMapper.updateStoreRiderRel(storeRiderRel);
+
+        return adminMapper.insertStoreRiderRel(storeRiderRel);
+    }
+
 }

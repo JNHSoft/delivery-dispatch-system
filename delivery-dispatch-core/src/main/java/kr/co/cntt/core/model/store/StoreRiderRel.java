@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StoreRiderRel implements Dto{
+public class StoreRiderRel extends User implements Dto {
     private static final long serialVersionUID = -4427066318008803379L;
     private String createdDatetime;
     private String modifiedDatetime;

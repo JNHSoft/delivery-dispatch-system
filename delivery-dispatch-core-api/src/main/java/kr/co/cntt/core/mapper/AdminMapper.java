@@ -112,4 +112,20 @@ public interface AdminMapper {
      */
     public List<StoreRiderRel> selectStoreRiderRel(User user);
 
+    /**
+     * <p> 상점 기사 소속 변경
+     *
+     * @param storeRiderRel
+     * @return
+     */
+    public int updateStoreRiderRel(StoreRiderRel storeRiderRel);
+
+    /**
+     * <p> 상점 기사 소속 등록
+     *
+     * @param storeRiderRel
+     * @return
+     */
+    public int insertStoreRiderRel(StoreRiderRel storeRiderRel);
+
 }

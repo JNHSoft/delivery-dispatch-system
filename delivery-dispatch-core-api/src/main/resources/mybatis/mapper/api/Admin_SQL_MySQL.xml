@@ -339,5 +339,34 @@
 		WHERE rel.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>
 
+
+	<!-- updateStoreRiderRel -->
+	<update id="updateStoreRiderRel" parameterType="kr.co.cntt.core.model.store.StoreRiderRel">
+		UPDATE TB_STORE_RIDER_REL
+		SET
+			modified_datetime = now()
+		WHERE
+			deleted IS NULL
+			AND modified_datetime IS NULL
+			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND rider_id = #{riderId}
+	</update>
+
+
+	<!-- insertStoreRiderRel -->
+	<insert id="insertStoreRiderRel" parameterType="kr.co.cntt.core.model.store.StoreRiderRel">
+		INSERT INTO TB_STORE_RIDER_REL (
+			created_datetime,
+			admin_id,
+			rider_id,
+			store_id
+		) VALUES (
+			now(),
+			(SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token}),
+			#{riderId},
+			#{storeId}
+		)
+	</insert>
+
 </mapper>
  

@@ -28,6 +28,9 @@ public interface Api {
     /** [Admin] 상점 기사 전체 소속 목록 */
     String ADMIN_STORE_RIDER_REL = "/getStoreRiderRel.json";
 
+    /** [Admin] 상점 기사 소속 등록, 변경 */
+    String ADMIN_RIDER_TO_STORE_PUT = "/putStoreRiderRel.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */

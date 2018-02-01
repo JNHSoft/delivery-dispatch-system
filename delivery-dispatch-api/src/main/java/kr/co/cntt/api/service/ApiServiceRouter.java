@@ -8,6 +8,7 @@ import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreRiderRel;
 import lombok.Getter;
 
 @Getter
@@ -31,6 +32,11 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 상점 기사 전체 소속 목록 */
 	ADMIN_STORE_RIDER_REL("adminService", "getStoreRiderRel", User.class),
 
+	/** [Admin] 상점 기사 소속 등록, 변경 */
+	ADMIN_RIDER_TO_STORE_PUT("adminService", "putStoreRiderRel", StoreRiderRel.class),
+
+	// ############################################################################################ //
+
 	/** Rider 정보조회 */
 	RIDER_INFO("riderService", "getRiderInfo", Rider.class),
 
@@ -40,14 +46,20 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** 해당 스토어 Rider 목록 */
 	STORE_RIDERS("riderService", "getStoreRiders", User.class),
 
+	// ############################################################################################ //
+
 	/** Store 정보조회 */
 	STORE_INFO("storeService", "getStoreInfo", Store.class),
 
 	/** Store 정보수정 */
 	STORE_UPDATE_INFO("storeService", "updateStoreInfo", Store.class),
 
+	// ############################################################################################ //
+
 	/** Order 등록 */
 	ORDER_POST("orderService", "postOrder", Order.class),
+
+	// ############################################################################################ //
 
 	/** Notice 등록 */
 	NOTICE_POST("noticeService", "postNotice", Notice.class),
