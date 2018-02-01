@@ -1,5 +1,7 @@
 package kr.co.cntt.core.service.api.impl;
 
+import kr.co.cntt.core.enums.ErrorCodeEnum;
+import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.NoticeMapper;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -47,7 +49,6 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             Notice res = noticeMapper.selectAdminId(notice);
 
             notice.setAdminId(res.getAdminId());
-
             notice.setWriterId(res.getAdminId());
             notice.setWriterType("1");
 
@@ -67,34 +68,86 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
     public int updateNotice(Notice notice){
-//        // Role 확인
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        if (authentication.getAuthorities().equals("[ROLE_ADMIN]")){
-//            Notice result = noticeMapper.selectAdminId(notice);
-//
-//            notice.setAdminId(result.getAdminId());
-//            notice.setWriterId(result.getWriterId());
-//
-//            String writerId = not
-//
-//
-//        } else {
-//            String adminId = noticeMapper.selectStoreAdminId(notice);
-//            notice.setAdminId(adminId);
-//        }
-//
-//        return noticeMapper.updateNotice(notice);
-        return 0;
+        // Role 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")){
+
+            Notice res = noticeMapper.selectAdminId(notice);
+
+            notice.setAdminId(res.getAdminId());
+            notice.setWriterId(res.getAdminId());
+            notice.setWriterType("1");
+
+        } else {
+            Notice res = noticeMapper.selectStoreAdminId(notice);
+
+            notice.setAdminId(res.getAdminId());
+            notice.setWriterId(res.getAdminId());
+            notice.setWriterType("2");
+        }
+
+        return noticeMapper.updateNotice(notice);
     }
 
+    // 공지 사항 삭제
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Override
+    public int deleteNotice(Notice notice) throws AppTrException {
+        // Role 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")){
+
+            Notice res = noticeMapper.selectStoreAdminId(notice);
+
+            notice.setAdminId(res.getAdminId());
+            notice.setWriterId(res.getAdminId());
+            notice.setWriterType("2");
+        } else {
+            Notice res = noticeMapper.selectAdminId(notice);
+
+            notice.setAdminId(res.getAdminId());
+            notice.setWriterType("1");
+        }
+        // Error
+        int res = noticeMapper.deleteNotice(notice);
+
+        if (res == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return res;
+    }
+
+    // 공지사항 상세 보기 진행중...
+    @Override
+    public Notice detailNotice(Notice notice) throws AppTrException {
+        // Role 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Notice nt = null;
+        // 상점
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+
+            nt = noticeMapper.detailNotice(notice);
+            // 해당 스토어 아이디로 작성한 목록
+
+        }
+        // 라이더
+        else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            nt = noticeMapper.detailNotice(notice);
+            // 해당 라이더 아이디로 작성한 목록
 
 
+        }
+        // 관리자
+        else if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+            notice.setToRider("1");
+            notice.setToStore("1");
+            nt = noticeMapper.detailNotice(notice);
 
+        }
 
-
-
-
-
-
+        return nt;
+    }
 }
