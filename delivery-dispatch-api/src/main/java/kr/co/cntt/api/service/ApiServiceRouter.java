@@ -49,6 +49,12 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Notice 수정 */
 	NOTICE_UPDATE("noticeService", "updateNotice", Notice.class),
 
+	/** Notice 삭제 */
+	NOTICE_DELETE("noticeService", "deleteNotice", Notice.class),
+
+	/** Notice 상세 보기 */
+	NOTICE_DETAIL("noticeService", "detailNotice", Notice.class),
+
 
 //	/** 주문요청2 */
 //	SET_ORDER2("TRO001SV_APP", "setorder2", R_TRO001_1.class),
