@@ -61,4 +61,14 @@ public interface RiderMapper {
      * @return
      */
     public int updateRiderInfo(Rider rider);
+
+    /**
+     * Rider 출/퇴근
+     * @param rider
+     * @return
+     */
+    public int updateWorkingRider(Rider rider);
+
+
+
 }
