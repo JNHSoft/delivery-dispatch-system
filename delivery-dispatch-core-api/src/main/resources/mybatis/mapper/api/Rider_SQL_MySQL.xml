@@ -193,5 +193,28 @@
 
 	</update>
 
+	<!-- rider 출/퇴근  -->
+	<update id="updateWorkingRider" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_RIDER
+		SET
+		modified_datetime = now()
+
+		<if test="working != null and working != ''">
+			, working=#{working}
+		</if>
+		WHERE
+		id = (
+		SELECT
+			rider_id
+		FROM
+			TB_RIDER_SESSION
+		WHERE
+			access_token = #{accessToken}
+		)
+
+	</update>
+
+
+
 </mapper>
  
