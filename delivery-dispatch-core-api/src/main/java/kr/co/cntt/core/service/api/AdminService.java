@@ -86,4 +86,12 @@ public interface AdminService {
      */
     public List<StoreRiderRel> getStoreRiderRel(User user) throws AppTrException;
 
+    /**
+     * <p> putStoreRiderRel
+     *
+     * @param storeRiderRel
+     * @return
+     */
+    public int putStoreRiderRel(StoreRiderRel storeRiderRel);
+
 }
