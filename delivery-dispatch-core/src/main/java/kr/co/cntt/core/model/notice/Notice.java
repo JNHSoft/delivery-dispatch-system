@@ -16,6 +16,7 @@ public class Notice extends User implements Dto {
     private String modifiedDatetime;
     private String id;
     private String writerId;
+    private String writerName;
     private String writerType;
     private String adminId;
     private String title;
