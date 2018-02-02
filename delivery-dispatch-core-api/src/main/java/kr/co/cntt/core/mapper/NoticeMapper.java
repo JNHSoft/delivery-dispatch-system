@@ -3,6 +3,8 @@ package kr.co.cntt.core.mapper;
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.notice.Notice;
 
+import java.util.List;
+
 /**
  * <per>
  * kr.co.cntt.core.mapper
@@ -51,9 +53,43 @@ public interface NoticeMapper {
     public int deleteNotice(Notice notice);
 
     /**
-     * 공지사항 상세보기
+     * 공지사항 상세보기 세분화 rider , admin ,store
      * @param notice
      * @return
      */
-    public Notice detailNotice(Notice notice);
+    // store Admin Detail
+    public List<Notice> getAdminStoreDetailNoticeList(Notice notice);
+    // store Detail
+    public List<Notice> getStoreDetailNoticeList(Notice notice);
+
+    // rider Admin Detail
+    public List<Notice> getRiderAdminDetailNoticeList(Notice notice);
+    // rider Store Detail
+    public List<Notice> getRiderStoreDetailNoticeList(Notice notice);
+
+    // Admin admin
+    public List<Notice> getAdminDetailNoticeList(Notice notice);
+    // Admin Store store
+    public List<Notice> getStoreAdminDetailNoticeList(Notice notice);
+
+
+    /**
+     * 공지사항 리스트 세분화 Rider, Admin , Store
+     * @param notice
+     * @return
+     */
+    // store Admin
+    public List<Notice> getStoreAdminNoticeList(Notice notice);
+    // store
+    public List<Notice> getStoreNoticeList(Notice notice);
+
+    // rider 공지사항 Admin
+    public List<Notice> getRiderAdminNoticeList(Notice notice);
+
+    // rider 공지사항 Store
+    public List<Notice> getRiderStoreNoticeList(Notice notice);
+
+    // admin 공지사항 Admin
+    public List<Notice> getAdminNoticeList(Notice notice);
+
 }
