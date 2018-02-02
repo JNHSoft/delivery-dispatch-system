@@ -42,6 +42,9 @@ public interface Api {
     /** Rider 정보 수정  */
     String RIDER_UPDATE_INFO = "/updateRiderInfo.json";
 
+    /** Rider 출/퇴근   */
+    String RIDER_UPDATE_WORKING = "/updateWorkingRider.json";
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */
