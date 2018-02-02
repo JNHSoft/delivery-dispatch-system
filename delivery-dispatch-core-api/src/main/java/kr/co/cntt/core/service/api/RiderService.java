@@ -52,4 +52,12 @@ public interface RiderService {
      * @return
      */
     public int updateRiderInfo(Rider rider) throws AppTrException;
+
+    /**
+     * rider 출/퇴근
+     * @param rider
+     * @return
+     */
+    public int updateWorkingRider(Rider rider) throws AppTrException ;
+
 }
