@@ -104,5 +104,22 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return nRet;
     }
 
+    // rider 출/퇴근
+    @Override
+    public int updateWorkingRider(Rider rider) throws AppTrException {
 
+        // Role 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            rider.setAccessToken(rider.getToken());
+            rider.setId("");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
+            rider.setAccessToken(null);
+            rider.setId("");
+        }
+
+        int nRet = riderMapper.updateWorkingRider(rider);
+        return nRet;
+
+    }
 }
