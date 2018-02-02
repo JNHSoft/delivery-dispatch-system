@@ -13,9 +13,6 @@ import java.util.List;
 public class Rider extends User implements Dto {
     private static final long serialVersionUID = 6384739497543017734L;
 
-    private String createdDatetime;
-    private String modifiedDatetime;
-    private String lastAccess;
     private String adminId;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String type;
@@ -33,7 +30,6 @@ public class Rider extends User implements Dto {
     private String vehicleNumber;
     private String emergencyPhone;
     private String comment;
-    private String deleted;
 
     private List<RiderSession> riderSession;
 }

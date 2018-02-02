@@ -1,18 +1,15 @@
 package kr.co.cntt.core.model.order;
 
+import kr.co.cntt.core.model.Common;
 import kr.co.cntt.core.model.Dto;
-import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class Order extends User implements Dto {
+public class Order extends Common implements Dto {
     private static final long serialVersionUID = -3663510383729036464L;
 
-    private String createdDatetime;
-    private String modifiedDatetime;
-    private String id;
     private String adminId;
     private String storeId;
     private String riderId;
@@ -35,4 +32,5 @@ public class Order extends User implements Dto {
     private String completedDatetime;
     private String requiredGender;
     private String deviceOs;
+    
 }

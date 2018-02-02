@@ -43,7 +43,7 @@
 
 
 	<!-- selectAdminInfo -->
-	<select id="selectAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
+	<select id="selectAdminInfo" parameterType="kr.co.cntt.core.model.Common" resultType="kr.co.cntt.core.model.admin.Admin">
 		SELECT
 			created_datetime
 			, modified_datetime
@@ -51,10 +51,9 @@
 			, id
 			, name
 			, login_id
-			, login_pw
 			, state
 		FROM TB_ADMIN
-		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
+		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>
 
 
@@ -99,7 +98,7 @@
 
 
 	<!-- selectRiders -->
-	<select id="selectRiders" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.rider.Rider">
+	<select id="selectRiders" parameterType="kr.co.cntt.core.model.Common" resultType="kr.co.cntt.core.model.rider.Rider">
 		SELECT
 			id
 			, name
@@ -111,7 +110,7 @@
 			, working
 			, status
 		FROM TB_RIDER
-		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>
 
 
@@ -182,7 +181,7 @@
 
 
 	<!-- selectStores -->
-	<select id="selectStores" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
+	<select id="selectStores" parameterType="kr.co.cntt.core.model.Common" resultType="kr.co.cntt.core.model.store.Store">
 		SELECT
 			id
 			, code
@@ -329,7 +328,7 @@
 
 
 	<!-- selectStoreRiderRel -->
-	<select id="selectStoreRiderRel" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
+	<select id="selectStoreRiderRel" parameterType="kr.co.cntt.core.model.Common" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
 		SELECT
 			rel.created_datetime
 			, rel.modified_datetime

@@ -2,8 +2,8 @@ package kr.co.cntt.core.service.api;
 
 
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.model.Common;
 import kr.co.cntt.core.model.admin.Admin;
-import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.store.StoreRiderRel;
@@ -36,20 +36,20 @@ public interface AdminService {
     /**
      * <p> getAdminInfo
      *
-     * @param admin
+     * @param common
      * @return
      * @throws AppTrException
      */
-    public List<Admin> getAdminInfo(Admin admin) throws AppTrException;
+    public List<Admin> getAdminInfo(Common common) throws AppTrException;
 
     /**
      * <p> getRiders
      *
-     * @param admin
+     * @param common
      * @return
      * @throws AppTrException
      */
-    public List<Rider> getRiders(Admin admin) throws AppTrException;
+    public List<Rider> getRiders(Common common) throws AppTrException;
 
     /**
      * <p> postRider
@@ -62,11 +62,11 @@ public interface AdminService {
     /**
      * <p> getStores
      *
-     * @param user
+     * @param common
      * @return
      * @throws AppTrException
      */
-    public List<Store> getStores(User user) throws AppTrException;
+    public List<Store> getStores(Common common) throws AppTrException;
 
     /**
      * <p> postStore
@@ -80,11 +80,11 @@ public interface AdminService {
     /**
      * <p> getStoreRiderRel
      *
-     * @param user
+     * @param common
      * @return
      * @throws AppTrException
      */
-    public List<StoreRiderRel> getStoreRiderRel(User user) throws AppTrException;
+    public List<StoreRiderRel> getStoreRiderRel(Common common) throws AppTrException;
 
     /**
      * <p> putStoreRiderRel

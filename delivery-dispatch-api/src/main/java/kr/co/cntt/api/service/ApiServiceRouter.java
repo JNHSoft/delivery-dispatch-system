@@ -1,8 +1,7 @@
 package kr.co.cntt.api.service;
 
 import kr.co.cntt.api.config.IServiceRouter;
-
-import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
@@ -15,22 +14,22 @@ import lombok.Getter;
 public enum ApiServiceRouter implements IServiceRouter {
 	
 	/** [Admin] 정보조회 */
-	ADMIN_INFO("adminService", "getAdminInfo", Admin.class),
+	ADMIN_INFO("adminService", "getAdminInfo", Common.class),
 
 	/** [Admin] 기사 목록 조회 */
-	ADMIN_RIDERS_LIST("adminService", "getRiders", Admin.class),
+	ADMIN_RIDERS_LIST("adminService", "getRiders", Common.class),
 
 	/** [Admin] 기사 등록 */
 	ADMIN_RIDER_POST("adminService", "postRider", Rider.class),
 
 	/** [Admin] 상점 목록 조회 */
-	ADMIN_STORES_LIST("adminService", "getStores", User.class),
+	ADMIN_STORES_LIST("adminService", "getStores", Common.class),
 
 	/** [Admin] 상점 등록 */
 	ADMIN_STORE_POST("adminService", "postStore", Store.class),
 
 	/** [Admin] 상점 기사 전체 소속 목록 */
-	ADMIN_STORE_RIDER_REL("adminService", "getStoreRiderRel", User.class),
+	ADMIN_STORE_RIDER_REL("adminService", "getStoreRiderRel", Common.class),
 
 	/** [Admin] 상점 기사 소속 등록, 변경 */
 	ADMIN_RIDER_TO_STORE_PUT("adminService", "putStoreRiderRel", StoreRiderRel.class),

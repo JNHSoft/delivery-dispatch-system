@@ -1,8 +1,8 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.Common;
 import kr.co.cntt.core.model.admin.Admin;
-import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.store.StoreRiderRel;
@@ -44,41 +44,42 @@ public interface AdminMapper {
     /**
      * <p> Admin 정보 조회
      *
+     * @param common
      * @return Admin Info 조회 결과값
      */
-    public List<Admin> selectAdminInfo(Admin admin);
+    public List<Admin> selectAdminInfo(Common common);
 
     /**
      * <p> chatUser 등록
      *
-     * @param user
+     * @param common
      * @return
      */
-    public int insertChatUser(User user);
+    public int insertChatUser(Common common);
 
     /**
      * <p> chatRoom 등록
      *
-     * @param user
+     * @param common
      * @return
      */
-    public int insertChatRoom(User user);
+    public int insertChatRoom(Common common);
 
     /**
      * <p> chatUserChatRoomRel 등록
      *
-     * @param user
+     * @param common
      * @return
      */
-    public int insertChatUserChatRoomRel(User user);
+    public int insertChatUserChatRoomRel(Common common);
 
     /**
      * <p> 기사 목록 조회
      *
-     * @param admin
+     * @param common
      * @return
      */
-    public List<Rider> selectRiders(Admin admin);
+    public List<Rider> selectRiders(Common common);
 
     /**
      * <p> 기사 등록
@@ -91,10 +92,10 @@ public interface AdminMapper {
     /**
      * <p> 상점 목록 조회
      *
-     * @param user
+     * @param common
      * @return
      */
-    public List<Store> selectStores(User user);
+    public List<Store> selectStores(Common common);
 
     /**
      * <p> 상점 등록
@@ -107,10 +108,10 @@ public interface AdminMapper {
     /**
      * <p> 상점 기사 전체 소속 목록
      *
-     * @param user
+     * @param common
      * @return
      */
-    public List<StoreRiderRel> selectStoreRiderRel(User user);
+    public List<StoreRiderRel> selectStoreRiderRel(Common common);
 
     /**
      * <p> 상점 기사 소속 변경

@@ -34,7 +34,7 @@
 		<![CDATA[
 		INSERT INTO TB_STORE_SESSION(store_id, access_token, created_datetime)
 		SELECT
-			, id
+			id
 			, #{accessToken}
 			, now()
 		FROM TB_STORE
