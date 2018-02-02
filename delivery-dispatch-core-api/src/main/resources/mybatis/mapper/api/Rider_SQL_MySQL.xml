@@ -5,9 +5,10 @@
 		SELECT login_id FROM TB_RIDER
 		WHERE 1=1
 		AND login_id = #{loginId}
-		<!--AND login_pw = #{loginPw}-->
+			<!--AND login_pw = #{loginPw}-->
 		limit 1
 	</select>
+
 
 	<!--
 		- login ID  및 Aceess 토근 값체크
@@ -27,15 +28,14 @@
 	</select>
 
 
-
 	<!-- insertRiderSession -->
 	<insert id="insertRiderSession" parameterType="kr.co.cntt.core.model.rider.Rider">
 		<![CDATA[
 		INSERT INTO TB_RIDER_SESSION(rider_id, access_token, created_datetime)
 		SELECT
-			id,
-			#{accessToken},
-			now()
+			id
+			, #{accessToken}
+			, now()
 		FROM TB_RIDER
 		WHERE login_id = #{loginId}
 		]]>
@@ -44,71 +44,68 @@
 
 	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.rider.Rider">
 		SELECT
-			created_datetime,
-			modified_datetime,
-			last_access,
-			chat_user_id,
-			admin_id,
-			id,
-			name,
-			phone,
-			login_id,
-			login_pw,
-			comment,
-			deleted
+			created_datetime
+			, modified_datetime
+			, last_access
+			, chat_user_id
+			, admin_id
+			, id
+			, name
+			, phone
+			, login_id
+			, login_pw
+			, comment
+			, deleted
 		FROM TB_RIDER
 		WHERE
-		<choose>
-		<when test="id != null and id != ''">
-			id = #{id}
-		</when>
-		<otherwise>
-			id =(
-			SELECT
-			rider_id
-			FROM
-			TB_RIDER_SESSION
-			WHERE
-			access_token = #{accessToken}
-			)
-		</otherwise>
-		</choose>
+			<choose>
+			<when test="id != null and id != ''">
+				id = #{id}
+			</when>
+			<otherwise>
+				id = (
+					SELECT rider_id
+					FROM TB_RIDER_SESSION
+					WHERE access_token = #{accessToken}
+				)
+			</otherwise>
+			</choose>
 	</select>
 
 
 	<!-- getStoreRiders -->
 	<select id="getStoreRiders" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.rider.Rider">
 		SELECT
-			rid.created_datetime,
-			rid.modified_datetime,
-			rid.last_access,
-			rid.chat_user_id,
-			rid.admin_id,
-			rid.id,
-			rid.name,
-			rid.phone,
-			rid.login_id,
-			rid.login_pw,
-			rid.comment,
-			rid.deleted
+			rid.created_datetime
+			, rid.modified_datetime
+			, rid.last_access
+			, rid.chat_user_id
+			, rid.admin_id
+			, rid.id
+			, rid.name
+			, rid.phone
+			, rid.login_id
+			, rid.login_pw
+			, rid.comment
+			, rid.deleted
 		FROM TB_RIDER AS rid
 		INNER JOIN TB_STORE_RIDER_REL AS rel
-			ON rid.id = rel.rider_id
-			WHERE
+		ON rid.id = rel.rider_id
+		WHERE
 			<choose>
 			<when test="id != null and id != ''">
 				rel.store_id = #{id}
 			</when>
 			<otherwise>
-				rel.store_id =(
-				SELECT store_id
-				FROM TB_STORE_SESSION
-				WHERE access_token = #{accessToken})
+				rel.store_id = (
+					SELECT store_id
+					FROM TB_STORE_SESSION
+					WHERE access_token = #{accessToken})
 			</otherwise>
 			</choose>
 			AND
-			rel.admin_id =
-				(SELECT admin_id
+			rel.admin_id = (
+				SELECT admin_id
 				FROM TB_STORE AS st
 				WHERE st.id = rel.store_id)
     </select>
@@ -118,90 +115,83 @@
 	<update id="updateRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
 		UPDATE TB_RIDER
 		SET
+			modified_datetime = now()
 
-		modified_datetime = now()
+			<if test="lastAccess != null and lastAccess != ''">
+				, last_access = #{lastAccess}
+			</if>
 
-		<if test="lastAccess != null and lastAccess != ''">
-			, last_access = #{lastAccess}
-		</if>
-		<if test="name != null and name != ''">
-			, name=#{name}
-		</if>
+			<if test="name != null and name != ''">
+				, name=#{name}
+			</if>
 
-		<if test="phone != null and phone != ''">
-			, phone=#{phone}
-		</if>
+			<if test="phone != null and phone != ''">
+				, phone=#{phone}
+			</if>
 
-		<if test="position != null and position != ''">
-			, position=#{position}
-		</if>
+			<if test="position != null and position != ''">
+				, position=#{position}
+			</if>
 
-		<if test="gender != null and gender != ''">
-			, gender=#{gender}
-		</if>
+			<if test="gender != null and gender != ''">
+				, gender=#{gender}
+			</if>
 
-		<!--<if test="login_pw != null and login_pw != ''">
-			, login_pw=#{login_pw}
-		</if>
+			<!--<if test="login_pw != null and login_pw != ''">
+				, login_pw=#{login_pw}
+			</if>
 
-		<if test="employment_type != null and employment_type != ''">
-			, employment_type=#{employment_type}
-		</if>-->
+			<if test="employment_type != null and employment_type != ''">
+				, employment_type=#{employment_type}
+			</if>-->
 
-		<if test="working != null and working != ''">
-			, working=#{working}
-		</if>
+			<if test="working != null and working != ''">
+				, working=#{working}
+			</if>
 
-		<if test="address != null and address != ''">
-			, address = #{address}
-		</if>
+			<if test="address != null and address != ''">
+				, address = #{address}
+			</if>
 
-		<if test="status != null and status != ''">
-			, status=#{status}
-		</if>
+			<if test="status != null and status != ''">
+				, status=#{status}
+			</if>
 
-		<if test="vehicleNumber != null and vehicleNumber != ''">
-			, vehicle_number=#{vehicleNumber}
-		</if>
+			<if test="vehicleNumber != null and vehicleNumber != ''">
+				, vehicle_number=#{vehicleNumber}
+			</if>
 
-		<if test="emergencyPhone != null and emergencyPhone != ''">
-			, emergency_phone=#{emergencyPhone}
-		</if>
+			<if test="emergencyPhone != null and emergencyPhone != ''">
+				, emergency_phone=#{emergencyPhone}
+			</if>
 
-		<if test="latitude != null and latitude != ''">
-			, latitude=#{latitude}
-		</if>
+			<if test="latitude != null and latitude != ''">
+				, latitude=#{latitude}
+			</if>
 
-		<if test="longitude != null  and longitude != ''">
-			, longitude=#{longitude}
-		</if>
+			<if test="longitude != null  and longitude != ''">
+				, longitude=#{longitude}
+			</if>
 
-		<if test="comment != null  and comment != ''">
-			, comment=#{comment}
-		</if>
+			<if test="comment != null  and comment != ''">
+				, comment=#{comment}
+			</if>
 
-		<if test="assignmentLimit != null  and assignmentLimit != ''">
-			, assignment_limit=#{assignmentLimit}
-		</if>
+			<if test="deleted != null  and deleted != ''">
+				, deleted=#{deleted}
+			</if>
 
-		<if test="deleted != null  and deleted != ''">
-			, deleted=#{deleted}
-		</if>
-
-		<if test="locationUpdated != null  and locationUpdated != ''">
-			, location_updated=#{locationUpdated}
-		</if>
-
-		where
-		id =(
-		SELECT
-		rider_id
-		FROM
-		TB_RIDER_SESSION
+			<if test="locationUpdated != null  and locationUpdated != ''">
+				, location_updated=#{locationUpdated}
+			</if>
 		WHERE
-		access_token = #{accessToken}
-		)
+			id = (
+				SELECT rider_id
+				FROM TB_RIDER_SESSION
+				WHERE access_token = #{accessToken}
+			)
 
 	</update>
+
 </mapper>
  

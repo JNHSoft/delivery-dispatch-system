@@ -4,43 +4,43 @@
     <!-- insertOrder -->
     <insert id="insertOrder" parameterType="kr.co.cntt.core.model.order.Order">
 		INSERT INTO TB_ORDER (
-			admin_id,
-			store_id,
-			address,
-			detail_address,
-			latitude,
-			longitude,
-			menu_name,
-			menu_price,
-			cooking_time,
-			to_be_paid,
-			message,
-			phone,
-			reservation,
-			reservation_datetime,
-			required_gender,
-			device_os,
-			status,
-			created_datetime
+			admin_id
+			, store_id
+			, address
+			, detail_address
+			, latitude
+			, longitude
+			, menu_name
+			, menu_price
+			, cooking_time
+			, to_be_paid
+			, message
+			, phone
+			, reservation
+			, reservation_datetime
+			, required_gender
+			, device_os
+			, status
+			, created_datetime
 		) VALUES(
-			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})),
-			(SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}),
-			#{address},
-			#{detailAddress},
-			#{latitude},
-			#{longitude},
-			#{menuName},
-			#{menuPrice},
-			#{cookingTime},
-			#{toBePaid},
-			#{message},
-			#{phone},
-			#{reservation},
-			#{reservationDatetime},
-			#{requiredGender},
-			#{deviceOs},
-			#{status},
-			now()
+			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+			, (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+			, #{address}
+			, #{detailAddress}
+			, #{latitude}
+			, #{longitude}
+			, #{menuName}
+			, #{menuPrice}
+			, #{cookingTime}
+			, #{toBePaid}
+			, #{message}
+			, #{phone}
+			, #{reservation}
+			, #{reservationDatetime}
+			, #{requiredGender}
+			, #{deviceOs}
+			, #{status}
+			, now()
 	  	)
 	</insert>
 

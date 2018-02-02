@@ -32,7 +32,6 @@ public class Rider extends User implements Dto {
     private String locationUpdated;
     private String vehicleNumber;
     private String emergencyPhone;
-    private String assignmentLimit;
     private String comment;
     private String deleted;
 

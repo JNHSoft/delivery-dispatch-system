@@ -4,7 +4,7 @@
 	<select id="selectLoginAdmin" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="String">
 		SELECT login_id, id FROM TB_ADMIN
 		WHERE 1=1
-		AND login_id = #{loginId}
+			AND login_id = #{loginId}
 		<!--AND login_pw = #{loginPw}-->
 		limit 1
 	</select>
@@ -33,9 +33,9 @@
 		<![CDATA[
 		INSERT INTO TB_ADMIN_SESSION(admin_id, access_token, created_datetime)
 		SELECT
-			id,
-			#{accessToken},
-			now()
+			id
+			, #{accessToken}
+			, now()
 		FROM TB_ADMIN
 		WHERE login_id = #{loginId}
 		]]>
@@ -45,14 +45,14 @@
 	<!-- selectAdminInfo -->
 	<select id="selectAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
 		SELECT
-			created_datetime,
-			modified_datetime,
-			chat_user_id,
-			id,
-			name,
-			login_id,
-			login_pw,
-			state
+			created_datetime
+			, modified_datetime
+			, chat_user_id
+			, id
+			, name
+			, login_id
+			, login_pw
+			, state
 		FROM TB_ADMIN
 		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
 	</select>
@@ -61,11 +61,11 @@
 	<!-- insertChatUser -->
 	<insert id="insertChatUser" parameterType="kr.co.cntt.core.model.login.User">
 		INSERT INTO TB_CHAT_USER (
-			created_datetime,
-			type
+			created_datetime
+			, type
 		) VALUES (
-			now(),
-			#{type}
+			now()
+			, #{type}
 		)
 		<selectKey keyProperty="chatUserId" resultType="String">
 			SELECT LAST_INSERT_ID()
@@ -89,11 +89,11 @@
 	<!-- insertChatUserChatRoomRel -->
 	<insert id="insertChatUserChatRoomRel" parameterType="kr.co.cntt.core.model.login.User">
 		INSERT INTO TB_CHAT_USER_CHATROOM_REL (
-			chat_user_id,
-			chatroom_id
+			chat_user_id
+			, chatroom_id
 		) VALUES (
-			#{chatUserId},
-			#{chatRoomId}
+			#{chatUserId}
+			, #{chatRoomId}
 		)
 	</insert>
 
@@ -101,15 +101,15 @@
 	<!-- selectRiders -->
 	<select id="selectRiders" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.rider.Rider">
 		SELECT
-			id,
-			name,
-			phone,
-			login_id,
-			position,
-			gender,
-			employment_type,
-			working,
-			status
+			id
+			, name
+			, phone
+			, login_id
+			, position
+			, gender
+			, employment_type
+			, working
+			, status
 		FROM TB_RIDER
 		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{accessToken})
 	</select>
@@ -118,64 +118,64 @@
 	<!-- insertRider -->
 	<insert id="insertRider" parameterType="kr.co.cntt.core.model.rider.Rider">
 		INSERT INTO TB_RIDER (
-			created_datetime,
-			chat_user_id,
-			admin_id,
-			name,
-			phone,
-			login_id,
-			login_pw,
-			position,
-			gender,
-			employment_type,
-			address,
-			vehicle_number,
-			emergency_phone,
-			comment
+			created_datetime
+			, chat_user_id
+			, admin_id
+			, name
+			, phone
+			, login_id
+			, login_pw
+			, position
+			, gender
+			, employment_type
+			, address
+			, vehicle_number
+			, emergency_phone
+			, comment
 		) VALUES (
-			now(),
-			#{chatUserId},
-			(SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token}),
-			#{name},
-			#{phone},
-			#{loginId},
-			#{loginPw},
-			#{position},
+			now()
+			, #{chatUserId}
+			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			, #{name}
+			, #{phone}
+			, #{loginId}
+			, #{loginPw}
+			, #{position}
 			<if test="gender != null and gender != ''">
-				#{gender},
+				, #{gender}
 			</if>
 			<if test="gender == null or gender == ''">
-				0,
+				, 0
 			</if>
 			<if test="employmentType != null and employmentType != ''">
-				#{employmentType},
+				, #{employmentType}
 			</if>
 			<if test="employmentType == null or employmentType == ''">
-				0,
+				, 0
 			</if>
 			<if test="address != address and address != ''">
-				#{address},
+				, #{address}
 			</if>
 			<if test="address == null or address == ''">
-				NULL,
+				, NULL
 			</if>
 			<if test="vehicleNumber != null and vehicleNumber != ''">
-				#{vehicleNumber},
+				, #{vehicleNumber}
 			</if>
 			<if test="vehicleNumber == null or vehicleNumber == ''">
-				NULL,
+				, NULL
 			</if>
 			<if test="emergencyPhone != null and emergencyPhone != ''">
-				#{emergencyPhone},
+				, #{emergencyPhone}
 			</if>
 			<if test="emergencyPhone == null or emergencyPhone == ''">
-				NULL,
+				, NULL
 			</if>
 			<if test="comment != null and comment != ''">
-				#{comment},
+				, #{comment}
 			</if>
 			<if test="comment == null or comment == ''">
-				NULL
+				, NULL
 			</if>
 		)
 	</insert>
@@ -184,18 +184,19 @@
 	<!-- selectStores -->
 	<select id="selectStores" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
 		SELECT
-			id,
-			code,
-			name,
-			phone,
-			store_name,
-			ch_store_name,
-			store_phone,
-			login_id,
-			latitude,
-			longitude,
-			store_status,
-			assignment_status
+			id
+			, code
+			, name
+			, phone
+			, store_name
+			, ch_store_name
+			, store_phone
+			, login_id
+			, latitude
+			, longitude
+			, store_status
+			, assignment_status
+			, assignment_limit
 		FROM TB_STORE
 		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>
@@ -204,118 +205,125 @@
 	<!-- insertStore -->
 	<insert id="insertStore" parameterType="kr.co.cntt.core.model.store.Store">
 		INSERT INTO TB_STORE (
-		created_datetime,
-		expiration_date,
-		chat_user_id,
-		admin_id,
-		login_id,
-		login_pw,
-		code,
-		name,
-		phone,
-		store_name,
-		ch_store_name,
-		store_phone,
-		email,
-		address,
-		detail_address,
-		ch_address,
-		ch_detail_address,
-		latitude,
-		longitude,
-		comment,
-		radius,
-		store_distance_sort,
-		assignment_status
+			created_datetime
+			, chat_user_id
+			, admin_id
+			, login_id
+			, login_pw
+			, store_name
+			, store_phone
+			, address
+			, latitude
+			, longitude
+			, expiration_date
+			, code
+			, name
+			, phone
+			, ch_store_name
+			, email
+			, detail_address
+			, ch_address
+			, ch_detail_address
+			, comment
+			, radius
+			, store_distance_sort
+			, assignment_status
+			, assignment_limit
 		) VALUES (
-		now(),
-		<if test="expirationDate != null and expirationDate != ''">
-			#{expirationDate},
-		</if>
-		<if test="expirationDate == null or expirationDate == ''">
-			'3000-01-01',
-		</if>
-  		#{chatUserId},
-		(SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token}),
-		#{loginId},
-		#{loginPw},
-		<if test="code != null and code != ''">
-			#{code},
-		</if>
-		<if test="code == null or code == ''">
-			NULL,
-		</if>
-		<if test="name != null and name != ''">
-			#{name},
-		</if>
-		<if test="name == null or name == ''">
-			NULL,
-		</if>
-		<if test="phone != null and phone != ''">
-			#{phone},
-		</if>
-		<if test="phone == null or phone == ''">
-			NULL,
-		</if>
-		#{storeName},
-		<if test="chStoreName != null and chStoreName != ''">
-			#{chStoreName},
-		</if>
-		<if test="chStoreName == null or chStoreName == ''">
-			NULL,
-		</if>
-		#{storePhone},
-		<if test="email != null and email != ''">
-			#{email},
-		</if>
-		<if test="email == null or email == ''">
-			NULL,
-		</if>
-		#{address},
-		<if test="detailAddress != null and detailAddress != ''">
-			#{detailAddress},
-		</if>
-		<if test="detailAddress == null or detailAddress == ''">
-			NULL,
-		</if>
-		<if test="chAddress != null and chAddress != ''">
-			#{chAddress},
-		</if>
-		<if test="chAddress == null or chAddress == ''">
-			NULL,
-		</if>
-		<if test="chDetailAddress != null and chDetailAddress != ''">
-			#{chDetailAddress},
-		</if>
-		<if test="chDetailAddress == null or chDetailAddress == ''">
-			NULL,
-		</if>
-		#{latitude},
-		#{longitude},
-		<if test="comment != null and comment != ''">
-			#{comment},
-		</if>
-		<if test="comment == null or comment == ''">
-			NULL,
-		</if>
-		<if test="radius != null and radius != ''">
-			#{radius},
-		</if>
-		<if test="radius == null or radius == ''">
-			1,
-		</if>
-		<if test="storeDistanceSort != null and storeDistanceSort != ''">
-			#{storeDistanceSort},
-		</if>
-		<if test="storeDistanceSort == null or storeDistanceSort == ''">
-			NULL,
-		</if>
-		<if test="assignmentStatus != null and assignmentStatus != ''">
-			#{assignmentStatus}
-		</if>
-		<if test="assignmentStatus == null or assignmentStatus == ''">
-			0
-		</if>
+			now()
+			, #{chatUserId}
+			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			, #{loginId}
+			, #{loginPw}
+			, #{storeName}
+			, #{storePhone}
+			, #{address}
+			, #{latitude}
+			, #{longitude}
+			<if test="expirationDate != null and expirationDate != ''">
+				, #{expirationDate}
+			</if>
+			<if test="expirationDate == null or expirationDate == ''">
+				, '3000-01-01'
+			</if>
+			<if test="code != null and code != ''">
+				, #{code}
+			</if>
+			<if test="code == null or code == ''">
+				, NULL
+			</if>
+			<if test="name != null and name != ''">
+				, #{name}
+			</if>
+			<if test="name == null or name == ''">
+				, NULL
+			</if>
+			<if test="phone != null and phone != ''">
+				, #{phone}
+			</if>
+			<if test="phone == null or phone == ''">
+				, NULL
+			</if>
+			<if test="chStoreName != null and chStoreName != ''">
+				, #{chStoreName}
+			</if>
+			<if test="chStoreName == null or chStoreName == ''">
+				, NULL
+			</if>
+			<if test="email != null and email != ''">
+				, #{email}
+			</if>
+			<if test="email == null or email == ''">
+				, NULL
+			</if>
+			<if test="detailAddress != null and detailAddress != ''">
+				, #{detailAddress}
+			</if>
+			<if test="detailAddress == null or detailAddress == ''">
+				, NULL
+			</if>
+			<if test="chAddress != null and chAddress != ''">
+				, #{chAddress}
+			</if>
+			<if test="chAddress == null or chAddress == ''">
+				, NULL
+			</if>
+			<if test="chDetailAddress != null and chDetailAddress != ''">
+				, #{chDetailAddress}
+			</if>
+			<if test="chDetailAddress == null or chDetailAddress == ''">
+				, NULL
+			</if>
+			<if test="comment != null and comment != ''">
+				, #{comment}
+			</if>
+			<if test="comment == null or comment == ''">
+				, NULL
+			</if>
+			<if test="radius != null and radius != ''">
+				, #{radius}
+			</if>
+			<if test="radius == null or radius == ''">
+				, 1
+			</if>
+			<if test="storeDistanceSort != null and storeDistanceSort != ''">
+				, #{storeDistanceSort}
+			</if>
+			<if test="storeDistanceSort == null or storeDistanceSort == ''">
+				, NULL
+			</if>
+			<if test="assignmentStatus != null and assignmentStatus != ''">
+				, #{assignmentStatus}
+			</if>
+			<if test="assignmentStatus == null or assignmentStatus == ''">
+				, 0
+			</if>
+			<if test="assignmentLimit != null and assignmentLimit != ''">
+				, #{assignmentLimit}
+			</if>
+			<if test="assignmentLimit == null or assignmentLimit == ''">
+				, NULL
+			</if>
 		)
 	</insert>
 
@@ -323,14 +331,14 @@
 	<!-- selectStoreRiderRel -->
 	<select id="selectStoreRiderRel" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
 		SELECT
-		rel.created_datetime,
-		rel.modified_datetime,
-		rel.id,
-		rel.rider_id,
-		ri.name AS rider_name,
-		ri.phone AS rider_phone,
-		rel.store_id,
-		st.store_name
+			rel.created_datetime
+			, rel.modified_datetime
+			, rel.id
+			, rel.rider_id
+			, ri.name AS rider_name
+			, ri.phone AS rider_phone
+			, rel.store_id
+			, st.store_name
 		FROM TB_STORE_RIDER_REL AS rel
 		INNER JOIN TB_STORE AS st
 		ON rel.store_id = st.id
@@ -345,8 +353,7 @@
 		UPDATE TB_STORE_RIDER_REL
 		SET
 			modified_datetime = now()
-		WHERE
-			deleted IS NULL
+		WHERE deleted IS NULL
 			AND modified_datetime IS NULL
 			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND rider_id = #{riderId}
@@ -356,15 +363,15 @@
 	<!-- insertStoreRiderRel -->
 	<insert id="insertStoreRiderRel" parameterType="kr.co.cntt.core.model.store.StoreRiderRel">
 		INSERT INTO TB_STORE_RIDER_REL (
-			created_datetime,
-			admin_id,
-			rider_id,
-			store_id
+			created_datetime
+			, admin_id
+			, rider_id
+			, store_id
 		) VALUES (
-			now(),
-			(SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token}),
-			#{riderId},
-			#{storeId}
+			now()
+			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			, #{riderId}
+			, #{storeId}
 		)
 	</insert>
 

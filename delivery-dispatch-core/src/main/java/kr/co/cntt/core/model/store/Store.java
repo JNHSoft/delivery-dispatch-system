@@ -38,6 +38,7 @@ public class Store extends User implements Dto {
 	private String radius;
     private String storeDistanceSort;
 	private String assignmentStatus;
+	private String assignmentLimit;
     private String deleted;
 }
 
