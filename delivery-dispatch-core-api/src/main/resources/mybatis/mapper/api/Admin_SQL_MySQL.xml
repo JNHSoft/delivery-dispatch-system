@@ -43,7 +43,7 @@
 
 
 	<!-- selectAdminInfo -->
-	<select id="selectAdminInfo" parameterType="kr.co.cntt.core.model.Common" resultType="kr.co.cntt.core.model.admin.Admin">
+	<select id="selectAdminInfo" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.admin.Admin">
 		SELECT
 			created_datetime
 			, modified_datetime
@@ -98,7 +98,7 @@
 
 
 	<!-- selectRiders -->
-	<select id="selectRiders" parameterType="kr.co.cntt.core.model.Common" resultType="kr.co.cntt.core.model.rider.Rider">
+	<select id="selectRiders" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.rider.Rider">
 		SELECT
 			id
 			, name
@@ -181,7 +181,7 @@
 
 
 	<!-- selectStores -->
-	<select id="selectStores" parameterType="kr.co.cntt.core.model.Common" resultType="kr.co.cntt.core.model.store.Store">
+	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.store.Store">
 		SELECT
 			id
 			, code
@@ -328,7 +328,7 @@
 
 
 	<!-- selectStoreRiderRel -->
-	<select id="selectStoreRiderRel" parameterType="kr.co.cntt.core.model.Common" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
+	<select id="selectStoreRiderRel" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
 		SELECT
 			rel.created_datetime
 			, rel.modified_datetime

@@ -1,7 +1,7 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
-import kr.co.cntt.core.model.Common;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;

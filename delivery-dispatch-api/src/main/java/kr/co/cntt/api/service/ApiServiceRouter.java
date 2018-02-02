@@ -1,7 +1,7 @@
 package kr.co.cntt.api.service;
 
 import kr.co.cntt.api.config.IServiceRouter;
-import kr.co.cntt.core.model.Common;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;

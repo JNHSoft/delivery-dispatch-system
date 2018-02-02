@@ -3,7 +3,7 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
-import kr.co.cntt.core.model.Common;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;

@@ -1,6 +1,6 @@
 package kr.co.cntt.core.model.store;
 
-import kr.co.cntt.core.model.Common;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.Dto;
 import lombok.Getter;
 import lombok.Setter;
