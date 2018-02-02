@@ -58,8 +58,11 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Notice 삭제 */
 	NOTICE_DELETE("noticeService", "deleteNotice", Notice.class),
 
-	/** Notice 상세 보기 */
+	/** Notice 상세 보기 진행 중*/
 	NOTICE_DETAIL("noticeService", "detailNotice", Notice.class),
+
+	/** Notice 리스트 */
+	NOTICE_LIST("noticeService", "getNoticeList", Notice.class),
 
 
 //	/** 주문요청2 */
