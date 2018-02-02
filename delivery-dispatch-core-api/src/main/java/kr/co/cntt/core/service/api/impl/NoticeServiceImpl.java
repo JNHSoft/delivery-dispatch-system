@@ -13,7 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -120,34 +122,91 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         return res;
     }
 
-    // 공지사항 상세 보기 진행중...
+    // 공지사항 상세 보기
     @Override
-    public Notice detailNotice(Notice notice) throws AppTrException {
+    public Map detailNotice(Notice notice) throws AppTrException {
+        // list 선언
+        List<Notice> A_Notice = new ArrayList<>();
+        List<Notice> S_Notice = new ArrayList<>();
+
         // Role 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Notice nt = null;
         // 상점
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            // token 값 선언
+            notice.setAccessToken(notice.getToken());
+            A_Notice = noticeMapper.getAdminStoreDetailNoticeList(notice);
 
-            nt = noticeMapper.detailNotice(notice);
-            // 해당 스토어 아이디로 작성한 목록
+            S_Notice = noticeMapper.getStoreDetailNoticeList(notice);
 
         }
         // 라이더
         else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
-            nt = noticeMapper.detailNotice(notice);
-            // 해당 라이더 아이디로 작성한 목록
+            // token 값 선언
+            notice.setAccessToken(notice.getToken());
 
+            // Admin
+            A_Notice = noticeMapper.getRiderAdminDetailNoticeList(notice);
+
+            // Store
+            S_Notice = noticeMapper.getRiderStoreDetailNoticeList(notice);
 
         }
         // 관리자
         else if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
-            notice.setToRider("1");
-            notice.setToStore("1");
-            nt = noticeMapper.detailNotice(notice);
+            // token 값 선언
+            notice.setAccessToken(notice.getToken());
+            // admin
+            A_Notice = noticeMapper.getAdminDetailNoticeList(notice);
+            // store
+            S_Notice = noticeMapper.getStoreAdminDetailNoticeList(notice);
 
         }
-
-        return nt;
+        // map 으로 넘겨준다
+        Map<String, List<Notice>> map = new HashMap<>();
+        map.put("adminNotice", A_Notice);
+        map.put("storeNotice", S_Notice);
+        return map;
     }
+
+    // 공지 사항 리스트 map 으로 값을 받아온다.
+    @Override
+    public Map getNoticeList(Notice notice) throws AppTrException{
+        // list 선언
+        List<Notice> A_Notice = new ArrayList<>();
+        List<Notice> S_Notice = new ArrayList<>();
+        // Role 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            // token 값 선언
+            notice.setAccessToken(notice.getToken());
+            // Admin
+            A_Notice = noticeMapper.getStoreAdminNoticeList(notice);
+            // Store
+            S_Notice = noticeMapper.getStoreNoticeList(notice);
+
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            notice.setAccessToken(notice.getToken());
+
+            // 라이더가 보는 공지사항 리스트
+            // Admin
+            A_Notice = noticeMapper.getRiderAdminNoticeList(notice);
+
+            // Store
+            S_Notice = noticeMapper.getRiderStoreNoticeList(notice);
+
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+
+            notice.setAccessToken(notice.getToken());
+
+            A_Notice = noticeMapper.getAdminNoticeList(notice);
+        }
+        // map 으로 넘겨준다
+        Map<String, List<Notice>> map = new HashMap<>();
+        map.put("adminNotice", A_Notice);
+        map.put("storeNotice", S_Notice);
+        return map;
+    }
+
 }
