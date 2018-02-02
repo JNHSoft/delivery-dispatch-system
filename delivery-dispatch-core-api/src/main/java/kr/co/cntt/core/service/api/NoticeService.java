@@ -3,6 +3,9 @@ package kr.co.cntt.core.service.api;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.notice.Notice;
 
+import java.util.List;
+import java.util.Map;
+
 public interface NoticeService {
     /**
      * 공지사항 등록
@@ -31,5 +34,16 @@ public interface NoticeService {
      * @param notice
      * @return
      */
-    public Notice detailNotice(Notice notice) throws AppTrException;
+    public Map detailNotice(Notice notice) throws AppTrException;
+
+
+    /**
+     * 공지사항 리스트 Map 으로 type 을 던진다.
+     * @param notice
+     * @return
+     * @throws AppTrException
+     */
+    public Map getNoticeList(Notice notice) throws AppTrException;
+
+
 }

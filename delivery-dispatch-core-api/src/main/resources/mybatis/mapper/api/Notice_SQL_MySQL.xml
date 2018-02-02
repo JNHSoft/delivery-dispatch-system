@@ -4,21 +4,21 @@
     <!-- insert Notice 공지사항 등록  -->
     <insert id="insertNotice" parameterType="kr.co.cntt.core.model.notice.Notice">
         INSERT INTO TB_NOTICE (
-        created_datetime
-        , admin_id
-        , writer_id
-        , writer_type
-        , title
-        , content
-        , to_rider
-        , to_store
+            created_datetime
+            , admin_id
+            , writer_id
+            , writer_type
+            , title
+            , content
+            , to_rider
+            , to_store
         ) VALUES(
-          now()
-        , #{adminId}
-        , #{writerId}
-        , #{writerType}
-        , #{title}
-        , #{content}
+              now()
+            , #{adminId}
+            , #{writerId}
+            , #{writerType}
+            , #{title}
+            , #{content}
 
         <if test="toRider != null and toRider != ''">
           , #{toRider}
@@ -42,22 +42,22 @@
     <!--AdminID 관리자가 공지사항 작성 -->
     <select id="selectAdminId" parameterType="kr.co.cntt.core.model.notice.Notice"  resultType="kr.co.cntt.core.model.notice.Notice">
         SELECT
-        admin_id
+          admin_id
         FROM
-        TB_ADMIN_SESSION
+          TB_ADMIN_SESSION
         WHERE
-        access_token=#{token}
+          access_token=#{token}
     </select>
 
     <!--StoreID 상점 공지사항 작성 -->
     <select id="selectStoreAdminId" parameterType="kr.co.cntt.core.model.notice.Notice"  resultType="kr.co.cntt.core.model.notice.Notice">
         SELECT
-        st.admin_id
-        , se.store_id    AS writer_id
+          st.admin_id
+        , se.store_id      AS writer_id
         FROM
-        TB_STORE_SESSION AS se
+          TB_STORE_SESSION AS se
         INNER JOIN
-        TB_STORE AS st
+          TB_STORE         AS st
         ON se.store_id = st.id
 
         WHERE
@@ -69,7 +69,7 @@
     <update id="updateNotice" parameterType="kr.co.cntt.core.model.notice.Notice">
       UPDATE TB_NOTICE
       SET
-      modified_datetime = now()
+        modified_datetime = now()
         , admin_id = #{adminId}
 
         , writer_id = #{writerId}
@@ -99,33 +99,335 @@
     <update id="deleteNotice" parameterType="kr.co.cntt.core.model.notice.Notice">
         UPDATE TB_NOTICE
         SET
-        deleted = now()
-        WHERE id = #{id}
-        AND admin_id = #{adminId}
+          deleted = now()
+        WHERE
+          id = #{id}
+        AND
+          admin_id = #{adminId}
         <if test="writerType == '2'">
             AND writer_id = #{writerId}
         </if>
     </update>
 
-    <!--공지사항 상세 보기 -->
-    <select id="detailNotice" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+    <!--공지사항 상세 보기  admin store -->
+    <select id="getAdminStoreDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+            created_datetime
+            , modified_datetime
+            , id
+            , admin_id
+            , writer_id
+            , writer_type
+            , title
+            , content
+            , (SELECT name FROM TB_ADMIN WHERE id=#{writerId}) AS writerName
+            , to_rider
+            , to_store
+
+        FROM
+          TB_NOTICE
+        WHERE
+          id = #{id}
+          AND deleted IS NUll
+          AND writer_id = #{writerId}
+          AND writer_type = #{writerType}
+          AND to_store = 1
+    </select>
+
+
+    <!--공지사항 상세 보기 store -->
+    <select id="getStoreDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
         SELECT
         created_datetime
         , modified_datetime
         , id
+        , admin_id
+        , writer_id
+        , writer_type
         , title
         , content
+        , (SELECT store_name FROM TB_STORE WHERE id=#{writerId}) AS writerName
+        , to_rider
+        , to_store
 
-        from
+        FROM
         TB_NOTICE
         WHERE
         id = #{id}
+        AND deleted IS NUll
+        AND writer_id = #{writerId}
+        AND writer_type = #{writerType}
+        AND to_store = 1
+    </select>
 
-          AND admin_id = #{adminId}
-          AND writer_id = #{writerId}
-          AND writer_type = #{writerType}
+    <!--공지사항 상세보기 rider Admin-->
+    <select id="getRiderAdminDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+            created_datetime
+            , modified_datetime
+            , id
+            , admin_id
+            , writer_id
+            , writer_type
+            , title
+            , content
+            , (SELECT name FROM TB_ADMIN WHERE id=#{writerId}) AS writerName
+            , to_rider
+            , to_store
+
+        FROM
+          TB_NOTICE
+        WHERE
+          id = #{id}
+        AND deleted IS NUll
+        AND writer_id = #{writerId}
+        AND writer_type = #{writerType}
+        AND to_rider = 1
+    </select>
+
+    <!--공지사항 상세 보기 rider -->
+    <select id="getRiderStoreDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+        created_datetime
+        , modified_datetime
+        , id
+        , admin_id
+        , writer_id
+        , writer_type
+        , title
+        , content
+        , (SELECT store_name FROM TB_STORE WHERE id=#{writerId}) AS writerName
+        , to_rider
+        , to_store
+
+        FROM
+        TB_NOTICE
+        WHERE
+        id = #{id}
+        AND deleted IS NUll
+        AND writer_id = #{writerId}
+        AND writer_type = #{writerType}
+        AND to_rider = 1
+    </select>
+
+
+    <!--공지사항 상세 보기 ADMIN admin-->
+    <select id="getAdminDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+        created_datetime
+        , modified_datetime
+        , id
+        , admin_id
+        , writer_id
+        , writer_type
+        , title
+        , content
+        , (SELECT name FROM TB_ADMIN WHERE id=#{writerId}) AS writerName
+        , to_rider
+        , to_store
+
+        FROM
+        TB_NOTICE
+        WHERE
+        id = #{id}
+        AND deleted IS NUll
+        AND writer_id = #{writerId}
+        AND writer_type = #{writerType}
 
     </select>
 
+
+    <!--공지사항 상세 보기 ADMIN store-->
+    <select id="getStoreAdminDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+        created_datetime
+        , modified_datetime
+        , id
+        , admin_id
+        , writer_id
+        , writer_type
+        , title
+        , content
+        , (SELECT store_name FROM TB_STORE WHERE id=#{writerId}) AS writerName
+        , to_rider
+        , to_store
+
+        FROM
+        TB_NOTICE
+        WHERE
+        id = #{id}
+        AND deleted IS NUll
+        AND writer_id = #{writerId}
+        AND writer_type = #{writerType}
+
+    </select>
+
+
+
+    <!--라이더 공지사항 보기 Admin-->
+    <select id="getRiderAdminNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+            created_datetime
+            , modified_datetime
+            , id
+            , admin_id
+            , writer_id
+            , writer_type
+            , title
+            , to_rider
+            , to_store
+        FROM
+          TB_NOTICE
+        WHERE
+          admin_id =(
+          SELECT
+            admin_id
+          FROM
+            TB_RIDER
+          WHERE
+            id =(
+              SELECT
+                rider_id
+              FROM
+                TB_RIDER_SESSION
+              WHERE
+                access_token = #{token}))
+        AND deleted IS NUll
+        AND writer_type = 1
+        AND to_rider = 1
+    </select>
+
+
+    <!-- 라이더 공지사항 보기 Store -->
+    <select id="getRiderStoreNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+            created_datetime
+            , modified_datetime
+            , id
+            , admin_id
+            , writer_id
+            , writer_type
+            , title
+            , to_rider
+            , to_store
+        FROM
+          TB_NOTICE
+        WHERE
+          admin_id =(
+            SELECT
+              admin_id
+            FROM
+              TB_RIDER
+            WHERE
+              id =(
+                SELECT
+                  rider_id
+                FROM
+                  TB_RIDER_SESSION
+                WHERE
+                  access_token = #{token}))
+        AND deleted IS NUll
+        AND writer_type = 2
+        AND to_rider = 1
+    </select>
+
+    <!--store 공지 보기 admin-->
+    <select id="getStoreAdminNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+            created_datetime
+            , modified_datetime
+            , id
+            , admin_id
+            , writer_id
+            , writer_type
+            , title
+            , to_rider
+            , to_store
+        FROM
+          TB_NOTICE
+        WHERE
+          admin_id =(
+            SELECT
+              admin_id
+            FROM
+              TB_STORE
+            WHERE
+              id =(
+                SELECT
+                  store_id
+                FROM
+                  TB_STORE_SESSION
+                WHERE
+                  access_token = #{token}))
+        AND deleted IS NUll
+        AND writer_type = 1
+        AND to_store = 1
+    </select>
+
+
+    <!--store 공지 보기 store-->
+    <select id="getStoreNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+            created_datetime
+            , modified_datetime
+            , id
+            , admin_id
+            , writer_id
+            , writer_type
+            , title
+            , to_rider
+            , to_store
+        FROM
+          TB_NOTICE
+        WHERE
+          admin_id =(
+            SELECT
+              admin_id
+            FROM
+              TB_STORE
+            WHERE
+              id =(
+                SELECT
+                  store_id
+                FROM
+                  TB_STORE_SESSION
+                WHERE
+                  access_token = #{token}))
+        AND deleted IS NUll
+        AND writer_type = 2
+        AND to_store = 1
+    </select>
+
+
+    <!--admin 공지 보기 -->
+    <select id="getAdminNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+            created_datetime
+            , modified_datetime
+            , id
+            , admin_id
+            , writer_id
+            , writer_type
+            , title
+            , to_rider
+            , to_store
+        FROM
+          TB_NOTICE
+        WHERE
+          admin_id =(
+            SELECT
+              id
+            FROM
+              TB_ADMIN
+          WHERE
+            id =(
+              SELECT
+                admin_id
+              FROM
+                TB_ADMIN_SESSION
+              WHERE
+                access_token = #{token}))
+          AND deleted IS NUll
+    </select>
 
 </mapper>
