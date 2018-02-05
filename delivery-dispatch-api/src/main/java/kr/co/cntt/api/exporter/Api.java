@@ -45,6 +45,16 @@ public interface Api {
     /** Rider 출/퇴근   */
     String RIDER_UPDATE_WORKING = "/updateWorkingRider.json";
 
+    /** Rider 위치 전송   */
+    String RIDER_UPDATE_LOCATION = "/updateRiderLocation.json";
+
+    /** Rider 자기 위치 정보 조회   */
+    String RIDER_LOCATION_INFO = "/getRiderLocation.json";
+
+    /** Rider 들 위치 정보 조회   */
+    String RIDERS_LOCATION_INFO = "/getRidersLocation.json";
+
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */
