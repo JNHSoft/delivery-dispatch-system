@@ -202,8 +202,9 @@
 		<if test="working != null and working != ''">
 			, working=#{working}
 		</if>
+
 		WHERE
-		id = (
+			id = (
 		SELECT
 			rider_id
 		FROM
@@ -214,7 +215,100 @@
 
 	</update>
 
+	<!--rider 위치 정보 전송 -->
+	<update id="updateRiderLocation" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_RIDER
+		SET
+		modified_datetime = now()
 
+		<if test="latitude != null and latitude != ''">
+			, latitude = #{latitude}
+		</if>
+
+		<if test="longitude != null  and longitude != ''">
+			, longitude = #{longitude}
+		</if>
+
+		, location_updated = now()
+		WHERE
+			id = (
+				SELECT
+					rider_id
+				FROM
+					TB_RIDER_SESSION
+				WHERE
+					access_token = #{accessToken})
+
+	</update>
+
+	<!--rider 자기 위치 정보 조회 -->
+	<select id="getRiderLocation" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.rider.Rider">
+		SELECT
+		  id
+		, name
+		, latitude
+		, longitude
+		, location_updated
+		FROM TB_RIDER
+		WHERE 1=1
+		<choose>
+			<when test="id != null and id != ''">
+			AND	id = #{id}
+			</when>
+
+			<otherwise>
+			AND	id = (
+					SELECT
+						rider_id
+					FROM
+						TB_RIDER_SESSION
+					WHERE
+						access_token = #{accessToken})
+			</otherwise>
+		</choose>
+	</select>
+
+	<!--rider 들 위치 정보 조회 admin -->
+	<select id="getAdminRidersLocation" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.rider.Rider">
+		SELECT
+		admin_id
+		, name
+		, latitude
+		, longitude
+		, location_updated
+		FROM TB_RIDER
+		WHERE 1=1
+		AND	admin_id = (SELECT
+					admin_id
+				  FROM
+					TB_ADMIN_SESSION
+				  WHERE
+					access_token = #{accessToken})
+	</select>
+
+	<!--rider 들 위치 정보 조회 store -->
+	<select id="getStoreRidersLocation" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.rider.Rider">
+		SELECT
+			TSR.store_id
+			, name
+			, latitude
+			, longitude
+			, location_updated
+		FROM
+			TB_RIDER TR
+		join
+			TB_STORE_RIDER_REL TSR
+		on TR.id = TSR.rider_id
+		WHERE
+			TSR.modified_datetime IS NULL
+		AND	TSR.store_id = (
+			SELECT
+				store_id
+			FROM
+				TB_STORE_SESSION
+			WHERE
+				access_token = #{accessToken})
+	</select>
 
 </mapper>
  
