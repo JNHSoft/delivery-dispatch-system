@@ -3,8 +3,6 @@ package kr.co.cntt.core.mapper;
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.store.StoreRiderRel;
 
 import java.util.List;
 
@@ -68,6 +66,32 @@ public interface RiderMapper {
      * @return
      */
     public int updateWorkingRider(Rider rider);
+
+
+    /**
+     * Rider 위치 정보 전송
+     * @param rider
+     * @return
+     */
+    public int updateRiderLocation(Rider rider);
+
+    /**
+     * Rider 위치 정보 조회
+     * @param rider
+     * @return
+     */
+    public List<Rider> getRiderLocation(Rider rider);
+
+    /**
+     * Rider들 위치 정보 조회 admin , store 나눔
+     * @param rider
+     * @return
+     */
+    // riders admin
+    public List<Rider> getAdminRidersLocation(Rider rider);
+
+    // riders store
+    public List<Rider> getStoreRidersLocation(Rider rider);
 
 
 
