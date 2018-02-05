@@ -4,10 +4,9 @@ package kr.co.cntt.core.service.api;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.store.StoreRiderRel;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RiderService {
     /**
@@ -59,5 +58,28 @@ public interface RiderService {
      * @return
      */
     public int updateWorkingRider(Rider rider) throws AppTrException ;
+
+    /**
+     * Rider 위치 정보 전송
+     * @param rider
+     * @return
+     * @throws AppTrException
+     */
+    public int updateRiderLocation(Rider rider) throws AppTrException ;
+
+    /**
+     * Rider 위치 정보 조회
+     * @param rider
+     * @return
+     */
+    public List<Rider> getRiderLocation(Rider rider) throws AppTrException ;
+
+    /**
+     * Rider 들 정보 조회
+     * @param rider
+     * @return
+     */
+    public Map getRidersLocation(Rider rider) throws AppTrException ;
+
 
 }
