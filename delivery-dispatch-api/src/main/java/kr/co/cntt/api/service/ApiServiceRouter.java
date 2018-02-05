@@ -48,6 +48,17 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 출/퇴근 */
 	RIDER_UPDATE_WORKING("riderService", "updateWorkingRider", Rider.class),
 
+	/** Rider 위치 전송 */
+	RIDER_UPDATE_RIDER_LOCATION("riderService", "updateRiderLocation", Rider.class),
+
+	/** Rider 위치 조회 */
+	RIDER_LOCATION_INFO("riderService", "getRiderLocation", Rider.class),
+
+	/** Rider 들 위치 조회 */
+	RIDERS_LOCATION_INFO("riderService", "getRidersLocation", Rider.class),
+
+
+
 	// ############################################################################################ //
 
 	/** Store 정보조회 */
