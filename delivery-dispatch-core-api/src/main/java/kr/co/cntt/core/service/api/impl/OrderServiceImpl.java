@@ -4,6 +4,7 @@ import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -11,6 +12,8 @@ import kr.co.cntt.core.service.api.OrderService;
 import kr.co.cntt.core.util.Geocoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -93,6 +96,34 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             return 0;
         }
+    }
+
+    /**
+     * <p> getOrders
+     *
+     * @param common
+     * @return
+     * @throws AppTrException
+     */
+    @Override
+    public List<Order> getOrders(Common common) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+            common.setRole("ROLE_ADMIN");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            common.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            common.setRole("ROLE_RIDER");
+        }
+
+        List<Order> S_Order = orderMapper.selectOrders(common);
+
+        if (S_Order.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Order;
     }
 
 }

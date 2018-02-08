@@ -1,7 +1,10 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
+
+import java.util.List;
 
 /**
  * <p> kr.co.cntt.core.mapper </p>
@@ -21,5 +24,13 @@ public interface OrderMapper {
      * @return Insert 결과값
      */
     public int insertOrder(Order order);
+
+    /**
+     * <p> Orders 목록 조회
+     *
+     * @param common
+     * @return
+     */
+    public List<Order> selectOrders(Common common);
 
 }

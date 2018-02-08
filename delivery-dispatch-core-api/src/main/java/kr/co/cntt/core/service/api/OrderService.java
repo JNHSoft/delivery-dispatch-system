@@ -1,7 +1,10 @@
 package kr.co.cntt.core.service.api;
 
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
+
+import java.util.List;
 
 public interface OrderService {
 
@@ -13,5 +16,14 @@ public interface OrderService {
      * @throws AppTrException
      */
     public int postOrder(Order order) throws AppTrException;
+
+    /**
+     * <p> getOrders
+     *
+     * @param common
+     * @return
+     * @throws AppTrException
+     */
+    public List<Order> getOrders(Common common) throws AppTrException;
 
 }
