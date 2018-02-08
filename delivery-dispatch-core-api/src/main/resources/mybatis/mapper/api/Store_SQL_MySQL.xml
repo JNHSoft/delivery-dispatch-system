@@ -59,6 +59,11 @@
 			, latitude
 			, longitude
 			, comment
+			, store_status
+			, store_distance_sort
+			, radius
+			, assignment_status
+			, assignment_limit
 			, deleted
         FROM TB_STORE
 		WHERE 1=1
