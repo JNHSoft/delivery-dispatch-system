@@ -74,6 +74,12 @@ public interface Api {
     /** Order 등록 */
     String ORDER_POST = "/postOrder.json";
 
+    /** Order 목록 조회 */
+    String ORDERS_LIST = "/getOrders.json";
+
+    /** Order 정보 조회 */
+    String ORDER_INFO = "/getOrderInfo.json";
+
     // ############################################################################################ //
 
 

@@ -1,14 +1,22 @@
 package kr.co.cntt.core.service.api.impl;
 
+import kr.co.cntt.core.enums.ErrorCodeEnum;
+import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.OrderMapper;
+import kr.co.cntt.core.mapper.StoreMapper;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.OrderService;
 import kr.co.cntt.core.util.Geocoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -21,15 +29,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     private OrderMapper orderMapper;
 
     /**
+     * Store DAO
+     */
+    private StoreMapper storeMapper;
+
+    /**
      * @param orderMapper ORDER D A O
+     * @param storeMapper STORE D A O
      */
     @Autowired
-    public OrderServiceImpl(OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderMapper orderMapper, StoreMapper storeMapper) {
         this.orderMapper = orderMapper;
+        this.storeMapper = storeMapper;
     }
 
     @Override
-    public int postOrder(Order order) {
+    public int postOrder(Order order) throws AppTrException {
         Geocoder geocoder = new Geocoder();
 
         try {
@@ -40,7 +55,89 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             e.printStackTrace();
         }
 
-        return orderMapper.insertOrder(order);
+        int postOrder = orderMapper.insertOrder(order);
+
+        if (postOrder == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        } else {
+            int assignOrder = this.autoAssignOrder(order);
+
+            if (assignOrder == 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            }
+        }
+
+        return postOrder;
+    }
+
+    /**
+     * <p> autoAssignOrder
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int autoAssignOrder(Order order) throws AppTrException {
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        List<Store> S_Store = storeMapper.getStoreInfo(storeDTO);
+
+        if (S_Store.get(0).getAssignmentStatus().equals("1")) {
+//             TODO. 자동 배정
+            log.info(">>> 자동배정");
+
+            return 1;
+        } else if (S_Store.get(0).getAssignmentStatus().equals("0")) {
+            log.info(">>> 수동배정");
+
+            return 1;
+        } else {
+            log.info(">>> error");
+
+            return 0;
+        }
+    }
+
+    @Override
+    public List<Order> getOrders(Common common) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+            common.setRole("ROLE_ADMIN");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            common.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            common.setRole("ROLE_RIDER");
+        }
+
+        List<Order> S_Order = orderMapper.selectOrders(common);
+
+        if (S_Order.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Order;
+    }
+
+    @Override
+    public List<Order> getOrderInfo(Common common) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+            common.setRole("ROLE_ADMIN");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            common.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            common.setRole("ROLE_RIDER");
+        }
+
+        List<Order> S_Order = orderMapper.selectOrderInfo(common);
+
+        if (S_Order.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Order;
     }
 
 }

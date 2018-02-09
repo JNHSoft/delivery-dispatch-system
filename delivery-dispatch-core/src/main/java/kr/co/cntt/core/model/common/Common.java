@@ -17,5 +17,11 @@ public class Common implements Dto {
     private String id;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String token;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String role;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String currentDatetime;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String days;
 
 }
