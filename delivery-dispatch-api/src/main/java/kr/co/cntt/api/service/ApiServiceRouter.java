@@ -22,11 +22,17 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 기사 등록 */
 	ADMIN_RIDER_POST("adminService", "postRider", Rider.class),
 
+	/** [Admin] 기사 삭제 */
+	ADMIN_RIDER_DELETE("adminService", "deleteRider", Rider.class),
+
 	/** [Admin] 상점 목록 조회 */
 	ADMIN_STORES_LIST("adminService", "getStores", Common.class),
 
 	/** [Admin] 상점 등록 */
 	ADMIN_STORE_POST("adminService", "postStore", Store.class),
+
+	/** [Admin] 상점 삭제 */
+	ADMIN_STORE_DELETE("adminService", "deleteStore", Store.class),
 
 	/** [Admin] 상점 기사 전체 소속 목록 */
 	ADMIN_STORE_RIDER_REL("adminService", "getStoreRiderRel", Common.class),
