@@ -97,6 +97,15 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
             return 0;
         }
     }
+    // 기사 삭제
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteRider(Rider rider){
+
+        adminMapper.deleteRider(rider);
+
+        return adminMapper.deleteRider(rider);
+    }
 
     @Secured("ROLE_ADMIN")
     @Override
@@ -151,6 +160,17 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
             return 0;
         }
     }
+
+    // 상점 삭제
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteStore(Store store){
+
+        adminMapper.deleteStore(store);
+
+        return adminMapper.deleteStore(store);
+    }
+
 
     @Secured("ROLE_ADMIN")
     @Override
