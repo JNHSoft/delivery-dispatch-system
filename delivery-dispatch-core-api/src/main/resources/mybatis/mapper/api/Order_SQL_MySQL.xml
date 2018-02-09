@@ -88,13 +88,13 @@
 					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})	)
 					</when>
 				<otherwise>
-					id IS NULL
+					AND id IS NULL
 				</otherwise>
 			</choose>
 		ORDER BY created_datetime DESC
 	</select>
 
-	
+
 	<!-- selectOrderInfo -->
 	<select id="selectOrderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.order.Order">
 		SELECT
@@ -133,7 +133,7 @@
 					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})	)
 				</when>
 				<otherwise>
-					id IS NULL
+					AND id IS NULL
 				</otherwise>
 			</choose>
 	</select>
