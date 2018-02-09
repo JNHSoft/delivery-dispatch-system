@@ -90,6 +90,14 @@ public interface AdminMapper {
     public int insertRider(Rider rider);
 
     /**
+     * 기가 삭제
+     * @param rider
+     * @return
+     */
+    public int deleteRider(Rider rider);
+
+
+    /**
      * <p> 상점 목록 조회
      *
      * @param common
@@ -104,6 +112,13 @@ public interface AdminMapper {
      * @return
      */
     public int insertStore(Store store);
+
+    /**
+     * 상점 삭제
+     * @param store
+     * @return
+     */
+    public int deleteStore(Store store);
 
     /**
      * <p> 상점 기사 전체 소속 목록
