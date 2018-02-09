@@ -50,11 +50,9 @@
 		SELECT
 			id
 			, created_datetime
-			, modified_datetime
+			, rider_id
 			, address
 		    , detail_address
-			, latitude
-			, longitude
 			, status
 			, menu_name
 			, menu_price
@@ -62,14 +60,11 @@
 			, to_be_paid
 			, paid
 			, message
-			, phone
 			, reservation
 			, reservation_datetime
 			, assigned_datetime
 			, picked_up_datetime
 			, completed_datetime
-			, required_gender
-			, device_os
 		FROM TB_ORDER
 		WHERE
 			<choose>
@@ -97,6 +92,50 @@
 				</otherwise>
 			</choose>
 		ORDER BY created_datetime DESC
+	</select>
+
+	
+	<!-- selectOrderInfo -->
+	<select id="selectOrderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.order.Order">
+		SELECT
+		id
+		, created_datetime
+		, rider_id
+		, address
+		, detail_address
+		, latitude
+		, longitude
+		, status
+		, menu_name
+		, menu_price
+		, cooking_time
+		, to_be_paid
+		, paid
+		, message
+		, phone
+		, reservation
+		, reservation_datetime
+		, assigned_datetime
+		, picked_up_datetime
+		, completed_datetime
+		, required_gender
+		FROM TB_ORDER
+		WHERE id = #{id}
+			<choose>
+				<when test="role != null and role == 'ROLE_ADMIN'">
+					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+				</when>
+				<when test="role != null and role == 'ROLE_STORE'">
+					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})	)
+					AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+				</when>
+				<when test="role != null and role == 'ROLE_RIDER'">
+					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})	)
+				</when>
+				<otherwise>
+					id IS NULL
+				</otherwise>
+			</choose>
 	</select>
 
 </mapper>

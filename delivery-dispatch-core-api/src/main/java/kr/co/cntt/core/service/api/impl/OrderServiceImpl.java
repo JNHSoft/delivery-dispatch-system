@@ -98,13 +98,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
     }
 
-    /**
-     * <p> getOrders
-     *
-     * @param common
-     * @return
-     * @throws AppTrException
-     */
     @Override
     public List<Order> getOrders(Common common) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -118,6 +111,27 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         List<Order> S_Order = orderMapper.selectOrders(common);
+
+        if (S_Order.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Order;
+    }
+
+    @Override
+    public List<Order> getOrderInfo(Common common) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+            common.setRole("ROLE_ADMIN");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            common.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            common.setRole("ROLE_RIDER");
+        }
+
+        List<Order> S_Order = orderMapper.selectOrderInfo(common);
 
         if (S_Order.size() == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());

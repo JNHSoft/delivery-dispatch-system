@@ -26,4 +26,13 @@ public interface OrderService {
      */
     public List<Order> getOrders(Common common) throws AppTrException;
 
+    /**
+     * <p> getOrderInfo
+     *
+     * @param common
+     * @return
+     * @throws AppTrException
+     */
+    public List<Order> getOrderInfo(Common common) throws AppTrException;
+
 }

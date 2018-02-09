@@ -33,4 +33,12 @@ public interface OrderMapper {
      */
     public List<Order> selectOrders(Common common);
 
+    /**
+     * <p> Order 정보 조회
+     *
+     * @param common
+     * @return
+     */
+    public List<Order> selectOrderInfo(Common common);
+
 }

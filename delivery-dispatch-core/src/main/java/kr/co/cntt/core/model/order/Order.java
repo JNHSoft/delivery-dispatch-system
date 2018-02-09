@@ -1,5 +1,6 @@
 package kr.co.cntt.core.model.order;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.Dto;
 import lombok.Getter;
@@ -10,7 +11,9 @@ import lombok.Setter;
 public class Order extends Common implements Dto {
     private static final long serialVersionUID = -3663510383729036464L;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String adminId;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String storeId;
     private String riderId;
     private String address;

@@ -75,6 +75,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Order 목록 조회 */
 	ORDERS_LIST("orderService", "getOrders", Order.class),
 
+	/** Order 정보 조회 */
+	ORDER_INFO("orderService", "getOrderInfo", Order.class),
+
 	// ############################################################################################ //
 
 	/** Notice 등록 */
