@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.OrderMapper;
+import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
@@ -12,10 +13,12 @@ import kr.co.cntt.core.service.api.OrderService;
 import kr.co.cntt.core.util.Geocoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -34,13 +37,20 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     private StoreMapper storeMapper;
 
     /**
+     * Rider DAO
+     */
+    private RiderMapper riderMapper;
+
+    /**
      * @param orderMapper ORDER D A O
      * @param storeMapper STORE D A O
+     * @param riderMapper Rider D A O
      */
     @Autowired
-    public OrderServiceImpl(OrderMapper orderMapper, StoreMapper storeMapper) {
+    public OrderServiceImpl(OrderMapper orderMapper, StoreMapper storeMapper, RiderMapper riderMapper) {
         this.orderMapper = orderMapper;
         this.storeMapper = storeMapper;
+        this.riderMapper = riderMapper;
     }
 
     @Override
@@ -108,6 +118,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             common.setRole("ROLE_STORE");
         } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             common.setRole("ROLE_RIDER");
+        } else {
+            common.setRole("ROLE_USER");
         }
 
         List<Order> S_Order = orderMapper.selectOrders(common);
@@ -129,6 +141,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             common.setRole("ROLE_STORE");
         } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             common.setRole("ROLE_RIDER");
+        } else {
+            common.setRole("ROLE_USER");
         }
 
         List<Order> S_Order = orderMapper.selectOrderInfo(common);
@@ -140,4 +154,93 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return S_Order;
     }
 
+    /**
+     * <p> putOrder
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrder(Order order) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+            order.setRole("ROLE_ADMIN");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            order.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            order.setRole("ROLE_RIDER");
+        } else {
+            order.setRole("ROLE_USER");
+        }
+
+        int S_Order = orderMapper.updateOrder(order);
+
+        if (S_Order == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Order;
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Override
+    public int putOrderInfo(Order order) throws AppTrException {
+        Geocoder geocoder = new Geocoder();
+
+        try {
+            Map<String, String> geo = geocoder.getLatLng(order.getAddress());
+            order.setLatitude(geo.get("lat"));
+            order.setLongitude(geo.get("lng"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        order.setStatus(null);
+        order.setRiderId(null);
+        order.setAssignedDatetime(null);
+        order.setPickedUpDatetime(null);
+        order.setCompletedDatetime(null);
+
+        return this.putOrder(order);
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Override
+    public int putOrderAssigned(Order order) throws AppTrException {
+        Order orderAssigned = new Order();
+
+        orderAssigned.setToken(order.getToken());
+        orderAssigned.setId(order.getId());
+        orderAssigned.setRiderId(order.getRiderId());
+        orderAssigned.setStatus("1");
+        orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+
+        return this.putOrder(orderAssigned);
+    }
+
+    @Secured({"ROLE_RIDER"})
+    @Override
+    public int putOrderPickedUp(Order order) throws AppTrException {
+        Order orderPickedUp = new Order();
+
+        orderPickedUp.setToken(order.getToken());
+        orderPickedUp.setId(order.getId());
+        orderPickedUp.setStatus("2");
+        orderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
+
+        return this.putOrder(orderPickedUp);
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_STORE", "ROLE_RIDER"})
+    @Override
+    public int putOrderCompleted(Order order) throws AppTrException {
+        Order orderCompleted = new Order();
+
+        orderCompleted.setToken(order.getToken());
+        orderCompleted.setId(order.getId());
+        orderCompleted.setStatus("3");
+        orderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
+
+        return this.putOrder(orderCompleted);
+    }
 }

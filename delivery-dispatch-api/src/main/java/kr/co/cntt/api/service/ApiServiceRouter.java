@@ -84,6 +84,18 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Order 정보 조회 */
 	ORDER_INFO("orderService", "getOrderInfo", Order.class),
 
+	/** Order 정보 수정 */
+	ORDER_UPDATE_INFO("orderService", "putOrderInfo", Order.class),
+
+	/** Order 강제 배정 */
+	ORDER_ASSIGNED("orderService", "putOrderAssigned", Order.class),
+
+	/** Order 픽업 */
+	ORDER_PICKEDUP("orderService", "putOrderPickedUp", Order.class),
+
+	/** Order 완료 */
+	ORDER_COMPLETED("orderService", "putOrderCompleted", Order.class),
+
 	// ############################################################################################ //
 
 	/** Notice 등록 */

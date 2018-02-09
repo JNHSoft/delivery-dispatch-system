@@ -35,4 +35,39 @@ public interface OrderService {
      */
     public List<Order> getOrderInfo(Common common) throws AppTrException;
 
+    /**
+     * <p> putOrderInfo
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderInfo(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderAssigned
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderAssigned(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderPickedUp
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderPickedUp(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderCompleted
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderCompleted(Order order) throws AppTrException;
 }

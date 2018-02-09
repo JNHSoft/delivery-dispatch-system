@@ -41,4 +41,12 @@ public interface OrderMapper {
      */
     public List<Order> selectOrderInfo(Common common);
 
+    /**
+     * <p> Order 수정
+     *
+     * @param order
+     * @return
+     */
+    public int updateOrder(Order order);
+
 }

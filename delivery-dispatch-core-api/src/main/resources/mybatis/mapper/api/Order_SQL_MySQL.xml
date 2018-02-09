@@ -138,5 +138,90 @@
 			</choose>
 	</select>
 
+
+	<!-- updateOrder -->
+	<update id="updateOrder" parameterType="kr.co.cntt.core.model.order.Order">
+		UPDATE TB_ORDER
+		SET
+			modified_datetime = now()
+			<if test="riderId != null and riderId != ''">
+				, rider_id = #{riderId}
+			</if>
+			<if test="address != null and address != ''">
+				, address = #{address}
+			</if>
+			<if test="detailAddress != null and detailAddress != ''">
+				, detail_address = #{detailAddress}
+			</if>
+			<if test="latitude != null and latitude != ''">
+				, latitude = #{latitude}
+			</if>
+			<if test="longitude != null and longitude != ''">
+				, longitude = #{longitude}
+			</if>
+			<if test="status != null and status != ''">
+				, status = #{status}
+			</if>
+			<if test="menuName != null and menuName != ''">
+				, menu_name = #{menuName}
+			</if>
+			<if test="menuPrice != null and menuPrice != ''">
+				, menu_price = #{menuPrice}
+			</if>
+			<if test="cookingTime != null and cookingTime != ''">
+				, cooking_time = #{cookingTime}
+			</if>
+			<if test="toBePaid != null and toBePaid != ''">
+				, to_be_paid = #{toBePaid}
+			</if>
+			<if test="paid != null and paid != ''">
+				, paid = #{paid}
+			</if>
+			<if test="message != null and message != ''">
+				, message = #{message}
+			</if>
+			<if test="phone != null and phone != ''">
+				, phone = #{phone}
+			</if>
+			<if test="reservation != null and reservation != ''">
+				, reservation = #{reservation}
+			</if>
+			<if test="reservationDatetime != null and reservationDatetime != ''">
+				, reservation_datetime = #{reservationDatetime}
+			</if>
+			<if test="assignedDatetime != null and assignedDatetime != ''">
+				, assigned_datetime = now()
+			</if>
+			<if test="pickedUpDatetime != null and pickedUpDatetime != ''">
+				, picked_up_datetime = #{pickedUpDatetime}
+			</if>
+			<if test="completedDatetime != null and completedDatetime != ''">
+				, completed_datetime = #{completedDatetime}
+			</if>
+			<if test="requiredGender != null and requiredGender != ''">
+				, required_gender = #{requiredGender}
+			</if>
+			<if test="deviceOs != null and deviceOs != ''">
+				, device_os = #{deviceOs}
+			</if>
+		WHERE id = #{id}
+			<choose>
+				<when test="role != null and role == 'ROLE_ADMIN'">
+					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+				</when>
+				<when test="role != null and role == 'ROLE_STORE'">
+					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+					AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+				</when>
+				<when test="role != null and role == 'ROLE_RIDER'">
+					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+					AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+				</when>
+				<otherwise>
+					AND id IS NULL
+				</otherwise>
+			</choose>
+	</update>
+
 </mapper>
  

@@ -80,6 +80,18 @@ public interface Api {
     /** Order 정보 조회 */
     String ORDER_INFO = "/getOrderInfo.json";
 
+    /** Order 정보 수정 */
+    String ORDER_UPDATE_INFO = "/putOrderInfo.json";
+
+    /** Order 강제 배정 */
+    String ORDER_ASSIGNED = "/putOrderAssigned.json";
+
+    /** Order 픽업 */
+    String ORDER_PICKEDUP = "/putOrderPickedUp.json";
+
+    /** Order 완료 */
+    String ORDER_COMPLETED = "/putOrderCompleted.json";
+
     // ############################################################################################ //
 
 
