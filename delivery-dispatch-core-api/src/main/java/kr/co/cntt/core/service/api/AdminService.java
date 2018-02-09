@@ -60,6 +60,14 @@ public interface AdminService {
     public int postRider(Rider rider);
 
     /**
+     * Delete Rider
+     * @param rider
+     * @return
+     */
+    public int deleteRider(Rider rider);
+
+
+    /**
      * <p> getStores
      *
      * @param common
@@ -75,6 +83,13 @@ public interface AdminService {
      * @return
      */
     public int postStore(Store store);
+
+    /**
+     *  Delete Store
+     * @param store
+     * @return
+     */
+    public int deleteStore(Store store);
 
 
     /**
