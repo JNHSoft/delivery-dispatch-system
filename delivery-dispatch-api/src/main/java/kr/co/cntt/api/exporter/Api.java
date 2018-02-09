@@ -19,11 +19,17 @@ public interface Api {
     /** [Admin] 기사 등록 */
     String ADMIN_RIDER_POST = "/postRider.json";
 
+    /** [Admin] 기사 삭제 */
+    String ADMIN_RIDER_DELETE = "/deleteRider.json";
+
     /** [Admin] 상점 목록 조회 */
     String ADMIN_STORES_LIST = "/getStores.json";
 
     /** [Admin] 상점 등록 */
     String ADMIN_STORE_POST = "/postStore.json";
+
+    /** [Admin] 상점 삭제 */
+    String ADMIN_STORE_DELETE = "/deleteStore.json";
 
     /** [Admin] 상점 기사 전체 소속 목록 */
     String ADMIN_STORE_RIDER_REL = "/getStoreRiderRel.json";
