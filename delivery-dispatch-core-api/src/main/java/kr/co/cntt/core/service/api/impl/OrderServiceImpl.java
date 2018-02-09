@@ -7,6 +7,8 @@ import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.order.OrderCheckAssignment;
+import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.OrderService;
@@ -93,7 +95,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         List<Store> S_Store = storeMapper.getStoreInfo(storeDTO);
 
         if (S_Store.get(0).getAssignmentStatus().equals("1")) {
-//             TODO. 자동 배정
+            // TODO. 자동 배정
             log.info(">>> 자동배정");
 
             return 1;
@@ -243,4 +245,45 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         return this.putOrder(orderCompleted);
     }
+
+    @Override
+    public int putOrderCanceled(Order order) throws AppTrException {
+        // TODO. 주문 취소
+        return 0;
+    }
+
+    @Secured({"ROLE_RIDER"})
+    @Override
+    public int postOrderConfirm(Order order) throws AppTrException {
+        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(order);
+
+        if (S_OrderConfirm.size() != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return orderMapper.insertOrderConfirm(order);
+    }
+
+    @Secured({"ROLE_RIDER"})
+    @Override
+    public int postOrderDeny(Order order) throws AppTrException {
+
+        Rider currentRider = new Rider();
+        currentRider.setAccessToken(order.getToken());
+
+        List<Rider> S_Rider = riderMapper.getRiderInfo(currentRider);
+
+        List<OrderCheckAssignment> S_OrderDeny = orderMapper.selectOrderDeny(order);
+
+        if (S_OrderDeny.size() != 0 && S_Rider.size() != 0) {
+            for (OrderCheckAssignment orderDeny : S_OrderDeny) {
+                if (orderDeny.getRiderId().equals(S_Rider.get(0).getId())) {
+                    throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+                }
+            }
+        }
+
+        return orderMapper.insertOrderDeny(order);
+    }
+
 }

@@ -70,4 +70,32 @@ public interface OrderService {
      * @throws AppTrException
      */
     public int putOrderCompleted(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderCanceled
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderCanceled(Order order) throws AppTrException;
+
+    /**
+     * <p> postOrderConfirm
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int postOrderConfirm(Order order) throws AppTrException;
+
+    /**
+     * <p> postOrderDeny
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int postOrderDeny(Order order) throws AppTrException;
+
 }

@@ -96,6 +96,15 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Order 완료 */
 	ORDER_COMPLETED("orderService", "putOrderCompleted", Order.class),
 
+	/** Order 취소 */
+	ORDER_CANCELED("orderService", "putOrderCanceled", Order.class),
+
+	/** Order 배정 확인 */
+	ORDER_CONFIRM_ASSIGNMENT("orderService", "postOrderConfirm", Order.class),
+
+	/** Order 배정 거부 */
+	ORDER_DENY_ASSIGNMENT("orderService", "postOrderDeny", Order.class),
+
 	// ############################################################################################ //
 
 	/** Notice 등록 */

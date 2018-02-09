@@ -1,8 +1,8 @@
 package kr.co.cntt.core.model.order;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.Dto;
+import kr.co.cntt.core.model.common.Common;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,5 +35,5 @@ public class Order extends Common implements Dto {
     private String completedDatetime;
     private String requiredGender;
     private String deviceOs;
-    
+
 }
