@@ -179,6 +179,16 @@
 		)
 	</insert>
 
+	<!--기사 삭제 -->
+	<update id="deleteRider" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_RIDER
+		SET
+			deleted = now()
+		WHERE
+			id = #{id}
+		AND
+			admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	</update>
 
 	<!-- selectStores -->
 	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.store.Store">
@@ -326,6 +336,16 @@
 		)
 	</insert>
 
+	<!--상점 삭제 -->
+	<update id="deleteStore" parameterType="kr.co.cntt.core.model.store.Store">
+		UPDATE TB_STORE
+		SET
+			deleted = now()
+		WHERE
+			id = #{id}
+		AND
+		admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	</update>
 
 	<!-- selectStoreRiderRel -->
 	<select id="selectStoreRiderRel" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
