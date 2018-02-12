@@ -246,6 +246,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return this.putOrder(orderCompleted);
     }
 
+
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
     public int putOrderCanceled(Order order) throws AppTrException {
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
