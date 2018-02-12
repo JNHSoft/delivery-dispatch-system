@@ -266,6 +266,26 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return this.putOrder(orderCanceled);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_STORE", "ROLE_RIDER"})
+    @Override
+    public int putOrderAssignCanceled(Order order) throws AppTrException {
+        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+        if (selectOrderIsApprovalCompleted != 0 || selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        Order orderAssignCanceled = new Order();
+        orderAssignCanceled.setToken(order.getToken());
+        orderAssignCanceled.setId(order.getId());
+        orderAssignCanceled.setStatus("5");
+        orderAssignCanceled.setRiderId(null);
+        orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
+
+        return this.putOrder(orderAssignCanceled);
+    }
+
     @Secured({"ROLE_RIDER"})
     @Override
     public int postOrderConfirm(Order order) throws AppTrException {

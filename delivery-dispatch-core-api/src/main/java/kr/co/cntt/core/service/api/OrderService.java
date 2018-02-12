@@ -81,6 +81,15 @@ public interface OrderService {
     public int putOrderCanceled(Order order) throws AppTrException;
 
     /**
+     * <p> putOrderAssignCanceled
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderAssignCanceled(Order order) throws AppTrException;
+
+    /**
      * <p> postOrderConfirm
      *
      * @param order

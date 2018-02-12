@@ -144,7 +144,10 @@
 		UPDATE TB_ORDER
 		SET
 			modified_datetime = now()
-			<if test="riderId != null and riderId != ''">
+			<if test="(riderId != null and riderId != '') and status != 5">
+				, rider_id = #{riderId}
+			</if>
+			<if test="(riderId == null or riderId == '') and status == 5">
 				, rider_id = #{riderId}
 			</if>
 			<if test="address != null and address != ''">

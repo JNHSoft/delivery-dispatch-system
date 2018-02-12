@@ -95,6 +95,9 @@ public interface Api {
     /** Order 취소 */
     String ORDER_CANCELED = "/putOrderCanceled.json";
 
+    /** Order 배정 취소 */
+    String ORDER_ASSIGN_CANCELED = "/putOrderAssignCanceled.json";
+
     /** Order 배정 확인 */
     String ORDER_CONFIRM_ASSIGNMENT = "/postOrderConfirm.json";
 
