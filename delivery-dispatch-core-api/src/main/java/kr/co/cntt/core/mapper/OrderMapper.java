@@ -51,6 +51,22 @@ public interface OrderMapper {
     public int updateOrder(Order order);
 
     /**
+     * <p> 카드 결제 승인 완료 체크
+     *
+     * @param order
+     * @return
+     */
+    public int selectOrderIsApprovalCompleted(Order order);
+
+    /**
+     * <p> 주문 완료, 취소 체크
+     *
+     * @param order
+     * @return
+     */
+    public int selectOrderIsCompletedIsCanceled(Order order);
+
+    /**
      * <p> Order 배정 확인
      *
      * @param order

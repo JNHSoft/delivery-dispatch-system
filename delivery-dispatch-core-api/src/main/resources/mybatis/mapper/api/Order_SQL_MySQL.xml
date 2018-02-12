@@ -224,7 +224,28 @@
 	</update>
 
 
-    <!-- insertOrderConfirm -->
+	<!-- selectOrderIsApprovalCompleted -->
+	<select id="selectOrderIsApprovalCompleted" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM TB_ORDER AS A INNER JOIN TB_PAYMENT AS B
+		ON A.id = B.order_id
+		WHERE A.id = #{id}
+			AND B.status = 0
+	</select>
+
+
+	<!-- selectOrderIsCompletedIsCanceled -->
+	<select id="selectOrderIsCompletedIsCanceled" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM TB_ORDER
+		WHERE id = #{id}
+			AND (status = 3 OR status = 4)
+	</select>
+
+
+	<!-- insertOrderConfirm -->
     <insert id="insertOrderConfirm" parameterType="kr.co.cntt.core.model.order.Order">
         INSERT INTO TB_ORDER_CONFIRM_ASSIGNMENT (
           created_datetime
