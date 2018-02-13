@@ -98,28 +98,28 @@
 	<!-- selectOrderInfo -->
 	<select id="selectOrderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.order.Order">
 		SELECT
-		id
-		, created_datetime
-		, rider_id
-		, address
-		, detail_address
-		, latitude
-		, longitude
-		, status
-		, menu_name
-		, menu_price
-		, cooking_time
-		, to_be_paid
-		, paid
-		, message
-		, phone
-		, reservation
-		, reservation_datetime
-		, assigned_datetime
-		, picked_up_datetime
-		, completed_datetime
-		, required_gender
-		FROM TB_ORDER
+            id
+            , created_datetime
+            , rider_id
+            , address
+            , detail_address
+            , latitude
+            , longitude
+            , status
+            , menu_name
+            , menu_price
+            , cooking_time
+            , to_be_paid
+            , paid
+            , message
+            , phone
+            , reservation
+            , reservation_datetime
+            , assigned_datetime
+            , picked_up_datetime
+            , completed_datetime
+            , required_gender
+		FROM TB_ORDER AS ord
 		WHERE id = #{id}
 			<choose>
 				<when test="role != null and role == 'ROLE_ADMIN'">
@@ -137,6 +137,189 @@
 				</otherwise>
 			</choose>
 	</select>
+
+
+	<!-- updateOrder -->
+	<update id="updateOrder" parameterType="kr.co.cntt.core.model.order.Order">
+		UPDATE TB_ORDER
+		SET
+			modified_datetime = now()
+			<if test="(riderId != null and riderId != '') and status != 5">
+				, rider_id = #{riderId}
+			</if>
+			<if test="(riderId == null or riderId == '') and status == 5">
+				, rider_id = #{riderId}
+			</if>
+			<if test="address != null and address != ''">
+				, address = #{address}
+			</if>
+			<if test="detailAddress != null and detailAddress != ''">
+				, detail_address = #{detailAddress}
+			</if>
+			<if test="latitude != null and latitude != ''">
+				, latitude = #{latitude}
+			</if>
+			<if test="longitude != null and longitude != ''">
+				, longitude = #{longitude}
+			</if>
+			<if test="status != null and status != ''">
+				, status = #{status}
+			</if>
+			<if test="menuName != null and menuName != ''">
+				, menu_name = #{menuName}
+			</if>
+			<if test="menuPrice != null and menuPrice != ''">
+				, menu_price = #{menuPrice}
+			</if>
+			<if test="cookingTime != null and cookingTime != ''">
+				, cooking_time = #{cookingTime}
+			</if>
+			<if test="toBePaid != null and toBePaid != ''">
+				, to_be_paid = #{toBePaid}
+			</if>
+			<if test="paid != null and paid != ''">
+				, paid = #{paid}
+			</if>
+			<if test="message != null and message != ''">
+				, message = #{message}
+			</if>
+			<if test="phone != null and phone != ''">
+				, phone = #{phone}
+			</if>
+			<if test="reservation != null and reservation != ''">
+				, reservation = #{reservation}
+			</if>
+			<if test="reservationDatetime != null and reservationDatetime != ''">
+				, reservation_datetime = #{reservationDatetime}
+			</if>
+			<if test="assignedDatetime != null and assignedDatetime != ''">
+				, assigned_datetime = now()
+			</if>
+			<if test="pickedUpDatetime != null and pickedUpDatetime != ''">
+				, picked_up_datetime = #{pickedUpDatetime}
+			</if>
+			<if test="completedDatetime != null and completedDatetime != ''">
+				, completed_datetime = #{completedDatetime}
+			</if>
+			<if test="requiredGender != null and requiredGender != ''">
+				, required_gender = #{requiredGender}
+			</if>
+			<if test="deviceOs != null and deviceOs != ''">
+				, device_os = #{deviceOs}
+			</if>
+		WHERE id = #{id}
+			<choose>
+				<when test="role != null and role == 'ROLE_ADMIN'">
+					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+				</when>
+				<when test="role != null and role == 'ROLE_STORE'">
+					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+					AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+				</when>
+				<when test="role != null and role == 'ROLE_RIDER'">
+					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+					AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+				</when>
+				<otherwise>
+					AND id IS NULL
+				</otherwise>
+			</choose>
+	</update>
+
+
+	<!-- selectOrderIsApprovalCompleted -->
+	<select id="selectOrderIsApprovalCompleted" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM TB_ORDER AS A INNER JOIN TB_PAYMENT AS B
+		ON A.id = B.order_id
+		WHERE A.id = #{id}
+			AND B.status = 0
+	</select>
+
+
+	<!-- selectOrderIsCompletedIsCanceled -->
+	<select id="selectOrderIsCompletedIsCanceled" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM TB_ORDER
+		WHERE id = #{id}
+			AND (status = 3 OR status = 4)
+	</select>
+
+
+	<!-- insertOrderConfirm -->
+    <insert id="insertOrderConfirm" parameterType="kr.co.cntt.core.model.order.Order">
+        INSERT INTO TB_ORDER_CONFIRM_ASSIGNMENT (
+          created_datetime
+          , confirmed_datetime
+          , admin_id
+          , store_id
+          , rider_id
+          , order_id
+        ) VALUES (
+          now()
+          , now()
+          , (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+          , (
+              SELECT store_id
+              FROM TB_STORE_RIDER_REL
+              WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+                AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                AND modified_datetime IS NULL
+            )
+          , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+          , #{id}
+        )
+    </insert>
+
+
+    <!-- insertOrderDeny -->
+    <insert id="insertOrderDeny" parameterType="kr.co.cntt.core.model.order.Order">
+        INSERT INTO TB_ORDER_DENY_ASSIGNMENT (
+          created_datetime
+          , denied_datetime
+          , admin_id
+          , store_id
+          , rider_id
+          , order_id
+        ) VALUES (
+          now()
+          , now()
+          , (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+          , (
+              SELECT store_id
+              FROM TB_STORE_RIDER_REL
+              WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+                AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                AND modified_datetime IS NULL
+            )
+          , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+          , #{id}
+        )
+    </insert>
+
+
+    <!-- selectOrderConfirm -->
+    <select id="selectOrderConfirm" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.order.OrderCheckAssignment">
+        SELECT
+          order_id
+          , rider_id
+          , confirmed_datetime
+        FROM TB_ORDER_CONFIRM_ASSIGNMENT
+        WHERE order_id = #{id}
+    </select>
+
+
+    <!-- selectOrderDeny -->
+    <select id="selectOrderDeny" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.order.OrderCheckAssignment">
+        SELECT
+          order_id
+          , rider_id
+          , denied_datetime
+        FROM TB_ORDER_DENY_ASSIGNMENT
+        WHERE order_id = #{id}
+    </select>
 
 </mapper>
  

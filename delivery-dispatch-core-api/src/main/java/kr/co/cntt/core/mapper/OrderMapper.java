@@ -3,6 +3,7 @@ package kr.co.cntt.core.mapper;
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.order.OrderCheckAssignment;
 
 import java.util.List;
 
@@ -40,5 +41,61 @@ public interface OrderMapper {
      * @return
      */
     public List<Order> selectOrderInfo(Common common);
+
+    /**
+     * <p> Order 수정
+     *
+     * @param order
+     * @return
+     */
+    public int updateOrder(Order order);
+
+    /**
+     * <p> 카드 결제 승인 완료 체크
+     *
+     * @param order
+     * @return
+     */
+    public int selectOrderIsApprovalCompleted(Order order);
+
+    /**
+     * <p> 주문 완료, 취소 체크
+     *
+     * @param order
+     * @return
+     */
+    public int selectOrderIsCompletedIsCanceled(Order order);
+
+    /**
+     * <p> Order 배정 확인
+     *
+     * @param order
+     * @return
+     */
+    public int insertOrderConfirm(Order order);
+
+    /**
+     * <p> Order 배정 거부
+     *
+     * @param order
+     * @return
+     */
+    public int insertOrderDeny(Order order);
+
+    /**
+     * <p> Order 배정 확인 조회
+     *
+     * @param order
+     * @return
+     */
+    public List<OrderCheckAssignment> selectOrderConfirm(Order order);
+
+    /**
+     * <p> Order 배정 거부 조회
+     *
+     * @param order
+     * @return
+     */
+    public List<OrderCheckAssignment> selectOrderDeny(Order order);
 
 }

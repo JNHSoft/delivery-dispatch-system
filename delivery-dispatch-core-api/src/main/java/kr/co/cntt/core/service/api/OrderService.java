@@ -35,4 +35,76 @@ public interface OrderService {
      */
     public List<Order> getOrderInfo(Common common) throws AppTrException;
 
+    /**
+     * <p> putOrderInfo
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderInfo(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderAssigned
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderAssigned(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderPickedUp
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderPickedUp(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderCompleted
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderCompleted(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderCanceled
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderCanceled(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderAssignCanceled
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderAssignCanceled(Order order) throws AppTrException;
+
+    /**
+     * <p> postOrderConfirm
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int postOrderConfirm(Order order) throws AppTrException;
+
+    /**
+     * <p> postOrderDeny
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int postOrderDeny(Order order) throws AppTrException;
+
 }
