@@ -82,6 +82,17 @@ public interface Api {
 
     // ############################################################################################ //
 
+    /** Payment 카드 결제 정보 조회 */
+    String PAYMENT_INFO = "/getPaymentInfo.json";
+
+    /** Payment 카드 결제 정보 등록 */
+    String PAYMENT_INFO_POST = "/postPaymentInfo.json";
+
+    /** Payment 카드 결제 정보 수정 */
+    String PAYMENT_INFO_UPDATE = "/updatePaymentInfo.json";
+
+    // ############################################################################################ //
+
 
     /** 공지사항 등록 */
     String NOTICE_POST = "/postNotice.json";
