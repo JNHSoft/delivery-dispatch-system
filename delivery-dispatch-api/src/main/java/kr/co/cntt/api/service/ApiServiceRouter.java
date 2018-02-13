@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.payment.Payment;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.store.StoreRiderRel;
@@ -83,6 +84,17 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** Order 정보 조회 */
 	ORDER_INFO("orderService", "getOrderInfo", Order.class),
+
+	// ############################################################################################ //
+
+	/** Payment  결제 정보 조회 */
+	PAYMENT_INFO("paymentService", "getPaymentInfo", Payment.class),
+
+	/** Payment  결제 정보 등록 */
+	PAYMENT_INFO_POST("paymentService", "postPaymentInfo", Payment.class),
+
+	/** Payment  결제 정보 수정 */
+	PAYMENT_INFO_UPDATE("paymentService", "updatePaymentInfo", Payment.class),
 
 	// ############################################################################################ //
 
