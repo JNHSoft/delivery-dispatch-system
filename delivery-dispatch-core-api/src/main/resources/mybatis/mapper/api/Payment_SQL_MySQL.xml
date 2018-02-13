@@ -129,7 +129,7 @@
 		WHERE 1=1
 		AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 		AND store_id = (SELECT store_id FROM TB_STORE_RIDER_REL WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-		AND order_id = #{orderId}
+		AND id = #{id}
 	</update>
 
 
