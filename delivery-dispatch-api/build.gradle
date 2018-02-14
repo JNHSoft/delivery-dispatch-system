@@ -1,1 +1,3 @@
-bootRepackage.enabled = false
+springBoot {
+    mainClass = 'kr.co.cntt.api.ApiApplication'
+}
