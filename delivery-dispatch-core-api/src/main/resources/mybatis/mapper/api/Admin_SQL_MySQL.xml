@@ -218,8 +218,10 @@
 		LEFT JOIN TB_STORE AS B
 		ON A.store_id = B.id
 		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			AND A.group_id = #{groupId}
-			AND A.subgroup_id = #{subGroupId}
+			<if test="groupId != null and subGroupId != null">
+				AND A.group_id = #{groupId}
+				AND A.subgroup_id = #{subGroupId}
+			</if>
 			AND A.deleted IS NULL
 			AND B.deleted IS NULL
 		ORDER BY B.store_name ASC

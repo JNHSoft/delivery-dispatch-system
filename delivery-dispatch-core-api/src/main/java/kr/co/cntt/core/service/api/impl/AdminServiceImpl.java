@@ -147,6 +147,14 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
     @Secured("ROLE_ADMIN")
     @Override
+    public int postSubgroupStoreRel(Store store) { return adminMapper.insertSubGroupStoreRel(store); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putSubgroupStoreRel(Store store) { return adminMapper.updateSubGroupStoreRel(store); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
     public List<Rider> getRiders(Common common) throws AppTrException {
 
         List<Rider> S_Rider = adminMapper.selectRiders(common);
@@ -157,14 +165,6 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
         return S_Rider;
     }
-
-    @Secured("ROLE_ADMIN")
-    @Override
-    public int postSubgroupStoreRel(Store store) { return adminMapper.insertSubGroupStoreRel(store); }
-
-    @Secured("ROLE_ADMIN")
-    @Override
-    public int putSubgroupStoreRel(Store store) { return adminMapper.updateSubGroupStoreRel(store); }
 
     @Secured("ROLE_ADMIN")
     @Override
