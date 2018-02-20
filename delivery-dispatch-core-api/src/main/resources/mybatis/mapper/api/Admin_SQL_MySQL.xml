@@ -245,7 +245,8 @@
 		)
 	</insert>
 
-	
+
+	<!-- updateSubGroupStoreRel -->
 	<update id="updateSubGroupStoreRel" parameterType="kr.co.cntt.core.model.store.Store">
 		UPDATE TB_SUBGROUP_STORE_REL
 		SET modified_datetime = now()
