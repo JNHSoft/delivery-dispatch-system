@@ -2,6 +2,9 @@ package kr.co.cntt.core.model.store;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,19 +26,21 @@ public class Store extends User implements Dto {
     private String storeName;
     private String chStoreName;
     private String storePhone;
-    private String email;
     private String address;
     private String detailAddress;
     private String chAddress;
     private String chDetailAddress;
     private String latitude;
     private String longitude;
-    private String comment;
     private String storeStatus;
     private String radius;
     private String storeDistanceSort;
     private String assignmentStatus;
     private String assignmentLimit;
+
+    private Group group;
+    private SubGroup subGroup;
+    private SubGroupStoreRel subGroupStoreRel;
 
 }
 
