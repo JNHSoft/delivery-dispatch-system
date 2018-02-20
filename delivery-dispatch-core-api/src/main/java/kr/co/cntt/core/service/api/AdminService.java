@@ -111,6 +111,15 @@ public interface AdminService {
     public int deleteSubgroup(SubGroup subGroup);
 
     /**
+     * <p> getNoneSubgroupStoreRels
+     *
+     * @param subGroupStoreRel
+     * @return
+     * @throws AppTrException
+     */
+    public List<SubGroupStoreRel> getNoneSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel) throws AppTrException;
+
+    /**
      * <p> getSubgroupStoreRels
      *
      * @param subGroupStoreRel

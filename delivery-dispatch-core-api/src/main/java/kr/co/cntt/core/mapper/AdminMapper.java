@@ -116,6 +116,14 @@ public interface AdminMapper {
     public int deleteSubGroup(SubGroup subGroup);
 
     /**
+     * <p> 상점 미지정 그룹 목록 조회
+     * 
+     * @param subGroupStoreRel
+     * @return
+     */
+    public List<SubGroupStoreRel> selectNoneSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel);
+
+    /**
      * <p> 상점 그룹 목록 조회
      *
      * @param subGroupStoreRel

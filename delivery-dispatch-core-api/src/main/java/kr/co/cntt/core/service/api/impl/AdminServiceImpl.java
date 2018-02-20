@@ -121,6 +121,19 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
     @Secured("ROLE_ADMIN")
     @Override
+    public List<SubGroupStoreRel> getNoneSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel) throws AppTrException {
+
+        List<SubGroupStoreRel> S_Group = adminMapper.selectNoneSubgroupStoreRels(subGroupStoreRel);
+
+        if (S_Group.size() ==0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Group;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
     public List<SubGroupStoreRel> getSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel) throws AppTrException {
 
         List<SubGroupStoreRel> S_Group = adminMapper.selectSubgroupStoreRels(subGroupStoreRel);

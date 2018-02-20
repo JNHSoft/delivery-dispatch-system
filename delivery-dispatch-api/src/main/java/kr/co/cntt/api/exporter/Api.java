@@ -37,6 +37,9 @@ public interface Api {
     /** [Admin] 서브그룹 삭제 */
     String ADMIN_SUBGROUP_DELETE = "/deleteSubgroup.json";
 
+    /** [Admin] 상점 미지정 그룹 목록 조회 */
+    String ADMIN_NONE_SUBGROUP_STORE_REL_LIST = "/getNoneSubgroupStoreRels.json";
+
     /** [Admin] 상점 그룹 목록 조회 */
     String ADMIN_SUBGROUP_STORE_REL_LIST = "/getSubgroupStoreRels.json";
 
