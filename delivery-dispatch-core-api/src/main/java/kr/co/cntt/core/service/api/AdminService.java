@@ -2,11 +2,13 @@ package kr.co.cntt.core.service.api;
 
 
 import kr.co.cntt.core.exception.AppTrException;
-import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.store.StoreRiderRel;
 
 import java.util.List;
 
@@ -41,6 +43,96 @@ public interface AdminService {
      * @throws AppTrException
      */
     public List<Admin> getAdminInfo(Common common) throws AppTrException;
+
+    /**
+     * <p> getGroups
+     *
+     * @param common
+     * @return
+     * @throws AppTrException
+     */
+    public List<Group> getGroups(Common common) throws AppTrException;
+
+    /**
+     * <p> postGroup
+     *
+     * @param group
+     * @return
+     */
+    public int postGroup(Group group);
+
+    /**
+     * <p> putGroup
+     *
+     * @param group
+     * @return
+     */
+    public int putGroup(Group group);
+
+    /**
+     * <p> deleteGroup
+     *
+     * @param group
+     * @return
+     */
+    public int deleteGroup(Group group);
+
+    /**
+     * <p> getSubgroups
+     *
+     * @param common
+     * @return
+     * @throws AppTrException
+     */
+    public List<SubGroup> getSubgroups(Common common) throws AppTrException;
+
+    /**
+     * <p> postSubgroup
+     *
+     * @param subGroup
+     * @return
+     */
+    public int postSubgroup(SubGroup subGroup);
+
+    /**
+     * <p> putSubgroup
+     *
+     * @param subGroup
+     * @return
+     */
+    public int putSubgroup(SubGroup subGroup);
+
+    /**
+     * <p> deleteSubgroup
+     *
+     * @param subGroup
+     * @return
+     */
+    public int deleteSubgroup(SubGroup subGroup);
+
+    /**
+     * <p> getSubgroupStoreRels
+     *
+     * @param subGroupStoreRel
+     * @return
+     * @throws AppTrException
+     */
+    public List<SubGroupStoreRel> getSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel) throws AppTrException;
+
+    /**
+     * <p> postSubgroupStoreRel
+     * @param store
+     * @return
+     */
+    public int postSubgroupStoreRel(Store store);
+
+    /**
+     * <p> putSubgroupStoreRel
+     *
+     * @param store
+     * @return
+     */
+    public int putSubgroupStoreRel(Store store);
 
     /**
      * <p> getRiders
@@ -90,23 +182,5 @@ public interface AdminService {
      * @return
      */
     public int deleteStore(Store store);
-
-
-    /**
-     * <p> getStoreRiderRel
-     *
-     * @param common
-     * @return
-     * @throws AppTrException
-     */
-    public List<StoreRiderRel> getStoreRiderRel(Common common) throws AppTrException;
-
-    /**
-     * <p> putStoreRiderRel
-     *
-     * @param storeRiderRel
-     * @return
-     */
-    public int putStoreRiderRel(StoreRiderRel storeRiderRel);
 
 }

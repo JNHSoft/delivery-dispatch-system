@@ -2,13 +2,15 @@ package kr.co.cntt.api.service;
 
 import kr.co.cntt.api.config.IServiceRouter;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.payment.Payment;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.store.StoreRiderRel;
 import lombok.Getter;
 
 @Getter
@@ -16,6 +18,39 @@ public enum ApiServiceRouter implements IServiceRouter {
 	
 	/** [Admin] 정보조회 */
 	ADMIN_INFO("adminService", "getAdminInfo", Common.class),
+
+	/** [Admin] 그룹 목록 조회 */
+	ADMIN_GROUP_LIST("adminService", "getGroups", Common.class),
+
+	/** [Admin] 그룹 등록 */
+	ADMIN_GROUP_POST("adminService", "postGroup", Group.class),
+
+	/** [Admin] 그룹 수정 */
+	ADMIN_GROUP_PUT("adminService", "putGroup", Group.class),
+
+	/** [Admin] 그룹 삭제 */
+	ADMIN_GROUP_DELETE("adminService", "deleteGroup", Group.class),
+
+	/** [Admin] 서브그룹 목록 조회 */
+	ADMIN_SUBGROUP_LIST("adminService", "getSubgroups", Common.class),
+
+	/** [Admin] 서브그룹 등록 */
+	ADMIN_SUBGROUP_POST("adminService", "postSubgroup", SubGroup.class),
+
+	/** [Admin] 서브그룹 수정 */
+	ADMIN_SUBGROUP_PUT("adminService", "putSubgroup", SubGroup.class),
+
+	/** [Admin] 서브그룹 삭제 */
+	ADMIN_SUBGROUP_DELETE("adminService", "deleteSubgroup", SubGroup.class),
+
+	/** [Admin] 상점 그룹 목록 조회 */
+	ADMIN_SUBGROUP_STORE_REL_LIST("adminService", "getSubgroupStoreRels", SubGroupStoreRel.class),
+
+	/** [Admin] 상점 그룹 설정 */
+	ADMIN_SUBGROUP_STORE_REL_POST("adminService", "postSubgroupStoreRel", Store.class),
+
+	/** [Admin] 상점 그룹 수정 */
+	ADMIN_SUBGROUP_STORE_REL_PUT("adminService", "putSubgroupStoreRel", Store.class),
 
 	/** [Admin] 기사 목록 조회 */
 	ADMIN_RIDERS_LIST("adminService", "getRiders", Common.class),
@@ -34,12 +69,6 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** [Admin] 상점 삭제 */
 	ADMIN_STORE_DELETE("adminService", "deleteStore", Store.class),
-
-	/** [Admin] 상점 기사 전체 소속 목록 */
-	ADMIN_STORE_RIDER_REL("adminService", "getStoreRiderRel", Common.class),
-
-	/** [Admin] 상점 기사 소속 등록, 변경 */
-	ADMIN_RIDER_TO_STORE_PUT("adminService", "putStoreRiderRel", StoreRiderRel.class),
 
 	// ############################################################################################ //
 

@@ -13,4 +13,7 @@ public class SubGroupStoreRel extends SubGroup implements Dto {
     private String subGroupId;
     private String storeId;
 
+    private String storeName;
+    private String chStoreName;
+
 }

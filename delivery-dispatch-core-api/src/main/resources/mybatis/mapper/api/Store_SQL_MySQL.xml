@@ -54,6 +54,7 @@
 			, id
 			, name
 			, phone
+			, store_name
 			, login_id
 			, login_pw
 			, latitude

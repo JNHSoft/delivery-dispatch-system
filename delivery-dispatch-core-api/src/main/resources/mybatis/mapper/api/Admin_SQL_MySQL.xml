@@ -57,6 +57,191 @@
 	</select>
 
 
+	<!-- selectGroups -->
+	<select id="selectGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.Group">
+		SELECT
+			A.created_datetime
+			, A.modified_datetime
+			, A.id
+			, A.name
+			, A.admin_id
+-- 			, COUNT(B.id) AS subGroupCount
+			, (SELECT COUNT(id) from TB_SUBGROUP WHERE group_id=A.id) AS subGroupCount
+			, COUNT(C.id) AS subGroupStoreCount
+-- 			, (SELECT COUNT(id) from TB_SUBGROUP_STORE_REL WHERE subgroup_id=B.id) AS subGroupStoreCount
+		FROM TB_GROUP AS A
+		LEFT JOIN TB_SUBGROUP AS B
+		ON A.id = B.group_id
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
+		ON B.id = C.subgroup_id
+		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.deleted IS NULL
+			AND B.deleted IS NULL
+			AND C.deleted IS NULL
+		GROUP BY A.id
+		ORDER BY A.name ASC
+	</select>
+
+
+	<!-- insertGroup -->
+	<insert id="insertGroup" parameterType="kr.co.cntt.core.model.group.Group">
+		INSERT INTO TB_GROUP (
+			created_datetime
+			, name
+			, admin_id
+		) VALUES (
+			now()
+			, #{name}
+			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		)
+	</insert>
+
+	<!-- updateGroup -->
+	<update id="updateGroup" parameterType="kr.co.cntt.core.model.group.Group">
+		UPDATE TB_GROUP
+		SET modified_datetime = now()
+			, name = #{name}
+		WHERE id = #{id}
+			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND deleted IS NULL
+	</update>
+
+
+	<!-- deleteGroup -->
+	<update id="deleteGroup" parameterType="kr.co.cntt.core.model.group.Group">
+		UPDATE TB_GROUP AS A
+		LEFT JOIN TB_SUBGROUP AS B
+		ON A.id = B.group_id
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
+		ON B.id = C.subgroup_id
+		SET A.deleted = now()
+			,B.deleted = now()
+			,C.deleted = now()
+		WHERE A.id = #{id}
+			AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.deleted IS NULL
+			AND B.deleted IS NULL
+			AND C.deleted IS NULL
+	</update>
+
+
+	<!-- selectSubGroups -->
+	<select id="selectSubGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.SubGroup">
+		SELECT
+			A.created_datetime
+			, A.modified_datetime
+			, A.id
+			, A.name
+			, A.group_id
+			, A.admin_id
+			, COUNT(B.id) AS subGroupStoreCount
+		FROM TB_SUBGROUP AS A
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
+		ON A.id = B.subgroup_id
+		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.group_id = #{id}
+			AND A.deleted IS NULL
+			AND B.deleted IS NULL
+		GROUP BY A.id
+		ORDER BY A.name ASC
+	</select>
+
+
+	<!-- insertSubGroup -->
+	<insert id="insertSubGroup" parameterType="kr.co.cntt.core.model.group.SubGroup">
+		INSERT INTO TB_SUBGROUP (
+			created_datetime
+			, name
+			, group_id
+			, admin_id
+		) VALUES (
+			now()
+			, #{name}
+			, #{groupId}
+			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		)
+	</insert>
+
+
+	<!-- updateSubGroup -->
+	<update id="updateSubGroup" parameterType="kr.co.cntt.core.model.group.SubGroup">
+		UPDATE TB_SUBGROUP
+		SET modified_datetime = now()
+			, name = #{name}
+		WHERE id = #{id}
+			AND group_id = #{groupId}
+			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND deleted IS NULL
+	</update>
+
+
+	<!-- deleteSubGroup -->
+	<update id="deleteSubGroup" parameterType="kr.co.cntt.core.model.group.SubGroup">
+		UPDATE TB_SUBGROUP AS A
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
+		ON A.id = B.subgroup_id
+		SET A.deleted = now()
+		,B.deleted = now()
+		WHERE A.id = #{id}
+		AND A.group_id = #{groupId}
+		AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND A.deleted IS NULL
+		AND B.deleted IS NULL
+	</update>
+
+
+	<!-- selectSubgroupStoreRels -->
+	<select id="selectSubgroupStoreRels" parameterType="kr.co.cntt.core.model.group.SubGroupStoreRel" resultType="kr.co.cntt.core.model.group.SubGroupStoreRel">
+		SELECT
+			A.created_datetime
+			, A.modified_datetime
+			, A.id
+			, A.admin_id
+			, A.group_id
+			, A.subgroup_id
+			, A.store_id
+			, B.store_name AS storeName
+			, B.ch_store_name AS chStoreName
+		FROM TB_SUBGROUP_STORE_REL AS A
+		LEFT JOIN TB_STORE AS B
+		ON A.store_id = B.id
+		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.group_id = #{groupId}
+			AND A.subgroup_id = #{subGroupId}
+			AND A.deleted IS NULL
+			AND B.deleted IS NULL
+		ORDER BY B.store_name ASC
+	</select>
+
+
+	<!-- insertSubGroupStoreRel -->
+	<insert id="insertSubGroupStoreRel" parameterType="kr.co.cntt.core.model.store.Store">
+		INSERT INTO TB_SUBGROUP_STORE_REL (
+			created_datetime
+			, admin_id
+			, group_id
+			, subgroup_id
+			, store_id
+		) VALUES (
+			now()
+			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			, #{group.id}
+			, #{subGroup.id}
+			, #{id}
+		)
+	</insert>
+
+	<update id="updateSubGroupStoreRel" parameterType="kr.co.cntt.core.model.store.Store">
+		UPDATE TB_SUBGROUP_STORE_REL
+		SET modified_datetime = now()
+			, group_id = #{group.id}
+			, subgroup_id = #{subGroup.id}
+		WHERE store_id = #{id}
+			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND deleted IS NULL
+	</update>
+
+
 	<!-- insertChatUser -->
 	<insert id="insertChatUser" parameterType="kr.co.cntt.core.model.login.User">
 		INSERT INTO TB_CHAT_USER (
@@ -229,11 +414,9 @@
 			, name
 			, phone
 			, ch_store_name
-			, email
 			, detail_address
 			, ch_address
 			, ch_detail_address
-			, comment
 			, radius
 			, store_distance_sort
 			, assignment_status
@@ -279,12 +462,6 @@
 			<if test="chStoreName == null or chStoreName == ''">
 				, NULL
 			</if>
-			<if test="email != null and email != ''">
-				, #{email}
-			</if>
-			<if test="email == null or email == ''">
-				, NULL
-			</if>
 			<if test="detailAddress != null and detailAddress != ''">
 				, #{detailAddress}
 			</if>
@@ -301,12 +478,6 @@
 				, #{chDetailAddress}
 			</if>
 			<if test="chDetailAddress == null or chDetailAddress == ''">
-				, NULL
-			</if>
-			<if test="comment != null and comment != ''">
-				, #{comment}
-			</if>
-			<if test="comment == null or comment == ''">
 				, NULL
 			</if>
 			<if test="radius != null and radius != ''">
@@ -334,7 +505,11 @@
 				, NULL
 			</if>
 		)
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</insert>
+
 
 	<!--상점 삭제 -->
 	<update id="deleteStore" parameterType="kr.co.cntt.core.model.store.Store">
@@ -346,53 +521,6 @@
 		AND
 		admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</update>
-
-	<!-- selectStoreRiderRel -->
-	<select id="selectStoreRiderRel" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.store.StoreRiderRel">
-		SELECT
-			rel.created_datetime
-			, rel.modified_datetime
-			, rel.id
-			, rel.rider_id
-			, ri.name AS rider_name
-			, ri.phone AS rider_phone
-			, rel.store_id
-			, st.store_name
-		FROM TB_STORE_RIDER_REL AS rel
-		INNER JOIN TB_STORE AS st
-		ON rel.store_id = st.id
-		INNER JOIN TB_RIDER AS ri
-		ON rel.rider_id = ri.id
-		WHERE rel.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-	</select>
-
-
-	<!-- updateStoreRiderRel -->
-	<update id="updateStoreRiderRel" parameterType="kr.co.cntt.core.model.store.StoreRiderRel">
-		UPDATE TB_STORE_RIDER_REL
-		SET
-			modified_datetime = now()
-		WHERE deleted IS NULL
-			AND modified_datetime IS NULL
-			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			AND rider_id = #{riderId}
-	</update>
-
-
-	<!-- insertStoreRiderRel -->
-	<insert id="insertStoreRiderRel" parameterType="kr.co.cntt.core.model.store.StoreRiderRel">
-		INSERT INTO TB_STORE_RIDER_REL (
-			created_datetime
-			, admin_id
-			, rider_id
-			, store_id
-		) VALUES (
-			now()
-			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			, #{riderId}
-			, #{storeId}
-		)
-	</insert>
 
 </mapper>
  
