@@ -2,6 +2,9 @@ package kr.co.cntt.core.model.rider;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +21,7 @@ public class Rider extends User implements Dto {
     private String type;
 
     private String phone;
-    private String position;
+    private String code;
     private String gender;
     private String employmentType;
     private String address;
@@ -29,7 +32,16 @@ public class Rider extends User implements Dto {
     private String locationUpdated;
     private String vehicleNumber;
     private String emergencyPhone;
-    private String comment;
+    private String workingHours;
+    private String restHours;
+    private String teenager;
+
+    private Group group;
+    private SubGroup subGroup;
+    private SubGroupRiderRel subGroupRiderRel;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String isAdmin;
 
     private List<RiderSession> riderSession;
 }
