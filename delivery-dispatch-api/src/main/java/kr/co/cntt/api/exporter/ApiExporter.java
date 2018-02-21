@@ -77,7 +77,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
     //@GetMapping(value = GET_TOKEN)
     @RequestMapping(value = GET_TOKEN)
     public ResponseEntity<?> createAuthenticate(HttpServletRequest request, @RequestParam String level, @RequestParam String loginId, @RequestParam String loginPw, Device device) throws Exception {
-        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
+//        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
+        Map<String, Object> response = new HashMap<String, Object>();
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
@@ -146,8 +147,11 @@ public class ApiExporter extends ExporterSupportor implements Api {
             result.put("result", CODE_SUCCESS);
             data.put("token", token);
 
-            response.add(result);
-            response.add(data);
+            response.put("result", CODE_SUCCESS);
+            response.put("token", token);
+
+//            response.add(result);
+//            response.add(data);
             //response.add(new R_TR_A0002(CODE_SUCCESS, token));
             // Return the token
 
@@ -168,8 +172,11 @@ public class ApiExporter extends ExporterSupportor implements Api {
             result.put("result", CODE_ERROR);
             data.put("token", "");
             data.put("msg", e.getLocalizedMessage());
-            response.add(result);
-            response.add(data);
+            response.put("result", CODE_ERROR);
+            response.put("token", "");
+            response.put("msg", e.getLocalizedMessage());
+//            response.add(result);
+//            response.add(data);
             return ResponseEntity.ok(new Gson().toJson(response).toString());
         }
     }
