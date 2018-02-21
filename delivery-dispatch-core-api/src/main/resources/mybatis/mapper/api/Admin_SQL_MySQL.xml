@@ -113,15 +113,19 @@
 		LEFT JOIN TB_SUBGROUP AS B
 		ON A.id = B.group_id
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
-		ON B.id = C.subgroup_id
+		ON B.id = C.group_id
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS D
+		ON B.id = D.group_id
 		SET A.deleted = now()
 			,B.deleted = now()
 			,C.deleted = now()
+			,D.deleted = now()
 		WHERE A.id = #{id}
 			AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND A.deleted IS NULL
 			AND B.deleted IS NULL
 			AND C.deleted IS NULL
+			AND D.deleted IS NULL
 	</update>
 
 
@@ -180,13 +184,17 @@
 		UPDATE TB_SUBGROUP AS A
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
 		ON A.id = B.subgroup_id
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS C
+		ON A.id = C.subgroup_id
 		SET A.deleted = now()
-		,B.deleted = now()
+			,B.deleted = now()
+			,C.deleted = now()
 		WHERE A.id = #{id}
 		AND A.group_id = #{groupId}
 		AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		AND A.deleted IS NULL
 		AND B.deleted IS NULL
+		AND C.deleted IS NULL
 	</update>
 
 
@@ -264,14 +272,17 @@
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.store_id = B.store_id
 			AND A.subgroup_id = B.subgroup_id
-			AND A.group_id = B.group_id
-			AND A.admin_id = B.admin_id
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS C
+		ON A.store_id = C.store_id
+			AND A.subgroup_id = C.subgroup_id
 		SET A.deleted = now()
-			,B.deleted = now()
+			, B.deleted = now()
+			, C.deleted = now()
 		WHERE A.id = #{id}
 			AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND A.deleted IS NULL
 			AND B.deleted IS NULL
+			AND C.deleted IS NULL
 	</update>
 
 
