@@ -65,7 +65,7 @@ public enum ApiServiceRouter implements IServiceRouter {
 	ADMIN_RIDER_POST("adminService", "postRider", Rider.class),
 
 	/** [Admin] 기사 삭제 */
-	ADMIN_RIDER_DELETE("adminService", "deleteRider", Rider.class),
+	ADMIN_RIDER_DELETE("adminService", "deleteRider", Common.class),
 
 	/** [Admin] 상점 목록 조회 */
 	ADMIN_STORES_LIST("adminService", "getStores", Common.class),
@@ -74,7 +74,7 @@ public enum ApiServiceRouter implements IServiceRouter {
 	ADMIN_STORE_POST("adminService", "postStore", Store.class),
 
 	/** [Admin] 상점 삭제 */
-	ADMIN_STORE_DELETE("adminService", "deleteStore", Store.class),
+	ADMIN_STORE_DELETE("adminService", "deleteStore", Common.class),
 
 	// ############################################################################################ //
 

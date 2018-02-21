@@ -157,7 +157,7 @@ public interface AdminMapper {
 
     /**
      * <p> 상점 소속 서브그룹에 기사 등록
-     * 
+     *
      * @param rider
      * @return
      */
@@ -204,11 +204,12 @@ public interface AdminMapper {
     public int insertRider(Rider rider);
 
     /**
-     * 기가 삭제
-     * @param rider
+     * <p> 기사 삭제
+     *
+     * @param common
      * @return
      */
-    public int deleteRider(Rider rider);
+    public int deleteRider(Common common);
 
 
     /**
@@ -228,10 +229,11 @@ public interface AdminMapper {
     public int insertStore(Store store);
 
     /**
-     * 상점 삭제
-     * @param store
+     * <p> 상점 삭제
+     *
+     * @param common
      * @return
      */
-    public int deleteStore(Store store);
+    public int deleteStore(Common common);
 
 }

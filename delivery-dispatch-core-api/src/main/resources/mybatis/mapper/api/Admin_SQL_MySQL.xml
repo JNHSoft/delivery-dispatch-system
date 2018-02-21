@@ -430,16 +430,20 @@
 		</selectKey>
 	</insert>
 
-	<!--기사 삭제 -->
-	<update id="deleteRider" parameterType="kr.co.cntt.core.model.rider.Rider">
-		UPDATE TB_RIDER
-		SET
-			deleted = now()
-		WHERE
-			id = #{id}
-		AND
-			admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+
+	<!-- deleteRider -->
+	<update id="deleteRider" parameterType="kr.co.cntt.core.model.common.Common">
+		UPDATE TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
+		SET A.deleted = now()
+		    , B.deleted = now()
+		WHERE A.id = #{id}
+		    AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		    AND A.deleted IS NULL
+		    AND B.deleted IS NULL
 	</update>
+
 
 	<!-- selectStores -->
 	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.store.Store">
@@ -577,15 +581,21 @@
 	</insert>
 
 
-	<!--상점 삭제 -->
-	<update id="deleteStore" parameterType="kr.co.cntt.core.model.store.Store">
-		UPDATE TB_STORE
-		SET
-			deleted = now()
-		WHERE
-			id = #{id}
-		AND
-		admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	<!-- deleteStore -->
+	<update id="deleteStore" parameterType="kr.co.cntt.core.model.common.Common">
+		UPDATE TB_STORE AS A
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
+		ON A.id = B.store_id
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS C
+		ON A.id = C.store_id
+		SET A.deleted = now()
+		    , B.deleted = now()
+		    , C.deleted = now()
+		WHERE A.id = #{id}
+		    AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		    AND A.deleted IS NULL
+		    AND B.deleted IS NULL
+		    AND C.deleted IS NULL
 	</update>
 
 </mapper>

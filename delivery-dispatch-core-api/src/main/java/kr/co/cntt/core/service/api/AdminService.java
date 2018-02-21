@@ -169,12 +169,12 @@ public interface AdminService {
     public int postRider(Rider rider);
 
     /**
-     * Delete Rider
-     * @param rider
+     * <p> deleteRider
+     *
+     * @param common
      * @return
      */
-    public int deleteRider(Rider rider);
-
+    public int deleteRider(Common common);
 
     /**
      * <p> getStores
@@ -194,10 +194,11 @@ public interface AdminService {
     public int postStore(Store store);
 
     /**
-     *  Delete Store
-     * @param store
+     *  <p> deleteStore
+     *
+     * @param common
      * @return
      */
-    public int deleteStore(Store store);
+    public int deleteStore(Common common);
 
 }
