@@ -13,5 +13,6 @@ public class SubGroupRiderRel extends SubGroup implements Dto {
 
     private String subGroupId;
     private String riderId;
+    private String storeId;
 
 }

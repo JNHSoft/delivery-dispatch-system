@@ -20,7 +20,7 @@ public enum ErrorCodeEnum {
 	L0007,
 	L0008,
 	L0009,
-	
+
 	/* 프로모션 */
 	P0001,
 	P0002,
@@ -56,7 +56,7 @@ public enum ErrorCodeEnum {
 	/* 3rd party */
 	EX001,
 	
-	/** API 전문통신 오류 (APP)*/
+	/** API 전문통신 오류 (APP) */
 	A4444,
 	A0001,
 	A0002,
@@ -89,7 +89,13 @@ public enum ErrorCodeEnum {
 	E0004,
 	E0005,
 	E9999,
-	
+
+	/** API 전문 통신 오류 */
+	E00001,
+	E00002,
+	E00003,
+	E00004,
+
 	/* 관리자 */
 	F0001,
 	M0001,

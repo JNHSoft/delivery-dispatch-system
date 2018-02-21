@@ -133,82 +133,89 @@
 
 	<!-- rider 정보 수정 -->
 	<update id="updateRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
-		UPDATE TB_RIDER
+		UPDATE TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
 		SET
-			modified_datetime = now()
+			A.modified_datetime = now()
 
 			<if test="lastAccess != null and lastAccess != ''">
-				, last_access = #{lastAccess}
+				, A.last_access = #{lastAccess}
 			</if>
 
 			<if test="name != null and name != ''">
-				, name=#{name}
+				, A.name = #{name}
 			</if>
 
 			<if test="phone != null and phone != ''">
-				, phone=#{phone}
+				, A.phone = #{phone}
 			</if>
 
 			<if test="code != null and code != ''">
-				, code=#{code}
+				, A.code = #{code}
 			</if>
 
 			<if test="gender != null and gender != ''">
-				, gender=#{gender}
+				, A.gender = #{gender}
 			</if>
 
 			<if test="employmentType != null and employmentType != ''">
-				, employmentType=#{employmentType}
+				, A.employmentType = #{employmentType}
 			</if>
 
 			<if test="address != null and address != ''">
-				, address = #{address}
+				, A.address = #{address}
 			</if>
 
 			<if test="working != null and working != ''">
-				, working=#{working}
+				, A.working = #{working}
 			</if>
 
 			<if test="status != null and status != ''">
-				, status=#{status}
+				, A.status = #{status}
 			</if>
 
 			<if test="vehicleNumber != null and vehicleNumber != ''">
-				, vehicle_number=#{vehicleNumber}
+				, A.vehicle_number = #{vehicleNumber}
 			</if>
 
 			<if test="emergencyPhone != null and emergencyPhone != ''">
-				, emergency_phone=#{emergencyPhone}
+				, A.emergency_phone = #{emergencyPhone}
 			</if>
 
 			<if test="workingHours != null and workingHours != ''">
-				, workingHours=#{workingHours}
+				, A.workingHours = #{workingHours}
 			</if>
 
-			<if test="restHours != null  and restHours != ''">
-				, restHours=#{restHours}
+			<if test="restHours != null and restHours != ''">
+				, A.restHours = #{restHours}
 			</if>
 
-			<if test="teenager != null  and teenager != ''">
-				, teenager=#{teenager}
+			<if test="teenager != null and teenager != ''">
+				, A.teenager = #{teenager}
 			</if>
 
-			<if test="deleted != null  and deleted != ''">
-				, deleted=#{deleted}
+			<if test="(subGroupRiderRel.groupId != null and subGroupRiderRel.groupId != '')
+				and (subGroupRiderRel.subGroupId != null and subGroupRiderRel.subGroupId != '')
+				and (subGroupRiderRel.storeId != null and subGroupRiderRel.storeId != '')">
+				, B.modified_datetime = now()
+				, B.store_id = #{subGroupRiderRel.storeId}
+				, B.subgroup_id = #{subGroupRiderRel.subGroupId}
+				, B.group_id = #{subGroupRiderRel.groupId}
 			</if>
 		WHERE 1=1
 		<choose>
 			<when test="id != null and id != ''">
 				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 				</if>
 				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+					AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 				</if>
-				AND id = #{id}
+				AND A.id = #{id}
 			</when>
 			<otherwise>
-				AND id = (
+				AND A.id = (
 				SELECT rider_id
 				FROM TB_RIDER_SESSION
 				WHERE access_token=#{accessToken}

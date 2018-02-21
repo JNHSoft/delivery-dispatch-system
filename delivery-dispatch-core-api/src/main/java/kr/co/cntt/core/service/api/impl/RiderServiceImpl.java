@@ -103,10 +103,14 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setAccessToken(rider.getToken());
             rider.setId("");
             rider.setIsAdmin("");
+            rider.setSubGroupRiderRel(null);
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            rider.setSubGroupRiderRel(null);
         } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             rider.setAccessToken(null);
             rider.setId("");
             rider.setIsAdmin("");
+            rider.setSubGroupRiderRel(null);
         }
 
         int nRet = riderMapper.updateRiderInfo(rider);
