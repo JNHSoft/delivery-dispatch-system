@@ -49,47 +49,34 @@
 			created_datetime
 			, modified_datetime
 			, last_access
-			, admin_id
 			, chat_user_id
+			, admin_id
 			, id
-			, login_id
-			, login_pw
-			, code
 			, name
 			, phone
-			, store_name
-			, ch_store_name
-			, store_phone
-			, address
-			, detail_address
+			, login_id
+			, login_pw
 			, latitude
 			, longitude
+			, comment
 			, store_status
 			, store_distance_sort
 			, radius
 			, assignment_status
 			, assignment_limit
-			, third_party
 			, deleted
         FROM TB_STORE
 		WHERE 1=1
 			<choose>
 			<when test="id != null and id != ''">
-				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-					AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-				</if>
-				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-				</if>
 				AND id = #{id}
 			</when>
 			<otherwise>
-				AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 				AND id = (
-				SELECT store_id
-				FROM TB_STORE_SESSION
-				WHERE access_token=#{accessToken}
-				)
+					SELECT store_id
+					FROM TB_STORE_SESSION
+					WHERE access_token=#{accessToken}
+					)
 			</otherwise>
 			</choose>
 	</select>

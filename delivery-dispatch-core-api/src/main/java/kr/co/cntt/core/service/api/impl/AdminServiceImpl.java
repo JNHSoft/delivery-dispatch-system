@@ -3,11 +3,13 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
-import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.store.StoreRiderRel;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.util.Geocoder;
@@ -69,6 +71,90 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
     @Secured("ROLE_ADMIN")
     @Override
+    public List<Group> getGroups(Common common) throws AppTrException {
+
+        List<Group> S_Group = adminMapper.selectGroups(common);
+
+        if (S_Group.size() ==0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Group;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int postGroup(Group group) { return adminMapper.insertGroup(group); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putGroup(Group group) { return adminMapper.updateGroup(group); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteGroup(Group group) { return adminMapper.deleteGroup(group); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public List<SubGroup> getSubgroups(Common common) throws AppTrException {
+
+        List<SubGroup> S_Group = adminMapper.selectSubGroups(common);
+
+        if (S_Group.size() ==0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Group;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int postSubgroup(SubGroup subGroup) { return adminMapper.insertSubGroup(subGroup); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putSubgroup(SubGroup subGroup) { return adminMapper.updateSubGroup(subGroup); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteSubgroup(SubGroup subGroup) { return adminMapper.deleteSubGroup(subGroup); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public List<SubGroupStoreRel> getNoneSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel) throws AppTrException {
+
+        List<SubGroupStoreRel> S_Group = adminMapper.selectNoneSubgroupStoreRels(subGroupStoreRel);
+
+        if (S_Group.size() ==0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Group;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public List<SubGroupStoreRel> getSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel) throws AppTrException {
+
+        List<SubGroupStoreRel> S_Group = adminMapper.selectSubgroupStoreRels(subGroupStoreRel);
+
+        if (S_Group.size() ==0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Group;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int postSubgroupStoreRel(Store store) { return adminMapper.insertSubGroupStoreRel(store); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putSubgroupStoreRel(Store store) { return adminMapper.updateSubGroupStoreRel(store); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
     public List<Rider> getRiders(Common common) throws AppTrException {
 
         List<Rider> S_Rider = adminMapper.selectRiders(common);
@@ -97,6 +183,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
             return 0;
         }
     }
+
     // 기사 삭제
     @Secured("ROLE_ADMIN")
     @Override
@@ -154,7 +241,13 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         if (store.getChatUserId() != null && store.getChatRoomId() != null) {
             adminMapper.insertChatUserChatRoomRel(store);
 
-            return adminMapper.insertStore(store);
+            if (store.getGroup() != null && store.getSubGroup() != null) {
+                adminMapper.insertStore(store);
+                return adminMapper.insertSubGroupStoreRel(store);
+            } else {
+
+                return adminMapper.insertStore(store);
+            }
         } else {
             // TODO : chatUser or chatRoom deleted
             return 0;
@@ -169,29 +262,6 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         adminMapper.deleteStore(store);
 
         return adminMapper.deleteStore(store);
-    }
-
-
-    @Secured("ROLE_ADMIN")
-    @Override
-    public List<StoreRiderRel> getStoreRiderRel(Common common) throws AppTrException {
-
-        List<StoreRiderRel> S_Rel = adminMapper.selectStoreRiderRel(common);
-
-        if (S_Rel.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
-        }
-
-        return S_Rel;
-    }
-
-    @Secured("ROLE_ADMIN")
-    @Override
-    public int putStoreRiderRel(StoreRiderRel storeRiderRel) {
-
-        adminMapper.updateStoreRiderRel(storeRiderRel);
-
-        return adminMapper.insertStoreRiderRel(storeRiderRel);
     }
 
 }

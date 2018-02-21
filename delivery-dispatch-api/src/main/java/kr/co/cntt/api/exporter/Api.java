@@ -13,6 +13,42 @@ public interface Api {
     /** [Admin] 정보 조회 */
     String ADMIN_INFO = "/getAdminInfo.json";
 
+    /** [Admin] 그룹 목록 조회 */
+    String ADMIN_GROUP_LIST = "/getGroups.json";
+
+    /** [Admin] 그룹 등록 */
+    String ADMIN_GROUP_POST = "/postGroup.json";
+
+    /** [Admin] 그룹 수정 */
+    String ADMIN_GROUP_PUT = "/putGroup.json";
+
+    /** [Admin] 그룹 삭제 */
+    String ADMIN_GROUP_DELETE = "/deleteGroup.json";
+
+    /** [Admin] 서브그룹 목록 조회 */
+    String ADMIN_SUBGROUP_LIST = "/getSubgroups.json";
+
+    /** [Admin] 서브그룹 등록 */
+    String ADMIN_SUBGROUP_POST = "/postSubgroup.json";
+
+    /** [Admin] 서브그룹 수정 */
+    String ADMIN_SUBGROUP_PUT = "/putSubgroup.json";
+
+    /** [Admin] 서브그룹 삭제 */
+    String ADMIN_SUBGROUP_DELETE = "/deleteSubgroup.json";
+
+    /** [Admin] 상점 미지정 그룹 목록 조회 */
+    String ADMIN_NONE_SUBGROUP_STORE_REL_LIST = "/getNoneSubgroupStoreRels.json";
+
+    /** [Admin] 상점 그룹 목록 조회 */
+    String ADMIN_SUBGROUP_STORE_REL_LIST = "/getSubgroupStoreRels.json";
+
+    /** [Admin] 상점 그룹 설정 */
+    String ADMIN_SUBGROUP_STORE_REL_POST = "/postSubgroupStoreRel.json";
+
+    /** [Admin] 상점 그룹 수정 */
+    String ADMIN_SUBGROUP_STORE_REL_PUT = "/putSubgroupStoreRel.json";
+
     /** [Admin] 기사 목록 조회 */
     String ADMIN_RIDERS_LIST = "/getRiders.json";
 
@@ -30,12 +66,6 @@ public interface Api {
 
     /** [Admin] 상점 삭제 */
     String ADMIN_STORE_DELETE = "/deleteStore.json";
-
-    /** [Admin] 상점 기사 전체 소속 목록 */
-    String ADMIN_STORE_RIDER_REL = "/getStoreRiderRel.json";
-
-    /** [Admin] 상점 기사 소속 등록, 변경 */
-    String ADMIN_RIDER_TO_STORE_PUT = "/putStoreRiderRel.json";
 
     // ############################################################################################ //
 
