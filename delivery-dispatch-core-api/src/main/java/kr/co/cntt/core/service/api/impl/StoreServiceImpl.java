@@ -9,6 +9,7 @@ import kr.co.cntt.core.service.api.StoreService;
 import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -55,16 +56,23 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     }
 
     // store 정보 조회
+    @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
     public List<Store> getStoreInfo(Store store) throws AppTrException {
+        // 권한
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // store 가 조회
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             // token 값 선언
             store.setAccessToken(store.getToken());
             store.setId("");
-        } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
+            store.setIsAdmin("");
+        }
+        // 이 조회
+        else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             store.setAccessToken(null);
             store.setId("");
+            store.setIsAdmin("");
         }
 
         // log 확인
