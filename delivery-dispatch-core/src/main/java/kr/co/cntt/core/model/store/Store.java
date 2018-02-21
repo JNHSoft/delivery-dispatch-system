@@ -37,10 +37,14 @@ public class Store extends User implements Dto {
     private String storeDistanceSort;
     private String assignmentStatus;
     private String assignmentLimit;
+    private String thirdParty;
 
     private Group group;
     private SubGroup subGroup;
     private SubGroupStoreRel subGroupStoreRel;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String isAdmin;
 
 }
 
