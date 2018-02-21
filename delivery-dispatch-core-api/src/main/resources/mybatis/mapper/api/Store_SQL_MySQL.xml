@@ -51,6 +51,7 @@
 		, last_access
 		, admin_id
 		, chat_user_id
+		, id
 		, login_id
 		, login_pw
 		, code

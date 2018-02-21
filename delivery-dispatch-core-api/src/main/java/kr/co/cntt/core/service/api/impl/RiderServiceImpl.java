@@ -51,15 +51,19 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return riderMapper.insertRiderSession(rider);
     }
 
+    // rider 정보 조회
+    @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
     public List<Rider> getRiderInfo(Rider rider) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             rider.setAccessToken(rider.getToken());
             rider.setId("");
+            rider.setIsAdmin("");
         } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             rider.setAccessToken(null);
             rider.setId("");
+            rider.setIsAdmin("");
         }
 
         List<Rider> S_Rider = riderMapper.getRiderInfo(rider);
@@ -90,16 +94,19 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         return S_Rider;
     }
-
+    // rider 정보 수정
+    @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
     public int updateRiderInfo(Rider rider) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             rider.setAccessToken(rider.getToken());
             rider.setId("");
+            rider.setIsAdmin("");
         } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             rider.setAccessToken(null);
             rider.setId("");
+            rider.setIsAdmin("");
         }
 
         int nRet = riderMapper.updateRiderInfo(rider);

@@ -68,7 +68,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
             store.setId("");
             store.setIsAdmin("");
         }
-        // 이 조회
+        // 권한이 없는 다른 user 가 조회
         else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             store.setAccessToken(null);
             store.setId("");
