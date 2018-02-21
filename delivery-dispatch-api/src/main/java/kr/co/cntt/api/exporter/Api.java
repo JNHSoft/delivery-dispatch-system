@@ -49,6 +49,9 @@ public interface Api {
     /** [Admin] 상점 그룹 수정 */
     String ADMIN_SUBGROUP_STORE_REL_PUT = "/putSubgroupStoreRel.json";
 
+    /** [Admin] 상점 그룹 삭제 */
+    String ADMIN_SUBGROUP_STORE_REL_DELETE = "/deleteSubgroupStoreRel.json";
+
     /** [Admin] 기사 목록 조회 */
     String ADMIN_RIDERS_LIST = "/getRiders.json";
 

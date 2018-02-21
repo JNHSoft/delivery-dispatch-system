@@ -55,6 +55,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 상점 그룹 수정 */
 	ADMIN_SUBGROUP_STORE_REL_PUT("adminService", "putSubgroupStoreRel", Store.class),
 
+	/** [Admin] 상점 그룹 삭제 */
+	ADMIN_SUBGROUP_STORE_REL_DELETE("adminService", "deleteSubgroupStoreRel", SubGroupStoreRel.class),
+
 	/** [Admin] 기사 목록 조회 */
 	ADMIN_RIDERS_LIST("adminService", "getRiders", Common.class),
 

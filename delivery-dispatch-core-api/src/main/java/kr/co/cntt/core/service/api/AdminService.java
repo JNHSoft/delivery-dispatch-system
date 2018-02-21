@@ -144,6 +144,14 @@ public interface AdminService {
     public int putSubgroupStoreRel(Store store);
 
     /**
+     * <p> deleteSubgroupStoreRel
+     *
+     * @param subGroupStoreRel
+     * @return
+     */
+    public int deleteSubgroupStoreRel(SubGroupStoreRel subGroupStoreRel);
+
+    /**
      * <p> getRiders
      *
      * @param common

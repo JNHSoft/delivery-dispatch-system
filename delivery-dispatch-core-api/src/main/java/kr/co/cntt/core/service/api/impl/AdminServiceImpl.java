@@ -63,7 +63,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> S_Admin = adminMapper.selectAdminInfo(common);
 
         if (S_Admin.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.M0001), ErrorCodeEnum.M0001.name());
         }
 
         return S_Admin;
@@ -76,7 +76,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Group> S_Group = adminMapper.selectGroups(common);
 
         if (S_Group.size() ==0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00001), ErrorCodeEnum.E00001.name());
         }
 
         return S_Group;
@@ -101,7 +101,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<SubGroup> S_Group = adminMapper.selectSubGroups(common);
 
         if (S_Group.size() ==0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00002), ErrorCodeEnum.E00002.name());
         }
 
         return S_Group;
@@ -126,7 +126,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<SubGroupStoreRel> S_Group = adminMapper.selectNoneSubgroupStoreRels(subGroupStoreRel);
 
         if (S_Group.size() ==0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00003), ErrorCodeEnum.E00003.name());
         }
 
         return S_Group;
@@ -139,7 +139,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<SubGroupStoreRel> S_Group = adminMapper.selectSubgroupStoreRels(subGroupStoreRel);
 
         if (S_Group.size() ==0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00004), ErrorCodeEnum.E00004.name());
         }
 
         return S_Group;
@@ -152,6 +152,10 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Secured("ROLE_ADMIN")
     @Override
     public int putSubgroupStoreRel(Store store) { return adminMapper.updateSubGroupStoreRel(store); }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteSubgroupStoreRel(SubGroupStoreRel subGroupStoreRel) { return adminMapper.deleteSubGroupStoreRel(subGroupStoreRel); }
 
     @Secured("ROLE_ADMIN")
     @Override
@@ -177,7 +181,14 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         if (rider.getChatUserId() != null && rider.getChatRoomId() != null) {
             adminMapper.insertChatUserChatRoomRel(rider);
 
-            return adminMapper.insertRider(rider);
+            if (rider.getSubGroupStoreRel() != null) {
+                adminMapper.insertRider(rider);
+
+                return adminMapper.insertSubGroupRiderRel(rider);
+            } else {
+
+                return adminMapper.insertRider(rider);
+            }
         } else {
             // TODO : chatUser or chatRoom deleted
             return 0;

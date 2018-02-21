@@ -258,6 +258,43 @@
 	</update>
 
 
+	<!-- deleteSubGroupStoreRel -->
+	<update id="deleteSubGroupStoreRel" parameterType="kr.co.cntt.core.model.group.SubGroupStoreRel">
+		UPDATE TB_SUBGROUP_STORE_REL AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.store_id = B.store_id
+			AND A.subgroup_id = B.subgroup_id
+			AND A.group_id = B.group_id
+			AND A.admin_id = B.admin_id
+		SET A.deleted = now()
+			,B.deleted = now()
+		WHERE A.id = #{id}
+			AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.deleted IS NULL
+			AND B.deleted IS NULL
+	</update>
+
+
+	<!-- insertSubGroupRiderRel -->
+	<insert id="insertSubGroupRiderRel" parameterType="kr.co.cntt.core.model.rider.Rider">
+		INSERT INTO TB_SUBGROUP_RIDER_REL (
+			created_datetime
+			, admin_id
+			, group_id
+			, subgroup_id
+			, store_id
+			, rider_id
+		) VALUES (
+			now()
+			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			, #{subGroupStoreRel.groupId}
+			, #{subGroupStoreRel.subGroupId}
+			, #{subGroupStoreRel.storeId}
+			, #{id}
+		)
+	</insert>
+
+
 	<!-- insertChatUser -->
 	<insert id="insertChatUser" parameterType="kr.co.cntt.core.model.login.User">
 		INSERT INTO TB_CHAT_USER (
@@ -325,13 +362,15 @@
 			, phone
 			, login_id
 			, login_pw
-			, position
+			, code
 			, gender
 			, employment_type
 			, address
 			, vehicle_number
 			, emergency_phone
-			, comment
+			, working_hours
+			, rest_hours
+			, teenager
 		) VALUES (
 			now()
 			, #{chatUserId}
@@ -340,20 +379,15 @@
 			, #{phone}
 			, #{loginId}
 			, #{loginPw}
-			, #{position}
-			<if test="gender != null and gender != ''">
-				, #{gender}
+			<if test="code != null and code != ''">
+				, #{code}
 			</if>
-			<if test="gender == null or gender == ''">
-				, 0
+			<if test="code == null or code == ''">
+				, NULL
 			</if>
-			<if test="employmentType != null and employmentType != ''">
-				, #{employmentType}
-			</if>
-			<if test="employmentType == null or employmentType == ''">
-				, 0
-			</if>
-			<if test="address != address and address != ''">
+			, #{gender}
+			, #{employmentType}
+			<if test="address != null and address != ''">
 				, #{address}
 			</if>
 			<if test="address == null or address == ''">
@@ -371,13 +405,18 @@
 			<if test="emergencyPhone == null or emergencyPhone == ''">
 				, NULL
 			</if>
-			<if test="comment != null and comment != ''">
-				, #{comment}
+			, #{workingHours}
+			<if test="restHours != null and restHours != ''">
+				, #{restHours}
 			</if>
-			<if test="comment == null or comment == ''">
+			<if test="restHours == null or restHours == ''">
 				, NULL
 			</if>
+			, #{teenager}
 		)
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</insert>
 
 	<!--기사 삭제 -->

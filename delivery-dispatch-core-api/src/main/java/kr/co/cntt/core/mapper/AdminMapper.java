@@ -148,6 +148,22 @@ public interface AdminMapper {
     public int updateSubGroupStoreRel(Store store);
 
     /**
+     * <p> 상점 서브그룹 삭제
+     *
+     * @param subGroupStoreRel
+     * @return
+     */
+    public int deleteSubGroupStoreRel(SubGroupStoreRel subGroupStoreRel);
+
+    /**
+     * <p> 상점 소속 서브그룹에 기사 등록
+     * 
+     * @param rider
+     * @return
+     */
+    public int insertSubGroupRiderRel(Rider rider);
+
+    /**
      * <p> chatUser 등록
      *
      * @param common
