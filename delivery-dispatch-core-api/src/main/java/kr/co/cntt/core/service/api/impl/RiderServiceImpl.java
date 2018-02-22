@@ -203,4 +203,18 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return map;
     }
 
+    @Override
+    public int updatePushToken(Rider rider) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            rider.setAccessToken(rider.getToken());
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
+            // rider 가 아닌 user 가 넘어왔을때 token 값 null 로 셋팅
+            rider.setAccessToken(null);
+        }
+
+        int nRet = riderMapper.updatePushToken(rider);
+        return nRet;
+    }
+
 }

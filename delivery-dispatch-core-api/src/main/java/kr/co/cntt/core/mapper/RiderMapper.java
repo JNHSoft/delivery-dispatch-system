@@ -94,5 +94,10 @@ public interface RiderMapper {
     public List<Rider> getStoreRidersLocation(Rider rider);
 
 
-
+    /**
+     * Rider 푸쉬토큰 등록
+     * @param rider
+     * @return
+     */
+    public int updatePushToken(Rider rider);
 }

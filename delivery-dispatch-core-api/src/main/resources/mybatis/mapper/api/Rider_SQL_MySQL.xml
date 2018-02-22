@@ -340,5 +340,18 @@
 				access_token = #{accessToken})
 	</select>
 
+	<update id="updatePushToken" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_RIDER_SESSION
+		SET
+		modified_datetime = now()
+
+		<if test="pushToken != null and pushToken != ''">
+			, push_token=#{pushToken}
+		</if>
+
+		WHERE
+		access_token = #{accessToken}
+	</update>
+
 </mapper>
  
