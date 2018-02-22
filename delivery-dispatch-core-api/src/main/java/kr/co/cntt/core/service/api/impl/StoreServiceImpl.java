@@ -90,10 +90,9 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     }
 
     // store 정보 수정
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
     public int updateStoreInfo(Store store) {
-        // token 값 선언
-        store.setAccessToken(store.getToken());
 
         Misc misc = new Misc();
         Map<String, Integer> storeHaversineMap = new HashMap<>();
@@ -115,6 +114,14 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         }
 
         store.setStoreDistanceSort(StringUtils.arrayToDelimitedString(misc.sortByValue(storeHaversineMap).toArray(), ","));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            store.setId(null);
+            store.setCode(null);
+            store.setSubGroupStoreRel(null);
+        }
 
         return storeMapper.updateStoreInfo(store);
     }

@@ -86,9 +86,9 @@
 			<otherwise>
 				AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 				AND id = (
-				SELECT store_id
-				FROM TB_STORE_SESSION
-				WHERE access_token=#{accessToken}
+					SELECT store_id
+					FROM TB_STORE_SESSION
+					WHERE access_token=#{accessToken}
 				)
 			</otherwise>
 		</choose>
@@ -97,102 +97,118 @@
 
 	<!-- store 정보 수정 -->
 	<update id="updateStoreInfo" parameterType="kr.co.cntt.core.model.store.Store">
-		UPDATE TB_STORE
+		UPDATE TB_STORE AS A
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
+		ON A.id = B.store_id
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS C
+		ON A.id = C.store_id
 		SET
-			modified_datetime = now()
+			A.modified_datetime = now()
 			<if test="expirationDate != null and expirationDate != ''">
-				, expiration_date = #{expirationDate}
+				, A.expiration_date = #{expirationDate}
 			</if>
 
 			<if test="lastAccess != null and lastAccess != ''">
-				, last_access = #{lastAccess}
+				, A.last_access = #{lastAccess}
+			</if>
+
+			<if test="code != null and code != ''">
+				, A.code = #{code}
 			</if>
 
 			<if test="name != null and name != ''">
-				, name = #{name}
+				, A.name = #{name}
 			</if>
 
 			<if test="phone != null and phone != ''">
-				, phone = #{phone}
+				, A.phone = #{phone}
 			</if>
 
 			<if test="storeName != null and storeName != ''">
-				, store_name = #{storeName}
+				, A.store_name = #{storeName}
 			</if>
 
 			<if test="chStoreName != null and chStoreName != ''">
-				, ch_store_name = #{chStoreName}
+				, A.ch_store_name = #{chStoreName}
 			</if>
 
 			<if test="storePhone != null and storePhone != ''">
-				, store_phone = #{storePhone}
+				, A.store_phone = #{storePhone}
 			</if>
 
 			<if test="loginPw != null and loginPw != ''">
-				, login_pw = #{loginPw}
-			</if>
-
-			<if test="email != null and email != ''">
-				, email = #{email}
+				, A.login_pw = #{loginPw}
 			</if>
 
 			<if test="address != null and address != ''">
-				, address = #{address}
+				, A.address = #{address}
 			</if>
 
 			<if test="detailAddress != null and detailAddress != ''">
-				, detail_address = #{detailAddress}
+				, A.detail_address = #{detailAddress}
 			</if>
 
 			<if test="chAddress != null and chAddress != ''">
-				, ch_address = #{chAddress}
+				, A.ch_address = #{chAddress}
 			</if>
 
 			<if test="chDetailAddress != null and chDetailAddress != ''">
-				, ch_detail_address = #{chDetailAddress}
+				, A.ch_detail_address = #{chDetailAddress}
 			</if>
 
 			<if test="latitude != null and latitude != ''">
-				, latitude = #{latitude}
+				, A.latitude = #{latitude}
 			</if>
 
 			<if test="longitude != null  and longitude != ''">
-				, longitude = #{longitude}
-			</if>
-
-			<if test="comment != null  and comment != ''">
-				, comment = #{comment}
+				, A.longitude = #{longitude}
 			</if>
 
 			<if test="storeStatus != null  and storeStatus != ''">
-				, store_status = #{storeStatus}
+				, A.store_status = #{storeStatus}
 			</if>
 
 			<if test="radius != null  and radius != ''">
-				, radius = #{radius}
+				, A.radius = #{radius}
 			</if>
 
 			<if test="storeDistanceSort != null  and storeDistanceSort != ''">
-				, store_distance_sort = #{storeDistanceSort}
+				, A.store_distance_sort = #{storeDistanceSort}
 			</if>
 
 			<if test="assignmentStatus != null  and assignmentStatus != ''">
-				, assignment_status = #{assignmentStatus}
+				, A.assignment_status = #{assignmentStatus}
 			</if>
 
 			<if test="assignmentLimit != null  and assignmentLimit != ''">
-				, assignment_limit = #{assignmentLimit}
+				, A.assignment_limit = #{assignmentLimit}
+			</if>
+			<if test="subGroupStoreRel != null">
+				, B.modified_datetime = now()
+				, B.store_id = #{subGroupStoreRel.storeId}
+				, B.subgroup_id = #{subGroupStoreRel.subGroupId}
+				, B.group_id = #{subGroupStoreRel.groupId}
+				, C.modified_datetime = now()
+				, C.store_id = #{subGroupStoreRel.storeId}
+				, C.subgroup_id = #{subGroupStoreRel.subGroupId}
+				, C.group_id = #{subGroupStoreRel.groupId}
 			</if>
 
-			<if test="deleted != null  and deleted != ''">
-				, deleted = #{deleted}
-			</if>
-		WHERE
-			id = (
-				SELECT store_id
-				FROM TB_STORE_SESSION
-				WHERE access_token=#{accessToken}
-			)
+		WHERE 1=1
+		<choose>
+			<when test="id != null and id != ''">
+				AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+				AND A.id = #{id}
+			</when>
+			<otherwise>
+				AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+				AND A.id = (
+						SELECT store_id
+						FROM TB_STORE_SESSION
+						WHERE access_token=#{token}
+					)
+			</otherwise>
+		</choose>
 
 	</update>
 
