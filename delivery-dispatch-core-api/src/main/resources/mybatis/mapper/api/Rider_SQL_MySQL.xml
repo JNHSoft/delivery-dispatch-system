@@ -366,7 +366,6 @@
 				access_token = #{accessToken})
 	</select>
 
-<<<<<<< HEAD
 	<update id="updatePushToken" parameterType="kr.co.cntt.core.model.rider.Rider">
 		UPDATE TB_RIDER_SESSION
 		SET
@@ -379,7 +378,6 @@
 		WHERE
 		access_token = #{accessToken}
 	</update>
-=======
 
 	<!-- selectSubgroupRiderRels -->
 	<select id="selectSubgroupRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
@@ -411,7 +409,7 @@
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			AND A.deleted IS NULL;
 	</select>
->>>>>>> 073127e65c7d7df6f6fb03d3bbb6e2ac23bd4676
+
 
 </mapper>
  

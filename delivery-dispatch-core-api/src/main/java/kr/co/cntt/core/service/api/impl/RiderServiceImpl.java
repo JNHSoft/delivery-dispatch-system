@@ -204,7 +204,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return map;
     }
 
-<<<<<<< HEAD
     @Override
     public int updatePushToken(Rider rider) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -217,7 +216,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         int nRet = riderMapper.updatePushToken(rider);
         return nRet;
-=======
+
     @Secured("ROLE_STORE")
     @Override
     public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException {
@@ -228,7 +227,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         return S_Rider;
->>>>>>> 073127e65c7d7df6f6fb03d3bbb6e2ac23bd4676
+
     }
 
 }
