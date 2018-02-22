@@ -93,6 +93,7 @@ public interface Api {
     /** Rider 들 위치 정보 조회   */
     String RIDERS_LOCATION_INFO = "/getRidersLocation.json";
 
+    String SUBGROUP_RIDER_REL_LIST = "/getSubgroupRiderRels.json";
 
     // ############################################################################################ //
 

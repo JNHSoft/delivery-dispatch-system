@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -201,6 +202,18 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         map.put("adminRider", A_Rider);
         map.put("storeRider", S_Rider);
         return map;
+    }
+
+    @Secured("ROLE_STORE")
+    @Override
+    public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException {
+        List<Rider> S_Rider = riderMapper.selectSubgroupRiderRels(common);
+
+        if (S_Rider.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00006), ErrorCodeEnum.E00006.name());
+        }
+
+        return S_Rider;
     }
 
 }
