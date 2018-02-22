@@ -99,17 +99,21 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Override
     public int updateRiderInfo(Rider rider) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             rider.setAccessToken(rider.getToken());
-            rider.setId("");
-            rider.setIsAdmin("");
+            rider.setId(null);
+            rider.setIsAdmin(null);
+            rider.setCode(null);
             rider.setSubGroupRiderRel(null);
         } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            rider.setCode(null);
             rider.setSubGroupRiderRel(null);
         } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             rider.setAccessToken(null);
-            rider.setId("");
-            rider.setIsAdmin("");
+            rider.setId(null);
+            rider.setIsAdmin(null);
+            rider.setCode(null);
             rider.setSubGroupRiderRel(null);
         }
 

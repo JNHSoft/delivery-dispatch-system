@@ -195,9 +195,7 @@
 				, A.teenager = #{teenager}
 			</if>
 
-			<if test="(subGroupRiderRel.groupId != null and subGroupRiderRel.groupId != '')
-				and (subGroupRiderRel.subGroupId != null and subGroupRiderRel.subGroupId != '')
-				and (subGroupRiderRel.storeId != null and subGroupRiderRel.storeId != '')">
+			<if test="subGroupRiderRel != null">
 				, B.modified_datetime = now()
 				, B.store_id = #{subGroupRiderRel.storeId}
 				, B.subgroup_id = #{subGroupRiderRel.subGroupId}
