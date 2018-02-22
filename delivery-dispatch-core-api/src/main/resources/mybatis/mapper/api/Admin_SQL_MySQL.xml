@@ -1,8 +1,36 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.AdminMapper">
 
-	<!-- StoreListResult -->
-	<resultMap id="StoreListResult" type="kr.co.cntt.core.model.store.Store">
+	<!-- selectRidersResult -->
+	<resultMap id="selectRidersResult" type="kr.co.cntt.core.model.rider.Rider">
+		<result property="id" column="id" />
+        <result property="name" column="name" />
+		<result property="code" column="code" />
+		<result property="phone" column="phone" />
+        <result property="address" column="address" />
+		<result property="gender" column="gender" />
+		<result property="employmentType" column="employment_type" />
+		<result property="teenager" column="teenager" />
+		<result property="vehicleNumber" column="vehicle_number" />
+		<result property="loginId" column="login_id" />
+
+		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
+			<result property="id" column="groupId" />
+			<result property="name" column="groupName" />
+			<result property="adminId" column="groupAdminId" />
+		</association>
+
+		<association property="subGroup" column="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
+			<result property="id" column="subgroupId" />
+			<result property="groupId" column="subgroupGroupId" />
+			<result property="name" column="subgroupName" />
+			<result property="adminId" column="subgroupAdminId" />
+		</association>
+	</resultMap>
+
+
+	<!-- selectStoresResult -->
+	<resultMap id="selectStoresResult" type="kr.co.cntt.core.model.store.Store">
 		<result property="id" column="id" />
 		<result property="code" column="code" />
 		<result property="name" column="name" />
@@ -378,19 +406,39 @@
 
 
 	<!-- selectRiders -->
-	<select id="selectRiders" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.rider.Rider">
+	<select id="selectRiders" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRidersResult">
 		SELECT
-			id
-			, name
-			, phone
-			, login_id
-			, position
-			, gender
-			, employment_type
-			, working
-			, status
-		FROM TB_RIDER
-		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			A.id
+			, A.name
+			, A.code
+			, A.phone
+			, A.address
+			, A.login_id
+			, A.gender
+			, A.employment_type
+			, A.teenager
+			, A.vehicle_number
+			, C.id AS subgroupId
+			, C.group_id AS subgroupGroupId
+			, C.name AS subgroupName
+			, C.admin_id AS subgroupAdminId
+			, D.id AS groupId
+			, D.name AS groupName
+			, D.admin_id AS groupAdminId
+		FROM TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
+			AND B.deleted IS NULL
+		LEFT JOIN TB_SUBGROUP AS C
+		ON B.group_id = C.group_id
+			AND B.subgroup_id = C.id
+			AND C.deleted IS NULL
+		LEFT JOIN  TB_GROUP AS D
+		ON B.group_id = D.id
+			AND D.deleted IS NULL
+		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.deleted IS NULL
+			ORDER BY A.name
 	</select>
 
 
@@ -477,7 +525,7 @@
 
 
 	<!-- selectStores -->
-	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultMap="StoreListResult">
+	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectStoresResult">
 		SELECT
 			A.id
 			, A.code

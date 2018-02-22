@@ -2,6 +2,8 @@ package kr.co.cntt.core.model.rider;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
@@ -36,6 +38,9 @@ public class Rider extends User implements Dto {
     private String teenager;
 
     private List<RiderSession> riderSession;
+
+    private Group group;
+    private SubGroup subGroup;
     private SubGroupRiderRel subGroupRiderRel;
     private SubGroupStoreRel subGroupStoreRel;
 

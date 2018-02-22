@@ -164,7 +164,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Rider> S_Rider = adminMapper.selectRiders(common);
 
         if (S_Rider.size() ==0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00006), ErrorCodeEnum.E00006.name());
         }
 
         return S_Rider;
