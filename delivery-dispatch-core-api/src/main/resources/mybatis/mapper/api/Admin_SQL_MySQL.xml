@@ -1,6 +1,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.AdminMapper">
 
+	<!-- StoreListResult -->
+	<resultMap id="StoreListResult" type="kr.co.cntt.core.model.store.Store">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="phone" column="phone" />
+		<result property="storeName" column="store_name" />
+		<result property="chStoreName" column="ch_store_name" />
+		<result property="storePhone" column="store_phone" />
+		<result property="loginId" column="login_id" />
+		<result property="address" column="address" />
+		<result property="detailAddress" column="detail_address" />
+		<result property="chAddress" column="ch_address" />
+		<result property="chDetailAddress" column="ch_detail_address" />
+
+		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
+			<result property="id" column="groupId" />
+			<result property="name" column="groupName" />
+			<result property="adminId" column="groupAdminId" />
+		</association>
+
+		<association property="subGroup" column="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
+			<result property="id" column="subgroupId" />
+			<result property="groupId" column="subgroupGroupId" />
+			<result property="name" column="subgroupName" />
+			<result property="adminId" column="subgroupAdminId" />
+		</association>
+	</resultMap>
+
+
+	<!-- selectLoginAdmin -->
 	<select id="selectLoginAdmin" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="String">
 		SELECT login_id, id FROM TB_ADMIN
 		WHERE 1=1
@@ -446,23 +477,41 @@
 
 
 	<!-- selectStores -->
-	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.store.Store">
+	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultMap="StoreListResult">
 		SELECT
-			id
-			, code
-			, name
-			, phone
-			, store_name
-			, ch_store_name
-			, store_phone
-			, login_id
-			, latitude
-			, longitude
-			, store_status
-			, assignment_status
-			, assignment_limit
-		FROM TB_STORE
-		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			A.id
+			, A.code
+			, A.name
+			, A.phone
+			, A.store_name
+			, A.ch_store_name
+			, A.store_phone
+			, A.login_id
+			, A.address
+			, A.detail_address
+			, A.ch_address
+			, A.ch_detail_address
+			, C.id AS subgroupId
+			, C.group_id AS subgroupGroupId
+			, C.name AS subgroupName
+			, C.admin_id AS subgroupAdminId
+			, D.id AS groupId
+			, D.name AS groupName
+			, D.admin_id AS groupAdminId
+		FROM TB_STORE AS A
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
+		ON A.id = B.store_id
+			AND B.deleted IS NULL
+		LEFT JOIN TB_SUBGROUP AS C
+		ON B.group_id = C.group_id
+			AND B.subgroup_id = C.id
+			AND C.deleted IS NULL
+		LEFT JOIN  TB_GROUP AS D
+		ON B.group_id = D.id
+			AND D.deleted IS NULL
+		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.deleted IS NULL
+			ORDER BY A.name
 	</select>
 
 

@@ -206,7 +206,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Store> S_Store = adminMapper.selectStores(common);
 
         if (S_Store.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00005), ErrorCodeEnum.E00005.name());
         }
 
         return S_Store;
