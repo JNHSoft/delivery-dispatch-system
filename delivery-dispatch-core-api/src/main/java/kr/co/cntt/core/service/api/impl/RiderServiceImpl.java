@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -203,6 +204,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return map;
     }
 
+<<<<<<< HEAD
     @Override
     public int updatePushToken(Rider rider) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -215,6 +217,18 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         int nRet = riderMapper.updatePushToken(rider);
         return nRet;
+=======
+    @Secured("ROLE_STORE")
+    @Override
+    public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException {
+        List<Rider> S_Rider = riderMapper.selectSubgroupRiderRels(common);
+
+        if (S_Rider.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00006), ErrorCodeEnum.E00006.name());
+        }
+
+        return S_Rider;
+>>>>>>> 073127e65c7d7df6f6fb03d3bbb6e2ac23bd4676
     }
 
 }

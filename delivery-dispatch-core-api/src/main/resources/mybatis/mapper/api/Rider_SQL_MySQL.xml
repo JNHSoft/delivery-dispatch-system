@@ -1,6 +1,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.RiderMapper">
 
+	<!-- selectRidersResult -->
+	<resultMap id="selectSubgroupRiderRelsResult" type="kr.co.cntt.core.model.rider.Rider">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="status" column="status" />
+		<result property="working" column="working" />
+		<result property="chatUserId" column="chat_user_id" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="locationUpdated" column="location_updated" />
+
+		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
+			<result property="id" column="groupId" />
+			<result property="name" column="groupName" />
+			<result property="adminId" column="groupAdminId" />
+		</association>
+
+		<association property="subGroup" column="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
+			<result property="id" column="subgroupId" />
+			<result property="groupId" column="subgroupGroupId" />
+			<result property="name" column="subgroupName" />
+			<result property="adminId" column="subgroupAdminId" />
+		</association>
+	</resultMap>
+
+
 	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="String">
 		SELECT login_id FROM TB_RIDER
 		WHERE 1=1
@@ -340,6 +366,7 @@
 				access_token = #{accessToken})
 	</select>
 
+<<<<<<< HEAD
 	<update id="updatePushToken" parameterType="kr.co.cntt.core.model.rider.Rider">
 		UPDATE TB_RIDER_SESSION
 		SET
@@ -352,6 +379,39 @@
 		WHERE
 		access_token = #{accessToken}
 	</update>
+=======
+
+	<!-- selectSubgroupRiderRels -->
+	<select id="selectSubgroupRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
+		SELECT A.id
+			, A.name
+			, A.status
+			, A.working
+			, A.chat_user_id
+			, A.latitude
+			, A.longitude
+			, A.location_updated
+			, C.id AS subgroupId
+			, C.group_id AS subgroupGroupId
+			, C.name AS subgroupName
+			, C.admin_id AS subgroupAdminId
+			, D.id AS groupId
+			, D.name AS groupName
+			, D.admin_id AS groupAdminId
+		FROM TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
+			AND B.deleted IS NULL
+		LEFT JOIN TB_SUBGROUP AS C
+		ON B.subgroup_id = C.id
+		LEFT JOIN TB_GROUP AS D
+		ON B.group_id = D.id
+			AND C.deleted IS NULL
+			AND D.deleted IS NULL
+		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+			AND A.deleted IS NULL;
+	</select>
+>>>>>>> 073127e65c7d7df6f6fb03d3bbb6e2ac23bd4676
 
 </mapper>
  
