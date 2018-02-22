@@ -69,7 +69,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         List<Rider> S_Rider = riderMapper.getRiderInfo(rider);
 
         if (S_Rider.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00008), ErrorCodeEnum.E00008.name());
         }
 
         return S_Rider;
