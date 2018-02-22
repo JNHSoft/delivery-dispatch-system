@@ -1,6 +1,7 @@
 package kr.co.cntt.api.exporter;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import kr.co.cntt.api.security.Actor;
 import kr.co.cntt.api.security.ActorDetails;
 import kr.co.cntt.api.security.CustomAuthentificateService;
@@ -222,6 +223,31 @@ public class ApiExporter extends ExporterSupportor implements Api {
         } catch (Exception e) {
             return responseError(null, e);
         }
+    }
+
+
+    @GetMapping(value = VERSION_CHECK)
+    public ResponseEntity<?> versionCheck(HttpServletRequest request) throws Exception {
+        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> min = new HashMap<String, Object>();
+        Map<String, Object> recommand = new HashMap<String, Object>();
+
+        min.put("android", null);
+        min.put("ios", null);
+        min.put("pc", null);
+
+        recommand.put("android", null);
+        recommand.put("ios", null);
+        recommand.put("pc", null);
+
+        response.put("result", CODE_SUCCESS);
+        response.put("min", min);
+        response.put("recommanded", recommand);
+
+        Gson gson = new GsonBuilder().serializeNulls().create();
+
+        return ResponseEntity.ok(gson.toJson(response).toString());
+
     }
 
 }

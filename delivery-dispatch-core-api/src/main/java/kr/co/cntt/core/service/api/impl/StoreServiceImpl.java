@@ -83,7 +83,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         List<Store> S_Store = storeMapper.getStoreInfo(store);
 
         if (S_Store.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00007), ErrorCodeEnum.E00007.name());
         }
 
         return S_Store;

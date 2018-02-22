@@ -1,6 +1,51 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.StoreMapper">
 
+
+
+    <!-- selectStoresResult -->
+    <resultMap id="selectStoreResult" type="kr.co.cntt.core.model.store.Store">
+        <result property="id" column="id" />
+        <result property="loginId" column="login_id" />
+        <result property="code" column="code" />
+        <result property="phone" column="phone" />
+        <result property="storeName" column="store_name" />
+        <result property="assignmentStatus" column="assignment_status" />
+        <result property="name" column="name" />
+
+        <result property="chStoreName" column="ch_store_name" />
+        <result property="storePhone" column="store_phone" />
+
+        <result property="address" column="address" />
+        <result property="detailAddress" column="detail_address" />
+
+        <result property="chAddress" column="ch_address" />
+        <result property="chDetailAddress" column="ch_detail_address" />
+
+        <association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
+            <result property="id" column="groupId" />
+            <result property="name" column="groupName" />
+            <result property="adminId" column="groupAdminId" />
+        </association>
+
+        <association property="subGroup" column="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
+            <result property="id" column="subgroupId" />
+            <result property="groupId" column="subgroupGroupId" />
+            <result property="name" column="subgroupName" />
+            <result property="adminId" column="subgroupAdminId" />
+        </association>
+    </resultMap>
+
+
+
+
+
+
+
+
+
+
+
 	<!--로그인 ID 확인 -->
 	<select id="selectLoginStore" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">
 		SELECT login_id FROM TB_STORE
@@ -44,55 +89,75 @@
 
 
 	<!--store 정보 조회-->
-	<select id="getStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
-		SELECT
-            created_datetime
-            , modified_datetime
-            , last_access
-            , admin_id
-            , chat_user_id
-            , id
-            , login_id
-            , login_pw
-            , code
-            , name
-            , phone
-            , store_name
-            , ch_store_name
-            , store_phone
-            , address
-            , detail_address
-            , latitude
-            , longitude
-            , store_status
-            , store_distance_sort
-            , radius
-            , assignment_status
-            , assignment_limit
-            , third_party
-            , deleted
-		FROM TB_STORE
-		WHERE 1=1
-		<choose>
-			<when test="id != null and id != ''">
-				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-					AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-				</if>
-				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-				</if>
-				AND id = #{id}
-			</when>
-			<otherwise>
-				AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-				AND id = (
-					SELECT store_id
-					FROM TB_STORE_SESSION
-					WHERE access_token=#{accessToken}
-				)
-			</otherwise>
-		</choose>
-	</select>
+    <select id="getStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultMap="selectStoreResult">
+        SELECT
+            TS.created_datetime
+            , TS.modified_datetime
+            , TS.last_access
+            , TS.admin_id
+            , TS.chat_user_id
+            , TS.id
+            , TS.login_id
+            , TS.login_pw
+            , TS.code
+            , TS.name
+            , TS.phone
+            , TS.store_name
+            , TS.ch_store_name
+            , TS.store_phone
+            , TS.address
+            , TS.detail_address
+            , TS.latitude
+            , TS.longitude
+            , TS.store_status
+            , TS.store_distance_sort
+            , TS.radius
+            , TS.assignment_status
+            , TS.assignment_limit
+            , TS.third_party
+            , TS.deleted
+            , TSG.id AS subgroupId
+            , TSG.group_id AS subgroupGroupId
+            , TG.name AS groupName
+            , TSG.name AS subgroupName
+            , TSG.admin_id AS subgroupAdminId
+            , TG.id AS groupId
+            , TG.admin_id AS groupAdminId
+        FROM TB_STORE TS
+
+        left join
+        TB_SUBGROUP_STORE_REL AS SSR
+        on TS.id = SSR.store_id
+
+        left join
+        TB_SUBGROUP AS TSG
+        on SSR.group_id=TSG.id
+
+        left join
+        TB_GROUP AS TG
+        on SSR.group_id = TG.id
+
+        WHERE 1=1
+        <choose>
+            <when test="id != null and id != ''">
+                <if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
+                    AND TS.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                </if>
+                <if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
+                    AND TS.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                </if>
+                AND TS.id = #{id}
+            </when>
+            <otherwise>
+                AND TS.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+                AND TS.id = (
+                SELECT store_id
+                FROM TB_STORE_SESSION
+                WHERE access_token=#{accessToken}
+                )
+            </otherwise>
+        </choose>
+    </select>
 
 
 	<!-- store 정보 수정 -->

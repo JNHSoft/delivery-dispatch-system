@@ -8,6 +8,9 @@ public interface Api {
     /** 토큰발행 */
     String GET_TOKEN = "/getToken.do";
 
+    /** APP Version Check */
+    String VERSION_CHECK = "/versionCheck.do";
+
     // ############################################################################################ //
 
     /** [Admin] 정보 조회 */
