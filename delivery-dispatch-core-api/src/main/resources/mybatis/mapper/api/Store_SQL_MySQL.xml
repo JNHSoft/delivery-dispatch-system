@@ -46,31 +46,31 @@
 	<!--store 정보 조회-->
 	<select id="getStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
 		SELECT
-		created_datetime
-		, modified_datetime
-		, last_access
-		, admin_id
-		, chat_user_id
-		, id
-		, login_id
-		, login_pw
-		, code
-		, name
-		, phone
-		, store_name
-		, ch_store_name
-		, store_phone
-		, address
-		, detail_address
-		, latitude
-		, longitude
-		, store_status
-		, store_distance_sort
-		, radius
-		, assignment_status
-		, assignment_limit
-		, third_party
-		, deleted
+            created_datetime
+            , modified_datetime
+            , last_access
+            , admin_id
+            , chat_user_id
+            , id
+            , login_id
+            , login_pw
+            , code
+            , name
+            , phone
+            , store_name
+            , ch_store_name
+            , store_phone
+            , address
+            , detail_address
+            , latitude
+            , longitude
+            , store_status
+            , store_distance_sort
+            , radius
+            , assignment_status
+            , assignment_limit
+            , third_party
+            , deleted
 		FROM TB_STORE
 		WHERE 1=1
 		<choose>
@@ -195,20 +195,23 @@
 			</if>
 
 		WHERE 1=1
-		<choose>
-			<when test="id != null and id != ''">
-				AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-				AND A.id = #{id}
-			</when>
-			<otherwise>
-				AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-				AND A.id = (
-						SELECT store_id
-						FROM TB_STORE_SESSION
-						WHERE access_token=#{token}
-					)
-			</otherwise>
-		</choose>
+            AND A.deleted IS NULL
+            AND B.deleted IS NULL
+            AND C.deleted IS NULL
+            <choose>
+                <when test="id != null and id != ''">
+                    AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                    AND A.id = #{id}
+                </when>
+                <otherwise>
+                    AND A.admin_id = (SELECT * FROM (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})) AS D)
+                    AND A.id = (
+                        SELECT store_id
+                        FROM TB_STORE_SESSION
+                        WHERE access_token=#{accessToken}
+                    )
+                </otherwise>
+            </choose>
 
 	</update>
 

@@ -94,6 +94,8 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     @Override
     public int updateStoreInfo(Store store) {
 
+        store.setAccessToken(store.getToken());
+
         Misc misc = new Misc();
         Map<String, Integer> storeHaversineMap = new HashMap<>();
         List<Store> C_Store = storeMapper.getStoreInfo(store);

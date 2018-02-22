@@ -213,10 +213,11 @@
 				AND A.id = #{id}
 			</when>
 			<otherwise>
+                AND A.admin_id = (SELECT * FROM (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})) AS D)
 				AND A.id = (
-				SELECT rider_id
-				FROM TB_RIDER_SESSION
-				WHERE access_token=#{accessToken}
+                    SELECT rider_id
+                    FROM TB_RIDER_SESSION
+                    WHERE access_token=#{accessToken}
 				)
 			</otherwise>
 		</choose>
