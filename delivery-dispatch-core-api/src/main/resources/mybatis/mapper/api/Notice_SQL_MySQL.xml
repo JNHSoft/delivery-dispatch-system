@@ -19,6 +19,7 @@
             , #{adminId}
             , #{title}
             , #{content}
+
         <if test="toGroupId != null and toGroupId != ''">
             , #{toGroupId}
         </if>
