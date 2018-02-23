@@ -65,4 +65,11 @@ public interface StoreMapper {
      */
     public List<Store> selectStores(Store store);
 
+    /**
+     * <p> 배정 모드 설정
+     *
+     * @param store
+     * @return
+     */
+    public int updateStoreAssignmentStatus(Store store);
 }

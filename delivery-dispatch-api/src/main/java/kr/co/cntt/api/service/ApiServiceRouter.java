@@ -119,6 +119,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Store 정보수정 */
 	STORE_UPDATE_INFO("storeService", "updateStoreInfo", Store.class),
 
+	/** [Admin] 배정모드 추가**/
+	STORE_ASSIGNMENT_STATUS_PUT("storeService", "putStoreAssignmentStatus", Store.class),
+
 	// ############################################################################################ //
 
 	/** Order 등록 */

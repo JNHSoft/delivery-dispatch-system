@@ -57,6 +57,12 @@ public interface StoreService {
      */
     public int updateStoreInfo(Store store);
 
-
+    /**
+     *  <p> deleteStore
+     *
+     * @param store
+     * @return
+     */
+    public int putStoreAssignmentStatus(Store store);
 
 }
