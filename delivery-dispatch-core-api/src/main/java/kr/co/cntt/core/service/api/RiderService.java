@@ -2,6 +2,7 @@ package kr.co.cntt.core.service.api;
 
 
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 
@@ -81,5 +82,20 @@ public interface RiderService {
      */
     public Map getRidersLocation(Rider rider) throws AppTrException ;
 
+    /**
+     * Rider pushToken 등록
+     * @param rider
+     * @return
+     * @throws AppTrException
+     */
+    public int updatePushToken(Rider rider) throws AppTrException ;
+
+    /**
+     * <p> getSubgroupRiderRels
+     *
+     * @param common
+     * @return
+     */
+    public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException;
 
 }

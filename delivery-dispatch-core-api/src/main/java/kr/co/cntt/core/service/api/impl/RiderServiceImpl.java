@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -201,6 +202,33 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         map.put("adminRider", A_Rider);
         map.put("storeRider", S_Rider);
         return map;
+    }
+
+    @Override
+    public int updatePushToken(Rider rider) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            rider.setAccessToken(rider.getToken());
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
+            // rider 가 아닌 user 가 넘어왔을때 token 값 null 로 셋팅
+            rider.setAccessToken(null);
+        }
+
+        int nRet = riderMapper.updatePushToken(rider);
+
+        return nRet;
+    }
+
+    @Secured("ROLE_STORE")
+    @Override
+    public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException {
+        List<Rider> S_Rider = riderMapper.selectSubgroupRiderRels(common);
+
+        if (S_Rider.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00006), ErrorCodeEnum.E00006.name());
+        }
+
+        return S_Rider;
     }
 
 }

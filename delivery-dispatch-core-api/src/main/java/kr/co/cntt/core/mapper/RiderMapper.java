@@ -1,6 +1,7 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 
@@ -94,5 +95,19 @@ public interface RiderMapper {
     public List<Rider> getStoreRidersLocation(Rider rider);
 
 
+    /**
+     * Rider 푸쉬토큰 등록
+     * @param rider
+     * @return
+     */
+    public int updatePushToken(Rider rider);
+
+    /**
+     * <p> 해당 그룹 기사 목록 조회
+     *
+     * @param common
+     * @return
+     */
+    public List<Rider> selectSubgroupRiderRels(Common common);
 
 }
