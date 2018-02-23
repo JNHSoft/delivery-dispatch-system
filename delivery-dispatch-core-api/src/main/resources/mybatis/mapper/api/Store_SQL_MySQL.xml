@@ -128,14 +128,17 @@
         left join
         TB_SUBGROUP_STORE_REL AS SSR
         on TS.id = SSR.store_id
+        AND SSR.deleted is NULL
 
         left join
         TB_SUBGROUP AS TSG
         on SSR.group_id=TSG.id
+        AND TSG.deleted is NULL
 
         left join
         TB_GROUP AS TG
         on SSR.group_id = TG.id
+        AND TG.deleted is NULL
 
         WHERE 1=1
         <choose>
