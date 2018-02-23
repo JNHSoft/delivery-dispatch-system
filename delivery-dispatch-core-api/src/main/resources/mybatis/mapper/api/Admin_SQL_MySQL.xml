@@ -714,5 +714,15 @@
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		)
 	</insert>
+
+	<!-- updateThirdParty -->
+	<update id="updateThirdParty" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty">
+		UPDATE TB_THIRD_PARTY as A
+		SET A.modified_datetime = now()
+			,name = #{name}
+		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.id = #{id}
+			AND deleted IS NULL
+	</update>
 </mapper>
  
