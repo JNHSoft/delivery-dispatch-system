@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.util.Geocoder;
@@ -268,4 +269,9 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Secured("ROLE_ADMIN")
     @Override
     public int putAdminAssignmentStatus(Admin admin){return adminMapper.updateAdminAssignmentStatus(admin); }
+
+    //배정 서드파티 추가
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int postThirdParty(ThirdParty thirdParty){return adminMapper.insertThirdParty(thirdParty); }
 }

@@ -13,6 +13,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.payment.Payment;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import lombok.Getter;
 
 @Getter
@@ -81,6 +82,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 배정모드 추가**/
 	ADMIN_ASSIGNMENT_STATUS_PUT("adminService", "putAdminAssignmentStatus", Admin.class),
 
+	/** [Admin] 배정서드파티 추가**/
+	ADMIN_THIRD_PARTY_POST("adminService", "postThirdParty", ThirdParty.class),
+
 	// ############################################################################################ //
 
 	/** Rider 정보조회 */
@@ -117,7 +121,7 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Store 정보수정 */
 	STORE_UPDATE_INFO("storeService", "updateStoreInfo", Store.class),
 
-	/** [Admin] 배정모드 추가**/
+	/** Store 배정모드 추가**/
 	STORE_ASSIGNMENT_STATUS_PUT("storeService", "putStoreAssignmentStatus", Store.class),
 
 	// ############################################################################################ //

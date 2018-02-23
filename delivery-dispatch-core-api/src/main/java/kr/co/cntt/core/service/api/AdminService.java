@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
 
@@ -202,11 +203,19 @@ public interface AdminService {
     public int deleteStore(Common common);
 
     /**
-     *  <p> deleteStore
+     *  <p> putAdminAssignmentStatus
      *
      * @param admin
      * @return
      */
     public int putAdminAssignmentStatus(Admin admin);
+
+    /**
+     *  <p> postThirdParty
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int postThirdParty(ThirdParty thirdParty);
 
 }
