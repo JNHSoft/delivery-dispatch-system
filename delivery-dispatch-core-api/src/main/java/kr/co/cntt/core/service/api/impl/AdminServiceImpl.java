@@ -264,4 +264,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Override
     public int deleteStore(Common common){ return adminMapper.deleteStore(common); }
 
+    //배정 모드 추가
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putAdminAssignmentStatus(Admin admin){return adminMapper.updateAdminAssignmentStatus(admin); }
 }

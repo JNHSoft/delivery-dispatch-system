@@ -73,6 +73,8 @@ public interface Api {
     /** [Admin] 상점 삭제 */
     String ADMIN_STORE_DELETE = "/deleteStore.json";
 
+    /** [Admin] 배정모드 추가**/
+    String ADMIN_ASSIGNMENT_STATUS_PUT = "/putAdminAssignmentStatus.json";
     // ############################################################################################ //
 
     /** Rider 정보 조회 */

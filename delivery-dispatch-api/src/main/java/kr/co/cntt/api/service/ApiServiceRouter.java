@@ -1,6 +1,7 @@
 package kr.co.cntt.api.service;
 
 import kr.co.cntt.api.config.IServiceRouter;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
@@ -76,6 +77,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** [Admin] 상점 삭제 */
 	ADMIN_STORE_DELETE("adminService", "deleteStore", Common.class),
+
+	/** [Admin] 배정모드 추가**/
+	ADMIN_ASSIGNMENT_STATUS_PUT("adminService", "putAdminAssignmentStatus", Admin.class),
 
 	// ############################################################################################ //
 
