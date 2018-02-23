@@ -11,6 +11,10 @@ public interface Api {
     /** APP Version Check */
     String VERSION_CHECK = "/versionCheck.do";
 
+    /** pushToken 등록   */
+    String SET_PUSH_TOKEN = "/updatePushToken.json";
+
+
     // ############################################################################################ //
 
     /** [Admin] 정보 조회 */
@@ -73,6 +77,8 @@ public interface Api {
     /** [Admin] 상점 삭제 */
     String ADMIN_STORE_DELETE = "/deleteStore.json";
 
+    /** [Admin] 배정모드 추가**/
+    String ADMIN_ASSIGNMENT_STATUS_PUT = "/putAdminAssignmentStatus.json";
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
@@ -96,11 +102,6 @@ public interface Api {
     /** Rider 들 위치 정보 조회   */
     String RIDERS_LOCATION_INFO = "/getRidersLocation.json";
 
-
-    /** Rider pushToken 등록   */
-    String RIDERS_PUSH_TOKEN = "/updatePushToken.json";
-
-
     /** 해당 그룹 소속 기사 목록 조회 */
     String SUBGROUP_RIDER_REL_LIST = "/getSubgroupRiderRels.json";
 
@@ -112,6 +113,9 @@ public interface Api {
 
     /** Store 정보 수정  */
     String STORE_UPDATE_INFO = "/updateStoreInfo.json";
+
+    /** Store 배정모드 설정**/
+    String STORE_ASSIGNMENT_STATUS_PUT = "/putStoreAssignmentStatus.json";
 
     // ############################################################################################ //
 

@@ -1,6 +1,7 @@
 package kr.co.cntt.api.service;
 
 import kr.co.cntt.api.config.IServiceRouter;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
@@ -77,6 +78,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 상점 삭제 */
 	ADMIN_STORE_DELETE("adminService", "deleteStore", Common.class),
 
+	/** [Admin] 배정모드 추가**/
+	ADMIN_ASSIGNMENT_STATUS_PUT("adminService", "putAdminAssignmentStatus", Admin.class),
+
 	// ############################################################################################ //
 
 	/** Rider 정보조회 */
@@ -100,8 +104,6 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 들 위치 조회 */
 	RIDERS_LOCATION_INFO("riderService", "getRidersLocation", Rider.class),
 
-    /** Rider pushToken 등록   */
-    RIDERS_PUSH_TOKEN("riderService", "updatePushToken", Rider.class),
 
 	/** 해당 그룹 소속 기사 목록 조회 */
 	SUBGROUP_RIDER_REL_LIST("riderService", "getSubgroupRiderRels", Common.class),
@@ -114,6 +116,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** Store 정보수정 */
 	STORE_UPDATE_INFO("storeService", "updateStoreInfo", Store.class),
+
+	/** [Admin] 배정모드 추가**/
+	STORE_ASSIGNMENT_STATUS_PUT("storeService", "putStoreAssignmentStatus", Store.class),
 
 	// ############################################################################################ //
 
@@ -177,6 +182,10 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** Notice 리스트 */
 	NOTICE_LIST("noticeService", "getNoticeList", Notice.class),
+
+	/** pushToken 등록   */
+	SET_PUSH_TOKEN("userService", "updatePushToken", User.class),
+
 
 
 //	/** 주문요청2 */

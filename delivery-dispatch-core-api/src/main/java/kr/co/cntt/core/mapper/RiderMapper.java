@@ -96,13 +96,6 @@ public interface RiderMapper {
 
 
     /**
-     * Rider 푸쉬토큰 등록
-     * @param rider
-     * @return
-     */
-    public int updatePushToken(Rider rider);
-
-    /**
      * <p> 해당 그룹 기사 목록 조회
      *
      * @param common

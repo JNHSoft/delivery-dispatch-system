@@ -236,4 +236,11 @@ public interface AdminMapper {
      */
     public int deleteStore(Common common);
 
+    /**
+     * <p> 배정 모드 추가
+     *
+     * @param admin
+     * @return
+     */
+    public int updateAdminAssignmentStatus(Admin admin);
 }

@@ -201,4 +201,12 @@ public interface AdminService {
      */
     public int deleteStore(Common common);
 
+    /**
+     *  <p> deleteStore
+     *
+     * @param admin
+     * @return
+     */
+    public int putAdminAssignmentStatus(Admin admin);
+
 }
