@@ -11,6 +11,10 @@ public interface Api {
     /** APP Version Check */
     String VERSION_CHECK = "/versionCheck.do";
 
+    /** pushToken 등록   */
+    String SET_PUSH_TOKEN = "/updatePushToken.json";
+
+
     // ############################################################################################ //
 
     /** [Admin] 정보 조회 */
@@ -97,11 +101,6 @@ public interface Api {
 
     /** Rider 들 위치 정보 조회   */
     String RIDERS_LOCATION_INFO = "/getRidersLocation.json";
-
-
-    /** Rider pushToken 등록   */
-    String RIDERS_PUSH_TOKEN = "/updatePushToken.json";
-
 
     /** 해당 그룹 소속 기사 목록 조회 */
     String SUBGROUP_RIDER_REL_LIST = "/getSubgroupRiderRels.json";

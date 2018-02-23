@@ -21,4 +21,7 @@ public class User extends Common implements Dto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String accessToken;
 
+    private String pushToken;
+    private String level;
+
 }

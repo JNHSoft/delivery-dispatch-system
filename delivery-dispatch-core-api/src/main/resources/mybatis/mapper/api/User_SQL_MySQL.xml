@@ -1,0 +1,35 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cntt.core.mapper.UserMapper">
+
+
+
+	<update id="updateRiderPushToken" parameterType="kr.co.cntt.core.model.login.User">
+		UPDATE TB_RIDER_SESSION
+		SET
+			modified_datetime = now()
+
+		<if test="pushToken != null and pushToken != ''">
+			, push_token=#{pushToken}
+		</if>
+
+		WHERE
+			access_token = #{accessToken}
+	</update>
+
+	<update id="updateStorePushToken" parameterType="kr.co.cntt.core.model.login.User">
+		UPDATE TB_STORE_SESSION
+		SET
+		modified_datetime = now()
+
+		<if test="pushToken != null and pushToken != ''">
+			, push_token=#{pushToken}
+		</if>
+
+		WHERE
+		access_token = #{accessToken}
+	</update>
+
+
+
+</mapper>
+ 
