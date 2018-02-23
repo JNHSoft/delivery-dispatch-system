@@ -103,10 +103,8 @@ public enum ApiServiceRouter implements IServiceRouter {
     /** Rider pushToken 등록   */
     RIDERS_PUSH_TOKEN("riderService", "updatePushToken", Rider.class),
 
-
-
 	/** 해당 그룹 소속 기사 목록 조회 */
-	SUBGROUP_RIDER_REL_LIST("riderService", "getSubgroupRiderRels", SubGroupRiderRel.class),
+	SUBGROUP_RIDER_REL_LIST("riderService", "getSubgroupRiderRels", Common.class),
 
 
 	// ############################################################################################ //

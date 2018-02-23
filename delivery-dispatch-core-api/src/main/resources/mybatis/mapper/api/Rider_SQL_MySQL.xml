@@ -369,14 +369,14 @@
 	<update id="updatePushToken" parameterType="kr.co.cntt.core.model.rider.Rider">
 		UPDATE TB_RIDER_SESSION
 		SET
-		modified_datetime = now()
+			modified_datetime = now()
 
 		<if test="pushToken != null and pushToken != ''">
 			, push_token=#{pushToken}
 		</if>
 
 		WHERE
-		access_token = #{accessToken}
+			access_token = #{accessToken}
 	</update>
 
 	<!-- selectSubgroupRiderRels -->
@@ -409,7 +409,6 @@
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			AND A.deleted IS NULL;
 	</select>
-
 
 </mapper>
  

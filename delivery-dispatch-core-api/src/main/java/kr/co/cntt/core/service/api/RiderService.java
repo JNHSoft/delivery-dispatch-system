@@ -90,12 +90,12 @@ public interface RiderService {
      */
     public int updatePushToken(Rider rider) throws AppTrException ;
 
+    /**
      * <p> getSubgroupRiderRels
      *
      * @param common
      * @return
      */
     public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException;
-
 
 }

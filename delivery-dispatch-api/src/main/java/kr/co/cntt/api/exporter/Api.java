@@ -101,6 +101,7 @@ public interface Api {
     String RIDERS_PUSH_TOKEN = "/updatePushToken.json";
 
 
+    /** 해당 그룹 소속 기사 목록 조회 */
     String SUBGROUP_RIDER_REL_LIST = "/getSubgroupRiderRels.json";
 
 

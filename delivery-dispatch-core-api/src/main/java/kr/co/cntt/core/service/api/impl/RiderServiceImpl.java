@@ -215,7 +215,9 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         int nRet = riderMapper.updatePushToken(rider);
+
         return nRet;
+    }
 
     @Secured("ROLE_STORE")
     @Override
@@ -227,7 +229,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         return S_Rider;
-
     }
 
 }

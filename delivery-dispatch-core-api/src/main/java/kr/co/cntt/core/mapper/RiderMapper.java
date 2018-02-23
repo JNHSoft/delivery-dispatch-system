@@ -110,5 +110,4 @@ public interface RiderMapper {
      */
     public List<Rider> selectSubgroupRiderRels(Common common);
 
-
 }
