@@ -85,6 +85,9 @@ public interface Api {
     /** [Admin] 배정서드파티 수정**/
     String ADMIN_THIRD_PARTY_PUT = "/putThirdParty.json";
 
+    /** [Admin] 배정서드파티 삭제**/
+    String ADMIN_THIRD_PARTY_DELETE = "/deleteThirdParty.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
@@ -196,4 +199,5 @@ public interface Api {
      * #FROM Test#
      */
     String ALIVE_TEST = "/aliveTest";
+
 }

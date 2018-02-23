@@ -225,4 +225,12 @@ public interface AdminService {
      * @return
      */
     public int putThirdParty(ThirdParty thirdParty);
+
+    /**
+     *  <p> putThirdParty
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int deleteThirdParty(ThirdParty thirdParty);
 }
