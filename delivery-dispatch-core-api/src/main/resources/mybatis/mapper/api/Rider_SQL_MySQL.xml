@@ -4,7 +4,19 @@
 	<!-- selectRidersResult -->
 	<resultMap id="selectSubgroupRiderRelsResult" type="kr.co.cntt.core.model.rider.Rider">
 		<result property="id" column="id" />
+
+		<result property="loginId" column="login_id" />
 		<result property="name" column="name" />
+		<result property="code" column="code" />
+		<result property="phone" column="phone" />
+		<result property="gender" column="gender" />
+		<result property="emergencyPhone" column="emergency_phone" />
+		<result property="address" column="address" />
+		<result property="workingHours" column="working_hours" />
+		<result property="restHours" column="rest_hours" />
+		<result property="teenager" column="teenager" />
+		<result property="vehicleNumber" column="vehicle_number" />
+
 		<result property="status" column="status" />
 		<result property="working" column="working" />
 		<result property="chatUserId" column="chat_user_id" />
@@ -67,49 +79,71 @@
 		]]>
 	</insert>
 
+	<!--rider 정보 조회 -->
+	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultMap="selectSubgroupRiderRelsResult">
+	  SELECT
+		TR.created_datetime
+		, TR.modified_datetime
+		, TR.last_access
+		, TR.admin_id
+		, TR.chat_user_id
+		, TR.id
+		, TR.name
+		, TR.phone
+		, TR.login_id
+		, TR.login_pw
+		, TR.code
+		, TR.gender
+		, TR.employment_type
+		, TR.address
+		, TR.working
+		, TR.status
+		, TR.latitude
+		, TR.longitude
+		, TR.location_updated
+		, TR.vehicle_number
+		, TR.emergency_phone
+		, TR.working_hours
+		, TR.rest_hours
+		, TR.teenager
+		, TSG.id AS subgroupId
+		, TSG.group_id AS subgroupGroupId
+		, TG.name AS groupName
+		, TSG.name AS subgroupName
+		, TSG.admin_id AS subgroupAdminId
+		, TG.id AS groupId
+		, TG.admin_id AS groupAdminId
+		, TR.deleted
 
-	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.rider.Rider">
-		SELECT
-			created_datetime
-			, modified_datetime
-			, last_access
-			, admin_id
-			, chat_user_id
-			, id
-			, name
-			, phone
-			, login_id
-			, login_pw
-			, code
-			, gender
-			, employment_type
-			, address
-			, working
-			, status
-			, latitude
-			, longitude
-			, location_updated
-			, vehicle_number
-			, emergency_phone
-			, working_hours
-			, rest_hours
-			, teenager
-			, deleted
-		FROM TB_RIDER
+		FROM TB_RIDER TR
+
+		left join
+		dde.TB_SUBGROUP_RIDER_REL AS SRR
+		on TR.id = SRR.rider_id
+
+		left join
+		TB_SUBGROUP AS TSG
+		on SRR.group_id=TSG.id
+
+		left join
+		TB_GROUP AS TG
+		on SRR.group_id = TG.id
+
 		WHERE 1=1
 		<choose>
 			<when test="id != null and id != ''">
 				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+					AND TR.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 				</if>
 				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+					AND TR.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 				</if>
-				AND id = #{id}
+				AND TR.id = #{id}
 			</when>
 			<otherwise>
-				AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-				AND id = (
+				AND SRR.subgroup_id=TSG.id
+				AND TR.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+				AND TR.id = (
 				SELECT rider_id
 				FROM TB_RIDER_SESSION
 				WHERE access_token=#{accessToken}
