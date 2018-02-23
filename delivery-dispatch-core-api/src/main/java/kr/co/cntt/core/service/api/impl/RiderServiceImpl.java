@@ -10,6 +10,7 @@ import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -204,6 +205,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return map;
     }
 
+    @Scheduled(fixedDelay = 1000 * 60)
     @Secured("ROLE_STORE")
     @Override
     public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException {
