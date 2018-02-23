@@ -218,4 +218,11 @@ public interface AdminService {
      */
     public int postThirdParty(ThirdParty thirdParty);
 
+    /**
+     *  <p> putThirdParty
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int putThirdParty(ThirdParty thirdParty);
 }

@@ -252,4 +252,12 @@ public interface AdminMapper {
      * @return
      */
     public int insertThirdParty(ThirdParty thirdParty);
+
+    /**
+     * <p> 배정 서드파티 수정
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int updateThirdParty(ThirdParty thirdParty);
 }
