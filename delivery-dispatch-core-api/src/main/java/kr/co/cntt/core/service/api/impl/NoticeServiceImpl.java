@@ -40,7 +40,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
 //    log.info(">>> role: " + authentication.getAuthorities());
 
     // 공지 사항 등록
-    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Secured({"ROLE_ADMIN"})
     @Override
     public int postNotice(Notice notice) {
         // Role 확인
@@ -51,23 +51,14 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             Notice res = noticeMapper.selectAdminId(notice);
 
             notice.setAdminId(res.getAdminId());
-            notice.setWriterId(res.getAdminId());
-            notice.setWriterType("1");
 
-
-        } else {
-            Notice res = noticeMapper.selectStoreAdminId(notice);
-
-            notice.setAdminId(res.getAdminId());
-            notice.setWriterId(res.getWriterId());
-            notice.setWriterType("2");
 
         }
         return noticeMapper.insertNotice(notice);
     }
 
     // 공지 사항 수정
-    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Secured({"ROLE_ADMIN"})
     @Override
     public int updateNotice(Notice notice){
         // Role 확인
@@ -78,15 +69,8 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             Notice res = noticeMapper.selectAdminId(notice);
 
             notice.setAdminId(res.getAdminId());
-            notice.setWriterId(res.getAdminId());
-            notice.setWriterType("1");
 
-        } else {
-            Notice res = noticeMapper.selectStoreAdminId(notice);
 
-            notice.setAdminId(res.getAdminId());
-            notice.setWriterId(res.getAdminId());
-            notice.setWriterType("2");
         }
 
         return noticeMapper.updateNotice(notice);
@@ -104,13 +88,13 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             Notice res = noticeMapper.selectStoreAdminId(notice);
 
             notice.setAdminId(res.getAdminId());
-            notice.setWriterId(res.getAdminId());
-            notice.setWriterType("2");
+
+
         } else {
             Notice res = noticeMapper.selectAdminId(notice);
 
             notice.setAdminId(res.getAdminId());
-            notice.setWriterType("1");
+
         }
         // Error
         int res = noticeMapper.deleteNotice(notice);

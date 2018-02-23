@@ -6,34 +6,65 @@
         INSERT INTO TB_NOTICE (
             created_datetime
             , admin_id
-            , writer_id
-            , writer_type
             , title
             , content
-            , to_rider
-            , to_store
+            , to_group_id
+            , to_subgroup_id
+            , to_store_id
+            , ori_file_name
+            , file_name
+            , file_size
         ) VALUES(
               now()
             , #{adminId}
-            , #{writerId}
-            , #{writerType}
             , #{title}
             , #{content}
-
-        <if test="toRider != null and toRider != ''">
-          , #{toRider}
+        <if test="toGroupId != null and toGroupId != ''">
+            , #{toGroupId}
         </if>
 
-        <if test="toRider == null or toRider == ''">
-          , 0
+        <if test="toGroupId == null or toGroupId == ''">
+            , 0
         </if>
 
-        <if test="toStore != null and toStore != ''">
-          , #{toStore}
+        <if test="toSubGroupId != null and toSubGroupId != ''">
+            , #{toSubGroupId}
         </if>
 
-        <if test="toStore == null or toStore == ''">
-          , 0
+        <if test="toSubGroupId == null or toSubGroupId == ''">
+            , 0
+        </if>
+
+        <if test="toStoreId != null and toStoreId != ''">
+            , #{toStoreId}
+        </if>
+
+        <if test="toStoreId == null or toStoreId == ''">
+            , 0
+        </if>
+
+        <if test="oriFileName != null and oriFileName != ''">
+          , #{oriFileName}
+        </if>
+
+        <if test="oriFileName == null or oriFileName == ''">
+          , null
+        </if>
+
+        <if test="fileName != null and fileName != ''">
+          , #{fileName}
+        </if>
+
+        <if test="fileName == null or fileName == ''">
+          , null
+        </if>
+
+        <if test="fileSize != null and fileSize != ''">
+          , #{fileSize}
+        </if>
+
+        <if test="fileSize == null or fileSize == ''">
+          , null
         </if>
 
         )
@@ -71,10 +102,7 @@
       SET
         modified_datetime = now()
         , admin_id = #{adminId}
-
         , writer_id = #{writerId}
-
-        , writer_type = #{writerType}
 
       <if test="title != null and title != ''">
         , title = #{title}
@@ -84,14 +112,10 @@
         , content = #{content}
       </if>
 
-      <if test="toRider != null and toRider != ''">
-        , to_rider = #{toRider}
-      </if>
+      WHERE 1=1
+      AND id = #{id}
+      AND admin_id = (select admin_id from TB_ADMIN_SESSION where access_token=#{token})
 
-      <if test="toStore != null and toStore != ''">
-        , to_store = #{toStore}
-      </if>
-      WHERE id = #{id}
 
     </update>
 
