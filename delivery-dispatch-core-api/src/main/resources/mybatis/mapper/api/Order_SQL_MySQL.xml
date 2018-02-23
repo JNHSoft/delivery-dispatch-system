@@ -15,6 +15,7 @@
 			, detail_address
 			, latitude
 			, longitude
+			, cooking_time
 			, menu_name
 			, menu_price
 			, delivery_price
@@ -38,6 +39,7 @@
 			, #{detailAddress}
 			, #{latitude}
 			, #{longitude}
+			, #{cookingTime}
 			, #{menuName}
 			, #{menuPrice}
 			, #{deliveryPrice}
@@ -85,9 +87,6 @@
 			</choose>
 
 			<choose>
-				<when test="role != null and role == 'ROLE_ADMIN'">
-					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-				</when>
 				<when test="role != null and role == 'ROLE_STORE'">
 					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})	)
 					AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})

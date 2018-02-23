@@ -187,6 +187,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         order.setTotalPrice(order.getMenuPrice() + order.getDeliveryPrice());
+
+        if (order.getCookingTime() == null || order.getCookingTime() == "") {
+            order.setCookingTime("0");
+        }
+
         order.setStatus("0");
 
         int postOrder = orderMapper.insertOrder(order);
@@ -246,18 +251,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
     }
 
+    @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public List<Order> getOrders(Common common) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
-            common.setRole("ROLE_ADMIN");
-        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             common.setRole("ROLE_STORE");
         } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             common.setRole("ROLE_RIDER");
-        } else {
-            common.setRole("ROLE_USER");
         }
 
         List<Order> S_Order = orderMapper.selectOrders(common);
