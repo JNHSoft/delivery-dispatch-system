@@ -7,18 +7,22 @@
 			admin_id
 			, store_id
 			, address
+			, area_address
+			, district_address
+			, street_address
+			, estate_address
+			, building_address
 			, detail_address
 			, latitude
 			, longitude
 			, menu_name
 			, menu_price
-			, cooking_time
-			, to_be_paid
+			, delivery_price
+			, total_price
+			, paid
 			, message
 			, phone
-			, reservation
 			, reservation_datetime
-			, required_gender
 			, device_os
 			, status
 			, created_datetime
@@ -26,18 +30,22 @@
 			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			, (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
 			, #{address}
+			, #{areaAddress}
+			, #{districtAddress}
+			, #{streetAddress}
+			, #{estateAddress}
+			, #{buildingAddress}
 			, #{detailAddress}
 			, #{latitude}
 			, #{longitude}
 			, #{menuName}
 			, #{menuPrice}
-			, #{cookingTime}
-			, #{toBePaid}
+			, #{deliveryPrice}
+			, #{totalPrice}
+			, #{paid}
 			, #{message}
 			, #{phone}
-			, #{reservation}
 			, #{reservationDatetime}
-			, #{requiredGender}
 			, #{deviceOs}
 			, #{status}
 			, now()
@@ -263,10 +271,10 @@
           , (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
           , (
               SELECT store_id
-              FROM TB_STORE_RIDER_REL
+              FROM TB_SUBGROUP_RIDER_REL
               WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
-                AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-                AND modified_datetime IS NULL
+                  AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                  AND deleted IS NULL
             )
           , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
           , #{id}
@@ -289,10 +297,10 @@
           , (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
           , (
               SELECT store_id
-              FROM TB_STORE_RIDER_REL
+              FROM TB_SUBGROUP_RIDER_REL
               WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
-                AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-                AND modified_datetime IS NULL
+                  AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+              	  AND deleted IS NULL
             )
           , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
           , #{id}

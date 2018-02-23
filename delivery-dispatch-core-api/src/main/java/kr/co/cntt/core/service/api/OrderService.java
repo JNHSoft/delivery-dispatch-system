@@ -9,6 +9,12 @@ import java.util.List;
 public interface OrderService {
 
     /**
+     * <p> autoAssignOrder
+     *
+     */
+    public void autoAssignOrder();
+
+    /**
      * <p> insertOrder
      *
      * @param order

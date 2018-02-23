@@ -14,7 +14,6 @@ public interface Api {
     /** pushToken 등록   */
     String SET_PUSH_TOKEN = "/updatePushToken.json";
 
-
     // ############################################################################################ //
 
     /** [Admin] 정보 조회 */
@@ -83,9 +82,9 @@ public interface Api {
     /** [Admin] 배정서드파티 추가**/
     String ADMIN_THIRD_PARTY_POST = "/postThirdParty.json";
 
-
     /** [Admin] 배정서드파티 수정**/
     String ADMIN_THIRD_PARTY_PUT = "/putThirdParty.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
@@ -111,7 +110,6 @@ public interface Api {
 
     /** 해당 그룹 소속 기사 목록 조회 */
     String SUBGROUP_RIDER_REL_LIST = "/getSubgroupRiderRels.json";
-
 
     // ############################################################################################ //
 
@@ -172,7 +170,6 @@ public interface Api {
 
     // ############################################################################################ //
 
-
     /** 공지사항 등록 */
     String NOTICE_POST = "/postNotice.json";
 
@@ -187,8 +184,6 @@ public interface Api {
 
     /** 공지사항 리스트 */
     String NOTICE_LIST = "/getNoticeList.json";
-
-
 
     // ############################################################################################ //
 
