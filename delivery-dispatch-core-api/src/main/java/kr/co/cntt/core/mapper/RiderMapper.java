@@ -94,6 +94,14 @@ public interface RiderMapper {
     // riders store
     public List<Rider> getStoreRidersLocation(Rider rider);
 
+
+    /**
+     * Rider 푸쉬토큰 등록
+     * @param rider
+     * @return
+     */
+    public int updatePushToken(Rider rider);
+
     /**
      * <p> 해당 그룹 기사 목록 조회
      *
@@ -101,5 +109,6 @@ public interface RiderMapper {
      * @return
      */
     public List<Rider> selectSubgroupRiderRels(Common common);
+
 
 }

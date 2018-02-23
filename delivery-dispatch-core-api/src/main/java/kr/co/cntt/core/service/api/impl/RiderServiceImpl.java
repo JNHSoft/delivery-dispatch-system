@@ -10,7 +10,6 @@ import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -205,7 +204,19 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return map;
     }
 
-    @Scheduled(fixedDelay = 1000 * 60)
+    @Override
+    public int updatePushToken(Rider rider) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            rider.setAccessToken(rider.getToken());
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
+            // rider 가 아닌 user 가 넘어왔을때 token 값 null 로 셋팅
+            rider.setAccessToken(null);
+        }
+
+        int nRet = riderMapper.updatePushToken(rider);
+        return nRet;
+
     @Secured("ROLE_STORE")
     @Override
     public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException {
@@ -216,6 +227,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         return S_Rider;
+
     }
 
 }
