@@ -141,7 +141,6 @@
 				AND TR.id = #{id}
 			</when>
 			<otherwise>
-				AND SRR.subgroup_id=TSG.id
 				AND TR.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 				AND TR.id = (
 				SELECT rider_id
