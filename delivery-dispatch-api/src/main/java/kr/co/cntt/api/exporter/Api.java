@@ -114,7 +114,7 @@ public interface Api {
     /** Store 정보 수정  */
     String STORE_UPDATE_INFO = "/updateStoreInfo.json";
 
-    /** [Admin] 배정모드 수정**/
+    /** Store 배정모드 설정**/
     String STORE_ASSIGNMENT_STATUS_PUT = "/putStoreAssignmentStatus.json";
 
     // ############################################################################################ //
