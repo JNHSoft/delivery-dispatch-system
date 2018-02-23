@@ -36,6 +36,16 @@
 			<result property="name" column="subgroupName" />
 			<result property="adminId" column="subgroupAdminId" />
 		</association>
+
+		<association property="subGroupRiderRel" column="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
+			<result property="id" column="subGroupRiderRelId" />
+			<result property="adminId" column="subGroupRiderRelAdminId" />
+			<result property="groupId" column="subGroupRiderRelGroupId" />
+			<result property="subGroupId" column="subGroupRiderRelSubGroupId" />
+			<result property="storeId" column="subGroupRiderRelStoreId" />
+			<result property="riderId" column="subGroupRiderRelRiderId" />
+
+		</association>
 	</resultMap>
 
 
@@ -113,21 +123,29 @@
 		, TSG.admin_id AS subgroupAdminId
 		, TG.id AS groupId
 		, TG.admin_id AS groupAdminId
-		, TR.deleted
+		, SRR.id AS subGroupRiderRelId
+		, SRR.admin_id AS subGroupRiderRelAdminId
+		, SRR.group_id AS subGroupRiderRelGroupId
+		, SRR.subgroup_id AS subGroupRiderRelSubGroupId
+		, SRR.store_id AS subGroupRiderRelStoreId
+		, SRR.rider_id AS subGroupRiderRelRiderId
 
 		FROM TB_RIDER TR
 
 		left join
 		dde.TB_SUBGROUP_RIDER_REL AS SRR
 		on TR.id = SRR.rider_id
+		AND SRR.deleted is NULL
 
 		left join
 		TB_SUBGROUP AS TSG
 		on SRR.group_id=TSG.id
+		AND TSG.deleted is NULL
 
 		left join
 		TB_GROUP AS TG
 		on SRR.group_id = TG.id
+		AND TG.deleted is NULL
 
 		WHERE 1=1
 		<choose>
