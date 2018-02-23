@@ -7,12 +7,15 @@ import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.NoticeService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,11 +50,18 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
 
-
             Notice res = noticeMapper.selectAdminId(notice);
 
             notice.setAdminId(res.getAdminId());
+            // 파일 업로드
+            if (notice.getOriFileName() != null) {
+                DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmSS");
+                String[] tmp = notice.getOriFileName().split("\\.");
 
+                notice.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
+
+                notice.getFileSize();
+            }
 
         }
         return noticeMapper.insertNotice(notice);
