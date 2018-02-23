@@ -702,5 +702,17 @@
 		WHERE A.id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</update>
 
+	<!-- insertThirdParty -->
+	<insert id="insertThirdParty" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty">
+		INSERT INTO TB_THIRD_PARTY (
+			created_datetime
+			, name
+			, admin_id
+		) VALUES(
+			now()
+			, #{name}
+			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		)
+	</insert>
 </mapper>
  

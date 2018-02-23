@@ -8,6 +8,7 @@ import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
 
@@ -243,4 +244,12 @@ public interface AdminMapper {
      * @return
      */
     public int updateAdminAssignmentStatus(Admin admin);
+
+    /**
+     * <p> 배정 서드파티 추가
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int insertThirdParty(ThirdParty thirdParty);
 }

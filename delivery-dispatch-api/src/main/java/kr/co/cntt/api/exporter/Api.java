@@ -79,6 +79,9 @@ public interface Api {
 
     /** [Admin] 배정모드 추가**/
     String ADMIN_ASSIGNMENT_STATUS_PUT = "/putAdminAssignmentStatus.json";
+
+    /** [Admin] 배정서드파티 추가**/
+    String ADMIN_THIRD_PARTY_POST = "/postThirdParty.json";
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
