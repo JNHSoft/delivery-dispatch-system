@@ -60,7 +60,6 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
 
                 notice.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
 
-                notice.getFileSize();
             }
 
         }
