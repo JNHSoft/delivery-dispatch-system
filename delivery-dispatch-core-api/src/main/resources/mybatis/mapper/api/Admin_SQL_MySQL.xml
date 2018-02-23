@@ -724,5 +724,14 @@
 			AND A.id = #{id}
 			AND deleted IS NULL
 	</update>
+
+	<!-- deleteThirdParty -->
+	<update id="deleteThirdParty" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty">
+		UPDATE TB_THIRD_PARTY as A
+			SET A.deleted = now()
+		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND A.id = #{id}
+			AND deleted IS NULL
+	</update>
 </mapper>
  
