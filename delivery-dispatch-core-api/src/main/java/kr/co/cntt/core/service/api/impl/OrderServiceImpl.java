@@ -160,10 +160,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             address += " " + order.getBuildingAddress();
         }
 
-        if (order.getDistrictAddress() != null && order.getDistrictAddress() != "") {
-            address += " " + order.getDistrictAddress();
-        }
-
         order.setAddress(address);
 
         Geocoder geocoder = new Geocoder();
@@ -265,7 +261,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         List<Order> S_Order = orderMapper.selectOrders(common);
 
         if (S_Order.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00015), ErrorCodeEnum.E00015.name());
         }
 
         return S_Order;

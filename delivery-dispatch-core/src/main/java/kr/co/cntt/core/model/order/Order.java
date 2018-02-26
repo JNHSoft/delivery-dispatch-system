@@ -14,7 +14,6 @@ public class Order extends Common implements Dto {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String adminId;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String storeId;
     private String riderId;
     private String combinedOrderId;
@@ -43,7 +42,7 @@ public class Order extends Common implements Dto {
     private String deviceOs;
     private String distance;
 
-    private Rider rider;
     private OrderCheckAssignment orderCheckAssignment;
+    private Rider rider;
 
 }

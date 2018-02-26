@@ -1,6 +1,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.OrderMapper">
 
+    <!-- selectRidersResult -->
+    <resultMap id="selectOrdersResult" type="kr.co.cntt.core.model.order.Order">
+
+        <result property="id" column="id" />
+        <result property="createdDatetime" column="created_datetime" />
+        <result property="storeId" column="store_id" />
+        <result property="riderId" column="rider_id" />
+        <result property="address" column="address" />
+        <result property="detailAddress" column="detail_address" />
+        <result property="status" column="status" />
+        <result property="menuName" column="menu_name" />
+        <result property="cookingTime" column="cooking_time" />
+        <result property="paid" column="paid" />
+        <result property="reservationDatetime" column="reservation_datetime" />
+        <result property="assignedDatetime" column="assigned_datetime" />
+        <result property="picked_upDatetime" column="picked_up_datetime" />
+
+        <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
+            <result property="id" column="riderId" />
+            <result property="name" column="riderName" />
+        </association>
+    </resultMap>
+
+
     <!-- insertOrder -->
     <insert id="insertOrder" parameterType="kr.co.cntt.core.model.order.Order">
 		INSERT INTO TB_ORDER (
@@ -56,49 +80,54 @@
 
 
 	<!-- selectOrders -->
-	<select id="selectOrders" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.order.Order">
+	<select id="selectOrders" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectOrdersResult">
 		SELECT
-			id
-			, created_datetime
-			, rider_id
-			, address
-		    , detail_address
-			, status
-			, menu_name
-			, menu_price
-			, cooking_time
-			, to_be_paid
-			, paid
-			, message
-			, reservation
-			, reservation_datetime
-			, assigned_datetime
-			, picked_up_datetime
-			, completed_datetime
-		FROM TB_ORDER
+			A.id
+			, A.created_datetime
+            , A.store_id
+            , A.rider_id
+			, A.address
+		    , A.detail_address
+			, A.status
+			, A.menu_name
+			, A.cooking_time
+			, A.paid
+			, A.reservation_datetime
+			, A.assigned_datetime
+			, A.picked_up_datetime
+			, A.rider_id AS riderId
+            , B.name AS riderName
+		FROM TB_ORDER AS A
+        LEFT JOIN TB_RIDER AS B
+        ON A.rider_id = B.id
+        LEFT JOIN TB_SUBGROUP_STORE_REL AS C
+        ON A.store_id = C.store_id
 		WHERE
 			<choose>
 				<when test="currentDatetime != null and currentDatetime != ''">
-					created_datetime > date_sub(#{currentDatetime}, interval #{days} - 1 day)
+					A.created_datetime > date_sub(#{currentDatetime}, interval #{days} - 1 day)
 				</when>
 				<otherwise>
-					created_datetime > CURRENT_DATE()
+					A.created_datetime > CURRENT_DATE()
 				</otherwise>
 			</choose>
 
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
-					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})	)
-					AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})	)
+                    AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+                    AND C.deleted IS NULL
 				</when>
 				<when test="role != null and role == 'ROLE_RIDER'">
-					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})	)
-					</when>
+					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})	)
+                    AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                    AND C.deleted IS NULL
+                </when>
 				<otherwise>
-					AND id IS NULL
+					AND A.id IS NULL
 				</otherwise>
 			</choose>
-		ORDER BY created_datetime DESC
+		ORDER BY A.reservation_datetime DESC, A.created_datetime DESC
 	</select>
 
 
