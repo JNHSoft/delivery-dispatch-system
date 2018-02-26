@@ -69,7 +69,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
     // 공지 사항 수정
     @Secured({"ROLE_ADMIN"})
     @Override
-    public int updateNotice(Notice notice){
+    public int updateNotice(Notice notice) throws AppTrException{
         // Role 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -78,28 +78,26 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             Notice res = noticeMapper.selectAdminId(notice);
 
             notice.setAdminId(res.getAdminId());
+        }
+        // Error
+        int res = noticeMapper.updateNotice(notice);
 
-
+        if (res == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
         }
 
-        return noticeMapper.updateNotice(notice);
+        return res;
     }
 
     // 공지 사항 삭제
-    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Secured({"ROLE_ADMIN"})
     @Override
     public int deleteNotice(Notice notice) throws AppTrException {
         // Role 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")){
+        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")){
 
-            Notice res = noticeMapper.selectStoreAdminId(notice);
-
-            notice.setAdminId(res.getAdminId());
-
-
-        } else {
             Notice res = noticeMapper.selectAdminId(notice);
 
             notice.setAdminId(res.getAdminId());
@@ -115,12 +113,16 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         return res;
     }
 
+
+
     // 공지사항 상세 보기
+    @Secured({"ROLE_ADMIN","ROLE_STORE","ROLE_RIDER"})
     @Override
     public Map detailNotice(Notice notice) throws AppTrException {
         // list 선언
         List<Notice> A_Notice = new ArrayList<>();
         List<Notice> S_Notice = new ArrayList<>();
+        List<Notice> R_Notice = new ArrayList<>();
 
         // Role 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -128,7 +130,6 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             // token 값 선언
             notice.setAccessToken(notice.getToken());
-            A_Notice = noticeMapper.getAdminStoreDetailNoticeList(notice);
 
             S_Notice = noticeMapper.getStoreDetailNoticeList(notice);
 
@@ -138,11 +139,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             // token 값 선언
             notice.setAccessToken(notice.getToken());
 
-            // Admin
-            A_Notice = noticeMapper.getRiderAdminDetailNoticeList(notice);
-
-            // Store
-            S_Notice = noticeMapper.getRiderStoreDetailNoticeList(notice);
+            R_Notice = noticeMapper.getRiderDetailNoticeList(notice);
 
         }
         // 관리자
@@ -151,43 +148,39 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             notice.setAccessToken(notice.getToken());
             // admin
             A_Notice = noticeMapper.getAdminDetailNoticeList(notice);
-            // store
-            S_Notice = noticeMapper.getStoreAdminDetailNoticeList(notice);
+
 
         }
         // map 으로 넘겨준다
         Map<String, List<Notice>> map = new HashMap<>();
         map.put("adminNotice", A_Notice);
         map.put("storeNotice", S_Notice);
+        map.put("riderNotice", R_Notice);
         return map;
     }
 
-    // 공지 사항 리스트 map 으로 값을 받아온다.
+    // 공지 사항 List map 으로 값을 받아온다.
+    @Secured({"ROLE_ADMIN","ROLE_STORE","ROLE_RIDER"})
     @Override
     public Map getNoticeList(Notice notice) throws AppTrException{
         // list 선언
         List<Notice> A_Notice = new ArrayList<>();
         List<Notice> S_Notice = new ArrayList<>();
+        List<Notice> R_Notice = new ArrayList<>();
         // Role 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             // token 값 선언
             notice.setAccessToken(notice.getToken());
-            // Admin
-            A_Notice = noticeMapper.getStoreAdminNoticeList(notice);
-            // Store
+
             S_Notice = noticeMapper.getStoreNoticeList(notice);
 
         } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             notice.setAccessToken(notice.getToken());
 
-            // 라이더가 보는 공지사항 리스트
-            // Admin
-            A_Notice = noticeMapper.getRiderAdminNoticeList(notice);
-
             // Store
-            S_Notice = noticeMapper.getRiderStoreNoticeList(notice);
+            R_Notice = noticeMapper.getRiderNoticeList(notice);
 
         } else if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
 
@@ -199,6 +192,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         Map<String, List<Notice>> map = new HashMap<>();
         map.put("adminNotice", A_Notice);
         map.put("storeNotice", S_Notice);
+        map.put("riderNotice", R_Notice);
         return map;
     }
 
