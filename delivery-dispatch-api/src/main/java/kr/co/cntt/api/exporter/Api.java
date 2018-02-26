@@ -182,7 +182,7 @@ public interface Api {
     /** 공지사항 삭제 */
     String NOTICE_DELETE = "/deleteNotice.json";
 
-    /** 공지사항 상세보기 진행중*/
+    /** 공지사항 상세보기 */
     String NOTICE_DETAIL = "/detailNotice.json";
 
     /** 공지사항 리스트 */
