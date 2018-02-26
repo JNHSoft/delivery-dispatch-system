@@ -89,4 +89,13 @@ public interface StoreMapper {
      * @return
      */
     public List<ThirdParty> selectThirdParty(ThirdParty thirdParty);
+
+    /**
+     * <p> 상점 위치 정보 조회
+     *
+     * @param storeId
+     * @return
+     */
+    public Store selectStoreLocation(String storeId);
+
 }
