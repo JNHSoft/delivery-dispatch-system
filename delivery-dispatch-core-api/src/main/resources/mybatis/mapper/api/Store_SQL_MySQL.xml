@@ -309,5 +309,32 @@
         SET A.third_party = #{thirdParty}
         WHERE A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
     </update>
+
+
+    <!-- selectThirdParty -->
+    <select id="selectThirdParty" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty" resultType="kr.co.cntt.core.model.thirdParty.ThirdParty">
+        SELECT
+        A.created_datetime
+        , A.modified_datetime
+        , A.id
+        , A.name
+        , A.admin_id
+        FROM TB_THIRD_PARTY as A
+        WHERE
+        A.deleted IS NULL
+        <choose>
+            <when test="level != null and level != ''">
+                <if test="level eq '1'.toString()">
+                  AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                </if>
+                <if test="level eq '2'.toString()">
+                    AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+                </if>
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+        ORDER BY A.name asc
+    </select>
 </mapper>
  

@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
 
@@ -80,4 +81,12 @@ public interface StoreMapper {
      * @return
      */
     public int updateStoreThirdParty(Store store);
+
+    /**
+     * <p> 배정 서드파티 목록
+     *
+     * @param thirdParty
+     * @return
+     */
+    public List<ThirdParty> selectThirdParty(ThirdParty thirdParty);
 }

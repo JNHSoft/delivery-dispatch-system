@@ -734,18 +734,5 @@
 			AND deleted IS NULL
 	</update>
 
-	<!-- selectThirdParty -->
-	<select id="selectThirdParty" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty" resultType="kr.co.cntt.core.model.thirdParty.ThirdParty">
-		SELECT
-		A.created_datetime
-		, A.modified_datetime
-		, A.id
-		, A.name
-		, A.admin_id
-		FROM TB_THIRD_PARTY as A
-		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-		AND A.deleted IS NULL
-		ORDER BY A.name asc
-	</select>
 </mapper>
  

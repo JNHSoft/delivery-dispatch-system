@@ -234,11 +234,5 @@ public interface AdminService {
      */
     public int deleteThirdParty(ThirdParty thirdParty);
 
-    /**
-     *  <p> getThirdParty
-     *
-     * @param thirdParty
-     * @return
-     */
-    public List<ThirdParty> getThirdParty(ThirdParty thirdParty);
+
 }
