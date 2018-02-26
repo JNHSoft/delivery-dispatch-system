@@ -132,8 +132,8 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Store 배정모드 추가**/
 	STORE_ASSIGNMENT_STATUS_PUT("storeService", "putStoreAssignmentStatus", Store.class),
 
-	/** [Store]상점 배정서드파티 설정**/
-	STORE_THIRD_PARTY_UPDATE("storeService", "putStoreThirdParty", Store.class),
+	/** Store상점 배정서드파티 설정**/
+	STORE_THIRD_PARTY_PUT("storeService", "putStoreThirdParty", Store.class),
 
 	// ############################################################################################ //
 

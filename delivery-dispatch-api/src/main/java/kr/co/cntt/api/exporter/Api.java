@@ -128,8 +128,8 @@ public interface Api {
     /** Store 배정모드 설정**/
     String STORE_ASSIGNMENT_STATUS_PUT = "/putStoreAssignmentStatus.json";
 
-    /** [Store]상점 배정서드파티 목록**/
-    String STORE_THIRD_PARTY_SELECT = "/putStoreThirdParty.json";
+    /** Store 상점 배정서드파티 설정**/
+    String STORE_THIRD_PARTY_PUT = "/putStoreThirdParty.json";
 
     // ############################################################################################ //
 
