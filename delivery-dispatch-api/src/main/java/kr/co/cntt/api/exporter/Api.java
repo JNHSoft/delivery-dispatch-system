@@ -89,7 +89,7 @@ public interface Api {
     String ADMIN_THIRD_PARTY_DELETE = "/deleteThirdParty.json";
 
     /** [Admin] 배정서드파티 목록**/
-    String ADMIN_THIRD_PARTY_SELECT = "/getThirdParty.json";
+    String ADMIN_THIRD_PARTY_GET = "/getThirdParty.json";
 
     // ############################################################################################ //
 
