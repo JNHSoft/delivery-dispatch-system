@@ -461,6 +461,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
+        int orderDenyCount = orderMapper.selectOrderDenyCount(currentRider);
+        if (orderDenyCount > 1) {
+            currentRider.setWorking("2");
+            riderMapper.updateWorkingRider(currentRider);
+        }
+
         List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(order);
         if (S_OrderConfirm.size() != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00014), ErrorCodeEnum.E00014.name());
@@ -475,6 +481,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
 
             }
+        }
+
+        if (order.getOrderCheckAssignment() != null) {
+            if (order.getOrderCheckAssignment().getStatus() == null || order.getOrderCheckAssignment().getStatus() == "") {
+                order.getOrderCheckAssignment().setStatus("0");
+            }
+
         }
 
         return orderMapper.insertOrderDeny(order);

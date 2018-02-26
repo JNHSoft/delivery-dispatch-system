@@ -290,6 +290,7 @@
           , store_id
           , rider_id
           , order_id
+          , status
         ) VALUES (
           now()
           , now()
@@ -303,6 +304,7 @@
             )
           , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
           , #{id}
+          , #{orderCheckAssignment.status}
         )
     </insert>
 
@@ -326,6 +328,19 @@
           , denied_datetime
         FROM TB_ORDER_DENY_ASSIGNMENT
         WHERE order_id = #{id}
+    </select>
+
+
+    <!-- selectOrderDenyCount -->
+    <select id="selectOrderDenyCount" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="int">
+        SELECT COUNT(A.status)
+        FROM TB_ORDER_DENY_ASSIGNMENT AS A
+        LEFT JOIN TB_RIDER AS B
+        ON A.rider_id = B.id
+        WHERE A.rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+        	AND A.status = 1
+        	AND A.denied_datetime > B.last_access
+        	AND A.denied_datetime > CURRENT_DATE()
     </select>
 
 </mapper>

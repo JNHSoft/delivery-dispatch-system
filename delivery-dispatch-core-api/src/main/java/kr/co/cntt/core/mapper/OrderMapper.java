@@ -4,6 +4,7 @@ import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.order.OrderCheckAssignment;
+import kr.co.cntt.core.model.rider.Rider;
 
 import java.util.List;
 
@@ -97,5 +98,13 @@ public interface OrderMapper {
      * @return
      */
     public List<OrderCheckAssignment> selectOrderDeny(Order order);
+
+    /**
+     * <p> 무반응 거부 count 조회
+     *
+     * @param rider
+     * @return
+     */
+    public int selectOrderDenyCount(Rider rider);
 
 }
