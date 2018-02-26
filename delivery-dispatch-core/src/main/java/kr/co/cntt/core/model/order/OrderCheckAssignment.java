@@ -20,5 +20,6 @@ public class OrderCheckAssignment extends Common implements Dto {
     private String orderId;
     private String confirmedDatetime;
     private String deniedDatetime;
+    private String status;
 
 }

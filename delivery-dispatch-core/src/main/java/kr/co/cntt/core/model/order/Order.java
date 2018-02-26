@@ -44,5 +44,6 @@ public class Order extends Common implements Dto {
     private String distance;
 
     private Rider rider;
+    private OrderCheckAssignment orderCheckAssignment;
 
 }
