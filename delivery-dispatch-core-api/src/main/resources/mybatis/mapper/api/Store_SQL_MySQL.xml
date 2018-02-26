@@ -302,5 +302,12 @@
         SET A.assignment_status = #{assignmentStatus}
         WHERE A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
     </update>
+
+    <!-- updateStoreThirdParty -->
+    <update id="updateStoreThirdParty" parameterType="kr.co.cntt.core.model.store.Store">
+        UPDATE TB_STORE as A
+        SET A.third_party = #{thirdParty}
+        WHERE A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+    </update>
 </mapper>
  

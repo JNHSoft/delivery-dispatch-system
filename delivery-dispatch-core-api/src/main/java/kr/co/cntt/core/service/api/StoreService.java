@@ -65,4 +65,11 @@ public interface StoreService {
      */
     public int putStoreAssignmentStatus(Store store);
 
+    /**
+     *  <p> putThirdParty
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int putStoreThirdParty(Store store);
 }

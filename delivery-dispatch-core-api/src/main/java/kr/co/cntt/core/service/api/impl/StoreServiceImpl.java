@@ -132,4 +132,9 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
     public int putStoreAssignmentStatus(Store store){return storeMapper.updateStoreAssignmentStatus(store); }
+
+    //배정 서드파티 설정
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Override
+    public int putStoreThirdParty(Store store){return storeMapper.updateStoreThirdParty(store); }
 }
