@@ -57,20 +57,15 @@ public interface NoticeMapper {
      * @param notice
      * @return
      */
-    // store Admin Detail
-    public List<Notice> getAdminStoreDetailNoticeList(Notice notice);
     // store Detail
     public List<Notice> getStoreDetailNoticeList(Notice notice);
 
-    // rider Admin Detail
-    public List<Notice> getRiderAdminDetailNoticeList(Notice notice);
     // rider Store Detail
-    public List<Notice> getRiderStoreDetailNoticeList(Notice notice);
+    public List<Notice> getRiderDetailNoticeList(Notice notice);
 
     // Admin admin
     public List<Notice> getAdminDetailNoticeList(Notice notice);
-    // Admin Store store
-    public List<Notice> getStoreAdminDetailNoticeList(Notice notice);
+
 
 
     /**
@@ -78,18 +73,13 @@ public interface NoticeMapper {
      * @param notice
      * @return
      */
-    // store Admin
-    public List<Notice> getStoreAdminNoticeList(Notice notice);
-    // store
+    // store 공지사항
     public List<Notice> getStoreNoticeList(Notice notice);
 
-    // rider 공지사항 Admin
-    public List<Notice> getRiderAdminNoticeList(Notice notice);
+    // rider 공지사항
+    public List<Notice> getRiderNoticeList(Notice notice);
 
-    // rider 공지사항 Store
-    public List<Notice> getRiderStoreNoticeList(Notice notice);
-
-    // admin 공지사항 Admin
+    // admin 공지사항
     public List<Notice> getAdminNoticeList(Notice notice);
 
 }

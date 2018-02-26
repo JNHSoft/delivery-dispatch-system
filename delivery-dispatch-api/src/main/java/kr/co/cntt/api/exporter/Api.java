@@ -89,7 +89,7 @@ public interface Api {
     String ADMIN_THIRD_PARTY_DELETE = "/deleteThirdParty.json";
 
     /** [Admin] 배정서드파티 목록**/
-    String ADMIN_THIRD_PARTY_SELECT = "/getThirdParty.json";
+    String ADMIN_THIRD_PARTY_GET = "/getThirdParty.json";
 
     // ############################################################################################ //
 
@@ -127,6 +127,9 @@ public interface Api {
 
     /** Store 배정모드 설정**/
     String STORE_ASSIGNMENT_STATUS_PUT = "/putStoreAssignmentStatus.json";
+
+    /** Store 상점 배정서드파티 설정**/
+    String STORE_THIRD_PARTY_PUT = "/putStoreThirdParty.json";
 
     // ############################################################################################ //
 
@@ -185,7 +188,7 @@ public interface Api {
     /** 공지사항 삭제 */
     String NOTICE_DELETE = "/deleteNotice.json";
 
-    /** 공지사항 상세보기 진행중*/
+    /** 공지사항 상세보기 */
     String NOTICE_DETAIL = "/detailNotice.json";
 
     /** 공지사항 리스트 */

@@ -20,7 +20,7 @@ public interface NoticeService {
      * @param notice
      * @return
      */
-    public int updateNotice(Notice notice);
+    public int updateNotice(Notice notice) throws AppTrException;
 
     /**
      * 공지사항 삭제
