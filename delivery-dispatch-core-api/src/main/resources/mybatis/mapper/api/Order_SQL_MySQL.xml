@@ -7,18 +7,23 @@
 			admin_id
 			, store_id
 			, address
+			, area_address
+			, district_address
+			, street_address
+			, estate_address
+			, building_address
 			, detail_address
 			, latitude
 			, longitude
+			, cooking_time
 			, menu_name
 			, menu_price
-			, cooking_time
-			, to_be_paid
+			, delivery_price
+			, total_price
+			, paid
 			, message
 			, phone
-			, reservation
 			, reservation_datetime
-			, required_gender
 			, device_os
 			, status
 			, created_datetime
@@ -26,18 +31,23 @@
 			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			, (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
 			, #{address}
+			, #{areaAddress}
+			, #{districtAddress}
+			, #{streetAddress}
+			, #{estateAddress}
+			, #{buildingAddress}
 			, #{detailAddress}
 			, #{latitude}
 			, #{longitude}
+			, #{cookingTime}
 			, #{menuName}
 			, #{menuPrice}
-			, #{cookingTime}
-			, #{toBePaid}
+			, #{deliveryPrice}
+			, #{totalPrice}
+			, #{paid}
 			, #{message}
 			, #{phone}
-			, #{reservation}
 			, #{reservationDatetime}
-			, #{requiredGender}
 			, #{deviceOs}
 			, #{status}
 			, now()
@@ -77,9 +87,6 @@
 			</choose>
 
 			<choose>
-				<when test="role != null and role == 'ROLE_ADMIN'">
-					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-				</when>
 				<when test="role != null and role == 'ROLE_STORE'">
 					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})	)
 					AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -263,10 +270,10 @@
           , (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
           , (
               SELECT store_id
-              FROM TB_STORE_RIDER_REL
+              FROM TB_SUBGROUP_RIDER_REL
               WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
-                AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-                AND modified_datetime IS NULL
+                  AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                  AND deleted IS NULL
             )
           , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
           , #{id}
@@ -283,19 +290,21 @@
           , store_id
           , rider_id
           , order_id
+          , status
         ) VALUES (
           now()
           , now()
           , (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
           , (
               SELECT store_id
-              FROM TB_STORE_RIDER_REL
+              FROM TB_SUBGROUP_RIDER_REL
               WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
-                AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-                AND modified_datetime IS NULL
+                  AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+              	  AND deleted IS NULL
             )
           , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
           , #{id}
+          , #{orderCheckAssignment.status}
         )
     </insert>
 
@@ -319,6 +328,19 @@
           , denied_datetime
         FROM TB_ORDER_DENY_ASSIGNMENT
         WHERE order_id = #{id}
+    </select>
+
+
+    <!-- selectOrderDenyCount -->
+    <select id="selectOrderDenyCount" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="int">
+        SELECT COUNT(A.status)
+        FROM TB_ORDER_DENY_ASSIGNMENT AS A
+        LEFT JOIN TB_RIDER AS B
+        ON A.rider_id = B.id
+        WHERE A.rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+        	AND A.status = 1
+        	AND A.denied_datetime > B.last_access
+        	AND A.denied_datetime > CURRENT_DATE()
     </select>
 
 </mapper>

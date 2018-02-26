@@ -72,4 +72,12 @@ public interface StoreMapper {
      * @return
      */
     public int updateStoreAssignmentStatus(Store store);
+
+    /**
+     * <p> 배정 서드파티 설정
+     *
+     * @param store
+     * @return
+     */
+    public int updateStoreThirdParty(Store store);
 }

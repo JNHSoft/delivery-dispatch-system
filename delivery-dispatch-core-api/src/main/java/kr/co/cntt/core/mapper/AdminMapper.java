@@ -260,4 +260,20 @@ public interface AdminMapper {
      * @return
      */
     public int updateThirdParty(ThirdParty thirdParty);
+
+    /**
+     * <p> 배정 서드파티 삭제
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int deleteThirdParty(ThirdParty thirdParty);
+
+    /**
+     * <p> 배정 서드파티 목록
+     *
+     * @param thirdParty
+     * @return
+     */
+    public List<ThirdParty> selectThirdParty(ThirdParty thirdParty);
 }

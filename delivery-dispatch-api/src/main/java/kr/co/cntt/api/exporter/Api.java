@@ -14,7 +14,6 @@ public interface Api {
     /** pushToken 등록   */
     String SET_PUSH_TOKEN = "/updatePushToken.json";
 
-
     // ############################################################################################ //
 
     /** [Admin] 정보 조회 */
@@ -83,9 +82,15 @@ public interface Api {
     /** [Admin] 배정서드파티 추가**/
     String ADMIN_THIRD_PARTY_POST = "/postThirdParty.json";
 
-
     /** [Admin] 배정서드파티 수정**/
     String ADMIN_THIRD_PARTY_PUT = "/putThirdParty.json";
+
+    /** [Admin] 배정서드파티 삭제**/
+    String ADMIN_THIRD_PARTY_DELETE = "/deleteThirdParty.json";
+
+    /** [Admin] 배정서드파티 목록**/
+    String ADMIN_THIRD_PARTY_GET = "/getThirdParty.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
@@ -112,7 +117,6 @@ public interface Api {
     /** 해당 그룹 소속 기사 목록 조회 */
     String SUBGROUP_RIDER_REL_LIST = "/getSubgroupRiderRels.json";
 
-
     // ############################################################################################ //
 
     /** Store 정보 조회 */
@@ -123,6 +127,9 @@ public interface Api {
 
     /** Store 배정모드 설정**/
     String STORE_ASSIGNMENT_STATUS_PUT = "/putStoreAssignmentStatus.json";
+
+    /** Store 상점 배정서드파티 설정**/
+    String STORE_THIRD_PARTY_PUT = "/putStoreThirdParty.json";
 
     // ############################################################################################ //
 
@@ -172,7 +179,6 @@ public interface Api {
 
     // ############################################################################################ //
 
-
     /** 공지사항 등록 */
     String NOTICE_POST = "/postNotice.json";
 
@@ -188,8 +194,6 @@ public interface Api {
     /** 공지사항 리스트 */
     String NOTICE_LIST = "/getNoticeList.json";
 
-
-
     // ############################################################################################ //
 
     // MVC || ADMIN || Call Center -> CNT APP API SERVER
@@ -201,4 +205,5 @@ public interface Api {
      * #FROM Test#
      */
     String ALIVE_TEST = "/aliveTest";
+
 }

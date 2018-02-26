@@ -304,7 +304,10 @@
 	<update id="updateWorkingRider" parameterType="kr.co.cntt.core.model.rider.Rider">
 		UPDATE TB_RIDER
 		SET
-		modified_datetime = now()
+			modified_datetime = now()
+		<if test="working == 1">
+			, last_access = now()
+		</if>
 
 		<if test="working != null and working != ''">
 			, working=#{working}

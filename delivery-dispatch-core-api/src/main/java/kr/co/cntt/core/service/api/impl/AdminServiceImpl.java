@@ -279,4 +279,14 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Secured("ROLE_ADMIN")
     @Override
     public int putThirdParty(ThirdParty thirdParty){return adminMapper.updateThirdParty(thirdParty); }
+
+    //배정 서드파티 삭제
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteThirdParty(ThirdParty thirdParty){return adminMapper.deleteThirdParty(thirdParty); }
+
+    //배정 서드파티 목록
+    @Secured("ROLE_ADMIN")
+    @Override
+    public List<ThirdParty> getThirdParty(ThirdParty thirdParty){return adminMapper.selectThirdParty(thirdParty); }
 }
