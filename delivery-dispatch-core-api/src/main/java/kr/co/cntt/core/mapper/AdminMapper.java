@@ -268,4 +268,12 @@ public interface AdminMapper {
      * @return
      */
     public int deleteThirdParty(ThirdParty thirdParty);
+
+    /**
+     * <p> 배정 서드파티 목록
+     *
+     * @param thirdParty
+     * @return
+     */
+    public List<ThirdParty> selectThirdParty(ThirdParty thirdParty);
 }
