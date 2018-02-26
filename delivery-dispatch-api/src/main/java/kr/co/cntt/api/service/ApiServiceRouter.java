@@ -91,8 +91,6 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 배정서드파티 삭제**/
 	ADMIN_THIRD_PARTY_DELETE("adminService", "deleteThirdParty", ThirdParty.class),
 
-	/** [Admin] 배정서드파티 목록**/
-	ADMIN_THIRD_PARTY_GET("adminService", "getThirdParty", ThirdParty.class),
 	// ############################################################################################ //
 
 	/** Rider 정보조회 */
@@ -134,6 +132,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** Store상점 배정서드파티 설정**/
 	STORE_THIRD_PARTY_PUT("storeService", "putStoreThirdParty", Store.class),
+
+	/** 배정서드파티 목록**/
+	THIRD_PARTY_GET("storeService", "getThirdParty", ThirdParty.class),
 
 	// ############################################################################################ //
 

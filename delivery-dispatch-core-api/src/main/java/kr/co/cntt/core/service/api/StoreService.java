@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api;
 
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
 
@@ -68,8 +69,16 @@ public interface StoreService {
     /**
      *  <p> putThirdParty
      *
-     * @param thirdParty
+     * @param store
      * @return
      */
     public int putStoreThirdParty(Store store);
+
+    /**
+     *  <p> getThirdParty
+     *
+     * @param thirdParty
+     * @return
+     */
+    public List<ThirdParty> getThirdParty(ThirdParty thirdParty);
 }

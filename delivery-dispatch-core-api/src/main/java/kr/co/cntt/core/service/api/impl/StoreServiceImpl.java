@@ -4,6 +4,7 @@ import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.StoreService;
 import kr.co.cntt.core.util.Misc;
@@ -137,4 +138,11 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
     public int putStoreThirdParty(Store store){return storeMapper.updateStoreThirdParty(store); }
+
+    //배정 서드파티 목록
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Override
+    public List<ThirdParty> getThirdParty(ThirdParty thirdParty){
+        return storeMapper.selectThirdParty(thirdParty);
+    }
 }

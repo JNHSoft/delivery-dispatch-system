@@ -88,8 +88,6 @@ public interface Api {
     /** [Admin] 배정서드파티 삭제**/
     String ADMIN_THIRD_PARTY_DELETE = "/deleteThirdParty.json";
 
-    /** [Admin] 배정서드파티 목록**/
-    String ADMIN_THIRD_PARTY_GET = "/getThirdParty.json";
 
     // ############################################################################################ //
 
@@ -130,6 +128,9 @@ public interface Api {
 
     /** Store 상점 배정서드파티 설정**/
     String STORE_THIRD_PARTY_PUT = "/putStoreThirdParty.json";
+
+    /** 배정서드파티 목록**/
+    String THIRD_PARTY_GET = "/getThirdParty.json";
 
     // ############################################################################################ //
 
