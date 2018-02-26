@@ -80,4 +80,13 @@ public interface StoreMapper {
      * @return
      */
     public int updateStoreThirdParty(Store store);
+
+    /**
+     * <p> 상점 위치정보 조회
+     *
+     * @param storeId
+     * @return
+     */
+    public Store selectStoreLocation(String storeId);
+
 }

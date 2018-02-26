@@ -19,10 +19,15 @@ public class Order extends Common implements Dto {
     private String combinedOrderId;
     private String status;
     private String address;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String areaAddress;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String districtAddress;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String streetAddress;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String estateAddress;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String buildingAddress;
     private String detailAddress;
     private String latitude;

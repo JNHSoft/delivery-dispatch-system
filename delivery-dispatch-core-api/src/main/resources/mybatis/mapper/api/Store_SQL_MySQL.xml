@@ -309,5 +309,17 @@
         SET A.third_party = #{thirdParty}
         WHERE A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
     </update>
+
+
+    <!-- selectStoreLocation -->
+    <select id="selectStoreLocation" parameterType="String" resultType="kr.co.cntt.core.model.store.Store">
+        SELECT
+            id
+            , latitude
+            , longitude
+        FROM TB_STORE
+        WHERE id = #{id};
+    </select>
+
 </mapper>
  
