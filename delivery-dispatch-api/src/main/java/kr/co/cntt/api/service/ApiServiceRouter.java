@@ -118,6 +118,8 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** 해당 그룹 소속 기사 목록 조회 */
 	SUBGROUP_RIDER_REL_LIST("riderService", "getSubgroupRiderRels", Common.class),
 
+	/** Rider 배정 모드 조회**/
+	RIDER_ASSIGNMENT_STATUS_GET("riderService", "getRiderAssignmentStatus", Rider.class),
 
 	// ############################################################################################ //
 

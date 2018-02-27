@@ -464,5 +464,15 @@
 			AND A.deleted IS NULL;
 	</select>
 
+	<!-- selectRiderAssignmentStatus -->
+	<select id="selectRiderAssignmentStatus" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="java.lang.String">
+		SELECT A.assignment_status
+		FROM TB_STORE as A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL as B
+		ON A.id = B.store_id
+			AND B.rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0YWl3YW5fcmlkZXJfemFjaGFyeSIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6MTUxOTY5MjE5NDU0MH0.3Sx1om-39MQhh_hK8yJgcgo1Z76aVdHE_rBkvltPbE0")
+		WHERE B.store_id = (SELECT store_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id =
+							(SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0YWl3YW5fcmlkZXJfemFjaGFyeSIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6MTUxOTY5MjE5NDU0MH0.3Sx1om-39MQhh_hK8yJgcgo1Z76aVdHE_rBkvltPbE0"))
+	</select>
 </mapper>
  

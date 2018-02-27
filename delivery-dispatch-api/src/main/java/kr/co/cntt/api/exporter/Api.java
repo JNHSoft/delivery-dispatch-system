@@ -115,6 +115,9 @@ public interface Api {
     /** 해당 그룹 소속 기사 목록 조회 */
     String SUBGROUP_RIDER_REL_LIST = "/getSubgroupRiderRels.json";
 
+    /** Rider 배정 모드 조회**/
+    String RIDER_ASSIGNMENT_STATUS_GET = "/getRiderAssignmentStatus.json";
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */
