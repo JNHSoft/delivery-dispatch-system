@@ -327,6 +327,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_STORE")
     @Override
     public int putOrderInfo(Order order) throws AppTrException {
+        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+        if (selectOrderIsApprovalCompleted != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00021), ErrorCodeEnum.E00021.name());
+        }
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00022), ErrorCodeEnum.E00022.name());
+        }
+
         String address = "";
 
         if (order.getAreaAddress() != null && order.getAreaAddress() != "") {
@@ -387,6 +398,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrder.setRiderId(order.getRiderId());
             combinedOrder.setToken(order.getToken());
 
+            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+            if (selectCombinedOrderIsApprovalCompleted != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00021), ErrorCodeEnum.E00021.name());
+            }
+
+            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00022), ErrorCodeEnum.E00022.name());
+            }
+
             this.putOrder(combinedOrder);
         }
 
@@ -396,6 +418,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_STORE")
     @Override
     public int putOrderAssigned(Order order) throws AppTrException {
+        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+        if (selectOrderIsApprovalCompleted != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00023), ErrorCodeEnum.E00023.name());
+        }
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00024), ErrorCodeEnum.E00024.name());
+        }
+
         Order orderAssigned = new Order();
 
         orderAssigned.setToken(order.getToken());
@@ -413,6 +446,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
 
+            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+            if (selectCombinedOrderIsApprovalCompleted != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00023), ErrorCodeEnum.E00023.name());
+            }
+
+            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00024), ErrorCodeEnum.E00024.name());
+            }
+
             this.putOrder(combinedOrderAssigned);
         }
 
@@ -422,6 +466,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_RIDER")
     @Override
     public int putOrderPickedUp(Order order) throws AppTrException {
+        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+        if (selectOrderIsApprovalCompleted != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+        }
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }
+
         Order orderPickedUp = new Order();
 
         orderPickedUp.setToken(order.getToken());
@@ -436,6 +491,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderPickedUp.setStatus("2");
             combinedOrderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
             combinedOrderPickedUp.setToken(order.getToken());
+
+            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+            if (selectCombinedOrderIsApprovalCompleted != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+            }
+
+            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+            }
 
             this.putOrder(combinedOrderPickedUp);
         }
@@ -468,14 +534,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     }
 
 
-    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Secured("ROLE_STORE")
     @Override
     public int putOrderCanceled(Order order) throws AppTrException {
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
 
-        if (selectOrderIsApprovalCompleted != 0 || selectOrderIsCompletedIsCanceled != 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        if (selectOrderIsApprovalCompleted != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00019), ErrorCodeEnum.E00019.name());
+        }
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00020), ErrorCodeEnum.E00020.name());
         }
 
         Order orderCanceled = new Order();
@@ -483,6 +553,28 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderCanceled.setId(order.getId());
         orderCanceled.setStatus("4");
         orderCanceled.setModifiedDatetime(LocalDateTime.now().toString());
+
+        Order combinedOrderCanceled = new Order();
+
+        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+            combinedOrderCanceled.setId(order.getCombinedOrderId());
+            combinedOrderCanceled.setStatus("4");
+            combinedOrderCanceled.setModifiedDatetime(LocalDateTime.now().toString());
+            combinedOrderCanceled.setToken(order.getToken());
+
+            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderCanceled);
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(combinedOrderCanceled);
+
+            if (selectCombinedOrderIsApprovalCompleted != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00019), ErrorCodeEnum.E00019.name());
+            }
+
+            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00020), ErrorCodeEnum.E00020.name());
+            }
+
+            this.putOrder(combinedOrderCanceled);
+        }
 
         return this.putOrder(orderCanceled);
     }
