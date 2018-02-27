@@ -15,7 +15,7 @@
         <result property="paid" column="paid" />
         <result property="reservationDatetime" column="reservation_datetime" />
         <result property="assignedDatetime" column="assigned_datetime" />
-        <result property="picked_upDatetime" column="picked_up_datetime" />
+        <result property="pickedUpDatetime" column="picked_up_datetime" />
 
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
             <result property="id" column="riderId" />
@@ -45,7 +45,7 @@
 		<result property="phone" column="phone" />
 		<result property="reservationDatetime" column="reservation_datetime" />
 		<result property="assignedDatetime" column="assigned_datetime" />
-		<result property="picked_upDatetime" column="picked_up_datetime" />
+		<result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="completedDatetime" column="completed_datetime" />
 		<result property="combinedOrderId" column="combined_order_id" />
 		<result property="device_os" column="device_os" />
