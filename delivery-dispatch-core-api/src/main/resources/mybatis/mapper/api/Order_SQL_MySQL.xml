@@ -143,6 +143,9 @@
 					A.created_datetime > CURRENT_DATE()
 				</otherwise>
 			</choose>
+			<if test="status != null and status != ''">
+				AND A.status = #{status}
+			</if>
 
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
@@ -217,87 +220,97 @@
 
 	<!-- updateOrder -->
 	<update id="updateOrder" parameterType="kr.co.cntt.core.model.order.Order">
-		UPDATE TB_ORDER
+		UPDATE TB_ORDER AS A
+		LEFT JOIN TB_RIDER AS B
+		ON A.rider_id = B.id
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
+		ON A.store_id = C.store_id
 		SET
-			modified_datetime = now()
-			<if test="(riderId != null and riderId != '') and status != 5">
-				, rider_id = #{riderId}
-			</if>
-			<if test="(riderId == null or riderId == '') and status == 5">
-				, rider_id = #{riderId}
+			A.modified_datetime = now()
+			<if test="riderId != null and riderId != ''">
+				, A.rider_id = #{riderId}
 			</if>
 			<if test="address != null and address != ''">
-				, address = #{address}
+				, A.address = #{address}
+			</if>
+			<if test="areaAddress != null and areaAddress != ''">
+				, A.area_address = #{areaAddress}
+			</if>
+			<if test="districtAddress != null and districtAddress != ''">
+				, A.district_address = #{districtAddress}
+			</if>
+			<if test="streetAddress != null and streetAddress != ''">
+				, A.street_address = #{streetAddress}
+			</if>
+			<if test="estateAddress != null and estateAddress != ''">
+				, A.estate_address = #{estateAddress}
+			</if>
+			<if test="buildingAddress != null and buildingAddress != ''">
+				, A.building_address = #{buildingAddress}
 			</if>
 			<if test="detailAddress != null and detailAddress != ''">
-				, detail_address = #{detailAddress}
+				, A.detail_address = #{detailAddress}
 			</if>
 			<if test="latitude != null and latitude != ''">
-				, latitude = #{latitude}
+				, A.latitude = #{latitude}
 			</if>
 			<if test="longitude != null and longitude != ''">
-				, longitude = #{longitude}
+				, A.longitude = #{longitude}
 			</if>
 			<if test="status != null and status != ''">
-				, status = #{status}
-			</if>
-			<if test="menuName != null and menuName != ''">
-				, menu_name = #{menuName}
-			</if>
-			<if test="menuPrice != null and menuPrice != ''">
-				, menu_price = #{menuPrice}
+				, A.status = #{status}
 			</if>
 			<if test="cookingTime != null and cookingTime != ''">
 				, cooking_time = #{cookingTime}
 			</if>
-			<if test="toBePaid != null and toBePaid != ''">
-				, to_be_paid = #{toBePaid}
+			<if test="menuName != null and menuName != ''">
+				, A.menu_name = #{menuName}
+			</if>
+			<if test="menuPrice != null and menuPrice != ''">
+				, A.menu_price = #{menuPrice}
+			</if>
+			<if test="deliveryPrice != null and deliveryPrice != ''">
+				, A.delivery_price = #{deliveryPrice}
+			</if>
+			<if test="totalPrice != null and totalPrice != ''">
+				, A.total_price = #{totalPrice}
 			</if>
 			<if test="paid != null and paid != ''">
-				, paid = #{paid}
+				, A.paid = #{paid}
 			</if>
 			<if test="message != null and message != ''">
-				, message = #{message}
+				, A.message = #{message}
 			</if>
 			<if test="phone != null and phone != ''">
-				, phone = #{phone}
-			</if>
-			<if test="reservation != null and reservation != ''">
-				, reservation = #{reservation}
+				, A.phone = #{phone}
 			</if>
 			<if test="reservationDatetime != null and reservationDatetime != ''">
-				, reservation_datetime = #{reservationDatetime}
+				, A.reservation_datetime = #{reservationDatetime}
 			</if>
 			<if test="assignedDatetime != null and assignedDatetime != ''">
-				, assigned_datetime = now()
+				, A.assigned_datetime = now()
 			</if>
 			<if test="pickedUpDatetime != null and pickedUpDatetime != ''">
-				, picked_up_datetime = #{pickedUpDatetime}
+				, A.picked_up_datetime = #{pickedUpDatetime}
 			</if>
 			<if test="completedDatetime != null and completedDatetime != ''">
-				, completed_datetime = #{completedDatetime}
+				, A.completed_datetime = #{completedDatetime}
 			</if>
-			<if test="requiredGender != null and requiredGender != ''">
-				, required_gender = #{requiredGender}
+			<if test="combinedOrderId != null and combinedOrderId != ''">
+				, A.combined_order_id = #{combinedOrderId}
 			</if>
 			<if test="deviceOs != null and deviceOs != ''">
-				, device_os = #{deviceOs}
+				, A.device_os = #{deviceOs}
 			</if>
-		WHERE id = #{id}
+		WHERE A.id = #{id}
 			<choose>
-				<when test="role != null and role == 'ROLE_ADMIN'">
-					AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-				</when>
 				<when test="role != null and role == 'ROLE_STORE'">
-					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-					AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-				</when>
-				<when test="role != null and role == 'ROLE_RIDER'">
-					AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-					AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})	)
+					AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+					AND C.deleted IS NULL
 				</when>
 				<otherwise>
-					AND id IS NULL
+					AND A.id IS NULL
 				</otherwise>
 			</choose>
 	</update>

@@ -301,6 +301,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     /**
      * <p> putOrder
+     *
      * @param order
      * @return
      * @throws AppTrException
@@ -308,37 +309,68 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     public int putOrder(Order order) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
-            order.setRole("ROLE_ADMIN");
-        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             order.setRole("ROLE_STORE");
-        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
-            order.setRole("ROLE_RIDER");
-        } else {
-            order.setRole("ROLE_USER");
         }
 
         int S_Order = orderMapper.updateOrder(order);
 
         if (S_Order == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00016), ErrorCodeEnum.E00016.name());
         }
 
         return S_Order;
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Secured("ROLE_STORE")
     @Override
     public int putOrderInfo(Order order) throws AppTrException {
+        String address = "";
+
+        if (order.getAreaAddress() != null && order.getAreaAddress() != "") {
+            address += order.getAreaAddress();
+        }
+
+        if (order.getDistrictAddress() != null && order.getDistrictAddress() != "") {
+            address += " " + order.getDistrictAddress();
+        }
+
+        if (order.getStreetAddress() != null && order.getStreetAddress() != "") {
+            address += " " + order.getStreetAddress();
+        }
+
+        if (order.getEstateAddress() != null && order.getEstateAddress() != "") {
+            address += " " + order.getEstateAddress();
+        }
+
+        if (order.getBuildingAddress() != null && order.getBuildingAddress() != "") {
+            address += " " + order.getBuildingAddress();
+        }
+
+        order.setAddress(address);
+
         Geocoder geocoder = new Geocoder();
 
-        try {
-            Map<String, String> geo = geocoder.getLatLng(order.getAddress());
-            order.setLatitude(geo.get("lat"));
-            order.setLongitude(geo.get("lng"));
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (order.getAddress() != null && order.getAddress() != "") {
+            try {
+                Map<String, String> geo = geocoder.getLatLng(order.getAddress());
+                order.setLatitude(geo.get("lat"));
+                order.setLongitude(geo.get("lng"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
+
+        if (order.getMenuPrice() == null || order.getMenuPrice() == "") {
+            order.setMenuPrice("0");
+        }
+
+        if (order.getDeliveryPrice() == null || order.getDeliveryPrice() == "") {
+            order.setDeliveryPrice("0");
+        }
+
+        order.setTotalPrice(order.getMenuPrice() + order.getDeliveryPrice());
 
         order.setStatus(null);
         order.setRiderId(null);
@@ -346,10 +378,20 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         order.setPickedUpDatetime(null);
         order.setCompletedDatetime(null);
 
+        Order combinedOrder = new Order();
+        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+            combinedOrder.setId(order.getCombinedOrderId());
+            combinedOrder.setCombinedOrderId(order.getId());
+            combinedOrder.setRiderId(order.getRiderId());
+            combinedOrder.setToken(order.getToken());
+
+            this.putOrder(combinedOrder);
+        }
+
         return this.putOrder(order);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Secured("ROLE_STORE")
     @Override
     public int putOrderAssigned(Order order) throws AppTrException {
         Order orderAssigned = new Order();
