@@ -415,7 +415,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return this.putOrder(order);
     }
 
-    @Secured("ROLE_STORE")
+    @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public int putOrderAssigned(Order order) throws AppTrException {
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
@@ -427,6 +427,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (selectOrderIsCompletedIsCanceled != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00024), ErrorCodeEnum.E00024.name());
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            Rider rider = new Rider();
+            rider.setToken(order.getToken());
+            String assignmentStatus = riderMapper.selectRiderAssignmentStatus(rider);
+            if (!assignmentStatus.equals("2")) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00027), ErrorCodeEnum.E00027.name());
+            }
         }
 
         Order orderAssigned = new Order();

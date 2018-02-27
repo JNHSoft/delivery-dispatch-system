@@ -17,5 +17,6 @@ public class CommonBody<T> {
 	private final String result;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private T code;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Map<String, String> error_desc;
 }
