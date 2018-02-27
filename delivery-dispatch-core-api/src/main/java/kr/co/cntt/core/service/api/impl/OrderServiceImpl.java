@@ -438,6 +438,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if (!assignmentStatus.equals("2")) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.E00027), ErrorCodeEnum.E00027.name());
             }
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            Store storeDTO = new Store();
+            storeDTO.setAccessToken(order.getToken());
+            storeDTO.setToken(order.getToken());
+
+            List<Store> S_Store = storeMapper.getStoreInfo(storeDTO);
+
+            if (!S_Store.get(0).getAssignmentStatus().equals("0")) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00028), ErrorCodeEnum.E00028.name());
+            }
         }
 
         Order orderAssigned = new Order();
