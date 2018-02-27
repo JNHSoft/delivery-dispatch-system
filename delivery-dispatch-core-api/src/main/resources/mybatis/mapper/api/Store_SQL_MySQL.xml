@@ -18,6 +18,8 @@
 
         <result property="address" column="address" />
         <result property="detailAddress" column="detail_address" />
+        <result property="latitude" column="latitude" />
+        <result property="longitude" column="longitude" />
 
         <result property="chAddress" column="ch_address" />
         <result property="chDetailAddress" column="ch_detail_address" />
@@ -80,7 +82,7 @@
 
 
 	<!--store 정보 조회-->
-    <select id="getStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultMap="selectStoreResult">
+    <select id="selectStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultMap="selectStoreResult">
         SELECT
             TS.created_datetime
             , TS.modified_datetime
@@ -231,8 +233,11 @@
 				, A.radius = #{radius}
 			</if>
 
-			<if test="storeDistanceSort != null  and storeDistanceSort != ''">
+			<if test="storeDistanceSort != null  and storeDistanceSort != '' and storeDistanceSort != '-1'">
 				, A.store_distance_sort = #{storeDistanceSort}
+			</if>
+			<if test="storeDistanceSort == '-1'">
+				, A.store_distance_sort = NULL
 			</if>
 
 			<if test="assignmentStatus != null  and assignmentStatus != ''">
@@ -271,7 +276,6 @@
                     )
                 </otherwise>
             </choose>
-
 	</update>
 
 
@@ -282,9 +286,30 @@
         	, latitude
         	, longitude
         FROM TB_STORE
-        WHERE admin_id = (
-        	SELECT admin_id FROM TB_STORE WHERE id = (
-        		SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{accessToken}));
+        WHERE admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{accessToken}))
+	</select>
+
+
+	<!-- selectSubGroupStores -->
+	<select id="selectSubGroupStores" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
+        SELECT
+        	A.id
+        	, A.latitude
+        	, A.longitude
+        FROM TB_STORE AS A
+        LEFT JOIN TB_SUBGROUP_STORE_REL AS B
+        ON A.id = B.store_id
+        WHERE B.deleted IS NULL
+        <choose>
+            <when test="id != null and id != ''">
+                AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id})
+            </when>
+            <otherwise>
+                AND A.admin_id = (SELECT * FROM (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})) AS D)
+                AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+            </otherwise>
+        </choose>
 	</select>
 
     <!-- updateStoreAssignmentStatus -->

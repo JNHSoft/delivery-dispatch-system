@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
+import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
@@ -35,11 +36,17 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     private AdminMapper adminMapper;
 
     /**
+     * Store DAO
+     */
+    private StoreMapper storeMapper;
+
+    /**
      * @param adminMapper USER D A O
      */
     @Autowired
-    public AdminServiceImpl(AdminMapper adminMapper) {
+    public AdminServiceImpl(AdminMapper adminMapper, StoreMapper storeMapper) {
         this.adminMapper = adminMapper;
+        this.storeMapper = storeMapper;
     }
 
     @Override
@@ -228,18 +235,6 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
             }
         }
 
-        Misc misc = new Misc();
-        Map<String, Integer> storeHaversineMap = new HashMap<>();
-        List<Store> S_Store = adminMapper.selectStores(store);
-        for (Store s : S_Store) {
-            try {
-                storeHaversineMap.put(s.getId(), misc.getHaversine(store.getLatitude(), store.getLongitude(), s.getLatitude(), s.getLongitude()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        store.setStoreDistanceSort(StringUtils.arrayToDelimitedString(misc.sortByValue(storeHaversineMap).toArray(), ","));
         store.setType("2");
 
         adminMapper.insertChatUser(store);
@@ -249,7 +244,22 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
             if (store.getGroup() != null && store.getSubGroup() != null) {
                 adminMapper.insertStore(store);
-                return adminMapper.insertSubGroupStoreRel(store);
+                adminMapper.insertSubGroupStoreRel(store);
+
+                Misc misc = new Misc();
+                Map<String, Integer> storeHaversineMap = new HashMap<>();
+                List<Store> S_Store = storeMapper.selectSubGroupStores(store);
+                for (Store s : S_Store) {
+                    try {
+                        storeHaversineMap.put(s.getId(), misc.getHaversine(store.getLatitude(), store.getLongitude(), s.getLatitude(), s.getLongitude()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                store.setStoreDistanceSort(StringUtils.arrayToDelimitedString(misc.sortByValue(storeHaversineMap).toArray(), "|"));
+
+                return storeMapper.updateStoreInfo(store);
             } else {
 
                 return adminMapper.insertStore(store);

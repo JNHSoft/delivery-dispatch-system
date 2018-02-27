@@ -218,7 +218,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
 
-        List<Store> S_Store = storeMapper.getStoreInfo(storeDTO);
+        List<Store> S_Store = storeMapper.selectStoreInfo(storeDTO);
 
         if (S_Store.get(0).getAssignmentStatus().equals("1")) {
             log.info(">>> 자동배정");
@@ -238,7 +238,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             return 1;
         } else if (S_Store.get(0).getAssignmentStatus().equals("0")) {
-            log.info(">>> 수동배정");
+            log.info(">>> Proc End: 상점 수동 배정");
+
+            return 1;
+        } else if (S_Store.get(0).getAssignmentStatus().equals("2")) {
+            log.info(">>> Proc End: 기사 수동 배정");
 
             return 1;
         } else {
@@ -443,7 +447,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             storeDTO.setAccessToken(order.getToken());
             storeDTO.setToken(order.getToken());
 
-            List<Store> S_Store = storeMapper.getStoreInfo(storeDTO);
+            List<Store> S_Store = storeMapper.selectStoreInfo(storeDTO);
 
             if (!S_Store.get(0).getAssignmentStatus().equals("0")) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.E00028), ErrorCodeEnum.E00028.name());

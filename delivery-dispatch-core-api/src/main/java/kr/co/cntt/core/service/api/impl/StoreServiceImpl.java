@@ -81,7 +81,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         log.info(">>> token: " + store.getToken());
 
         // 리스트
-        List<Store> S_Store = storeMapper.getStoreInfo(store);
+        List<Store> S_Store = storeMapper.selectStoreInfo(store);
 
         if (S_Store.size() == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00007), ErrorCodeEnum.E00007.name());
@@ -99,8 +99,8 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
         Misc misc = new Misc();
         Map<String, Integer> storeHaversineMap = new HashMap<>();
-        List<Store> C_Store = storeMapper.getStoreInfo(store);
-        List<Store> S_Store = storeMapper.selectStores(store);
+        List<Store> C_Store = storeMapper.selectStoreInfo(store);
+        List<Store> S_Store = storeMapper.selectSubGroupStores(store);
 
         for (Store cs : C_Store) {
             for (Store s : S_Store) {
@@ -116,7 +116,11 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
             }
         }
 
-        store.setStoreDistanceSort(StringUtils.arrayToDelimitedString(misc.sortByValue(storeHaversineMap).toArray(), ","));
+        if (storeHaversineMap.isEmpty()) {
+            store.setStoreDistanceSort("-1");
+        } else {
+            store.setStoreDistanceSort(StringUtils.arrayToDelimitedString(misc.sortByValue(storeHaversineMap).toArray(), "|"));
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

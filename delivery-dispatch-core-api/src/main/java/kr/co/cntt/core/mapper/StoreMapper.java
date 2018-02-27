@@ -48,7 +48,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
-    public List<Store> getStoreInfo(Store store);
+    public List<Store> selectStoreInfo(Store store);
 
     /**
      * Store 정보 수정
@@ -65,6 +65,14 @@ public interface StoreMapper {
      * @return
      */
     public List<Store> selectStores(Store store);
+
+    /**
+     * <p> 소그룹 상점 목록 조회
+     *
+     * @param store
+     * @return
+     */
+    public List<Store> selectSubGroupStores(Store store);
 
     /**
      * <p> 배정 모드 설정
