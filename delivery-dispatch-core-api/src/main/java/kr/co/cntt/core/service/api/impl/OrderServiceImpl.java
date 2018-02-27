@@ -443,7 +443,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return this.putOrder(orderPickedUp);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_STORE", "ROLE_RIDER"})
+    @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public int putOrderCompleted(Order order) throws AppTrException {
         Order orderCompleted = new Order();
@@ -452,6 +452,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderCompleted.setId(order.getId());
         orderCompleted.setStatus("3");
         orderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
+
+        Order combinedOrderCompleted = new Order();
+
+        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+            combinedOrderCompleted.setId(order.getCombinedOrderId());
+            combinedOrderCompleted.setStatus("3");
+            combinedOrderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
+            combinedOrderCompleted.setToken(order.getToken());
+
+            this.putOrder(combinedOrderCompleted);
+        }
 
         return this.putOrder(orderCompleted);
     }
@@ -476,22 +487,54 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return this.putOrder(orderCanceled);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_STORE", "ROLE_RIDER"})
+    @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public int putOrderAssignCanceled(Order order) throws AppTrException {
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
 
-        if (selectOrderIsApprovalCompleted != 0 || selectOrderIsCompletedIsCanceled != 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        if (selectOrderIsApprovalCompleted != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00017), ErrorCodeEnum.E00017.name());
+        }
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00018), ErrorCodeEnum.E00018.name());
         }
 
         Order orderAssignCanceled = new Order();
-        orderAssignCanceled.setToken(order.getToken());
         orderAssignCanceled.setId(order.getId());
         orderAssignCanceled.setStatus("5");
-        orderAssignCanceled.setRiderId(null);
+        orderAssignCanceled.setRiderId("-1");
         orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
+        orderAssignCanceled.setAssignedDatetime("-1");
+        orderAssignCanceled.setPickedUpDatetime("-1");
+        orderAssignCanceled.setToken(order.getToken());
+
+        Order combinedOrderAssignCanceled = new Order();
+
+        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+            combinedOrderAssignCanceled.setId(order.getCombinedOrderId());
+            combinedOrderAssignCanceled.setStatus("5");
+            combinedOrderAssignCanceled.setRiderId("-1");
+            combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
+            combinedOrderAssignCanceled.setAssignedDatetime("-1");
+            combinedOrderAssignCanceled.setPickedUpDatetime("-1");
+            combinedOrderAssignCanceled.setToken(order.getToken());
+
+            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderAssignCanceled);
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(combinedOrderAssignCanceled);
+
+            if (selectCombinedOrderIsApprovalCompleted != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00017), ErrorCodeEnum.E00017.name());
+            }
+
+            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00018), ErrorCodeEnum.E00018.name());
+            }
+
+            this.putOrder(combinedOrderAssignCanceled);
+        }
+
 
         return this.putOrder(orderAssignCanceled);
     }

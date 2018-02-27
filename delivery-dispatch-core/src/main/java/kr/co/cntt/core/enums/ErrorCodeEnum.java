@@ -107,6 +107,8 @@ public enum ErrorCodeEnum {
 	E00014,
 	E00015,
 	E00016,
+	E00017,
+	E00018,
 
 	/* 관리자 */
 	F0001,

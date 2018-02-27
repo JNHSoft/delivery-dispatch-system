@@ -227,8 +227,11 @@
 		ON A.store_id = C.store_id
 		SET
 			A.modified_datetime = now()
-			<if test="riderId != null and riderId != ''">
+			<if test="riderId != null and riderId != '' and riderId != '-1'">
 				, A.rider_id = #{riderId}
+			</if>
+			<if test="riderId == '-1'">
+				, A.rider_id = NULL
 			</if>
 			<if test="address != null and address != ''">
 				, A.address = #{address}
@@ -287,11 +290,17 @@
 			<if test="reservationDatetime != null and reservationDatetime != ''">
 				, A.reservation_datetime = #{reservationDatetime}
 			</if>
-			<if test="assignedDatetime != null and assignedDatetime != ''">
+			<if test="assignedDatetime != null and assignedDatetime != '' and assignedDatetime != '-1'">
 				, A.assigned_datetime = now()
 			</if>
-			<if test="pickedUpDatetime != null and pickedUpDatetime != ''">
+			<if test="assignedDatetime == '-1'">
+				, A.assigned_datetime = NULL
+			</if>
+			<if test="pickedUpDatetime != null and pickedUpDatetime != '' and pickedUpDatetime != '-1'">
 				, A.picked_up_datetime = #{pickedUpDatetime}
+			</if>
+			<if test="pickedUpDatetime == '-1'">
+				, A.picked_up_datetime = NULL
 			</if>
 			<if test="completedDatetime != null and completedDatetime != ''">
 				, A.completed_datetime = #{completedDatetime}
