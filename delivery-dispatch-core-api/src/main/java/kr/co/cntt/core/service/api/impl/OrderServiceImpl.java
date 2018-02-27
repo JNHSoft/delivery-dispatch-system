@@ -311,6 +311,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             order.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            order.setRole("ROLE_RIDER");
         }
 
         int S_Order = orderMapper.updateOrder(order);
@@ -403,10 +405,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
 
         Order combinedOrderAssigned = new Order();
+
         if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
             combinedOrderAssigned.setId(order.getCombinedOrderId());
             combinedOrderAssigned.setRiderId(order.getRiderId());
             combinedOrderAssigned.setStatus("1");
+            combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
 
             this.putOrder(combinedOrderAssigned);
@@ -415,7 +419,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return this.putOrder(orderAssigned);
     }
 
-    @Secured({"ROLE_RIDER"})
+    @Secured("ROLE_RIDER")
     @Override
     public int putOrderPickedUp(Order order) throws AppTrException {
         Order orderPickedUp = new Order();
@@ -424,6 +428,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderPickedUp.setId(order.getId());
         orderPickedUp.setStatus("2");
         orderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
+
+        Order combinedOrderPickedUp = new Order();
+
+        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+            combinedOrderPickedUp.setId(order.getCombinedOrderId());
+            combinedOrderPickedUp.setStatus("2");
+            combinedOrderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
+            combinedOrderPickedUp.setToken(order.getToken());
+
+            this.putOrder(combinedOrderPickedUp);
+        }
 
         return this.putOrder(orderPickedUp);
     }
