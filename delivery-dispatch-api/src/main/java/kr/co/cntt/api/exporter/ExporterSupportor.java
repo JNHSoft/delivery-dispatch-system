@@ -140,6 +140,7 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
             log.info("[AppExporterSupportor][response][!AppTrException][errorCause : {}]", errorLocalizedMessage);
             errorMap.put("error", CODE_SYSTEM_ERROR);
         }
+        cBody.setCode(null);
         cBody.setError_desc(errorMap);
         response.setBody(cBody);
         response.setHeader(header);
