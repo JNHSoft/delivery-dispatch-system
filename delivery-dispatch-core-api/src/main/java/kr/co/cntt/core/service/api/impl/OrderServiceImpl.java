@@ -402,6 +402,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssigned.setStatus("1");
         orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
 
+        Order combinedOrderAssigned = new Order();
+        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+            combinedOrderAssigned.setId(order.getCombinedOrderId());
+            combinedOrderAssigned.setRiderId(order.getRiderId());
+            combinedOrderAssigned.setStatus("1");
+            combinedOrderAssigned.setToken(order.getToken());
+
+            this.putOrder(combinedOrderAssigned);
+        }
+
         return this.putOrder(orderAssigned);
     }
 
