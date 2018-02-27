@@ -4,6 +4,7 @@ import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
 
@@ -103,4 +104,11 @@ public interface RiderMapper {
      */
     public List<Rider> selectSubgroupRiderRels(Common common);
 
+    /**
+     * <p> 배정 모드 조회
+     *
+     * @param rider
+     * @return
+     */
+    public String selectRiderAssignmentStatus(Rider rider);
 }

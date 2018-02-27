@@ -5,6 +5,7 @@ import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
 import java.util.Map;
@@ -92,4 +93,11 @@ public interface RiderService {
      */
     public List<Rider> getSubgroupRiderRels(Common common) throws AppTrException;
 
+    /**
+     *  <p> getRiderAssignmentStatus
+     *
+     * @param rider
+     * @return
+     */
+    public Map getRiderAssignmentStatus(Rider rider);
 }

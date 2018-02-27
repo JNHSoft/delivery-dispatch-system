@@ -6,6 +6,7 @@ import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
@@ -216,6 +217,23 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         return S_Rider;
+    }
+
+    //배정 모드 조회
+    @Override
+    public Map getRiderAssignmentStatus(Rider rider){
+        // Role 확인 token 으로 권한 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            rider.setAccessToken(rider.getToken());
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
+            rider.setAccessToken(null);
+        }
+
+        String nRet = riderMapper.selectRiderAssignmentStatus(rider);
+        Map<String, String> map = new HashMap<>();
+        map.put("assignmentStatus", nRet);
+        return map;
     }
 
 }

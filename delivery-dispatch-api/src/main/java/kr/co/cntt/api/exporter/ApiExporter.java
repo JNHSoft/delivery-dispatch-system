@@ -189,7 +189,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
             // 서비스 로직 후 응답처리
             return ResponseEntity.ok(new CommonBody<Map<String, String>>(CODE_SUCCESS));
         } catch (Exception e) {
-            return ResponseEntity.ok(new CommonBody<String>(CODE_ERROR, e.getLocalizedMessage()));
+            return ResponseEntity.ok(new CommonBody<String>(CODE_ERROR, e.getLocalizedMessage(), null));
         }
 
     }
