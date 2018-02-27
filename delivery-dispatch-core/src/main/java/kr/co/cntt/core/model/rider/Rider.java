@@ -1,5 +1,6 @@
 package kr.co.cntt.core.model.rider;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.group.Group;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Rider extends User implements Dto {
     private static final long serialVersionUID = 6384739497543017734L;
 
