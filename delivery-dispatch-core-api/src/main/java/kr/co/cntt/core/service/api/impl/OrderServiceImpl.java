@@ -792,7 +792,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return orderMapper.insertOrderDeny(order);
     }
 
-    @Secured({"ROLE_STORE", "ROLE_RIDER"})
+    @Secured("ROLE_STORE")
     @Override
     public int putOrderAssignedFirst(Order order) throws AppTrException {
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
