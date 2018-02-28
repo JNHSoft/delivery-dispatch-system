@@ -143,6 +143,9 @@ public interface Api {
     /** Store 알림음 설정**/
     String STORE_ALARM_PUT = "/putStoreAlarm.json";
 
+    /** 알림음 목록**/
+    String ALARM_GET = "/getAlarm.json";
+
     // ############################################################################################ //
 
     /** Order 등록 */

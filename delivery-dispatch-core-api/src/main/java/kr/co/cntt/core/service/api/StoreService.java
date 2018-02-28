@@ -2,6 +2,7 @@ package kr.co.cntt.core.service.api;
 
 
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
@@ -89,4 +90,12 @@ public interface StoreService {
      * @return
      */
     public int putStoreAlarm(Store store);
+
+    /**
+     *  <p> getAlarm
+     *
+     * @param store
+     * @return
+     */
+    public List<Alarm> getAlarm(Store store);
 }

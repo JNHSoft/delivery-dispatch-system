@@ -1,6 +1,7 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
@@ -113,4 +114,12 @@ public interface StoreMapper {
      * @return
      */
     public int updateStoreAlarm(Store store);
+
+    /**
+     * <p> 알림음 목록
+     *
+     * @param store
+     * @return
+     */
+    public List<Alarm> selectAlarm(Store store);
 }

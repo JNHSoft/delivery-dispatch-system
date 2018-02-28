@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.StoreMapper;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -154,6 +155,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         return storeMapper.selectThirdParty(thirdParty);
     }
 
+    //알림음 설정
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
     public int putStoreAlarm(Store store){
@@ -161,4 +163,9 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         store.setAlarm(StringUtils.arrayToDelimitedString(tempStr, "|"));
         return storeMapper.updateStoreAlarm(store);
     }
+
+    //알림음 목록
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Override
+    public List<Alarm> getAlarm(Store store){ return storeMapper.selectAlarm(store); }
 }
