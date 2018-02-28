@@ -2,6 +2,7 @@ package kr.co.cntt.api.service;
 
 import kr.co.cntt.api.config.IServiceRouter;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
@@ -90,6 +91,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** [Admin] 배정서드파티 삭제**/
 	ADMIN_THIRD_PARTY_DELETE("adminService", "deleteThirdParty", ThirdParty.class),
+
+	/** [Admin] 알림음 추가**/
+	ADMIN_ALARM_POST("adminService", "postAlarm", Alarm.class),
 
 	// ############################################################################################ //
 

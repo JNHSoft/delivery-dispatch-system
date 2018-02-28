@@ -734,5 +734,23 @@
 			AND deleted IS NULL
 	</update>
 
+	<!-- insertAlarm -->
+	<insert id="insertAlarm" parameterType="kr.co.cntt.core.model.alarm.Alarm">
+		INSERT INTO TB_ALARM (
+		created_datetime
+		, alarm_type
+		, admin_id
+		, ori_file_name
+		, file_name
+		, file_size
+		) VALUES (
+		now()
+		, #{alarmType}
+		, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		, #{oriFileName}
+		, #{fileName}
+		, #{fileSize}
+		)
+	</insert>
 </mapper>
  
