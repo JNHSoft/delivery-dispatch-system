@@ -249,7 +249,12 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
                 Misc misc = new Misc();
                 Map<String, Integer> storeHaversineMap = new HashMap<>();
                 List<Store> S_Store = storeMapper.selectSubGroupStores(store);
+
                 for (Store s : S_Store) {
+                    if (store.getId().equals(s.getId())) {
+                        continue;
+                    }
+
                     try {
                         storeHaversineMap.put(s.getId(), misc.getHaversine(store.getLatitude(), store.getLongitude(), s.getLatitude(), s.getLongitude()));
                     } catch (Exception e) {
