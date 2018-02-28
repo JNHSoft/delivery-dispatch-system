@@ -316,6 +316,7 @@
     <update id="updateStoreAssignmentStatus" parameterType="kr.co.cntt.core.model.store.Store">
         UPDATE TB_STORE AS A
         SET A.assignment_status = #{assignmentStatus}
+            , A.modified_datetime = now()
         WHERE A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
     </update>
 
@@ -323,6 +324,7 @@
     <update id="updateStoreThirdParty" parameterType="kr.co.cntt.core.model.store.Store">
         UPDATE TB_STORE as A
         SET A.third_party = #{thirdParty}
+            , A.modified_datetime = now()
         WHERE A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
     </update>
 

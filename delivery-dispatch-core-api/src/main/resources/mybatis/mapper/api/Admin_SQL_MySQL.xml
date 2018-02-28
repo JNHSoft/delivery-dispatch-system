@@ -699,6 +699,7 @@
 	<update id="updateAdminAssignmentStatus" parameterType="kr.co.cntt.core.model.admin.Admin">
 		UPDATE TB_ADMIN AS A
 		SET A.assignment_status = #{assignmentStatus}
+			A.modified_datetime = now()
 		WHERE A.id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</update>
 
