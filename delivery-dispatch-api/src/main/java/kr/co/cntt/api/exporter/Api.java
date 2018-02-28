@@ -140,6 +140,9 @@ public interface Api {
     /** 배정서드파티 목록**/
     String THIRD_PARTY_GET = "/getThirdParty.json";
 
+    /** Store 알림음 설정**/
+    String STORE_ALARM_PUT = "/putStoreAlarm.json";
+
     // ############################################################################################ //
 
     /** Order 등록 */

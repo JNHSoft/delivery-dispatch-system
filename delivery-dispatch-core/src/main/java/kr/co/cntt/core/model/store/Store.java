@@ -40,6 +40,7 @@ public class Store extends User implements Dto {
     private String assignmentStatus;
     private String assignmentLimit;
     private String thirdParty;
+    private String alarm;
 
     private Group group;
     private SubGroup subGroup;

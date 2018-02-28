@@ -153,4 +153,12 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     public List<ThirdParty> getThirdParty(ThirdParty thirdParty){
         return storeMapper.selectThirdParty(thirdParty);
     }
+
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Override
+    public int putStoreAlarm(Store store){
+        String[] tempStr = (store.getAlarm()).split("(?<=\\G.{" + 1 + "})");
+        store.setAlarm(StringUtils.arrayToDelimitedString(tempStr, "|"));
+        return storeMapper.updateStoreAlarm(store);
+    }
 }

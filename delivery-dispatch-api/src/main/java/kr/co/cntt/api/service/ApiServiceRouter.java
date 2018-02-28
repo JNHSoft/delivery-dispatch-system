@@ -145,6 +145,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** 배정서드파티 목록**/
 	THIRD_PARTY_GET("storeService", "getThirdParty", ThirdParty.class),
 
+	/** Store 알림음 설정**/
+	STORE_ALARM_PUT("storeService", "putStoreAlarm", Store.class),
+
 	// ############################################################################################ //
 
 	/** Order 등록 */

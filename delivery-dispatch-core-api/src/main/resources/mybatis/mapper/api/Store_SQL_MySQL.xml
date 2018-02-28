@@ -366,5 +366,13 @@
         WHERE id = #{id};
     </select>
 
+
+    <!-- updateStoreAlarm -->
+    <update id="updateStoreAlarm" parameterType="kr.co.cntt.core.model.store.Store">
+        UPDATE TB_STORE
+          SET alarm = #{alarm}
+              , modified_datetime = now()
+        WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+    </update>
 </mapper>
  
