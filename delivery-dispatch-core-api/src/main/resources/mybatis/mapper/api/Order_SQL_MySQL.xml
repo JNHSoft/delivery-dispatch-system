@@ -128,6 +128,7 @@
 			, A.assigned_datetime
 			, A.picked_up_datetime
 			, A.rider_id AS riderId
+			, A.menu_price
             , B.name AS riderName
 		FROM TB_ORDER AS A
         LEFT JOIN TB_RIDER AS B
