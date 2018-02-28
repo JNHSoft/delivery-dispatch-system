@@ -141,12 +141,24 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     //배정 서드파티 설정
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
-    public int putStoreThirdParty(Store store){return storeMapper.updateStoreThirdParty(store); }
+    public int putStoreThirdParty(Store store){
+        String[] tempStr = (store.getThirdParty()).split("(?<=\\G.{" + 1 + "})");
+        store.setThirdParty(StringUtils.arrayToDelimitedString(tempStr, "|"));
+        return storeMapper.updateStoreThirdParty(store);
+    }
 
     //배정 서드파티 목록
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
     public List<ThirdParty> getThirdParty(ThirdParty thirdParty){
         return storeMapper.selectThirdParty(thirdParty);
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_STORE"})
+    @Override
+    public int putStoreAlarm(Store store){
+        String[] tempStr = (store.getAlarm()).split("(?<=\\G.{" + 1 + "})");
+        store.setAlarm(StringUtils.arrayToDelimitedString(tempStr, "|"));
+        return storeMapper.updateStoreAlarm(store);
     }
 }

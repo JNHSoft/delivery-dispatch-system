@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
@@ -118,7 +119,7 @@ public interface AdminMapper {
 
     /**
      * <p> 상점 미지정 그룹 목록 조회
-     * 
+     *
      * @param subGroupStoreRel
      * @return
      */
@@ -268,4 +269,20 @@ public interface AdminMapper {
      * @return
      */
     public int deleteThirdParty(ThirdParty thirdParty);
+
+    /**
+     * <p> 알림음 추가
+     *
+     * @param alarm
+     * @return
+     */
+    public int insertAlarm(Alarm alarm);
+
+    /**
+     * <p> 알림음 삭제
+     *
+     * @param alarm
+     * @return
+     */
+    public int deleteAlarm(Alarm alarm);
 }

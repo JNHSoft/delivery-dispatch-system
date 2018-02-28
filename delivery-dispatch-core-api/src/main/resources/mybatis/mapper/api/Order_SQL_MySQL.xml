@@ -16,11 +16,20 @@
         <result property="reservationDatetime" column="reservation_datetime" />
         <result property="assignedDatetime" column="assigned_datetime" />
         <result property="pickedUpDatetime" column="picked_up_datetime" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
 
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
             <result property="id" column="riderId" />
             <result property="name" column="riderName" />
         </association>
+
+		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="id" column="store_id" />
+			<result property="storeName" column="store_name" />
+			<result property="latitude" column="store_latitude" />
+			<result property="longitude" column="store_longitude" />
+		</association>
     </resultMap>
 
 
@@ -120,6 +129,8 @@
             , A.rider_id
 			, A.address
 		    , A.detail_address
+			, A.latitude
+			, A.longitude
 			, A.status
 			, A.menu_name
 			, A.cooking_time
@@ -128,13 +139,19 @@
 			, A.assigned_datetime
 			, A.picked_up_datetime
 			, A.rider_id AS riderId
+			, A.menu_price
             , B.name AS riderName
+  			, D.store_name
+			, D.latitude AS store_latitude
+			, D.longitude AS store_longitude
 -- 			, @RNUM := @RNUM + 1 AS RNUM
 		FROM TB_ORDER AS A
         LEFT JOIN TB_RIDER AS B
         ON A.rider_id = B.id
         LEFT JOIN TB_SUBGROUP_STORE_REL AS C
         ON A.store_id = C.store_id
+		LEFT JOIN TB_STORE AS D
+		ON A.store_id = D.id
 -- 		, (SELECT @RNUM := 0) E
 		WHERE
 			<choose>
@@ -143,7 +160,6 @@
 				</when>
 				<otherwise>
 					A.created_datetime > CURRENT_DATE()
-					OR A.reservation_datetime > CURRENT_DATE()
 				</otherwise>
 			</choose>
 			<if test="status != null and status != ''">

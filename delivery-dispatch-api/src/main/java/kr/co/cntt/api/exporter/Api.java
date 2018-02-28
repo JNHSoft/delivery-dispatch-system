@@ -88,6 +88,11 @@ public interface Api {
     /** [Admin] 배정서드파티 삭제**/
     String ADMIN_THIRD_PARTY_DELETE = "/deleteThirdParty.json";
 
+    /** [Admin] 알림음 추가**/
+    String ADMIN_ALARM_POST = "/postAlarm.json";
+
+    /** [Admin] 알림음 삭제**/
+    String ADMIN_ALARM_DELETE = "/deleteAlarm.json";
 
     // ############################################################################################ //
 
@@ -134,6 +139,9 @@ public interface Api {
 
     /** 배정서드파티 목록**/
     String THIRD_PARTY_GET = "/getThirdParty.json";
+
+    /** Store 알림음 설정**/
+    String STORE_ALARM_PUT = "/putStoreAlarm.json";
 
     // ############################################################################################ //
 

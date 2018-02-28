@@ -5,6 +5,7 @@ import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
@@ -17,11 +18,14 @@ import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -300,4 +304,18 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Override
     public int deleteThirdParty(ThirdParty thirdParty){return adminMapper.deleteThirdParty(thirdParty); }
 
+    //알림음 추가
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int postAlarm(Alarm alarm){
+        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmSS");
+        String[] tmp = alarm.getOriFileName().split("\\.");
+        alarm.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
+        return adminMapper.insertAlarm(alarm);
+    }
+
+    //알림음 삭제
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteAlarm(Alarm alarm){ return adminMapper.deleteAlarm(alarm); }
 }

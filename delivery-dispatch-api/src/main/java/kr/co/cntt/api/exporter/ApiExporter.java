@@ -11,11 +11,13 @@ import kr.co.cntt.core.api.model.CommonBody;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.service.api.RiderService;
 import kr.co.cntt.core.service.api.StoreService;
+import kr.co.cntt.core.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +27,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +52,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
     private CustomAuthentificateService customAuthentificateService;
     private AuthenticationManager authenticationManager;
     private TokenManager tokenManager;
+    private FileUtil fileUtil;
 
     public ApiExporter(){}
 
@@ -57,13 +62,15 @@ public class ApiExporter extends ExporterSupportor implements Api {
             , TokenManager tokenManager
             , RiderService riderService
             , StoreService storeService
-            , AdminService adminService){
+            , AdminService adminService
+            , FileUtil fileUtil){
         this.customAuthentificateService = customAuthentificateService;
         this.authenticationManager = authenticationManager;
         this.tokenManager = tokenManager;
         this.riderService = riderService;
         this.storeService = storeService;
         this.adminService = adminService;
+        this.fileUtil = fileUtil;
     }
 
     /**
@@ -249,5 +256,4 @@ public class ApiExporter extends ExporterSupportor implements Api {
         return ResponseEntity.ok(gson.toJson(response).toString());
 
     }
-
 }

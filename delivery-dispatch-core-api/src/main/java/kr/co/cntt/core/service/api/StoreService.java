@@ -81,4 +81,12 @@ public interface StoreService {
      * @return
      */
     public List<ThirdParty> getThirdParty(ThirdParty thirdParty);
+
+    /**
+     *  <p> putStoreAlarm
+     *
+     * @param store
+     * @return
+     */
+    public int putStoreAlarm(Store store);
 }

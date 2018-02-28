@@ -106,4 +106,11 @@ public interface StoreMapper {
      */
     public Store selectStoreLocation(String storeId);
 
+    /**
+     * <p> 알림음 설정
+     *
+     * @param store
+     * @return
+     */
+    public int updateStoreAlarm(Store store);
 }

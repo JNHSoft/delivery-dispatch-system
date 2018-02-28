@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api;
 
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
@@ -234,5 +235,19 @@ public interface AdminService {
      */
     public int deleteThirdParty(ThirdParty thirdParty);
 
+    /**
+     *  <p> postAlarm
+     *
+     * @param alarm
+     * @return
+     */
+    public int postAlarm(Alarm alarm);
 
+    /**
+     *  <p> deleteAlarm
+     *
+     * @param alarm
+     * @return
+     */
+    public int deleteAlarm(Alarm alarm);
 }
