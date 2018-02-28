@@ -148,6 +148,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Store 알림음 설정**/
 	STORE_ALARM_PUT("storeService", "putStoreAlarm", Store.class),
 
+	/** 알림음 목록**/
+	ALARM_GET("storeService", "getAlarm", Store.class),
+
 	// ############################################################################################ //
 
 	/** Order 등록 */
