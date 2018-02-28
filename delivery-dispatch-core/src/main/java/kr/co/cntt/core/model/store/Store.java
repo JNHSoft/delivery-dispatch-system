@@ -1,5 +1,6 @@
 package kr.co.cntt.core.model.store;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.group.Group;
@@ -13,6 +14,7 @@ import org.apache.ibatis.type.Alias;
 @Getter
 @Setter
 @Alias("store")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Store extends User implements Dto {
     private static final long serialVersionUID = 6587372870369862831L;
 
