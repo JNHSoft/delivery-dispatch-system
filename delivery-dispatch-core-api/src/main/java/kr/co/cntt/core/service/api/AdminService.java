@@ -242,4 +242,12 @@ public interface AdminService {
      * @return
      */
     public int postAlarm(Alarm alarm);
+
+    /**
+     *  <p> deleteAlarm
+     *
+     * @param alarm
+     * @return
+     */
+    public int deleteAlarm(Alarm alarm);
 }

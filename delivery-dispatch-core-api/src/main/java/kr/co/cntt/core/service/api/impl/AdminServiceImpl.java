@@ -313,4 +313,9 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         alarm.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
         return adminMapper.insertAlarm(alarm);
     }
+
+    //알림음 삭제
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteAlarm(Alarm alarm){ return adminMapper.deleteAlarm(alarm); }
 }

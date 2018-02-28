@@ -95,6 +95,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 알림음 추가**/
 	ADMIN_ALARM_POST("adminService", "postAlarm", Alarm.class),
 
+	/** [Admin] 알림음 삭제**/
+	ADMIN_ALARM_DELETE("adminService", "deleteAlarm", Alarm.class),
+
 	// ############################################################################################ //
 
 	/** Rider 정보조회 */

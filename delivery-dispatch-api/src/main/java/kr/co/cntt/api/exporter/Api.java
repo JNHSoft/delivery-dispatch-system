@@ -91,6 +91,9 @@ public interface Api {
     /** [Admin] 알림음 추가**/
     String ADMIN_ALARM_POST = "/postAlarm.json";
 
+    /** [Admin] 알림음 삭제**/
+    String ADMIN_ALARM_DELETE = "/deleteAlarm.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */

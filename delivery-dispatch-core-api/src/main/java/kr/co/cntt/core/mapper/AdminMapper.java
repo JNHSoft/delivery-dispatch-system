@@ -277,4 +277,12 @@ public interface AdminMapper {
      * @return
      */
     public int insertAlarm(Alarm alarm);
+
+    /**
+     * <p> 알림음 삭제
+     *
+     * @param alarm
+     * @return
+     */
+    public int deleteAlarm(Alarm alarm);
 }
