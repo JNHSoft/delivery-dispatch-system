@@ -173,6 +173,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Order 배정 거부 */
 	ORDER_DENY_ASSIGNMENT("orderService", "postOrderDeny", Order.class),
 
+	/** Order 우선배정 */
+	ORDER_ASSIGNED_FIRST("orderService", "putOrderAssignedFirst", Order.class),
+
 	// ############################################################################################ //
 
 	/** Payment  결제 정보 조회 */

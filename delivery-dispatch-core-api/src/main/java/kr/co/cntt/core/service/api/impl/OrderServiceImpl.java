@@ -254,16 +254,23 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
-    public List<Order> getOrders(Common common) throws AppTrException {
+    public List<Order> getOrders(Order order) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-            common.setRole("ROLE_STORE");
+            order.setRole("ROLE_STORE");
         } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
-            common.setRole("ROLE_RIDER");
+            order.setRole("ROLE_RIDER");
         }
 
-        List<Order> S_Order = orderMapper.selectOrders(common);
+        if (order.getStatus() != null) {
+            String tmpString = order.getStatus().replaceAll("[\\D]", "");
+            char[] statusArray = tmpString.toCharArray();
+
+            order.setStatusArray(statusArray);
+        }
+
+        List<Order> S_Order = orderMapper.selectOrders(order);
 
         if (S_Order.size() == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00015), ErrorCodeEnum.E00015.name());
@@ -723,6 +730,25 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         return orderMapper.insertOrderDeny(order);
+    }
+
+    @Secured({"ROLE_STORE", "ROLE_RIDER"})
+    @Override
+    public int putOrderAssignedFirst(Order order) throws AppTrException {
+        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+        if (selectOrderIsApprovalCompleted != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00023), ErrorCodeEnum.E00023.name());
+        }
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00024), ErrorCodeEnum.E00024.name());
+        }
+
+        order.setAssignedFirst("True");
+
+        return this.putOrder(order);
     }
 
 }

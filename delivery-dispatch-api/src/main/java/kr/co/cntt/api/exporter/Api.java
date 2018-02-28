@@ -170,6 +170,9 @@ public interface Api {
     /** Order 배정 거부 */
     String ORDER_DENY_ASSIGNMENT = "/postOrderDeny.json";
 
+    /** Order 우선배정 */
+    String ORDER_ASSIGNED_FIRST = "putOrderAssignedFirst.json";
+
     // ############################################################################################ //
 
     /** Payment 카드 결제 정보 조회 */

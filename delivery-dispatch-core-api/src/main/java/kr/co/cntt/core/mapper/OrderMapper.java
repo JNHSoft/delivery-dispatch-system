@@ -30,10 +30,10 @@ public interface OrderMapper {
     /**
      * <p> Orders 목록 조회
      *
-     * @param common
+     * @param order
      * @return
      */
-    public List<Order> selectOrders(Common common);
+    public List<Order> selectOrders(Order order);
 
     /**
      * <p> Order 정보 조회

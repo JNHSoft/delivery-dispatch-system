@@ -26,11 +26,11 @@ public interface OrderService {
     /**
      * <p> getOrders
      *
-     * @param common
+     * @param order
      * @return
      * @throws AppTrException
      */
-    public List<Order> getOrders(Common common) throws AppTrException;
+    public List<Order> getOrders(Order order) throws AppTrException;
 
     /**
      * <p> getOrderInfo
@@ -112,5 +112,14 @@ public interface OrderService {
      * @throws AppTrException
      */
     public int postOrderDeny(Order order) throws AppTrException;
+
+    /**
+     * <p> putOrderAssignedFirst
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderAssignedFirst(Order order) throws AppTrException;
 
 }
