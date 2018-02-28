@@ -314,18 +314,18 @@
 
     <!-- updateStoreAssignmentStatus -->
     <update id="updateStoreAssignmentStatus" parameterType="kr.co.cntt.core.model.store.Store">
-        UPDATE TB_STORE AS A
-        SET A.assignment_status = #{assignmentStatus}
-            , A.modified_datetime = now()
-        WHERE A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+        UPDATE TB_STORE
+        SET assignment_status = #{assignmentStatus}
+            , modified_datetime = now()
+        WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
     </update>
 
     <!-- updateStoreThirdParty -->
     <update id="updateStoreThirdParty" parameterType="kr.co.cntt.core.model.store.Store">
-        UPDATE TB_STORE as A
-        SET A.third_party = #{thirdParty}
-            , A.modified_datetime = now()
-        WHERE A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+        UPDATE TB_STORE
+        SET third_party = #{thirdParty}
+            , modified_datetime = now()
+        WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
     </update>
 
 

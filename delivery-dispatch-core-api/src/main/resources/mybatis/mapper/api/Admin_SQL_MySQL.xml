@@ -697,10 +697,10 @@
 
 	<!-- updateAdminAssignmentStatus -->
 	<update id="updateAdminAssignmentStatus" parameterType="kr.co.cntt.core.model.admin.Admin">
-		UPDATE TB_ADMIN AS A
-		SET A.assignment_status = #{assignmentStatus}
-			A.modified_datetime = now()
-		WHERE A.id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		UPDATE TB_ADMIN
+		SET assignment_status = #{assignmentStatus}
+			modified_datetime = now()
+		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</update>
 
 	<!-- insertThirdParty -->
@@ -718,19 +718,19 @@
 
 	<!-- updateThirdParty -->
 	<update id="updateThirdParty" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty">
-		UPDATE TB_THIRD_PARTY as A
-		SET A.modified_datetime = now()
+		UPDATE TB_THIRD_PARTY
+		SET modified_datetime = now()
 			,name = #{name}
-		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			AND A.id = #{id}
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND id = #{id}
 			AND deleted IS NULL
 	</update>
 
 	<!-- deleteThirdParty -->
 	<update id="deleteThirdParty" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty">
-		UPDATE TB_THIRD_PARTY as A
+		UPDATE TB_THIRD_PARTY
 			SET A.deleted = now()
-		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND A.id = #{id}
 			AND deleted IS NULL
 	</update>
