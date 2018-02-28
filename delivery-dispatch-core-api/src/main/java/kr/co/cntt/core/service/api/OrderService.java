@@ -39,7 +39,7 @@ public interface OrderService {
      * @return
      * @throws AppTrException
      */
-    public List<Order> getOrderInfo(Common common) throws AppTrException;
+    public Order getOrderInfo(Common common) throws AppTrException;
 
     /**
      * <p> putOrderInfo
@@ -121,5 +121,14 @@ public interface OrderService {
      * @throws AppTrException
      */
     public int putOrderAssignedFirst(Order order) throws AppTrException;
+
+    /**
+     * <p> assignOrder
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int assignOrder(Order order) throws AppTrException;
 
 }

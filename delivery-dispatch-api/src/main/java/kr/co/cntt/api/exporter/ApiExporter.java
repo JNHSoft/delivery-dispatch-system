@@ -11,10 +11,10 @@ import kr.co.cntt.core.api.model.CommonBody;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
-import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.api.AdminService;
+import kr.co.cntt.core.service.api.OrderService;
 import kr.co.cntt.core.service.api.RiderService;
 import kr.co.cntt.core.service.api.StoreService;
 import kr.co.cntt.core.util.FileUtil;
@@ -27,13 +27,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static kr.co.cntt.api.exporter.Api.Path;
@@ -49,6 +45,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
     private RiderService riderService;
     private StoreService storeService;
     private AdminService adminService;
+    private OrderService orderService;
     private CustomAuthentificateService customAuthentificateService;
     private AuthenticationManager authenticationManager;
     private TokenManager tokenManager;
@@ -63,6 +60,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
             , RiderService riderService
             , StoreService storeService
             , AdminService adminService
+            , OrderService orderService
             , FileUtil fileUtil){
         this.customAuthentificateService = customAuthentificateService;
         this.authenticationManager = authenticationManager;
@@ -70,6 +68,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         this.riderService = riderService;
         this.storeService = storeService;
         this.adminService = adminService;
+        this.orderService = orderService;
         this.fileUtil = fileUtil;
     }
 
@@ -169,7 +168,22 @@ public class ApiExporter extends ExporterSupportor implements Api {
                 riderService.insertRiderSession(riderInfo);
             } else if (level.equals("2")) {
                 storeInfo.setAccessToken(token);
-                storeService.insertStoreSession(storeInfo);
+                int getTokenResult = storeService.insertStoreSession(storeInfo);
+
+//                if (getTokenResult == 1) {
+//                    Order order = new Order();
+//
+//                    order.setRole("ROLE_STORE");
+//                    order.setToken(token);
+//                    order.setStatus("[0,5]");
+//
+//                    String tmpString = order.getStatus().replaceAll("[\\D]", "");
+//                    char[] tmpStatus = tmpString.toCharArray();
+//
+//                    order.setStatusArray(tmpStatus);
+//
+//                    orderService.assignOrder(order);
+//                }
             } else if (level.equals("1")) {
                 adminInfo.setAccessToken(token);
                 adminService.insertAdminSession(adminInfo);

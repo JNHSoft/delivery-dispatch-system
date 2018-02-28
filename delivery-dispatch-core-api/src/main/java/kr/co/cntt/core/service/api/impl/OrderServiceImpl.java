@@ -32,8 +32,10 @@ import java.util.Map;
 @Service("orderService")
 public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
-    private List<Map> orderReservationArrayList = new ArrayList();
-    private List<Map> orderArrayList = new ArrayList();
+//    private List<Map> orderReservationArrayList = new ArrayList();
+//    private List<Map> orderArrayList = new ArrayList();
+    private List<Order> orderList = new ArrayList<>();
+    private List<Store> currentStoreList  = new ArrayList<>();
 
     /**
      * Order DAO
@@ -72,6 +74,58 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 + String.format("%02d", LocalDateTime.now().getMinute())
                 + "00";
 
+        if (orderList != null) {
+            for (int i = 0; i < orderList.size(); i++) {
+                log.info(">>> 배정 대기 오더: " + orderList.get(i).getId());
+
+                Order order = new Order();
+                order.setId(orderList.get(i).getId());
+
+                Store store = new Store();
+                store.setId(orderList.get(i).getStoreId());
+                store.setId(orderList.get(i).getLatitude());
+                store.setId(orderList.get(i).getLongitude());
+                store.setId(currentStoreList.get(0).getRadius());
+                store.setId(currentStoreList.get(0).getStoreDistanceSort());
+                store.setId(currentStoreList.get(0).getAssignmentLimit());
+
+                Map map = new HashMap();
+                map.put("order", order);
+                map.put("store", store);
+
+                if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
+                    if (orderList.get(i).getReservationDatetime().equals(nowDate)) {
+                        // 예약 배정
+                        log.info(">>> 예약 배정 " + orderList.get(i).getId() + ": " + orderList.get(i).getMenuName());
+                        int proc = this.autoAssignOrderProc(map);
+
+                        if (proc == 1) {
+                            orderList.remove(i);
+//                    orderArrayList.remove(i);
+                            i -= 1;
+                            log.info("============================================================================");
+                        }
+                    } else {
+                        log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getId() + ": " + orderList.get(i).getMenuName());
+                        log.info("============================================================================");
+                    }
+
+                } else {
+                    // 자동 배정
+                    log.info(">>> 자동 배정 " + orderList.get(i).getId() + ": " + orderList.get(i).getMenuName());
+                    int proc = this.autoAssignOrderProc(map);
+
+                    if (proc == 1) {
+                        orderList.remove(i);
+//                    orderArrayList.remove(i);
+                        i -= 1;
+                        log.info("============================================================================");
+                    }
+                }
+            }
+
+        }
+        /*
         for (int i = 0; i < orderReservationArrayList.size(); i++) {
             Order order = new Order();
             order.setId(((Order) orderReservationArrayList.get(i).get("order")).getId());
@@ -89,7 +143,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             map.put("store", store);
 
             if (((Order) orderReservationArrayList.get(i).get("order")).getReservationDatetime().equals(nowDate)) {
-                // TODO. 예약 배정
+                // 예약 배정
                 log.info(">>> 예약 배정 " + ((Order) orderReservationArrayList.get(i).get("order")).getMenuName());
                 int proc = this.autoAssignOrderProc(map);
                 if (proc == 1) {
@@ -116,7 +170,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             map.put("order", order);
             map.put("store", store);
 
-            // TODO. 자동 배정
+            // 자동 배정
             log.info(">>> 자동 배정 " + ((Order) orderArrayList.get(i).get("order")).getMenuName());
             int proc = this.autoAssignOrderProc(map);
             if (proc == 1) {
@@ -124,14 +178,14 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 i -= 1;
                 log.info("============================================================================");
             }
-        }
+        }*/
 
     }
 
     public int autoAssignOrderProc(Map map) {
         // TODO. 자동 배정 proc
         log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ proc!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ order.getId() !!!!! " + ((Order) map.get("order")).getMenuName());
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ order.getId() !!!!! " + ((Order) map.get("order")).getId());
 
         return  1;
     }
@@ -139,6 +193,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_STORE")
     @Override
     public int postOrder(Order order) throws AppTrException {
+        orderList = null;
+
         String address = "";
 
         if (order.getAreaAddress() != null && order.getAreaAddress() != "") {
@@ -196,6 +252,14 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         if (postOrder == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00011), ErrorCodeEnum.E00011.name());
         } else {
+            order.setRole("ROLE_STORE");
+            order.setStatus("[0,5]");
+
+            String tmpString = order.getStatus().replaceAll("[\\D]", "");
+            char[] tmpStatus = tmpString.toCharArray();
+
+            order.setStatusArray(tmpStatus);
+
             int assignOrder = this.assignOrder(order);
 
             if (assignOrder == 0) {
@@ -206,42 +270,38 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return postOrder;
     }
 
-    /**
-     * <p> assignOrder
-     *
-     * @param order
-     * @return
-     * @throws AppTrException
-     */
+    @Override
     public int assignOrder(Order order) throws AppTrException {
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
 
-        List<Store> S_Store = storeMapper.selectStoreInfo(storeDTO);
+        currentStoreList = storeMapper.selectStoreInfo(storeDTO);
 
-        if (S_Store.get(0).getAssignmentStatus().equals("1")) {
+        if (currentStoreList.get(0).getAssignmentStatus().equals("1")) {
             log.info(">>> 자동배정");
-            if (order.getReservationDatetime() != null && order.getReservationDatetime() != "") {
-                Map map = new HashMap();
-                map.put("order", order);
-                map.put("store", S_Store.get(0));
 
-                orderReservationArrayList.add(map);
-            } else {
-                Map map = new HashMap();
-                map.put("order", order);
-                map.put("store", S_Store.get(0));
-
-                orderArrayList.add(map);
-            }
+            orderList = orderMapper.selectOrders(order);
+//            if (order.getReservationDatetime() != null && order.getReservationDatetime() != "") {
+//                Map map = new HashMap();
+//                map.put("order", order);
+//                map.put("store", S_Store.get(0));
+//
+//                orderReservationArrayList.add(map);
+//            } else {
+//                Map map = new HashMap();
+//                map.put("order", order);
+//                map.put("store", S_Store.get(0));
+//
+//                orderArrayList.add(map);
+//            }
 
             return 1;
-        } else if (S_Store.get(0).getAssignmentStatus().equals("0")) {
+        } else if (currentStoreList.get(0).getAssignmentStatus().equals("0")) {
             log.info(">>> Proc End: 상점 수동 배정");
 
             return 1;
-        } else if (S_Store.get(0).getAssignmentStatus().equals("2")) {
+        } else if (currentStoreList.get(0).getAssignmentStatus().equals("2")) {
             log.info(">>> Proc End: 기사 수동 배정");
 
             return 1;
@@ -281,7 +341,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
-    public List<Order> getOrderInfo(Common common) throws AppTrException {
+    public Order getOrderInfo(Common common) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
@@ -290,18 +350,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             common.setRole("ROLE_RIDER");
         }
 
-        List<Order> S_Order = orderMapper.selectOrderInfo(common);
+        Order S_Order = orderMapper.selectOrderInfo(common);
 
-        if (S_Order.size() == 0) {
+        if (S_Order == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00016), ErrorCodeEnum.E00016.name());
         }
 
         Misc misc = new Misc();
-        if (S_Order.get(0).getLatitude() != null && S_Order.get(0).getLongitude() != null) {
-            Store storeInfo = storeMapper.selectStoreLocation(S_Order.get(0).getStoreId());
+        if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
+            Store storeInfo = storeMapper.selectStoreLocation(S_Order.getStoreId());
 
             try {
-                S_Order.get(0).setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), S_Order.get(0).getLatitude(), S_Order.get(0).getLongitude()) / (double) 1000));
+                S_Order.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), S_Order.getLatitude(), S_Order.getLongitude()) / (double) 1000));
             } catch (Exception e) {
                 e.printStackTrace();
             }

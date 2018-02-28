@@ -41,7 +41,7 @@ public interface OrderMapper {
      * @param common
      * @return
      */
-    public List<Order> selectOrderInfo(Common common);
+    public Order selectOrderInfo(Common common);
 
     /**
      * <p> Order 수정
