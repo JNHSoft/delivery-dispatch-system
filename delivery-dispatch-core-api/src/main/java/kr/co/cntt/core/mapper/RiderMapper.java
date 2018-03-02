@@ -121,6 +121,14 @@ public interface RiderMapper {
     public void resetRiderReturnTime();
 
     /**
+     * <p> 라이더 재배치
+     *
+     * @param rider
+     * @return
+     */
+    public int updateRiderReturnTime(Rider rider);
+
+    /**
      * <p> 자동 배정 관련 기사 목록
      *
      * @param storeId

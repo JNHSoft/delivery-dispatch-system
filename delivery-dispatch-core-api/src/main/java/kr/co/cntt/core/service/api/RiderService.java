@@ -100,4 +100,13 @@ public interface RiderService {
      * @return
      */
     public Map getRiderAssignmentStatus(Rider rider);
+
+    /**
+     *  <p> putRiderReturnTime
+     *
+     * @param rider
+     * @return
+     */
+    public int putRiderReturnTime(Rider rider);
+
 }

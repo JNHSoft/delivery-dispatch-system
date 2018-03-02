@@ -123,6 +123,9 @@ public interface Api {
     /** Rider 배정 모드 조회**/
     String RIDER_ASSIGNMENT_STATUS_GET = "/getRiderAssignmentStatus.json";
 
+    /** Rider 재배치**/
+    String RIDER_RETURN_TIME_PUT = "/putRiderReturnTime.json";
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */
