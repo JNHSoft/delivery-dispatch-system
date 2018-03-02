@@ -20,6 +20,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -86,20 +87,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                log.info(">>> s_sort: " + orderList.get(i).getStore().getStoreDistanceSort());
 
                 List<Rider> riderList = riderMapper.selectForAssignRiders(orderList.get(i).getStore().getId());
+
+                Misc misc = new Misc();
+                Map<String, Integer> riderHaversineMap = new HashMap<>();
+
                 if (riderList != null) {
                     for (Rider r : riderList) {
-                        Rider rider = new Rider();
-                        if (r.getReturnTime() == null) {
-                            rider = r;
-                            map.put("rider", rider);
-                        } else {
-                            if (r.getSubGroupStoreRel().getStoreId() == order.getStoreId()) {
-                                rider = r;
-                                map.put("rider", rider);
-                            } else {
-                                log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
+                        if (r.getLatitude() != null) {
+                            try {
+                                riderHaversineMap.put(r.getId(), misc.getHaversine(orderList.get(i).getStore().getLatitude(), orderList.get(i).getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
+
                         }
+
+
 //                        log.info("@@@ getId   " + r.getId());
 //                        log.info("@@@ getStatus   " + r.getStatus());
 //                        log.info("@@@ getWorking   " + r.getWorking());
@@ -109,10 +112,61 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
                 }
 
-                if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
-                    if (orderList.get(i).getReservationDatetime().equals(nowDate)) {
-                        // 예약 배정
-                        log.info(">>> 예약 배정 " + orderList.get(i).getId());
+                String riderSort = null;
+                if (riderHaversineMap.isEmpty()) {
+                    orderList.get(i).getStore().setStoreDistanceSort("-1");
+                } else {
+                    riderSort = StringUtils.arrayToDelimitedString(misc.sortByValue(riderHaversineMap).toArray(), "|");
+                }
+
+                String[] riderSortArray = riderSort.split("\\|");
+
+                Boolean flag = Boolean.FALSE;
+                for (int j = 0; j < riderSortArray.length; j++) {
+                    for (Rider r1 : riderList) {
+
+                        if (r1.getId().equals(riderSortArray[j])) {
+                            if (r1.getAssignCount().equals("0")) {
+                                if (r1.getReturnTime() == null) {
+                                    map.put("rider", r1);
+                                } else {
+                                    if (r1.getSubGroupStoreRel().getStoreId() == order.getStoreId()) {
+                                        map.put("rider", r1);
+                                    } else {
+                                        log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
+                                    }
+                                }
+                                flag = Boolean.TRUE;
+                            } else {
+                                flag = Boolean.FALSE;
+
+                            }
+                        }
+                    }
+
+                }
+
+                if (flag == Boolean.TRUE) {
+
+                    if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
+                        if (orderList.get(i).getReservationDatetime().equals(nowDate)) {
+                            // 예약 배정
+                            log.info(">>> 예약 배정 " + orderList.get(i).getId());
+                            int proc = this.autoAssignOrderProc(map);
+
+                            if (proc == 1) {
+                                orderList.remove(i);
+                                i -= 1;
+                                log.info("============================================================================");
+                            }
+                        } else {
+                            log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getId());
+                            log.info("============================================================================");
+                        }
+
+                    } else {
+                        // 자동 배정
+                        log.info(">>> 자동 배정 " + orderList.get(i).getId());
                         int proc = this.autoAssignOrderProc(map);
 
                         if (proc == 1) {
@@ -120,20 +174,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             i -= 1;
                             log.info("============================================================================");
                         }
-                    } else {
-                        log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getId());
-                        log.info("============================================================================");
-                    }
-
-                } else {
-                    // 자동 배정
-                    log.info(">>> 자동 배정 " + orderList.get(i).getId());
-                    int proc = this.autoAssignOrderProc(map);
-
-                    if (proc == 1) {
-                        orderList.remove(i);
-                        i -= 1;
-                        log.info("============================================================================");
                     }
                 }
             }

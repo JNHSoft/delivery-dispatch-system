@@ -32,6 +32,8 @@
 			<result property="name" column="store_name" />
 			<result property="latitude" column="store_latitude" />
 			<result property="longitude" column="store_longitude" />
+			<result property="radius" column="radius" />
+			<result property="assignmentLimit" column="assignment_limit" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
 		</association>
     </resultMap>
@@ -480,6 +482,8 @@
 		    , B.id AS store_id
 		    , B.latitude AS store_latitude
 		    , B.longitude AS store_longitude
+		    , B.radius
+		    , B.assignment_limit
 		    , B.store_distance_sort
 		FROM TB_ORDER AS A
         LEFT JOIN TB_STORE AS B
