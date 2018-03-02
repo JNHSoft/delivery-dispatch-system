@@ -4,7 +4,6 @@ import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
 
@@ -120,4 +119,13 @@ public interface RiderMapper {
      * @return
      */
     public void resetRiderReturnTime();
+
+    /**
+     * <p> 자동 배정 관련 기사 목록
+     *
+     * @param storeId
+     * @return
+     */
+    public List<Rider> selectForAssignRiders(String storeId);
+
 }

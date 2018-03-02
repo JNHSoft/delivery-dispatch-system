@@ -16,14 +16,12 @@ import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +32,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
 //    private List<Map> orderReservationArrayList = new ArrayList();
 //    private List<Map> orderArrayList = new ArrayList();
-    private List<Order> orderList = new ArrayList<>();
-    private List<Store> currentStoreList  = new ArrayList<>();
+//    private List<Order> orderList = new ArrayList<>();
+//    private List<Store> currentStoreList  = new ArrayList<>();
 
     /**
      * Order DAO
@@ -64,7 +62,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         this.riderMapper = riderMapper;
     }
 
-    @Scheduled(fixedDelay = 1000 * 60)
     @Override
     public void autoAssignOrder() {
         String nowDate = String.format("%02d", LocalDateTime.now().getYear())
@@ -73,10 +70,27 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 + String.format("%02d", LocalDateTime.now().getHour())
                 + String.format("%02d", LocalDateTime.now().getMinute())
                 + "00";
-
+        List<Order> orderList = orderMapper.selectForAssignOrders();
         if (orderList != null) {
             for (int i = 0; i < orderList.size(); i++) {
                 log.info(">>> 배정 대기 오더: " + orderList.get(i).getId());
+                log.info(">>> 배정 대기 오더: " + orderList.get(i).getLongitude());
+
+                log.info(">>> store_id: " + orderList.get(i).getStore().getId());
+                log.info(">>> s_lon: " + orderList.get(i).getStore().getLongitude());
+                log.info(">>> s_sort: " + orderList.get(i).getStore().getStoreDistanceSort());
+
+                List<Rider> riderList = riderMapper.selectForAssignRiders(orderList.get(i).getStore().getId());
+                if (riderList != null) {
+                    for (Rider r : riderList) {
+                        log.info("@@@ getId   " + r.getId());
+                        log.info("@@@ getStatus   " + r.getStatus());
+                        log.info("@@@ getWorking   " + r.getWorking());
+                        log.info("@@@ getWorkingHours   " + r.getWorkingHours());
+                        log.info("@@@ getRestHours   " + r.getRestHours());
+                        log.info("@@@ -----------------------------------------------------");
+                    }
+                }
 
                 Order order = new Order();
                 order.setId(orderList.get(i).getId());
@@ -85,9 +99,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 store.setId(orderList.get(i).getStoreId());
                 store.setId(orderList.get(i).getLatitude());
                 store.setId(orderList.get(i).getLongitude());
-                store.setId(currentStoreList.get(0).getRadius());
-                store.setId(currentStoreList.get(0).getStoreDistanceSort());
-                store.setId(currentStoreList.get(0).getAssignmentLimit());
+                // store.setId(currentStoreList.get(0).getRadius());
+                // store.setId(currentStoreList.get(0).getStoreDistanceSort());
+                // store.setId(currentStoreList.get(0).getAssignmentLimit());
 
                 Map map = new HashMap();
                 map.put("order", order);
@@ -193,7 +207,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_STORE")
     @Override
     public int postOrder(Order order) throws AppTrException {
-        orderList = null;
+        // orderList = null;
 
         String address = "";
 
@@ -251,65 +265,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (postOrder == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00011), ErrorCodeEnum.E00011.name());
-        } else {
-            order.setRole("ROLE_STORE");
-            order.setStatus("[0,5]");
-
-            String tmpString = order.getStatus().replaceAll("[\\D]", "");
-            char[] tmpStatus = tmpString.toCharArray();
-
-            order.setStatusArray(tmpStatus);
-
-            int assignOrder = this.assignOrder(order);
-
-            if (assignOrder == 0) {
-                throw new AppTrException(getMessage(ErrorCodeEnum.E00012), ErrorCodeEnum.E00012.name());
-            }
         }
 
         return postOrder;
-    }
-
-    @Override
-    public int assignOrder(Order order) throws AppTrException {
-        Store storeDTO = new Store();
-        storeDTO.setAccessToken(order.getToken());
-        storeDTO.setToken(order.getToken());
-
-        currentStoreList = storeMapper.selectStoreInfo(storeDTO);
-
-        if (currentStoreList.get(0).getAssignmentStatus().equals("1")) {
-            log.info(">>> 자동배정");
-
-            orderList = orderMapper.selectOrders(order);
-//            if (order.getReservationDatetime() != null && order.getReservationDatetime() != "") {
-//                Map map = new HashMap();
-//                map.put("order", order);
-//                map.put("store", S_Store.get(0));
-//
-//                orderReservationArrayList.add(map);
-//            } else {
-//                Map map = new HashMap();
-//                map.put("order", order);
-//                map.put("store", S_Store.get(0));
-//
-//                orderArrayList.add(map);
-//            }
-
-            return 1;
-        } else if (currentStoreList.get(0).getAssignmentStatus().equals("0")) {
-            log.info(">>> Proc End: 상점 수동 배정");
-
-            return 1;
-        } else if (currentStoreList.get(0).getAssignmentStatus().equals("2")) {
-            log.info(">>> Proc End: 기사 수동 배정");
-
-            return 1;
-        } else {
-            log.info(">>> error");
-
-            return 0;
-        }
     }
 
     @Secured({"ROLE_STORE", "ROLE_RIDER"})

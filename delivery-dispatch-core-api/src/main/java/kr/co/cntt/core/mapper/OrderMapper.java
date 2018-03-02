@@ -107,4 +107,10 @@ public interface OrderMapper {
      */
     public int selectOrderDenyCount(Rider rider);
 
+    /**
+     * <p> 자동 배정 관련 주문 목록
+     * @return
+     */
+    public List<Order> selectForAssignOrders();
+
 }

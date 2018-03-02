@@ -122,13 +122,4 @@ public interface OrderService {
      */
     public int putOrderAssignedFirst(Order order) throws AppTrException;
 
-    /**
-     * <p> assignOrder
-     *
-     * @param order
-     * @return
-     * @throws AppTrException
-     */
-    public int assignOrder(Order order) throws AppTrException;
-
 }

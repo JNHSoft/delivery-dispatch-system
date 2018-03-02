@@ -25,25 +25,25 @@
 		<result property="locationUpdated" column="location_updated" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
-			<result property="id" column="groupId" />
-			<result property="name" column="groupName" />
-			<result property="adminId" column="groupAdminId" />
+			<result property="id" column="group_id" />
+			<result property="name" column="group_name" />
+			<result property="adminId" column="group_admin_id" />
 		</association>
 
 		<association property="subGroup" column="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
-			<result property="id" column="subgroupId" />
-			<result property="groupId" column="subgroupGroupId" />
-			<result property="name" column="subgroupName" />
-			<result property="adminId" column="subgroupAdminId" />
+			<result property="id" column="subgroup_id" />
+			<result property="groupId" column="subgroup_group_Id" />
+			<result property="name" column="subgroup_name" />
+			<result property="adminId" column="subgroup_admin_id" />
 		</association>
 
 		<association property="subGroupRiderRel" column="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
-			<result property="id" column="subGroupRiderRelId" />
-			<result property="adminId" column="subGroupRiderRelAdminId" />
-			<result property="groupId" column="subGroupRiderRelGroupId" />
-			<result property="subGroupId" column="subGroupRiderRelSubGroupId" />
-			<result property="storeId" column="subGroupRiderRelStoreId" />
-			<result property="riderId" column="subGroupRiderRelRiderId" />
+			<result property="id" column="subGroupRiderRel_id" />
+			<result property="adminId" column="subGroupRiderRel_admin_id" />
+			<result property="groupId" column="subGroupRiderRel_group_id" />
+			<result property="subGroupId" column="subGroupRiderRel_subgroup_id" />
+			<result property="storeId" column="subGroupRiderRel_store_id" />
+			<result property="riderId" column="subGroupRiderRel_rider_id" />
 
 		</association>
 	</resultMap>
@@ -116,19 +116,19 @@
 		, TR.working_hours
 		, TR.rest_hours
 		, TR.teenager
-		, TSG.id AS subgroupId
-		, TSG.group_id AS subgroupGroupId
-		, TG.name AS groupName
-		, TSG.name AS subgroupName
-		, TSG.admin_id AS subgroupAdminId
-		, TG.id AS groupId
-		, TG.admin_id AS groupAdminId
-		, SRR.id AS subGroupRiderRelId
-		, SRR.admin_id AS subGroupRiderRelAdminId
-		, SRR.group_id AS subGroupRiderRelGroupId
-		, SRR.subgroup_id AS subGroupRiderRelSubGroupId
-		, SRR.store_id AS subGroupRiderRelStoreId
-		, SRR.rider_id AS subGroupRiderRelRiderId
+		, TSG.id AS subgroup_id
+		, TSG.group_id AS subgroup_group_id
+		, TG.name AS group_name
+		, TSG.name AS subgroup_name
+		, TSG.admin_id AS subgroup_admin_id
+		, TG.id AS group_id
+		, TG.admin_id AS group_admin_id
+		, SRR.id AS subGroupRiderRel_id
+		, SRR.admin_id AS subGroupRiderRel_admin_id
+		, SRR.group_id AS subGroupRiderRel_group_id
+		, SRR.subgroup_id AS subGroupRiderRel_subgroup_id
+		, SRR.store_id AS subGroupRiderRel_store_id
+		, SRR.rider_id AS subGroupRiderRel_rider_id
 
 		FROM TB_RIDER TR
 
@@ -443,13 +443,13 @@
 			, A.latitude
 			, A.longitude
 			, A.location_updated
-			, C.id AS subgroupId
-			, C.group_id AS subgroupGroupId
-			, C.name AS subgroupName
-			, C.admin_id AS subgroupAdminId
-			, D.id AS groupId
-			, D.name AS groupName
-			, D.admin_id AS groupAdminId
+			, C.id AS subgroup_id
+			, C.group_id AS subgroup_group_id
+			, C.name AS subgroup_name
+			, C.admin_id AS subgroup_admin_id
+			, D.id AS group_id
+			, D.name AS group_name
+			, D.admin_id AS group_admin_id
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
@@ -481,5 +481,24 @@
 			SET return_time = IF(now() > DATE_ADD(return_time, INTERVAL 1 HOUR), NULL, return_time)
 		WHERE return_time is not NULL;
 	</update>
+
+
+	<!-- selectForAssignRiders -->
+	<select id="selectForAssignRiders" parameterType="String" resultMap="selectSubgroupRiderRelsResult">
+		SELECT A.id
+			, A.status
+			, A.working
+			, A.working_hours
+			, A.rest_hours
+			, A.latitude
+			, A.longitude
+			, B.subgroup_id
+			, B.store_id
+		FROM TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
+		WHERE B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{storeId} GROUP BY subgroup_id)
+	</select>
+
 </mapper>
  

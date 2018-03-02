@@ -23,15 +23,16 @@
 		<result property="longitude" column="longitude" />
 
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
-            <result property="id" column="riderId" />
-            <result property="name" column="riderName" />
+            <result property="riderId" column="rider_id" />
+            <result property="riderName" column="rider_name" />
         </association>
 
 		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="id" column="store_id" />
-			<result property="storeName" column="store_name" />
+			<result property="name" column="store_name" />
 			<result property="latitude" column="store_latitude" />
 			<result property="longitude" column="store_longitude" />
+			<result property="storeDistanceSort" column="store_distance_sort" />
 		</association>
     </resultMap>
 
@@ -63,8 +64,8 @@
 		<result property="device_os" column="device_os" />
 
 		<association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
-			<result property="id" column="riderId" />
-			<result property="name" column="riderName" />
+			<result property="id" column="rider_id" />
+			<result property="name" column="rider_name" />
 		</association>
 	</resultMap>
 
@@ -141,10 +142,10 @@
 			, A.reservation_datetime
 			, A.assigned_datetime
 			, A.picked_up_datetime
-			, A.rider_id AS riderId
 			, A.menu_price
-            , B.name AS riderName
-  			, D.store_name
+			, B.id AS rider_id
+            , B.name AS rider_name
+  			, D.name AS store_name
 			, D.latitude AS store_latitude
 			, D.longitude AS store_longitude
 -- 			, @RNUM := @RNUM + 1 AS RNUM
@@ -217,8 +218,8 @@
             , A.completed_datetime
             , A.combined_order_id
             , A.device_os
-			, A.rider_id AS riderId
-			, B.name AS riderName
+			, B.id AS rider_id
+			, B.name AS rider_name
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_RIDER AS B
 		ON A.rider_id = B.id
@@ -466,6 +467,26 @@
         	AND A.denied_datetime > B.last_access
         	AND A.denied_datetime > CURRENT_DATE()
     </select>
+
+
+	<!-- selectForAssignOrders -->
+	<select id="selectForAssignOrders" resultMap="selectOrdersResult">
+		SELECT A.id
+		    , A.created_datetime
+		    , A.reservation_datetime
+		    , A.latitude
+		    , A.longitude
+		    , A.store_id
+		    , B.latitude AS store_latitude
+		    , B.longitude AS store_longitude
+		    , B.store_distance_sort
+		FROM TB_ORDER AS A
+        LEFT JOIN TB_STORE AS B
+        ON A.store_id = B.id
+        WHERE B.assignment_status=1
+            AND (A.status = 0 OR A.status =5)
+            AND A.created_datetime>'20180228'
+	</select>
 
 </mapper>
  

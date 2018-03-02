@@ -25,16 +25,16 @@
         <result property="chDetailAddress" column="ch_detail_address" />
 
         <association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
-            <result property="id" column="groupId" />
-            <result property="name" column="groupName" />
-            <result property="adminId" column="groupAdminId" />
+            <result property="id" column="group_id" />
+            <result property="name" column="group_name" />
+            <result property="adminId" column="group_admin_id" />
         </association>
 
         <association property="subGroup" column="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
-            <result property="id" column="subgroupId" />
-            <result property="groupId" column="subgroupGroupId" />
-            <result property="name" column="subgroupName" />
-            <result property="adminId" column="subgroupAdminId" />
+            <result property="id" column="subgroup_id" />
+            <result property="groupId" column="subgroup_group_id" />
+            <result property="name" column="subgroup_name" />
+            <result property="adminId" column="subgroup_admin_id" />
         </association>
     </resultMap>
 
@@ -109,13 +109,13 @@
             , TS.assignment_limit
             , TS.third_party
             , TS.deleted
-            , TSG.id AS subgroupId
-            , TSG.group_id AS subgroupGroupId
-            , TG.name AS groupName
-            , TSG.name AS subgroupName
-            , TSG.admin_id AS subgroupAdminId
-            , TG.id AS groupId
-            , TG.admin_id AS groupAdminId
+            , TSG.id AS subgroup_id
+            , TSG.group_id AS subgroup_group_id
+            , TG.name AS group_name
+            , TSG.name AS subgroup_name
+            , TSG.admin_id AS subgroup_admin_id
+            , TG.id AS group_id
+            , TG.admin_id AS group_admin_id
         FROM TB_STORE TS
 
         left join
@@ -404,5 +404,6 @@
         </choose>
         ORDER BY alarm_type asc
     </select>
+
 </mapper>
  
