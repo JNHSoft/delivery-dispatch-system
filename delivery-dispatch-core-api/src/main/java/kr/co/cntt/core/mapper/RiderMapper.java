@@ -119,5 +119,5 @@ public interface RiderMapper {
      * @param
      * @return
      */
-    public void updateRiderReturnTime();
+    public void resetRiderReturnTime();
 }

@@ -17,7 +17,7 @@ public class Schedule {
     //라이더 재배치 스케줄링
     @Scheduled(fixedDelayString = "60000")
     public void ReturnReset() throws InterruptedException{
-        riderMapper.updateRiderReturnTime();
+        riderMapper.resetRiderReturnTime();
         System.out.println("라이더 재배치 스케줄링 - 1분");
     }
 }

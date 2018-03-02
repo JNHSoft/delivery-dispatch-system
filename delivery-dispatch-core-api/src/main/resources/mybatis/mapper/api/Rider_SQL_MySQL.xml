@@ -475,8 +475,8 @@
 							(SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 	</select>
 
-	<!-- updateRiderReturnTime -->
-	<update id="updateRiderReturnTime">
+	<!-- resetRiderReturnTime -->
+	<update id="resetRiderReturnTime">
 		UPDATE TB_RIDER
 			SET return_time = IF(now() > DATE_ADD(return_time, INTERVAL 1 HOUR), NULL, return_time)
 		WHERE return_time is not NULL;
