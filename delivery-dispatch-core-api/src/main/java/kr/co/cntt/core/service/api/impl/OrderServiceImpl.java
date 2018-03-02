@@ -89,8 +89,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 if (riderList != null) {
                     for (Rider r : riderList) {
                         Rider rider = new Rider();
-                        rider = r;
-                        map.put("rider", rider);
+                        if (r.getReturnTime() == null) {
+                            rider = r;
+                            map.put("rider", rider);
+                        } else {
+                            if (r.getSubGroupStoreRel().getStoreId() == order.getStoreId()) {
+                                rider = r;
+                                map.put("rider", rider);
+                            } else {
+                                log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
+                            }
+                        }
 //                        log.info("@@@ getId   " + r.getId());
 //                        log.info("@@@ getStatus   " + r.getStatus());
 //                        log.info("@@@ getWorking   " + r.getWorking());

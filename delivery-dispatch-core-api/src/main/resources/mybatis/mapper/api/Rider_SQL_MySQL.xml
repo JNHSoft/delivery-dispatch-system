@@ -23,6 +23,7 @@
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
 		<result property="locationUpdated" column="location_updated" />
+		<result property="returnTime" column="return_time" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -500,13 +501,13 @@
 			, A.rest_hours
 			, A.latitude
 			, A.longitude
+			, A.return_time
 			, B.subgroup_id
 			, B.store_id
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
 		WHERE A.deleted IS NULL
-			AND A.return_time IS NULL
 			AND B.deleted IS NULL
 			AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{storeId} GROUP BY subgroup_id)
 	</select>
