@@ -505,9 +505,9 @@
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
-		WHERE A.deleted IS NOT NULL
-			AND A.return_time IS NOT NULL
-			AND B.deleted IS NOT NULL
+		WHERE A.deleted IS NULL
+			AND A.return_time IS NULL
+			AND B.deleted IS NULL
 			AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{storeId} GROUP BY subgroup_id)
 	</select>
 

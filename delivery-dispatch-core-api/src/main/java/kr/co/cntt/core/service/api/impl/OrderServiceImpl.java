@@ -138,6 +138,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ proc!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ order.getId() !!!!! " + ((Order) map.get("order")).getId());
         log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ order.getStore().getId() !!!!! " + ((Order) map.get("order")).getStore().getId());
+
         if (map.get("rider") == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
         } else {
