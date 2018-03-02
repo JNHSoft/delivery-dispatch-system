@@ -479,7 +479,7 @@
 	<update id="resetRiderReturnTime">
 		UPDATE TB_RIDER
 			SET return_time = IF(now() > DATE_ADD(return_time, INTERVAL 1 HOUR), NULL, return_time)
-		WHERE return_time is not NULL;
+		WHERE return_time is not NULL
 	</update>
 </mapper>
  
