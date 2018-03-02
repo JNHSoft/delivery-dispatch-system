@@ -111,4 +111,13 @@ public interface RiderMapper {
      * @return
      */
     public String selectRiderAssignmentStatus(Rider rider);
+
+
+    /**
+     * <p> 라이더 재배치 스케줄링
+     *
+     * @param
+     * @return
+     */
+    public void updateRiderReturnTime();
 }
