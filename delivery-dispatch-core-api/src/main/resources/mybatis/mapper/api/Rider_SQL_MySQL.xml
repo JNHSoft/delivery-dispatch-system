@@ -481,5 +481,13 @@
 			SET return_time = IF(now() > DATE_ADD(return_time, INTERVAL 1 HOUR), NULL, return_time)
 		WHERE return_time is not NULL
 	</update>
+
+	<!-- updateRiderReturnTime -->
+	<update id="updateRiderReturnTime" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_RIDER
+			SET return_time = now()
+		WHERE id = #{id}
+			AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+	</update>
 </mapper>
  

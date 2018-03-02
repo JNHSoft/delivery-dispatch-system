@@ -236,4 +236,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return map;
     }
 
+    //라이더 재배치
+    @Secured("ROLE_STORE")
+    @Override
+    public int putRiderReturnTime(Rider rider){ return riderMapper.updateRiderReturnTime(rider); }
 }

@@ -120,4 +120,12 @@ public interface RiderMapper {
      * @return
      */
     public void resetRiderReturnTime();
+
+    /**
+     * <p> 라이더 재배치
+     *
+     * @param rider
+     * @return
+     */
+    public int updateRiderReturnTime(Rider rider);
 }
