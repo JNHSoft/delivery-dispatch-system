@@ -56,7 +56,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     // rider 정보 조회
     @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
-    public List<Rider> getRiderInfo(Rider rider) throws AppTrException {
+    public Rider getRiderInfo(Rider rider) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             rider.setAccessToken(rider.getToken());
@@ -68,9 +68,9 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setIsAdmin("");
         }
 
-        List<Rider> S_Rider = riderMapper.getRiderInfo(rider);
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
 
-        if (S_Rider.size() == 0) {
+        if (S_Rider == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00008), ErrorCodeEnum.E00008.name());
         }
 
@@ -158,7 +158,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
     // rider 가 자기 위치 정보 조회
     @Override
-    public List<Rider> getRiderLocation(Rider rider) throws AppTrException {
+    public Rider getRiderLocation(Rider rider) throws AppTrException {
         // Role 확인 token 으로 권한 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
@@ -169,9 +169,9 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setId("");
         }
 
-        List<Rider> S_Rider = riderMapper.getRiderLocation(rider);
+        Rider S_Rider = riderMapper.getRiderLocation(rider);
 
-        if (S_Rider.size() == 0) {
+        if (S_Rider == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
         }
         return S_Rider;
