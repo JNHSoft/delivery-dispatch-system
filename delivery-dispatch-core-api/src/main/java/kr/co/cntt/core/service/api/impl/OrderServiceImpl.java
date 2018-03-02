@@ -71,7 +71,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         List<Order> orderList = orderMapper.selectForAssignOrders();
         if (orderList != null) {
-            for (int i = 0; i < orderList.size(); i++) {
+            Loop1 : for (int i = 0; i < orderList.size(); i++) {
                 Order order = new Order();
                 order = orderList.get(i);
                 map.put("order", order);
@@ -122,30 +122,83 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 String[] riderSortArray = riderSort.split("\\|");
 
                 Boolean flag = Boolean.FALSE;
-                for (int j = 0; j < riderSortArray.length; j++) {
+                Loop2 : for (int j = 0; j < riderSortArray.length; j++) {
+                    Loop3:
                     for (Rider r1 : riderList) {
-
                         if (r1.getId().equals(riderSortArray[j])) {
-                            if (r1.getAssignCount().equals("0")) {
-                                if (r1.getReturnTime() == null) {
-                                    map.put("rider", r1);
-                                } else {
-                                    if (r1.getSubGroupStoreRel().getStoreId() == order.getStoreId()) {
+                            if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 1000) {
+                                if (r1.getSubGroupRiderRel().getStoreId().equals(orderList.get(i).getStoreId()) && r1.getAssignCount().equals("0")) {
+                                    log.info(">>> auto assign step1");
+                                    if (r1.getReturnTime() == null) {
                                         map.put("rider", r1);
+                                        flag = Boolean.TRUE;
+                                        break Loop2;
                                     } else {
-                                        log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
+                                        if (r1.getSubGroupRiderRel().getStoreId().equals(order.getStoreId())) {
+                                            map.put("rider", r1);
+                                            flag = Boolean.TRUE;
+                                            break Loop2;
+                                        } else {
+                                            log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
+                                            flag = Boolean.FALSE;
+                                        }
                                     }
-                                }
-                                flag = Boolean.TRUE;
-                            } else {
-                                flag = Boolean.FALSE;
 
+                                } else {
+                                    flag = Boolean.FALSE;
+                                }
+                            } else if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 1000) {
+                                if (r1.getSubGroupRiderRel().getStoreId().equals(orderList.get(i).getStoreId()) && Integer.parseInt(r1.getAssignCount()) <= Integer.parseInt(order.getStore().getAssignmentLimit())) {
+                                    log.info(">>> auto assign step2");
+                                    if (r1.getReturnTime() == null) {
+                                        map.put("rider", r1);
+                                        flag = Boolean.TRUE;
+                                        break Loop2;
+                                    } else {
+                                        if (r1.getSubGroupRiderRel().getStoreId().equals(order.getStoreId())) {
+                                            map.put("rider", r1);
+                                            flag = Boolean.TRUE;
+                                            break Loop2;
+                                        } else {
+                                            log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
+                                            flag = Boolean.FALSE;
+                                        }
+                                    }
+                                } else {
+                                    flag = Boolean.FALSE;
+                                }
+                            } else {
+                                if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 2000) {
+                                    if (Integer.parseInt(r1.getAssignCount()) <= Integer.parseInt(order.getStore().getAssignmentLimit())) {
+                                        log.info(">>> auto assign step3");
+                                        if (r1.getReturnTime() == null) {
+                                            map.put("rider", r1);
+                                            flag = Boolean.TRUE;
+                                            break Loop2;
+                                        } else {
+                                            if (r1.getSubGroupRiderRel().getStoreId().equals(order.getStoreId())) {
+                                                map.put("rider", r1);
+                                                flag = Boolean.TRUE;
+                                                break Loop2;
+                                            } else {
+                                                flag = Boolean.FALSE;
+                                                log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    flag = Boolean.FALSE;
+                                }
                             }
+
+                        } else {
+                            flag = Boolean.FALSE;
                         }
+
                     }
 
                 }
-
+                log.info(flag+"");
                 if (flag == Boolean.TRUE) {
 
                     if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
@@ -153,7 +206,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             // 예약 배정
                             log.info(">>> 예약 배정 " + orderList.get(i).getId());
                             int proc = this.autoAssignOrderProc(map);
-
                             if (proc == 1) {
                                 orderList.remove(i);
                                 i -= 1;

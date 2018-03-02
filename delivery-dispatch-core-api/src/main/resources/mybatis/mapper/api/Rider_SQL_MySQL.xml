@@ -503,8 +503,8 @@
 			, A.latitude
 			, A.longitude
 			, A.return_time
-			, B.subgroup_id
-			, B.store_id
+			, B.subgroup_id AS subGroupRiderRel_subgroup_id
+			, B.store_id AS subGroupRiderRel_store_id
 			, (SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND (status = 1 OR status = 2) AND created_datetime > CURRENT_DATE()) AS assign_count
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
