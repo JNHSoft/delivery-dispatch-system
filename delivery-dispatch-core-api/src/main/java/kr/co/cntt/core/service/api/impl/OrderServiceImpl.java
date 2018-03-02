@@ -731,9 +731,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         currentRider.setAccessToken(order.getToken());
         currentRider.setToken(order.getToken());
 
-        List<Rider> S_Rider = riderMapper.getRiderInfo(currentRider);
+        Rider S_Rider = riderMapper.getRiderInfo(currentRider);
 
-        if (S_Rider.get(0).getSubGroupRiderRel() == null) {
+        if (S_Rider.getSubGroupRiderRel() == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
@@ -754,9 +754,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         currentRider.setAccessToken(order.getToken());
         currentRider.setToken(order.getToken());
 
-        List<Rider> S_Rider = riderMapper.getRiderInfo(currentRider);
+        Rider S_Rider = riderMapper.getRiderInfo(currentRider);
 
-        if (S_Rider.get(0).getSubGroupRiderRel() == null) {
+        if (S_Rider.getSubGroupRiderRel() == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
@@ -773,9 +773,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         List<OrderCheckAssignment> S_OrderDeny = orderMapper.selectOrderDeny(order);
 
-        if (S_OrderDeny.size() != 0 && S_Rider.size() != 0) {
+        if (S_OrderDeny.size() != 0 && S_Rider != null) {
             for (OrderCheckAssignment orderDeny : S_OrderDeny) {
-                if (orderDeny.getRiderId().equals(S_Rider.get(0).getId())) {
+                if (orderDeny.getRiderId().equals(S_Rider.getId())) {
                     throw new AppTrException(getMessage(ErrorCodeEnum.E00010), ErrorCodeEnum.E00010.name());
                 }
 

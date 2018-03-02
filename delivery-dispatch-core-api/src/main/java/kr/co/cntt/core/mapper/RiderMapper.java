@@ -45,7 +45,7 @@ public interface RiderMapper {
      *
      * @return Rider Info 조회 결과값
      */
-    public List<Rider> getRiderInfo(Rider rider);
+    public Rider getRiderInfo(Rider rider);
 
     /**
      * <p> 해당 스토어 Rider 목록
@@ -82,7 +82,7 @@ public interface RiderMapper {
      * @param rider
      * @return
      */
-    public List<Rider> getRiderLocation(Rider rider);
+    public Rider getRiderLocation(Rider rider);
 
     /**
      * Rider들 위치 정보 조회 admin , store 나눔

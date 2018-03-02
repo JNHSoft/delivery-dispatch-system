@@ -37,7 +37,7 @@ public interface RiderService {
      *
      * @return
      */
-    public List<Rider> getRiderInfo(Rider rider) throws AppTrException;
+    public Rider getRiderInfo(Rider rider) throws AppTrException;
 
     /**
      * <p> selectStoreRiders
@@ -74,7 +74,7 @@ public interface RiderService {
      * @param rider
      * @return
      */
-    public List<Rider> getRiderLocation(Rider rider) throws AppTrException ;
+    public Rider getRiderLocation(Rider rider) throws AppTrException ;
 
     /**
      * Rider 들 정보 조회
