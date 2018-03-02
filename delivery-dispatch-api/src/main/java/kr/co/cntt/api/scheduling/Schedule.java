@@ -1,5 +1,6 @@
 package kr.co.cntt.api.scheduling;
 
+import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.service.api.OrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class Schedule {
 
     // 주문 자동 배정 스케줄링
     @Scheduled(cron = "0 */5 * * * *")
-    public void autoAssignOrder() throws InterruptedException {
+    public void autoAssignOrder() throws InterruptedException, AppTrException {
         log.info("주문 자동 배정 스케줄링 - 5분마다다");
         orderService.autoAssignOrder();
     }

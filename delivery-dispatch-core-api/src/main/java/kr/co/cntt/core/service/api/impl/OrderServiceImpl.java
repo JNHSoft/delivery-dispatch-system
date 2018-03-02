@@ -30,11 +30,6 @@ import java.util.Map;
 @Service("orderService")
 public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
-//    private List<Map> orderReservationArrayList = new ArrayList();
-//    private List<Map> orderArrayList = new ArrayList();
-//    private List<Order> orderList = new ArrayList<>();
-//    private List<Store> currentStoreList  = new ArrayList<>();
-
     /**
      * Order DAO
      */
@@ -63,75 +58,71 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     }
 
     @Override
-    public void autoAssignOrder() {
+    public void autoAssignOrder() throws AppTrException {
         String nowDate = String.format("%02d", LocalDateTime.now().getYear())
                 + String.format("%02d", LocalDateTime.now().getMonthValue())
                 + String.format("%02d", LocalDateTime.now().getDayOfMonth())
                 + String.format("%02d", LocalDateTime.now().getHour())
                 + String.format("%02d", LocalDateTime.now().getMinute())
                 + "00";
+
+        Map map = new HashMap();
+
         List<Order> orderList = orderMapper.selectForAssignOrders();
         if (orderList != null) {
             for (int i = 0; i < orderList.size(); i++) {
-                log.info(">>> 배정 대기 오더: " + orderList.get(i).getId());
-                log.info(">>> 배정 대기 오더: " + orderList.get(i).getLongitude());
+                Order order = new Order();
+                order = orderList.get(i);
+                map.put("order", order);
 
-                log.info(">>> store_id: " + orderList.get(i).getStore().getId());
-                log.info(">>> s_lon: " + orderList.get(i).getStore().getLongitude());
-                log.info(">>> s_sort: " + orderList.get(i).getStore().getStoreDistanceSort());
+//                log.info(">>> 배정 대기 오더 getCreatedDatetime(): " + orderList.get(i).getCreatedDatetime());
+//                log.info(">>> 배정 대기 오더 getReservationDatetime(): " + orderList.get(i).getReservationDatetime());
+//                log.info(">>> 배정 대기 오더 getId(): " + orderList.get(i).getId());
+//                log.info(">>> 배정 대기 오더 getLongitude(): " + orderList.get(i).getLongitude());
+//                log.info(">>> 배정 대기 오더 getLongitude(): " + orderList.get(i).getLongitude());
+//
+//                log.info(">>> store_id: " + orderList.get(i).getStore().getId());
+//                log.info(">>> s_lon: " + orderList.get(i).getStore().getLongitude());
+//                log.info(">>> s_sort: " + orderList.get(i).getStore().getStoreDistanceSort());
 
                 List<Rider> riderList = riderMapper.selectForAssignRiders(orderList.get(i).getStore().getId());
                 if (riderList != null) {
                     for (Rider r : riderList) {
-                        log.info("@@@ getId   " + r.getId());
-                        log.info("@@@ getStatus   " + r.getStatus());
-                        log.info("@@@ getWorking   " + r.getWorking());
-                        log.info("@@@ getWorkingHours   " + r.getWorkingHours());
-                        log.info("@@@ getRestHours   " + r.getRestHours());
-                        log.info("@@@ -----------------------------------------------------");
+                        Rider rider = new Rider();
+                        rider = r;
+                        map.put("rider", rider);
+//                        log.info("@@@ getId   " + r.getId());
+//                        log.info("@@@ getStatus   " + r.getStatus());
+//                        log.info("@@@ getWorking   " + r.getWorking());
+//                        log.info("@@@ getWorkingHours   " + r.getWorkingHours());
+//                        log.info("@@@ getRestHours   " + r.getRestHours());
+//                        log.info("@@@ -----------------------------------------------------");
                     }
                 }
-
-                Order order = new Order();
-                order.setId(orderList.get(i).getId());
-
-                Store store = new Store();
-                store.setId(orderList.get(i).getStoreId());
-                store.setId(orderList.get(i).getLatitude());
-                store.setId(orderList.get(i).getLongitude());
-                // store.setId(currentStoreList.get(0).getRadius());
-                // store.setId(currentStoreList.get(0).getStoreDistanceSort());
-                // store.setId(currentStoreList.get(0).getAssignmentLimit());
-
-                Map map = new HashMap();
-                map.put("order", order);
-                map.put("store", store);
 
                 if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
                     if (orderList.get(i).getReservationDatetime().equals(nowDate)) {
                         // 예약 배정
-                        log.info(">>> 예약 배정 " + orderList.get(i).getId() + ": " + orderList.get(i).getMenuName());
+                        log.info(">>> 예약 배정 " + orderList.get(i).getId());
                         int proc = this.autoAssignOrderProc(map);
 
                         if (proc == 1) {
                             orderList.remove(i);
-//                    orderArrayList.remove(i);
                             i -= 1;
                             log.info("============================================================================");
                         }
                     } else {
-                        log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getId() + ": " + orderList.get(i).getMenuName());
+                        log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getId());
                         log.info("============================================================================");
                     }
 
                 } else {
                     // 자동 배정
-                    log.info(">>> 자동 배정 " + orderList.get(i).getId() + ": " + orderList.get(i).getMenuName());
+                    log.info(">>> 자동 배정 " + orderList.get(i).getId());
                     int proc = this.autoAssignOrderProc(map);
 
                     if (proc == 1) {
                         orderList.remove(i);
-//                    orderArrayList.remove(i);
                         i -= 1;
                         log.info("============================================================================");
                     }
@@ -139,67 +130,19 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
         }
-        /*
-        for (int i = 0; i < orderReservationArrayList.size(); i++) {
-            Order order = new Order();
-            order.setId(((Order) orderReservationArrayList.get(i).get("order")).getId());
-
-            Store store = new Store();
-            store.setId(((Store) orderReservationArrayList.get(i).get("store")).getId());
-            store.setLatitude(((Store) orderReservationArrayList.get(i).get("store")).getLatitude());
-            store.setLongitude(((Store) orderReservationArrayList.get(i).get("store")).getLongitude());
-            store.setRadius(((Store) orderReservationArrayList.get(i).get("store")).getRadius());
-            store.setStoreDistanceSort(((Store) orderReservationArrayList.get(i).get("store")).getStoreDistanceSort());
-            store.setAssignmentLimit(((Store) orderReservationArrayList.get(i).get("store")).getAssignmentLimit());
-
-            Map map = new HashMap();
-            map.put("order", order);
-            map.put("store", store);
-
-            if (((Order) orderReservationArrayList.get(i).get("order")).getReservationDatetime().equals(nowDate)) {
-                // 예약 배정
-                log.info(">>> 예약 배정 " + ((Order) orderReservationArrayList.get(i).get("order")).getMenuName());
-                int proc = this.autoAssignOrderProc(map);
-                if (proc == 1) {
-                    orderReservationArrayList.remove(i);
-                    i -= 1;
-                    log.info("============================================================================");
-                }
-            }
-        }
-
-        for (int i = 0; i < orderArrayList.size(); i++) {
-            Order order = new Order();
-            order.setId(((Order) orderArrayList.get(i).get("order")).getId());
-
-            Store store = new Store();
-            store.setId(((Store) orderArrayList.get(i).get("store")).getId());
-            store.setLatitude(((Store) orderArrayList.get(i).get("store")).getLatitude());
-            store.setLongitude(((Store) orderArrayList.get(i).get("store")).getLongitude());
-            store.setRadius(((Store) orderArrayList.get(i).get("store")).getRadius());
-            store.setStoreDistanceSort(((Store) orderArrayList.get(i).get("store")).getStoreDistanceSort());
-            store.setAssignmentLimit(((Store) orderArrayList.get(i).get("store")).getAssignmentLimit());
-
-            Map map = new HashMap();
-            map.put("order", order);
-            map.put("store", store);
-
-            // 자동 배정
-            log.info(">>> 자동 배정 " + ((Order) orderArrayList.get(i).get("order")).getMenuName());
-            int proc = this.autoAssignOrderProc(map);
-            if (proc == 1) {
-                orderArrayList.remove(i);
-                i -= 1;
-                log.info("============================================================================");
-            }
-        }*/
 
     }
 
-    public int autoAssignOrderProc(Map map) {
+    public int autoAssignOrderProc(Map map) throws AppTrException {
         // TODO. 자동 배정 proc
         log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ proc!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ order.getId() !!!!! " + ((Order) map.get("order")).getId());
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ order.getStore().getId() !!!!! " + ((Order) map.get("order")).getStore().getId());
+        if (map.get("rider") == null) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
+        } else {
+            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ rider.getId() !!!!! " + ((Rider) map.get("rider")).getId());
+        }
 
         return  1;
     }

@@ -477,15 +477,22 @@
 		    , A.latitude
 		    , A.longitude
 		    , A.store_id
+		    , B.id AS store_id
 		    , B.latitude AS store_latitude
 		    , B.longitude AS store_longitude
 		    , B.store_distance_sort
 		FROM TB_ORDER AS A
         LEFT JOIN TB_STORE AS B
         ON A.store_id = B.id
-        WHERE B.assignment_status=1
+        LEFT JOIN TB_SUBGROUP_STORE_REL AS C
+        ON B.id = C.store_id
+        WHERE B.deleted IS NULL
+            AND C.deleted IS NULL
+            AND B.assignment_status=1
             AND (A.status = 0 OR A.status =5)
-            AND A.created_datetime>'20180228'
+            AND A.created_datetime > CURRENT_DATE()
+            AND C.subgroup_id IS NOT NULL
+		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime DESC
 	</select>
 
 </mapper>

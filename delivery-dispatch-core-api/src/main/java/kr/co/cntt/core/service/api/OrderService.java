@@ -12,7 +12,7 @@ public interface OrderService {
      * <p> autoAssignOrder
      *
      */
-    public void autoAssignOrder();
+    public void autoAssignOrder() throws AppTrException;
 
     /**
      * <p> insertOrder
