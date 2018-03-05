@@ -25,6 +25,7 @@
 		<result property="locationUpdated" column="location_updated" />
 		<result property="returnTime" column="return_time" />
 		<result property="assignCount" column="assign_count" />
+		<result property="minAssignedDatetime" column="min_assigned_datetime" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -506,6 +507,7 @@
 			, B.subgroup_id AS subGroupRiderRel_subgroup_id
 			, B.store_id AS subGroupRiderRel_store_id
 			, (SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND (status = 1 OR status = 2) AND created_datetime > CURRENT_DATE()) AS assign_count
+   			, (SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
@@ -513,6 +515,7 @@
 			AND B.deleted IS NULL
 			AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{storeId} GROUP BY subgroup_id)
 			AND A.working = 1
+		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
 
 </mapper>
