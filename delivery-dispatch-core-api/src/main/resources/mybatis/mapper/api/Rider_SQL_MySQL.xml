@@ -16,7 +16,7 @@
 		<result property="restHours" column="rest_hours" />
 		<result property="teenager" column="teenager" />
 		<result property="vehicleNumber" column="vehicle_number" />
-
+		<result property="employmentType" column="employment_type" />
 		<result property="status" column="status" />
 		<result property="working" column="working" />
 		<result property="chatUserId" column="chat_user_id" />
