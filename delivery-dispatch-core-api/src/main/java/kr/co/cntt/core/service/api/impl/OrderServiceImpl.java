@@ -85,6 +85,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                log.info(">>> store_id: " + orderList.get(i).getStore().getId());
 //                log.info(">>> s_lon: " + orderList.get(i).getStore().getLongitude());
 //                log.info(">>> s_sort: " + orderList.get(i).getStore().getStoreDistanceSort());
+//                log.info("=====================================================");
 
                 List<Rider> riderList = riderMapper.selectForAssignRiders(orderList.get(i).getStore().getId());
 
@@ -103,12 +104,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
 
 
-//                        log.info("@@@ getId   " + r.getId());
-//                        log.info("@@@ getStatus   " + r.getStatus());
-//                        log.info("@@@ getWorking   " + r.getWorking());
-//                        log.info("@@@ getWorkingHours   " + r.getWorkingHours());
-//                        log.info("@@@ getRestHours   " + r.getRestHours());
-//                        log.info("@@@ -----------------------------------------------------");
+//                        log.info(">>> rider_id" + r.getId());
+//                        log.info(">>> rider_status   " + r.getStatus());
+//                        log.info(">>> rider_working   " + r.getWorking());
+//                        log.info(">>> rider_workingHours   " + r.getWorkingHours());
+//                        log.info(">>> rider_restHours   " + r.getRestHours());
+//                        log.info("-----------------------------------------------------");
                     }
                 }
 
