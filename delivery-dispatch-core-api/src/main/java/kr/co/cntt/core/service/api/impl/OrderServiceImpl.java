@@ -126,6 +126,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     Loop3:
                     for (Rider r1 : riderList) {
                         if (r1.getId().equals(riderSortArray[j])) {
+                            log.info("@@@@@@@@@@@@@@@@@@ order: " + order.getId());
+                            log.info("@@@@@@@@@@@@@@@@@@ rider: " + r1.getId());
+                            log.info("@@@@@@@@@@@@@@@@@@ riderHaversineMap: " + riderHaversineMap.get(riderSortArray[j]));
+                            log.info("@@@@@@@@@@@@@@@@@@ getRadius: " + Integer.parseInt(order.getStore().getRadius()) * 1000);
+                            log.info("@@@@@@@@@@@@@@@@@@ getAssignCount: " + r1.getAssignCount());
                             if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 1000) {
                                 if (r1.getSubGroupRiderRel().getStoreId().equals(orderList.get(i).getStoreId()) && r1.getAssignCount().equals("0")) {
                                     log.info(">>> auto assign step1");
@@ -168,23 +173,27 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                     flag = Boolean.FALSE;
                                 }
                             } else {
-                                if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 2000) {
-                                    if (Integer.parseInt(r1.getAssignCount()) <= Integer.parseInt(order.getStore().getAssignmentLimit())) {
+                                if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 6000) {
+                                    if (r1.getAssignCount().equals("0")) {
                                         log.info(">>> auto assign step3");
                                         if (r1.getReturnTime() == null) {
                                             map.put("rider", r1);
                                             flag = Boolean.TRUE;
+                                            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
                                             break Loop2;
                                         } else {
                                             if (r1.getSubGroupRiderRel().getStoreId().equals(order.getStoreId())) {
                                                 map.put("rider", r1);
                                                 flag = Boolean.TRUE;
+                                                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
                                                 break Loop2;
                                             } else {
                                                 flag = Boolean.FALSE;
                                                 log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
                                             }
                                         }
+                                    } else {
+                                        flag = Boolean.FALSE;
                                     }
                                 } else {
                                     flag = Boolean.FALSE;
@@ -198,7 +207,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
                 }
-                log.info(flag+"");
+                log.info("@@@@@@@@@@@@@@@@@@@@@ flag: " + flag);
                 if (flag == Boolean.TRUE) {
 
                     if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
@@ -244,9 +253,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
         } else {
             log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ rider.getId() !!!!! " + ((Rider) map.get("rider")).getId());
+            Order order = new Order();
+            order.setRole("ROLE_SYSTEM");
+            order.setId(((Order) map.get("order")).getId());
+            order.setRiderId(((Rider) map.get("rider")).getId());
+            order.setStatus("1");
+
+            return orderMapper.updateOrder(order);
+
         }
 
-        return  1;
     }
 
     @Secured("ROLE_STORE")
