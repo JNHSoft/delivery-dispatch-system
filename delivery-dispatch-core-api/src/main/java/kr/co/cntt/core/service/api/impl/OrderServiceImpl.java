@@ -166,7 +166,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                     flag = Boolean.FALSE;
                                 }
                             } else {
-                                if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 7000) {
+                                if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 2000) {
                                     if (r1.getAssignCount().equals("0")) {
                                         log.info(">>> auto assign step3");
                                         if (r1.getReturnTime() == null) {
