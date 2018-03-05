@@ -29,7 +29,7 @@
 
 		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="id" column="store_id" />
-			<result property="name" column="store_name" />
+			<result property="storeName" column="store_name" />
 			<result property="latitude" column="store_latitude" />
 			<result property="longitude" column="store_longitude" />
 			<result property="radius" column="radius" />
@@ -72,12 +72,12 @@
 
 		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="id" column="store_id" />
-			<result property="name" column="store_name" />
+			<result property="storeName" column="store_name" />
 			<result property="latitude" column="store_latitude" />
 			<result property="longitude" column="store_longitude" />
 			<result property="longitude" column="store_longitude" />
 			<result property="address" column="store_address" />
-			<result property="detail_address" column="store_detail_address" />
+			<result property="detailAddress" column="store_detail_address" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
 		</association>
 	</resultMap>
