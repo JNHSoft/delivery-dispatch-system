@@ -518,10 +518,9 @@
             AND C.deleted IS NULL
             AND B.assignment_status=1
             AND (A.status = 0 OR A.status =5)
-            AND A.created_datetime > '20180228'
---             AND A.created_datetime > CURRENT_DATE()
+            AND A.created_datetime > CURRENT_DATE()
             AND C.subgroup_id IS NOT NULL
-		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime DESC
+		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC
 	</select>
 
 </mapper>

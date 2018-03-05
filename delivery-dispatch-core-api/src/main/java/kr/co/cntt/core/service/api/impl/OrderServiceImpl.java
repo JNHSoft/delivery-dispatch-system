@@ -113,9 +113,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
 
                 String riderSort = null;
-                if (riderHaversineMap.isEmpty()) {
-                    orderList.get(i).getStore().setStoreDistanceSort("-1");
-                } else {
+                if (!riderHaversineMap.isEmpty()) {
                     riderSort = StringUtils.arrayToDelimitedString(misc.sortByValue(riderHaversineMap).toArray(), "|");
                 }
 
@@ -126,11 +124,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     Loop3:
                     for (Rider r1 : riderList) {
                         if (r1.getId().equals(riderSortArray[j])) {
-                            log.info("@@@@@@@@@@@@@@@@@@ order: " + order.getId());
-                            log.info("@@@@@@@@@@@@@@@@@@ rider: " + r1.getId());
-                            log.info("@@@@@@@@@@@@@@@@@@ riderHaversineMap: " + riderHaversineMap.get(riderSortArray[j]));
-                            log.info("@@@@@@@@@@@@@@@@@@ getRadius: " + Integer.parseInt(order.getStore().getRadius()) * 1000);
-                            log.info("@@@@@@@@@@@@@@@@@@ getAssignCount: " + r1.getAssignCount());
                             if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 1000) {
                                 if (r1.getSubGroupRiderRel().getStoreId().equals(orderList.get(i).getStoreId()) && r1.getAssignCount().equals("0")) {
                                     log.info(">>> auto assign step1");
@@ -173,19 +166,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                     flag = Boolean.FALSE;
                                 }
                             } else {
-                                if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 6000) {
+                                if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 7000) {
                                     if (r1.getAssignCount().equals("0")) {
                                         log.info(">>> auto assign step3");
                                         if (r1.getReturnTime() == null) {
                                             map.put("rider", r1);
                                             flag = Boolean.TRUE;
-                                            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
                                             break Loop2;
                                         } else {
                                             if (r1.getSubGroupRiderRel().getStoreId().equals(order.getStoreId())) {
                                                 map.put("rider", r1);
                                                 flag = Boolean.TRUE;
-                                                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
                                                 break Loop2;
                                             } else {
                                                 flag = Boolean.FALSE;
@@ -207,7 +198,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
                 }
-                log.info("@@@@@@@@@@@@@@@@@@@@@ flag: " + flag);
                 if (flag == Boolean.TRUE) {
 
                     if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
@@ -244,15 +234,14 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     }
 
     public int autoAssignOrderProc(Map map) throws AppTrException {
-        // TODO. 자동 배정 proc
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ proc!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ order.getId() !!!!! " + ((Order) map.get("order")).getId());
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ order.getStore().getId() !!!!! " + ((Order) map.get("order")).getStore().getId());
+        log.info(">>> proc!!!");
+        log.info(">>> order.getId() " + ((Order) map.get("order")).getId());
+        log.info(">>> order.getStore().getId() " + ((Order) map.get("order")).getStore().getId());
 
         if (map.get("rider") == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
         } else {
-            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ rider.getId() !!!!! " + ((Rider) map.get("rider")).getId());
+            log.info(">>> rider.getId() " + ((Rider) map.get("rider")).getId());
             Order order = new Order();
             order.setRole("ROLE_SYSTEM");
             order.setId(((Order) map.get("order")).getId());
