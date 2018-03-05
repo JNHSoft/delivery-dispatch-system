@@ -1,10 +1,13 @@
 package kr.co.deliverydispatch.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import kr.co.cntt.core.config.DeliveryDispatchDatabaseConfig;
-import kr.co.deliverydispatch.controller.ErrorController;
-import kr.co.deliverydispatch.interceptor.LoginInterceptor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -30,13 +33,17 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-import org.springframework.web.servlet.resource.*;
+import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
+import org.springframework.web.servlet.resource.GzipResourceResolver;
+import org.springframework.web.servlet.resource.PathResourceResolver;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
+import org.springframework.web.servlet.resource.VersionResourceResolver;
 
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.co.deliverydispatch.controller.ErrorController;
+import kr.co.deliverydispatch.interceptor.LoginInterceptor;
 
 @Configuration
 @Import({DeliveryDispatchDatabaseConfig.class})
