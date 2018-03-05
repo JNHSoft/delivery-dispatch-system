@@ -23,8 +23,8 @@
 		<result property="longitude" column="longitude" />
 
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
-            <result property="riderId" column="rider_id" />
-            <result property="riderName" column="rider_name" />
+            <result property="id" column="rider_id" />
+            <result property="name" column="rider_name" />
         </association>
 
 		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
@@ -68,6 +68,17 @@
 		<association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
 			<result property="id" column="rider_id" />
 			<result property="name" column="rider_name" />
+		</association>
+
+		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="id" column="store_id" />
+			<result property="name" column="store_name" />
+			<result property="latitude" column="store_latitude" />
+			<result property="longitude" column="store_longitude" />
+			<result property="longitude" column="store_longitude" />
+			<result property="address" column="store_address" />
+			<result property="detail_address" column="store_detail_address" />
+			<result property="storeDistanceSort" column="store_distance_sort" />
 		</association>
 	</resultMap>
 
@@ -222,11 +233,18 @@
             , A.device_os
 			, B.id AS rider_id
 			, B.name AS rider_name
+			, D.name AS store_name
+			, D.latitude AS store_latitude
+			, D.longitude AS store_longitude
+			, D.address AS store_address
+			, D.detail_address AS store_detail_address
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_RIDER AS B
 		ON A.rider_id = B.id
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
 		ON A.store_id = C.store_id
+		LEFT JOIN TB_STORE AS D
+		ON A.store_id = D.id
 		WHERE A.id = #{id}
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
