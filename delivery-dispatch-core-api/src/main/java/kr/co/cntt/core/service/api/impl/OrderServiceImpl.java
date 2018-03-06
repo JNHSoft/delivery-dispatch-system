@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -331,10 +332,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         if(storeDTO.getAssignmentStatus().equals("2")){
+            storeDTO.getSubGroup().getGroupId();
             Notification noti = new Notification();
             noti.setType(Notification.NOTI.ORDER_NEW);
-            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.send("f7leV43zlcY:APA91bF7kjApgp9AMEG5gk6QcsI6QzY6cERP1xs0r_NUxtFNn_XfCF0fn6lGo7BeJe2KJH6ryXv7EfgYaf6JgQVoFfvyInS4aht6Mmw2-puIIL32QTsHVj8C-Y7JtQMl1Jom8OeBSeur",
-                    noti);
+//            "f7leV43zlcY:APA91bF7kjApgp9AMEG5gk6QcsI6QzY6cERP1xs0r_NUxtFNn_XfCF0fn6lGo7BeJe2KJH6ryXv7EfgYaf6JgQVoFfvyInS4aht6Mmw2-puIIL32QTsHVj8C-Y7JtQMl1Jom8OeBSeur"
+            ArrayList<String> tokens = new ArrayList<>();
+            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
             if(pushNotification != null){
                 CompletableFuture.allOf(pushNotification).join();
                 try {
