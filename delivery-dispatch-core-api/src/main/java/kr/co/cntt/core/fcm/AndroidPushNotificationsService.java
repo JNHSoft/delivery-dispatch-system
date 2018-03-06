@@ -73,7 +73,7 @@ public class AndroidPushNotificationsService {
 
 
     @Async
-    public CompletableFuture<FirebaseResponse> sendGroup(ArrayList<String> tokens) {
+    public CompletableFuture<FirebaseResponse> sendGroup(ArrayList<String> tokens, Object obj) {
         HttpEntity<String> request = null;
         try {
             JSONObject body = new JSONObject();
@@ -91,12 +91,17 @@ public class AndroidPushNotificationsService {
             notification.put("title", "title string here");
             // notification.put("icon", "myicon");
 
+            Gson gson = new GsonBuilder().serializeNulls().create();
+
             JSONObject data = new JSONObject();
-            data.put("key1", "value1");
-            data.put("key2", "value2");
+            data.put("obj", gson.toJson(obj));
+//            data.put("key2", "value2");
+
 
             body.put("notification", notification);
             body.put("data", data);
+
+            System.out.println("body" + body.toString());
 
             request = new HttpEntity<>(body.toString());
 
