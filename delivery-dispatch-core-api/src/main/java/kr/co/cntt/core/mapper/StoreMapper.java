@@ -50,7 +50,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
-    public List<Store> selectStoreInfo(Store store);
+    public Store selectStoreInfo(Store store);
 
     /**
      * Store 정보 수정

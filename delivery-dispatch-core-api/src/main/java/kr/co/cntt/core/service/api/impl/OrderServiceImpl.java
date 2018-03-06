@@ -2,10 +2,13 @@ package kr.co.cntt.core.service.api.impl;
 
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
+import kr.co.cntt.core.fcm.FirebaseResponse;
 import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.order.OrderCheckAssignment;
 import kr.co.cntt.core.model.rider.Rider;
@@ -26,11 +29,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service("orderService")
 public class OrderServiceImpl extends ServiceSupport implements OrderService {
-
+	@Autowired
+    AndroidPushNotificationsService androidPushNotificationsService;
     /**
      * Order DAO
      */
@@ -318,6 +324,36 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00011), ErrorCodeEnum.E00011.name());
         }
 
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+
+        storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
+        if(storeDTO.getAssignmentStatus().equals("2")){
+            Notification noti = new Notification();
+            noti.setType(Notification.NOTI.ORDER_NEW);
+            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.send("f7leV43zlcY:APA91bF7kjApgp9AMEG5gk6QcsI6QzY6cERP1xs0r_NUxtFNn_XfCF0fn6lGo7BeJe2KJH6ryXv7EfgYaf6JgQVoFfvyInS4aht6Mmw2-puIIL32QTsHVj8C-Y7JtQMl1Jom8OeBSeur",
+                    noti);
+            if(pushNotification != null){
+                CompletableFuture.allOf(pushNotification).join();
+                try {
+                    FirebaseResponse firebaseResponse = pushNotification.get();
+                    if (firebaseResponse.getSuccess() == 1) {
+                        log.info("push notification sent ok!");
+                    } else {
+                        log.error("error sending push notifications: " + firebaseResponse.toString());
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+
         return postOrder;
     }
 
@@ -523,9 +559,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             storeDTO.setAccessToken(order.getToken());
             storeDTO.setToken(order.getToken());
 
-            List<Store> S_Store = storeMapper.selectStoreInfo(storeDTO);
+            Store S_Store = storeMapper.selectStoreInfo(storeDTO);
 
-            if (!S_Store.get(0).getAssignmentStatus().equals("0")) {
+            if (!S_Store.getAssignmentStatus().equals("0")) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.E00028), ErrorCodeEnum.E00028.name());
             }
         }

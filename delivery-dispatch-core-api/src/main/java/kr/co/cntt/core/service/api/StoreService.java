@@ -50,7 +50,7 @@ public interface StoreService {
    * @since  2018-01-26
    *
    */
-    public List<Store> getStoreInfo(Store store) throws AppTrException;
+    public Store getStoreInfo(Store store) throws AppTrException;
 
     /**
      * store 정보 수정

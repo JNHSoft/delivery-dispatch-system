@@ -71,7 +71,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     // store 정보 조회
     @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
-    public List<Store> getStoreInfo(Store store) throws AppTrException {
+    public Store getStoreInfo(Store store) throws AppTrException {
         // 권한
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // store 가 조회
@@ -93,9 +93,9 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         log.info(">>> token: " + store.getToken());
 
         // 리스트
-        List<Store> S_Store = storeMapper.selectStoreInfo(store);
+        Store S_Store = storeMapper.selectStoreInfo(store);
 
-        if (S_Store.size() == 0) {
+        if (S_Store == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00007), ErrorCodeEnum.E00007.name());
         }
 
@@ -111,22 +111,22 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
         Misc misc = new Misc();
         Map<String, Integer> storeHaversineMap = new HashMap<>();
-        List<Store> C_Store = storeMapper.selectStoreInfo(store);
+        Store C_Store = storeMapper.selectStoreInfo(store);
         List<Store> S_Store = storeMapper.selectSubGroupStores(store);
 
-        for (Store cs : C_Store) {
+//        for (Store cs : C_Store) {
             for (Store s : S_Store) {
-                if (cs.getId().equals(s.getId())) {
+                if (C_Store.getId().equals(s.getId())) {
                     continue;
                 }
 
                 try {
-                    storeHaversineMap.put(s.getId(), misc.getHaversine(cs.getLatitude(), cs.getLongitude(), s.getLatitude(), s.getLongitude()));
+                    storeHaversineMap.put(s.getId(), misc.getHaversine(C_Store.getLatitude(), C_Store.getLongitude(), s.getLatitude(), s.getLongitude()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        }
+//        }
 
         if (storeHaversineMap.isEmpty()) {
             store.setStoreDistanceSort("-1");
