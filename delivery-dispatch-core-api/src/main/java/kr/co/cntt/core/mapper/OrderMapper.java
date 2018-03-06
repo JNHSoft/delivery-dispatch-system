@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.order.OrderCheckAssignment;
 import kr.co.cntt.core.model.rider.Rider;
@@ -121,4 +122,5 @@ public interface OrderMapper {
     public Order selectOrderLocation(String id);
 
 
+    public List<String> selectPushToken(SubGroup subGroup);
 }
