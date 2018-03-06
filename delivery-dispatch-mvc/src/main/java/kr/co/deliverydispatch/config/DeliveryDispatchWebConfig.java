@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import kr.co.cntt.core.config.DeliveryDispatchDatabaseConfig;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -43,6 +45,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.deliverydispatch.controller.ErrorController;
 import kr.co.deliverydispatch.interceptor.LoginInterceptor;
 
+@Configuration
+@Import({DeliveryDispatchDatabaseConfig.class})
 public class DeliveryDispatchWebConfig {
     /**
      * spring web-mvc configuration. This is inner nested static class which
@@ -211,13 +215,13 @@ public class DeliveryDispatchWebConfig {
             registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/member/login", "/mypage/**", "/order/**");
 
             //공사중 페이지
-			/*
-			final UnderConstructionInterceptor underConstructionInterceptor = underConstructionInterceptor();
-			registry.addInterceptor(underConstructionInterceptor).addPathPatterns("/**")
-					.excludePathPatterns(underConstructionInterceptor.getRedirectUrl() + "/**")
-					.excludePathPatterns("/resources/**").excludePathPatterns("/files/**")
-					.excludePathPatterns("/error/**").excludePathPatterns("/common/**");
-			*/
+         /*
+         final UnderConstructionInterceptor underConstructionInterceptor = underConstructionInterceptor();
+         registry.addInterceptor(underConstructionInterceptor).addPathPatterns("/**")
+               .excludePathPatterns(underConstructionInterceptor.getRedirectUrl() + "/**")
+               .excludePathPatterns("/resources/**").excludePathPatterns("/files/**")
+               .excludePathPatterns("/error/**").excludePathPatterns("/common/**");
+         */
         }
         /*
         @Bean

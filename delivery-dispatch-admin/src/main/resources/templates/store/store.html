@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+
+	<!-- 컨텐츠 영역 -->
+	<section id="container" layout:fragment="content">
+		<h2 id="pageTit" class="blind">매장관리</h2>
+		<div class="search_box">
+			<div class="left">
+				<select name="" class="select">
+					<option value="">전체</option>
+				</select>
+				<input type="text" class="input" placeholder="검색명을 입력하세요" />
+				<button class="button"><i class="fa fa-search" aria-hidden="true"></i> 검색</button>
+			</div>
+			<div class="right">
+				<a href="#popStore" class="button btn_blue pop_open"><i class="fa fa-plus" aria-hidden="true"></i> 신규매장</a>
+			</div>
+		</div>
+		<div id="contents">
+			<div class="jq_grid">
+				<div>
+					<table id="jqGrid"></table>
+				</div>
+			</div>
+			<div id="jqGridPager"></div>
+		</div>
+	</section>
+	<!-- //컨텐츠 영역 -->
+
+	<!-- 팝업영역 -->
+	<div id="popStore" class="pop_wrap" layout:fragment="popup">
+		<article class="popup">
+			<div class="pop_head">
+				<h1>매장 정보</h1>
+			</div>
+			<div class="pop_cont">
+				<div class="tbl_wrap">
+					<table class="table tbl_left">
+						<colgroup>
+							<col width="13%" />
+							<col width="37%" />
+							<col width="13%" />
+							<col width="37%" />
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>아이디</th>
+								<td>
+									<input type="text" name="" id="userId" class="input" value="" />
+									<button class="button btn_black" onclick="alertTip('#userId','중복된 아이디 입니다.')">중복확인</button>
+								</td>
+								<th>소속그룹</th>
+								<td>
+									<select name="" class="select">
+										<option value="">서초동부</option>
+									</select>
+									<select name="" class="select">
+										<option value="">서초A</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<th>패스워드</th>
+								<td><input type="password" name="" class="input" value="" /></td>
+								<th>점장명</th>
+								<td><input type="text" name="" class="input" value="" /></td>
+							</tr>
+							<tr>
+								<th>매장코드</th>
+								<td><input type="text" name="" class="input" value="" /></td>
+								<th>점장 전화번호</th>
+								<td><input type="text" name="" class="input" value="" /></td>
+							</tr>
+							<tr>
+								<th>매장명</th>
+								<td><input type="text" name="" class="input" value="" /></td>
+								<th>매장주소</th>
+								<td><input type="text" name="" class="input w_100" value="" /></td>
+							</tr>
+							<tr>
+								<th>매장 전화번호</th>
+								<td><input type="text" name="" class="input" value="" /></td>
+								<th>매장 상세주소</th>
+								<td><input type="text" name="" class="input w_100" value="" /></td>
+							</tr>
+							<tr>
+								<th>배정 모드</th>
+								<td>
+									<select name="" class="select">
+										<option value="">자동</option>
+									</select>
+								</td>
+								<th></th>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="pop_foot">
+				<div class="left"><a href="#" class="button h30 btn_gray pop_close">취소</a></div>
+				<div class="right">
+					<a href="#" class="button h30 btn_red">삭제</a>
+					<a href="#" class="button h30 btn_blue">확인</a>
+				</div>
+			</div>
+			<a href="#" class="btn_close pop_close">팝업닫기</a>
+		</article>
+	</div>
+	<!-- //팝업영역 -->
+
+<script layout:fragment="script">
+var mydata = [
+	{No:'5', group1:'서초동부', group2:'서초A', storeName:'서초점', code:'00000', tel1:'02-1234-1234', name:'홍길동', tel2:'010-1234-1234', address1:'서울시 구로구 개봉동', address2:'증산빌라 201호', id:'seicho', mode:'자동'},
+	{No:'4', group1:'서초동부', group2:'서초A', storeName:'서초점', code:'00000', tel1:'02-1234-1234', name:'홍길동', tel2:'010-1234-1234', address1:'서울시 구로구 개봉동', address2:'증산빌라 201호', id:'seicho', mode:'수동'},
+	{No:'3', group1:'서초동부', group2:'서초A', storeName:'서초점', code:'00000', tel1:'02-1234-1234', name:'홍길동', tel2:'010-1234-1234', address1:'서울시 구로구 개봉동', address2:'증산빌라 201호', id:'seicho', mode:'자동'},
+	{No:'2', group1:'서초동부', group2:'서초A', storeName:'서초점', code:'00000', tel1:'02-1234-1234', name:'홍길동', tel2:'010-1234-1234', address1:'서울시 구로구 개봉동', address2:'증산빌라 201호', id:'seicho', mode:'자동'},
+	{No:'1', group1:'서초동부', group2:'서초A', storeName:'서초점', code:'00000', tel1:'02-1234-1234', name:'홍길동', tel2:'010-1234-1234', address1:'서울시 구로구 개봉동', address2:'증산빌라 201호', id:'seicho', mode:'자동'}
+];	
+$(document).ready(function () {
+	$("#jqGrid").jqGrid({
+		datatype:"local",
+		data:mydata,
+		colModel:[
+	    {label:'No', name:'No', width:25, key:true, align:'center'},
+	    {label:'소속그룹', name:'group1', width:60, align:'center'},
+	    {label:'소그룹', name:'group2', width:60, align:'center'},
+	    {label:'매장명', name:'storeName', width:80, align:'center'},
+	    {label:'매장코드', name:'code', width:60, align:'center'},
+	    {label:'매장전화번호', name:'tel1', width:80, align:'center'},
+	    {label:'점장명', name:'name', width:60, align:'center'},
+	    {label:'점장 전화번호', name:'tel2', width:80, align:'center'},
+	    {label:'주소', name:'address1', width:200},
+	    {label:'상세주소', name:'address2', width:200},
+	    {label:'아이디', name:'id', width:60, align:'center'},
+	    {label:'배정모드', name:'mode', width:60, align:'center'}
+    ],
+		width:'auto',
+		height:520,
+		autowidth:true,
+		rowNum:20,
+		pager:"#jqGridPager"
+	});
+
+	resizeJqGrid('#jqGrid'); //그리드 리사이즈
+});
+</script>
+</html>

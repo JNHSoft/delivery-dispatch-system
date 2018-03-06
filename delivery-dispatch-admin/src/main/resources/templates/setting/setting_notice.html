@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+
+	<!-- 컨텐츠 영역 -->
+	<section id="container" layout:fragment="content">
+		<h2 id="pageTit" class="blind">설정</h2>
+		<div class="tabmenu">
+			<ul>
+				<li><a href="/setting-account.html">계정관리</a></li>
+				<li><a href="/setting-assign.html">배정관리</a></li>
+				<li><a href="/setting-alarm.html">알림음설정</a></li>
+				<li class="on"><a href="/setting-notice.html">공지사항</a></li>
+			</ul>						
+		</div>
+		<div class="tabmenu_btn">
+			<div><a href="#popNoticeNew" class="button btn_blue pop_open"><i class="fa fa-plus" aria-hidden="true"></i> 신규공지</a></div>
+		</div>
+		<div id="contents">
+			<div class="jq_grid">
+				<div>
+					<table id="jqGrid"></table>
+				</div>
+			</div>
+			<div id="jqGridPager"></div>
+		</div>
+	</section>
+	<!-- //컨텐츠 영역 -->
+
+	<!-- 팝업영역 -->
+	<!-- 등록 -->
+	<div id="popNoticeNew" class="pop_wrap" layout:fragment="popup">
+		<article class="popup">
+			<div class="pop_head">
+				<h1>공지사항 등록</h1>
+			</div>
+			<div class="pop_cont">
+				<div class="tbl_wrap">
+					<table class="table tbl_left">
+						<colgroup>
+							<col width="13%" />
+							<col width="87%" />
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>공지대항</th>
+								<td>
+									<select name="" class="select">
+										<option value="">강남</option>
+									</select>
+									<select name="" class="select">
+										<option value="">강남A</option>
+									</select>
+									<select name="" class="select">
+										<option value="">매장전체</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<th>제목</th>
+								<td><input type="text" name="" class="input w_100" value="" /></td>
+							</tr>
+							<tr>
+								<th>내용</th>
+								<td>
+									<textarea class="textarea" style="height:170px;"></textarea>
+								</td>
+							</tr>
+							<tr>
+								<th>첨부파일</th>
+								<td>
+									<span class="inp_file">
+										<input type="text" class="input" />
+										<span class="btn_file">
+											<a href="#" class="button btn_dgray"><i class="fa fa-paperclip" aria-hidden="true"></i> 파일첨부</a>
+											<input type="file" placeholder="내용입력" title="파일첨부" />
+										</span>
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="pop_foot">
+				<div class="left"><a href="#" class="button h40 btn_gray pop_close">취소</a></div>
+				<div class="right"><a href="#" class="button h40 btn_blue">확인</a></div>
+			</div>
+			<a href="#" class="btn_close pop_close">팝업닫기</a>
+		</article>
+	</div>
+
+	<!-- 상세 -->
+	<div id="popNotice" class="pop_wrap" layout:fragment="popup">
+		<article class="popup">
+			<div class="pop_head">
+				<h1>공지사항</h1>
+			</div>
+			<div class="pop_cont">
+				<div class="tbl_wrap">
+					<table class="table tbl_left">
+						<colgroup>
+							<col width="13%" />
+							<col width="57%" />
+							<col width="13%" />
+							<col width="17%" />
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>공지대항</th>
+								<td>
+									<select name="" class="select">
+										<option value="">강남</option>
+									</select>
+									<select name="" class="select">
+										<option value="">강남A</option>
+									</select>
+									<select name="" class="select">
+										<option value="">매장전체</option>
+									</select>
+								</td>
+								<th>확인여부</th>
+								<td>
+									<div class="store_chk">
+										<a href="#" class="open">5/4매장확인</a>
+										<div>
+											<ul>
+												<li>양세점 O</li>
+												<li>양세점 O</li>
+												<li>양세점 O</li>
+												<li>양세점 O</li>
+												<li class="none">양세점 X</li>
+											</ul>
+											<a href="#" class="close"><i class="fa fa-times" aria-hidden="true"></i><span class="blind">닫기</span></a>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>제목</th>
+								<td colspan="3"><input type="text" name="" class="input w_100" value="제목제목제목제목제목제목제목" /></td>
+							</tr>
+							<tr>
+								<th>내용</th>
+								<td colspan="3">
+									<textarea class="textarea" style="height:170px;">내용 내용 내용 내용 내용 내용 내용 내용 내용 </textarea>
+								</td>
+							</tr>
+							<tr>
+								<th>첨부파일</th>
+								<td colspan="3">
+									<span class="t_blue">sound.wav(30.11KB)</span>
+									<a href="#" class="button btn_red"><i class="fa fa-trash-o" aria-hidden="true"></i> 삭제</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="pop_foot">
+				<div class="left"><a href="#" class="button h40 btn_gray pop_close">취소</a></div>
+				<div class="right">
+					<a href="#" class="button h40 btn_red">삭제</a>
+					<a href="#" class="button h40 btn_blue">확인</a>
+				</div>
+			</div>
+			<a href="#" class="btn_close pop_close">팝업닫기</a>
+		</article>
+	</div>
+	<!-- //팝업영역 -->
+
+<script layout:fragment="script">
+var mydata = [
+	{No:'2', target:'전매장', title:'공지사항 제목 공지사항 제목 ', file:'없음', date:'02/25 15:10', check:'100/50'},
+	{No:'1', target:'강남/강남A', title:'공지사항 제목 공지사항 제목 ', file:'<a href="#" class="button h20">다운로드</a>', date:'02/25 15:10', check:'5/4'}
+];	
+$(document).ready(function () {
+	$("#jqGrid").jqGrid({
+		datatype:"local",
+		data:mydata,
+		colModel:[
+	    {label:'No', name:'No', width:25, key:true, align:'center'},
+	    {label:'공지대상', name:'target', width:60, align:'center'},
+	    {label:'제목', name:'title', width:300},
+	    {label:'첨부파일', name:'file', width:100, align:'center'},
+	    {label:'등록일시', name:'date', width:100, align:'center'},
+	    {label:'확인여부', name:'check', width:80, align:'center'}
+    ],
+		width:'auto',
+		height:520,
+		autowidth:true,
+		rowNum:20,
+		pager:"#jqGridPager",
+		onCellSelect: function(rowid,icol,cellcontent,e){
+			popOpen('#popNotice') //상세보기 열기			
+    }
+	});
+
+	resizeJqGrid('#jqGrid'); //그리드 리사이즈
+
+	$('.store_chk .open').click(function(e) {
+		e.preventDefault();
+		$(this).next().slideDown();
+	});
+
+	$('.store_chk .close').click(function(e) {
+		e.preventDefault();
+		$(this).closest('div').slideUp();
+	});
+});
+</script>
+</html>

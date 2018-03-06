@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+
+	<!-- 컨텐츠 영역 -->
+	<section id="container" layout:fragment="content">
+		<h2 id="pageTit" class="blind">통계</h2>
+		<div class="search_box">
+			<div class="left">
+				<label class="checkbox"><input name="" type="checkbox" /><i></i>
+					<span class="lbl">전체</span>
+				</label>
+				<label class="checkbox"><input name="" type="checkbox" /><i></i>
+					<span class="lbl">신규</span>
+				</label>
+				<label class="checkbox"><input name="" type="checkbox" /><i></i>
+					<span class="lbl">배정</span>
+				</label>
+			</div>
+			<div class="left">
+				<input type="text" name="" class="input datepicker" />
+				~
+				<input type="text" name="" class="input datepicker" />
+			</div>
+			<div class="right">
+				<label class="checkbox"><input name="" type="checkbox" /><i></i>
+					<span class="lbl">내매장 주문만 보기</span>
+				</label>
+				<span class="inblock">
+					<select name="" id="" class="select">
+						<option value="">전체</option>
+					</select>
+					<input type="text" class="input" placeholder="검색명을 입력하세요" />
+					<button class="button"><i class="fa fa-search" aria-hidden="true"></i> 검색</button>
+				</span>
+				<button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 엑셀다운로드</button>
+			</div>
+		</div>
+		<div id="contents">
+			<div class="state_wrap">
+				<div class="left">
+					<div class="jq_grid">
+						<div>
+							<table id="jqGrid"></table>
+						</div>
+					</div>
+					<div id="jqGridPager"></div>
+				</div>
+				<div class="right">
+					<a href="#" class="btn_close"><i class="fa fa-times" aria-hidden="true"></i><span class="blind">닫기</span></a>
+					<div class="state_detail">
+						<div class="tit">
+							<h2>주문상세 - 11023</h2>
+							<i class="ic_txt">완료</i>
+							<i class="ic_txt ic_red">취소</i>
+						</div>
+						<div class="cont">
+							<div>
+								<ul>
+									<li>
+										<span>등록시간</span>
+										<div>01/25 14:57</div>
+									</li>
+									<li>
+										<span>예약시간</span>
+										<div>정보없음</div>
+									</li>
+									<li class="clear">
+										<span>경과시간</span>
+										<div>-</div>
+									</li>
+									<li>
+										<span>배정시간</span>
+										<div>01/25 14:57</div>
+									</li>
+									<li class="clear">
+										<span>픽업시간</span>
+										<div>01/25 14:57</div>
+									</li>
+									<li>
+										<span>완료시간</span>
+										<div>01/25 14:57</div>
+									</li>
+								</ul>
+							</div>
+							<div>
+								<ul>
+									<li>
+										<span>주문내용</span>
+										<div>징거버거 세트 외...</div>
+									</li>
+									<li>
+										<span>조리시간</span>
+										<div>10분</div>
+									</li>
+									<li class="clear">
+										<span>음식금액</span>
+										<div>20,000원</div>
+									</li>
+									<li>
+										<span>배달금액</span>
+										<div>0원</div>
+									</li>
+									<li class="clear">
+										<span>결제금액</span>
+										<div>20,000원</div>
+									</li>
+									<li>
+										<span>결제종류</span>
+										<div>카드</div>
+									</li>
+								</ul>
+							</div>
+							<div>
+								<ul>
+									<li class="full">
+										<span>묶음배송</span>
+										<div>-</div>
+									</li>
+								</ul>
+							</div>
+							<div>
+								<ul>
+									<li>
+										<span>기사명</span>
+										<div>김나은</div>
+									</li>
+									<li>
+										<span>기사연락처</span>
+										<div>010-1234-1234</div>
+									</li>
+									<li class="clear full">
+										<span>매장 메모</span>
+										<div>빠른배송 바랍니다.</div>
+									</li>
+								</ul>
+							</div>
+							<div>
+								<ul>
+									<li class="full">
+										<span>고객 연락처</span>
+										<div>010-1234-1234</div>
+									</li>
+									<li class="full">
+										<span>고객 주소</span>
+										<div>서울시 서대문구 증가로 29길 35 북가좌동, 씨엔티테크 빌딩</div>
+									</li>
+									<li class="full">
+										<span>거리</span>
+										<div>2.5km</div>
+									</li>
+									<li class="full">
+										<div class="map">
+											<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- //컨텐츠 영역 -->
+
+<script layout:fragment="script">
+var mydata = [
+	{No:'1', state:'<i class="ic_txt">확인</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은'},
+	{No:'2', state:'<i class="ic_txt ic_red">취소</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'3', state:'<i class="ic_txt ic_green">신규</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'4', state:'<i class="ic_txt ic_blue">배정</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'5', state:'<i class="ic_txt ic_blue">픽업</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' }
+];	
+$(document).ready(function () {
+	$("#jqGrid").jqGrid({
+		datatype:"local",
+		data:mydata,
+		colModel:[
+	    {label:'No', name:'No', width:25, key:true, align:'center'},
+	    {label:'주문상태', name:'state', width:80, align:'center'},
+	    {label:'주문id', name:'id', width:80, align:'center'},
+	    {label:'등록시간', name:'time1', width:80, align:'center'},
+	    {label:'기본주소', name:'address', width:200},
+	    {label:'주문내용', name:'text', width:150},
+	    {label:'조리시간', name:'time2', width:80, align:'center'},
+	    {label:'결제종류', name:'pay', width:80, align:'center'},
+	    {label:'배정시간', name:'time3', width:80, align:'center'},
+	    {label:'픽업시간', name:'time4', width:80, align:'center'},
+	    {label:'예약시간', name:'time5', width:80, align:'center'},
+	    {label:'기사명', name:'rider', width:80, align:'center'}
+    ],
+		width:'auto',
+		height:520,
+		autowidth:true,
+		rowNum:20,
+		pager:"#jqGridPager",
+		onCellSelect: function(rowid,icol,cellcontent,e){
+			$('.state_wrap').addClass('on') //상세보기 열기
+			setTimeout(function(){
+				$(window).trigger('resize');
+			},300)//그리드 리사이즈
+    }
+	});
+
+	resizeJqGrid('#jqGrid'); //그리드 리사이즈
+
+	$('.state_wrap .btn_close').click(function(e){
+		e.preventDefault();
+		$('.state_wrap').removeClass('on') //상세보기 닫기
+		setTimeout(function(){
+			$(window).trigger('resize');
+		},300)//그리드 리사이즈
+	})
+});
+</script>
+</html>

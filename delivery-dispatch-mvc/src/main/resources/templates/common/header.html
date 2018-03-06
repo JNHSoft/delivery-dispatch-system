@@ -1,105 +1,39 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"> 
 <meta charset="UTF-8" />
+	<!-- 헤더영역 -->
 	<header id="header" th:fragment="commonHeader">
-		<h1 id="logo"><a href="/">Delivery Dispatch</a></h1>
-		<div class="btn_gnb"><a href="#"><i></i><span>메뉴</span></a></div>
-		<div class="gnb_wrap">
-			<div  class="head_util">
-				<div class="inner"> 
-					<ul>
-					<th:block th:if="${session.login != null}">
-						<!-- 로그인 후 -->
-						<li><a href="#" class="btn_logout">로그아웃</a>
-							<div class="layer_box logout_box">
-								<p>로그아웃하시겠습니까?
-									<a href="javascript:void(0);" id="logout_Btn">로그아웃</a>
-									<a href="#" class="logout_close">취소</a>
-								</p>
-								<i></i>
-							</div>
-						</li>	
-						<li><a href="/mypage">마이페이지</a></li>
-						<!-- <li><a href="/mypage/myOrderList">주문확인</a></li> -->
-					</th:block>
-					<th:block th:if="${session.login == null}">
-						<!-- 로그인 전 -->
-						<li><a href="/member/login">로그인</a></li>	
-						<li><a href="/member/joinAgree">회원가입</a></li>
-						<!-- <li><a href="#none">주문확인</a></li>		 -->
-					</th:block>		
-					</ul>
+		<div class="mobile_head">
+			<h2 class="head_tit"><img src="../resources/images/common/logo.png" alt="KFC" /></h2>
+			<a href="#" class="head_notice new"><i class="fa fa-envelope-o" aria-hidden="true"></i> 공지사항</a>
+		</div>
+		<a href="#" class="btn_gnb"><i></i><span class="blind">GNB 메뉴</span></a>
+		<div class="web_head">
+			<div>
+				<div class="head_top">
+					<div class="head_timer">
+						<div class="date"></div>
+						<div class="clock"></div>
+					</div>
+					<div class="head_info">
+						<a href="#" class="head_notice new"><i class="fa fa-envelope-o" aria-hidden="true"></i> 공지사항</a>
+						<a href="#" class="user_id"><i class="fa fa-user-circle-o" aria-hidden="true"></i>본사관리자</a>
+						<a href="/logout" class="button btn_gray h20">로그아웃</a>
+					</div>
 				</div>
-			</div>	
-		
-		
-			<div class="inner">
-				<nav id="gnb">
-					<ul>
-						<li class="gnb03"><a href="/store/search" class="in_sub">STORE</a>
-							<ul>
-								<li><a href="/store/search">배달매장찾기</a></li>
-							</ul>
-						</li>
-						<li class="gnb05"><a href="/customer/faqList" class="in_sub">FAQ</a>
-							<ul>
-								<li><a href="/customer/faqList">FQA</a></li>
-								<li><a href="/customer/noticeList">공지사항</a></li>
-							</ul>
-						</li>
-					</ul>
-				</nav>
-				<div class="head_call">
+				<h1 id="logo"><img src="../resources/images/common/logo.png" alt="KFC" /></h1>
+				<div class="gnb_wrap">
+					<nav id="gnb">
+						<ul>
+							<li><a href="/order"><img src="../resources/images/common/gnb_order.png" alt="" /><strong>주문접수</strong></a></li>
+							<li><a href="/rider"><img src="../resources/images/common/gnb_rider.png" alt="" /><strong>기사현황</strong></a></li>
+							<li><a href="/statistics"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong>통계</strong></a></li>
+							<li><a href="/setting-account"><img src="../resources/images/common/gnb_setting.png" alt="" /><strong>설정</strong></a></li>
+						</ul>
+					</nav>
 				</div>
 			</div>
 		</div>
-		
-		<!-- 장바구니, 결제페이지는 장바구니 표시하지 않음 -->
-		<th:block th:if="${#httpServletRequest.requestURI} != '/cart/cartList' and ${#httpServletRequest.requestURI} != '/order/payment'">
-			<section  th:replace="common/headerCart :: #headerCart"></section>
-		</th:block>
-		
-		<div class="gnb_bg"></div>
-		<script>
-			var headerObj = {};
-			
-			var headerFunc = (function(hf) {
-				
-				hf.init = function() {
-					
-					// 모바일 화면일 때 GNB 메뉴 로드
-					if($(".btn_gnb").css('display') == "block") {
-						$('#menuClass').getLoad('/menu/getHeaderMenuClass');
-					}
-					
-					// 헤더 장바구니 갱신
-					this.loadHeaderCart();
-				};
-				
-				// 로그아웃 처리
-				hf.logoutProcess = function() {
-					cntt.ajax.get(
-						'/member/logoutProcess',
-						function (response) {
-							cntt.goPage("/");
-						}
-					);
-				};
-				
-
-				return hf;
-			}(window.hf || {}));
-			
-			// 이벤트
-			$(function(){
-				headerFunc.init();
-				
-				// 로그아웃 버튼 클릭
-				$('#logout_Btn').on('click', function(event){
-					headerFunc.logoutProcess();
-				});
-				
-			}());
-		</script>
 	</header>
+	<!-- //헤더영역 -->
 </html>

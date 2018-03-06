@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+
+	<!-- 컨텐츠 영역 -->
+	<section id="container" layout:fragment="content">
+		<h2 id="pageTit" class="blind">설정</h2>
+		<div class="tabmenu">
+			<ul>
+				<li><a href="/setting-account">계정관리</a></li>
+				<li class="on"><a href="/setting-assign">배정관리</a></li>
+				<li><a href="/setting-rider">기사관리</a></li>
+				<li><a href="/setting-alarm">알림음설정</a></li>
+				<li><a href="/setting-notice">공지사항</a></li>
+			</ul>
+		</div>
+		<div id="contents">
+			<div class="cont_box">
+				<div class="top"><strong>배정관리</strong></div>
+				<div class="cont">
+					<ul class="form_list">
+						<li>
+							<strong>배정모드</strong>
+							<div>
+								<label class="radio"><input name="" type="radio" /><i></i>
+									<span class="lbl">자동</span>
+								</label>
+								<label class="radio"><input name="" type="radio" /><i></i>
+									<span class="lbl">수동(관리자 주문배정)</span>
+								</label>
+								<label class="radio"><input name="" type="radio" /><i></i>
+									<span class="lbl">수동(기사 주문 선택)</span>
+								</label>
+							</div>
+						</li>
+						<li>
+							<strong>최대오더</strong>
+							<div>
+								<select name="" id="" class="select">
+									<option value="">10</option>
+								</select>
+								개
+							</div>
+						</li>
+						<li class="clear full">
+							<strong>서드파티</strong>
+							<div>
+								<label class="checkbox"><input name="" type="checkbox" /><i></i>
+									<span class="lbl">푸드판다</span>
+								</label>
+								<label class="checkbox"><input name="" type="checkbox" /><i></i>
+									<span class="lbl">딜리버루</span>
+								</label>
+								<label class="checkbox"><input name="" type="checkbox" /><i></i>
+									<span class="lbl">우버이츠</span>
+								</label>
+								<label class="checkbox"><input name="" type="checkbox" /><i></i>
+									<span class="lbl">매장내 직원</span>
+								</label>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="button_box">
+				<a href="#" class="button btn_blue w120 h30">확인</a>
+			</div>
+		</div>
+	</section>
+	<!-- //컨텐츠 영역 -->
+
+</html>

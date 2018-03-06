@@ -240,4 +240,28 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Secured("ROLE_STORE")
     @Override
     public int putRiderReturnTime(Rider rider){ return riderMapper.updateRiderReturnTime(rider); }
+
+    //기사 휴식 시간
+    @Override
+    public void autoRiderWorking() throws AppTrException {
+        List<Rider> riderList = riderMapper.selectRiderRestHours();
+        if(riderList != null){
+            for(Rider rider : riderList){
+                HashMap map = new HashMap();
+                map.put("idNum", rider.getId());
+                if(rider.getRestHours() !=null) {
+                    int restHoursLength = (rider.getRestHours()).length();
+                    int num = (restHoursLength + 1) / 3;
+                    int beforeWorking = Integer.parseInt(rider.getWorking());
+                    for (int i = 0; i < num; i++) {
+                        map.put("num", i);
+                        int temp = riderMapper.updateRiderWorkingAuto(map);
+                        if (temp != beforeWorking) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

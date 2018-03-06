@@ -1,0 +1,171 @@
+---
+spring:
+  profiles: admin
+  application.name: delivery-dispatch-admin
+  mvc:
+    locale: ko_KR
+    favicon.enabled: false
+  messages:
+    cache-seconds: -1
+    basename: classpath:/META-INF/messages/exceptions
+    encoding: UTF-8
+    #fallback-to-system-locale: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    multipart:
+      enabled: true
+  thymeleaf.cache : false
+
+management:
+  context-path: /monitor
+
+# was
+server:
+  port: 8181
+  tomcat:
+    uri-encoding: UTF-8
+  jsp-servlet:
+    init-parameters:
+      development: true
+
+# logging
+logging:
+  config: classpath:logback-spring.xml
+
+# datasource
+datasource:
+  deliveryDispatch:
+    initialize: true
+    driver-class-name: com.mysql.jdbc.Driver
+    #url: jdbc:mysql://nanum-taiwan-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/nanum
+    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
+    username: nanum
+    password: snaskzhf
+    initial-size: 10
+    max-active: 10
+    max-idle: 10
+    min-idle: 10
+    max-wait: 3000
+    test-on-borrow: true
+    #validation-query: select 1
+
+# concurrent
+cntt.concurrent.enable: true
+cntt.concurrent.threadCount: 8
+
+# spring security disabled
+security.basic.enabled: false
+management.security.enabled: false
+
+# mail service
+#cntt.mail:
+#  enable : true
+#  sender : Do_not_reply@burgerking.co.kr
+#  imageHeader : http://delivery.burgerking.co.kr/files/mail/mail_header.gif
+#  imageLock : http://delivery.burgerking.co.kr/files/mail/img_lock.gif
+#  tempPasswordMailTitle : TEST
+#  tempPasswordMailHtmlPath : classpath:templates/mail/tempPasswordMail.html
+#  tempPasswordMailSampleHtmlPath1 : classpath:templates/mail/tempPasswordMailSample1.html
+#  tempPasswordMailSampleHtmlPath2 : classpath:templates/mail/tempPasswordMailSample2.html
+#  tempPasswordMailSampleHtmlPath3 : classpath:templates/mail/tempPasswordMailSample3.html
+
+cntt:
+  underConstruction:
+    redirectUrl: /caution
+    ignoreIps: 127.0.0.1, 0:0:0:0:0:0:0:1, 123.111.91.3
+    paramAdminPw: cbody
+    active: true
+
+---
+spring:
+  profiles: local
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    -
+      scheme: http
+      host: localhost
+      port: 8090
+      maxPerRoute: 20
+    -
+      scheme: http
+      host: localhost
+      port: 8091
+      maxPerRoute: 20
+
+api.pos.server : http://localhost:8090
+api.app.server : http://localhost:8091
+# Logger
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.cntt.deliverydispatchadmin
+
+---
+spring:
+  profiles: dev
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    -
+      scheme: http
+      host: localhost
+      port: 8084
+      maxPerRoute: 20
+    -
+      scheme: http
+      host: localhost
+      port: 8085
+      maxPerRoute: 20
+
+api.pos.server : http://localhost:8085
+api.app.server : http://localhost:8084
+# Logger
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.cntt.deliverydispatchadmin
+
+---
+spring:
+  profiles: oper
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    -
+      scheme: http
+      host: burgerking.cntt.kr
+      port: 8081
+      maxPerRoute: 20
+      #scheme: http
+      #host: 211.219.135.107
+      #port: 8081
+      #maxPerRoute: 20
+    -
+      scheme: https
+      host: burgerking.cntt.kr
+      port: 9443
+      maxPerRoute: 20
+      #scheme: https
+      #host: apitest.cntt.kr
+      #port: 9441
+      #maxPerRoute: 20
+
+api.pos.server : http://burgerking.cntt.kr:8081
+api.app.server : https://burgerking.cntt.kr:9443
+#api.pos.server : http://211.219.135.107:8081
+#api.app.server : https://apitest.cntt.kr:9441
+# Logger
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.cntt.deliverydispatchadmin

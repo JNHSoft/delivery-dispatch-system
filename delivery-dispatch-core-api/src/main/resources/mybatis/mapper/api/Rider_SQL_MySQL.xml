@@ -16,7 +16,7 @@
 		<result property="restHours" column="rest_hours" />
 		<result property="teenager" column="teenager" />
 		<result property="vehicleNumber" column="vehicle_number" />
-
+		<result property="employmentType" column="employment_type" />
 		<result property="status" column="status" />
 		<result property="working" column="working" />
 		<result property="chatUserId" column="chat_user_id" />
@@ -24,6 +24,8 @@
 		<result property="longitude" column="longitude" />
 		<result property="locationUpdated" column="location_updated" />
 		<result property="returnTime" column="return_time" />
+		<result property="assignCount" column="assign_count" />
+		<result property="minAssignedDatetime" column="min_assigned_datetime" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -502,15 +504,41 @@
 			, A.latitude
 			, A.longitude
 			, A.return_time
-			, B.subgroup_id
-			, B.store_id
+			, B.subgroup_id AS subGroupRiderRel_subgroup_id
+			, B.store_id AS subGroupRiderRel_store_id
+			, (SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND (status = 1 OR status = 2) AND created_datetime > CURRENT_DATE()) AS assign_count
+   			, (SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
 		WHERE A.deleted IS NULL
 			AND B.deleted IS NULL
 			AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{storeId} GROUP BY subgroup_id)
+			AND A.working = 1
+		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
 
+	<!-- selectRiderRestHours -->
+	<select id="selectRiderRestHours" resultType="kr.co.cntt.core.model.rider.Rider">
+		SELECT id, rest_hours, working from TB_RIDER where working = 1 or working = 3;
+	</select>
+
+	<!-- updateRiderWorkingAuto -->
+	<select id="updateRiderWorkingAuto" statementType="CALLABLE" parameterType="HashMap" resultType="java.lang.Integer">
+		{ CALL SP_AUTO_REST_TIME(
+								#{idNum}
+								,#{num})
+		}
+		<!-- DELIMITER $$
+		create procedure SP_AUTO_REST_TIME(IN idNum INT,IN num INT)
+		BEGIN
+		UPDATE TB_RIDER as R
+		SET working = if(timediff(date_format(now(), '%T'), subtime(concat(substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'00:20:00')) > 0
+		AND timediff(date_format(now(),'%T'), addtime(concat(substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'01:00:00')) < 0, '3', '1')
+		WHERE (working = 1 or working = 3) and id = idNum;
+		select working from dde.TB_RIDER where id = idNum;
+		END $$
+		DELIMITER ; -->
+	</select>
 </mapper>
  

@@ -5,6 +5,9 @@ spring:
 spring:
   profiles: local
   mybatisEnvironmentId: development
+  file:
+      url : /files/
+      savePath : D:/Web/delivery-dispatch/files/
 
 ---
 spring:
@@ -12,6 +15,9 @@ spring:
   datasource:
     jmx-enabled: true
   mybatisEnvironmentId: development
+  file:
+      url : /files/
+      savePath : /home/delivery-dispatch/files/
 
 ---
 spring:
@@ -19,3 +25,6 @@ spring:
   datasource:
     jmx-enabled: true
   mybatisEnvironmentId: production
+  file:
+      url : /files/
+      savePath : /home/delivery-dispatch/files/
