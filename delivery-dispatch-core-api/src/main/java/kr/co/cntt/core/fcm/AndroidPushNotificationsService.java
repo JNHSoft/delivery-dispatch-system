@@ -2,10 +2,10 @@ package kr.co.cntt.core.fcm;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import kr.co.cntt.core.model.order.Order;
 import org.apache.poi.ss.formula.functions.T;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
@@ -77,9 +77,9 @@ public class AndroidPushNotificationsService {
         HttpEntity<String> request = null;
         try {
             JSONObject body = new JSONObject();
-            JsonArray registration_ids = new JsonArray();
+            JSONArray registration_ids = new JSONArray();
             for(String token : tokens){
-                registration_ids.add(token);
+                registration_ids.put(token);
             }
 
             body.put("registration_ids", registration_ids);
