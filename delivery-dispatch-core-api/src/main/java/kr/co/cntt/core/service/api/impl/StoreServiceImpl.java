@@ -2,8 +2,10 @@ package kr.co.cntt.core.service.api.impl;
 
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.alarm.Alarm;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -31,12 +33,21 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     private StoreMapper storeMapper;
 
     /**
+     * Order DAO
+     */
+    private OrderMapper orderMapper;
+
+
+
+    /**
      * @param storeMapper USER D A O
      * @author Nick
      */
     @Autowired
-    public StoreServiceImpl(StoreMapper storeMapper) {
+    public StoreServiceImpl(StoreMapper storeMapper, OrderMapper orderMapper) {
+
         this.storeMapper = storeMapper;
+        this.orderMapper = orderMapper;
     }
 
     // login_id 체크하는 함수
@@ -168,4 +179,50 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
     public List<Alarm> getAlarm(Store store){ return storeMapper.selectAlarm(store); }
+
+
+    // 통계 목록(list)
+    @Secured("ROLE_STORE")
+    @Override
+    public List<Order> getStoreStatistics(Order order) throws AppTrException {
+
+        List<Order> S_Statistics = storeMapper.selectStoreStatistics(order);
+
+        if (S_Statistics.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return S_Statistics;
+
+    }
+
+    // 통계 조회
+    @Secured("ROLE_STORE")
+    @Override
+    public Order getStoreStatisticsInfo(Order order) throws AppTrException {
+
+        Order S_Order = storeMapper.selectStoreStatisticsInfo(order);
+
+        if (S_Order == null) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+
+        Misc misc = new Misc();
+
+        if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
+
+
+            Order orderInfo = orderMapper.selectOrderLocation(S_Order.getId());
+
+            try {
+                S_Order.setDistance(Double.toString(misc.getHaversine(orderInfo.getLatitude(), orderInfo.getLongitude(), orderInfo.getLatitude(), orderInfo.getLongitude()) / (double) 1000));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return S_Order;
+    }
+
+
 }

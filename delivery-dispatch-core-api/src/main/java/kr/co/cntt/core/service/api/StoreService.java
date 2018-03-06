@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api;
 
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.alarm.Alarm;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
@@ -98,4 +99,20 @@ public interface StoreService {
      * @return
      */
     public List<Alarm> getAlarm(Store store);
+
+    /**
+     * Store 통계 목록
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public List<Order> getStoreStatistics(Order order) throws AppTrException;
+
+    /**
+     * Store 통계 조회
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public Order getStoreStatisticsInfo(Order order) throws AppTrException;
 }

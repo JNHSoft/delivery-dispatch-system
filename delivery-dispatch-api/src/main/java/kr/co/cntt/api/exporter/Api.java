@@ -94,6 +94,13 @@ public interface Api {
     /** [Admin] 알림음 삭제**/
     String ADMIN_ALARM_DELETE = "/deleteAlarm.json";
 
+    /** [Admin] 통계 목록**/
+    String ADMIN_STATISTICS = "/getAdminStatistics.json";
+
+    /** [Admin] 통계 조회**/
+    String ADMIN_STATISTICS_INFO = "/getAdminStatisticsInfo.json";
+
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
@@ -148,6 +155,12 @@ public interface Api {
 
     /** 알림음 목록**/
     String ALARM_GET = "/getAlarm.json";
+
+    /** Store 통계 목록**/
+    String STORE_STATISTICS = "/getStoreStatistics.json";
+
+    /** Store 통계 목록**/
+    String STORE_STATISTICS_INFO = "/getStoreStatisticsInfo.json";
 
     // ############################################################################################ //
 

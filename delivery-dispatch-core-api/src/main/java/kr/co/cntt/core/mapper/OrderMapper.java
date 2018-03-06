@@ -113,4 +113,12 @@ public interface OrderMapper {
      */
     public List<Order> selectForAssignOrders();
 
+    /**
+     * 주문 위치 정보 조회
+     * @param id
+     * @return
+     */
+    public Order selectOrderLocation(String id);
+
+
 }
