@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Slf4j
 @Controller
-public class OrderController {
+public class RiderController {
 
     /**
-     * 주문현황 페이지
+     * 기사현황 페이지
      *
      * @return
      */
-    @GetMapping("/order")
-    public String order() { return "/order/order"; }
+    @GetMapping("/rider")
+    public String rider() { return "/rider/rider"; }
 
 }

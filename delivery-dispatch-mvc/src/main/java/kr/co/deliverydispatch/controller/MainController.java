@@ -15,7 +15,16 @@ public class MainController {
      * @return
      */
     @GetMapping("/login")
-    public String loginMain() { return "/login/login"; }
+    public String login() { return "/login/login"; }
+
+
+    /**
+     * 로그아웃
+     *
+     * @return
+     */
+    @GetMapping("/logout")
+    public String logout() { return "redirect:/login"; }
 
 
     /**
