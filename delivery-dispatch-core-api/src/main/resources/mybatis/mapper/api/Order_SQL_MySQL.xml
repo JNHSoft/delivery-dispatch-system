@@ -523,5 +523,14 @@
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC
 	</select>
 
+	<select id="selectOrderLocation" parameterType="String" resultType="kr.co.cntt.core.model.order.Order">
+		SELECT
+		id
+		, latitude
+		, longitude
+		FROM TB_ORDER
+		WHERE id = #{id}
+	</select>
+
 </mapper>
  

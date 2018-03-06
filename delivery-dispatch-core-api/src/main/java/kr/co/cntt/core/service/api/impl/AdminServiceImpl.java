@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
+import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
@@ -10,6 +11,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -40,6 +42,11 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     private AdminMapper adminMapper;
 
     /**
+     * Order DAO
+     */
+    private OrderMapper orderMapper;
+
+    /**
      * Store DAO
      */
     private StoreMapper storeMapper;
@@ -48,9 +55,10 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
      * @param adminMapper USER D A O
      */
     @Autowired
-    public AdminServiceImpl(AdminMapper adminMapper, StoreMapper storeMapper) {
+    public AdminServiceImpl(AdminMapper adminMapper, StoreMapper storeMapper, OrderMapper orderMapper) {
         this.adminMapper = adminMapper;
         this.storeMapper = storeMapper;
+        this.orderMapper = orderMapper;
     }
 
     @Override
@@ -318,4 +326,49 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Secured("ROLE_ADMIN")
     @Override
     public int deleteAlarm(Alarm alarm){ return adminMapper.deleteAlarm(alarm); }
+
+    // 통계 목록(list)
+    @Secured("ROLE_ADMIN")
+    @Override
+    public List<Order> getAdminStatistics(Order order) throws AppTrException {
+
+        List<Order> A_Statistics = adminMapper.selectAdminStatistics(order);
+
+        if (A_Statistics.size() == 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        return A_Statistics;
+
+    }
+
+    // 통계 조회
+    @Secured("ROLE_ADMIN")
+    @Override
+    public Order getAdminStatisticsInfo(Order order) throws AppTrException {
+
+        Order A_Order = adminMapper.selectAdminStatisticsInfo(order);
+
+        if (A_Order == null) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+
+        Misc misc = new Misc();
+
+        if (A_Order.getLatitude() != null && A_Order.getLongitude() != null) {
+
+
+            Order orderInfo = orderMapper.selectOrderLocation(A_Order.getId());
+
+            try {
+                A_Order.setDistance(Double.toString(misc.getHaversine(orderInfo.getLatitude(), orderInfo.getLongitude(), orderInfo.getLatitude(), orderInfo.getLongitude()) / (double) 1000));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return A_Order;
+    }
+
+
 }

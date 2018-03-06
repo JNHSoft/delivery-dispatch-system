@@ -109,4 +109,11 @@ public interface RiderService {
      */
     public int putRiderReturnTime(Rider rider);
 
+    /**
+     *  <p> autoRiderWorking
+     *
+     * @param
+     * @return
+     */
+    public void autoRiderWorking() throws AppTrException;
 }

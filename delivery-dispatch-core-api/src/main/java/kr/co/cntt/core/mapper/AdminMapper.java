@@ -7,6 +7,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -285,4 +286,21 @@ public interface AdminMapper {
      * @return
      */
     public int deleteAlarm(Alarm alarm);
+
+
+    /**
+     * 통계 목록
+     * @param order
+     * @return
+     */
+    public List<Order> selectAdminStatistics(Order order);
+
+    /**
+     * 통계 조회
+     * @param order
+     * @return
+     */
+    public Order selectAdminStatisticsInfo(Order order);
+
+
 }

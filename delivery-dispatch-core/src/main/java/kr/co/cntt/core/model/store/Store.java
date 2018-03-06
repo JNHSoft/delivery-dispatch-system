@@ -7,6 +7,8 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.payment.Payment;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
@@ -45,6 +47,9 @@ public class Store extends User implements Dto {
     private Group group;
     private SubGroup subGroup;
     private SubGroupStoreRel subGroupStoreRel;
+
+    private Order order;
+    private Payment payment;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String isAdmin;

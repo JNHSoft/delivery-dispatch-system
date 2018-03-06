@@ -56,6 +56,71 @@
 			<result property="name" column="subgroup_name" />
 			<result property="adminId" column="subgroup_admin_id" />
 		</association>
+
+	</resultMap>
+
+
+	<!-- selectOrderResult -->
+	<resultMap id="selectOrderResult" type="kr.co.cntt.core.model.order.Order">
+		<result property="id" column="id" />
+		<result property="adminId" column="admin_id" />
+		<result property="storeId" column="store_id" />
+		<result property="riderId" column="rider_id" />
+		<result property="status" column="status" />
+		<result property="createdDatetime" column="created_datetime" />
+		<result property="menuName" column="menu_name" />
+		<result property="assignedDatetime" column="assigned_datetime" />
+		<result property="pickUpDatetime" column="pick_up_datetime" />
+		<result property="reservationDatetime" column="reservation_datetime" />
+		<result property="complatedDatetime" column="complated_datetime" />
+
+		<result property="cookingTime" column="cooking_time" />
+		<result property="menuPrice" column="menu_price" />
+		<result property="deliveryPrice" column="delivery_price" />
+		<result property="totalPrice" column="total_price" />
+		<result property="combinedOrderId" column="combined_order_id" />
+		<result property="message" column="message" />
+		<result property="phone" column="phone" />
+		<result property="address" column="address" />
+		<result property="areaAddress" column="area_address" />
+		<result property="districtAddress" column="district_address" />
+		<result property="streetAddress" column="street_address" />
+		<result property="estateAddress" column="estate_address" />
+		<result property="buildingAddress" column="building_address" />
+		<result property="detailAddress" column="detail_address" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+
+		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="storeName" column="store_name" />
+		</association>
+
+		<association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
+			<result property="name" column="name" />
+			<result property="phone" column="rider_phone" />
+		</association>
+
+
+
+
+		<association property="payment" column="payment" javaType="kr.co.cntt.core.model.payment.Payment">
+			<result property="type" column="type" />
+			<result property="orderId" column="order_id" />
+		</association>
+
+
+		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
+			<result property="id" column="group_id" />
+			<result property="name" column="group_name" />
+			<result property="adminId" column="group_admin_id" />
+		</association>
+
+		<association property="subGroup" column="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
+			<result property="id" column="subgroup_id" />
+			<result property="groupId" column="subgroup_group_id" />
+			<result property="name" column="subgroup_name" />
+			<result property="adminId" column="subgroup_admin_id" />
+		</association>
 	</resultMap>
 
 
@@ -768,6 +833,173 @@
 			AND alarm_type = #{alarmType}
 			AND deleted IS NULL
 	</update>
+
+
+	<!-- 통계 조회 List -->
+	<select id="selectAdminStatistics" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
+		SELECT
+		TG.name AS group_name
+	, TG.id AS group_id
+	, TG.admin_id AS group_admin_id
+	, TSG.id AS subgroup_id
+	, TSG.name AS subgroup_name
+	, TSG.admin_id AS subgroup_admin_id
+	, TSG.group_id AS subgroup_group_id
+	, SSR.store_id AS subGroupStoreRel_store_id
+	, TBS.store_name
+	, TBO.admin_id
+	, TBO.store_id
+	, TBO.rider_id
+	, TBO.status
+	, TBO.id
+	, TBO.created_datetime
+	, TBO.menu_name
+	, TBP.type
+	, TBO.assigned_datetime
+	, TBO.picked_up_datetime
+	, TBO.reservation_datetime
+	, TBR.name
+
+	FROM TB_ORDER AS TBO
+
+	LEFT JOIN
+	TB_RIDER AS TBR
+	on TBR.id = TBO.rider_id
+	AND TBR.deleted is NULL
+
+	LEFT JOIN
+	TB_STORE AS TBS
+	on TBS.id = TBO.store_id
+	AND TBS.deleted is NULL
+
+	LEFT JOIN
+	TB_PAYMENT AS TBP
+	on TBP.order_id = TBO.id
+	AND TBP.deleted is NULL
+
+	LEFT JOIN
+	TB_SUBGROUP_STORE_REL AS SSR
+	on TBO.store_id = SSR.store_id
+	AND SSR.deleted is NULL
+
+	LEFT JOIN
+	TB_SUBGROUP AS TSG
+	on SSR.group_id = TSG.id
+	AND TSG.deleted is NULL
+
+	LEFT JOIN
+	TB_GROUP AS TG
+	on SSR.group_id = TG.id
+	AND TG.deleted is NULL
+
+	WHERE
+
+	TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	AND TBO.status = 3 AND 4
+	<if test="startDate != null and startDate != ''">
+		AND start_date = #{startDate}
+	</if>
+	<if test="endDate != null and endDate != ''">
+		AND end_date = #{endDate}
+	</if>
+	</select>
+
+
+	<!-- 통계 조회 info -->
+	<select id="selectAdminStatisticsInfo" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
+		SELECT
+		TG.name AS group_name
+		, TG.id AS group_id
+		, TG.admin_id AS group_admin_id
+		, TSG.id AS subgroup_id
+		, TSG.name AS subgroup_name
+		, TSG.admin_id AS subgroup_admin_id
+		, TSG.group_id AS subgroup_group_id
+		, SSR.store_id AS subGroupStoreRel_store_id
+		, TBO.admin_id
+		, TBO.store_id
+		, TBO.rider_id
+		, TBO.status
+		, TBO.id
+		, TBO.created_datetime
+		, TBO.assigned_datetime
+		, TBO.picked_up_datetime
+		, TBO.reservation_datetime
+		, TBO.completed_datetime
+		, TBO.menu_name
+		, TBO.cooking_time
+		, TBO.menu_price
+		, TBO.delivery_price
+		, TBO.total_price
+		, TBP.type
+		, TBO.combined_order_id
+		, TBR.name
+		, TBR.phone AS rider_phone
+		, TBO.message
+		, TBO.phone
+		, TBO.address
+		, TBO.area_address
+		, TBO.district_address
+		, TBO.street_address
+		, TBO.estate_address
+		, TBO.building_address
+		, TBO.detail_address
+		, TBO.latitude
+		, TBO.longitude
+
+
+		FROM TB_ORDER AS TBO
+
+		LEFT JOIN
+		TB_RIDER AS TBR
+		on TBR.id = TBO.rider_id
+		AND TBR.deleted is NULL
+
+		LEFT JOIN
+		TB_STORE AS TBS
+		on TBS.id = TBO.store_id
+		AND TBS.deleted is NULL
+
+		LEFT JOIN
+		TB_PAYMENT AS TBP
+		on TBP.order_id = TBO.id
+		AND TBP.deleted is NULL
+
+		LEFT JOIN
+		TB_SUBGROUP_STORE_REL AS SSR
+		on TBO.store_id = SSR.store_id
+		AND SSR.deleted is NULL
+
+		LEFT JOIN
+		TB_SUBGROUP AS TSG
+		on SSR.group_id = TSG.id
+		AND TSG.deleted is NULL
+
+		LEFT JOIN
+		TB_GROUP AS TG
+		on SSR.group_id = TG.id
+		AND TG.deleted is NULL
+		where
+
+		TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND TBO.status = 3 AND 4
+		<if test="startDate != null and startDate != ''">
+			AND start_date = #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND end_date = #{endDate}
+		</if>
+		AND TBO.id = #{id}
+	</select>
+
+
+
+
+
+
+
+
+
 
 </mapper>
  

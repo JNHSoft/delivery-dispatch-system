@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.alarm.Alarm;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
@@ -122,4 +123,21 @@ public interface StoreMapper {
      * @return
      */
     public List<Alarm> selectAlarm(Store store);
+
+    /**
+     * Store 통계 목록
+     * @param order
+     * @return
+     */
+    public List<Order> selectStoreStatistics(Order order);
+
+    /**
+     * 통계 조회
+     * @param order
+     * @return
+     */
+    public Order selectStoreStatisticsInfo(Order order);
+
+
+
 }

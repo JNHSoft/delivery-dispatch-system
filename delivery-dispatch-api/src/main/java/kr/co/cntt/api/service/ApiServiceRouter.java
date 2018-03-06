@@ -98,6 +98,12 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 알림음 삭제**/
 	ADMIN_ALARM_DELETE("adminService", "deleteAlarm", Alarm.class),
 
+	/** [Admin] 통계 목록**/
+	ADMIN_STATISTICS("adminService", "getAdminStatistics", Order.class),
+
+	/** [Admin] 통계 조회**/
+	ADMIN_STATISTICS_INFO("adminService", "getAdminStatisticsInfo", Order.class),
+
 	// ############################################################################################ //
 
 	/** Rider 정보조회 */
@@ -153,6 +159,12 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** 알림음 목록**/
 	ALARM_GET("storeService", "getAlarm", Store.class),
+
+	/** Store 통계 목록**/
+	STORE_STATISTICS("storeService", "getStoreStatistics", Order.class),
+
+	/** Store 통계 조회**/
+	STORE_STATISTICS_INFO("storeService", "getStoreStatisticsInfo", Order.class),
 
 	// ############################################################################################ //
 
