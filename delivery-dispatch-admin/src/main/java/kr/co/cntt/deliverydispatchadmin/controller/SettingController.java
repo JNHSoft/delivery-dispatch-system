@@ -1,4 +1,4 @@
-package kr.co.deliverydispatch.controller;
+package kr.co.cntt.deliverydispatchadmin.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -24,15 +24,6 @@ public class SettingController {
      */
     @GetMapping("/setting-assign")
     public String settingAssign() { return "/setting/setting_assign"; }
-
-
-    /**
-     * 설정 - 기사관리 페이지
-     *
-     * @return
-     */
-    @GetMapping("/setting-rider")
-    public String settingRider() { return "/setting/setting_rider"; }
 
 
     /**
