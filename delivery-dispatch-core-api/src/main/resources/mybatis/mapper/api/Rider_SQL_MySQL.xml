@@ -518,5 +518,27 @@
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
 
+	<!-- selectRiderRestHours -->
+	<select id="selectRiderRestHours" resultType="kr.co.cntt.core.model.rider.Rider">
+		SELECT id, rest_hours, working from TB_RIDER where working = 1 or working = 3;
+	</select>
+
+	<!-- updateRiderWorkingAuto -->
+	<select id="updateRiderWorkingAuto" statementType="CALLABLE" parameterType="HashMap" resultType="java.lang.Integer">
+		{ CALL SP_AUTO_REST_TIME(
+								#{idNum}
+								,#{num})
+		}
+		<!-- DELIMITER $$
+		create procedure SP_AUTO_REST_TIME(IN idNum INT,IN num INT)
+		BEGIN
+		UPDATE TB_RIDER as R
+		SET working = if(timediff(date_format(now(), '%T'), subtime(concat(substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'00:20:00')) > 0
+		AND timediff(date_format(now(),'%T'), addtime(concat(substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'01:00:00')) < 0, '3', '1')
+		WHERE (working = 1 or working = 3) and id = idNum;
+		select working from dde.TB_RIDER where id = idNum;
+		END $$
+		DELIMITER ; -->
+	</select>
 </mapper>
  

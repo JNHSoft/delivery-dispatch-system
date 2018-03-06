@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -135,5 +136,21 @@ public interface RiderMapper {
      * @return
      */
     public List<Rider> selectForAssignRiders(String storeId);
+
+    /**
+     *  <p> 자동 휴식 관련 기사 목록
+     *
+     * @param
+     * @return
+     */
+    public List<Rider> selectRiderRestHours();
+
+    /**
+     *  <p> 자동 휴식
+     *
+     * @param
+     * @return
+     */
+    public int updateRiderWorkingAuto(HashMap map);
 
 }
