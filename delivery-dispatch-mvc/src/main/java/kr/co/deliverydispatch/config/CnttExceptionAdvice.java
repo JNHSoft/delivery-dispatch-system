@@ -38,7 +38,10 @@ public class CnttExceptionAdvice extends CnttBaseExceptionHandler {
 	@ResponseBody
 	public Object handleGenericException(Throwable e, HandlerMethod handlerMethod, HttpServletRequest request, HttpServletResponse response) { 
 		ResponseBody methodAnnotation = handlerMethod.getMethodAnnotation(ResponseBody.class);
-		insertErrorLog(request, handlerMethod, e);
+
+		// TODO. LogService - db table 없으므로 주석 처리
+		// insertErrorLog(request, handlerMethod, e);
+
 		if (methodAnnotation != null) {
 			if (e instanceof MethodArgumentNotValidException || e instanceof BindException) {
 				return processValidationError(e);
