@@ -253,8 +253,12 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     int restHoursLength = (rider.getRestHours()).length();
                     int num = (restHoursLength + 1) / 3;
                     int beforeWorking = Integer.parseInt(rider.getWorking());
-                    for (int i = 0; i < num; i++) {
+                    for (int i = 1; i <= num; i++) {
+                        if(map.containsKey("num")){
+                            map.remove("num");
+                        }
                         map.put("num", i);
+                        log.info("!!!!"+riderMapper.updateRiderWorkingAuto(map));
                         int temp = riderMapper.updateRiderWorkingAuto(map);
                         if (temp != beforeWorking) {
                             break;
