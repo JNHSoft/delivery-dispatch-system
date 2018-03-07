@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/mainLayout">
 	<div class="box" layout:fragment="content">
-		<h1><img src="./resources/images/common/logo.png" alt="KFC" /></h1>
-		<ul>
-			<li class="inp">
-				<input type="text" class="input h50" placeholder="아이디" value="" />
-			</li>
-			<li class="inp">
-				<input type="password" class="input h50" placeholder="비밀번호" value="" />
-			</li>
-			<li class="btn"><a href="#" class="button h50 btn_blue">로그인</a></li>
-			<li class="chk">
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">아이디저장</span>
-				</label>
-				<a href="#">비밀번호 찾기</a>
-			</li>
-
-		</ul>
+		<form id="loginForm" name="loginForm">
+			<h1><img src="./resources/images/common/logo.png" alt="KFC" /></h1>
+			<ul>
+				<li class="inp">
+					<input type="text" class="input h50" name="adminId" id="adminId" placeholder="아이디" value="" maxlength="20" />
+				</li>
+				<li class="inp">
+					<input type="password" name="adminPassword" id="adminPassword" class="input h50" placeholder="비밀번호" value="" />
+				</li>
+				<li class="btn"><a href="javascript:void(0);" class="button h50 btn_blue" id="loginProcessButton">로그인</a></li>
+				<li class="chk">
+					<label class="checkbox"><input name="" type="checkbox" /><i></i>
+						<span class="lbl">아이디저장</span>
+					</label>
+					<a href="#">비밀번호 찾기</a>
+				</li>
+			</ul>
+		</form>
 	</div>
-
 <script layout:fragment="script">
 	$(function(){
 
@@ -35,6 +35,96 @@
 		$parentH = $parent.height(),
 		$top = Math.max(0,($parentH-$thisH)/2);
 	$this.css({'top':$top});
+
+        // page parameter
+        var PageParam = {};
+
+        // page function
+        var PageFunction = (function(pf) {
+            // document ready
+            pf.init = function() {
+                // 퍼블리싱 start
+                //센터 정렬
+                vaMid('.login_wrap')
+                $(window).resize(function(){
+                    vaMid('.login_wrap')
+                })
+                //input  삭제버튼(.btnDel) 노출
+                $('.inp .input').focus(function(){
+                    $(this).closest('li').addClass('focus');
+                }).blur(function(){
+                    if($(this).val() == ''){
+                        $(this).closest('li').removeClass('focus');
+                    }
+                });
+                //.btnDel 버튼 기능
+                $('.btnDel').click(function(e){
+                    e.preventDefault();
+                    $(this).prev().find('.input').val('').focus();
+                });
+                // 퍼블리싱 end
+                // 쿠키 확인 및 처리
+                var adminId = cntt.cookie.get("adminId");
+                if (adminId) {
+                    $('#adminId').val(adminId);
+                    $('#adminId').closest('li').addClass('focus');
+                    $('#idInfoSave').prop('checked', true);
+                }
+            };
+            // 로그인 체크 및 처리
+            pf.loginProcess = function() {
+
+                var adminId = $("#adminId").val();
+                var adminPassword = $('#adminPassword').val();
+                var loginForm = {
+                    adminId : adminId,
+                    adminPassword : adminPassword
+                };
+                cntt.ajax.formData(
+                    '/loginProcess',
+                    loginForm,
+                    function (response) {
+                        if (response.result === "S") {
+                            // 로그인 성공
+                            PageFunction.loginSuccess(adminId);
+                        } else {
+                            // 로그인 실패
+                            var ret = response.et;
+                            if (ret === 'BC') {
+                                alert('#adminPassword','계정 정보를 확인 해주세요.');
+                            } else if (ret === 'LK') {
+                                alert('계정이 잠금 처리 되었습니다.\n관리자 에게 문의 해주세요.');
+                            }
+                        }
+                    }
+                );
+            };
+            // 로그인 성공
+            pf.loginSuccess = function(adminId) {
+                // 회원 정보 쿠키 저장 혹은 삭제
+                if ($('#idInfoSave').is(":checked")) {
+                    cntt.cookie.set("adminId", adminId, 7);
+                } else {
+                    if (cntt.cookie.get("adminId")) {
+                        cntt.cookie.del("adminId");
+                    }
+                }
+                cntt.goPage("/loginSuccess");
+            };
+            return pf;
+        }(window.pf || {}));
+        (function(){
+            // 로그인 버튼 클릭
+            $('#loginProcessButton').click(function(){
+                PageFunction.loginProcess();
+            });
+
+            // input Enter Key
+            $('.input').keyup(function(e){
+                if(e.keyCode == 13)
+                    $('#loginProcessButton').click();
+            });
+        }());
 }
 </script>
 </html>

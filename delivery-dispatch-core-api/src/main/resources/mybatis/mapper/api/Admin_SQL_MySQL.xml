@@ -121,7 +121,25 @@
 			<result property="name" column="subgroup_name" />
 			<result property="adminId" column="subgroup_admin_id" />
 		</association>
+
 	</resultMap>
+
+
+
+	<!-- loginAdminInfo -->
+	<select id="loginAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
+		SELECT
+			A.id, A.chat_user_id, A.login_id, A.login_pw,
+			A.name, A.state, A.assignment_status, A.assignment_limit,
+			B.access_token
+		FROM TB_ADMIN A JOIN TB_ADMIN_SESSION B
+		ON A.id = B.admin_id
+		WHERE A.login_id = #{loginId}
+			AND login_pw = #{loginPw}
+			AND deleted IS NULL
+		ORDER BY B.Created_datetime DESC
+		limit 1
+	</select>
 
 
 	<!-- selectLoginAdmin -->
@@ -994,7 +1012,43 @@
 
 
 
-
+	<!-- selectStoreList -->
+	<select id="selectStoreList" parameterType="kr.co.cntt.core.model.store.Store" resultMap="selectStoresResult">
+		SELECT
+		A.id
+		, A.code
+		, A.name
+		, A.phone
+		, A.store_name
+		, A.ch_store_name
+		, A.store_phone
+		, A.login_id
+		, A.address
+		, A.detail_address
+		, A.ch_address
+		, A.ch_detail_address
+		, C.id AS subgroup_id
+		, C.group_id AS subgroup_group_id
+		, C.name AS subgroup_name
+		, C.admin_id AS subgroup_admin_id
+		, D.id AS group_id
+		, D.name AS group_name
+		, D.admin_id AS group_admin_id
+		FROM TB_STORE AS A
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
+		ON A.id = B.store_id
+		AND B.deleted IS NULL
+		LEFT JOIN TB_SUBGROUP AS C
+		ON B.group_id = C.group_id
+		AND B.subgroup_id = C.id
+		AND C.deleted IS NULL
+		LEFT JOIN  TB_GROUP AS D
+		ON B.group_id = D.id
+		AND D.deleted IS NULL
+		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND A.deleted IS NULL
+		ORDER BY A.name
+	</select>
 
 
 

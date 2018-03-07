@@ -24,6 +24,13 @@ import java.util.List;
  */
 @DeliveryDispatchMapper
 public interface AdminMapper {
+    /**
+     * <p> loginAdminInfo
+     *
+     * @return loginId String
+     */
+    public Admin loginAdminInfo(Admin admin);
+
 
     /**
      * <p> selectLoginAdmin
@@ -223,6 +230,7 @@ public interface AdminMapper {
      */
     public List<Store> selectStores(Common common);
 
+
     /**
      * <p> 상점 등록
      *
@@ -303,4 +311,11 @@ public interface AdminMapper {
     public Order selectAdminStatisticsInfo(Order order);
 
 
+    /**
+     * <p> ADMIN 페이지 상점 목록 조회
+     *
+     * @param store
+     * @return
+     */
+    public List<Store> selectStoreList(Store store);
 }

@@ -126,20 +126,18 @@ project(':delivery-dispatch-core') {
     }
 }
 
-
-project(':delivery-dispatch-core-admin') {
-    dependencies {
-        compileOnly project(':delivery-dispatch-core')
-    }
-}
-
-
 project(':delivery-dispatch-core-api') {
     dependencies {
         compileOnly project(':delivery-dispatch-core')
     }
 }
 
+project(':delivery-dispatch-core-admin') {
+    dependencies {
+        compile project(':delivery-dispatch-core')
+        compile project(':delivery-dispatch-core-api')
+    }
+}
 
 project(':delivery-dispatch-api') {
     apply plugin: 'war'
@@ -159,6 +157,7 @@ project(':delivery-dispatch-admin') {
     apply plugin: 'war'
     war.archiveName 'ROOT.war'
     build.dependsOn ':delivery-dispatch-core:build'
+    build.dependsOn ':delivery-dispatch-core-api:build'
     build.dependsOn ':delivery-dispatch-core-admin:build'
 
     dependencies {
@@ -176,6 +175,7 @@ project(':delivery-dispatch-mvc') {
     apply plugin: 'war'
     war.archiveName 'ROOT.war'
     build.dependsOn ':delivery-dispatch-core:build'
+    build.dependsOn ':delivery-dispatch-core-api:build'
 
     dependencies {
         compile project(':delivery-dispatch-core')

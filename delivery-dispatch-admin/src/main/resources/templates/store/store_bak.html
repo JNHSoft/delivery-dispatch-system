@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+
 	<!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
-		
-		<!-- 데티아 출력 JSON -->
-		<div th:text="${jsonList}">${jsonList}</div>
-
-
 		<h2 id="pageTit" class="blind">매장관리</h2>
 		<div class="search_box">
 			<div class="left">
@@ -30,8 +26,6 @@
 		</div>
 	</section>
 	<!-- //컨텐츠 영역 -->
-
-
 
 	<!-- 팝업영역 -->
 	<div id="popStore" class="pop_wrap" layout:fragment="popup">
@@ -122,8 +116,9 @@ var mydata = [
 	{No:'3', group1:'서초동부', group2:'서초A', storeName:'서초점', code:'00000', tel1:'02-1234-1234', name:'홍길동', tel2:'010-1234-1234', address1:'서울시 구로구 개봉동', address2:'증산빌라 201호', id:'seicho', mode:'자동'},
 	{No:'2', group1:'서초동부', group2:'서초A', storeName:'서초점', code:'00000', tel1:'02-1234-1234', name:'홍길동', tel2:'010-1234-1234', address1:'서울시 구로구 개봉동', address2:'증산빌라 201호', id:'seicho', mode:'자동'},
 	{No:'1', group1:'서초동부', group2:'서초A', storeName:'서초점', code:'00000', tel1:'02-1234-1234', name:'홍길동', tel2:'010-1234-1234', address1:'서울시 구로구 개봉동', address2:'증산빌라 201호', id:'seicho', mode:'자동'}
-];
 
+
+];	
 $(document).ready(function () {
 	$("#jqGrid").jqGrid({
 		datatype:"local",
@@ -150,8 +145,6 @@ $(document).ready(function () {
 	});
 
 	resizeJqGrid('#jqGrid'); //그리드 리사이즈
-
-
 });
 </script>
 </html>

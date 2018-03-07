@@ -17,12 +17,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class, ErrorMvcAutoConfiguration.class})
 @ComponentScan(basePackages={"kr.co.cntt.deliverydispatchadmin", "kr.co.cntt.core"})
 @Import({DeliveryDispatchAdminWebConfig.class, ConcurrentConfig.class, CacheConfig.class, RestConfig.class})
 @EnableCaching
+@EnableScheduling
 public class DeliveryDispatchAdminApplication extends SpringBootServletInitializer {
 	private static ApplicationContext context;
 

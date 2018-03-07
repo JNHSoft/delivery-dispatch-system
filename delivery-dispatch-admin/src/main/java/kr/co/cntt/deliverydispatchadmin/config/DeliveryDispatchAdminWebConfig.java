@@ -185,17 +185,6 @@ public class DeliveryDispatchAdminWebConfig {
                     .addResolver(new PathResourceResolver());
         }
 
-        /**
-         * {@inheritDoc}
-         * <p>
-         * This implementation is empty.
-         */
-        @Override
-        public void addViewControllers(ViewControllerRegistry registry) {
-            registry.addViewController("/").setViewName("forward:/main");
-            registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
-            super.addViewControllers(registry);
-        }
 
         /**
          * {@inheritDoc}
@@ -205,27 +194,6 @@ public class DeliveryDispatchAdminWebConfig {
         @Override
         public void addInterceptors(final InterceptorRegistry registry) {
             registry.addInterceptor(localeChangeInterceptor()).addPathPatterns("/**");
-            registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/member/login", "/mypage/**", "/order/**");
-
-            //공사중 페이지
-         /*
-         final UnderConstructionInterceptor underConstructionInterceptor = underConstructionInterceptor();
-         registry.addInterceptor(underConstructionInterceptor).addPathPatterns("/**")
-               .excludePathPatterns(underConstructionInterceptor.getRedirectUrl() + "/**")
-               .excludePathPatterns("/resources/**").excludePathPatterns("/files/**")
-               .excludePathPatterns("/error/**").excludePathPatterns("/common/**");
-         */
-        }
-        /*
-        @Bean
-        public UnderConstructionInterceptor underConstructionInterceptor() {
-            return new UnderConstructionInterceptor(redirectUrl, paramAdminPw, active,
-                    new HashSet<String>(Arrays.asList(ignoreIps)));
-        }
-        */
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder(10);
         }
     }
 }
