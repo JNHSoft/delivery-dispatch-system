@@ -156,4 +156,6 @@ public interface RiderMapper {
     public int updateRiderWorkingAuto(HashMap map);
 
     public List<String> selectRiderToken(Order order);
+
+    public List<String> selectRiderTokenByOrderId(Order order);
 }

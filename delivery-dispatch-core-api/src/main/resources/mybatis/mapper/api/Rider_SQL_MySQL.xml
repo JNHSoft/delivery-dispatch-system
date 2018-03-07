@@ -546,5 +546,14 @@
 		from dde.TB_RIDER_SESSION AS TBRS
 		where TBRS.rider_id = #{riderId} and TBRS.push_token is not null
 	</select>
+
+	<select id="selectRiderTokenByOrderId" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
+		select TBRS.push_token
+		from dde.TB_RIDER_SESSION AS TBRS
+        left join TB_ORDER AS TBO
+        on TBO.id = #{id}
+		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null
+	</select>
+
 </mapper>
  

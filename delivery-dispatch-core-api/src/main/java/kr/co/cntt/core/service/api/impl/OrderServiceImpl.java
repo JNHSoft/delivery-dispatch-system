@@ -775,8 +775,19 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             this.putOrder(combinedOrderAssignCanceled);
         }
 
+        int ret = this.putOrder(orderAssignCanceled);
 
-        return this.putOrder(orderAssignCanceled);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
+
+            Notification noti = new Notification();
+            noti.setType(Notification.NOTI.ORDER_ASSIGN_CANCEL);
+            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+            checkFcmResponse(pushNotification);
+        }
+
+        return ret;
     }
 
     @Secured({"ROLE_RIDER"})
