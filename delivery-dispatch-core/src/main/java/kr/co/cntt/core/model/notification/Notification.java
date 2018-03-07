@@ -19,6 +19,7 @@ public class Notification {
         public static String NOTICE_BRANCH = "notice_branch";
         public static String RIDER_LOCATION= "rider_location";
         public static String ORDER_ASSIGN= "order_assign";
+        public static String ORDER_ASSIGN_AUTO= "order_assign_auto";
         public static String ORDER_PICKUP= "order_pickup";
         public static String ORDER_COMPLET= "order_complete";
         public static String ORDER_HIDDEN= "order_hidden";
