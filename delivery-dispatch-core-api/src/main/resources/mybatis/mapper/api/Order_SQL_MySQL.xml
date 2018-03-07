@@ -533,7 +533,7 @@
 	</select>
 
 	<select id="selectPushToken" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">
-		select TBRS.push_token, TBRS.rider_id, TSRR.subgroup_id, TSRR.store_id
+		select TBRS.push_token
 		from TB_RIDER_SESSION AS TBRS
 		   left join TB_SUBGROUP_RIDER_REL AS TSRR
 		       on TSRR.subgroup_id = #{groupId}

@@ -540,5 +540,11 @@
 			END $$
 			DELIMITER ; -->
 	</select>
+
+	<select id="selectRiderToken" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
+		select TBRS.push_token
+		from dde.TB_RIDER_SESSION AS TBRS
+		where TBRS.rider_id = #{riderId} and TBRS.push_token is not null
+	</select>
 </mapper>
  

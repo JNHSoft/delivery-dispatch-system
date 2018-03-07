@@ -602,7 +602,33 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             this.putOrder(combinedOrderAssigned);
         }
 
-        return this.putOrder(orderAssigned);
+        int ret = this.putOrder(orderAssigned);
+
+        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
+
+            Notification noti = new Notification();
+            noti.setType(Notification.NOTI.ORDER_ASSIGN);
+            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+            if(pushNotification != null){
+                CompletableFuture.allOf(pushNotification).join();
+                try {
+                    FirebaseResponse firebaseResponse = pushNotification.get();
+                    if (firebaseResponse.getSuccess() == 1) {
+                        log.info("push notification sent ok!");
+                    } else {
+                        log.error("error sending push notifications: " + firebaseResponse.toString());
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        return ret;
     }
 
     @Secured("ROLE_RIDER")
