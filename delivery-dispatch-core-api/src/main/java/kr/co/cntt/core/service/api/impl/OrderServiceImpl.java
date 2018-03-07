@@ -256,6 +256,14 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setRiderId(((Rider) map.get("rider")).getId());
             order.setStatus("1");
 
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(order);
+
+            Notification noti = new Notification();
+            noti.setType(Notification.NOTI.ORDER_ASSIGN_AUTO);
+            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+
+            checkFcmResponse(pushNotification);
+
             return orderMapper.updateOrder(order);
 
         }
@@ -340,21 +348,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Notification noti = new Notification();
             noti.setType(Notification.NOTI.ORDER_NEW);
             CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-            if(pushNotification != null){
-                CompletableFuture.allOf(pushNotification).join();
-                try {
-                    FirebaseResponse firebaseResponse = pushNotification.get();
-                    if (firebaseResponse.getSuccess() == 1) {
-                        log.info("push notification sent ok!");
-                    } else {
-                        log.error("error sending push notifications: " + firebaseResponse.toString());
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
+            checkFcmResponse(pushNotification);
         }
 
 
@@ -602,7 +596,19 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             this.putOrder(combinedOrderAssigned);
         }
 
-        return this.putOrder(orderAssigned);
+        int ret = this.putOrder(orderAssigned);
+
+        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
+
+            Notification noti = new Notification();
+            noti.setType(Notification.NOTI.ORDER_ASSIGN);
+            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+            checkFcmResponse(pushNotification);
+        }
+
+
+        return ret;
     }
 
     @Secured("ROLE_RIDER")
@@ -769,8 +775,19 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             this.putOrder(combinedOrderAssignCanceled);
         }
 
+        int ret = this.putOrder(orderAssignCanceled);
 
-        return this.putOrder(orderAssignCanceled);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
+
+            Notification noti = new Notification();
+            noti.setType(Notification.NOTI.ORDER_ASSIGN_CANCEL);
+            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+            checkFcmResponse(pushNotification);
+        }
+
+        return ret;
     }
 
     @Secured({"ROLE_RIDER"})
@@ -861,4 +878,21 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return this.putOrder(order);
     }
 
+    private void checkFcmResponse(CompletableFuture<FirebaseResponse> pushNotification){
+        if(pushNotification != null){
+            CompletableFuture.allOf(pushNotification).join();
+            try {
+                FirebaseResponse firebaseResponse = pushNotification.get();
+                if (firebaseResponse.getSuccess() == 1) {
+                    log.info("push notification sent ok!");
+                } else {
+                    log.error("error sending push notifications: " + firebaseResponse.toString());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

@@ -2,7 +2,9 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 
 import java.util.HashMap;
@@ -153,4 +155,7 @@ public interface RiderMapper {
      */
     public int updateRiderWorkingAuto(HashMap map);
 
+    public List<String> selectRiderToken(Order order);
+
+    public List<String> selectRiderTokenByOrderId(Order order);
 }
