@@ -530,11 +530,11 @@
 								,#{num})
 		}
 		<!-- DELIMITER $$
-			CREATE PROCEDURE SP_AUTO_REST_TIME(IN id_num INT,IN num INT)
+			create procedure SP_AUTO_REST_TIME(IN id_num INT,IN num INT)
 			BEGIN
 			UPDATE TB_RIDER as R
-			SET working = if(timediff(date_format(now(), '%T'), subtime(date_format(convert_tz(concat('2000-01-01 ',substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'Asia/Seoul','UTC'), '%T'),'00:20:00')) > 0
-				AND timediff(date_format(now(),'%T'), addtime(date_format(convert_tz(concat('2000-01-01 ',substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'Asia/Seoul','UTC'), '%T'),'01:00:00')) < 0, '3', '1')
+			SET working = if(timediff(date_format(now(), '%T'), subtime(concat(substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'00:20:00')) > 0
+				AND timediff(date_format(now(),'%T'), addtime(concat(substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'01:00:00')) < 0, '3', '1')
 			WHERE (working = 1 or working = 3) and id = id_num;
         	select working from dde.TB_RIDER where id = id_num;
 			END $$
