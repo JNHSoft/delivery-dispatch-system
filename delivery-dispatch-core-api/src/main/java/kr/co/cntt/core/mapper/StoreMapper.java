@@ -18,7 +18,12 @@ import java.util.List;
  */
 @DeliveryDispatchMapper
 public interface StoreMapper {
-
+    /**
+     * <p> loginStoreInfo
+     *
+     * @return loginId String
+     */
+    public Store loginStoreInfo(Store admin);
     /**
      * login id 확인
      *

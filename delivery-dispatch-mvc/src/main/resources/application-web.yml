@@ -104,7 +104,7 @@ api.pos.server : http://localhost:8090
 api.app.server : http://localhost:8091
 # Logger
 cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.burgerking
+cntt.monitor.basepackage: kr.co.deliverydispatch
 
 ---
 spring:
@@ -131,7 +131,7 @@ api.pos.server : http://localhost:8085
 api.app.server : http://localhost:8084
 # Logger
 cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.burgerking
+cntt.monitor.basepackage: kr.co.deliverydispatch
 
 ---
 spring:
@@ -168,4 +168,4 @@ api.app.server : https://burgerking.cntt.kr:9443
 #api.app.server : https://apitest.cntt.kr:9441
 # Logger
 cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.burgerking
+cntt.monitor.basepackage: kr.co.deliverydispatch
