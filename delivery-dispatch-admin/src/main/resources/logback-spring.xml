@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanperiod="1 minutes">
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
+	<!--<springProfile name="local">-->
+		<!--<property value="/home/logs/dde_admin/dde_admin_application" name="LOG_FILE_PREFIX" />-->
+	<!--</springProfile>-->
+	<!--<springProfile name="dev">-->
+		<!--<property value="/home/logs/dde_admin/dde_admin_application" name="LOG_FILE_PREFIX" />-->
+	<!--</springProfile>-->
+	<!--<springProfile name="oper">-->
+	<!--<property value="/web/mvc_brk/tomcat_ddeadmin/logs/application" name="LOG_FILE_PREFIX" />-->
+	<!--</springProfile>-->
 	<springProfile name="local">
-		<property value="/home/logs/bk_web/bk_web_application" name="LOG_FILE_PREFIX" />
-	</springProfile>
-	<springProfile name="dev">
-		<property value="/home/logs/bk_web/bk_web_application" name="LOG_FILE_PREFIX" />
-	</springProfile>
-	<springProfile name="oper">
-	<property value="/web/mvc_brk/tomcat_brkmvc/logs/application" name="LOG_FILE_PREFIX" />
-	</springProfile>
-	<springProfile name="local">
-		<property value="/home/logs/bk_web/bk_web_application" name="LOG_FILE_PREFIX" />
-		<logger name="kr.co.burgerking" level="DEBUG" additivity="false">
-			<appender-ref ref="CONSOLE" />
-		</logger>
-		<logger name="kr.co.cntt.core" level="DEBUG" additivity="false">
+		<logger name="kr.co.cntt" level="DEBUG" additivity="false">
 			<appender-ref ref="CONSOLE" />
 		</logger>
 		<logger name="org.springframework" level="INFO" additivity="false">
@@ -25,12 +21,9 @@
 			<appender-ref ref="CONSOLE" />
 		</root>
 	</springProfile>
+
 	<springProfile name="!local">
-		<logger name="kr.co.burgerking" level="DEBUG" additivity="false">
-			<appender-ref ref="CONSOLE" />
-			<appender-ref ref="FILE" />
-		</logger>
-		<logger name="kr.co.cntt.core" level="DEBUG" additivity="false">
+		<logger name="kr.co.cntt" level="INFO" additivity="false">
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="FILE" />
 		</logger>
@@ -42,6 +35,38 @@
 			<appender-ref ref="CONSOLE" />
 		</root>
 	</springProfile>
+	<!--<springProfile name="local">-->
+		<!--<property value="/home/logs/bk_web/bk_web_application" name="LOG_FILE_PREFIX" />-->
+		<!--<logger name="kr.co.burgerking" level="DEBUG" additivity="false">-->
+			<!--<appender-ref ref="CONSOLE" />-->
+		<!--</logger>-->
+		<!--<logger name="kr.co.cntt.core" level="DEBUG" additivity="false">-->
+			<!--<appender-ref ref="CONSOLE" />-->
+		<!--</logger>-->
+		<!--<logger name="org.springframework" level="INFO" additivity="false">-->
+			<!--<appender-ref ref="CONSOLE" />-->
+		<!--</logger>-->
+		<!--<root level="INFO">-->
+			<!--<appender-ref ref="CONSOLE" />-->
+		<!--</root>-->
+	<!--</springProfile>-->
+	<!--<springProfile name="!local">-->
+		<!--<logger name="kr.co.burgerking" level="DEBUG" additivity="false">-->
+			<!--<appender-ref ref="CONSOLE" />-->
+			<!--<appender-ref ref="FILE" />-->
+		<!--</logger>-->
+		<!--<logger name="kr.co.cntt.core" level="DEBUG" additivity="false">-->
+			<!--<appender-ref ref="CONSOLE" />-->
+			<!--<appender-ref ref="FILE" />-->
+		<!--</logger>-->
+		<!--<logger name="org.springframework" level="INFO" additivity="false">-->
+			<!--<appender-ref ref="CONSOLE" />-->
+			<!--<appender-ref ref="FILE" />-->
+		<!--</logger>-->
+		<!--<root level="INFO">-->
+			<!--<appender-ref ref="CONSOLE" />-->
+		<!--</root>-->
+	<!--</springProfile>-->
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<charset>UTF-8</charset>

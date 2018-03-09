@@ -110,6 +110,7 @@ subprojects {
 //        compile 'cglib:cglib:3.2.6'
         compile 'com.google.maps:google-maps-services:0.2.6'
         compile 'org.apache.commons:commons-lang3:3.7'
+        compile("org.springframework.boot:spring-boot-starter-data-redis")
         testCompileOnly 'org.projectlombok:lombok:1.16.16'
         testCompile 'org.springframework.boot:spring-boot-starter-test'
     }

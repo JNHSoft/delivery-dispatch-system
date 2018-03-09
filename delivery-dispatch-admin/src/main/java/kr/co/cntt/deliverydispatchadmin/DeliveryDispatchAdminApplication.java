@@ -1,6 +1,7 @@
 package kr.co.cntt.deliverydispatchadmin;
 
 import kr.co.cntt.core.concurrent.ConcurrentConfig;
+import kr.co.cntt.core.config.RedisConfig;
 import kr.co.cntt.deliverydispatchadmin.config.CacheConfig;
 import kr.co.cntt.deliverydispatchadmin.config.DeliveryDispatchAdminWebConfig;
 import kr.co.cntt.rest.config.RestConfig;
@@ -22,7 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class, ErrorMvcAutoConfiguration.class})
 @ComponentScan(basePackages={"kr.co.cntt.deliverydispatchadmin", "kr.co.cntt.core"})
-@Import({DeliveryDispatchAdminWebConfig.class, ConcurrentConfig.class, CacheConfig.class, RestConfig.class})
+@Import({DeliveryDispatchAdminWebConfig.class, ConcurrentConfig.class, CacheConfig.class, RestConfig.class, RedisConfig.class})
 @EnableCaching
 @EnableScheduling
 public class DeliveryDispatchAdminApplication extends SpringBootServletInitializer {

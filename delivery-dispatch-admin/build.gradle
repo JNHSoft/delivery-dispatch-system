@@ -1,1 +1,4 @@
-bootRepackage.enabled = false
+//bootRepackage.enabled = false
+springBoot {
+    mainClass = 'kr.co.cntt.deliverydispatchadmin.DeliveryDispatchAdminApplication'
+}
