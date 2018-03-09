@@ -101,7 +101,20 @@
         </association>
     </resultMap>
 
-
+    <!-- loginStoreInfo -->
+    <select id="loginStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
+        SELECT
+        A.id, A.chat_user_id, A.login_id, A.login_pw,
+        A.name, A.store_status, A.assignment_status, A.assignment_limit,
+        B.access_token
+        FROM TB_STORE A JOIN TB_STORE_SESSION B
+        ON A.id = B.store_id
+        WHERE A.login_id = #{loginId}
+        AND login_pw = #{loginPw}
+        AND deleted IS NULL
+        ORDER BY B.Created_datetime DESC
+        limit 1
+    </select>
 
     <!--로그인 ID 확인 -->
 	<select id="selectLoginStore" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">

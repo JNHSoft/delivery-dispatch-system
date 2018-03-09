@@ -137,6 +137,8 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 재배치 **/
 	RIDER_RETURN_TIME_PUT("riderService","putRiderReturnTime", Rider.class),
 
+	REJECT_REASON_LIST("riderService", "getRejectReasonList", Common.class),
+
 	// ############################################################################################ //
 
 	/** Store 정보조회 */

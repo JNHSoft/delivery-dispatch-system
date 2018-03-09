@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 
 import java.util.HashMap;
@@ -158,4 +159,6 @@ public interface RiderMapper {
     public List<String> selectRiderToken(Order order);
 
     public List<String> selectRiderTokenByOrderId(Order order);
+
+    public List<Reason> selectRejectReason();
 }

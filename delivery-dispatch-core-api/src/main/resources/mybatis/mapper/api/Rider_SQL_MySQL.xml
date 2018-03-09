@@ -555,5 +555,9 @@
 		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null
 	</select>
 
+	<select id="selectRejectReason" resultType="kr.co.cntt.core.model.reason.Reason">
+		SELECT id, reason from TB_REJECT_REASON where deleted is null
+	</select>
+
 </mapper>
  
