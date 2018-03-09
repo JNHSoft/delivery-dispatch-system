@@ -2,6 +2,9 @@ package kr.co.cntt.core.model.notification;
 
 public class Notification {
     private String type;
+    private int id;
+    private String addr;
+    private String storeName;
 
     public String getType() {
         return type;
@@ -9,6 +12,30 @@ public class Notification {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public interface NOTI{

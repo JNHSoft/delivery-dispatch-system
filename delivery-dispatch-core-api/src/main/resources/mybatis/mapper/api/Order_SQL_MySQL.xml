@@ -509,6 +509,8 @@
 		    , B.radius
 		    , B.assignment_limit
 		    , B.store_distance_sort
+		    , B.store_name
+		    , A.address
 		FROM TB_ORDER AS A
         LEFT JOIN TB_STORE AS B
         ON A.store_id = B.id

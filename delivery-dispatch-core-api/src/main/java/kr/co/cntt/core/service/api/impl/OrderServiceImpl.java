@@ -258,8 +258,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(order);
 
+            Order notiOrder = (Order) map.get("order");
+
             Notification noti = new Notification();
             noti.setType(Notification.NOTI.ORDER_ASSIGN_AUTO);
+            noti.setId(Integer.valueOf(notiOrder.getId()));
+            noti.setStoreName(notiOrder.getStore().getStoreName());
+            noti.setAddr(notiOrder.getAddress());
             CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
 
             checkFcmResponse(pushNotification);
@@ -347,6 +352,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
             Notification noti = new Notification();
             noti.setType(Notification.NOTI.ORDER_NEW);
+            /*noti.setId(291);
+            noti.setStoreName(order.getMenuName());
+            noti.setAddr(order.getAreaAddress());*/
             CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
             checkFcmResponse(pushNotification);
         }
@@ -527,7 +535,43 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             this.putOrder(combinedOrder);
         }
 
-        return this.putOrder(order);
+        int nRet = this.putOrder(order);
+
+        if(nRet == 1){
+            Order curOrder = getOrderInfo(order);
+            if(curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")){
+                // 해당 라이더한테만 푸쉬
+                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(order);
+
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.ORDER_CHANGE);
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                checkFcmResponse(pushNotification);
+            }else{
+                // 상점 관련 라이더한테 푸쉬
+                Store storeDTO = new Store();
+                storeDTO.setAccessToken(order.getToken());
+                storeDTO.setToken(order.getToken());
+
+                storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
+                if(storeDTO.getAssignmentStatus().equals("2")){
+                    ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(storeDTO.getSubGroup());
+                    for(String token: tokens){
+                        System.out.println("token: " + token);
+                    }
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_CHANGE);
+                    /*noti.setId(291);
+                    noti.setStoreName(order.getMenuName());
+                    noti.setAddr(order.getAreaAddress());*/
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
+            }
+        }
+
+        return nRet;
     }
 
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
@@ -724,7 +768,43 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             this.putOrder(combinedOrderCanceled);
         }
 
-        return this.putOrder(orderCanceled);
+        int nRet = this.putOrder(orderCanceled);
+
+        if(nRet == 1){
+            Order curOrder = getOrderInfo(order);
+            if(curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")){
+                // 해당 라이더한테만 푸쉬
+                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(order);
+
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.ORDER_CHANGE);
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                checkFcmResponse(pushNotification);
+            }else{
+                // 상점 관련 라이더한테 푸쉬
+                Store storeDTO = new Store();
+                storeDTO.setAccessToken(order.getToken());
+                storeDTO.setToken(order.getToken());
+
+                storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
+                if(storeDTO.getAssignmentStatus().equals("2")){
+                    ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(storeDTO.getSubGroup());
+                    for(String token: tokens){
+                        System.out.println("token: " + token);
+                    }
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_CHANGE);
+                    /*noti.setId(291);
+                    noti.setStoreName(order.getMenuName());
+                    noti.setAddr(order.getAreaAddress());*/
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
+            }
+        }
+
+        return nRet;
     }
 
     @Secured({"ROLE_STORE", "ROLE_RIDER"})

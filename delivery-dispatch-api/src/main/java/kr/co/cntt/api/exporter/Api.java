@@ -133,6 +133,10 @@ public interface Api {
     /** Rider 재배치**/
     String RIDER_RETURN_TIME_PUT = "/putRiderReturnTime.json";
 
+
+    /** 배정 거절 사유 목록 조회 **/
+    String REJECT_REASON_LIST = "getRejectReasonList.json";
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */

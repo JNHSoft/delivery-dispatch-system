@@ -9,12 +9,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -94,23 +97,34 @@ public class AndroidPushNotificationsService {
             Gson gson = new GsonBuilder().serializeNulls().create();
 
             JSONObject data = new JSONObject();
-            data.put("obj", gson.toJson(obj));
+            JSONObject dataObject= new JSONObject(gson.toJson(obj));
+            data.put("obj", dataObject);
+
 //            data.put("key2", "value2");
 
 
-            body.put("notification", notification);
+//            body.put("notification", notification);
             body.put("data", data);
 
             System.out.println("body" + body.toString());
 
-            request = new HttpEntity<>(body.toString());
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+            request = new HttpEntity<>(body.toString(), headers);
 
             RestTemplate restTemplate = new RestTemplate();
 
+
             ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
             interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + FIREBASE_SERVER_KEY));
-            interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json"));
+//            interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json;charset=utf-8"));
             restTemplate.setInterceptors(interceptors);
+
+
+
 
             FirebaseResponse firebaseResponse = restTemplate.postForObject("https://fcm.googleapis.com/fcm/send", request, FirebaseResponse.class);
 
