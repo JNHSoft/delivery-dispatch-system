@@ -5,6 +5,7 @@ import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -265,5 +266,12 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 }
             }
         }
+    }
+
+
+    @Override
+    public List<Reason> getRejectReasonList(Common common) throws AppTrException {
+        List<Reason> reasonList = riderMapper.selectRejectReason();
+        return reasonList;
     }
 }
