@@ -134,6 +134,9 @@
 			, #{status}
 			, now()
 	  	)
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</insert>
 
 
@@ -360,6 +363,7 @@
 			<if test="role == 'ROLE_STORE' and assignedFirst == 'True'">
 				, A.assigned_first = (SELECT * FROM (SELECT IFNULL(MAX(assigned_first), 0) + 1 FROM TB_ORDER) AS D)
 			</if>
+			, A.id = LAST_INSERT_ID(A.id)
 		WHERE A.id = #{id}
 			<choose>
 				<when test="role != null and role == 'ROLE_SYSTEM'">
@@ -382,6 +386,9 @@
 					AND A.id IS NULL
 				</otherwise>
 			</choose>
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</update>
 
 

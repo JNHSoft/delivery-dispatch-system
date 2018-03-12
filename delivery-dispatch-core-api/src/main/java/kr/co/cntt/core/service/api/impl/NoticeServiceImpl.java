@@ -6,6 +6,7 @@ import kr.co.cntt.core.mapper.NoticeMapper;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.NoticeService;
+import kr.co.cntt.core.service.api.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,12 @@ import java.util.Map;
 @Slf4j
 @Service("noticeService")
 public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
+
+    /**
+     * RedisService
+     */
+    @Autowired
+    private RedisService redisService;
 
     /**
      * Notice DAO
@@ -63,7 +70,14 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             }
 
         }
-        return noticeMapper.insertNotice(notice);
+
+        int result = noticeMapper.insertNotice(notice);
+
+        if (result != 0) {
+            redisService.setPublisher("notice_updated", "");
+        }
+
+        return result;
     }
 
     // 공지 사항 수정
@@ -84,6 +98,10 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
 
         if (res == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        if (res != 0) {
+            redisService.setPublisher("notice_updated", "");
         }
 
         return res;
@@ -108,6 +126,10 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
 
         if (res == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+        }
+
+        if (res != 0) {
+            redisService.setPublisher("notice_updated", "");
         }
 
         return res;
