@@ -7,6 +7,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.payment.Payment;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.PaymentService;
+import kr.co.cntt.core.service.api.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -20,6 +21,11 @@ import java.util.List;
 @Service("paymentService")
 public class PaymentServiceImpl  extends ServiceSupport implements PaymentService {
 
+    /**
+     * RedisService
+     */
+    @Autowired
+    private RedisService redisService;
 
     /**
      *  Payment DAO
@@ -62,6 +68,11 @@ public class PaymentServiceImpl  extends ServiceSupport implements PaymentServic
     public int postPaymentInfo(Payment payment) throws AppTrException{
         int postPayment = paymentMapper.insertPaymentInfo(payment);
 
+        List<Payment> S_Payment = paymentMapper.selectPaymentInfo(payment);
+
+        if (postPayment != 0) {
+            redisService.setPublisher("order_updated", "order_id:"+S_Payment.get(0).getOrderId()+", store_id:"+S_Payment.get(0).getStoreId());
+        }
 
         return postPayment;
     }
@@ -71,6 +82,12 @@ public class PaymentServiceImpl  extends ServiceSupport implements PaymentServic
     @Override
     public int updatePaymentInfo(Payment payment) throws AppTrException{
         int updatePayment = paymentMapper.updatePaymentInfo(payment);
+
+        List<Payment> S_Payment = paymentMapper.selectPaymentInfo(payment);
+
+        if (updatePayment != 0) {
+            redisService.setPublisher("order_updated", "order_id:"+S_Payment.get(0).getOrderId()+", store_id:"+S_Payment.get(0).getStoreId());
+        }
 
         return updatePayment;
     }

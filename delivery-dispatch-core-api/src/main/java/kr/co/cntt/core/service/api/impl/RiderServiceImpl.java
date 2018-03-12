@@ -7,8 +7,8 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
+import kr.co.cntt.core.service.api.RedisService;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,12 @@ import java.util.Map;
 @Slf4j
 @Service("riderService")
 public class RiderServiceImpl extends ServiceSupport implements RiderService {
+
+    /**
+     * RedisService
+     */
+    @Autowired
+    private RedisService redisService;
 
     /**
      * Rider DAO
@@ -121,6 +127,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         int nRet = riderMapper.updateRiderInfo(rider);
+
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+        if (nRet != 0) {
+            if (S_Rider.getSubGroupStoreRel() != null) {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+            } else {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId());
+            }
+        }
+
         return nRet;
     }
 
@@ -138,6 +155,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         int nRet = riderMapper.updateWorkingRider(rider);
+
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+        if (nRet != 0) {
+            if (S_Rider.getSubGroupStoreRel() != null) {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+            } else {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId());
+            }
+        }
+
         return nRet;
 
     }
@@ -154,6 +182,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         int nRet = riderMapper.updateRiderLocation(rider);
+
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+        if (nRet != 0) {
+            if (S_Rider.getSubGroupStoreRel() != null) {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+            } else {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId());
+            }
+        }
+
         return nRet;
     }
 
@@ -240,7 +279,21 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     //라이더 재배치
     @Secured("ROLE_STORE")
     @Override
-    public int putRiderReturnTime(Rider rider){ return riderMapper.updateRiderReturnTime(rider); }
+    public int putRiderReturnTime(Rider rider){
+        int nRet = riderMapper.updateRiderReturnTime(rider);
+
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+        if (nRet != 0) {
+            if (S_Rider.getSubGroupStoreRel() != null) {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+            } else {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId());
+            }
+        }
+
+        return nRet;
+    }
 
     //기사 휴식 시간
     @Override

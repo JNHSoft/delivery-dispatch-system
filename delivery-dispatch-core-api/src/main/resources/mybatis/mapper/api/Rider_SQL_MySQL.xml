@@ -281,6 +281,7 @@
 				, B.subgroup_id = #{subGroupRiderRel.subGroupId}
 				, B.group_id = #{subGroupRiderRel.groupId}
 			</if>
+			, A.id = LAST_INSERT_ID(A.id)
 		WHERE 1=1
 		<choose>
 			<when test="id != null and id != ''">
@@ -301,6 +302,9 @@
 				)
 			</otherwise>
 		</choose>
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</update>
 
 	<!-- rider 출/퇴근  -->
