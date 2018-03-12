@@ -449,6 +449,7 @@
           , rider_id
           , order_id
           , status
+          , reason
         ) VALUES (
           now()
           , now()
@@ -463,6 +464,7 @@
           , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
           , #{id}
           , #{orderCheckAssignment.status}
+          , #{orderCheckAssignment.reason}
         )
     </insert>
 
