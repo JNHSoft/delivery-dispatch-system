@@ -15,7 +15,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.OrderService;
-import kr.co.cntt.core.service.api.RedisService;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;

@@ -6,7 +6,7 @@ import kr.co.cntt.core.mapper.NoticeMapper;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.NoticeService;
-import kr.co.cntt.core.service.api.RedisService;
+import kr.co.cntt.core.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

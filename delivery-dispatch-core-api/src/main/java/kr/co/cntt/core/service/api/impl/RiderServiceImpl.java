@@ -8,7 +8,7 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.service.ServiceSupport;
-import kr.co.cntt.core.service.api.RedisService;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

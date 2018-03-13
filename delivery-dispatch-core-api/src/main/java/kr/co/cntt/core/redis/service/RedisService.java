@@ -1,4 +1,4 @@
-package kr.co.cntt.core.service.api;
+package kr.co.cntt.core.redis.service;
 
 public interface RedisService {
 

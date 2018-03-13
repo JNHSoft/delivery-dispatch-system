@@ -1,8 +1,8 @@
-package kr.co.cntt.core.service.api.impl;
+package kr.co.cntt.core.redis.impl;
 
 import kr.co.cntt.core.model.redis.Message;
 import kr.co.cntt.core.redis.service.Publisher;
-import kr.co.cntt.core.service.api.RedisService;
+import kr.co.cntt.core.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
