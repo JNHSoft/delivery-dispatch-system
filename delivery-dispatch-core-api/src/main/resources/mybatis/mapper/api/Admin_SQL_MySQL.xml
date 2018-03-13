@@ -651,6 +651,7 @@
 		INSERT INTO TB_STORE (
 			created_datetime
 			, chat_user_id
+			, chatroom_id
 			, admin_id
 			, login_id
 			, login_pw
@@ -674,6 +675,7 @@
 		) VALUES (
 			now()
 			, #{chatUserId}
+			, #{chatRoomId}
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			, #{loginId}
 			, #{loginPw}
@@ -783,7 +785,7 @@
 	<update id="updateAdminAssignmentStatus" parameterType="kr.co.cntt.core.model.admin.Admin">
 		UPDATE TB_ADMIN
 		SET assignment_status = #{assignmentStatus}
-			modified_datetime = now()
+			, modified_datetime = now()
 		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</update>
 

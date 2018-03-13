@@ -3,10 +3,10 @@ package kr.co.cntt.api.service;
 import kr.co.cntt.api.config.IServiceRouter;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
+import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
-import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
@@ -237,7 +237,18 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** pushToken 등록   */
 	SET_PUSH_TOKEN("userService", "updatePushToken", User.class),
 
+	// ############################################################################################ //
 
+	/** 채팅 보내기 */
+	CHAT_POST("chatService", "postChat", Chat.class),
+
+	/** 채팅 읽기 */
+	CHAT_GET("chatService", "getChat", Chat.class),
+
+	/** 채팅방 목록 */
+	CHATROOM_GET("chatService", "getChatRoom", Chat.class),
+
+	// ############################################################################################ //
 
 //	/** 주문요청2 */
 //	SET_ORDER2("TRO001SV_APP", "setorder2", R_TRO001_1.class),

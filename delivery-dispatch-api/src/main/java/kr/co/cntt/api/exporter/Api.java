@@ -234,6 +234,17 @@ public interface Api {
 
     // ############################################################################################ //
 
+    /** 채팅 보내기 */
+    String CHAT_POST = "/postChat.json";
+
+    /** 채팅 읽기 */
+    String CHAT_GET = "/getChat.json";
+
+    /** 채팅방 목록 */
+    String CHATROOM_GET = "/getChatRoom.json";
+
+    // ############################################################################################ //
+
     // MVC || ADMIN || Call Center -> CNT APP API SERVER
     /** base uri */
     String INSIDE_PATH = "/API";

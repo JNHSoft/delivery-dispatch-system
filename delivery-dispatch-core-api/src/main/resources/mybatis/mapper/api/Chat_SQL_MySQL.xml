@@ -1,0 +1,143 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cntt.core.mapper.ChatMapper">
+
+	<!-- selectChatUserChatRoomRel -->
+	<select id="selectChatUserChatRoomRel" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="kr.co.cntt.core.model.chat.Chat">
+		SELECT
+			chatroom_id
+		FROM
+			TB_CHAT_USER_CHATROOM_REL
+		WHERE
+		<if test="role != null and role == 'ROLE_STORE'">
+			chat_user_id = #{chatUserId}
+				AND chatroom_id = (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = #{chatUserId})
+		</if>
+		<if test="role != null and role == 'ROLE_RIDER'">
+			chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+				AND chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = #{chatUserId})
+		</if>
+	</select>
+
+
+	<!-- insertChatRoom -->
+	<insert id="insertChatRoom" parameterType="kr.co.cntt.core.model.chat.Chat">
+		INSERT INTO TB_CHATROOM (
+			created_datetime
+		) VALUES (
+			now()
+		)
+		<selectKey keyProperty="chatRoomId" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<!-- insertChatRoomRelRecv -->
+	<insert id="insertChatRoomRelRecv" parameterType="kr.co.cntt.core.model.chat.Chat">
+		INSERT INTO TB_CHAT_USER_CHATROOM_REL (
+			chat_user_id
+			, chatroom_id
+		) VALUES (
+			<if test="role != null and role == 'ROLE_STORE'">
+				#{chatUserId}
+				, #{chatRoomId}
+			</if>
+			<if test="role != null and role == 'ROLE_RIDER'">
+				#{chatUserId}
+				, #{chatRoomId}
+			</if>
+		)
+	</insert>
+
+
+	<!-- insertChatRoomRelTran -->
+	<insert id="insertChatRoomRelTran" parameterType="kr.co.cntt.core.model.chat.Chat">
+		INSERT INTO TB_CHAT_USER_CHATROOM_REL (
+			chat_user_id
+			, chatroom_id
+		) VALUES (
+			<if test="role != null and role == 'ROLE_STORE'">
+				(SELECT chat_user_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+				, #{chatRoomId}
+			</if>
+			<if test="role != null and role == 'ROLE_RIDER'">
+				(SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+				, #{chatRoomId}
+			</if>
+		)
+	</insert>
+
+
+	<!-- updateChatRoomLastMessage -->
+	<update id="updateChatRoomLastMessage" parameterType="kr.co.cntt.core.model.chat.Chat">
+		UPDATE TB_CHATROOM
+		SET modified_datetime = now()
+			, last_message = #{lastMessage}
+		WHERE id = #{chatRoomId}
+	</update>
+
+
+	<!-- insertChat -->
+	<insert id="insertChat" parameterType="kr.co.cntt.core.model.chat.Chat">
+		INSERT INTO TB_CHAT (
+			created_datetime
+			, chat_user_id
+			, chatroom_id
+			, message
+		) VALUES (
+			now()
+		<if test="role != null and role == 'ROLE_STORE'">
+			, (SELECT chat_user_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+			, #{chatRoomId}
+		</if>
+		<if test="role != null and role == 'ROLE_RIDER'">
+			, (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+			, #{chatRoomId}
+		</if>
+			, #{message}
+		)
+	</insert>
+
+
+	<!-- selectChat -->
+	<select id="selectChat" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="kr.co.cntt.core.model.chat.Chat">
+		SELECT
+			created_datetime
+			, chat_user_id
+			, chatroom_id
+			, message
+		FROM
+			TB_CHAT
+		WHERE
+			<if test="role != null and role == 'ROLE_STORE'">
+				chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = #{chatUserId})
+			</if>
+			<if test="role != null and role == 'ROLE_RIDER'">
+				chatroom_id IN (select chatroom_id from TB_CHAT_USER_CHATROOM_REL where chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})))
+			</if>
+	</select>
+
+
+	<!-- selectChatRoom -->
+	<select id="selectChatRoom" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="kr.co.cntt.core.model.chat.Chat">
+		SELECT
+			A.created_datetime
+			, A.modified_datetime
+			, A.id
+			, A.last_message
+		FROM
+			TB_CHATROOM AS A
+		LEFT JOIN TB_CHAT_USER_CHATROOM_REL AS B
+		ON A.id = B.chatroom_id
+		WHERE 1 = 1
+			<if test="role != null and role == 'ROLE_STORE'">
+				AND B.chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = (SELECT chat_user_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})))
+			</if>
+			<if test="role != null and role == 'ROLE_RIDER'">
+				AND B.chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})))
+			</if>
+		GROUP BY B.chatroom_id
+	</select>
+
+</mapper>
+ 

@@ -120,6 +120,9 @@ public enum ErrorCodeEnum {
     E00027,
 	E00028,
 	E00029,
+	E00030,
+	E00031,
+	E00032,
 
 	/* 관리자 */
 	F0001,

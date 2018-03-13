@@ -275,11 +275,11 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
         rider.setType("3");
         adminMapper.insertChatUser(rider);
-        adminMapper.insertChatRoom(rider);
+//        adminMapper.insertChatRoom(rider);
 
         int result = 0;
-        if (rider.getChatUserId() != null && rider.getChatRoomId() != null) {
-            adminMapper.insertChatUserChatRoomRel(rider);
+        if (rider.getChatUserId() != null/* && rider.getChatRoomId() != null*/) {
+//            adminMapper.insertChatUserChatRoomRel(rider);
 
             if (rider.getSubGroupStoreRel() != null) {
                 result = adminMapper.insertRider(rider);
