@@ -1078,5 +1078,15 @@
         )
     </insert>
 
+
+    <!-- updateRejectReason -->
+    <update id="updateRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+        UPDATE TB_REJECT_REASON
+        SET modified_datetime = now()
+            , reason = #{reason}
+        WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+            AND id = #{id}
+    </update>
+
 </mapper>
  

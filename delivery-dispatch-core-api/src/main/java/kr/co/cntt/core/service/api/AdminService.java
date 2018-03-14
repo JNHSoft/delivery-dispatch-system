@@ -284,4 +284,12 @@ public interface AdminService {
      */
     public int postRejectReason(Reason reason);
 
+    /**
+     * 배정 거절 사유 수정
+     *
+     * @param reason
+     * @return
+     */
+    public int putRejectReason(Reason reason);
+
 }

@@ -108,6 +108,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 배정 거절 사유 추가 **/
 	ADMIN_REJECT_REASON_POST("adminService", "postRejectReason", Reason.class),
 
+	/** [Admin] 배정 거절 사유 수정 **/
+    ADMIN_REJECT_REASON_PUT("adminService", "putRejectReason", Reason.class),
+
 	// ############################################################################################ //
 
 	/** Rider 정보조회 */
