@@ -253,6 +253,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         log.info(">>> proc!!!");
         log.info(">>> order.getId() " + ((Order) map.get("order")).getId());
         log.info(">>> order.getStore().getId() " + ((Order) map.get("order")).getStore().getId());
+        log.info(">>> order.getStore().getAdminId() " + ((Order) map.get("order")).getStore().getAdminId());
 
         if (map.get("rider") == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
@@ -271,6 +272,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Notification noti = new Notification();
             noti.setType(Notification.NOTI.ORDER_ASSIGN_AUTO);
             noti.setId(Integer.valueOf(notiOrder.getId()));
+            noti.setStoreName(notiOrder.getStore().getAdminId());
             noti.setStoreName(notiOrder.getStore().getStoreName());
             noti.setAddr(notiOrder.getAddress());
             CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
@@ -280,7 +282,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             int result = orderMapper.updateOrder(order);
 
             if (result != 0) {
-                redisService.setPublisher("order_assigned", "id:"+notiOrder.getId()+", store_id:"+notiOrder.getStoreId());
+                redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+notiOrder.getAdminId() + ", store_id:"+notiOrder.getStoreId());
             }
 
             return result;
@@ -374,7 +376,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         if (postOrder != 0) {
-            redisService.setPublisher("order_new", "id:"+order.getId()+", store_id:"+storeDTO.getId());
+            redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId());
         }
 
         return postOrder;
@@ -588,7 +590,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         if (nRet != 0) {
-            redisService.setPublisher("order_updated", "id:"+order.getId()+", store_id:"+storeDTO.getId());
+            redisService.setPublisher("order_updated", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
         }
 
         return nRet;
@@ -672,7 +674,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         if (ret != 0) {
-            redisService.setPublisher("order_assigned", "id:"+order.getId()+", store_id:"+S_Store.getId());
+            redisService.setPublisher("order_assigned", "id:"+order.getId()+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
         }
 
         return ret;
@@ -728,7 +730,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         Order S_Order = orderMapper.selectOrderInfo(orderPickedUp);
 
         if (result != 0) {
-            redisService.setPublisher("order_picked_up", "id:"+order.getId()+", store_id:"+S_Order.getStoreId());
+            redisService.setPublisher("order_picked_up", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getStoreId());
         }
 
         return result;
@@ -762,7 +764,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         Order S_Order = orderMapper.selectOrderInfo(orderCompleted);
 
         if (result != 0) {
-            redisService.setPublisher("order_completed", "id:"+order.getId()+", store_id:"+S_Order.getStoreId());
+            redisService.setPublisher("order_completed", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getStoreId());
         }
 
         return result;
@@ -848,7 +850,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         if (nRet != 0) {
-            redisService.setPublisher("order_canceled", "id:"+order.getId()+", store_id:"+storeDTO.getId());
+            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
         }
 
         return nRet;
@@ -919,7 +921,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         Order S_Order = orderMapper.selectOrderInfo(orderAssignCanceled);
 
         if (ret != 0) {
-            redisService.setPublisher("order_canceled", "id:"+order.getId()+", store_id:"+S_Order.getId());
+            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId());
         }
 
         return ret;

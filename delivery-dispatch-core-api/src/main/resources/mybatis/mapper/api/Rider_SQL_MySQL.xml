@@ -4,6 +4,7 @@
 	<!-- selectRidersResult -->
 	<resultMap id="selectSubgroupRiderRelsResult" type="kr.co.cntt.core.model.rider.Rider">
 		<result property="id" column="id" />
+		<result property="adminId" column="admin_id" />
 
 		<result property="loginId" column="login_id" />
 		<result property="name" column="name" />

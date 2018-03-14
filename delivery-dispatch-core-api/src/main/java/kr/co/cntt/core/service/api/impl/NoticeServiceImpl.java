@@ -74,7 +74,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         int result = noticeMapper.insertNotice(notice);
 
         if (result != 0) {
-            redisService.setPublisher("notice_updated", "");
+            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
         }
 
         return result;
@@ -101,7 +101,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         }
 
         if (res != 0) {
-            redisService.setPublisher("notice_updated", "");
+            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
         }
 
         return res;
@@ -129,7 +129,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         }
 
         if (res != 0) {
-            redisService.setPublisher("notice_updated", "");
+            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
         }
 
         return res;

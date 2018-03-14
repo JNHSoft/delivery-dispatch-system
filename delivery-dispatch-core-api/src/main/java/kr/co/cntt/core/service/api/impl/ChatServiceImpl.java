@@ -3,7 +3,11 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.ChatMapper;
+import kr.co.cntt.core.mapper.RiderMapper;
+import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.chat.Chat;
+import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.ChatService;
@@ -29,21 +33,54 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
     private ChatMapper chatMapper;
 
     /**
+     * Store DAO
+     */
+    private StoreMapper storeMapper;
+
+    /**
+     * Rider DAO
+     */
+    private RiderMapper riderMapper;
+
+    /**
      * @param chatMapper CHAT D A O
+     * @param storeMapper STORE D A O
+     * @param riderMapper RIDER D A O
 
      */
     @Autowired
-    public ChatServiceImpl(ChatMapper chatMapper) { this.chatMapper = chatMapper; }
+    public ChatServiceImpl(ChatMapper chatMapper, StoreMapper storeMapper, RiderMapper riderMapper) {
+        this.chatMapper = chatMapper;
+        this.storeMapper = storeMapper;
+        this.riderMapper = riderMapper;
+    }
 
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public int postChat(Chat chat) throws AppTrException {
+
+        Store resultStore = new Store();
+        Rider resultRider = new Rider();
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             chat.setRole("ROLE_STORE");
+
+            Store store = new Store();
+            store.setToken(chat.getToken());
+            store.setAccessToken(chat.getToken());
+
+            resultStore = storeMapper.selectStoreInfo(store);
+
         } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             chat.setRole("ROLE_RIDER");
+
+            Rider rider = new Rider();
+            rider.setToken(chat.getToken());
+            rider.setAccessToken(chat.getToken());
+
+            resultRider = riderMapper.getRiderInfo(rider);
         }
 
         Chat resultSelectChatRoomRel = chatMapper.selectChatUserChatRoomRel(chat);
@@ -70,7 +107,11 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
         if (S_Chat == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00030), ErrorCodeEnum.E00030.name());
         } else {
-            redisService.setPublisher("chat_send", "recv_chat_user_id:"+chat.getChatUserId());
+            if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+                redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
+            } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+                redisService.setPublisher("chat_send", "admin_id:" + resultRider.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
+            }
         }
 
         return S_Chat;

@@ -29,6 +29,7 @@
 
 		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="id" column="store_id" />
+			<result property="adminId" column="admin_id" />
 			<result property="storeName" column="store_name" />
 			<result property="latitude" column="store_latitude" />
 			<result property="longitude" column="store_longitude" />
@@ -518,6 +519,7 @@
 		    , B.radius
 		    , B.assignment_limit
 		    , B.store_distance_sort
+		    , B.admin_id
 		    , B.store_name
 		    , A.address
 		FROM TB_ORDER AS A

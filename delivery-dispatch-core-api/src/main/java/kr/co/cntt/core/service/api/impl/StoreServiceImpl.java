@@ -149,7 +149,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         int result = storeMapper.updateStoreInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId());
+            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
         }
 
         return result;
@@ -161,8 +161,10 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     public int putStoreAssignmentStatus(Store store){
         int result = storeMapper.updateStoreAssignmentStatus(store);
 
+        Store C_Store = storeMapper.selectStoreInfo(store);
+
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId());
+            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
         }
 
         return result;
@@ -177,8 +179,10 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
         int result = storeMapper.updateStoreThirdParty(store);
 
+        Store C_Store = storeMapper.selectStoreInfo(store);
+
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId());
+            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
         }
 
         return result;
@@ -200,8 +204,10 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
         int result = storeMapper.updateStoreAlarm(store);
 
+        Store C_Store = storeMapper.selectStoreInfo(store);
+
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId());
+            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
         }
 
         return result;

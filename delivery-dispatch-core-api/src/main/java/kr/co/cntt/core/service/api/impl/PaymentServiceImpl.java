@@ -71,7 +71,7 @@ public class PaymentServiceImpl  extends ServiceSupport implements PaymentServic
         List<Payment> S_Payment = paymentMapper.selectPaymentInfo(payment);
 
         if (postPayment != 0) {
-            redisService.setPublisher("order_updated", "order_id:"+S_Payment.get(0).getOrderId()+", store_id:"+S_Payment.get(0).getStoreId());
+            redisService.setPublisher("order_updated", "order_id:"+S_Payment.get(0).getOrderId()+", admin_id:"+S_Payment.get(0).getAdminId()+", store_id:"+S_Payment.get(0).getStoreId());
         }
 
         return postPayment;
@@ -86,7 +86,7 @@ public class PaymentServiceImpl  extends ServiceSupport implements PaymentServic
         List<Payment> S_Payment = paymentMapper.selectPaymentInfo(payment);
 
         if (updatePayment != 0) {
-            redisService.setPublisher("order_updated", "order_id:"+S_Payment.get(0).getOrderId()+", store_id:"+S_Payment.get(0).getStoreId());
+            redisService.setPublisher("order_updated", "order_id:"+S_Payment.get(0).getOrderId()+", admin_id:"+S_Payment.get(0).getAdminId()+", store_id:"+S_Payment.get(0).getStoreId());
         }
 
         return updatePayment;
