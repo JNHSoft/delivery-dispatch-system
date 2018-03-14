@@ -249,6 +249,7 @@
 		)
 	</insert>
 
+
 	<!-- updateGroup -->
 	<update id="updateGroup" parameterType="kr.co.cntt.core.model.group.Group">
 		UPDATE TB_GROUP
@@ -1064,9 +1065,18 @@
 	</select>
 
 
-
-
-
+    <!-- insertGroup -->
+    <insert id="insertRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+        INSERT INTO TB_REJECT_REASON (
+            created_datetime
+            , reason
+            , admin_id
+        ) VALUES (
+            now()
+            , #{reason}
+            , (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+        )
+    </insert>
 
 </mapper>
  

@@ -12,6 +12,7 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.payment.Payment;
+import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -103,6 +104,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** [Admin] 통계 조회**/
 	ADMIN_STATISTICS_INFO("adminService", "getAdminStatisticsInfo", Order.class),
+
+	/** [Admin] 배정 거절 사유 추가 **/
+	ADMIN_REJECT_REASON_POST("adminService", "postRejectReason", Reason.class),
 
 	// ############################################################################################ //
 

@@ -103,6 +103,8 @@ public interface Api {
     /** [Admin] 통계 조회**/
     String ADMIN_STATISTICS_INFO = "/getAdminStatisticsInfo.json";
 
+    /** [Admin] 배정 거절 사유 추가 */
+    String ADMIN_REJECT_REASON_POST = "/postRejectReason.json";
 
     // ############################################################################################ //
 
@@ -135,7 +137,6 @@ public interface Api {
 
     /** Rider 재배치**/
     String RIDER_RETURN_TIME_PUT = "/putRiderReturnTime.json";
-
 
     /** 배정 거절 사유 목록 조회 **/
     String REJECT_REASON_LIST = "getRejectReasonList.json";

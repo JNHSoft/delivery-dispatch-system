@@ -12,6 +12,7 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -553,5 +554,18 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         return A_Order;
     }
 
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int postRejectReason(Reason reason) {
+        int result = adminMapper.insertRejectReason(reason);
+
+        List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
+
+        if (result != 0) {
+            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+        }
+
+        return result;
+    }
 
 }

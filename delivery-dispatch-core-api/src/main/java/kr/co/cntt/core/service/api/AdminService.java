@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -274,4 +275,13 @@ public interface AdminService {
      * @throws AppTrException
      */
     public Order getAdminStatisticsInfo(Order order) throws AppTrException;
+
+    /**
+     * 배정 거절 사유 추가
+     *
+     * @param reason
+     * @return
+     */
+    public int postRejectReason(Reason reason);
+
 }
