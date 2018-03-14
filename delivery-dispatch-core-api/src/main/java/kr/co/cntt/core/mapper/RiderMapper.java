@@ -42,6 +42,13 @@ public interface RiderMapper {
      */
     public int insertRiderSession(Rider rider);
 
+    /**
+     * <p> Rider 토큰 만료일, last_access, working update
+     *
+     * @param token
+     * @return
+     */
+    public int updateRiderSession(String token);
 
     /**
      * <p> Rider 정보 조회

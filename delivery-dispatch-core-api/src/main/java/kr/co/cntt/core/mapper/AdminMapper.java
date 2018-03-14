@@ -54,6 +54,14 @@ public interface AdminMapper {
     public int insertAdminSession(Admin admin);
 
     /**
+     * <p> Admin 토큰 만료일, last_access update
+     *
+     * @param token
+     * @return
+     */
+    public int updateAdminSession(String token);
+
+    /**
      * <p> Admin 정보 조회
      *
      * @param common

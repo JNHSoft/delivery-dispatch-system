@@ -60,6 +60,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return riderMapper.insertRiderSession(rider);
     }
 
+    @Override
+    public int updateRiderSession(String token) {
+        return riderMapper.updateRiderSession(token);
+    }
+
     // rider 정보 조회
     @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override

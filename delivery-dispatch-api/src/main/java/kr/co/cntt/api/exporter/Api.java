@@ -8,6 +8,9 @@ public interface Api {
     /** 토큰발행 */
     String GET_TOKEN = "/getToken.do";
 
+    /** 토큰만료 */
+    String PUT_TOKEN = "/putToken.do";
+
     /** APP Version Check */
     String VERSION_CHECK = "/versionCheck.do";
 

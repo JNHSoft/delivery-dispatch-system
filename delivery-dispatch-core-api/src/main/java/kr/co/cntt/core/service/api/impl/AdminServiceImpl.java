@@ -83,6 +83,11 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         return adminMapper.insertAdminSession(admin);
     }
 
+    @Override
+    public int updateAdminSession(String token) {
+        return adminMapper.updateAdminSession(token);
+    }
+
     @Secured("ROLE_ADMIN")
     @Override
     public List<Admin> getAdminInfo(Common common) throws AppTrException {

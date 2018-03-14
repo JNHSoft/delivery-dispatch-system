@@ -184,6 +184,17 @@
 	</insert>
 
 
+	<!-- updateAdminSession -->
+	<update id="updateAdminSession" parameterType="String">
+		UPDATE TB_ADMIN AS A
+		LEFT JOIN TB_ADMIN_SESSION AS B
+		ON A.id = B.store_id
+		SET A.last_access = now()
+			, B.expiry_datetime = now()
+		WHERE B.access_token = #{token}
+	</update>
+
+
 	<!-- selectAdminInfo -->
 	<select id="selectAdminInfo" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.admin.Admin">
 		SELECT

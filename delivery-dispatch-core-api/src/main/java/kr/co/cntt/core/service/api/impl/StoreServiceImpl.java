@@ -72,6 +72,11 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         return storeMapper.insertStoreSession(store);
     }
 
+    @Override
+    public int updateStoreSession(String token) {
+        return storeMapper.updateStoreSession(token);
+    }
+
     // store 정보 조회
     @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override

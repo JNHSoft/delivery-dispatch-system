@@ -48,6 +48,13 @@ public interface StoreMapper {
      */
     public int insertStoreSession(Store store);
 
+    /**
+     * store 토큰 만료일, last_access update
+     *
+     * @param token
+     * @return
+     */
+    public int updateStoreSession(String token);
 
     /**
      * store 정보 조회

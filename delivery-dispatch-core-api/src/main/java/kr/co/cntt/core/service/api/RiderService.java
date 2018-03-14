@@ -34,6 +34,14 @@ public interface RiderService {
     public int insertRiderSession(Rider rider);
 
     /**
+     * <p> updateRiderSession
+     *
+     * @param token
+     * @return
+     */
+    public int updateRiderSession(String token);
+
+    /**
      * <p> selectRiderInfo
      *
      * @return

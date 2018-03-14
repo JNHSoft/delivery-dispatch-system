@@ -39,6 +39,14 @@ public interface AdminService {
     public int insertAdminSession(Admin admin);
 
     /**
+     * <p> updateAdminSession
+     *
+     * @param token
+     * @return
+     */
+    public int updateAdminSession(String token);
+
+    /**
      * <p> getAdminInfo
      *
      * @param common

@@ -93,6 +93,19 @@
 		]]>
 	</insert>
 
+
+	<!-- updateRiderSession -->
+	<update id="updateRiderSession" parameterType="String">
+		UPDATE TB_RIDER AS A
+		LEFT JOIN TB_RIDER_SESSION AS B
+		ON A.id = B.rider_id
+		SET A.working = 0
+			, A.last_access = now()
+			, B.expiry_datetime = now()
+		WHERE B.access_token = #{token}
+	</update>
+
+
 	<!--rider 정보 조회 -->
 	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultMap="selectSubgroupRiderRelsResult">
 	  SELECT

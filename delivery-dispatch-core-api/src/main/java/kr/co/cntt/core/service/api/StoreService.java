@@ -44,12 +44,20 @@ public interface StoreService {
      */
     public int insertStoreSession(Store store);
 
-  /**
-   * store 정보 조회
-   * @author Nick
-   * @since  2018-01-26
-   *
-   */
+    /**
+     * <p> updateStoreSession
+     *
+     * @param token
+     * @return
+     */
+    public int updateStoreSession(String token);
+
+    /**
+     * store 정보 조회
+     * @author Nick
+     * @since  2018-01-26
+     *
+     */
     public Store getStoreInfo(Store store) throws AppTrException;
 
     /**
