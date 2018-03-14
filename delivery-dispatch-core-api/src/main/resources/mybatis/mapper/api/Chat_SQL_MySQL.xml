@@ -125,6 +125,7 @@
 			, A.modified_datetime
 			, A.id
 			, A.last_message
+			, B.chat_user_id
 		FROM
 			TB_CHATROOM AS A
 		LEFT JOIN TB_CHAT_USER_CHATROOM_REL AS B
@@ -132,9 +133,11 @@
 		WHERE 1 = 1
 			<if test="role != null and role == 'ROLE_STORE'">
 				AND B.chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = (SELECT chat_user_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})))
+				AND B.chat_user_id != (SELECT chat_user_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			</if>
 			<if test="role != null and role == 'ROLE_RIDER'">
 				AND B.chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})))
+				AND B.chat_user_id != (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 			</if>
 		GROUP BY B.chatroom_id
 	</select>
