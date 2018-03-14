@@ -300,4 +300,28 @@ public interface AdminService {
      */
     public int deleteRejectReason(Reason reason);
 
+    /**
+     * order 우선 배정 사유 추가
+     *
+     * @param reason
+     * @return
+     */
+    public int postOrderFirstAssignmentReason(Reason reason);
+
+    /**
+     * order 우선 배정 사유 수정
+     *
+     * @param reason
+     * @return
+     */
+    public int putOrderFirstAssignmentReason(Reason reason);
+
+    /**
+     * order 우선 배정 사유 삭제
+     *
+     * @param reason
+     * @return
+     */
+    public int deleteOrderFirstAssignmentReason(Reason reason);
+
 }

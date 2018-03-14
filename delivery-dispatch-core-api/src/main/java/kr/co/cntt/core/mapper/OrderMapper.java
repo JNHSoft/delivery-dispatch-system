@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.order.OrderCheckAssignment;
+import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 
 import java.util.List;
@@ -121,6 +122,14 @@ public interface OrderMapper {
      */
     public Order selectOrderLocation(String id);
 
+    /**
+     * <p> 우선 배정 사유 목록 조회
+     *
+     * @param common
+     * @return
+     */
+    public List<Reason> selectOrderFirstAssignmentReason(Common common);
 
     public List<String> selectPushToken(SubGroup subGroup);
+
 }

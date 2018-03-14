@@ -7,8 +7,8 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.redis.service.RedisService;
+import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -326,7 +326,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
     }
 
-
     @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
     public List<Reason> getRejectReasonList(Common common) throws AppTrException {
@@ -344,4 +343,5 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         return reasonList;
     }
+
 }

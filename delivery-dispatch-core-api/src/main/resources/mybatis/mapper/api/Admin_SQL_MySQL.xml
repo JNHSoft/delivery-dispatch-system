@@ -1065,7 +1065,7 @@
 	</select>
 
 
-    <!-- insertGroup -->
+    <!-- insertRejectReason -->
     <insert id="insertRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
         INSERT INTO TB_REJECT_REASON (
             created_datetime
@@ -1092,6 +1092,39 @@
     <!-- deleteRejectReason -->
     <update id="deleteRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
         UPDATE TB_REJECT_REASON
+        SET deleted = now()
+        WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+            AND id = #{id}
+    </update>
+
+
+    <!-- insertOrderFirstAssignmentReason -->
+    <insert id="insertOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+        INSERT INTO TB_ORDER_FIRST_ASSIGNMENT_REASON (
+            created_datetime
+            , reason
+            , admin_id
+        ) VALUES (
+            now()
+            , #{reason}
+            , (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+        )
+    </insert>
+
+
+    <!-- updateOrderFirstAssignmentReason -->
+    <update id="updateOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+        UPDATE TB_ORDER_FIRST_ASSIGNMENT_REASON
+        SET modified_datetime = now()
+            , reason = #{reason}
+        WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+            AND id = #{id}
+    </update>
+
+
+    <!-- deleteOrderFirstAssignmentReason -->
+    <update id="deleteOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+        UPDATE TB_ORDER_FIRST_ASSIGNMENT_REASON
         SET deleted = now()
         WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
             AND id = #{id}

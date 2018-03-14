@@ -114,6 +114,15 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 배정 거절 사유 삭제 **/
 	ADMIN_REJECT_REASON_DELETE("adminService", "deleteRejectReason", Reason.class),
 
+	/** [Admin] order 우선 배정 사유 추가 **/
+	ORDER_FIRST_ASSIGNMENT_REASON_POST("adminService", "postOrderFirstAssignmentReason", Reason.class),
+
+	/** [Admin] order 우선 배정 사유 수정 **/
+	ORDER_FIRST_ASSIGNMENT_REASON_PUT("adminService", "putOrderFirstAssignmentReason", Reason.class),
+
+	/** [Admin] order 우선 배정 사유 삭제 **/
+	ORDER_FIRST_ASSIGNMENT_REASON_DELETE("adminService", "deleteOrderFirstAssignmentReason", Reason.class),
+
 	// ############################################################################################ //
 
 	/** Rider 정보조회 */
@@ -137,16 +146,16 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 들 위치 조회 */
 	RIDERS_LOCATION_INFO("riderService", "getRidersLocation", Rider.class),
 
-
 	/** 해당 그룹 소속 기사 목록 조회 */
 	SUBGROUP_RIDER_REL_LIST("riderService", "getSubgroupRiderRels", Common.class),
 
-	/** Rider 배정 모드 조회**/
+	/** Rider 배정 모드 조회*/
 	RIDER_ASSIGNMENT_STATUS_GET("riderService", "getRiderAssignmentStatus", Rider.class),
 
-	/** Rider 재배치 **/
+	/** Rider 재배치 */
 	RIDER_RETURN_TIME_PUT("riderService","putRiderReturnTime", Rider.class),
 
+	/** Rider 배정 거절 사유 목록 조회 */
 	REJECT_REASON_LIST("riderService", "getRejectReasonList", Common.class),
 
 	// ############################################################################################ //
@@ -215,6 +224,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** Order 우선배정 */
 	ORDER_ASSIGNED_FIRST("orderService", "putOrderAssignedFirst", Order.class),
+
+	/** Order 우선 배정 사유 목록 조회 */
+	ORDER_FIRST_ASSIGNMENT_REASON_GET("orderService", "getOrderFirstAssignmentReason", Common.class),
 
 	// ############################################################################################ //
 
