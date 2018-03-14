@@ -6,4 +6,4 @@
 /delivery-dispatch-core-admin/out
 /delivery-dispatch-core-api/out
 /delivery-dispatch-mvc/out
-
+*.log
