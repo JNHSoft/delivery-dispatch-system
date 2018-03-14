@@ -344,4 +344,12 @@ public interface AdminMapper {
      */
     public int updateRejectReason(Reason reason);
 
+    /**
+     * <p> 배정 거절 사유 삭제
+     *
+     * @param reason
+     * @return
+     */
+    public int deleteRejectReason(Reason reason);
+
 }

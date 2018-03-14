@@ -582,4 +582,18 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         return result;
     }
 
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteRejectReason(Reason reason) {
+        int result = adminMapper.deleteRejectReason(reason);
+
+        List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
+
+        if (result != 0) {
+            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+        }
+
+        return result;
+    }
+
 }

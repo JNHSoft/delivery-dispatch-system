@@ -109,6 +109,9 @@ public interface Api {
     /** [Admin] 배정 거절 사유 수정 */
     String ADMIN_REJECT_REASON_PUT = "/putRejectReason.json";
 
+    /** [Admin] 배정 거절 사유 삭제 */
+    String ADMIN_REJECT_REASON_DELETE = "/deleteRejectReason.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */

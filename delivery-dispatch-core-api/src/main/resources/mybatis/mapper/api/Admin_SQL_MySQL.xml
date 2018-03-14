@@ -1088,5 +1088,14 @@
             AND id = #{id}
     </update>
 
+
+    <!-- deleteRejectReason -->
+    <update id="deleteRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+        UPDATE TB_REJECT_REASON
+        SET deleted = now()
+        WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+            AND id = #{id}
+    </update>
+
 </mapper>
  
