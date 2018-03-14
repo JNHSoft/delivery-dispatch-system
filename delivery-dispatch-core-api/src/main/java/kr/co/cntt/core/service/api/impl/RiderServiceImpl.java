@@ -327,9 +327,21 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
 
+    @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
     public List<Reason> getRejectReasonList(Common common) throws AppTrException {
-        List<Reason> reasonList = riderMapper.selectRejectReason();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            common.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            common.setRole("ROLE_RIDER");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+            common.setRole("ROLE_ADMIN");
+        }
+
+        List<Reason> reasonList = riderMapper.selectRejectReason(common);
+
         return reasonList;
     }
 }

@@ -573,9 +573,27 @@
 		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null
 	</select>
 
-	<select id="selectRejectReason" resultType="kr.co.cntt.core.model.reason.Reason">
-		SELECT id, reason from TB_REJECT_REASON where deleted is null
-	</select>
+	<select id="selectRejectReason" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.reason.Reason">
+		SELECT id
+		    , reason
+		    , admin_id
+		FROM TB_REJECT_REASON
+		WHERE deleted IS NULL
+            <choose>
+                <when test="role != null and role == 'ROLE_STORE'">
+                    AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+                </when>
+                <when test="role != null and role == 'ROLE_RIDER'">
+                    AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                </when>
+                <when test="role != null and role == 'ROLE_ADMIN'">
+                    AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                </when>
+                <otherwise>
+                    AND id IS NULL
+                </otherwise>
+            </choose>
+    </select>
 
 </mapper>
  

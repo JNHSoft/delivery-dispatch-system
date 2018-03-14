@@ -167,5 +167,5 @@ public interface RiderMapper {
 
     public List<String> selectRiderTokenByOrderId(Order order);
 
-    public List<Reason> selectRejectReason();
+    public List<Reason> selectRejectReason(Common common);
 }
