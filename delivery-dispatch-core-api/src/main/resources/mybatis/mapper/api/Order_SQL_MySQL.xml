@@ -177,7 +177,8 @@
 		WHERE
 			<choose>
 				<when test="currentDatetime != null and currentDatetime != ''">
-					A.created_datetime > date_sub(#{currentDatetime}, interval #{days} - 1 day)
+					date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > A.created_datetime
+					AND A.created_datetime > #{currentDatetime}
 				</when>
 				<otherwise>
 					A.created_datetime > CURRENT_DATE()
