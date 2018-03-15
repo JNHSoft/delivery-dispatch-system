@@ -672,18 +672,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         int ret = this.putOrder(orderAssigned);
 
-        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
-            if(tokens.size() > 0){
-                Notification noti = new Notification();
-                noti.setType(Notification.NOTI.ORDER_ASSIGN);
-                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                checkFcmResponse(pushNotification);
-            }
-        }
-
         if (ret != 0) {
             redisService.setPublisher("order_assigned", "id:"+order.getId()+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
+
+            if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_ASSIGN);
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
+            }
         }
 
         return ret;
@@ -774,6 +774,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (result != 0) {
             redisService.setPublisher("order_completed", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getStoreId());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(S_Order);
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_COMPLET);
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
+            }
         }
 
         return result;
