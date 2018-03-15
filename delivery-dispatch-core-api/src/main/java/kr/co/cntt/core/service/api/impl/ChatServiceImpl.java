@@ -2,10 +2,13 @@ package kr.co.cntt.core.service.api.impl;
 
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
+import kr.co.cntt.core.fcm.FirebaseResponse;
 import kr.co.cntt.core.mapper.ChatMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.chat.Chat;
+import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -18,11 +21,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service("chatService")
 public class ChatServiceImpl extends ServiceSupport implements ChatService {
+    @Autowired
+    AndroidPushNotificationsService androidPushNotificationsService;
 
     @Autowired
     private RedisService redisService;
@@ -114,6 +122,18 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
             }
         }
 
+        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByChatUserId(chat);
+
+            Notification noti = new Notification();
+            noti.setType(Notification.NOTI.CHAT_SEND);
+            noti.setTitle(resultStore.getStoreName());
+            noti.setMessage(chat.getMessage());
+            noti.setChat_user_id(resultStore.getChatUserId());
+            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+            checkFcmResponse(pushNotification);
+        }
+
         return S_Chat;
     }
 
@@ -157,6 +177,24 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
         }
 
         return S_Chatroom;
+    }
+
+    private void checkFcmResponse(CompletableFuture<FirebaseResponse> pushNotification){
+        if(pushNotification != null){
+            CompletableFuture.allOf(pushNotification).join();
+            try {
+                FirebaseResponse firebaseResponse = pushNotification.get();
+                if (firebaseResponse.getSuccess() == 1) {
+                    log.info("push notification sent ok!");
+                } else {
+                    log.error("error sending push notifications: " + firebaseResponse.toString());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

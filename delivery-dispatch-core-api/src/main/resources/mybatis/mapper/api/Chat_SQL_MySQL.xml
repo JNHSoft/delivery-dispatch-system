@@ -22,8 +22,10 @@
 	<!-- insertChatRoom -->
 	<insert id="insertChatRoom" parameterType="kr.co.cntt.core.model.chat.Chat">
 		INSERT INTO TB_CHATROOM (
-			created_datetime
+			created_datetime,
+			modified_datetime
 		) VALUES (
+			now(),
 			now()
 		)
 		<selectKey keyProperty="chatRoomId" resultType="String">

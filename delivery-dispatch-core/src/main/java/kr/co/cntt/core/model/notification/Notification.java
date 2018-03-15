@@ -5,6 +5,9 @@ public class Notification {
     private int id;
     private String addr;
     private String storeName;
+    private String title;
+    private String message;
+    private String chat_user_id;
 
     public String getType() {
         return type;
@@ -36,6 +39,30 @@ public class Notification {
 
     public void setStoreName(String storeName) {
         this.storeName = storeName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getChat_user_id() {
+        return chat_user_id;
+    }
+
+    public void setChat_user_id(String chat_user_id) {
+        this.chat_user_id = chat_user_id;
     }
 
     public interface NOTI{
