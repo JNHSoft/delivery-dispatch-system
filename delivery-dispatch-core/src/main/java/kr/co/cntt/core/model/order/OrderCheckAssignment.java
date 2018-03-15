@@ -1,5 +1,6 @@
 package kr.co.cntt.core.model.order;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.common.Common;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderCheckAssignment extends Common implements Dto {
 
     private static final long serialVersionUID = 3196247714328684624L;
