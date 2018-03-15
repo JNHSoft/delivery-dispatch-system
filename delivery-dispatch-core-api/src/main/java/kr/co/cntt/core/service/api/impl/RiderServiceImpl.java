@@ -103,7 +103,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         List<Rider> S_Rider = riderMapper.getStoreRiders(user);
 
         if (S_Rider.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00037), ErrorCodeEnum.E00037.name());
         }
 
         return S_Rider;
@@ -217,7 +217,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         Rider S_Rider = riderMapper.getRiderLocation(rider);
 
         if (S_Rider == null) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00008), ErrorCodeEnum.E00008.name());
         }
         return S_Rider;
     }
@@ -258,7 +258,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         List<Rider> S_Rider = riderMapper.selectSubgroupRiderRels(common);
 
         if (S_Rider.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00006), ErrorCodeEnum.E00006.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00038), ErrorCodeEnum.E00038.name());
         }
 
         return S_Rider;

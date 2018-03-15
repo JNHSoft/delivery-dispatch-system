@@ -5,9 +5,9 @@ import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.PaymentMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.payment.Payment;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.PaymentService;
-import kr.co.cntt.core.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -54,7 +54,7 @@ public class PaymentServiceImpl  extends ServiceSupport implements PaymentServic
         List<Payment> P_Payment = paymentMapper.selectPaymentInfo(common);
 
         if (P_Payment.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00036), ErrorCodeEnum.E00036.name());
         }
 
 

@@ -16,9 +16,9 @@ import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.AdminService;
-import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
@@ -519,7 +519,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Order> A_Statistics = adminMapper.selectAdminStatistics(order);
 
         if (A_Statistics.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00033), ErrorCodeEnum.E00033.name());
         }
 
         return A_Statistics;
@@ -534,7 +534,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         Order A_Order = adminMapper.selectAdminStatisticsInfo(order);
 
         if (A_Order == null) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00034), ErrorCodeEnum.E00034.name());
         }
 
 

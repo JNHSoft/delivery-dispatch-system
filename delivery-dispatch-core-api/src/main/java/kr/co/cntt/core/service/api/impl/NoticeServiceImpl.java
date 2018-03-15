@@ -7,9 +7,9 @@ import kr.co.cntt.core.fcm.FirebaseResponse;
 import kr.co.cntt.core.mapper.NoticeMapper;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.notification.Notification;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.NoticeService;
-import kr.co.cntt.core.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +113,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         int res = noticeMapper.updateNotice(notice);
 
         if (res == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00035), ErrorCodeEnum.E00035.name());
         }
 
         if (res != 0) {
@@ -141,7 +141,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         int res = noticeMapper.deleteNotice(notice);
 
         if (res == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00035), ErrorCodeEnum.E00035.name());
         }
 
         if (res != 0) {

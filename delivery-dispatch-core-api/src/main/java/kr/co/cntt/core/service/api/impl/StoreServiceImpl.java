@@ -8,8 +8,8 @@ import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
-import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.redis.service.RedisService;
+import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.StoreService;
 import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
@@ -232,7 +232,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         List<Order> S_Statistics = storeMapper.selectStoreStatistics(order);
 
         if (S_Statistics.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00033), ErrorCodeEnum.E00033.name());
         }
 
         return S_Statistics;
@@ -247,7 +247,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         Order S_Order = storeMapper.selectStoreStatisticsInfo(order);
 
         if (S_Order == null) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00034), ErrorCodeEnum.E00034.name());
         }
 
 
