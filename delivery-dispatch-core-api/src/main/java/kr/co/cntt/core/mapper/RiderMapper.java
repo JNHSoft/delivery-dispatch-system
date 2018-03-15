@@ -1,6 +1,7 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.login.User;
@@ -168,4 +169,6 @@ public interface RiderMapper {
     public List<String> selectRiderTokenByOrderId(Order order);
 
     public List<Reason> selectRejectReason(Common common);
+
+    public List<String> selectRiderTokenByChatUserId(Chat chat);
 }

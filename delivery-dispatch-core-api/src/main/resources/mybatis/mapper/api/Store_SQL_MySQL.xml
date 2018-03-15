@@ -8,6 +8,7 @@
         <result property="id" column="id" />
         <result property="loginId" column="login_id" />
         <result property="adminId" column="admin_id" />
+        <result property="chatUserId" column="chat_user_id" />
         <result property="code" column="code" />
         <result property="phone" column="phone" />
         <result property="storeName" column="store_name" />

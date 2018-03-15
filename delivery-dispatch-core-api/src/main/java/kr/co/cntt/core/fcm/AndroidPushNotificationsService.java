@@ -89,9 +89,9 @@ public class AndroidPushNotificationsService {
 
             body.put("priority", "high");
 
-            JSONObject notification = new JSONObject();
+            /*JSONObject notification = new JSONObject();
             notification.put("body", "body string here");
-            notification.put("title", "title string here");
+            notification.put("title", "title string here");*/
             // notification.put("icon", "myicon");
 
             Gson gson = new GsonBuilder().serializeNulls().create();
