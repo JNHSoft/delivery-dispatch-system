@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.api;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.reason.Reason;
 
 import java.util.List;
 
@@ -121,5 +122,14 @@ public interface OrderService {
      * @throws AppTrException
      */
     public int putOrderAssignedFirst(Order order) throws AppTrException;
+
+    /**
+     * <p> getOrderFirstAssignmentReason
+     *
+     * @param common
+     * @return
+     * @throws AppTrException
+     */
+    public List<Reason> getOrderFirstAssignmentReason(Common common) throws AppTrException;
 
 }

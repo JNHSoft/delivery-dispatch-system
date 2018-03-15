@@ -6,7 +6,6 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
 import java.util.Map;
@@ -126,5 +125,13 @@ public interface RiderService {
      */
     public void autoRiderWorking() throws AppTrException;
 
+    /**
+     * <p> getRejectReasonList
+     *
+     * @param common
+     * @return
+     * @throws AppTrException
+     */
     public List<Reason> getRejectReasonList(Common common) throws AppTrException;
+
 }

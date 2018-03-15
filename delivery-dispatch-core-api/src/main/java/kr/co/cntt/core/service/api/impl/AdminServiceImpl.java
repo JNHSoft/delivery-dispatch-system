@@ -596,4 +596,46 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         return result;
     }
 
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int postOrderFirstAssignmentReason(Reason reason) {
+        int result = adminMapper.insertOrderFirstAssignmentReason(reason);
+
+        List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
+
+        if (result != 0) {
+            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+        }
+
+        return result;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putOrderFirstAssignmentReason(Reason reason) {
+        int result = adminMapper.updateOrderFirstAssignmentReason(reason);
+
+        List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
+
+        if (result != 0) {
+            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+        }
+
+        return result;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int deleteOrderFirstAssignmentReason(Reason reason) {
+        int result = adminMapper.deleteOrderFirstAssignmentReason(reason);
+
+        List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
+
+        if (result != 0) {
+            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+        }
+
+        return result;
+    }
+
 }

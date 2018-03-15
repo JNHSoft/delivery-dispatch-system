@@ -352,4 +352,28 @@ public interface AdminMapper {
      */
     public int deleteRejectReason(Reason reason);
 
+    /**
+     * <p> order 우선 배정 사유 추가
+     *
+     * @param reason
+     * @return
+     */
+    public int insertOrderFirstAssignmentReason(Reason reason);
+
+    /**
+     * <p> order 우선 배정 사유 수정
+     *
+     * @param reason
+     * @return
+     */
+    public int updateOrderFirstAssignmentReason(Reason reason);
+
+    /**
+     * <p> order 우선 배정 사유 삭제
+     *
+     * @param reason
+     * @return
+     */
+    public int deleteOrderFirstAssignmentReason(Reason reason);
+
 }

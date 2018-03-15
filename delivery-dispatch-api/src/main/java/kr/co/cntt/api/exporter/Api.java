@@ -112,6 +112,15 @@ public interface Api {
     /** [Admin] 배정 거절 사유 삭제 */
     String ADMIN_REJECT_REASON_DELETE = "/deleteRejectReason.json";
 
+    /** [Admin] order 우선 배정 사유 추가 */
+    String ORDER_FIRST_ASSIGNMENT_REASON_POST = "/postOrderFirstAssignmentReason.json";
+
+    /** [Admin] order 우선 배정 사유 수정 */
+    String ORDER_FIRST_ASSIGNMENT_REASON_PUT = "/putOrderFirstAssignmentReason.json";
+
+    /** [Admin] order 우선 배정 사유 삭제 */
+    String ORDER_FIRST_ASSIGNMENT_REASON_DELETE = "/deleteOrderFirstAssignmentReason.json";
+
     // ############################################################################################ //
 
     /** Rider 정보 조회 */
@@ -212,7 +221,10 @@ public interface Api {
     String ORDER_DENY_ASSIGNMENT = "/postOrderDeny.json";
 
     /** Order 우선배정 */
-    String ORDER_ASSIGNED_FIRST = "putOrderAssignedFirst.json";
+    String ORDER_ASSIGNED_FIRST = "/putOrderAssignedFirst.json";
+
+    /** 우선 배정 사유 목록 조회 **/
+    String ORDER_FIRST_ASSIGNMENT_REASON_GET = "/getOrderFirstAssignmentReason.json";
 
     // ############################################################################################ //
 

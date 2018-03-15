@@ -536,6 +536,7 @@
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC
 	</select>
 
+
 	<select id="selectOrderLocation" parameterType="String" resultType="kr.co.cntt.core.model.order.Order">
 		SELECT
 		id
@@ -544,6 +545,31 @@
 		FROM TB_ORDER
 		WHERE id = #{id}
 	</select>
+
+
+	<!-- selectOrderFirstAssignmentReason -->
+	<select id="selectOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.reason.Reason">
+		SELECT id
+		, reason
+		, admin_id
+		FROM TB_ORDER_FIRST_ASSIGNMENT_REASON
+		WHERE deleted IS NULL
+		<choose>
+			<when test="role != null and role == 'ROLE_STORE'">
+				AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+			</when>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+			</when>
+			<when test="role != null and role == 'ROLE_ADMIN'">
+				AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			</when>
+			<otherwise>
+				AND id IS NULL
+			</otherwise>
+		</choose>
+	</select>
+
 
 	<select id="selectPushToken" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">
 		select TBRS.push_token
