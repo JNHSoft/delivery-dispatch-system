@@ -1,7 +1,10 @@
 package kr.co.cntt.core.service;
 
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import kr.co.cntt.core.fcm.FirebaseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -54,5 +57,23 @@ public class ServiceSupport extends LocaleContextHolder implements MessageSource
     @Override
     public void setMessageSource(MessageSource messageSource) {
         messageService = messageSource;
+    }
+
+    protected void checkFcmResponse(CompletableFuture<FirebaseResponse> pushNotification){
+        if(pushNotification != null){
+            CompletableFuture.allOf(pushNotification).join();
+            try {
+                FirebaseResponse firebaseResponse = pushNotification.get();
+                if (firebaseResponse.getSuccess() == 1) {
+                    logger.info("push notification sent ok!");
+                } else {
+                    logger.error("error sending push notifications: " + firebaseResponse.toString());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

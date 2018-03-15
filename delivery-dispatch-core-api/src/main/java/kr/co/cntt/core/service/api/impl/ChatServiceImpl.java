@@ -125,13 +125,15 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
         if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByChatUserId(chat);
 
-            Notification noti = new Notification();
-            noti.setType(Notification.NOTI.CHAT_SEND);
-            noti.setTitle(resultStore.getStoreName());
-            noti.setMessage(chat.getMessage());
-            noti.setChat_user_id(resultStore.getChatUserId());
-            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-            checkFcmResponse(pushNotification);
+            if(tokens.size() > 0){
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.CHAT_SEND);
+                noti.setTitle(resultStore.getStoreName());
+                noti.setMessage(chat.getMessage());
+                noti.setChat_user_id(resultStore.getChatUserId());
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                checkFcmResponse(pushNotification);
+            }
         }
 
         return S_Chat;
@@ -179,22 +181,5 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
         return S_Chatroom;
     }
 
-    private void checkFcmResponse(CompletableFuture<FirebaseResponse> pushNotification){
-        if(pushNotification != null){
-            CompletableFuture.allOf(pushNotification).join();
-            try {
-                FirebaseResponse firebaseResponse = pushNotification.get();
-                if (firebaseResponse.getSuccess() == 1) {
-                    log.info("push notification sent ok!");
-                } else {
-                    log.error("error sending push notifications: " + firebaseResponse.toString());
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 }

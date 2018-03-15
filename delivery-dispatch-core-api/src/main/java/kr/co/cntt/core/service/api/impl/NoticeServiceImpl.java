@@ -2,8 +2,11 @@ package kr.co.cntt.core.service.api.impl;
 
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
+import kr.co.cntt.core.fcm.FirebaseResponse;
 import kr.co.cntt.core.mapper.NoticeMapper;
 import kr.co.cntt.core.model.notice.Notice;
+import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.NoticeService;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -21,11 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service("noticeService")
 public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
-
+    @Autowired
+    AndroidPushNotificationsService androidPushNotificationsService;
     /**
      * RedisService
      */
@@ -75,6 +80,17 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
 
         if (result != 0) {
             redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
+
+            ArrayList<String> tokens = (ArrayList)noticeMapper.selectAllToken();
+
+            if(tokens.size() > 0){
+                Notification push = new Notification();
+                push.setType(Notification.NOTI.NOTICE_MASTER);
+                push.setTitle(notice.getTitle());
+                push.setMessage(notice.getContent());
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, push);
+                checkFcmResponse(pushNotification);
+            }
         }
 
         return result;

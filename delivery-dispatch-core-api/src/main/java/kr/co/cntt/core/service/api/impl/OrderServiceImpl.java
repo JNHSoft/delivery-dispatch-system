@@ -275,23 +275,23 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setStatus("1");
 
             ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(order);
-
             Order notiOrder = (Order) map.get("order");
-
-            Notification noti = new Notification();
-            noti.setType(Notification.NOTI.ORDER_ASSIGN_AUTO);
-            noti.setId(Integer.valueOf(notiOrder.getId()));
-            noti.setStoreName(notiOrder.getStore().getAdminId());
-            noti.setStoreName(notiOrder.getStore().getStoreName());
-            noti.setAddr(notiOrder.getAddress());
-            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-
-            checkFcmResponse(pushNotification);
 
             int result = orderMapper.updateOrder(order);
 
             if (result != 0) {
                 redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+notiOrder.getAdminId() + ", store_id:"+notiOrder.getStoreId());
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_ASSIGN_AUTO);
+                    noti.setId(Integer.valueOf(notiOrder.getId()));
+                    noti.setStoreName(notiOrder.getStore().getAdminId());
+                    noti.setStoreName(notiOrder.getStore().getStoreName());
+                    noti.setAddr(notiOrder.getAddress());
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+
+                    checkFcmResponse(pushNotification);
+                }
             }
 
             return result;
@@ -369,23 +369,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
-        if(storeDTO.getAssignmentStatus().equals("2")){
-            
-            ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(storeDTO.getSubGroup());
-            for(String token: tokens){
-                System.out.println("token: " + token);
-            }
-            Notification noti = new Notification();
-            noti.setType(Notification.NOTI.ORDER_NEW);
-            /*noti.setId(291);
-            noti.setStoreName(order.getMenuName());
-            noti.setAddr(order.getAreaAddress());*/
-            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-            checkFcmResponse(pushNotification);
-        }
-
         if (postOrder != 0) {
             redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId());
+
+            if(storeDTO.getAssignmentStatus().equals("2")){
+
+                ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(storeDTO.getSubGroup());
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_NEW);
+                /*noti.setId(291);
+                noti.setStoreName(order.getMenuName());
+                noti.setAddr(order.getAreaAddress());*/
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
+            }
         }
 
         return postOrder;
@@ -575,25 +574,25 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if(curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")){
                 // 해당 라이더한테만 푸쉬
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(order);
-
-                Notification noti = new Notification();
-                noti.setType(Notification.NOTI.ORDER_CHANGE);
-                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                checkFcmResponse(pushNotification);
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_CHANGE);
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
             }else{
                 // 상점 관련 라이더한테 푸쉬
                 if(storeDTO.getAssignmentStatus().equals("2")){
                     ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(storeDTO.getSubGroup());
-                    for(String token: tokens){
-                        System.out.println("token: " + token);
-                    }
-                    Notification noti = new Notification();
-                    noti.setType(Notification.NOTI.ORDER_CHANGE);
+                    if(tokens.size() > 0){
+                        Notification noti = new Notification();
+                        noti.setType(Notification.NOTI.ORDER_CHANGE);
                     /*noti.setId(291);
                     noti.setStoreName(order.getMenuName());
                     noti.setAddr(order.getAreaAddress());*/
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
+                        CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                        checkFcmResponse(pushNotification);
+                    }
                 }
             }
         }
@@ -675,11 +674,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
-
-            Notification noti = new Notification();
-            noti.setType(Notification.NOTI.ORDER_ASSIGN);
-            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-            checkFcmResponse(pushNotification);
+            if(tokens.size() > 0){
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.ORDER_ASSIGN);
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                checkFcmResponse(pushNotification);
+            }
         }
 
         if (ret != 0) {
@@ -835,25 +835,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if(curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")){
                 // 해당 라이더한테만 푸쉬
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(order);
-
-                Notification noti = new Notification();
-                noti.setType(Notification.NOTI.ORDER_CHANGE);
-                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                checkFcmResponse(pushNotification);
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_CANCEL);
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
             }else{
                 // 상점 관련 라이더한테 푸쉬
                 if(storeDTO.getAssignmentStatus().equals("2")){
                     ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(storeDTO.getSubGroup());
-                    for(String token: tokens){
-                        System.out.println("token: " + token);
+                    if(tokens.size() > 0){
+                        Notification noti = new Notification();
+                        noti.setType(Notification.NOTI.ORDER_CANCEL);
+                        CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                        checkFcmResponse(pushNotification);
                     }
-                    Notification noti = new Notification();
-                    noti.setType(Notification.NOTI.ORDER_CHANGE);
-                    /*noti.setId(291);
-                    noti.setStoreName(order.getMenuName());
-                    noti.setAddr(order.getAreaAddress());*/
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
                 }
             }
         }
@@ -916,14 +913,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         int ret = this.putOrder(orderAssignCanceled);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
-
-            Notification noti = new Notification();
-            noti.setType(Notification.NOTI.ORDER_ASSIGN_CANCEL);
-            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-            checkFcmResponse(pushNotification);
-        }
 
         orderAssignCanceled.setId(order.getId());
 
@@ -931,6 +920,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (ret != 0) {
             redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId());
+            if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_ASSIGN_CANCEL);
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
+            }
         }
 
         return ret;
@@ -1042,22 +1040,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return reasonList;
     }
 
-    private void checkFcmResponse(CompletableFuture<FirebaseResponse> pushNotification){
-        if(pushNotification != null){
-            CompletableFuture.allOf(pushNotification).join();
-            try {
-                FirebaseResponse firebaseResponse = pushNotification.get();
-                if (firebaseResponse.getSuccess() == 1) {
-                    log.info("push notification sent ok!");
-                } else {
-                    log.error("error sending push notifications: " + firebaseResponse.toString());
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+
 
 }
