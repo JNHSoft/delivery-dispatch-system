@@ -4,15 +4,15 @@
 	<!-- 푸터영역 -->
 	<footer id="footer">
 		<div class="f_left">
-			<span class="inblock">근무중 기사: 3명</span>
-			<span class="inblock">대기 기사: 1명</span>
-			<span class="inblock">휴식 기사: 1명</span>
+			<span class="inblock" th:text="${#messages.msg('rider.work', '3')}" />
+			<span class="inblock" th:text="${#messages.msg('rider.standby', '1')}" />
+			<span class="inblock" th:text="${#messages.msg('rider.rest', '1')}" />
 		</div>
 		<div class="f_right">
-			<span class="inblock">신규: 2</span>
-			<span class="inblock">배정: 1</span>
-			<span class="inblock">완료: 1</span>
-			<span class="inblock">취소: 1</span>
+			<span class="inblock" th:text="${#messages.msg('order.count.new', ': 2')}" />
+			<span class="inblock" th:text="${#messages.msg('order.count.assigned', ': 1')}" />
+			<span class="inblock" th:text="${#messages.msg('order.count.completed', ': 1')}" />
+			<span class="inblock" th:text="${#messages.msg('order.count.canceled', ': 1')}" />
 		</div>
 	</footer>
 	<!-- //푸터영역 -->
