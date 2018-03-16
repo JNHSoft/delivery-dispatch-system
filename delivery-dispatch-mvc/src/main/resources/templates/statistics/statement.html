@@ -49,35 +49,35 @@
 					<a href="#" class="btn_close"><i class="fa fa-times" aria-hidden="true"></i><span class="blind">닫기</span></a>
 					<div class="state_detail">
 						<div class="tit">
-							<h2>주문상세 - 11023</h2>
-							<i class="ic_txt">완료</i>
-							<i class="ic_txt ic_red">취소</i>
+							<h2 th:text="${#messages.msg('order.detail', '11023')}" />
+							<i class="ic_txt" th:text="${#messages.msg('status.completed')}" />
+							<i class="ic_txt ic_red" th:text="${#messages.msg('status.canceled')}" />
 						</div>
 						<div class="cont">
 							<div>
 								<ul>
 									<li>
-										<span>등록시간</span>
+										<span th:text="${#messages.msg('order.created')}" />
 										<div>01/25 14:57</div>
 									</li>
 									<li>
-										<span>예약시간</span>
-										<div>정보없음</div>
+                                        <span th:text="${#messages.msg('order.reserved')}" />
+										<div th:text="${#messages.msg('result.none')}" />
 									</li>
 									<li class="clear">
-										<span>경과시간</span>
+										<span th:text="${#messages.msg('order.time')}" />
 										<div>-</div>
 									</li>
 									<li>
-										<span>배정시간</span>
+										<span th:text="${#messages.msg('order.assigned')}" />
 										<div>01/25 14:57</div>
 									</li>
 									<li class="clear">
-										<span>픽업시간</span>
+										<span th:text="${#messages.msg('order.pickedup')}" />
 										<div>01/25 14:57</div>
 									</li>
 									<li>
-										<span>완료시간</span>
+										<span th:text="${#messages.msg('order.completed')}" />
 										<div>01/25 14:57</div>
 									</li>
 								</ul>
@@ -85,35 +85,35 @@
 							<div>
 								<ul>
 									<li>
-										<span>주문내용</span>
+										<span th:text="${#messages.msg('order.summary')}" />
 										<div>징거버거 세트 외...</div>
 									</li>
 									<li>
-										<span>조리시간</span>
+										<span th:text="${#messages.msg('order.cooking')}" />
 										<div>10분</div>
 									</li>
 									<li class="clear">
-										<span>음식금액</span>
+										<span th:text="${#messages.msg('order.menu.price')}" />
 										<div>20,000원</div>
 									</li>
 									<li>
-										<span>배달금액</span>
+										<span th:text="${#messages.msg('order.delivery.price')}" />
 										<div>0원</div>
 									</li>
 									<li class="clear">
-										<span>결제금액</span>
+										<span th:text="${#messages.msg('order.total.price')}" />
 										<div>20,000원</div>
 									</li>
 									<li>
-										<span>결제종류</span>
-										<div>카드</div>
+										<span th:text="${#messages.msg('order.payment')}" />
+										<div th:text="${#messages.msg('order.payment.card')}" />
 									</li>
 								</ul>
 							</div>
 							<div>
 								<ul>
 									<li class="full">
-										<span>묶음배송</span>
+										<span th:text="${#messages.msg('order.combined')}" />
 										<div>-</div>
 									</li>
 								</ul>
@@ -121,15 +121,15 @@
 							<div>
 								<ul>
 									<li>
-										<span>기사명</span>
+										<span th:text="${#messages.msg('rider.name')}" />
 										<div>김나은</div>
 									</li>
 									<li>
-										<span>기사연락처</span>
+										<span th:text="${#messages.msg('rider.phone')}" />
 										<div>010-1234-1234</div>
 									</li>
 									<li class="clear full">
-										<span>매장 메모</span>
+										<span th:text="${#messages.msg('order.message')}" />
 										<div>빠른배송 바랍니다.</div>
 									</li>
 								</ul>
@@ -137,15 +137,15 @@
 							<div>
 								<ul>
 									<li class="full">
-										<span>고객 연락처</span>
+										<span th:text="${#messages.msg('order.customer.phone')}" />
 										<div>010-1234-1234</div>
 									</li>
 									<li class="full">
-										<span>고객 주소</span>
+										<span th:text="${#messages.msg('order.customer.address')}" />
 										<div>서울시 서대문구 증가로 29길 35 북가좌동, 씨엔티테크 빌딩</div>
 									</li>
 									<li class="full">
-										<span>거리</span>
+										<span th:text="${#messages.msg('order.distance')}" />
 										<div>2.5km</div>
 									</li>
 									<li class="full">
