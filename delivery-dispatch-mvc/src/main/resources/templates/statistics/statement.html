@@ -30,9 +30,9 @@
 						<option value="" th:text="${#messages.msg('list.search.all')}" />
 					</select>
 					<input type="text" class="input" th:placeholder="${#messages.msg('list.search.placeholder')}" />
-					<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="${#messages.msg('list.search')}" /></button>
+					<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" /></button>
 				</span>
-				<button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="${#messages.msg('list.excel')}" /></button>
+				<button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.excel')}" /></button>
 			</div>
 		</div>
 		<div id="contents">
@@ -163,13 +163,32 @@
 	</section>
 	<!-- //컨텐츠 영역 -->
 
-<script layout:fragment="script">
+<script layout:fragment="script" th:inline="javascript">
+/*<![CDATA[*/
+var status_new = /*[[#{status.new}]]*/ 'status_new';
+var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
+var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
+var order_confirm = /*[[#{order.confirm}]]*/ 'order_confirm';
+var order_status = /*[[#{order.status}]]*/ 'order_status';
+var order_id = /*[[#{order.id}]]*/ 'order_id';
+var order_created = /*[[#{order.created}]]*/ 'order_created';
+var order_address = /*[[#{order.address}]]*/ 'order_address';
+var order_summary = /*[[#{order.summary}]]*/ 'order_summary';
+var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
+var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
+var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
+var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
+var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
+var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
+
 var mydata = [
-	{No:'1', state:'<i class="ic_txt">확인</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은'},
-	{No:'2', state:'<i class="ic_txt ic_red">취소</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'3', state:'<i class="ic_txt ic_green">신규</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'4', state:'<i class="ic_txt ic_blue">배정</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'5', state:'<i class="ic_txt ic_blue">픽업</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' }
+	{No:'1', state:'<i class="ic_txt">order_confirm</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은'},
+	{No:'2', state:'<i class="ic_txt ic_red">status_canceled</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'3', state:'<i class="ic_txt ic_green">status_new</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'4', state:'<i class="ic_txt ic_blue">status_assigned</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'5', state:'<i class="ic_txt ic_blue">status_pickedup</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' }
 ];	
 $(document).ready(function () {
 	$("#jqGrid").jqGrid({
@@ -177,17 +196,17 @@ $(document).ready(function () {
 		data:mydata,
 		colModel:[
 	    {label:'No', name:'No', width:25, key:true, align:'center'},
-	    {label:'주문상태', name:'state', width:80, align:'center'},
-	    {label:'주문id', name:'id', width:80, align:'center'},
-	    {label:'등록시간', name:'time1', width:80, align:'center'},
-	    {label:'기본주소', name:'address', width:200},
-	    {label:'주문내용', name:'text', width:150},
-	    {label:'조리시간', name:'time2', width:80, align:'center'},
-	    {label:'결제종류', name:'pay', width:80, align:'center'},
-	    {label:'배정시간', name:'time3', width:80, align:'center'},
-	    {label:'픽업시간', name:'time4', width:80, align:'center'},
-	    {label:'예약시간', name:'time5', width:80, align:'center'},
-	    {label:'기사명', name:'rider', width:80, align:'center'}
+	    {label:order_status, name:'state', width:80, align:'center'},
+	    {label:order_id, name:'id', width:80, align:'center'},
+	    {label:order_created, name:'time1', width:80, align:'center'},
+	    {label:order_address, name:'address', width:200},
+	    {label:order_summary, name:'text', width:150},
+	    {label:order_cooking, name:'time2', width:80, align:'center'},
+	    {label:order_payment, name:'pay', width:80, align:'center'},
+	    {label:order_assigned, name:'time3', width:80, align:'center'},
+	    {label:order_pickedup, name:'time4', width:80, align:'center'},
+	    {label:order_reserved, name:'time5', width:80, align:'center'},
+	    {label:rider_name, name:'rider', width:80, align:'center'}
     ],
 		width:'auto',
 		height:520,
@@ -212,5 +231,6 @@ $(document).ready(function () {
 		},300)//그리드 리사이즈
 	})
 });
+/*]]>*/
 </script>
 </html>
