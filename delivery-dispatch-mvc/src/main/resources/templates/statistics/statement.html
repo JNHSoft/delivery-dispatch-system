@@ -184,11 +184,11 @@ var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
 var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
 
 var mydata = [
-	{No:'1', state:'<i class="ic_txt">order_confirm</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은'},
-	{No:'2', state:'<i class="ic_txt ic_red">status_canceled</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'3', state:'<i class="ic_txt ic_green">status_new</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'4', state:'<i class="ic_txt ic_blue">status_assigned</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'5', state:'<i class="ic_txt ic_blue">status_pickedup</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' }
+	{No:'1', state:'<i class="ic_txt">' + order_confirm + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은'},
+	{No:'2', state:'<i class="ic_txt ic_red">' + status_canceled + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'3', state:'<i class="ic_txt ic_green">' + status_new + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'4', state:'<i class="ic_txt ic_blue">' + status_assigned + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
+	{No:'5', state:'<i class="ic_txt ic_blue">' + status_pickedup + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' }
 ];	
 $(document).ready(function () {
 	$("#jqGrid").jqGrid({
