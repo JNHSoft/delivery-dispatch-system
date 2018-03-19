@@ -199,7 +199,7 @@
 				</when>
 				<when test="role != null and role == 'ROLE_RIDER'">
 					<choose>
-						<when test="statusItem != null and (statusItem != '0' or statusItem != '5')">
+						<when test="statusArray != null and (statusItem != '0' or statusItem != '5')">
 							AND A.rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
 							AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 							AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
