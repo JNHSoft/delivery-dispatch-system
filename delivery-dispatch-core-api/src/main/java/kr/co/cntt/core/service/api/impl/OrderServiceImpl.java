@@ -400,20 +400,61 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setRole("ROLE_RIDER");
         }
 
+        char[] statusArray = null;
         if (order.getStatus() != null) {
             String tmpString = order.getStatus().replaceAll("[\\D]", "");
-            char[] statusArray = tmpString.toCharArray();
+            statusArray = tmpString.toCharArray();
 
             order.setStatusArray(statusArray);
         }
 
         List<Order> S_Order = orderMapper.selectOrders(order);
 
-        if (S_Order.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00015), ErrorCodeEnum.E00015.name());
+        if (order.getRole().equals("ROLE_RIDER")) {
+            Rider rider = new Rider();
+            List<Order> R_Order = new ArrayList<>();
+            if (statusArray != null) {
+                for (char s : statusArray) {
+                    if (s != '0' && s != '5') {
+                        rider.setAccessToken(order.getToken());
+                        rider.setToken(order.getToken());
+                        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+                        for (Order o : S_Order) {
+                            if (o.getRiderId() != null) {
+                                if (o.getRiderId().equals(S_Rider.getId())) {
+                                    R_Order.add(o);
+                                }
+                            }
+                        }
+                    } else {
+                        for (Order o : S_Order) {
+                            R_Order.add(o);
+                        }
+                    }
+                }
+
+                if (R_Order.size() == 0) {
+                    throw new AppTrException(getMessage(ErrorCodeEnum.E00015), ErrorCodeEnum.E00015.name());
+                }
+
+                return R_Order;
+
+            } else {
+                if (S_Order.size() == 0) {
+                    throw new AppTrException(getMessage(ErrorCodeEnum.E00015), ErrorCodeEnum.E00015.name());
+                }
+
+                return S_Order;
+            }
+        } else {
+            if (S_Order.size() == 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00015), ErrorCodeEnum.E00015.name());
+            }
+
+            return S_Order;
         }
 
-        return S_Order;
     }
 
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
