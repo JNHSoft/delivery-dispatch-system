@@ -19,30 +19,30 @@
 				<div class="cont">
 					<ul class="form_list">
 						<li>
-							<strong>배정모드</strong>
+							<strong th:text="${#messages.msg('order.assign.mode')}" />
 							<div>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">자동</span>
+									<span class="lbl" th:text="${#messages.msg('order.assign.mode.auto')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">수동(관리자 주문배정)</span>
+									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.store')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">수동(기사 주문 선택)</span>
+									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.rider')}" />
 								</label>
 							</div>
 						</li>
 						<li>
-							<strong>최대오더</strong>
+							<strong th:text="${#messages.msg('order.assign.max')}" />
 							<div>
 								<select name="" id="" class="select">
 									<option value="">10</option>
 								</select>
-								개
+								<span  th:text="${#messages.msg('order.assign.count.label')}" />
 							</div>
 						</li>
 						<li class="clear full">
-							<strong>서드파티</strong>
+							<strong th:text="${#messages.msg('order.assign.third')}" />
 							<div>
 								<label class="checkbox"><input name="" type="checkbox" /><i></i>
 									<span class="lbl">푸드판다</span>
@@ -62,7 +62,7 @@
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30">확인</a>
+				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
 			</div>
 		</div>
 	</section>
