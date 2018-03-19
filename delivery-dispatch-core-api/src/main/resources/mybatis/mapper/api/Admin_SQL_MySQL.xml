@@ -43,6 +43,7 @@
 		<result property="detailAddress" column="detail_address" />
 		<result property="chAddress" column="ch_address" />
 		<result property="chDetailAddress" column="ch_detail_address" />
+		<result property="assignmentStatus" column="assignment_status" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -270,7 +271,7 @@
 			AND D.deleted IS NULL
 	</update>
 
-
+	<!-- 서브그룹 목록 조회  -->
 	<!-- selectSubGroups -->
 	<select id="selectSubGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.SubGroup">
 		SELECT
@@ -389,8 +390,8 @@
 		) VALUES (
 			now()
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			, #{group.id}
-			, #{subGroup.id}
+			, #{subGroupStoreRel.groupId}
+			, #{subGroupStoreRel.subGroupId}
 			, #{id}
 		)
 	</insert>
@@ -400,8 +401,8 @@
 	<update id="updateSubGroupStoreRel" parameterType="kr.co.cntt.core.model.store.Store">
 		UPDATE TB_SUBGROUP_STORE_REL
 		SET modified_datetime = now()
-			, group_id = #{group.id}
-			, subgroup_id = #{subGroup.id}
+			, group_id = #{subGroupStoreRel.groupId}
+			, subgroup_id = #{subGroupStoreRel.subGroupId}
 		WHERE store_id = #{id}
 			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND deleted IS NULL
@@ -622,6 +623,7 @@
 			, A.detail_address
 			, A.ch_address
 			, A.ch_detail_address
+			, A.assignment_status
 			, C.id AS subgroup_id
 			, C.group_id AS subgroup_group_id
 			, C.name AS subgroup_name
@@ -649,116 +651,119 @@
 	<!-- insertStore -->
 	<insert id="insertStore" parameterType="kr.co.cntt.core.model.store.Store">
 		INSERT INTO TB_STORE (
-			created_datetime
-			, chat_user_id
-			, admin_id
-			, login_id
-			, login_pw
-			, store_name
-			, store_phone
-			, address
-			, latitude
-			, longitude
-			, expiration_date
-			, code
-			, name
-			, phone
-			, ch_store_name
-			, detail_address
-			, ch_address
-			, ch_detail_address
-			, radius
-			, store_distance_sort
-			, assignment_status
-			, assignment_limit
+		created_datetime
+		, chat_user_id
+		, chatroom_id
+		, admin_id
+		, login_id
+		, login_pw
+		, store_name
+		, store_phone
+		, address
+		, latitude
+		, longitude
+		, expiration_date
+		, code
+		, name
+		, phone
+		, ch_store_name
+		, detail_address
+		, ch_address
+		, ch_detail_address
+		, radius
+		, store_distance_sort
+		, assignment_status
+		, assignment_limit
 		) VALUES (
-			now()
-			, #{chatUserId}
-			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			, #{loginId}
-			, #{loginPw}
-			, #{storeName}
-			, #{storePhone}
-			, #{address}
-			, #{latitude}
-			, #{longitude}
-			<if test="expirationDate != null and expirationDate != ''">
-				, #{expirationDate}
-			</if>
-			<if test="expirationDate == null or expirationDate == ''">
-				, '3000-01-01'
-			</if>
-			<if test="code != null and code != ''">
-				, #{code}
-			</if>
-			<if test="code == null or code == ''">
-				, NULL
-			</if>
-			<if test="name != null and name != ''">
-				, #{name}
-			</if>
-			<if test="name == null or name == ''">
-				, NULL
-			</if>
-			<if test="phone != null and phone != ''">
-				, #{phone}
-			</if>
-			<if test="phone == null or phone == ''">
-				, NULL
-			</if>
-			<if test="chStoreName != null and chStoreName != ''">
-				, #{chStoreName}
-			</if>
-			<if test="chStoreName == null or chStoreName == ''">
-				, NULL
-			</if>
-			<if test="detailAddress != null and detailAddress != ''">
-				, #{detailAddress}
-			</if>
-			<if test="detailAddress == null or detailAddress == ''">
-				, NULL
-			</if>
-			<if test="chAddress != null and chAddress != ''">
-				, #{chAddress}
-			</if>
-			<if test="chAddress == null or chAddress == ''">
-				, NULL
-			</if>
-			<if test="chDetailAddress != null and chDetailAddress != ''">
-				, #{chDetailAddress}
-			</if>
-			<if test="chDetailAddress == null or chDetailAddress == ''">
-				, NULL
-			</if>
-			<if test="radius != null and radius != ''">
-				, #{radius}
-			</if>
-			<if test="radius == null or radius == ''">
-				, 1
-			</if>
-			<if test="storeDistanceSort != null and storeDistanceSort != ''">
-				, #{storeDistanceSort}
-			</if>
-			<if test="storeDistanceSort == null or storeDistanceSort == ''">
-				, NULL
-			</if>
-			<if test="assignmentStatus != null and assignmentStatus != ''">
-				, #{assignmentStatus}
-			</if>
-			<if test="assignmentStatus == null or assignmentStatus == ''">
-				, 0
-			</if>
-			<if test="assignmentLimit != null and assignmentLimit != ''">
-				, #{assignmentLimit}
-			</if>
-			<if test="assignmentLimit == null or assignmentLimit == ''">
-				, NULL
-			</if>
+		now()
+		, #{chatUserId}
+		, #{chatRoomId}
+		, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		, #{loginId}
+		, #{loginPw}
+		, #{storeName}
+		, #{storePhone}
+		, #{address}
+		, #{latitude}
+		, #{longitude}
+		<if test="expirationDate != null and expirationDate != ''">
+			, #{expirationDate}
+		</if>
+		<if test="expirationDate == null or expirationDate == ''">
+			, '3000-01-01'
+		</if>
+		<if test="code != null and code != ''">
+			, #{code}
+		</if>
+		<if test="code == null or code == ''">
+			, NULL
+		</if>
+		<if test="name != null and name != ''">
+			, #{name}
+		</if>
+		<if test="name == null or name == ''">
+			, NULL
+		</if>
+		<if test="phone != null and phone != ''">
+			, #{phone}
+		</if>
+		<if test="phone == null or phone == ''">
+			, NULL
+		</if>
+		<if test="chStoreName != null and chStoreName != ''">
+			, #{chStoreName}
+		</if>
+		<if test="chStoreName == null or chStoreName == ''">
+			, NULL
+		</if>
+		<if test="detailAddress != null and detailAddress != ''">
+			, #{detailAddress}
+		</if>
+		<if test="detailAddress == null or detailAddress == ''">
+			, NULL
+		</if>
+		<if test="chAddress != null and chAddress != ''">
+			, #{chAddress}
+		</if>
+		<if test="chAddress == null or chAddress == ''">
+			, NULL
+		</if>
+		<if test="chDetailAddress != null and chDetailAddress != ''">
+			, #{chDetailAddress}
+		</if>
+		<if test="chDetailAddress == null or chDetailAddress == ''">
+			, NULL
+		</if>
+		<if test="radius != null and radius != ''">
+			, #{radius}
+		</if>
+		<if test="radius == null or radius == ''">
+			, 1
+		</if>
+		<if test="storeDistanceSort != null and storeDistanceSort != ''">
+			, #{storeDistanceSort}
+		</if>
+		<if test="storeDistanceSort == null or storeDistanceSort == ''">
+			, NULL
+		</if>
+		<if test="assignmentStatus != null and assignmentStatus != ''">
+			, #{assignmentStatus}
+		</if>
+		<if test="assignmentStatus == null or assignmentStatus == ''">
+			, 0
+		</if>
+		<if test="assignmentLimit != null and assignmentLimit != ''">
+			, #{assignmentLimit}
+		</if>
+		<if test="assignmentLimit == null or assignmentLimit == ''">
+			, NULL
+		</if>
 		)
 		<selectKey keyProperty="id" resultType="String">
 			SELECT LAST_INSERT_ID()
 		</selectKey>
 	</insert>
+
 
 
 	<!-- deleteStore -->
