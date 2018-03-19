@@ -1009,7 +1009,36 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         }
 
-        return orderMapper.insertOrderDeny(order);
+        int ret = 0;
+
+        if (orderMapper.insertOrderDeny(order) != 0) {
+            Order orderAssignCanceled = new Order();
+            orderAssignCanceled.setRole("ROLE_RIDER");
+            orderAssignCanceled.setId(order.getId());
+            orderAssignCanceled.setStatus("0");
+            orderAssignCanceled.setRiderId("-1");
+            orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
+            orderAssignCanceled.setAssignedDatetime("-1");
+            orderAssignCanceled.setPickedUpDatetime("-1");
+            orderAssignCanceled.setToken(order.getToken());
+
+            if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+                Order combinedOrderAssignCanceled = new Order();
+                orderAssignCanceled.setRole("ROLE_RIDER");
+                combinedOrderAssignCanceled.setId(order.getCombinedOrderId());
+                combinedOrderAssignCanceled.setStatus("0");
+                combinedOrderAssignCanceled.setRiderId("-1");
+                combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
+                combinedOrderAssignCanceled.setAssignedDatetime("-1");
+                combinedOrderAssignCanceled.setPickedUpDatetime("-1");
+                combinedOrderAssignCanceled.setToken(order.getToken());
+
+                this.putOrder(combinedOrderAssignCanceled);
+            }
+
+            ret = this.putOrder(orderAssignCanceled);
+        }
+        return ret;
     }
 
     @Secured("ROLE_STORE")
