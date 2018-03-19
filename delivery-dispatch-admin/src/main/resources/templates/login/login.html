@@ -5,17 +5,17 @@
 			<h1><img src="./resources/images/common/logo.png" alt="KFC" /></h1>
 			<ul>
 				<li class="inp">
-					<input type="text" class="input h50" name="adminId" id="adminId" placeholder="아이디" value="" maxlength="20" />
+					<input type="text" class="input h50" name="adminId" id="adminId" th:placeholder="${#messages.msg('login.id')}" value="" maxlength="20" />
 				</li>
 				<li class="inp">
-					<input type="password" name="adminPassword" id="adminPassword" class="input h50" placeholder="비밀번호" value="" />
+					<input type="password" name="adminPassword" id="adminPassword" class="input h50" th:placeholder="${#messages.msg('login.password')}" value="" />
 				</li>
-				<li class="btn"><a href="javascript:void(0);" class="button h50 btn_blue" id="loginProcessButton">로그인</a></li>
+				<li class="btn"><a href="javascript:void(0);" class="button h50 btn_blue" id="loginProcessButton" th:text="${#messages.msg('login')}" /></li>
 				<li class="chk">
 					<label class="checkbox"><input name="" type="checkbox" /><i></i>
-						<span class="lbl">아이디저장</span>
+						<span class="lbl" th:text="${#messages.msg('login.id.save')}" />
 					</label>
-					<a href="#">비밀번호 찾기</a>
+					<a href="#" th:text="${#messages.msg('login.password.search')}" />
 				</li>
 			</ul>
 		</form>
