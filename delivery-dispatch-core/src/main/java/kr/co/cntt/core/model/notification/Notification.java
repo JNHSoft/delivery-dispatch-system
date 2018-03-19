@@ -8,6 +8,16 @@ public class Notification {
     private String title;
     private String message;
     private String chat_user_id;
+    private int rider_id;
+
+
+    public int getRider_id() {
+        return rider_id;
+    }
+
+    public void setRider_id(int rider_id) {
+        this.rider_id = rider_id;
+    }
 
     public String getType() {
         return type;
@@ -79,6 +89,7 @@ public class Notification {
         public static String ORDER_HIDDEN= "order_hidden";
         public static String ORDER_CANCEL= "order_cancle";
         public static String ORDER_ASSIGN_CANCEL = "order_assignment_cancel";
+        public static String ORDER_ASSIGN_OTHER = "order_assign_other";
     }
 }
 

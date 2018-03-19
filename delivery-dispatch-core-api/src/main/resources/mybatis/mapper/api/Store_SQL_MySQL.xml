@@ -7,8 +7,6 @@
     <resultMap id="selectStoreResult" type="kr.co.cntt.core.model.store.Store">
         <result property="id" column="id" />
         <result property="loginId" column="login_id" />
-        <result property="adminId" column="admin_id" />
-        <result property="chatUserId" column="chat_user_id" />
         <result property="code" column="code" />
         <result property="phone" column="phone" />
         <result property="storeName" column="store_name" />
@@ -160,17 +158,6 @@
 	</insert>
 
 
-    <!-- updateStoreSession -->
-    <update id="updateStoreSession" parameterType="String">
-        UPDATE TB_STORE AS A
-        LEFT JOIN TB_STORE_SESSION AS B
-        ON A.id = B.store_id
-        SET A.last_access = now()
-            , B.expiry_datetime = now()
-        WHERE B.access_token = #{token}
-    </update>
-
-
 	<!--store 정보 조회-->
     <select id="selectStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultMap="selectStoreResult">
         SELECT
@@ -201,26 +188,27 @@
             , TS.deleted
             , TSG.id AS subgroup_id
             , TSG.group_id AS subgroup_group_id
-            , TG.name AS group_name
             , TSG.name AS subgroup_name
             , TSG.admin_id AS subgroup_admin_id
+            , TG.name AS group_name
             , TG.id AS group_id
             , TG.admin_id AS group_admin_id
         FROM TB_STORE TS
 
-        left join
+        LEFT JOIN
         TB_SUBGROUP_STORE_REL AS SSR
         on TS.id = SSR.store_id
         AND SSR.deleted is NULL
 
-        left join
+        LEFT JOIN
         TB_SUBGROUP AS TSG
-        on SSR.group_id=TSG.id
+        on TSG.group_id=SSR.group_id
+        AND TSG.id = SSR.subgroup_id
         AND TSG.deleted is NULL
 
-        left join
+        LEFT JOIN
         TB_GROUP AS TG
-        on SSR.group_id = TG.id
+        on TG.id = TSG.group_id
         AND TG.deleted is NULL
 
         WHERE 1=1
@@ -337,17 +325,18 @@
 			<if test="assignmentLimit != null  and assignmentLimit != ''">
 				, A.assignment_limit = #{assignmentLimit}
 			</if>
-			<if test="subGroupStoreRel != null">
+
+            <if test="subGroupStoreRel != null">
 				, B.modified_datetime = now()
-				, B.store_id = #{subGroupStoreRel.storeId}
+				, B.store_id = #{id}
 				, B.subgroup_id = #{subGroupStoreRel.subGroupId}
 				, B.group_id = #{subGroupStoreRel.groupId}
 				, C.modified_datetime = now()
-				, C.store_id = #{subGroupStoreRel.storeId}
+				, C.store_id = #{id}
 				, C.subgroup_id = #{subGroupStoreRel.subGroupId}
 				, C.group_id = #{subGroupStoreRel.groupId}
 			</if>
-            , A.id = LAST_INSERT_ID(A.id)
+
 		WHERE 1=1
             AND A.deleted IS NULL
             AND B.deleted IS NULL
@@ -366,9 +355,6 @@
                     )
                 </otherwise>
             </choose>
-        <selectKey keyProperty="id" resultType="String">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
 	</update>
 
 
@@ -408,13 +394,23 @@
     <!-- updateStoreAssignmentStatus -->
     <update id="updateStoreAssignmentStatus" parameterType="kr.co.cntt.core.model.store.Store">
         UPDATE TB_STORE
-        SET assignment_status = #{assignmentStatus}
-            , modified_datetime = now()
-            , id = LAST_INSERT_ID(id)
-        WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-        <selectKey keyProperty="id" resultType="String">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
+        SET
+          assignment_status = #{assignmentStatus}
+          , modified_datetime = now()
+        WHERE
+        <choose>
+            <when test="id != null and id != ''">
+                <if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
+                    id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                </if>
+
+                <if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
+                    id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                </if>
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
     </update>
 
     <!-- updateStoreThirdParty -->
@@ -422,11 +418,7 @@
         UPDATE TB_STORE
         SET third_party = #{thirdParty}
             , modified_datetime = now()
-            , id = LAST_INSERT_ID(id)
         WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-        <selectKey keyProperty="id" resultType="String">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
     </update>
 
 
@@ -473,11 +465,7 @@
         UPDATE TB_STORE
           SET alarm = #{alarm}
               , modified_datetime = now()
-              , id = LAST_INSERT_ID(id)
         WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-        <selectKey keyProperty="id" resultType="String">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
     </update>
 
 
