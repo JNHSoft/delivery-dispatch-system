@@ -675,7 +675,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             redisService.setPublisher("order_assigned", "id:"+order.getId()+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
 
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
+                ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(S_Store.getSubGroup());
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_ASSIGN);
+                    noti.setRider_id(Integer.valueOf(orderAssigned.getRiderId()));
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
+            }else{
+                ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(S_Store.getSubGroup());
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN);
