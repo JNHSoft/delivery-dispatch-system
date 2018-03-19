@@ -4,6 +4,7 @@
 	<!-- selectRidersResult -->
 	<resultMap id="selectSubgroupRiderRelsResult" type="kr.co.cntt.core.model.rider.Rider">
 		<result property="id" column="id" />
+		<result property="adminId" column="admin_id" />
 
 		<result property="loginId" column="login_id" />
 		<result property="name" column="name" />
@@ -91,6 +92,19 @@
 		WHERE login_id = #{loginId}
 		]]>
 	</insert>
+
+
+	<!-- updateRiderSession -->
+	<update id="updateRiderSession" parameterType="String">
+		UPDATE TB_RIDER AS A
+		LEFT JOIN TB_RIDER_SESSION AS B
+		ON A.id = B.rider_id
+		SET A.working = 0
+			, A.last_access = now()
+			, B.expiry_datetime = now()
+		WHERE B.access_token = #{token}
+	</update>
+
 
 	<!--rider 정보 조회 -->
 	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultMap="selectSubgroupRiderRelsResult">
@@ -281,6 +295,7 @@
 				, B.subgroup_id = #{subGroupRiderRel.subGroupId}
 				, B.group_id = #{subGroupRiderRel.groupId}
 			</if>
+			, A.id = LAST_INSERT_ID(A.id)
 		WHERE 1=1
 		<choose>
 			<when test="id != null and id != ''">
@@ -301,6 +316,9 @@
 				)
 			</otherwise>
 		</choose>
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</update>
 
 	<!-- rider 출/퇴근  -->
@@ -541,6 +559,15 @@
 			DELIMITER ; -->
 	</select>
 
+
+    <select id="selectRiderTokenByChatUserId" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="String">
+        select TBRS.push_token
+		from dde.TB_RIDER_SESSION AS TBRS
+        LEFT JOIN dde.TB_RIDER AS B
+        ON B.chat_user_id = #{chatUserId}
+		where TBRS.rider_id = B.id and TBRS.push_token is not null
+    </select>
+
 	<select id="selectRiderToken" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
 		select TBRS.push_token
 		from dde.TB_RIDER_SESSION AS TBRS
@@ -555,9 +582,27 @@
 		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null
 	</select>
 
-	<select id="selectRejectReason" resultType="kr.co.cntt.core.model.reason.Reason">
-		SELECT id, reason from TB_REJECT_REASON where deleted is null
-	</select>
+	<select id="selectRejectReason" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.reason.Reason">
+		SELECT id
+		    , reason
+		    , admin_id
+		FROM TB_REJECT_REASON
+		WHERE deleted IS NULL
+            <choose>
+                <when test="role != null and role == 'ROLE_STORE'">
+                    AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+                </when>
+                <when test="role != null and role == 'ROLE_RIDER'">
+                    AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                </when>
+                <when test="role != null and role == 'ROLE_ADMIN'">
+                    AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                </when>
+                <otherwise>
+                    AND id IS NULL
+                </otherwise>
+            </choose>
+    </select>
 
 </mapper>
  

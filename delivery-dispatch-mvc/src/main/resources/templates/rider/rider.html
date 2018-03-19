@@ -3,25 +3,25 @@
 
 <!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
-		<h2 id="pageTit" class="blind">기사현황</h2>
+		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}" />
 		<div class="search_box">
 			<div class="left">
 				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">전체</span>
+					<span class="lbl" th:text="${#messages.msg('status.all')}" />
 				</label>
 				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">근무중</span>
+					<span class="lbl" th:text="${#messages.msg('status.work')}" />
 				</label>
 				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">대기</span>
+					<span class="lbl" th:text="${#messages.msg('status.standby')}" />
 				</label>
 				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">휴식</span>
+					<span class="lbl" th:text="${#messages.msg('status.rest')}" />
 				</label>
 			</div>
 			<div class="right">
 				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">내매장 소속 기사만 보기</span>
+					<span class="lbl" th:text="${#messages.msg('rider.mine')}" />
 				</label>
 			</div>
 		</div>
@@ -36,22 +36,22 @@
 							<thead>
 								<tr>
 									<th scope="col">NO</th>
-									<th scope="col">기사명</th>
-									<th scope="col">상태</th>
-									<th scope="col">소속매장</th>
-									<th scope="col">현재배달건</th>
-									<th scope="col">재배치</th>
+									<th scope="col" th:text="${#messages.msg('rider.name')}" />
+									<th scope="col" th:text="${#messages.msg('rider.status')}" />
+									<th scope="col" th:text="${#messages.msg('rider.belong.store')}" />
+									<th scope="col" th:text="${#messages.msg('rider.delivery.store')}" />
+									<th scope="col" th:text="${#messages.msg('rider.reset')}" />
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<td>10</td>
 									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
+									<td><i class="ic_txt ic_blue" th:text="${#messages.msg('status.work')}" /></td>
 									<td>양재점</td>
 									<td>서초점</td>
 									<td>
-										<button class="button h20">재배치</button>
+										<button class="button h20" th:text="${#messages.msg('rider.reset')}" />
 									</td>
 								</tr>
 								<tr>
@@ -201,9 +201,9 @@
 				<div class="chat_wrap cont_box">
 					<div class="top">
 						<a href="#" class="close"><i class="fa fa-chevron-left" aria-hidden="true"></i><span class="blind">닫기</span></a>
-						<strong>김나은</strong>님과 채팅
+						<strong th:text="${#messages.msg('rider.chat.title', '김나은')}" />
 						<span class="f_right">
-							<i class="ic_txt ic_blue">근무</i>
+							<i class="ic_txt ic_blue" th:text="${#messages.msg('status.work')}" />
 						</span>
 					</div>
 					<div class="chat">
@@ -255,7 +255,7 @@
 					</div>
 					<div class="inp_chat">
 						<textarea class="textarea"></textarea>
-						<button class="button btn_blue">전달</button>
+						<button class="button btn_blue" th:text="${#messages.msg('rider.chat.send')}" />
 					</div>
 				</div>
 			</div>

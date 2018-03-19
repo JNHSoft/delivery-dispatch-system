@@ -121,3 +121,10 @@ server:
 api.token.serviceKey : testkey
 api.token.secretKey : ATE6OLdQuouPbqyZ5qt1H++taImbDhqSPw53ClPT7+k=
 api.token.expiration : 6000
+
+---
+spring:
+  redis:
+    host: nanum-taiwan-redis.e6yhbk.0001.apn2.cache.amazonaws.com
+#    host: 127.0.0.1
+    port: 6379

@@ -8,6 +8,7 @@ spring:
   messages:
     cache-seconds: -1
     basename: classpath:/META-INF/messages/exceptions
+                , classpath:/META-INF/messages/messages
     encoding: UTF-8
     #fallback-to-system-locale: true
   http:
@@ -17,7 +18,10 @@ spring:
       force: true
     multipart:
       enabled: true
-  thymeleaf.cache : false
+#  thymeleaf.cache : false
+  thymeleaf:
+      cache : false
+      prefix: classpath:/templates
 
 management:
   context-path: /monitor
@@ -169,3 +173,10 @@ api.app.server : https://burgerking.cntt.kr:9443
 # Logger
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.deliverydispatch
+
+---
+spring:
+  redis:
+#    host: nanum-taiwan-redis.e6yhbk.0001.apn2.cache.amazonaws.com
+    host: 127.0.0.1
+    port: 6379

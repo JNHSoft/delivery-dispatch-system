@@ -1,6 +1,7 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.login.User;
@@ -42,6 +43,13 @@ public interface RiderMapper {
      */
     public int insertRiderSession(Rider rider);
 
+    /**
+     * <p> Rider 토큰 만료일, last_access, working update
+     *
+     * @param token
+     * @return
+     */
+    public int updateRiderSession(String token);
 
     /**
      * <p> Rider 정보 조회
@@ -160,5 +168,7 @@ public interface RiderMapper {
 
     public List<String> selectRiderTokenByOrderId(Order order);
 
-    public List<Reason> selectRejectReason();
+    public List<Reason> selectRejectReason(Common common);
+
+    public List<String> selectRiderTokenByChatUserId(Chat chat);
 }

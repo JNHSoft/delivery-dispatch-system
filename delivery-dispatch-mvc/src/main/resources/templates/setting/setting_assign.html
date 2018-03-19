@@ -3,46 +3,46 @@
 
 	<!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
-		<h2 id="pageTit" class="blind">설정</h2>
+		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.setting')}" />
 		<div class="tabmenu">
 			<ul>
-				<li><a href="/setting-account">계정관리</a></li>
-				<li class="on"><a href="/setting-assign">배정관리</a></li>
-				<li><a href="/setting-rider">기사관리</a></li>
-				<li><a href="/setting-alarm">알림음설정</a></li>
-				<li><a href="/setting-notice">공지사항</a></li>
+				<li><a href="/setting-account" th:text="${#messages.msg('gnb.setting.account')}" /></li>
+				<li class="on"><a href="/setting-assign" th:text="${#messages.msg('gnb.setting.assign')}" /></li>
+				<li><a href="/setting-rider" th:text="${#messages.msg('gnb.setting.rider')}" /></li>
+				<li><a href="/setting-alarm" th:text="${#messages.msg('gnb.setting.alarm')}" /></li>
+				<li><a href="/setting-notice" th:text="${#messages.msg('gnb.notice')}" /></li>
 			</ul>
 		</div>
 		<div id="contents">
 			<div class="cont_box">
-				<div class="top"><strong>배정관리</strong></div>
+				<div class="top"><strong th:text="${#messages.msg('gnb.setting.assign')}" /></div>
 				<div class="cont">
 					<ul class="form_list">
 						<li>
-							<strong>배정모드</strong>
+							<strong th:text="${#messages.msg('order.assign.mode')}" />
 							<div>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">자동</span>
+									<span class="lbl" th:text="${#messages.msg('order.assign.mode.auto')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">수동(관리자 주문배정)</span>
+									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.store')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">수동(기사 주문 선택)</span>
+									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.rider')}" />
 								</label>
 							</div>
 						</li>
 						<li>
-							<strong>최대오더</strong>
+							<strong th:text="${#messages.msg('order.assign.max')}" />
 							<div>
 								<select name="" id="" class="select">
 									<option value="">10</option>
 								</select>
-								개
+								<span  th:text="${#messages.msg('order.assign.count.label')}" />
 							</div>
 						</li>
 						<li class="clear full">
-							<strong>서드파티</strong>
+							<strong th:text="${#messages.msg('order.assign.third')}" />
 							<div>
 								<label class="checkbox"><input name="" type="checkbox" /><i></i>
 									<span class="lbl">푸드판다</span>
@@ -62,7 +62,7 @@
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30">확인</a>
+				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
 			</div>
 		</div>
 	</section>

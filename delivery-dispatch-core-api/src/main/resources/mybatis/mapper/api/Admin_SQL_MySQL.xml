@@ -43,7 +43,6 @@
 		<result property="detailAddress" column="detail_address" />
 		<result property="chAddress" column="ch_address" />
 		<result property="chDetailAddress" column="ch_detail_address" />
-		<result property="assignmentStatus" column="assignment_status" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -271,7 +270,7 @@
 			AND D.deleted IS NULL
 	</update>
 
-	<!-- 서브그룹 목록 조회  -->
+
 	<!-- selectSubGroups -->
 	<select id="selectSubGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.SubGroup">
 		SELECT

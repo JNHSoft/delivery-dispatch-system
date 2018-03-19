@@ -3,44 +3,44 @@
 
 <!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
-		<h2 id="pageTit" class="blind">설정</h2>
+		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.setting')}" />
 		<div class="tabmenu">
 			<ul>
-				<li class="on"><a href="/setting-account">계정관리</a></li>
-				<li><a href="/setting-assign">배정관리</a></li>
-				<li><a href="/setting-rider">기사관리</a></li>
-				<li><a href="/setting-alarm">알림음설정</a></li>
-				<li><a href="/setting-notice">공지사항</a></li>
+				<li class="on"><a href="/setting-account" th:text="${#messages.msg('gnb.setting.account')}" /></li>
+				<li><a href="/setting-assign" th:text="${#messages.msg('gnb.setting.assign')}" /></li>
+				<li><a href="/setting-rider" th:text="${#messages.msg('gnb.setting.rider')}" /></li>
+				<li><a href="/setting-alarm" th:text="${#messages.msg('gnb.setting.alarm')}" /></li>
+				<li><a href="/setting-notice" th:text="${#messages.msg('gnb.notice')}" /></li>
 			</ul>
 		</div>
 		<div id="contents">
 			<div class="cont_box">
-				<div class="top"><strong>매장 정보관리</strong></div>
+				<div class="top"><strong th:text="${#messages.msg('gnb.setting.account.store')}" /></div>
 				<div class="cont">
 					<ul class="form_list">
 						<li>
-							<strong>아이디</strong>
+							<strong th:text="${#messages.msg('login.id')}" />
 							<div><input type="text" name="" class="input readonly" readonly="readonly" /></div>
 						</li>
 						<li>
-							<strong>패스워드</strong>
+							<strong th:text="${#messages.msg('login.password')}" />
 							<div><input type="password" name="" class="input" /></div>
 						</li>
 						<li>
-							<strong>매장코드</strong>
+							<strong th:text="${#messages.msg('store.code')}" />
 							<div><input type="text" name="" class="input readonly" readonly="readonly" /></div>
 						</li>
 						<li>
-							<strong>매장명</strong>
+							<strong th:text="${#messages.msg('store.name')}" />
 							<div><input type="text" name="" class="input readonly" readonly="readonly" /></div>
 						</li>
 						<li>
-							<strong>매장전화번호</strong>
+							<strong th:text="${#messages.msg('store.phone')}" />
 							<div><input type="password" name="" class="input" /></div>
 						</li>
 
 						<li>
-							<strong>소속그룹</strong>
+							<strong th:text="${#messages.msg('store.belong.group')}" />
 							<div>
 								<select name="" class="select readonly" disabled="disabled">
 									<option value="">강남</option>
@@ -52,28 +52,28 @@
 						</li>
 						
 						<li>
-							<strong>점장명</strong>
+							<strong th:text="${#messages.msg('store.manager.name')}" />
 							<div><input type="text" name="" class="input" /></div>
 						</li>
 						
 						<li>
-							<strong>점장전화번호</strong>
+							<strong th:text="${#messages.msg('store.manager.phone')}" />
 							<div><input type="text" name="" class="input" /></div>
 						</li>
 						
 						<li>
-							<strong>매장주소</strong>
+							<strong th:text="${#messages.msg('store.address')}" />
 							<div><input type="text" name="" class="input w_100" /></div>
 						</li>
 						<li>
-							<strong>매장상세주소</strong>
+							<strong th:text="${#messages.msg('store.address.detail')}" />
 							<div><input type="text" name="" class="input w_100" /></div>
 						</li>
 					</ul>
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30">확인</a>
+				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
 			</div>
 		</div>
 	</section>

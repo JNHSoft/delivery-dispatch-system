@@ -3,86 +3,86 @@
 
 <!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
-		<h2 id="pageTit" class="blind">설정</h2>
+		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.setting')}" />
 		<div class="tabmenu">
 			<ul>
-				<li><a href="/setting-account">계정관리</a></li>
-				<li><a href="/setting_assign">배정관리</a></li>
-				<li><a href="/setting-rider">기사관리</a></li>
-				<li class="on"><a href="/setting-alarm">알림음설정</a></li>
-				<li><a href="/setting-notice">공지사항</a></li>
+				<li><a href="/setting-account" th:text="${#messages.msg('gnb.setting.account')}" /></li>
+				<li><a href="/setting_assign" th:text="${#messages.msg('gnb.setting.assign')}" /></li>
+				<li><a href="/setting-rider" th:text="${#messages.msg('gnb.setting.rider')}" /></li>
+				<li class="on"><a href="/setting-alarm" th:text="${#messages.msg('gnb.setting.alarm')}" /></li>
+				<li><a href="/setting-notice" th:text="${#messages.msg('gnb.notice')}" /></li>
 			</ul>
 		</div>
 		<div id="contents">
 			<div class="cont_box">
-				<div class="top"><strong>알림음설정</strong></div>
+				<div class="top"><strong th:text="${#messages.msg('gnb.setting.alarm')}" /></div>
 				<div class="cont">
 					<ul class="form_list">
 						<li class="full">
-							<strong>신규주문</strong>
+							<strong th:text="${#messages.msg('alarm.new')}" />
 							<div>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">미사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
-								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true"></i> 미리듣기</a>
+								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
 							</div>
 						</li>
 						<li class="full">
-							<strong>주문배정</strong>
+							<strong th:text="${#messages.msg('alarm.assigned')}" />
 							<div>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">미사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
-								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true"></i> 미리듣기</a>
+								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
 							</div>
 						</li>
 						<li class="full">
-							<strong>배정취소</strong>
+							<strong th:text="${#messages.msg('alarm.assigned.canceled')}" />
 							<div>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">미사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
-								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true"></i> 미리듣기</a>
+								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
 							</div>
 						</li>
 						<li class="full">
-							<strong>주문완료</strong>
+							<strong th:text="${#messages.msg('alarm.completed')}" />
 							<div>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">미사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
-								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true"></i> 미리듣기</a>
+								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
 							</div>
 						</li>
 						<li class="full">
-							<strong>주문취소</strong>
+							<strong th:text="${#messages.msg('alarm.canceled')}" />
 							<div>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
 								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl">미사용</span>
+									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
-								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true"></i> 미리듣기</a>
+								<a href="#" class="button"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
 							</div>
 						</li>
 					</ul>
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30">확인</a>
+				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
 			</div>
 		</div>
 	</section>

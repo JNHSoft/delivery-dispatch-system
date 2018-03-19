@@ -2,8 +2,12 @@ package kr.co.cntt.core.service.api.impl;
 
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
+import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
+import kr.co.cntt.core.fcm.FirebaseResponse;
 import kr.co.cntt.core.mapper.NoticeMapper;
 import kr.co.cntt.core.model.notice.Notice;
+import kr.co.cntt.core.model.notification.Notification;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.NoticeService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +24,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service("noticeService")
 public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
+    @Autowired
+    AndroidPushNotificationsService androidPushNotificationsService;
+    /**
+     * RedisService
+     */
+    @Autowired
+    private RedisService redisService;
 
     /**
      * Notice DAO
@@ -63,7 +75,25 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
             }
 
         }
-        return noticeMapper.insertNotice(notice);
+
+        int result = noticeMapper.insertNotice(notice);
+
+        if (result != 0) {
+            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
+
+            ArrayList<String> tokens = (ArrayList)noticeMapper.selectAllToken();
+
+            if(tokens.size() > 0){
+                Notification push = new Notification();
+                push.setType(Notification.NOTI.NOTICE_MASTER);
+                push.setTitle(notice.getTitle());
+                push.setMessage(notice.getContent());
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, push);
+                checkFcmResponse(pushNotification);
+            }
+        }
+
+        return result;
     }
 
     // 공지 사항 수정
@@ -83,7 +113,11 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         int res = noticeMapper.updateNotice(notice);
 
         if (res == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00035), ErrorCodeEnum.E00035.name());
+        }
+
+        if (res != 0) {
+            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
         }
 
         return res;
@@ -107,7 +141,11 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         int res = noticeMapper.deleteNotice(notice);
 
         if (res == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00035), ErrorCodeEnum.E00035.name());
+        }
+
+        if (res != 0) {
+            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
         }
 
         return res;

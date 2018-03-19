@@ -10,7 +10,7 @@
 	<meta charset="utf-8" />
 	<meta content="IE=edge" http-equiv="X-UA-Compatible" />
 	<meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width" />
-	<title>KFC</title>
+	<title th:text="${#messages.msg('application.title')}" />
 
 	<link rel="stylesheet" th:href="@{/resources/css/common.css}" />
 	<link rel="stylesheet" th:href="@{/resources/css/contents.css}" />
@@ -20,6 +20,7 @@
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-ui-1.11.4.min.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.cookie.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.number.js}"></script>
+	<script type="text/javascript" th:src="@{https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js}"></script>
 	<!--[if lt IE 9]>
 		<script src="/resources/js/lib/html5shiv-3.7.3.js"></script>
 	<![endif]-->
@@ -32,7 +33,7 @@
 	<script type="text/javascript" th:src="@{/resources/js/grid/jquery.jqGrid.min.js}"></script>
 
 	<script type="text/javascript" th:src="@{/resources/js/common/common.js}"></script>
-	
+
 	<!-- 사용자 스크립트 영역 -->
 	<th:block layout:fragment="script"></th:block>
 </head>

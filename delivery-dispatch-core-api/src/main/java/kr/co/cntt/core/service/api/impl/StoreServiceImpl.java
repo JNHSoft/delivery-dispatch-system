@@ -8,6 +8,7 @@ import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.StoreService;
 import kr.co.cntt.core.util.Misc;
@@ -28,6 +29,12 @@ import java.util.Map;
 public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
     /**
+     * RedisService
+     */
+    @Autowired
+    private RedisService redisService;
+
+    /**
      * Store DAO
      */
     private StoreMapper storeMapper;
@@ -37,15 +44,12 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
      */
     private OrderMapper orderMapper;
 
-
-
     /**
      * @param storeMapper USER D A O
      * @author Nick
      */
     @Autowired
     public StoreServiceImpl(StoreMapper storeMapper, OrderMapper orderMapper) {
-
         this.storeMapper = storeMapper;
         this.orderMapper = orderMapper;
     }
@@ -66,6 +70,11 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     @Override
     public int insertStoreSession(Store store) {
         return storeMapper.insertStoreSession(store);
+    }
+
+    @Override
+    public int updateStoreSession(String token) {
+        return storeMapper.updateStoreSession(token);
     }
 
     // store 정보 조회
@@ -142,13 +151,29 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
             store.setSubGroupStoreRel(null);
         }
 
-        return storeMapper.updateStoreInfo(store);
+        int result = storeMapper.updateStoreInfo(store);
+
+        if (result != 0) {
+            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+        }
+
+        return result;
     }
 
     // 배정 모드 설정
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
     @Override
-    public int putStoreAssignmentStatus(Store store){return storeMapper.updateStoreAssignmentStatus(store); }
+    public int putStoreAssignmentStatus(Store store){
+        int result = storeMapper.updateStoreAssignmentStatus(store);
+
+        Store C_Store = storeMapper.selectStoreInfo(store);
+
+        if (result != 0) {
+            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+        }
+
+        return result;
+    }
 
     //배정 서드파티 설정
     @Secured({"ROLE_ADMIN", "ROLE_STORE"})
@@ -156,7 +181,16 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     public int putStoreThirdParty(Store store){
         String[] tempStr = (store.getThirdParty()).split("(?<=\\G.{" + 1 + "})");
         store.setThirdParty(StringUtils.arrayToDelimitedString(tempStr, "|"));
-        return storeMapper.updateStoreThirdParty(store);
+
+        int result = storeMapper.updateStoreThirdParty(store);
+
+        Store C_Store = storeMapper.selectStoreInfo(store);
+
+        if (result != 0) {
+            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+        }
+
+        return result;
     }
 
     //배정 서드파티 목록
@@ -172,7 +206,16 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     public int putStoreAlarm(Store store){
         String[] tempStr = (store.getAlarm()).split("(?<=\\G.{" + 1 + "})");
         store.setAlarm(StringUtils.arrayToDelimitedString(tempStr, "|"));
-        return storeMapper.updateStoreAlarm(store);
+
+        int result = storeMapper.updateStoreAlarm(store);
+
+        Store C_Store = storeMapper.selectStoreInfo(store);
+
+        if (result != 0) {
+            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+        }
+
+        return result;
     }
 
     //알림음 목록
@@ -189,7 +232,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         List<Order> S_Statistics = storeMapper.selectStoreStatistics(order);
 
         if (S_Statistics.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00033), ErrorCodeEnum.E00033.name());
         }
 
         return S_Statistics;
@@ -204,7 +247,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         Order S_Order = storeMapper.selectStoreStatisticsInfo(order);
 
         if (S_Order == null) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00034), ErrorCodeEnum.E00034.name());
         }
 
 

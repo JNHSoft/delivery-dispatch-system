@@ -8,6 +8,9 @@ public interface Api {
     /** 토큰발행 */
     String GET_TOKEN = "/getToken.do";
 
+    /** 토큰만료 */
+    String PUT_TOKEN = "/putToken.do";
+
     /** APP Version Check */
     String VERSION_CHECK = "/versionCheck.do";
 
@@ -100,6 +103,23 @@ public interface Api {
     /** [Admin] 통계 조회**/
     String ADMIN_STATISTICS_INFO = "/getAdminStatisticsInfo.json";
 
+    /** [Admin] 배정 거절 사유 추가 */
+    String ADMIN_REJECT_REASON_POST = "/postRejectReason.json";
+
+    /** [Admin] 배정 거절 사유 수정 */
+    String ADMIN_REJECT_REASON_PUT = "/putRejectReason.json";
+
+    /** [Admin] 배정 거절 사유 삭제 */
+    String ADMIN_REJECT_REASON_DELETE = "/deleteRejectReason.json";
+
+    /** [Admin] order 우선 배정 사유 추가 */
+    String ORDER_FIRST_ASSIGNMENT_REASON_POST = "/postOrderFirstAssignmentReason.json";
+
+    /** [Admin] order 우선 배정 사유 수정 */
+    String ORDER_FIRST_ASSIGNMENT_REASON_PUT = "/putOrderFirstAssignmentReason.json";
+
+    /** [Admin] order 우선 배정 사유 삭제 */
+    String ORDER_FIRST_ASSIGNMENT_REASON_DELETE = "/deleteOrderFirstAssignmentReason.json";
 
     // ############################################################################################ //
 
@@ -132,7 +152,6 @@ public interface Api {
 
     /** Rider 재배치**/
     String RIDER_RETURN_TIME_PUT = "/putRiderReturnTime.json";
-
 
     /** 배정 거절 사유 목록 조회 **/
     String REJECT_REASON_LIST = "getRejectReasonList.json";
@@ -202,7 +221,10 @@ public interface Api {
     String ORDER_DENY_ASSIGNMENT = "/postOrderDeny.json";
 
     /** Order 우선배정 */
-    String ORDER_ASSIGNED_FIRST = "putOrderAssignedFirst.json";
+    String ORDER_ASSIGNED_FIRST = "/putOrderAssignedFirst.json";
+
+    /** 우선 배정 사유 목록 조회 **/
+    String ORDER_FIRST_ASSIGNMENT_REASON_GET = "/getOrderFirstAssignmentReason.json";
 
     // ############################################################################################ //
 
@@ -231,6 +253,17 @@ public interface Api {
 
     /** 공지사항 리스트 */
     String NOTICE_LIST = "/getNoticeList.json";
+
+    // ############################################################################################ //
+
+    /** 채팅 보내기 */
+    String CHAT_POST = "/postChat.json";
+
+    /** 채팅 읽기 */
+    String CHAT_GET = "/getChat.json";
+
+    /** 채팅방 목록 */
+    String CHATROOM_GET = "/getChatRoom.json";
 
     // ############################################################################################ //
 

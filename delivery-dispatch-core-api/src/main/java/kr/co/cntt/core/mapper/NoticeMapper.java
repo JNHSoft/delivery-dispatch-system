@@ -82,4 +82,6 @@ public interface NoticeMapper {
     // admin 공지사항
     public List<Notice> getAdminNoticeList(Notice notice);
 
+    public List<String> selectAllToken();
+
 }

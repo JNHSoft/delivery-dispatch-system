@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -37,6 +38,14 @@ public interface AdminService {
      * @return
      */
     public int insertAdminSession(Admin admin);
+
+    /**
+     * <p> updateAdminSession
+     *
+     * @param token
+     * @return
+     */
+    public int updateAdminSession(String token);
 
     /**
      * <p> getAdminInfo
@@ -266,4 +275,53 @@ public interface AdminService {
      * @throws AppTrException
      */
     public Order getAdminStatisticsInfo(Order order) throws AppTrException;
+
+    /**
+     * 배정 거절 사유 추가
+     *
+     * @param reason
+     * @return
+     */
+    public int postRejectReason(Reason reason);
+
+    /**
+     * 배정 거절 사유 수정
+     *
+     * @param reason
+     * @return
+     */
+    public int putRejectReason(Reason reason);
+
+    /**
+     * 배정 거절 사유 삭제
+     *
+     * @param reason
+     * @return
+     */
+    public int deleteRejectReason(Reason reason);
+
+    /**
+     * order 우선 배정 사유 추가
+     *
+     * @param reason
+     * @return
+     */
+    public int postOrderFirstAssignmentReason(Reason reason);
+
+    /**
+     * order 우선 배정 사유 수정
+     *
+     * @param reason
+     * @return
+     */
+    public int putOrderFirstAssignmentReason(Reason reason);
+
+    /**
+     * order 우선 배정 사유 삭제
+     *
+     * @param reason
+     * @return
+     */
+    public int deleteOrderFirstAssignmentReason(Reason reason);
+
 }

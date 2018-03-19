@@ -214,6 +214,42 @@ public class ApiExporter extends ExporterSupportor implements Api {
         }
 
     }
+
+    @RequestMapping(value = PUT_TOKEN)
+    public ResponseEntity<?> expiryToken(HttpServletRequest request, @RequestParam String level, @RequestParam String token) throws Exception {
+//        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
+        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
+
+        try {
+
+            if (level.equals("3")) {
+                riderService.updateRiderSession(token);
+            } else if (level.equals("2")) {
+                storeService.updateStoreSession(token);
+
+            } else if (level.equals("1")) {
+                adminService.updateAdminSession(token);
+            }
+
+            result.put("result", CODE_SUCCESS);
+            response.put("result", CODE_SUCCESS);
+
+            return ResponseEntity.ok(new Gson().toJson(response).toString());
+        } catch(Exception e) {
+            result.put("result", CODE_ERROR);
+            data.put("token", token);
+            data.put("msg", e.getLocalizedMessage());
+            response.put("result", CODE_ERROR);
+            response.put("token", token);
+            response.put("msg", e.getLocalizedMessage());
+//            response.add(result);
+//            response.add(data);
+            return ResponseEntity.ok(new Gson().toJson(response).toString());
+        }
+    }
+
     /**
      * Generic api controller 모든 request 를 서비스로 구분하여 generic하게 처리한다. 모든 response
      * type을 지원한다.

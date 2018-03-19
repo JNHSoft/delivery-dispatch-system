@@ -29,6 +29,7 @@
 
 		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="id" column="store_id" />
+			<result property="adminId" column="admin_id" />
 			<result property="storeName" column="store_name" />
 			<result property="latitude" column="store_latitude" />
 			<result property="longitude" column="store_longitude" />
@@ -134,6 +135,9 @@
 			, #{status}
 			, now()
 	  	)
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</insert>
 
 
@@ -173,7 +177,8 @@
 		WHERE
 			<choose>
 				<when test="currentDatetime != null and currentDatetime != ''">
-					A.created_datetime > date_sub(#{currentDatetime}, interval #{days} - 1 day)
+					date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > A.created_datetime
+					AND A.created_datetime > #{currentDatetime}
 				</when>
 				<otherwise>
 					A.created_datetime > CURRENT_DATE()
@@ -360,6 +365,7 @@
 			<if test="role == 'ROLE_STORE' and assignedFirst == 'True'">
 				, A.assigned_first = (SELECT * FROM (SELECT IFNULL(MAX(assigned_first), 0) + 1 FROM TB_ORDER) AS D)
 			</if>
+			, A.id = LAST_INSERT_ID(A.id)
 		WHERE A.id = #{id}
 			<choose>
 				<when test="role != null and role == 'ROLE_SYSTEM'">
@@ -382,6 +388,9 @@
 					AND A.id IS NULL
 				</otherwise>
 			</choose>
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</update>
 
 
@@ -442,6 +451,7 @@
           , rider_id
           , order_id
           , status
+          , reason
         ) VALUES (
           now()
           , now()
@@ -456,6 +466,7 @@
           , (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
           , #{id}
           , #{orderCheckAssignment.status}
+          , #{orderCheckAssignment.reason}
         )
     </insert>
 
@@ -509,6 +520,7 @@
 		    , B.radius
 		    , B.assignment_limit
 		    , B.store_distance_sort
+		    , B.admin_id
 		    , B.store_name
 		    , A.address
 		FROM TB_ORDER AS A
@@ -525,6 +537,7 @@
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC
 	</select>
 
+
 	<select id="selectOrderLocation" parameterType="String" resultType="kr.co.cntt.core.model.order.Order">
 		SELECT
 		id
@@ -533,6 +546,31 @@
 		FROM TB_ORDER
 		WHERE id = #{id}
 	</select>
+
+
+	<!-- selectOrderFirstAssignmentReason -->
+	<select id="selectOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.reason.Reason">
+		SELECT id
+		, reason
+		, admin_id
+		FROM TB_ORDER_FIRST_ASSIGNMENT_REASON
+		WHERE deleted IS NULL
+		<choose>
+			<when test="role != null and role == 'ROLE_STORE'">
+				AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+			</when>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+			</when>
+			<when test="role != null and role == 'ROLE_ADMIN'">
+				AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			</when>
+			<otherwise>
+				AND id IS NULL
+			</otherwise>
+		</choose>
+	</select>
+
 
 	<select id="selectPushToken" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">
 		select TBRS.push_token

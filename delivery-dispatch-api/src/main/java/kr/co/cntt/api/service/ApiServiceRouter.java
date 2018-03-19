@@ -3,15 +3,16 @@ package kr.co.cntt.api.service;
 import kr.co.cntt.api.config.IServiceRouter;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
+import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
-import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.payment.Payment;
+import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -104,6 +105,24 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 통계 조회**/
 	ADMIN_STATISTICS_INFO("adminService", "getAdminStatisticsInfo", Order.class),
 
+	/** [Admin] 배정 거절 사유 추가 **/
+	ADMIN_REJECT_REASON_POST("adminService", "postRejectReason", Reason.class),
+
+	/** [Admin] 배정 거절 사유 수정 **/
+    ADMIN_REJECT_REASON_PUT("adminService", "putRejectReason", Reason.class),
+
+	/** [Admin] 배정 거절 사유 삭제 **/
+	ADMIN_REJECT_REASON_DELETE("adminService", "deleteRejectReason", Reason.class),
+
+	/** [Admin] order 우선 배정 사유 추가 **/
+	ORDER_FIRST_ASSIGNMENT_REASON_POST("adminService", "postOrderFirstAssignmentReason", Reason.class),
+
+	/** [Admin] order 우선 배정 사유 수정 **/
+	ORDER_FIRST_ASSIGNMENT_REASON_PUT("adminService", "putOrderFirstAssignmentReason", Reason.class),
+
+	/** [Admin] order 우선 배정 사유 삭제 **/
+	ORDER_FIRST_ASSIGNMENT_REASON_DELETE("adminService", "deleteOrderFirstAssignmentReason", Reason.class),
+
 	// ############################################################################################ //
 
 	/** Rider 정보조회 */
@@ -127,16 +146,16 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 들 위치 조회 */
 	RIDERS_LOCATION_INFO("riderService", "getRidersLocation", Rider.class),
 
-
 	/** 해당 그룹 소속 기사 목록 조회 */
 	SUBGROUP_RIDER_REL_LIST("riderService", "getSubgroupRiderRels", Common.class),
 
-	/** Rider 배정 모드 조회**/
+	/** Rider 배정 모드 조회*/
 	RIDER_ASSIGNMENT_STATUS_GET("riderService", "getRiderAssignmentStatus", Rider.class),
 
-	/** Rider 재배치 **/
+	/** Rider 재배치 */
 	RIDER_RETURN_TIME_PUT("riderService","putRiderReturnTime", Rider.class),
 
+	/** Rider 배정 거절 사유 목록 조회 */
 	REJECT_REASON_LIST("riderService", "getRejectReasonList", Common.class),
 
 	// ############################################################################################ //
@@ -206,6 +225,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Order 우선배정 */
 	ORDER_ASSIGNED_FIRST("orderService", "putOrderAssignedFirst", Order.class),
 
+	/** Order 우선 배정 사유 목록 조회 */
+	ORDER_FIRST_ASSIGNMENT_REASON_GET("orderService", "getOrderFirstAssignmentReason", Common.class),
+
 	// ############################################################################################ //
 
 	/** Payment  결제 정보 조회 */
@@ -237,7 +259,18 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** pushToken 등록   */
 	SET_PUSH_TOKEN("userService", "updatePushToken", User.class),
 
+	// ############################################################################################ //
 
+	/** 채팅 보내기 */
+	CHAT_POST("chatService", "postChat", Chat.class),
+
+	/** 채팅 읽기 */
+	CHAT_GET("chatService", "getChat", Chat.class),
+
+	/** 채팅방 목록 */
+	CHATROOM_GET("chatService", "getChatRoom", Chat.class),
+
+	// ############################################################################################ //
 
 //	/** 주문요청2 */
 //	SET_ORDER2("TRO001SV_APP", "setorder2", R_TRO001_1.class),

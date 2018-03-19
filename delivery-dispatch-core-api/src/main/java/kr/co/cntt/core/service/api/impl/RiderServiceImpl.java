@@ -7,7 +7,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +25,12 @@ import java.util.Map;
 @Slf4j
 @Service("riderService")
 public class RiderServiceImpl extends ServiceSupport implements RiderService {
+
+    /**
+     * RedisService
+     */
+    @Autowired
+    private RedisService redisService;
 
     /**
      * Rider DAO
@@ -52,6 +58,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Override
     public int insertRiderSession(Rider rider) {
         return riderMapper.insertRiderSession(rider);
+    }
+
+    @Override
+    public int updateRiderSession(String token) {
+        return riderMapper.updateRiderSession(token);
     }
 
     // rider 정보 조회
@@ -92,7 +103,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         List<Rider> S_Rider = riderMapper.getStoreRiders(user);
 
         if (S_Rider.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00037), ErrorCodeEnum.E00037.name());
         }
 
         return S_Rider;
@@ -121,6 +132,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         int nRet = riderMapper.updateRiderInfo(rider);
+
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+        if (nRet != 0) {
+            if (S_Rider.getSubGroupStoreRel() != null) {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+            } else {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
+            }
+        }
+
         return nRet;
     }
 
@@ -138,6 +160,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         int nRet = riderMapper.updateWorkingRider(rider);
+
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+        if (nRet != 0) {
+            if (S_Rider.getSubGroupStoreRel() != null) {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+            } else {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
+            }
+        }
+
         return nRet;
 
     }
@@ -154,6 +187,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         int nRet = riderMapper.updateRiderLocation(rider);
+
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+        if (nRet != 0) {
+            if (S_Rider.getSubGroupStoreRel() != null) {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+            } else {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
+            }
+        }
+
         return nRet;
     }
 
@@ -173,7 +217,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         Rider S_Rider = riderMapper.getRiderLocation(rider);
 
         if (S_Rider == null) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.A0011), ErrorCodeEnum.A0011.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00008), ErrorCodeEnum.E00008.name());
         }
         return S_Rider;
     }
@@ -214,7 +258,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         List<Rider> S_Rider = riderMapper.selectSubgroupRiderRels(common);
 
         if (S_Rider.size() == 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00006), ErrorCodeEnum.E00006.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00038), ErrorCodeEnum.E00038.name());
         }
 
         return S_Rider;
@@ -240,7 +284,21 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     //라이더 재배치
     @Secured("ROLE_STORE")
     @Override
-    public int putRiderReturnTime(Rider rider){ return riderMapper.updateRiderReturnTime(rider); }
+    public int putRiderReturnTime(Rider rider){
+        int nRet = riderMapper.updateRiderReturnTime(rider);
+
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
+        if (nRet != 0) {
+            if (S_Rider.getSubGroupStoreRel() != null) {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+            } else {
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
+            }
+        }
+
+        return nRet;
+    }
 
     //기사 휴식 시간
     @Override
@@ -268,10 +326,22 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
     }
 
-
+    @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
     public List<Reason> getRejectReasonList(Common common) throws AppTrException {
-        List<Reason> reasonList = riderMapper.selectRejectReason();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            common.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            common.setRole("ROLE_RIDER");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+            common.setRole("ROLE_ADMIN");
+        }
+
+        List<Reason> reasonList = riderMapper.selectRejectReason(common);
+
         return reasonList;
     }
+
 }
