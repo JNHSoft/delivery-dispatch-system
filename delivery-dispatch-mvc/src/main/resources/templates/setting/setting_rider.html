@@ -77,10 +77,10 @@
 								<th th:text="${#messages.msg('rider.gender')}" />
 								<td>
 									<label class="radio"><input name="" type="radio" /><i></i>
-										<span class="lbl" th:text="${#messages.msg('rider.gender.men')}" />
+										<span class="lbl" th:text="${#messages.msg('rider.gender.male')}" />
 									</label>
 									<label class="radio"><input name="" type="radio" /><i></i>
-										<span class="lbl" th:text="${#messages.msg('rider.gender.women')}" />
+										<span class="lbl" th:text="${#messages.msg('rider.gender.female')}" />
 									</label>
 								</td>
 								<th rowspan="2" th:text="${#messages.msg('rider.time.rest')}" />
@@ -151,8 +151,8 @@
 var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
 var rider_code = /*[[#{rider.code}]]*/ 'rider_code';
 var rider_gender = /*[[#{rider.gender}]]*/ 'rider_gender';
-var rider_gender_men = /*[[#{rider.gender.men}]]*/ 'rider_gender_men';
-var rider_gender_women = /*[[#{rider.gender.women}]]*/ 'rider_gender_women';
+var rider_gender_male = /*[[#{rider.gender.male}]]*/ 'rider_gender_male';
+var rider_gender_female = /*[[#{rider.gender.female}]]*/ 'rider_gender_female';
 var rider_phone = /*[[#{rider.phone}]]*/ 'rider_phone';
 var rider_phone_emergency = /*[[#{rider.phone.emergency}]]*/ 'rider_phone_emergency';
 var rider_address = /*[[#{rider.address}]]*/ 'rider_address';
@@ -161,8 +161,8 @@ var rider_teenager = /*[[#{rider.teenager}]]*/ 'rider_teenager';
 var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
 
 var mydata = [
-	{No:'2', name:'홍길동', code:'00000', gender:rider_gender_men, tel1:'02-1234-1234', tel2:"02-5789-5789", address:'서울시 구로구 개봉동 123-12', carNumber:'가2222', youth:'O', id:'seocho'},
-	{No:'1', name:'김나은', code:'00001', gender:rider_gender_women, tel1:'02-1234-1234', tel2:"02-5789-5789", address:'서울시 구로구 개봉동 123-12', carNumber:'가2222', youth:'X', id:'jung'}
+	{No:'2', name:'홍길동', code:'00000', gender:rider_gender_male, tel1:'02-1234-1234', tel2:"02-5789-5789", address:'서울시 구로구 개봉동 123-12', carNumber:'가2222', youth:'O', id:'seocho'},
+	{No:'1', name:'김나은', code:'00001', gender:rider_gender_female, tel1:'02-1234-1234', tel2:"02-5789-5789", address:'서울시 구로구 개봉동 123-12', carNumber:'가2222', youth:'X', id:'jung'}
 ];	
 $(document).ready(function () {
 		$("#jqGrid").jqGrid({
