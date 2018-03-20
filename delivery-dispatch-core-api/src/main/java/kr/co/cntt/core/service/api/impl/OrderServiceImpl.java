@@ -413,24 +413,30 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (order.getRole().equals("ROLE_RIDER")) {
             Rider rider = new Rider();
+            rider.setAccessToken(order.getToken());
+            rider.setToken(order.getToken());
+
+            Rider S_Rider = riderMapper.getRiderInfo(rider);
+
             List<Order> R_Order = new ArrayList<>();
+
             if (statusArray != null) {
                 for (char s : statusArray) {
                     if (s != '0' && s != '5') {
-                        rider.setAccessToken(order.getToken());
-                        rider.setToken(order.getToken());
-                        Rider S_Rider = riderMapper.getRiderInfo(rider);
-
                         for (Order o : S_Order) {
                             if (o.getRiderId() != null) {
                                 if (o.getRiderId().equals(S_Rider.getId())) {
-                                    R_Order.add(o);
+                                    if (!R_Order.contains(o)) {
+                                        R_Order.add(o);
+                                    }
                                 }
                             }
                         }
                     } else {
                         for (Order o : S_Order) {
-                            R_Order.add(o);
+                            if (!R_Order.contains(o)) {
+                                R_Order.add(o);
+                            }
                         }
                     }
                 }
