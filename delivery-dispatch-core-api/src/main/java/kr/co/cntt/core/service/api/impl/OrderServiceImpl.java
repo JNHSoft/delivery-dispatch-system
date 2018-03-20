@@ -8,6 +8,7 @@ import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.order.OrderCheckAssignment;
@@ -662,9 +663,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
 
-        Store S_Store = storeMapper.selectStoreInfo(storeDTO);
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            Rider rider = new Rider();
+            rider.setToken(order.getToken());
+            rider.setRole("ROLE_RIDER");
+            SubGroupRiderRel subGroupRiderRel = riderMapper.selectMySubgroupRiderRels(rider);
+
+            storeDTO.setId(subGroupRiderRel.getStoreId());
+            storeDTO.setIsAdmin("0");
+        }
+
+        Store S_Store = storeMapper.selectStoreInfo(storeDTO);
 
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             Rider rider = new Rider();

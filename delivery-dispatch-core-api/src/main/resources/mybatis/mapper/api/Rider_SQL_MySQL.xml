@@ -605,5 +605,27 @@
             </choose>
     </select>
 
+
+	<!-- selectMySubgroupRiderRels -->
+	<select id="selectMySubgroupRiderRels" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.group.SubGroupRiderRel">
+		SELECT id
+			, admin_id
+			, group_id
+			, subgroup_id
+			, store_id
+			, rider_id
+		FROM TB_SUBGROUP_RIDER_REL
+		WHERE deleted IS NULL
+		<choose>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				AND admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+				AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+			</when>
+			<otherwise>
+				AND id IS NULL
+			</otherwise>
+		</choose>
+	</select>
+
 </mapper>
  
