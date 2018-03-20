@@ -1013,7 +1013,19 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00013), ErrorCodeEnum.E00013.name());
         }
 
-        return orderMapper.insertOrderConfirm(order);
+        int nRet = orderMapper.insertOrderConfirm(order);
+        /*if (nRet != 0) {
+            ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderToken(order);
+            if(tokens.size() > 0){
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.ORDER_ASSIGN);
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                checkFcmResponse(pushNotification);
+            }
+
+
+        }*/
+        return nRet;
     }
 
     @Secured({"ROLE_RIDER"})
