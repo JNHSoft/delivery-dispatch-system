@@ -458,6 +458,7 @@
 	<select id="selectSubgroupRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
 		SELECT A.id
 			, A.name
+			, A.phone
 			, A.status
 			, A.working
 			, A.chat_user_id
