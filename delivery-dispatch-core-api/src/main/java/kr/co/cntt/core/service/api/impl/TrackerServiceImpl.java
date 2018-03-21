@@ -80,8 +80,10 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             }
 
             String regOrderId = query_pairs.get("regOrderId");
+            String code = query_pairs.get("code");
 
             tracker.setRegOrderId(regOrderId);
+            tracker.setCode(code);
 
         } catch (Exception e) {
             e.printStackTrace();

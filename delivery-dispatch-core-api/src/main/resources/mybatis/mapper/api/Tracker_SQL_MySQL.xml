@@ -45,9 +45,12 @@
 
 	<!-- selectTracker -->
 	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
-		SELECT reg_order_id, id, status FROM TB_ORDER
-		WHERE reg_order_id = #{regOrderId}
-		limit 1
+		SELECT A.reg_order_id, A.id, A.status, B.code
+		FROM TB_ORDER AS A
+		LEFT JOIN TB_STORE AS B
+		ON A.store_id = B.id
+		WHERE A.reg_order_id = #{regOrderId}
+			AND B.code = #{code}
 	</select>
 
 </mapper>
