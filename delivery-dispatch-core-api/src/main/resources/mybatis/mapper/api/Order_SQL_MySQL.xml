@@ -4,6 +4,7 @@
     <!-- selectRidersResult -->
     <resultMap id="selectOrdersResult" type="kr.co.cntt.core.model.order.Order">
         <result property="id" column="id" />
+        <result property="regOrderId" column="reg_order_id" />
         <result property="createdDatetime" column="created_datetime" />
         <result property="storeId" column="store_id" />
         <result property="riderId" column="rider_id" />
@@ -44,6 +45,7 @@
 	<!-- selectRiderResult -->
 	<resultMap id="selectOrderInfoResult" type="kr.co.cntt.core.model.order.Order">
 		<result property="id" column="id" />
+		<result property="regOrderId" column="reg_order_id" />
 		<result property="createdDatetime" column="created_datetime" />
 		<result property="status" column="status" />
 		<result property="storeId" column="store_id" />
@@ -110,6 +112,7 @@
 			, reservation_datetime
 			, device_os
 			, status
+			, reg_order_id
 			, created_datetime
 		) VALUES(
 			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
@@ -134,6 +137,7 @@
 			, #{reservationDatetime}
 			, #{deviceOs}
 			, #{status}
+			, #{regOrderId}
 			, now()
 	  	)
 		<selectKey keyProperty="id" resultType="String">
@@ -146,6 +150,7 @@
 	<select id="selectOrders" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
 		SELECT
 			A.id
+			, A.reg_order_id
 			, A.created_datetime
             , A.store_id
             , A.rider_id
@@ -216,6 +221,7 @@
 	<select id="selectOrderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectOrderInfoResult">
 		SELECT
             A.id
+			, A.reg_order_id
             , A.created_datetime
 			, A.status
 			, A.store_id
