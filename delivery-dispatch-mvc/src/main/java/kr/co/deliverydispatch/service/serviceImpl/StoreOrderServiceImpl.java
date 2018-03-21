@@ -262,7 +262,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         if (ret != 0) {
             redisService.setPublisher("order_assigned", "id:"+order.getId()+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
 
-            if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
@@ -502,6 +502,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
     @Override
     public int putOrderAssignCanceled(Order order){
+        ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(order);
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
 
@@ -557,8 +558,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (ret != 0) {
             redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId());
-            if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
+            if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN_CANCEL);
