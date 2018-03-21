@@ -1,19 +1,16 @@
 package kr.co.cntt.api.security;
 
-import java.io.IOException;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.service.api.RiderService;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import kr.co.cntt.core.service.api.StoreService;
+import kr.co.cntt.core.service.api.TrackerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,10 +18,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Slf4j
 public class AuthentificationTokenFilter extends OncePerRequestFilter {
@@ -43,6 +41,9 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private TrackerService trackerService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse response, FilterChain chain)
@@ -76,6 +77,7 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                     Rider riderInfo = new Rider();
                     Store storeInfo = new Store();
                     Admin adminInfo = new Admin();
+                    User trackerInfo = new User();
                     int checkUserCount = 0;
 
                     if (authLevel.equals("3")) {
@@ -98,6 +100,11 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                         adminInfo.setLoginId(username);
 
                         checkUserCount = adminService.selectAdminTokenCheck(adminInfo);
+                    } else if (authLevel.equals("4")) {
+                        trackerInfo.setAccessToken(authToken);
+                        trackerInfo.setLoginId(username);
+
+                        checkUserCount = trackerService.selectTrackerTokenCheck(trackerInfo);
                     }
 
                     log.debug("=======> checkUserCount : {}", checkUserCount);

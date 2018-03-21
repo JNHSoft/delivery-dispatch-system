@@ -272,6 +272,11 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	// ############################################################################################ //
 
+	/** 트래커 - 주문 정보 조회 */
+	TRACKER_GET("trackerService", "getTracker", Order.class),
+
+	// ############################################################################################ //
+
 //	/** 주문요청2 */
 //	SET_ORDER2("TRO001SV_APP", "setorder2", R_TRO001_1.class),
 //	/** 회원정보등록 */
