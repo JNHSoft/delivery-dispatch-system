@@ -515,11 +515,17 @@ function putOrder() {
 
 function putOrderAssignCancle() {
     var id = $('.tit').attr("orderId");
+    var combinedOrderId = '';
+    if($('#combinedChk').prop("checked")){
+        combinedOrderId = $('#selectCombined').val();
+    }
+
     $.ajax({
         url: '/putOrderAssignCancle',
         type: 'put',
         data: {
             id : id,
+            combinedOrderId : combinedOrderId,
         },
         async : false,
         dataType : 'json',
