@@ -10,8 +10,10 @@ import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.service.api.RiderService;
 import kr.co.cntt.core.service.api.StoreService;
 import kr.co.cntt.core.service.api.TrackerService;
+import kr.co.cntt.core.util.AES256Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,9 +25,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Slf4j
 public class AuthentificationTokenFilter extends OncePerRequestFilter {
+
+    @Value("${api.tracker.key}")
+    private String tKey;
 
     @Autowired
     private CustomAuthentificateService customAuthentificateService;
@@ -135,10 +143,22 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
             }
         } else if (requestUri.contains("getTracker.do")) {
             try {
+                Map<String, String> query_pairs = new LinkedHashMap<>();
+
                 request = new RequestWrapper(servletRequest);
 
-                String authToken = request.getParameter("token");
-                String authLevel = request.getParameter("level");
+                AES256Util aesUtil = new AES256Util(tKey);
+
+                String decParam = aesUtil.aesDecode(request.getParameter("encParam"));
+                String[] pairs = decParam.split("&");
+                for (String pair : pairs) {
+                    int idx = pair.indexOf("=");
+                    query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                }
+
+
+                String authToken = query_pairs.get("token");
+                String authLevel = query_pairs.get("level");
 
                 log.debug("======= authToken : {}", authToken);
                 log.debug("======= authLevel : {}", authLevel);

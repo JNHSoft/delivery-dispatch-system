@@ -1,21 +1,32 @@
 package kr.co.cntt.core.service.api.impl;
 
+import kr.co.cntt.core.enums.ErrorCodeEnum;
+import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.TrackerMapper;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.TrackerService;
+import kr.co.cntt.core.util.AES256Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
+
+import java.net.URLDecoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Slf4j
 @Service("trackerService")
 public class TrackerServiceImpl extends ServiceSupport implements TrackerService {
 
+    @Value("${api.tracker.key}")
+    private String tKey;
+
     /**
-     * Rider DAO
+     * Tracker DAO
      */
     private TrackerMapper trackerMapper;
 
@@ -42,6 +53,47 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
 
     @Secured({"ROLE_TRACKER"})
     @Override
-    public Tracker getTracker(Tracker tracker) { return trackerMapper.selectTracker(tracker); }
+    public Tracker getJsonTracker(Tracker tracker) throws AppTrException {
+        Tracker S_Tracker = trackerMapper.selectTracker(tracker);
+
+        if (S_Tracker == null) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00016), ErrorCodeEnum.E00016.name());
+        }
+
+        return S_Tracker;
+    }
+
+    @Secured({"ROLE_TRACKER"})
+    @Override
+    public Tracker getTracker(String encParam) throws AppTrException {
+        Tracker tracker = new Tracker();
+
+        try {
+            Map<String, String> query_pairs = new LinkedHashMap<>();
+            AES256Util aesUtil = new AES256Util(tKey);
+
+            String decParam = aesUtil.aesDecode(encParam);
+            String[] pairs = decParam.split("&");
+            for (String pair : pairs) {
+                int idx = pair.indexOf("=");
+                query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+            }
+
+            String regOrderId = query_pairs.get("regOrderId");
+
+            tracker.setRegOrderId(regOrderId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Tracker S_Tracker = trackerMapper.selectTracker(tracker);
+
+        if (S_Tracker == null) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00016), ErrorCodeEnum.E00016.name());
+        }
+
+        return S_Tracker;
+    }
 
 }

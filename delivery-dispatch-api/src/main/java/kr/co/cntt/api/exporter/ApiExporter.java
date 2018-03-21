@@ -12,7 +12,6 @@ import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.login.User;
-import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.tracker.Tracker;
@@ -39,6 +38,7 @@ import static kr.co.cntt.api.exporter.Api.Path;
 @RestController
 @RequestMapping(Path)
 public class ApiExporter extends ExporterSupportor implements Api {
+
     /**
      * 객체 주입
      */
@@ -318,16 +318,13 @@ public class ApiExporter extends ExporterSupportor implements Api {
     }
 
     @GetMapping(value = TRACKER_GET)
-    public ResponseEntity<?> getTracker(@RequestParam String regOrderId) throws AppTrException {
+    public ResponseEntity<?> getTracker(@RequestParam String encParam) throws AppTrException {
         Map<String, Object> response = new HashMap<String, Object>();
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
         try {
-            Tracker tracker = new Tracker();
-            tracker.setRegOrderId(regOrderId);
-
-            Tracker trackerResult = trackerService.getTracker(tracker);
+            Tracker trackerResult = trackerService.getTracker(encParam);
 
             result.put("result", CODE_SUCCESS);
             data.put("tracker", trackerResult);

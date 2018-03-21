@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+
+	<!-- 컨텐츠 영역 -->
+	<section id="container" layout:fragment="content">
+		<p>iframe tracker test</p>
+		<br />
+		strParam : <p th:text="${strParam}" />
+		<br />
+		encParam : <p th:text="${encParam}" />
+		<br />
+		<iframe th:src="@{http://localhost:8091/API/getTracker.do(encParam=${encParam})}" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
+	</section>
+</html>

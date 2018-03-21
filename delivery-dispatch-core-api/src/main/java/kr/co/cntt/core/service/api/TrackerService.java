@@ -1,8 +1,8 @@
 package kr.co.cntt.core.service.api;
 
 
+import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.login.User;
-import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.tracker.Tracker;
 
 public interface TrackerService {
@@ -29,11 +29,19 @@ public interface TrackerService {
     public int insertTrackerSession(User user);
 
     /**
-     * <p> getTracker
+     * <p> getJsonTracker
      *
      * @param tracker
      * @return
      */
-    public Tracker getTracker(Tracker tracker);
+    public Tracker getJsonTracker(Tracker tracker) throws AppTrException;
+
+    /**
+     * <p> getTracker
+     *
+     * @param encParam
+     * @return
+     */
+    public Tracker getTracker(String encParam) throws AppTrException;
 
 }

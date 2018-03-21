@@ -274,6 +274,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	// ############################################################################################ //
 
 	/** 트래커 - 주문 정보 조회 */
+	TRACKER_JSON_GET("trackerService", "getJsonTracker", Tracker.class),
+
+	/** 트래커 - 주문 정보 조회 */
 	TRACKER_GET("trackerService", "getTracker", Tracker.class),
 
 	// ############################################################################################ //
