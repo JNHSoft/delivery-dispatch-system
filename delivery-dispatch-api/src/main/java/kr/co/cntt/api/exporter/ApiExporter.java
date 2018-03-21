@@ -12,12 +12,10 @@ import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.service.api.AdminService;
-import kr.co.cntt.core.service.api.OrderService;
-import kr.co.cntt.core.service.api.RiderService;
-import kr.co.cntt.core.service.api.StoreService;
+import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.service.api.*;
 import kr.co.cntt.core.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -318,4 +316,31 @@ public class ApiExporter extends ExporterSupportor implements Api {
         return ResponseEntity.ok(gson.toJson(response).toString());
 
     }
+
+    @GetMapping(value = TRACKER_GET)
+    public ResponseEntity<?> getTracker(@RequestParam String regOrderId) throws AppTrException {
+        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
+
+        try {
+            Tracker tracker = new Tracker();
+            tracker.setRegOrderId(regOrderId);
+
+            Tracker trackerResult = trackerService.getTracker(tracker);
+
+            result.put("result", CODE_SUCCESS);
+            data.put("tracker", trackerResult);
+
+            response.put("result", CODE_SUCCESS);
+            response.put("tracker", trackerResult);
+
+            Gson gson = new GsonBuilder().serializeNulls().create();
+
+            return ResponseEntity.ok(gson.toJson(response).toString());
+        } catch (Exception e) {
+            return responseError(null, e);
+        }
+    }
+
 }

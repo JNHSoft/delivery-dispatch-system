@@ -2,7 +2,7 @@ package kr.co.cntt.core.service.api.impl;
 
 import kr.co.cntt.core.mapper.TrackerMapper;
 import kr.co.cntt.core.model.login.User;
-import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.TrackerService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +42,6 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
 
     @Secured({"ROLE_TRACKER"})
     @Override
-    public Order getTracker(Order order) { return trackerMapper.selectTracker(order); }
+    public Tracker getTracker(Tracker tracker) { return trackerMapper.selectTracker(tracker); }
 
 }

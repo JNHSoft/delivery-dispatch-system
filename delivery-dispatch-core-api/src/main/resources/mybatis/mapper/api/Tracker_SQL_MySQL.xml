@@ -44,7 +44,7 @@
 
 
 	<!-- selectTracker -->
-	<select id="selectTracker" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.order.Order">
+	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
 		SELECT reg_order_id, id, status FROM TB_ORDER
 		WHERE reg_order_id = #{regOrderId}
 		limit 1

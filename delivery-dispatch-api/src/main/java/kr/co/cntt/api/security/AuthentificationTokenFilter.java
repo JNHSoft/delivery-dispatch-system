@@ -52,7 +52,7 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
         String requestUri = servletRequest.getRequestURI();
         log.debug("======= api request uri : {}", requestUri);
 
-        if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do")) && !(requestUri.contains("putToken.do")) && !(requestUri.contains("versionCheck.do"))) {
+        if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do")) && !(requestUri.contains("putToken.do")) && !(requestUri.contains("versionCheck.do")) && !requestUri.contains("getTracker.do")) {
             try {
                 //log.debug("======= try");
                 request = new RequestWrapper(servletRequest);
@@ -113,6 +113,56 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 
                         if (actorDetails == null) {
 //                            Actor actor = new Actor(username, username);
+                            Actor actor = new Actor(username, username, authLevel);
+                            actorDetails = new ActorDetails(actor, null);
+                        }
+
+                        log.debug("======= actorDetails : {}", actorDetails);
+                        if (tokenManager.validateCustomToken(authToken, actorDetails)) {
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                    actorDetails, null, actorDetails.getAuthorities());
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            logger.info("authenticated device " + username + ", setting security context");
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
+                    }
+                }
+
+                // TODO : filter chain stop 시점을 찾아야한다. 오류인 경우 어떻게 할지.. exception 공통구현 필요
+                chain.doFilter(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (requestUri.contains("getTracker.do")) {
+            try {
+                request = new RequestWrapper(servletRequest);
+
+                String authToken = request.getParameter("token");
+                String authLevel = request.getParameter("level");
+
+                log.debug("======= authToken : {}", authToken);
+                log.debug("======= authLevel : {}", authLevel);
+
+                String username = tokenManager.getUsernameFromToken(authToken);
+
+                log.debug("======= username : {}", username);
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                    User trackerInfo = new User();
+                    int checkUserCount = 0;
+
+                    if (authLevel.equals("4")) {
+                        trackerInfo.setAccessToken(authToken);
+                        trackerInfo.setLoginId(username);
+
+                        checkUserCount = trackerService.selectTrackerTokenCheck(trackerInfo);
+                    }
+
+                    log.debug("=======> checkUserCount : {}", checkUserCount);
+                    if (checkUserCount > 0) {
+                        ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
+
+                        if (actorDetails == null) {
                             Actor actor = new Actor(username, username, authLevel);
                             actorDetails = new ActorDetails(actor, null);
                         }

@@ -2,7 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.login.User;
-import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.tracker.Tracker;
 
 /**
  * <p> kr.co.cntt.core.mapper </p>
@@ -41,9 +41,9 @@ public interface TrackerMapper {
     /**
      * <p> selectTracker
      *
-     * @param order
-     * @return order
+     * @param tracker
+     * @return tracker
      */
-    public Order selectTracker(Order order);
+    public Tracker selectTracker(Tracker tracker);
 
 }
