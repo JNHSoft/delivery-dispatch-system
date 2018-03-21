@@ -1,5 +1,3 @@
-
-
 $(document).ready(function() {
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
@@ -165,6 +163,19 @@ function minusTimeSet(time1 , time2) {
 }
 
 var selectedOriginOrder;
+var map;
+var marker;
+function initMap() {
+    var uluru = {lat: 37.5806376, lng: 126.9058433};
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 15,
+        center: uluru
+    });
+    marker = new google.maps.Marker({
+        position: uluru,
+        map: map
+    });
+}
 
 function getOrderDetail(orderId) {
     console.log("orderId: " + orderId);
@@ -244,6 +255,8 @@ function getOrderDetail(orderId) {
             $('#userPhone').html(data.phone);
             $('#userAddress').html(data.address);
             $('#distance').html(data.distance);
+            map.setCenter({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
+            marker.setPosition({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
         }
     });
 }

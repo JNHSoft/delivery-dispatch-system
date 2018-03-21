@@ -187,8 +187,8 @@
 										<div id="distance"></div>
 									</li>
 									<li class="full">
-										<div class="map">
-											<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
+										<div id="map" style="width: 314px; height: 150px; background-color: gray;">
+											<!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>-->
 										</div>
 									</li>
 								</ul>
@@ -204,6 +204,7 @@
 		</div>
 		<script type="text/javascript" th:src="@{/resources/js/site/order/order.js}" layout:fragment="script2">
 		</script>
+		<script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
 	</section>
 	<!-- //컨텐츠 영역 -->
 	<script layout:fragment="script" th:inline="javascript">
