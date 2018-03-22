@@ -15,10 +15,6 @@ public class Notice extends User implements Dto {
 
     private static final long serialVersionUID = -4336674568434203200L;
 
-    private String createdDatetime;
-    private String modifiedDatetime;
-    private String id;
-
     private String writerName;
 
     private String adminId;
@@ -37,5 +33,9 @@ public class Notice extends User implements Dto {
     private String deleted;
 
     private String confirmedDatetime;
+
+    private String groupName;
+    private String subgroupName;
+    private String storeName;
 
 }
