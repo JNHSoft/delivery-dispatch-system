@@ -174,4 +174,11 @@ public interface RiderMapper {
 
     public SubGroupRiderRel selectMySubgroupRiderRels(Rider rider);
 
+    /**
+     *  <p> 라이더현황
+     *
+     * @param
+     * @return
+     */
+    public List<Rider> selectRiderNow(Common common);
 }

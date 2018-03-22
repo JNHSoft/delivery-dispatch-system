@@ -52,6 +52,66 @@
 		</association>
 	</resultMap>
 
+	<!-- selectRiderNowResult -->
+	<resultMap id="selectRiderNowResult" type="kr.co.cntt.core.model.rider.Rider">
+		<result property="id" column="id" />
+		<result property="adminId" column="admin_id" />
+		<result property="loginId" column="login_id" />
+		<result property="name" column="name" />
+		<result property="code" column="code" />
+		<result property="phone" column="phone" />
+		<result property="gender" column="gender" />
+		<result property="emergencyPhone" column="emergency_phone" />
+		<result property="address" column="address" />
+		<result property="workingHours" column="working_hours" />
+		<result property="restHours" column="rest_hours" />
+		<result property="teenager" column="teenager" />
+		<result property="vehicleNumber" column="vehicle_number" />
+		<result property="employmentType" column="employment_type" />
+		<result property="status" column="status" />
+		<result property="working" column="working" />
+		<result property="chatUserId" column="chat_user_id" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="locationUpdated" column="location_updated" />
+		<result property="returnTime" column="return_time" />
+		<result property="assignCount" column="assign_count" />
+		<result property="minAssignedDatetime" column="min_assigned_datetime" />
+
+		<association property="subGroupRiderRel" column="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
+			<result property="id" column="subGroupRiderRel_id" />
+			<result property="adminId" column="subGroupRiderRel_admin_id" />
+			<result property="groupId" column="subGroupRiderRel_group_id" />
+			<result property="subGroupId" column="subGroupRiderRel_subgroup_id" />
+			<result property="storeId" column="subGroupRiderRel_store_id" />
+			<result property="riderId" column="subGroupRiderRel_rider_id" />
+		</association>
+
+		<association property="riderStore" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="id" column="rider_store_id" />
+			<result property="storeName" column="rider_store_name" />
+			<result property="latitude" column="rider_store_latitude" />
+			<result property="longitude" column="rider_store_longitude" />
+			<result property="address" column="rider_store_address" />
+			<result property="detailAddress" column="rider_store_detail_address" />
+			<result property="storeDistanceSort" column="rider_store_distance_sort" />
+		</association>
+
+		<association property="orderStore" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="id" column="order_store_id" />
+			<result property="storeName" column="order_store_name" />
+			<result property="latitude" column="order_store_latitude" />
+			<result property="longitude" column="order_store_longitude" />
+			<result property="address" column="order_store_address" />
+			<result property="detailAddress" column="order_store_detail_address" />
+			<result property="storeDistanceSort" column="order_store_distance_sort" />
+		</association>
+
+		<association property="order" column="order" javaType="kr.co.cntt.core.model.order.Order">
+			<result property="id" column="order_id" />
+			<result property="name" column="order_name" />
+		</association>
+	</resultMap>
 
 	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="String">
 		SELECT login_id FROM TB_RIDER
@@ -454,6 +514,48 @@
 			access_token = #{accessToken}
 	</update>
 
+	<!-- selectRiderNow -->
+	<select id="selectRiderNow" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderNowResult">
+		SELECT A.id
+		, A.name
+		, A.phone
+		, A.status
+		, A.working
+		, I.name AS rider_store_name
+		, E.name AS order_store_name
+		, A.chat_user_id
+		, A.latitude
+		, A.longitude
+		, A.location_updated
+		, A.return_time
+		, I.latitude AS store_latitude
+		, I.longitude AS store_longitude
+		, B.store_id AS rider_store_id
+		, E.id AS order_id
+		, E.store_id AS order_store_id
+		FROM TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
+		AND B.deleted IS NULL
+		LEFT JOIN TB_SUBGROUP AS C
+		ON B.subgroup_id = C.id
+		LEFT JOIN TB_GROUP AS D
+		ON B.group_id = D.id
+		AND C.deleted IS NULL
+		AND D.deleted IS NULL
+		LEFT JOIN (
+		SELECT F.id, F.rider_id, F.assigned_datetime, F.store_id, G.name from TB_ORDER as F
+			LEFT JOIN TB_STORE as G
+    		ON F.store_id = G.id
+			where F.created_datetime > CURRENT_DATE()
+        	and F.id in(select SUBSTRING_INDEX(group_concat(id order by assigned_datetime asc),',',1) from TB_ORDER where assigned_datetime is not null and created_datetime > CURRENT_DATE() group by rider_id )) AS E
+		ON E.rider_id = A.id
+		LEFT JOIN TB_STORE AS I
+		ON B.store_id = I.id
+		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+		AND A.deleted IS NULL AND A.status = 0 AND B.store_id is not null;
+	</select>
+
 	<!-- selectSubgroupRiderRels -->
 	<select id="selectSubgroupRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
 		SELECT A.id
@@ -465,6 +567,7 @@
 			, A.latitude
 			, A.longitude
 			, A.location_updated
+			, B.store_id AS subGroupRiderRel_store_id
 			, C.id AS subgroup_id
 			, C.group_id AS subgroup_group_id
 			, C.name AS subgroup_name

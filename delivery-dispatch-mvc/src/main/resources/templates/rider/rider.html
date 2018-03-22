@@ -5,36 +5,37 @@
 <!-- 컨텐츠 영역 -->
 <section id="container" layout:fragment="content">
     <div th:object="${store}" style="display:none">
+        <input type="hidden" id="storeId" th:value="*{id}"/>
         <input type="hidden" id="statusArray"/>
         <input type="hidden" id="storeLatitude" th:value="*{latitude}"/>
         <input type="hidden" id="storeLongitude" th:value="*{longitude}"/>
     </div>
     <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}"/>
     <div class="search_box">
-        <div class="left">
-            <label class="checkbox"><input name="" type="checkbox"/><i></i>
+        <div class="left state">
+            <label class="checkbox"><input name="orderAllChk" id="orderAllChk" type="checkbox" checked="checked"/><i></i>
                 <span class="lbl" th:text="${#messages.msg('status.all')}"/>
             </label>
-            <label class="checkbox"><input name="" type="checkbox"/><i></i>
+            <label class="checkbox"><input id="srchChk1" name="srchChk" type="checkbox" checked="checked" /><i></i>
                 <span class="lbl" th:text="${#messages.msg('status.work')}"/>
             </label>
-            <label class="checkbox"><input name="" type="checkbox"/><i></i>
+            <label class="checkbox"><input id="srchChk2" name="srchChk" type="checkbox" checked="checked" /><i></i>
                 <span class="lbl" th:text="${#messages.msg('status.standby')}"/>
             </label>
-            <label class="checkbox"><input name="" type="checkbox"/><i></i>
-                <span class="lbl" th:text="${#messages.msg('status.rest')}"/>
+            <label class="checkbox"><input id="srchChk3" name="srchChk" type="checkbox" checked="checked" /><i></i>
+                <span class="lbl" th:text="${#messages.msg('status.rest')}" />
             </label>
+
         </div>
         <div class="right">
-            <label class="checkbox"><input name="" type="checkbox"/><i></i>
+            <label class="checkbox"><input name="" id="myStoreChk" type="checkbox"/><i></i>
                 <span class="lbl" th:text="${#messages.msg('rider.mine')}"/>
             </label>
         </div>
     </div>
     <div id="contents">
         <div class="rider_wrap">
-            <div id="map" style="width: 100%; height: 400px; background-color: grey;"></div>
-            <!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>-->
+            <div id="map" style="width: 76%; height: 750px; background-color: grey;"></div>
             <div class="list_wrap">
                 <div class="tbl_wrap">
                     <table class="table">
@@ -48,157 +49,7 @@
                             <th scope="col" th:text="${#messages.msg('rider.reset')}"/>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td>10</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue" th:text="${#messages.msg('status.work')}"/></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20" th:text="${#messages.msg('rider.reset')}"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>9</td>
-                            <td>김나은</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>8</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt">OFF</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_green">대기</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>홍길동</td>
-                            <td><i class="ic_txt ic_blue">근무</i></td>
-                            <td>양재점</td>
-                            <td>서초점</td>
-                            <td>
-                                <button class="button h20">재배치</button>
-                            </td>
-                        </tr>
+                        <tbody id="riderList">
                         </tbody>
                     </table>
                 </div>
@@ -269,44 +120,4 @@
 
     <script layout:fragment="script2" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
 </section>
-<!-- //컨텐츠 영역 -->
-
-
-<!--function initMap() {
-
-    var myStore = {lat: 117, lng: 255};
-    var map = new google.maps.Map($('#map'), {
-        zoom: 4,
-        center: myStore
-    });
-    var marker = new google.maps.Marker({
-        position: myStore,
-        map: map
-});
-}-->
-<!--$(function() {
-    $(window).load(function () {
-        $('.chat-item').last().focus();
-    });
-    $('.table tr').click(function () {
-        $(this).addClass('selected').siblings().removeClass('selected');
-        $('.chat_wrap').addClass('active');
-    })
-
-    $('.chat_wrap .close').click(function (e) {
-        e.preventDefault();
-        $('.table tr').removeClass('selected');
-        $('.chat_wrap').removeClass('active');
-        $(window).scrollTop(0);
-    })
-    $('#map').css('z-index', '10000');
-    console.log($('#storeLatitude').val());
-});-->
-<!--<script layout:fragment="script" th:src="@{/resources/js/site/rider/rider.js}"></script>-->
-
-<!--<script layout:fragment="script" th:async="async" th:defer="defer"-->
-<!--th:src="@{https://maps.googleapis.com/maps/api/js(key=${'AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU'})}">-->
-<!--</script>-->
-
-
 </html>
