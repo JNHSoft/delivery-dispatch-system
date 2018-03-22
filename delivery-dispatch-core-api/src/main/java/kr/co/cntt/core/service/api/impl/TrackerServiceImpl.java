@@ -8,15 +8,14 @@ import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.TrackerService;
 import kr.co.cntt.core.util.AES256Util;
+import kr.co.cntt.core.util.CustomEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
-
-import java.net.URLDecoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Slf4j
 @Service("trackerService")
@@ -69,18 +68,26 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
         Tracker tracker = new Tracker();
 
         try {
-            Map<String, String> query_pairs = new LinkedHashMap<>();
             AES256Util aesUtil = new AES256Util(tKey);
 
-            String decParam = aesUtil.aesDecode(encParam);
-            String[] pairs = decParam.split("&");
-            for (String pair : pairs) {
-                int idx = pair.indexOf("=");
-                query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
-            }
+            String decParam = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(encParam));
 
-            String regOrderId = query_pairs.get("regOrderId");
-            String code = query_pairs.get("code");
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(decParam);
+
+            String regOrderId = jsonObject.get("regOrderId").toString();
+            String code = jsonObject.get("code").toString();
+
+//            Map<String, String> query_pairs = new LinkedHashMap<>();
+//            String decParam = aesUtil.aesDecode(encParam);
+//            String[] pairs = decParam.split("&");
+//            for (String pair : pairs) {
+//                int idx = pair.indexOf("=");
+//                query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+//            }
+//
+//            String regOrderId = query_pairs.get("regOrderId");
+//            String code = query_pairs.get("code");
 
             tracker.setRegOrderId(regOrderId);
             tracker.setCode(code);

@@ -6,9 +6,13 @@
 		<p>iframe tracker test</p>
 		<br />
 		strParam : <p th:text="${strParam}" />
+		<hr />
+		encBase : <p th:text="${encBase}" />
+		<hr />
+		decBase : <p th:text="${decBase}" />
 		<br />
-		encParam : <p th:text="${encParam}" />
-		<br />
-		<iframe th:src="@{http://localhost:8091/API/getTracker.do(encParam=${encParam})}" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
+		decAes : <p th:text="${decAes}" />
+		<hr />
+		<iframe th:src="@{http://localhost:8091/API/getTracker.do(encParam=${encBase})}" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
 	</section>
 </html>

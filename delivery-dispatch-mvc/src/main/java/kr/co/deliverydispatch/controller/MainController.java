@@ -1,6 +1,7 @@
 package kr.co.deliverydispatch.controller;
 
 import kr.co.cntt.core.util.AES256Util;
+import kr.co.cntt.core.util.CustomEncryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -53,14 +54,25 @@ public class MainController {
 
     @GetMapping("/tracker")
     public String tracker(Model model) {
-        String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
+//        String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
+
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"016\",\"regOrderId\":\"15\"}";
 
         try {
-            AES256Util aesUtil = new AES256Util(tKey);
+            String encKey = tKey;
+            AES256Util aesUtil = new AES256Util(encKey);
+
             String encParam = aesUtil.aesEncode(param);
+            String encBase = CustomEncryptUtil.encodeBase64(encParam);
+
+            String decBase = CustomEncryptUtil.decodeBase64(encBase);
+            String decAes = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(encBase));
 
             model.addAttribute("strParam", param);
-            model.addAttribute("encParam", encParam);
+            model.addAttribute("encBase", encBase);
+            model.addAttribute("decBase", decBase);
+            model.addAttribute("decAes", decAes);
+
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
