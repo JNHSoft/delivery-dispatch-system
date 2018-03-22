@@ -158,9 +158,13 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
     @Override
     public Map detailNotice(Notice notice) throws AppTrException {
         // list 선언
-        List<Notice> A_Notice = new ArrayList<>();
-        List<Notice> S_Notice = new ArrayList<>();
-        List<Notice> R_Notice = new ArrayList<>();
+//        List<Notice> A_Notice = new ArrayList<>();
+//        List<Notice> S_Notice = new ArrayList<>();
+//        List<Notice> R_Notice = new ArrayList<>();
+
+        Notice A_Notice = new Notice();
+        Notice S_Notice = new Notice();
+        Notice R_Notice = new Notice();
 
         // Role 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -190,7 +194,8 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
 
         }
         // map 으로 넘겨준다
-        Map<String, List<Notice>> map = new HashMap<>();
+//        Map<String, List<Notice>> map = new HashMap<>();
+        Map<String, Notice> map = new HashMap<>();
         map.put("adminNotice", A_Notice);
         map.put("storeNotice", S_Notice);
         map.put("riderNotice", R_Notice);

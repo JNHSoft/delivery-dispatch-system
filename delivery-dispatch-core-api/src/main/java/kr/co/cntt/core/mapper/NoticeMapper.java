@@ -58,13 +58,13 @@ public interface NoticeMapper {
      * @return
      */
     // store Detail
-    public List<Notice> getStoreDetailNoticeList(Notice notice);
+    public Notice getStoreDetailNoticeList(Notice notice);
 
     // rider Store Detail
-    public List<Notice> getRiderDetailNoticeList(Notice notice);
+    public Notice getRiderDetailNoticeList(Notice notice);
 
     // Admin admin
-    public List<Notice> getAdminDetailNoticeList(Notice notice);
+    public Notice getAdminDetailNoticeList(Notice notice);
 
 
 

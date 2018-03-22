@@ -188,10 +188,19 @@
             , A.ori_file_name
             , A.file_name
             , A.file_size
-            , B.confirmed_datetime
+            , B.name AS group_name
+            , C.name AS subgroup_name
+            , D.name AS store_name
+            , E.confirmed_datetime
         FROM TB_NOTICE AS A
-        LEFT JOIN TB_NOTICE_CONFIRM AS B
-        ON A.id = B.notice_id
+        LEFT JOIN TB_GROUP AS B
+            ON A.to_group_id = B.id
+        LEFT JOIN TB_SUBGROUP AS C
+            ON A.to_subgroup_id = C.id
+        LEFT JOIN TB_STORE AS D
+            ON A.to_store_id = D.id
+        LEFT JOIN TB_NOTICE_CONFIRM AS E
+            ON A.id = E.notice_id
         WHERE A.id = #{id}
             AND A.deleted IS NUll
             AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(select store_id from TB_STORE_SESSION where access_token=#{token}))

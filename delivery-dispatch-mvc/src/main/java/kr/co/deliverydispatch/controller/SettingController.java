@@ -89,11 +89,23 @@ public class SettingController {
     @ResponseBody
     @GetMapping("/getNoticeList")
     @CnttMethodDescription("공지사항 리스트 조회")
-    public List<Notice> getNoticeList(Notice notice){
+    public List<Notice> getNoticeList(Notice notice) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         notice.setToken(storeInfo.getStoreAccessToken());
         List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
         return noticeList;
+    }
+
+
+    @ResponseBody
+    @GetMapping("/getNotice")
+    @CnttMethodDescription("공지사항 상세 조회")
+    public Notice getNotice(Notice notice) {
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(storeInfo.getStoreAccessToken());
+        Notice noticeDetail = storeNoticeService.getNotice(notice);
+        log.info(noticeDetail.getTitle());
+        return noticeDetail;
     }
 
 }

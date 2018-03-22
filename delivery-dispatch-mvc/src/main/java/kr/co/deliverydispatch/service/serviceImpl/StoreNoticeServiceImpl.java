@@ -101,7 +101,15 @@ public class StoreNoticeServiceImpl extends ServiceSupport implements StoreNotic
 
     @Override
     public Notice getNotice(Notice notice) {
-        return null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            notice.setRole("ROLE_STORE");
+        }
+
+        Notice S_Notice = noticeMapper.getStoreDetailNoticeList(notice);
+
+        return S_Notice;
     }
 
     @Override

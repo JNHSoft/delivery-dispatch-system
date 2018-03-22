@@ -10,8 +10,8 @@ $(document).ready(function() {
         });
         $(function() {
             $('#test').click(function(){
-                alert("!!!");
-                socket.emit('message', "websocketTest");//data보내는부분
+                alert('!!!');
+                socket.emit('message', 'websocketTest');//data보내는부분
             });
         })
     } else {
@@ -26,7 +26,7 @@ function getNoticeList() {
     var mydata = [];
 
     $.ajax({
-        url: "/getNoticeList",
+        url: '/getNoticeList',
         type: 'get',
         dataType: 'json',
         success: function (data) {
@@ -44,14 +44,14 @@ function getNoticeList() {
                     if (data[key].toGroupId != 0) {
                         tmpdata.target = data[key].groupName;
                         if (data[key].toSubGroupId != 0) {
-                            tmpdata.target = tmpdata.target + "/" + data[key].subgroupName;
+                            tmpdata.target = tmpdata.target + '/' + data[key].subgroupName;
                             if (data[key].toStoreId != 0) {
-                                tmpdata.target = tmpdata.target + "/" + data[key].storeName;
+                                tmpdata.target = tmpdata.target + '/' + data[key].storeName;
                             } else {
-                                tmpdata.target = tmpdata.target + "/" + notice_target_all;
+                                tmpdata.target = tmpdata.target + '/' + notice_target_all;
                             }
                         } else {
-                            tmpdata.target = tmpdata.target + "/" + notice_target_all;
+                            tmpdata.target = tmpdata.target + '/' + notice_target_all;
                         }
                     } else {
                         tmpdata.target = notice_target_all;
@@ -76,7 +76,7 @@ function getNoticeList() {
 
                     mydata.push(tmpdata);
 
-                    console.log("mydata");
+                    console.log('mydata');
                     console.log(mydata);
 
                     if (mydata != null) {
@@ -85,10 +85,11 @@ function getNoticeList() {
                         jQuery('#jqGrid').trigger('reloadGrid');
                     }
 
-                    $("#jqGrid").jqGrid({
-                        datatype: "local",
+                    $('#jqGrid').jqGrid({
+                        datatype: 'local',
                         data: mydata,
                         colModel: [
+                            {label: 'id', name: 'id', width: 25, key: true, align: 'center'},
                             {label: 'No', name: 'no', width: 25, key: true, align: 'center'},
                             {label: notice_target, name: 'target', width: 60, align: 'center'},
                             {label: notice_subject, name: 'title', width: 300},
@@ -100,8 +101,11 @@ function getNoticeList() {
                         height: 520,
                         autowidth: true,
                         rowNum: 20,
-                        pager: "#jqGridPager",
+                        pager: '#jqGridPager',
                         onCellSelect: function (rowid, icol, cellcontent, e) {
+                            var rowData = jQuery(this).getRowData(rowid);
+                            var noticeId = rowData['id'];
+                            getNoticeDetail(noticeId);
                             popOpen('#popNotice') //상세보기 열기
                         }
                     });
@@ -118,6 +122,61 @@ function getNoticeList() {
                         $(this).closest('div').slideUp();
                     });
                 }
+            }
+        }
+    });
+}
+
+function getNoticeDetail(noticeId) {
+    console.log('noticeId: ' + noticeId);
+    $.ajax({
+        url : '/getNotice',
+        type : 'get',
+        data : {
+            id : noticeId
+        },
+        async : false, //비동기 -> 동기
+        dataType : 'json',
+        success : function (data) {
+            console.log(data);
+
+            $('#nTitle').html(data.title);
+
+            var tmpTarget = '';
+            if (data.toGroupId != 0) {
+                tmpTarget = data.groupName;
+                if (data.toSubGroupId != 0) {
+                    tmpTarget = tmpTarget + '/' + data.subgroupName;
+                    if (data.toStoreId != 0) {
+                        tmpTarget = tmpTarget + '/' + data.storeName;
+                    } else {
+                        tmpTarget = tmpTarget + '/' + notice_target_all;
+                    }
+                } else {
+                    tmpTarget = tmpTarget + '/' + notice_target_all;
+                }
+            } else {
+                tmpTarget = notice_target_all;
+            }
+
+            $('#nTarget').html(tmpTarget);
+
+            $('#nDate').html(data.createdDatetime);
+
+            if (data.confirmedDatetime != null) {
+                $('#nConfirm').html(data.confirmedDatetime);
+            } else {
+                $('#nConfirm').html(notice_confirmed_before);
+            }
+
+            $('#nContent').html(data.content);
+            $('#nFile').html(data.title);
+
+            if (data.fileName != null) {
+                $('#nFile').html(data.oriFileName + '(' + data.fileSize + ')');
+            } else {
+                $('#nFile').html(notice_attach_none);
+                $('#btnDelete').hide();
             }
         }
     });
