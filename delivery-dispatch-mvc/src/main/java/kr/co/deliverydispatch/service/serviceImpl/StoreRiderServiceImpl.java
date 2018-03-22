@@ -156,4 +156,79 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
 
         return S_Chat;
     }
+
+    @Override
+    public int postChat(Chat chat){
+
+        Store resultStore = new Store();
+        Rider resultRider = new Rider();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            chat.setRole("ROLE_STORE");
+
+            Store store = new Store();
+            store.setToken(chat.getToken());
+            store.setAccessToken(chat.getToken());
+
+            resultStore = storeMapper.selectStoreInfo(store);
+
+        } else if (authentication.getAuthorities().toString().matches(".*ROLE_RIDER.*")) {
+            chat.setRole("ROLE_RIDER");
+
+            Rider rider = new Rider();
+            rider.setToken(chat.getToken());
+            rider.setAccessToken(chat.getToken());
+
+            resultRider = riderMapper.getRiderInfo(rider);
+        }
+
+        Chat resultSelectChatRoomRel = chatMapper.selectChatUserChatRoomRel(chat);
+
+        if (resultSelectChatRoomRel == null) {
+            int resultInsertChatRoom = chatMapper.insertChatRoom(chat);
+            if (resultInsertChatRoom != 0) {
+                chatMapper.insertChatRoomRelRecv(chat);
+                chatMapper.insertChatRoomRelTran(chat);
+            }
+        } else {
+            chat.setChatRoomId(resultSelectChatRoomRel.getChatRoomId());
+        }
+
+        if (chat.getMessage().length() > 64) {
+            chat.setLastMessage(chat.getMessage().substring(0, 64));
+        } else {
+            chat.setLastMessage(chat.getMessage());
+        }
+
+        chatMapper.updateChatRoomLastMessage(chat);
+        int S_Chat = chatMapper.insertChat(chat);
+
+        if (S_Chat == 0) {
+            return  0;
+        } else {
+            if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+                redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
+            } else if (authentication.getAuthorities().toString().matches(".*ROLE_RIDER.*")) {
+                redisService.setPublisher("chat_send", "admin_id:" + resultRider.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
+            }
+        }
+
+        if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByChatUserId(chat);
+
+            if(tokens.size() > 0){
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.CHAT_SEND);
+                noti.setTitle(resultStore.getStoreName());
+                noti.setMessage(chat.getMessage());
+                noti.setChat_user_id(resultStore.getChatUserId());
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                checkFcmResponse(pushNotification);
+            }
+        }
+
+        return S_Chat;
+    }
 }

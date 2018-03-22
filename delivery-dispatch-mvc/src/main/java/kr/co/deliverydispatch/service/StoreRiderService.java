@@ -32,6 +32,7 @@ public interface StoreRiderService {
      * @return int
      */
     public int putRiderReturnTime(Rider rider);
+
     /**
      * <p> getChat
      *
@@ -39,4 +40,12 @@ public interface StoreRiderService {
      * @return List<Chat>
      */
     public List<Chat> getChat(Chat chat);
+
+    /**
+     * <p> postChat
+     *
+     * @param chat
+     * @return int
+     */
+    public int postChat(Chat chat);
 }

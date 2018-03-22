@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -83,5 +80,13 @@ public class RiderController {
         return chatList;
     }
 
-
+    @ResponseBody
+    @PostMapping("/postChat")
+    @CnttMethodDescription("채팅보내기")
+    public Boolean postChat(Chat chat){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        chat.setToken(storeInfo.getStoreAccessToken());
+        storeRiderService.postChat(chat);
+        return true;
+    }
 }

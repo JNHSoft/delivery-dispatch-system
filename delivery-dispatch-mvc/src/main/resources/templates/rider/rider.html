@@ -16,16 +16,18 @@
             <label class="checkbox"><input name="orderAllChk" id="orderAllChk" type="checkbox" checked="checked"/><i></i>
                 <span class="lbl" th:text="${#messages.msg('status.all')}"/>
             </label>
-            <label class="checkbox"><input id="srchChk1" name="srchChk" type="checkbox" checked="checked" /><i></i>
+            <label class="checkbox"><input id="srchChk1" name="srchChk" type="checkbox" checked="checked" disabled="true"/><i></i>
                 <span class="lbl" th:text="${#messages.msg('status.work')}"/>
             </label>
-            <label class="checkbox"><input id="srchChk2" name="srchChk" type="checkbox" checked="checked" /><i></i>
+            <label class="checkbox"><input id="srchChk2" name="srchChk" type="checkbox" checked="checked" disabled="true"/><i></i>
                 <span class="lbl" th:text="${#messages.msg('status.standby')}"/>
             </label>
-            <label class="checkbox"><input id="srchChk3" name="srchChk" type="checkbox" checked="checked" /><i></i>
+            <label class="checkbox"><input id="srchChk3" name="srchChk" type="checkbox" checked="checked" disabled="true"/><i></i>
                 <span class="lbl" th:text="${#messages.msg('status.rest')}" />
             </label>
-
+            <label class="checkbox"><input id="srchChk4" name="srchChk" type="checkbox" checked="checked" disabled="true"/><i></i>
+                <span class="lbl" th:text="${#messages.msg('status.off')}" />
+            </label>
         </div>
         <div class="right">
             <label class="checkbox"><input name="" id="myStoreChk" type="checkbox"/><i></i>
@@ -57,61 +59,14 @@
             <div class="chat_wrap cont_box">
                 <div class="top">
                     <a href="#" class="close"><i class="fa fa-chevron-left" aria-hidden="true"></i><span class="blind">닫기</span></a>
-                    <strong th:text="${#messages.msg('rider.chat.title', '김나은')}"/>
-                    <span class="f_right">
-							<i class="ic_txt ic_blue" th:text="${#messages.msg('status.work')}"/>
-						</span>
+                    <strong id="chatRider"/>
+                    <span class="f_right" id="workingStatus"></span>
                 </div>
-                <div class="chat">
-                    <div class="date"><span>2017년 09월 21일</span></div>
-                    <div class="chat-item" tabindex="0">
-                        <p class="name">김나은</p>
-                        <div class="bubble">
-                            <div>어디로 배달해드리면 되죠?</div>
-                            <p class="time">오후 5:38</p>
-                        </div>
-                    </div>
-                    <div class="chat-item me" tabindex="0">
-                        <div class="bubble">
-                            <div>증산동으로 배달해주세요!</div>
-                            <p class="time">오후 5:39</p>
-                        </div>
-                    </div>
-
-                    <div class="date"><span>2017년 09월 21일</span></div>
-                    <div class="chat-item" tabindex="0">
-                        <p class="name">김나은</p>
-                        <div class="bubble">
-                            <div>쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라</div>
-                            <p class="time">오후 5:38</p>
-                        </div>
-                    </div>
-                    <div class="chat-item" tabindex="0">
-                        <p class="name">김나은</p>
-                        <div class="bubble">
-                            <div>쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라</div>
-                            <p class="time">오후 5:38</p>
-                        </div>
-                    </div>
-
-                    <div class="date"><span>오늘</span></div>
-                    <div class="chat-item" tabindex="0">
-                        <p class="name">김나은</p>
-                        <div class="bubble">
-                            <div>지금 출근 중인데 배달이 많이 밀려있나요? 출근하면 바로 나갈게요.</div>
-                            <p class="time">오전 11:12</p>
-                        </div>
-                    </div>
-                    <div class="chat-item me" tabindex="0">
-                        <div class="bubble">
-                            <div>아직 배달이 많이 밀려있진 않은데 이제 곧 몰려들거 같아요~~ 출근 조심히 하세요</div>
-                            <p class="time">오전 11:14</p>
-                        </div>
-                    </div>
+                <div class="chat" id="chatList">
                 </div>
                 <div class="inp_chat">
-                    <textarea class="textarea"></textarea>
-                    <button class="button btn_blue" th:text="${#messages.msg('rider.chat.send')}"/>
+                    <textarea class="textarea" id="chatTextarea"></textarea>
+                    <button class="button btn_blue" th:text="${#messages.msg('rider.chat.send')}" onclick="javascript:postChat()"/>
                 </div>
             </div>
         </div>
@@ -119,5 +74,14 @@
     <script type="text/javascript" th:src="@{/resources/js/site/rider/rider.js}" layout:fragment="script"></script>
 
     <script layout:fragment="script2" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
+    <script layout:fragment="script3" th:inline="javascript">
+        /*<![CDATA[*/
+        var rider_chat_title = /*[[#{rider.chat.title}]]*/ 'rider_chat_title';
+        var status_work = /*[[#{status.work}]]*/ 'status_work';
+        var status_standby = /*[[#{status.standby}]]*/ 'status_standby';
+        var status_rest = /*[[#{status.rest}]]*/ 'status_rest';
+        var status_off = /*[[#{status.off}]]*/ 'status_off';
+        /*]]>*/
+    </script>
 </section>
 </html>

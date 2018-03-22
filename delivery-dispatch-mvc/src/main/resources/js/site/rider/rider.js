@@ -17,7 +17,6 @@ $(function() {
     $(window).load(function () {
         $('.chat-item').last().focus();
         getRiderList(storeId);
-        getChatList("42");
         $("#orderAllChk").click(function () {
             if(this.checked){
                 $("input[name=srchChk]:checkbox").each(function() {
@@ -46,8 +45,9 @@ $(function() {
     $('#map').css('z-index', '10000');
 
 });
-
-function addMarker(location, data, i) {
+var RiderChatUserId = "";
+var chatUserName = "";
+function addMarker(location, data, i, status) {
     if($('#myStoreChk').prop('checked') && data.riderStore.id != $('#storeId').val()) {
         return i;
     }
@@ -56,13 +56,20 @@ function addMarker(location, data, i) {
         marker[i] = new google.maps.Marker({
             position : location,
             riderMapId : data.id,
+            riderChatUserId : data.chatUserId,
             label : data.name,
             map : map
         });
         marker[i].addListener('click', function () {
+            chatUserName = this.label
             console.log(this.riderMapId);
+            RiderChatUserId = this.riderChatUserId;
             $('tr').removeClass('selected');
             $('#riderMapId' + this.riderMapId).addClass('selected');
+            getChatList(this.riderChatUserId, this.label);
+            var name = this.label + rider_chat_title;
+            $('#chatRider').text(name);
+            $('#workingStatus').html(status);
         });
         return i + 1;
     }
@@ -96,27 +103,28 @@ function getRiderList(storeId) {
                     var longitude = parseFloat(data[key].longitude)
                     var location = {lat: lattitude, lng: longitude};
                 if(data[key].working==1 && typeof data[key].order != "undefined"){
-                    $status = '<i class="ic_txt ic_blue">'+ 'status_work' +'</i>';
+                    $status = '<i class="ic_txt ic_blue">'+ status_work +'</i>';
                 }else if (data[key].working==1 && typeof data[key].order == "undefined"){
-                    $status = '<i class="ic_txt ic_green">'+ 'status_standby' +'</i>';
+                    $status = '<i class="ic_txt ic_green">'+ status_standby +'</i>';
                 }else if (data[key].working==3){
-                    $status = '<i class="ic_txt ic_red">'+ 'status_rest' +'</i>';
+                    $status = '<i class="ic_txt ic_red">'+ status_rest +'</i>';
                 }else{
-                    $status = '<i class="ic_txt">'+ 'status_off' +'</i>';
+                    $status = '<i class="ic_txt">'+ status_off +'</i>';
                 }
                 if($('#srchChk1').prop('checked') && data[key].working==1 && typeof data[key].order != "undefined") {
-                    i = addMarker(location, data[key], i);
+                    i = addMarker(location, data[key], i, $status);
                     shtml += gridRiderList(data[key], $status);
                 }
                 if($('#srchChk2').prop('checked') && data[key].working==1 && typeof data[key].order == "undefined") {
-                    i = addMarker(location, data[key], i);
+                    i = addMarker(location, data[key], i, $status);
                     shtml += gridRiderList(data[key], $status);
                 }
                 if($('#srchChk3').prop('checked') && data[key].working==3) {
-                    i = addMarker(location, data[key], i);
+                    i = addMarker(location, data[key], i, $status);
                     shtml += gridRiderList(data[key], $status);
                 }
-                if(data[key].working==0){
+                if($('#srchChk4').prop('checked') && data[key].working==0){
+                    i = addMarker(location, data[key], i, $status);
                     shtml += gridRiderList(data[key], $status);
                 }
             } 
@@ -152,16 +160,15 @@ function gridRiderList(data, $status) {
     return shtml;
 }
 function daySet(time) {
-    var today = new Date();
+    var today= new Date();
     var d = new Date(time);
     if(today == d){
         return  'today';
     }
-    return $.datepicker.formatDate('yyyy-mm-dd ', d);
+    return $.datepicker.formatDate('yy-mm-dd ', d);
 }
 function messageTimeSet(time) {
-    var d = new Date(time);
-    return d.toString("hh:mm tt");
+    return new Date(time).toLocaleTimeString();
 }
 function getChatList(chatUserId, riderName) {
     var shtml = "";
@@ -177,12 +184,35 @@ function getChatList(chatUserId, riderName) {
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     shtml +='<div class="date"><span>' + daySet(data[key].createdDatetime) + '</span></div>';
-                    shtml +='<div class="chat-item" tabindex="0"><p class="name">'+riderName+'</p>';
-                    shtml +='<div class="bubble"><div>'+data[key].message +'</div>';
-                    shtml +='<p class="time">'+messageTimeSet(data[key].createdDatetime) +'</p></div></div>';
-                    shtml
+                    if(data[key].chatUserId == chatUserId){
+                        shtml += '<div class="chat-item me" tabindex="0"><div class="bubble">';
+                        shtml += '<div>' + data[key].message + '</div>';
+                        shtml += '<p class="time">'+messageTimeSet(data[key].createdDatetime) +'</p></div></div>';
+                    }else{
+                        shtml +='<div class="chat-item" tabindex="0"><p class="name">'+riderName+'</p>';
+                        shtml +='<div class="bubble"><div>'+data[key].message +'</div>';
+                        shtml +='<p class="time">'+messageTimeSet(data[key].createdDatetime) +'</p></div></div>';
+                    }
                 }
             }
+            $('#chatList').html(shtml);
+        }
+    });
+}
+function postChat() {
+    var chatUserId = RiderChatUserId;
+    console.log(chatUserId);
+    var message = $('#chatTextarea').val();
+    $.ajax({
+        url: "/postChat",
+        type: 'post',
+        data: {
+            chatUserId : chatUserId,
+            message : message
+        },
+        dataType: 'json',
+        success: function (data) {
+            getChatList(chatUserId, chatUserName);
         }
     });
 }
