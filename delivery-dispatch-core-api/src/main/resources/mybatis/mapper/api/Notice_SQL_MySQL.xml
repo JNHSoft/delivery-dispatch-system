@@ -176,26 +176,25 @@
     <!--공지사항 상세 보기 store -->
     <select id="getStoreDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
         SELECT
-        created_datetime
-        , modified_datetime
-        , id
-        , admin_id
-        , title
-        , content
-        , to_group_id
-        , to_subgroup_id
-        , to_store_id
-        , ori_file_name
-        , file_name
-        , file_size
-
-        FROM
-        TB_NOTICE
-        WHERE
-        id = #{id}
-        AND deleted IS NUll
-        AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(select store_id from TB_STORE_SESSION where access_token=#{token}))
-
+            A.created_datetime
+            , A.modified_datetime
+            , A.id
+            , A.admin_id
+            , A.title
+            , A.content
+            , A.to_group_id
+            , A.to_subgroup_id
+            , A.to_store_id
+            , A.ori_file_name
+            , A.file_name
+            , A.file_size
+            , B.confirmed_datetime
+        FROM TB_NOTICE AS A
+        LEFT JOIN TB_NOTICE_CONFIRM AS B
+        ON A.id = B.notice_id
+        WHERE A.id = #{id}
+            AND A.deleted IS NUll
+            AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(select store_id from TB_STORE_SESSION where access_token=#{token}))
     </select>
 
 
@@ -320,5 +319,52 @@
         from dde.TB_RIDER_SESSION AS TBRS
         where TBRS.push_token is not null
     </select>
+
+
+    <!-- selectNoticeConfirm -->
+    <select id="selectNoticeConfirm" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
+        SELECT
+            created_datetime
+            , modified_datetime
+            , id
+            , admin_id
+            , store_id
+            , notice_id
+        FROM TB_NOTICE_CONFIRM
+        WHERE deleted IS NULL
+            AND notice_id = #{id}
+            AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}))
+            AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token})
+    </select>
+
+
+    <!-- insertNoticeConfirm -->
+    <insert id="insertNoticeConfirm" parameterType="kr.co.cntt.core.model.notice.Notice">
+        INSERT INTO TB_NOTICE_CONFIRM (
+            created_datetime
+            , admin_id
+            , store_id
+            , notice_id
+            , confirmed_datetime
+        ) VALUES (
+            now()
+            , (SELECT admin_id FROM TB_STORE WHERE id =(SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}))
+            , (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token})
+            , #{id}
+            , now()
+        )
+    </insert>
+
+
+    <!-- updateNoticeConfirm -->
+    <update id="updateNoticeConfirm" parameterType="kr.co.cntt.core.model.notice.Notice">
+        UPDATE TB_NOTICE_CONFIRM
+        SET modified_datetime = now()
+            , confirmed_datetime = now()
+        WHERE deleted IS NULL
+            AND notice_id = #{id}
+            AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}))
+            AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token})
+    </update>
 
 </mapper>

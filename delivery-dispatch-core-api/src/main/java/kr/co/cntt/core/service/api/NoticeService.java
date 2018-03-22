@@ -45,5 +45,13 @@ public interface NoticeService {
      */
     public Map getNoticeList(Notice notice) throws AppTrException;
 
+    /**
+     * <p> 상점 - 공지사항 확인
+     *
+     * @param notice
+     * @return
+     * @throws AppTrException
+     */
+    public int putNoticeConfirm(Notice notice) throws AppTrException;
 
 }

@@ -254,6 +254,9 @@ public interface Api {
     /** 공지사항 리스트 */
     String NOTICE_LIST = "/getNoticeList.json";
 
+    /** 공지사항 확인 */
+    String NOTICE_CONFIRM = "/putNoticeConfirm.json";
+
     // ############################################################################################ //
 
     /** 채팅 보내기 */

@@ -36,6 +36,6 @@ public class Notice extends User implements Dto {
 
     private String deleted;
 
-
+    private String confirmedDatetime;
 
 }

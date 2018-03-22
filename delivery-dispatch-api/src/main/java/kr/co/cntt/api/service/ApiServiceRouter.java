@@ -257,6 +257,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Notice 리스트 */
 	NOTICE_LIST("noticeService", "getNoticeList", Notice.class),
 
+	/** Notice 확인 */
+	NOTICE_CONFIRM("noticeService", "putNoticeConfirm", Notice.class),
+
 	/** pushToken 등록   */
 	SET_PUSH_TOKEN("userService", "updatePushToken", User.class),
 

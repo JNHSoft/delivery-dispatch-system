@@ -234,4 +234,29 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         return map;
     }
 
+    /**
+     * <p> 상점 - 공지사항 확인
+     * @param notice
+     * @return
+     * @throws AppTrException
+     */
+    @Secured("ROLE_STORE")
+    @Override
+    public int putNoticeConfirm(Notice notice) throws AppTrException {
+        int ret = 0;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+
+            Notice C_Notice = noticeMapper.selectNoticeConfirm(notice);
+
+            if (C_Notice == null) {
+                ret = noticeMapper.insertNoticeConfirm(notice);
+            } else {
+                ret = noticeMapper.updateNoticeConfirm(notice);
+            }
+        }
+
+        return ret;
+    }
 }
