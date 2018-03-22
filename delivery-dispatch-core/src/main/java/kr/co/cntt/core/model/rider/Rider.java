@@ -8,6 +8,8 @@ import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.store.Store;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +40,6 @@ public class Rider extends User implements Dto {
     private String workingHours;
     private String restHours;
     private String teenager;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String returnTime;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String assignCount;
@@ -51,8 +52,9 @@ public class Rider extends User implements Dto {
     private SubGroup subGroup;
     private SubGroupRiderRel subGroupRiderRel;
     private SubGroupStoreRel subGroupStoreRel;
-
-
+    private Store RiderStore;
+    private Store OrderStore;
+    private Order Order;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String isAdmin;

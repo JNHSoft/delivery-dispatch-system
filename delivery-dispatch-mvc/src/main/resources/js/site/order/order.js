@@ -151,6 +151,16 @@ function timeSet(time) {
         return "-";
     }
 }
+
+function timeSet2(time) {
+    if(time != null){
+        var d = new Date(time);
+        return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    }else{
+        return "-";
+    }
+}
+
 function minusTimeSet(time1 , time2) {
     if(time2 != null){
         var d1 = new Date(time1);
@@ -386,19 +396,19 @@ function getOrderList(statusArray, storeId) {
                 if(data[key].assignedDatetime == null){
                     tmpdata.time3 = "-";
                 }else{
-                    tmpdata.time3 = data[key].assignedDatetime;
+                    tmpdata.time3 = timeSet2(data[key].assignedDatetime);
                 }
 
                 if(data[key].pickedUpDatetime == null){
                     tmpdata.time4 = "-";
                 }else{
-                    tmpdata.time4 = data[key].pickedUpDatetime;
+                    tmpdata.time4 = timeSet2(data[key].pickedUpDatetime);
                 }
 
                 if(data[key].reservationDatetime == null){
                     tmpdata.time5 = "-";
                 }else{
-                    tmpdata.time5 = data[key].reservationDatetime;
+                    tmpdata.time5 = timeSet2(data[key].reservationDatetime);
                 }
 
                 if(data[key].rider == null){
