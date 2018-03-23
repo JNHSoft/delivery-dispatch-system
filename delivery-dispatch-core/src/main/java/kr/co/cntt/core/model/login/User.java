@@ -15,7 +15,6 @@ public class User extends Common implements Dto {
     private String chatUserId;
     private String chatRoomId;
     private String loginId;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String loginPw;
     private String name;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

@@ -65,27 +65,27 @@
 							<div>
 								<ul>
 									<li>
-										<span>등록시간</span>
+										<span th:text="${#messages.msg('order.created')}" />
 										<div id="createdDatetime">-</div>
 									</li>
 									<li>
-										<span>예약시간</span>
+										<span th:text="${#messages.msg('order.reserved')}" />
 										<div id="reservationDatetime">-</div>
 									</li>
 									<li class="clear">
-										<span>경과시간</span>
+										<span th:text="${#messages.msg('order.time')}" />
 										<div id="passtime">-</div>
 									</li>
 									<li>
-										<span>배정시간</span>
+										<span th:text="${#messages.msg('order.assigned')}" />
 										<div id="assignedDatetime">-</div>
 									</li>
 									<li class="clear">
-										<span>배정시간</span>
+										<span th:text="${#messages.msg('order.pickedup')}" />
 										<div id="pickedUpDatetime">-</div>
 									</li>
 									<li>
-										<span>완료시간</span>
+										<span th:text="${#messages.msg('order.completed')}" />
 										<div id="completedDatetime">-</div>
 									</li>
 								</ul>
@@ -93,13 +93,11 @@
 							<div>
 								<ul>
 									<li>
-										<span>주문내용</span>
-										<div>
-											<input type="text" class="input h20" id="menuName"/>
-										</div>
+										<span th:text="${#messages.msg('order.summary')}" />
+										<div id="menuName">-</div>
 									</li>
 									<li>
-										<span>조리시간</span>
+										<span th:text="${#messages.msg('order.cooking')}" />
 										<div>
 											<input type="text" class="input h20" id="cookingTime" />분
 											<!--<select name="" class="select h20">-->
@@ -108,25 +106,25 @@
 										</div>
 									</li>
 									<li class="clear">
-										<span>음식금액</span>
+										<span th:text="${#messages.msg('order.menu.price')}" />
 										<div><input type="text" class="input h20" id="menuPrice" />원</div>
 									</li>
 									<li>
-										<span>배달금액</span>
+										<span th:text="${#messages.msg('order.delivery.price')}" />
 										<div><input type="text" class="input h20" id="deliveryPrice" />원</div>
 									</li>
 									<li class="clear">
-										<span>결제금액</span>
+										<span th:text="${#messages.msg('order.total.price')}" />
 										<div><input type="text" class="input h20" id="totalPrice"/>원</div>
 									</li>
 									<li>
-										<span>결제종류</span>
+										<span th:text="${#messages.msg('order.payment')}" />
 										<div>
 											<select name="" class="select h20" id="selectPaid">
-												<option value="0">현금</option>
-												<option value="1">카드</option>
-												<option value="2">선결제</option>
-												<option value="3">서비스</option>
+												<option value="0" th:text="${#messages.msg('order.payment.cash')}"/>
+												<option value="1" th:text="${#messages.msg('order.payment.card')}"/>
+												<option value="2" th:text="${#messages.msg('order.payment.prepayment')}"/>
+												<option value="3" th:text="${#messages.msg('order.payment.service')}"/>
 											</select>
 										</div>
 									</li>
@@ -136,7 +134,7 @@
 								<ul>
 									<li class="full">
 										<label class="checkbox"><input name="combinedChk" id="combinedChk" type="checkbox" /><i></i>
-											<span class="lbl">묶음배송</span>
+											<span class="lbl" th:text="${#messages.msg('order.combined')}" />
 										</label>
 										<select name="" class="select h20" id="selectCombined" disabled="true">
 											<!--<option value="">주문 ID: 11022 | 등록시간: 01/25 14:57</option>-->
@@ -147,7 +145,7 @@
 							<div>
 								<ul>
 									<li>
-										<span>기사명</span>
+										<span th:text="${#messages.msg('rider.name')}" />
 										<div>
 											<select name="" class="select h20" id="selectedRider">
 												<!--<option value="">정보없음</option>-->
@@ -155,23 +153,23 @@
 										</div>
 									</li>
 									<li>
-										<span>기사연락처</span>
+										<span th:text="${#messages.msg('rider.phone')}" />
 										<div id="riderPhone"></div>
 									</li>
 									<li class="clear full">
-										<span>매장 메모</span>
-										<div id="memo">빠른배송 바랍니다.</div>
+										<span th:text="${#messages.msg('order.message')}" />
+										<div id="memo">-</div>
 									</li>
 								</ul>
 							</div>
 							<div>
 								<ul>
 									<li class="full">
-										<span>고객 연락처</span>
-										<div id="userPhone">010-1234-1234</div>
+										<span th:text="${#messages.msg('order.customer.phone')}" />
+										<div id="userPhone">-</div>
 									</li>
 									<li class="full">
-										<span>고객 주소</span>
+										<span th:text="${#messages.msg('order.customer.address')}" />
 										<div id="userAddress">
 											<!--<a href="#" class="button btn_black h20">주소변경</a>-->
 											<!--<div class="mt5">-->
@@ -183,7 +181,7 @@
 										</div>
 									</li>
 									<li class="full">
-										<span>거리</span>
+										<span th:text="${#messages.msg('order.distance')}" />
 										<div id="distance"></div>
 									</li>
 									<li class="full">

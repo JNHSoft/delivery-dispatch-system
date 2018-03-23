@@ -160,18 +160,19 @@ function gridRiderList(data, $status) {
     return shtml;
 }
 function daySet(time) {
-    var today= new Date();
-    var d = new Date(time);
+    var today= $.datepicker.formatDate('yy-mm-dd ', new Date());
+    var d = $.datepicker.formatDate('yy-mm-dd ', new Date(time));
     if(today == d){
-        return  'today';
+        return  'Today';
     }
-    return $.datepicker.formatDate('yy-mm-dd ', d);
+    return d;
 }
 function messageTimeSet(time) {
     return new Date(time).toLocaleTimeString();
 }
 function getChatList(chatUserId, riderName) {
     var shtml = "";
+    var tmpDate;
     $.ajax({
         url: "/getChatList",
         type: 'get',
@@ -183,15 +184,18 @@ function getChatList(chatUserId, riderName) {
             console.log(data);
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
-                    shtml +='<div class="date"><span>' + daySet(data[key].createdDatetime) + '</span></div>';
+                    if(tmpDate != daySet(data[key].createdDatetime)){
+                        shtml +='<div class="date"><span>' + daySet(data[key].createdDatetime) + '</span></div>';
+                        tmpDate = daySet(data[key].createdDatetime);
+                    }
                     if(data[key].chatUserId == chatUserId){
-                        shtml += '<div class="chat-item me" tabindex="0"><div class="bubble">';
-                        shtml += '<div>' + data[key].message + '</div>';
-                        shtml += '<p class="time">'+messageTimeSet(data[key].createdDatetime) +'</p></div></div>';
-                    }else{
                         shtml +='<div class="chat-item" tabindex="0"><p class="name">'+riderName+'</p>';
                         shtml +='<div class="bubble"><div>'+data[key].message +'</div>';
                         shtml +='<p class="time">'+messageTimeSet(data[key].createdDatetime) +'</p></div></div>';
+                    }else{
+                        shtml += '<div class="chat-item me" tabindex="0"><div class="bubble">';
+                        shtml += '<div>' + data[key].message + '</div>';
+                        shtml += '<p class="time">'+messageTimeSet(data[key].createdDatetime) +'</p></div></div>';
                     }
                 }
             }
@@ -213,6 +217,7 @@ function postChat() {
         dataType: 'json',
         success: function (data) {
             getChatList(chatUserId, chatUserName);
+            $('#chatTextarea').val("");
         }
     });
 }

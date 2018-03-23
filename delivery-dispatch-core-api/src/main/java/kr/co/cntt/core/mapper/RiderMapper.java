@@ -181,4 +181,5 @@ public interface RiderMapper {
      * @return
      */
     public List<Rider> selectRiderNow(Common common);
+    public List<Rider> selectMyStoreRiderRels(Common common);
 }

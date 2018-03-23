@@ -5,6 +5,7 @@
 	<section id="container" layout:fragment="content">
 		<div th:object="${store}" style="display:none">
 			<input type="hidden" id="storeId" th:value="*{id}"/>
+			<input type="hidden" id="noticeId"/>
 		</div>
 		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.setting')}" />
 		<div class="tabmenu">
@@ -89,7 +90,7 @@
 			</div>
 			<div class="pop_foot">
 				<div class="right">
-					<a href="#" class="button h40 btn_blue" th:text="${#messages.msg('btn.confirm')}" />
+					<a href="#" class="button h40 btn_blue" onclick="javascript:putNoticeConfirm();" th:text="${#messages.msg('btn.confirm')}" />
 				</div>
 			</div>
 			<a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}" />

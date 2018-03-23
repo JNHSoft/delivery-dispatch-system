@@ -14,68 +14,69 @@
 			</ul>
 		</div>
 		<div id="contents">
-			<div class="cont_box">
+			<div class="cont_box" >
 				<div class="top"><strong th:text="${#messages.msg('gnb.setting.account.store')}" /></div>
 				<div class="cont">
-					<ul class="form_list">
+					<ul class="form_list" th:object="${store}">
 						<li>
 							<strong th:text="${#messages.msg('login.id')}" />
-							<div><input type="text" name="" class="input readonly" readonly="readonly" /></div>
+							<div><input type="text" name="" class="input readonly" readonly="readonly" th:value="*{loginId}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('login.password')}" />
-							<div><input type="password" name="" class="input" /></div>
+							<div><input type="password" name="" class="input"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.code')}" />
-							<div><input type="text" name="" class="input readonly" readonly="readonly" /></div>
+							<div><input type="text" name="" id="storeId" class="input readonly" readonly="readonly" th:value="*{id}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.name')}" />
-							<div><input type="text" name="" class="input readonly" readonly="readonly" /></div>
+							<div><input type="text" name="" id="name" class="input readonly" readonly="readonly" th:value="*{name}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.phone')}" />
-							<div><input type="password" name="" class="input" /></div>
+							<div><input type="text" name="" id="storePhone" class="input" th:value="*{storePhone}"/></div>
 						</li>
 
 						<li>
 							<strong th:text="${#messages.msg('store.belong.group')}" />
 							<div>
 								<select name="" class="select readonly" disabled="disabled">
-									<option value="">강남</option>
+									<option th:value="*{group.name}" th:text="*{group.name}"></option>
 								</select>
 								<select name="" class="select readonly" disabled="disabled">
-									<option value="">강남A</option>
+									<option th:value="*{subGroup.name}" th:text="*{subGroup.name}"></option>
 								</select>
 							</div>
 						</li>
 						
 						<li>
 							<strong th:text="${#messages.msg('store.manager.name')}" />
-							<div><input type="text" name="" class="input" /></div>
+							<div><input type="text" name="" class="input" id="mangerName" th:value="*{name}" /></div>
 						</li>
 						
 						<li>
 							<strong th:text="${#messages.msg('store.manager.phone')}" />
-							<div><input type="text" name="" class="input" /></div>
+							<div><input type="text" name="" class="input" id="phone" th:value="*{phone}"/></div>
 						</li>
 						
 						<li>
 							<strong th:text="${#messages.msg('store.address')}" />
-							<div><input type="text" name="" class="input w_100" /></div>
+							<div><input type="text" name="" id="address" class="input w_100" th:value="*{address}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.address.detail')}" />
-							<div><input type="text" name="" class="input w_100" /></div>
+							<div><input type="text" name="" id="detailAddress" class="input w_100" th:value="*{detailAddress}"/></div>
 						</li>
 					</ul>
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
+				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" onclick="javascript:putStoreInfo();"/>
 			</div>
 		</div>
+		<script type="text/javascript" th:src="@{/resources/js/site/setting/setting.js}" layout:fragment="script2"></script>
 	</section>
 	<!-- //컨텐츠 영역 -->
 

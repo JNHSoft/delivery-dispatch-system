@@ -129,13 +129,13 @@ function getNoticeList() {
 
 function getNoticeDetail(noticeId) {
     console.log('noticeId: ' + noticeId);
+    $('#noticeId').val(noticeId);
     $.ajax({
         url : '/getNotice',
         type : 'get',
         data : {
             id : noticeId
         },
-        async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
             console.log(data);
@@ -179,6 +179,21 @@ function getNoticeDetail(noticeId) {
                 $('#nFile').html(notice_attach_none);
                 $('#btnDelete').hide();
             }
+        }
+    });
+}
+
+function putNoticeConfirm() {
+    console.log($('#noticeId').val());
+    $.ajax({
+        url: '/putNoticeConfirm',
+        type: 'put',
+        data: {
+            id : $('#noticeId').val()
+        },
+        dataType : 'json',
+        success : function (data) {
+             location.href="/setting-notice";
         }
     });
 }

@@ -8,10 +8,13 @@
         <result property="id" column="id" />
         <result property="adminId" column="admin_id" />
         <result property="loginId" column="login_id" />
+        <result property="loginPw" column="login_pw" />
+        <result property="chatUserId" column="chat_user_id" />
         <result property="code" column="code" />
         <result property="phone" column="phone" />
         <result property="storeName" column="store_name" />
         <result property="assignmentStatus" column="assignment_status" />
+        <result property="assignmentLimit" column="assignment_limit" />
         <result property="name" column="name" />
 
         <result property="chStoreName" column="ch_store_name" />
@@ -24,6 +27,8 @@
 
         <result property="chAddress" column="ch_address" />
         <result property="chDetailAddress" column="ch_detail_address" />
+        <result property="thirdParty" column="third_party"/>
+        <result property="alarm" column="alarm"/>
 
         <association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
             <result property="id" column="group_id" />
@@ -187,6 +192,7 @@
             , TS.assignment_limit
             , TS.third_party
             , TS.deleted
+            , TS.alarm
             , TSG.id AS subgroup_id
             , TSG.group_id AS subgroup_group_id
             , TSG.name AS subgroup_name
@@ -510,6 +516,7 @@
         , TBO.id
         , TBO.created_datetime
         , TBO.address
+        , TBO.paid
         , TBO.menu_name
         , TBO.cooking_time
         , TBP.type

@@ -17,17 +17,17 @@
 			<div class="cont_box">
 				<div class="top"><strong th:text="${#messages.msg('gnb.setting.assign')}" /></div>
 				<div class="cont">
-					<ul class="form_list">
+					<ul class="form_list" th:object="${store}">
 						<li>
 							<strong th:text="${#messages.msg('order.assign.mode')}" />
 							<div>
-								<label class="radio"><input name="" type="radio" /><i></i>
-									<span class="lbl" th:text="${#messages.msg('order.assign.mode.auto')}" />
+								<label class="radio"><input name="assign" value="1" type="radio"  th:checked="${store.assignmentStatus} == 1" /><i></i>
+									<span class="lbl"  th:text="${#messages.msg('order.assign.mode.auto')}"/>
 								</label>
-								<label class="radio"><input name="" type="radio" /><i></i>
+								<label class="radio"><input name="assign" type="radio" value="0" th:checked="${store.assignmentStatus} == 0" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.store')}" />
 								</label>
-								<label class="radio"><input name="" type="radio" /><i></i>
+								<label class="radio"><input name="assign" value="2" type="radio" th:checked="${store.assignmentStatus} == 2" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.rider')}" />
 								</label>
 							</div>
@@ -35,8 +35,9 @@
 						<li>
 							<strong th:text="${#messages.msg('order.assign.max')}" />
 							<div>
-								<select name="" id="" class="select">
-									<option value="">10</option>
+								<select name="" id="maxSelect" class="select">
+									<option value="0" th:selected="${store.assignmentLimit} == null" >없음</option>
+									<option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:selected="${store.assignmentLimit} == ${i}" th:text="${i}"></option>
 								</select>
 								<span  th:text="${#messages.msg('order.assign.count.label')}" />
 							</div>
@@ -44,17 +45,9 @@
 						<li class="clear full">
 							<strong th:text="${#messages.msg('order.assign.third')}" />
 							<div>
-								<label class="checkbox"><input name="" type="checkbox" /><i></i>
-									<span class="lbl">푸드판다</span>
-								</label>
-								<label class="checkbox"><input name="" type="checkbox" /><i></i>
-									<span class="lbl">딜리버루</span>
-								</label>
-								<label class="checkbox"><input name="" type="checkbox" /><i></i>
-									<span class="lbl">우버이츠</span>
-								</label>
-								<label class="checkbox"><input name="" type="checkbox" /><i></i>
-									<span class="lbl">매장내 직원</span>
+								<label class="checkbox" th:each="test: ${thirdParty}">
+									<input name="" type="checkbox" id="thirdPartyId" th:value="${test.id}" th:checked="${#strings.contains(store.thirdParty, test.id)}" /><i></i>
+									<span class="lbl" th:text="${test.name}"/>
 								</label>
 							</div>
 						</li>
@@ -62,9 +55,10 @@
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
+				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" onclick="javascript:putStoreAssignInfo();"/>
 			</div>
 		</div>
+		<script type="text/javascript" th:src="@{/resources/js/site/setting/setting.js}" layout:fragment="script2"></script>
 	</section>
 	<!-- //컨텐츠 영역 -->
 
