@@ -183,3 +183,7 @@ spring:
 
 ---
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
+
+---
+api.upload.path.notice: /home/nanum/dde-upload/notice
+api.upload.path.alarm: /home/nanum/dde-upload/alarm
