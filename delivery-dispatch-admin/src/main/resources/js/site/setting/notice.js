@@ -5,12 +5,11 @@ $(document).ready(function() {
             path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
-        socket.on('message', function(data){
+        socket.on('message', function (data) {
 //                alert(data);//data 받는부분
         });
-        $(function() {
-            $('#test').click(function(){
-                alert('!!!');
+        $(function () {
+            $('#test').click(function () {
                 socket.emit('message', 'websocketTest');//data보내는부분
             });
         })
@@ -19,6 +18,18 @@ $(document).ready(function() {
     }
 
     getNoticeList();
+
+    $('#nTargetGroup').change(function() {
+        toGroup($(this).val());
+    });
+
+    $('#nTargetSubGroup').change(function() {
+        toSubGroup($(this).val());
+    });
+
+    $('#nTargetStore').change(function() {
+        $('#toStoreId').val($(this).val());
+    });
 
 });
 
@@ -30,9 +41,9 @@ function getNoticeList() {
         type: 'get',
         dataType: 'json',
         success: function (data) {
-            var i = 1;
-
             console.log(data);
+
+            var i = 1;
 
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -145,6 +156,13 @@ function getNoticeDetail(noticeId) {
         success : function (data) {
             console.log(data);
 
+            $('#nTargetGroup').empty();
+            $('#nTargetGroup').append('<option value="0">' + notice_target_all_group + '</option>');
+            $('#nTargetSubGroup').empty();
+            $('#nTargetSubGroup').append('<option value="0">' + notice_target_all_subgroup + '</option>');
+            $('#nTargetStore').empty();
+            $('#nTargetStore').append('<option value="0">' + notice_target_all_store + '</option>');
+
             $('#nTitle').val(data.S_Notice.title);
 
             var tmpTarget = '';
@@ -179,6 +197,54 @@ function getNoticeDetail(noticeId) {
                         $('<li>').append(data.C_Notice[key].storeName + ' O')
                     )
                 }
+            }
+
+            if (data.S_Group != null) {
+                for (var key in data.S_Group) {
+                    $('#nTargetGroup').append('<option value="' + data.S_Group[key].id + '">' + data.S_Group[key].name + '</option>');
+                }
+            }
+        }
+    });
+}
+
+function toGroup(toGroupId) {
+    $('#toGroupId').val(toGroupId);
+
+    $.ajax({
+        url: "/getAdminSubGroupList",
+        type: 'get',
+        data: {'toGroupId': toGroupId},
+        dataType: 'json',
+        success: function (data) {
+            console.log(data);
+
+            $('#nTargetSubGroup').empty();
+            $('#nTargetSubGroup').append('<option value="0">' + notice_target_all_subgroup + '</option>');
+            for (var key in data) {
+                $('#nTargetSubGroup').append('<option value="' + data[key].id + '">' + data[key].name + '</option>');
+            }
+        }
+    });
+}
+
+function toSubGroup(toSubGroupId) {
+    $('#toSubGroupId').val(toSubGroupId);
+
+    $.ajax({
+        url: "/getAdminSubGroupStoreList",
+        type: 'get',
+        data: {'toGroupId': $('#toGroupId').val()
+            ,'toSubGroupId': toSubGroupId
+        },
+        dataType: 'json',
+        success: function (data) {
+            console.log(data);
+
+            $('#nTargetStore').empty();
+            $('#nTargetStore').append('<option value="0">' + notice_target_all_store + '</option>');
+            for (var key in data) {
+                $('#nTargetStore').append('<option value="' + data[key].id + '">' + data[key].storeName + '</option>');
             }
         }
     });

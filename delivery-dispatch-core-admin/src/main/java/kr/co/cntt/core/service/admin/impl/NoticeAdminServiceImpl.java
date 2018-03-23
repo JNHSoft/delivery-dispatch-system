@@ -1,7 +1,12 @@
 package kr.co.cntt.core.service.admin.impl;
 
 import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
+import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.mapper.NoticeMapper;
+import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
@@ -34,12 +39,20 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
      */
     private NoticeMapper noticeMapper;
 
+    /**
+     * Admin DAO
+     */
+    private AdminMapper adminMapper;
+
 
     /**
      * @param noticeMapper Notice D A O
      */
     @Autowired
-    public NoticeAdminServiceImpl(NoticeMapper noticeMapper) { this.noticeMapper = noticeMapper; }
+    public NoticeAdminServiceImpl(NoticeMapper noticeMapper, AdminMapper adminMapper) {
+        this.noticeMapper = noticeMapper;
+        this.adminMapper = adminMapper;
+    }
 
     @Override
     public List<Notice> getNoticeList(Notice notice) {
@@ -69,11 +82,54 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
         Notice S_Notice = noticeMapper.getAdminDetailNoticeList(notice);
         List<Notice> C_Notice = noticeMapper.selectNoticeConfirm(notice);
 
+        Common common = new Common();
+        common.setRole("ROLE_ADMIN");
+        common.setToken(notice.getToken());
+
+        List<Group> S_Group = adminMapper.selectGroups(common);
+
         Map<String, Object> map = new HashMap<>();
         map.put("S_Notice", S_Notice);
         map.put("C_Notice", C_Notice);
+        map.put("S_Group", S_Group);
 
         return map;
     }
 
+    @Override
+    public List<SubGroup> getSubGroupList(Notice notice) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            notice.setRole("ROLE_ADMIN");
+        }
+
+        Common common = new Common();
+        common.setRole("ROLE_ADMIN");
+        common.setToken(notice.getToken());
+        common.setId(notice.getToGroupId());
+
+        List<SubGroup> S_SubGroup = adminMapper.selectSubGroups(common);
+
+        return S_SubGroup;
+    }
+
+    @Override
+    public List<SubGroupStoreRel> getSubGroupStoreRelList(Notice notice) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            notice.setRole("ROLE_ADMIN");
+        }
+
+        SubGroupStoreRel subGroupStoreRel = new SubGroupStoreRel();
+        subGroupStoreRel.setRole("ROLE_ADMIN");
+        subGroupStoreRel.setToken(notice.getToken());
+        subGroupStoreRel.setGroupId(notice.getToGroupId());
+        subGroupStoreRel.setSubGroupId(notice.getToSubGroupId());
+
+        List<SubGroupStoreRel> S_SubGroup = adminMapper.selectSubgroupStoreRels(subGroupStoreRel);
+
+        return S_SubGroup;
+    }
 }

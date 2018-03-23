@@ -1,6 +1,8 @@
 package kr.co.cntt.core.service.admin;
 
 
+import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
 
 import java.util.List;
@@ -23,5 +25,21 @@ public interface NoticeAdminService {
      * @return Notice
      */
     public Map getNotice(Notice notice);
+
+    /**
+     * <p> getSubGroupList
+     *
+     * @param notice
+     * @return SubGroup
+     */
+    public List<SubGroup> getSubGroupList(Notice notice);
+
+    /**
+     * <p> getSubGroupStoreRelList
+     *
+     * @param notice
+     * @return SubGroupStoreRel
+     */
+    public List<SubGroupStoreRel> getSubGroupStoreRelList(Notice notice);
 
 }
