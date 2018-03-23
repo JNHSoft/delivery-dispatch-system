@@ -145,30 +145,40 @@ function getNoticeDetail(noticeId) {
         success : function (data) {
             console.log(data);
 
-            $('#nTitle').val(data.title);
+            $('#nTitle').val(data.S_Notice.title);
 
             var tmpTarget = '';
 
-            tmpTarget = data.confirmedCount;
+            tmpTarget = data.S_Notice.confirmedCount;
 
-            if (data.toGroupId != 0 && data.toSubGroupId != 0 && data.toStoreId != 0) {
-                tmpTarget = tmpTarget + '/' + data.toStoreCount;
-            } else if (data.toGroupId != 0 && data.toSubGroupId != 0 && data.toStoreId == 0) {
-                tmpTarget = tmpTarget + '/' + data.toSubgroupCount;
-            } else if (data.toGroupId != 0 && data.toSubGroupId == 0 && data.toStoreId == 0) {
-                tmpTarget = tmpTarget + '/' + data.toGroupCount;
+            if (data.S_Notice.toGroupId != 0 && data.S_Notice.toSubGroupId != 0 && data.S_Notice.toStoreId != 0) {
+                tmpTarget = tmpTarget + '/' + data.S_Notice.toStoreCount + notice_confirmed_check_store;
+            } else if (data.S_Notice.toGroupId != 0 && data.S_Notice.toSubGroupId != 0 && data.S_Notice.toStoreId == 0) {
+                tmpTarget = tmpTarget + '/' + data.S_Notice.toSubgroupCount + notice_confirmed_check_store;
+            } else if (data.S_Notice.toGroupId != 0 && data.S_Notice.toSubGroupId == 0 && data.S_Notice.toStoreId == 0) {
+                tmpTarget = tmpTarget + '/' + data.S_Notice.toGroupCount + notice_confirmed_check_store;
             } else {
-                tmpTarget = tmpTarget + '/' + data.toAllCount;
+                tmpTarget = tmpTarget + '/' + data.S_Notice.toAllCount + notice_confirmed_check_store;
             }
 
             $('#nConfirm').html(tmpTarget);
-            $('#nContent').val(data.content);
+            $('#nContent').val(data.S_Notice.content);
 
-            if (data.fileName != null) {
-                $('#nFile').html(data.oriFileName + '(' + data.fileSize + ')');
+            if (data.S_Notice.fileName != null) {
+                $('#nFile').html(data.S_Notice.oriFileName + '(' + data.S_Notice.fileSize + ')');
+                $('#btnDelete').show();
             } else {
                 $('#nFile').html(notice_attach_none);
-                // $('#btnDelete').hide();
+                $('#btnDelete').hide();
+            }
+
+            $('#nTarget').empty();
+            if (data.C_Notice != null) {
+                for (var key in data.C_Notice) {
+                    $('#nTarget').append(
+                        $('<li>').append(data.C_Notice[key].storeName + ' O')
+                    )
+                }
             }
         }
     });

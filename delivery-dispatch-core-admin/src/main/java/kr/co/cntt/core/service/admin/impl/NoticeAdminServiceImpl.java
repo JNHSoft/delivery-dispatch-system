@@ -12,7 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service("noticeAdminService")
@@ -57,7 +59,7 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
     }
 
     @Override
-    public Notice getNotice(Notice notice) {
+    public Map getNotice(Notice notice) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
@@ -65,8 +67,13 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
         }
 
         Notice S_Notice = noticeMapper.getAdminDetailNoticeList(notice);
+        List<Notice> C_Notice = noticeMapper.selectNoticeConfirm(notice);
 
-        return S_Notice;
+        Map<String, Object> map = new HashMap<>();
+        map.put("S_Notice", S_Notice);
+        map.put("C_Notice", C_Notice);
+
+        return map;
     }
 
 }

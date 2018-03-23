@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -73,11 +74,10 @@ public class SettingController {
     @ResponseBody
     @GetMapping("/getNotice")
     @CnttMethodDescription("공지사항 상세 조회")
-    public Notice getNotice(Notice notice) {
+    public Map getNotice(Notice notice) {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         notice.setToken(adminInfo.getAdminAccessToken());
-        Notice noticeDetail = noticeAdminService.getNotice(notice);
-        log.info(noticeDetail.getTitle());
+        Map noticeDetail = noticeAdminService.getNotice(notice);
         return noticeDetail;
     }
 

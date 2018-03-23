@@ -368,17 +368,27 @@
     <!-- selectNoticeConfirm -->
     <select id="selectNoticeConfirm" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
         SELECT
-            created_datetime
-            , modified_datetime
-            , id
-            , admin_id
-            , store_id
-            , notice_id
-        FROM TB_NOTICE_CONFIRM
-        WHERE deleted IS NULL
-            AND notice_id = #{id}
-            AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}))
-            AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token})
+            A.created_datetime
+            , A.modified_datetime
+            , A.id
+            , A.admin_id
+            , A.store_id
+            , A.notice_id
+            , B.store_name AS store_name
+        FROM TB_NOTICE_CONFIRM AS A
+        LEFT JOIN TB_STORE AS B
+            ON A.store_id = B.id
+        WHERE A.deleted IS NULL
+            AND A.notice_id = #{id}
+            <choose>
+                <when test="(role != null and role != '') and role == 'ROLE_STORE'">
+                    AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}))
+                    AND A.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token})
+                </when>
+                <when test="(role != null and role != '') and role == 'ROLE_ADMIN'">
+                    AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token=#{token})
+                </when>
+            </choose>
     </select>
 
 

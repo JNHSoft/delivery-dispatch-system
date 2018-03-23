@@ -4,6 +4,7 @@ package kr.co.cntt.core.service.admin;
 import kr.co.cntt.core.model.notice.Notice;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NoticeAdminService {
 
@@ -21,6 +22,6 @@ public interface NoticeAdminService {
      * @param notice
      * @return Notice
      */
-    public Notice getNotice(Notice notice);
+    public Map getNotice(Notice notice);
 
 }

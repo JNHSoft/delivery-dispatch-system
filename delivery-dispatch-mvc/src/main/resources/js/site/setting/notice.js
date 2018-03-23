@@ -174,9 +174,10 @@ function getNoticeDetail(noticeId) {
 
             if (data.fileName != null) {
                 $('#nFile').html(data.oriFileName + '(' + data.fileSize + ')');
+                $('#btnDelete').show();
             } else {
                 $('#nFile').html(notice_attach_none);
-                // $('#btnDelete').hide();
+                $('#btnDelete').hide();
             }
         }
     });
