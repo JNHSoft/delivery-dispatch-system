@@ -58,6 +58,11 @@ public interface Api {
     /** [Admin] 상점 그룹 수정 */
     String ADMIN_SUBGROUP_STORE_REL_PUT = "/putSubgroupStoreRel.json";
 
+
+    /** [Admin] 상점 서브 그룹 수정  Nick 추가 */
+    String ADMIN_STORE_SUBGROUP_PUT = "/putStoreSubgroup.json";
+
+
     /** [Admin] 상점 그룹 삭제 */
     String ADMIN_SUBGROUP_STORE_REL_DELETE = "/deleteSubgroupStoreRel.json";
 

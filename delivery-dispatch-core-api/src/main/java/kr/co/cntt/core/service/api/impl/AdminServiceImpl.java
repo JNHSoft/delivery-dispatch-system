@@ -265,6 +265,24 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
         return result;
     }
+    // 상점 서브그룹만 수정          Nick 추가
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putStoreSubgroup(Store store) {
+
+        int result = adminMapper.updateStoreSubGroup(store);
+
+        List<Admin> resultAdmin = adminMapper.selectAdminInfo(store);
+
+        if (result != 0) {
+            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+        }
+
+        return result;
+    }
+
+
+
 
     @Secured("ROLE_ADMIN")
     @Override

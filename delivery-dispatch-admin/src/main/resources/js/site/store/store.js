@@ -56,6 +56,12 @@ function getStoreList() {
                     $mydata.push($tmpData);
                 }
             }
+            if ($mydata != null) {
+                jQuery('#jqGrid').jqGrid('clearGridData')
+                jQuery('#jqGrid').jqGrid('setGridParam', {data: $mydata, page: 1})
+                jQuery('#jqGrid').trigger('reloadGrid');
+            }
+            $("#jqGrid").trigger("reloadGrid");
 
             $("#jqGrid").jqGrid({
                 datatype:"local",
@@ -288,7 +294,7 @@ function getPostSubGroupList(gId, subGroup) {
  * Store 수정
  */
 function putStoreDetail() {
-    // 주문 수정 보내는 값들
+    // 수정 보내는 값들
     $.ajax({
         url : "/putStoreDetail",
         type : 'put',

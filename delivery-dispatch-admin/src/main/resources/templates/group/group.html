@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+<script type="text/javascript" th:src="@{/resources/js/site/group/group.js}" layout:fragment="script"></script>
 
 <!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
@@ -11,11 +12,11 @@
 						<div class="cont_in same-height">
 							<p><strong class="fz13 t_black">추가 그룹명</strong> <span class="fz10">그룹명은 최대 15자까지 입력 가능합니다.</span></p>
 							<div class="mt10">
-								<input type="text" class="input" />
-								<button class="button btn_dgray"><i class="fa fa-plus" aria-hidden="true"></i> 추가</button>
+								<input type="text" class="input" id="postGroupName"/>
+								<button class="button btn_dgray" onClick="javascript:postGroup()"><i class="fa fa-plus" aria-hidden="true" ></i> 추가</button>
 							</div>
 							<hr />
-							<div class="tbl_wrap">
+							<div class="tbl_wrap" id="groupList">
 								<table class="table">
 									<thead>
 										<tr>
@@ -25,50 +26,94 @@
 											<th>수정/삭제</th>
 										</tr>
 									</thead>
+
 									<tbody>
-										<tr>
-											<td class="t_left"><input type="text" class="input w_100" value="서초동부" /></td>
-											<td>10</td>
-											<td>15</td>
+										<tr th:each="group : ${groupList}"	th:attr="data-group-id=${group.id}">
+											<td class="t_left" th:text="${group.name}" name="groupName"></td>
+											<td th:text="${group.subGroupCount}"></td>
+											<td th:text="${group.subGroupStoreCount}"></td>
 											<td>
-												<button class="button h20">저장</button>
-												<button class="button h20">취소</button>
+												<button class="button h20" name="save">수정</button>
+												<button class="button h20" name="delete">삭제</button>
 											</td>
+											<input type="hidden" name="defaultGroupName" th:value="${group.name}" />
+
+
+
 										</tr>
-										<tr class="selected">
-											<td class="t_left">서초서부</td>
-											<td>10</td>
-											<td>15</td>
-											<td>
-												<button class="button h20">수정</button>
-												<button class="button h20">삭제</button>
-											</td>
-										</tr>
-										<tr>
+
+										<tr id="noneGroup">
 											<td class="t_left">미지정</td>
 											<td>0</td>
-											<td>3</td>
+											<td th:text="${noneGroupList.size()}"></td>
 											<td></td>
 										</tr>
+
+									</tbody>
+
+								</table>
+							</div>
+						</div>
+					</div>
+					<!-- 미지정 그룹 -->
+					<div id="noneGroupHtml" style="display: none;">
+						<div class="cont_in same-height">
+							<p><strong class="fz13 t_black">미지정</strong> <span class="fz10">그룹 내 매장</span></p>
+							<div class="mt10">
+								<input type="text" class="input" />
+								<button class="button"><i class="fa fa-search" aria-hidden="true"></i> 검색</button>
+							</div>
+							<hr />
+							<div class="tbl_wrap" id="noneGroupList" th:fragment="noneGroupList">
+								<table class="table">
+									<thead>
+									<tr>
+										<th>NO</th>
+										<th>매장명</th>
+										<th>그룹명</th>
+										<th>소그룹</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr th:each = "noneGroup:${noneGroupList}" th:attr="data-sub-id=${noneGroup.subGroupId}" th:attrappend="data-group-id=${noneGroup.groupId}">
+										<td th:text="${noneGroup.id}" name="storeId"></td>
+										<td class="t_left" th:text="${noneGroup.storeName}" name="groupName"></td>
+										<td>
+											<select class="select w_100" th:name="groupList" >
+													<option>없음</option>
+												<th:block th:each="groupList:${groupList}" >
+													<option th:value="${groupList.id}" th:text="${groupList.name}" ></option>
+												</th:block>
+											</select>
+										</td>
+										<td>
+											<select th:name="subGroupList" class="select w_100" id="noneStoreSubGroup">
+													<option>없음</option>
+											</select>
+										</td>
+									</tr>
 									</tbody>
 								</table>
 							</div>
 						</div>
 					</div>
-					<div>
+					<!-- 미지정 그룹 END-->
+
+					<div id="subGroupHtml" style="display: none;">
 						<div class="cont_in same-height">
 							<p>
-								<label class="checkbox"><input name="" type="checkbox" /><i></i>
-									<strong class="lbl fz13 t_black">강남 소그룹 추가</strong>
+								<label class="checkbox"><input name="checkbox" type="checkbox" /><i></i>
+									<strong class="lbl fz13 t_black" id="store_group_name"/>
 								</label>
-								<span class="fz10">소그룹 미지정 시 각매장은 개별적으로 주문을 처리합니다.</span>
+									<strong>소그룹 추가</strong>
+									<span class="fz10">소그룹 미지정 시 각매장은 개별적으로 주문을 처리합니다.</span>
 							</p>
 							<div class="mt10">
-								<input type="text" class="input" />
-								<button class="button btn_dgray"><i class="fa fa-plus" aria-hidden="true"></i> 추가</button>
+								<input type="text" class="input" id="postSubGroupName" disabled="disabled"/>
+								<button class="button btn_dgray" onClick="javascript:postSubGroup()"><i class="fa fa-plus" aria-hidden="true" ></i> 추가</button>
 							</div>
 							<hr />
-							<div class="tbl_wrap">
+							<div class="tbl_wrap" id="subGroupList" th:fragment="subGroupList">
 								<table class="table">
 									<thead>
 										<tr>
@@ -78,60 +123,29 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td class="t_left"><input type="text" class="input w_100" value="강남A" /></td>
-											<td>15</td>
+										<tr th:each = "subGroup:${subGroupList}" th:attr="data-sub-id=${subGroup.id}" th:attrappend="data-group-id=${subGroup.groupId}">
+											<td class="t_left" th:text="${subGroup.name}" name="groupName"></td>
+											<td th:text="${subGroup.subGroupStoreCount}"></td>
 											<td>
-												<button class="button h20">저장</button>
-												<button class="button h20">취소</button>
+												<button class="button h20" name="save">수정</button>
+												<button class="button h20" name="delete">삭제</button>
 											</td>
-										</tr>
-										<tr>
-											<td class="t_left">강남B</td>
-											<td>10</td>
-											<td>
-												<button class="button h20">수정</button>
-												<button class="button h20">삭제</button>
-											</td>
-										</tr>
-										<tr class="selected">
-											<td class="t_left">강남C</td>
-											<td>10</td>
-											<td>
-												<button class="button h20">수정</button>
-												<button class="button h20">삭제</button>
-											</td>
-										</tr>
-										<tr>
-											<td class="t_left">강남D</td>
-											<td>10</td>
-											<td>
-												<button class="button h20">수정</button>
-												<button class="button h20">삭제</button>
-											</td>
-										</tr>
-										<tr>
-											<td class="t_left">강남E</td>
-											<td>10</td>
-											<td>
-												<button class="button h20">수정</button>
-												<button class="button h20">삭제</button>
-											</td>
+											<input type="hidden" name="defaultGroupName" th:value="${subGroup.name}" />
 										</tr>
 									</tbody>
 								</table>
 							</div>
 						</div>
 					</div>
-					<div>
+					<div id="storeHtml" style="display: none;">
 						<div class="cont_in same-height">
-							<p><strong class="fz13 t_black">강남C</strong> <span class="fz10">그룹 내 매장</span></p>
+							<p><strong class="fz13 t_black" id="store_subgroup_name"/> <span class="fz10">그룹 내 매장</span></p>
 							<div class="mt10">
 								<input type="text" class="input" />
 								<button class="button"><i class="fa fa-search" aria-hidden="true"></i> 검색</button>
 							</div>
 							<hr />
-							<div class="tbl_wrap">
+							<div class="tbl_wrap" th:fragment="storeList" id="storeList">
 								<table class="table">
 									<thead>
 										<tr>
@@ -142,40 +156,18 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>10</td>
-											<td class="t_left">압구정점</td>
+										<tr th:each = "store:${storeList}" th:attr="data-sub-id=${store.subGroupId}" th:attrappend="data-group-id=${store.groupId}">
+											<td th:text="${store.storeId}" name="storeName"></td>
+											<td class="t_left"  th:text="${store.storeName}" name="storeName"></td>
 											<td>
-												<select name="" class="select w_100">
-													<option value="">강남C</option>
+												<select class="select w_100" th:name="*{subGroupList}">
+													<th:block th:each="subGroupList:${subGroupList}" >
+														<option th:value="${subGroupList.id}" th:text="${subGroupList.name}" th:selected="${store.subGroupId == subGroupList.id}"></option>
+													</th:block>
 												</select>
 											</td>
 											<td>
-												<button class="button h20">삭제</button>
-											</td>
-										</tr>
-										<tr>
-											<td>10</td>
-											<td class="t_left">압구정점</td>
-											<td>
-												<select name="" class="select w_100">
-													<option value="">강남C</option>
-												</select>
-											</td>
-											<td>
-												<button class="button h20">삭제</button>
-											</td>
-										</tr>
-										<tr>
-											<td>10</td>
-											<td class="t_left">압구정점</td>
-											<td>
-												<select name="" class="select w_100">
-													<option value="">강남C</option>
-												</select>
-											</td>
-											<td>
-												<button class="button h20">삭제</button>
+												<button class="button h20" name="delete">삭제</button>
 											</td>
 										</tr>
 									</tbody>
@@ -185,8 +177,9 @@
 					</div>
 				</div>
 			</div>
+			<!--기능 임시주석 -->
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30">확인</a>
+				<!--<a href="" class="button btn_blue w120 h30" id="selectSave">확인</a>-->
 			</div>
 		</div>
 	</section>
