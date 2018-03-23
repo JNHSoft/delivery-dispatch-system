@@ -89,7 +89,7 @@ function getNoticeList() {
                         datatype: 'local',
                         data: mydata,
                         colModel: [
-                            {label: 'id', name: 'id', width: 25, key: true, align: 'center'},
+                            {label: 'id', name: 'id', width: 25, key: true, align: 'center', hidden:true},
                             {label: 'No', name: 'no', width: 25, key: true, align: 'center'},
                             {label: notice_target, name: 'target', width: 60, align: 'center'},
                             {label: notice_subject, name: 'title', width: 300},
@@ -176,7 +176,7 @@ function getNoticeDetail(noticeId) {
                 $('#nFile').html(data.oriFileName + '(' + data.fileSize + ')');
             } else {
                 $('#nFile').html(notice_attach_none);
-                $('#btnDelete').hide();
+                // $('#btnDelete').hide();
             }
         }
     });
