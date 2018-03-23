@@ -145,6 +145,11 @@ function getNoticeList() {
 
 function getNoticeDetail(noticeId) {
     console.log('noticeId: ' + noticeId);
+
+    $('#toGroupId').val(0);
+    $('#toSubGroupId').val(0);
+    $('#toStoreId').val(0);
+
     $.ajax({
         url : '/getNotice',
         type : 'get',
