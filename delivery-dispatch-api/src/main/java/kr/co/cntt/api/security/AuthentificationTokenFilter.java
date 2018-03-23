@@ -1,33 +1,39 @@
 package kr.co.cntt.api.security;
 
-import java.io.IOException;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.service.api.RiderService;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import kr.co.cntt.core.service.api.StoreService;
+import kr.co.cntt.core.service.api.TrackerService;
+import kr.co.cntt.core.util.AES256Util;
+import kr.co.cntt.core.util.CustomEncryptUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Slf4j
 public class AuthentificationTokenFilter extends OncePerRequestFilter {
+
+    @Value("${api.tracker.key}")
+    private String tKey;
 
     @Autowired
     private CustomAuthentificateService customAuthentificateService;
@@ -44,6 +50,9 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private TrackerService trackerService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException, UsernameNotFoundException {
@@ -51,7 +60,7 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
         String requestUri = servletRequest.getRequestURI();
         log.debug("======= api request uri : {}", requestUri);
 
-        if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do")) && !(requestUri.contains("putToken.do")) && !(requestUri.contains("versionCheck.do"))) {
+        if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do")) && !(requestUri.contains("putToken.do")) && !(requestUri.contains("versionCheck.do")) && !requestUri.contains("getTracker.do")) {
             try {
                 //log.debug("======= try");
                 request = new RequestWrapper(servletRequest);
@@ -76,6 +85,7 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                     Rider riderInfo = new Rider();
                     Store storeInfo = new Store();
                     Admin adminInfo = new Admin();
+                    User trackerInfo = new User();
                     int checkUserCount = 0;
 
                     if (authLevel.equals("3")) {
@@ -98,6 +108,11 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                         adminInfo.setLoginId(username);
 
                         checkUserCount = adminService.selectAdminTokenCheck(adminInfo);
+                    } else if (authLevel.equals("4")) {
+                        trackerInfo.setAccessToken(authToken);
+                        trackerInfo.setLoginId(username);
+
+                        checkUserCount = trackerService.selectTrackerTokenCheck(trackerInfo);
                     }
 
                     log.debug("=======> checkUserCount : {}", checkUserCount);
@@ -106,6 +121,73 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 
                         if (actorDetails == null) {
 //                            Actor actor = new Actor(username, username);
+                            Actor actor = new Actor(username, username, authLevel);
+                            actorDetails = new ActorDetails(actor, null);
+                        }
+
+                        log.debug("======= actorDetails : {}", actorDetails);
+                        if (tokenManager.validateCustomToken(authToken, actorDetails)) {
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                    actorDetails, null, actorDetails.getAuthorities());
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            logger.info("authenticated device " + username + ", setting security context");
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
+                    }
+                }
+
+                // TODO : filter chain stop 시점을 찾아야한다. 오류인 경우 어떻게 할지.. exception 공통구현 필요
+                chain.doFilter(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (requestUri.contains("getTracker.do")) {
+            try {
+                request = new RequestWrapper(servletRequest);
+                AES256Util aesUtil = new AES256Util(tKey);
+
+//                String decParam = aesUtil.aesDecode(request.getParameter("encParam"));
+//                Map<String, String> query_pairs = new LinkedHashMap<>();
+//                String[] pairs = decParam.split("&");
+//                for (String pair : pairs) {
+//                    int idx = pair.indexOf("=");
+//                    query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+//                }
+//
+//                String authToken = query_pairs.get("token");
+//                String authLevel = query_pairs.get("level");
+
+                String decParam = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(request.getParameter("encParam")));
+
+                JSONParser jsonParser = new JSONParser();
+                JSONObject jsonObject = (JSONObject) jsonParser.parse(decParam);
+
+                String authToken = jsonObject.get("token").toString();
+                String authLevel = jsonObject.get("level").toString();
+
+                log.debug("======= authToken : {}", authToken);
+                log.debug("======= authLevel : {}", authLevel);
+
+                String username = tokenManager.getUsernameFromToken(authToken);
+
+                log.debug("======= username : {}", username);
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                    User trackerInfo = new User();
+                    int checkUserCount = 0;
+
+                    if (authLevel.equals("4")) {
+                        trackerInfo.setAccessToken(authToken);
+                        trackerInfo.setLoginId(username);
+
+                        checkUserCount = trackerService.selectTrackerTokenCheck(trackerInfo);
+                    }
+
+                    log.debug("=======> checkUserCount : {}", checkUserCount);
+                    if (checkUserCount > 0) {
+                        ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
+
+                        if (actorDetails == null) {
                             Actor actor = new Actor(username, username, authLevel);
                             actorDetails = new ActorDetails(actor, null);
                         }

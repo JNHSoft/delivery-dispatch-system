@@ -3,7 +3,7 @@ package kr.co.cntt.core.mapper;
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
@@ -171,4 +171,14 @@ public interface RiderMapper {
     public List<Reason> selectRejectReason(Common common);
 
     public List<String> selectRiderTokenByChatUserId(Chat chat);
+
+    public SubGroupRiderRel selectMySubgroupRiderRels(Rider rider);
+
+    /**
+     *  <p> 라이더현황
+     *
+     * @param
+     * @return
+     */
+    public List<Rider> selectRiderNow(Common common);
 }

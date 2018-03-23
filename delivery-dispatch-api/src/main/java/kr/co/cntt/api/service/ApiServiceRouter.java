@@ -16,6 +16,7 @@ import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
+import kr.co.cntt.core.model.tracker.Tracker;
 import lombok.Getter;
 
 @Getter
@@ -261,6 +262,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Notice 리스트 */
 	NOTICE_LIST("noticeService", "getNoticeList", Notice.class),
 
+	/** Notice 확인 */
+	NOTICE_CONFIRM("noticeService", "putNoticeConfirm", Notice.class),
+
 	/** pushToken 등록   */
 	SET_PUSH_TOKEN("userService", "updatePushToken", User.class),
 
@@ -274,6 +278,14 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** 채팅방 목록 */
 	CHATROOM_GET("chatService", "getChatRoom", Chat.class),
+
+	// ############################################################################################ //
+
+	/** 트래커 - 주문 정보 조회 */
+	TRACKER_JSON_GET("trackerService", "getJsonTracker", Tracker.class),
+
+	/** 트래커 - 주문 정보 조회 */
+	TRACKER_GET("trackerService", "getTracker", Tracker.class),
 
 	// ############################################################################################ //
 

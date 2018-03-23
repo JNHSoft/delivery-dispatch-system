@@ -5,7 +5,7 @@
 	<header id="header" th:fragment="commonHeader">
 		<div class="mobile_head">
 			<h2 class="head_tit"><img src="../resources/images/common/logo.png" alt="KFC" /></h2>
-			<a href="#" class="head_notice new"><i class="fa fa-envelope-o" aria-hidden="true"></i> 공지사항</a>
+			<a href="#" class="head_notice new" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
 		</div>
 		<a href="#" class="btn_gnb"><i></i><span class="blind">GNB 메뉴</span></a>
 		<div class="web_head">
@@ -17,18 +17,18 @@
 					</div>
 					<div class="head_info">
 						<a href="#" class="user_id"><i class="fa fa-user-circle-o" aria-hidden="true"></i>본사관리자</a>
-						<a href="/logout" class="button btn_gray h20">로그아웃</a>
+						<a href="/logout" class="button btn_gray h20" th:text="${#messages.msg('gnb.logout')}" />
 					</div>
 				</div>
 				<h1 id="logo"><img src="../resources/images/common/logo.png" alt="KFC" /></h1>
 				<div class="gnb_wrap">
 					<nav id="gnb">
 						<ul>
-							<li><a href="/store"><img src="../resources/images/common/gnb_store.png" alt="" /><strong>매장관리</strong></a></li>
-							<li><a href="/group"><img src="../resources/images/common/gnb_group.png" alt="" /><strong>그룹관리</strong></a></li>
-							<li><a href="/staff"><img src="../resources/images/common/gnb_staff.png" alt="" /><strong>직원관리</strong></a></li>
-							<li><a href="/statistics"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong>통계</strong></a></li>
-							<li><a href="/setting-account"><img src="../resources/images/common/gnb_setting.png" alt="" /><strong>설정</strong></a></li>
+							<li><a href="/store"><img src="../resources/images/common/gnb_store.png" alt="" /><strong th:text="${#messages.msg('gnb.store')}" /></a></li>
+							<li><a href="/group"><img src="../resources/images/common/gnb_group.png" alt="" /><strong th:text="${#messages.msg('gnb.group')}" /></a></li>
+							<li><a href="/staff"><img src="../resources/images/common/gnb_staff.png" alt="" /><strong th:text="${#messages.msg('gnb.staff')}" /></a></li>
+							<li><a href="/statistics"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong th:text="${#messages.msg('gnb.statistics')}" /></a></li>
+							<li><a href="/setting-account"><img src="../resources/images/common/gnb_setting.png" alt="" /><strong th:text="${#messages.msg('gnb.setting')}" /></a></li>
 						</ul>
 					</nav>
 				</div>

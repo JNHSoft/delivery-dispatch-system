@@ -11,12 +11,11 @@ import kr.co.cntt.core.api.model.CommonBody;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.service.api.AdminService;
-import kr.co.cntt.core.service.api.OrderService;
-import kr.co.cntt.core.service.api.RiderService;
-import kr.co.cntt.core.service.api.StoreService;
+import kr.co.cntt.core.model.tracker.Tracker;
+import kr.co.cntt.core.service.api.*;
 import kr.co.cntt.core.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +38,14 @@ import static kr.co.cntt.api.exporter.Api.Path;
 @RestController
 @RequestMapping(Path)
 public class ApiExporter extends ExporterSupportor implements Api {
+
     /**
      * 객체 주입
      */
     private RiderService riderService;
     private StoreService storeService;
     private AdminService adminService;
+    private TrackerService trackerService;
     private OrderService orderService;
     private CustomAuthentificateService customAuthentificateService;
     private AuthenticationManager authenticationManager;
@@ -60,6 +61,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
             , RiderService riderService
             , StoreService storeService
             , AdminService adminService
+            , TrackerService trackerService
             , OrderService orderService
             , FileUtil fileUtil){
         this.customAuthentificateService = customAuthentificateService;
@@ -68,6 +70,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         this.riderService = riderService;
         this.storeService = storeService;
         this.adminService = adminService;
+        this.trackerService = trackerService;
         this.orderService = orderService;
         this.fileUtil = fileUtil;
     }
@@ -93,6 +96,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Rider riderInfo = new Rider();
         Store storeInfo = new Store();
         Admin adminInfo = new Admin();
+        User trackerInfo = new User();
 
         try {
             if (level.equals("3")) {
@@ -107,6 +111,10 @@ public class ApiExporter extends ExporterSupportor implements Api {
                 adminInfo.setLoginId(loginId);
                 adminInfo.setLoginPw(loginPw);
                 userLoginId = adminService.selectLoginAdmin(adminInfo);
+            } else if (level.equals("4")) {
+                trackerInfo.setLoginId(loginId);
+                trackerInfo.setLoginPw(loginPw);
+                userLoginId = trackerService.selectLoginTracker(trackerInfo);
             }
 
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
@@ -187,6 +195,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
             } else if (level.equals("1")) {
                 adminInfo.setAccessToken(token);
                 adminService.insertAdminSession(adminInfo);
+            } else if (level.equals("4")) {
+                trackerInfo.setAccessToken(token);
+                trackerService.insertTrackerSession(trackerInfo);
             }
 
             return ResponseEntity.ok(new Gson().toJson(response).toString());
@@ -228,7 +239,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
                 riderService.updateRiderSession(token);
             } else if (level.equals("2")) {
                 storeService.updateStoreSession(token);
-
             } else if (level.equals("1")) {
                 adminService.updateAdminSession(token);
             }
@@ -306,4 +316,28 @@ public class ApiExporter extends ExporterSupportor implements Api {
         return ResponseEntity.ok(gson.toJson(response).toString());
 
     }
+
+    @GetMapping(value = TRACKER_GET)
+    public ResponseEntity<?> getTracker(@RequestParam String encParam) throws AppTrException {
+        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
+
+        try {
+            Tracker trackerResult = trackerService.getTracker(encParam);
+
+            result.put("result", CODE_SUCCESS);
+            data.put("tracker", trackerResult);
+
+            response.put("result", CODE_SUCCESS);
+            response.put("tracker", trackerResult);
+
+            Gson gson = new GsonBuilder().serializeNulls().create();
+
+            return ResponseEntity.ok(gson.toJson(response).toString());
+        } catch (Exception e) {
+            return responseError(null, e);
+        }
+    }
+
 }

@@ -259,6 +259,9 @@ public interface Api {
     /** 공지사항 리스트 */
     String NOTICE_LIST = "/getNoticeList.json";
 
+    /** 공지사항 확인 */
+    String NOTICE_CONFIRM = "/putNoticeConfirm.json";
+
     // ############################################################################################ //
 
     /** 채팅 보내기 */
@@ -269,6 +272,14 @@ public interface Api {
 
     /** 채팅방 목록 */
     String CHATROOM_GET = "/getChatRoom.json";
+
+    // ############################################################################################ //
+
+    /** 트래커 - 주문 정보 조회 */
+    String TRACKER_JSON_GET = "/getJsonTracker.json";
+
+    /** 트래커 - 주문 정보 조회 */
+    String TRACKER_GET = "/getTracker.do";
 
     // ############################################################################################ //
 

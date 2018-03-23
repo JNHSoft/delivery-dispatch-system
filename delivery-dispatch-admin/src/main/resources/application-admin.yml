@@ -8,6 +8,7 @@ spring:
   messages:
     cache-seconds: -1
     basename: classpath:/META-INF/messages/exceptions
+                , classpath:/META-INF/messages/messages
     encoding: UTF-8
     #fallback-to-system-locale: true
   http:

@@ -4,6 +4,7 @@
     <!-- selectRidersResult -->
     <resultMap id="selectOrdersResult" type="kr.co.cntt.core.model.order.Order">
         <result property="id" column="id" />
+        <result property="regOrderId" column="reg_order_id" />
         <result property="createdDatetime" column="created_datetime" />
         <result property="storeId" column="store_id" />
         <result property="riderId" column="rider_id" />
@@ -12,6 +13,7 @@
         <result property="status" column="status" />
         <result property="menuName" column="menu_name" />
 		<result property="menuPrice" column="menu_price" />
+		<result property="assignedFirst" column="assigned_first" />
 		<result property="deliveryPrice" column="delivery_price" />
 		<result property="totalPrice" column="total_price" />
         <result property="cookingTime" column="cooking_time" />
@@ -43,6 +45,7 @@
 	<!-- selectRiderResult -->
 	<resultMap id="selectOrderInfoResult" type="kr.co.cntt.core.model.order.Order">
 		<result property="id" column="id" />
+		<result property="regOrderId" column="reg_order_id" />
 		<result property="createdDatetime" column="created_datetime" />
 		<result property="status" column="status" />
 		<result property="storeId" column="store_id" />
@@ -109,6 +112,7 @@
 			, reservation_datetime
 			, device_os
 			, status
+			, reg_order_id
 			, created_datetime
 		) VALUES(
 			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
@@ -133,6 +137,7 @@
 			, #{reservationDatetime}
 			, #{deviceOs}
 			, #{status}
+			, #{regOrderId}
 			, now()
 	  	)
 		<selectKey keyProperty="id" resultType="String">
@@ -145,6 +150,7 @@
 	<select id="selectOrders" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
 		SELECT
 			A.id
+			, A.reg_order_id
 			, A.created_datetime
             , A.store_id
             , A.rider_id
@@ -160,6 +166,7 @@
 			, A.assigned_datetime
 			, A.picked_up_datetime
 			, A.menu_price
+			, A.assigned_first
 			, B.id AS rider_id
             , B.name AS rider_name
   			, D.name AS store_name
@@ -199,8 +206,8 @@
 				</when>
 				<when test="role != null and role == 'ROLE_RIDER'">
 					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-                    AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-                    AND C.deleted IS NULL
+					AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+					AND C.deleted IS NULL
                 </when>
 				<otherwise>
 					AND A.id IS NULL
@@ -214,6 +221,7 @@
 	<select id="selectOrderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectOrderInfoResult">
 		SELECT
             A.id
+			, A.reg_order_id
             , A.created_datetime
 			, A.status
 			, A.store_id

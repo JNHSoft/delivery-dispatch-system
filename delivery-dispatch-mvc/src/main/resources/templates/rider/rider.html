@@ -1,286 +1,87 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/layout">
 
 <!-- 컨텐츠 영역 -->
-	<section id="container" layout:fragment="content">
-		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}" />
-		<div class="search_box">
-			<div class="left">
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('status.all')}" />
-				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('status.work')}" />
-				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('status.standby')}" />
-				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('status.rest')}" />
-				</label>
-			</div>
-			<div class="right">
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('rider.mine')}" />
-				</label>
-			</div>
-		</div>
-		<div id="contents">
-			<div class="rider_wrap">
-				<div class="map">
-					<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
-				</div>
-				<div class="list_wrap">
-					<div class="tbl_wrap">
-						<table class="table">
-							<thead>
-								<tr>
-									<th scope="col">NO</th>
-									<th scope="col" th:text="${#messages.msg('rider.name')}" />
-									<th scope="col" th:text="${#messages.msg('rider.status')}" />
-									<th scope="col" th:text="${#messages.msg('rider.belong.store')}" />
-									<th scope="col" th:text="${#messages.msg('rider.delivery.store')}" />
-									<th scope="col" th:text="${#messages.msg('rider.reset')}" />
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>10</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue" th:text="${#messages.msg('status.work')}" /></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20" th:text="${#messages.msg('rider.reset')}" />
-									</td>
-								</tr>
-								<tr>
-									<td>9</td>
-									<td>김나은</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>8</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt">OFF</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>7</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_green">대기</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>6</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>5</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>4</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>3</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>2</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>1</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>5</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>4</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>3</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>2</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-								<tr>
-									<td>1</td>
-									<td>홍길동</td>
-									<td><i class="ic_txt ic_blue">근무</i></td>
-									<td>양재점</td>
-									<td>서초점</td>
-									<td>
-										<button class="button h20">재배치</button>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-				<div class="chat_wrap cont_box">
-					<div class="top">
-						<a href="#" class="close"><i class="fa fa-chevron-left" aria-hidden="true"></i><span class="blind">닫기</span></a>
-						<strong th:text="${#messages.msg('rider.chat.title', '김나은')}" />
-						<span class="f_right">
-							<i class="ic_txt ic_blue" th:text="${#messages.msg('status.work')}" />
-						</span>
-					</div>
-					<div class="chat">
-						<div class="date"><span>2017년 09월 21일</span></div>
-						<div class="chat-item" tabindex="0">
-							<p class="name">김나은</p>
-							<div class="bubble">
-								<div>어디로 배달해드리면 되죠?</div>
-								<p class="time">오후 5:38</p>
-							</div>
-						</div>
-						<div class="chat-item me" tabindex="0">
-							<div class="bubble">
-								<div>증산동으로 배달해주세요!</div>
-								<p class="time">오후 5:39</p>
-							</div>
-						</div>
+<section id="container" layout:fragment="content">
+    <div th:object="${store}" style="display:none">
+        <input type="hidden" id="storeId" th:value="*{id}"/>
+        <input type="hidden" id="statusArray"/>
+        <input type="hidden" id="storeLatitude" th:value="*{latitude}"/>
+        <input type="hidden" id="storeLongitude" th:value="*{longitude}"/>
+    </div>
+    <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}"/>
+    <div class="search_box">
+        <div class="left state">
+            <label class="checkbox"><input name="orderAllChk" id="orderAllChk" type="checkbox" checked="checked"/><i></i>
+                <span class="lbl" th:text="${#messages.msg('status.all')}"/>
+            </label>
+            <label class="checkbox"><input id="srchChk1" name="srchChk" type="checkbox" checked="checked" disabled="true"/><i></i>
+                <span class="lbl" th:text="${#messages.msg('status.work')}"/>
+            </label>
+            <label class="checkbox"><input id="srchChk2" name="srchChk" type="checkbox" checked="checked" disabled="true"/><i></i>
+                <span class="lbl" th:text="${#messages.msg('status.standby')}"/>
+            </label>
+            <label class="checkbox"><input id="srchChk3" name="srchChk" type="checkbox" checked="checked" disabled="true"/><i></i>
+                <span class="lbl" th:text="${#messages.msg('status.rest')}" />
+            </label>
+            <label class="checkbox"><input id="srchChk4" name="srchChk" type="checkbox" checked="checked" disabled="true"/><i></i>
+                <span class="lbl" th:text="${#messages.msg('status.off')}" />
+            </label>
+        </div>
+        <div class="right">
+            <label class="checkbox"><input name="" id="myStoreChk" type="checkbox"/><i></i>
+                <span class="lbl" th:text="${#messages.msg('rider.mine')}"/>
+            </label>
+        </div>
+    </div>
+    <div id="contents">
+        <div class="rider_wrap">
+            <div id="map" style="width: 76%; height: 750px; background-color: grey;"></div>
+            <div class="list_wrap">
+                <div class="tbl_wrap">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">NO</th>
+                            <th scope="col" th:text="${#messages.msg('rider.name')}"/>
+                            <th scope="col" th:text="${#messages.msg('rider.status')}"/>
+                            <th scope="col" th:text="${#messages.msg('rider.belong.store')}"/>
+                            <th scope="col" th:text="${#messages.msg('rider.delivery.store')}"/>
+                            <th scope="col" th:text="${#messages.msg('rider.reset')}"/>
+                        </tr>
+                        </thead>
+                        <tbody id="riderList">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="chat_wrap cont_box">
+                <div class="top">
+                    <a href="#" class="close"><i class="fa fa-chevron-left" aria-hidden="true"></i><span class="blind">닫기</span></a>
+                    <strong id="chatRider"/>
+                    <span class="f_right" id="workingStatus"></span>
+                </div>
+                <div class="chat" id="chatList">
+                </div>
+                <div class="inp_chat">
+                    <textarea class="textarea" id="chatTextarea"></textarea>
+                    <button class="button btn_blue" th:text="${#messages.msg('rider.chat.send')}" onclick="javascript:postChat()"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/resources/js/site/rider/rider.js}" layout:fragment="script"></script>
 
-						<div class="date"><span>2017년 09월 21일</span></div>
-						<div class="chat-item" tabindex="0">
-							<p class="name">김나은</p>
-							<div class="bubble">
-								<div>쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 </div>
-								<p class="time">오후 5:38</p>
-							</div>
-						</div>
-						<div class="chat-item" tabindex="0">
-							<p class="name">김나은</p>
-							<div class="bubble">
-								<div>쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 쏼라 </div>
-								<p class="time">오후 5:38</p>
-							</div>
-						</div>
-						
-						<div class="date"><span>오늘</span></div>
-						<div class="chat-item" tabindex="0">
-							<p class="name">김나은</p>
-							<div class="bubble">
-								<div>지금 출근 중인데 배달이 많이 밀려있나요? 출근하면 바로 나갈게요.</div>
-								<p class="time">오전 11:12</p>
-							</div>
-						</div>
-						<div class="chat-item me" tabindex="0">
-							<div class="bubble">
-								<div>아직 배달이 많이 밀려있진 않은데 이제 곧 몰려들거 같아요~~ 출근 조심히 하세요</div>
-								<p class="time">오전 11:14</p>
-							</div>
-						</div>
-					</div>
-					<div class="inp_chat">
-						<textarea class="textarea"></textarea>
-						<button class="button btn_blue" th:text="${#messages.msg('rider.chat.send')}" />
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- //컨텐츠 영역 -->
-
-<script layout:fragment="script">
-$(function(){
-	$(window).load(function(){
-		$('.chat-item').last().focus();
-	});
-	$('.table tr').click(function(){
-		$(this).addClass('selected').siblings().removeClass('selected');
-		$('.chat_wrap').addClass('active');
-	})
-
-	$('.chat_wrap .close').click(function(e){
-		e.preventDefault();
-		$('.table tr').removeClass('selected');
-		$('.chat_wrap').removeClass('active');
-		$(window).scrollTop(0);
-	})
-
-})
-
-</script>
+    <script layout:fragment="script2" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
+    <script layout:fragment="script3" th:inline="javascript">
+        /*<![CDATA[*/
+        var rider_chat_title = /*[[#{rider.chat.title}]]*/ 'rider_chat_title';
+        var status_work = /*[[#{status.work}]]*/ 'status_work';
+        var status_standby = /*[[#{status.standby}]]*/ 'status_standby';
+        var status_rest = /*[[#{status.rest}]]*/ 'status_rest';
+        var status_off = /*[[#{status.off}]]*/ 'status_off';
+        /*]]>*/
+    </script>
+</section>
 </html>

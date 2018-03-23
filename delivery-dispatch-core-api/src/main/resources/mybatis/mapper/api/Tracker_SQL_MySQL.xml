@@ -1,0 +1,57 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cntt.core.mapper.TrackerMapper">
+
+	<!-- selectLoginTracker -->
+	<select id="selectLoginTracker" parameterType="kr.co.cntt.core.model.login.User" resultType="String">
+		SELECT login_id, id FROM TB_TRACKER
+		WHERE 1=1
+			AND login_id = #{loginId}
+		<!--AND login_pw = #{loginPw}-->
+		limit 1
+	</select>
+
+
+	<!--
+		- login ID  및 Aceess 토근 값체크
+		- expiry_datetime 이 NULL 이거나 금일 datetime 보다 큰 값
+	-->
+	<select id="selectTrackerTokenCheck" parameterType="kr.co.cntt.core.model.login.User" resultType="int">
+		<![CDATA[
+		SELECT
+			COUNT(*)
+		FROM TB_TRACKER A JOIN TB_TRACKER_SESSION B
+		ON A.id = B.tracker_id
+		WHERE 1=1
+			AND A.login_id = #{loginId}
+			AND B.access_token = #{accessToken}
+			AND (expiry_datetime IS NULL OR expiry_datetime > now())
+		]]>
+	</select>
+
+
+	<!-- insertTrackerSession -->
+	<insert id="insertTrackerSession" parameterType="kr.co.cntt.core.model.login.User">
+		<![CDATA[
+		INSERT INTO TB_TRACKER_SESSION(tracker_id, access_token, created_datetime)
+		SELECT
+			id
+			, #{accessToken}
+			, now()
+		FROM TB_TRACKER
+		WHERE login_id = #{loginId}
+		]]>
+	</insert>
+
+
+	<!-- selectTracker -->
+	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
+		SELECT A.reg_order_id, A.id, A.status, B.code
+		FROM TB_ORDER AS A
+		LEFT JOIN TB_STORE AS B
+		ON A.store_id = B.id
+		WHERE A.reg_order_id = #{regOrderId}
+			AND B.code = #{code}
+	</select>
+
+</mapper>
+ 

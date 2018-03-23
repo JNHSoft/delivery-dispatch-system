@@ -1,6 +1,7 @@
 package kr.co.cntt.core.model.payment;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.common.Common;
 import lombok.Getter;
@@ -12,6 +13,7 @@ public class Payment extends Common implements Dto {
 
     private static final long serialVersionUID = 8384493233610556562L;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String adminId;
     private String storeId;
     private String orderId;

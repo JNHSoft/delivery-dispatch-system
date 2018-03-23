@@ -3,38 +3,46 @@
 
 	<!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
+		<div th:object="${store}" style="display:none">
+			<input type="hidden" id="statusArray"/>
+			<input type="hidden" id="assignmentStatus" th:value="*{assignmentStatus}"/>
+		</div>
 		<h2 id="pageTit" class="blind">주문접수</h2>
 		<div class="search_box">
 			<div class="left">
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">전체</span>
+				<label class="checkbox"><input name="srchAllChk" type="checkbox" id="orderAllChk" checked="checked"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('status.all')}"/>
 				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">신규</span>
+				<label class="checkbox"><input name="srchChk" type="checkbox" value="0" id="orderNewChk" checked="checked" disabled="true"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('status.new')}"/>
 				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">배정</span>
+				<label class="checkbox"><input name="srchChk" type="checkbox" value="1" id="orderAssignChk" checked="checked" disabled="true"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('status.assigned')}"/>
 				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">픽업</span>
+				<label class="checkbox"><input name="srchChk" type="checkbox" value="2" id="orderPickupChk" checked="checked" disabled="true"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('status.pickedup')}"/>
 				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">완료</span>
+				<label class="checkbox"><input name="srchChk" type="checkbox" value="3" id="orderCompleChk" checked="checked" disabled="true"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('status.completed')}"/>
 				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">취소</span>
+				<label class="checkbox"><input name="srchChk" type="checkbox" value="4" id="orderCancelChk" checked="checked" disabled="true"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('status.canceled')}"/>
 				</label>
 			</div>
 			<div class="right">
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl">내매장 주문만 보기</span>
+				<label class="checkbox"><input name="myStoreChk" type="checkbox" th:object="${store}" th:value="*{id}" id="orderMyStoreChk"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('order.mine')}"/>
 				</label>
 				<span class="inblock">
-					<select name="" id="" class="select">
-						<option value="">전체</option>
+					<select name="searchSelect" id="searchSelect" class="select">
+						<option value="all" th:text="${#messages.msg('list.search.all')}"/>
+						<option value="id" th:text="${#messages.msg('list.search.id')}"/>
+						<option value="address" th:text="${#messages.msg('list.search.address')}"/>
+						<option value="text" th:text="${#messages.msg('list.search.text')}"/>
+						<option value="rider" th:text="${#messages.msg('list.search.rider')}"/>
 					</select>
-					<input type="text" class="input" placeholder="검색명을 입력하세요" />
-					<button class="button"><i class="fa fa-search" aria-hidden="true"></i> 검색</button>
+					<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
+					<button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}"/></button>
 				</span>
 			</div>
 		</div>
@@ -52,37 +60,33 @@
 					<a href="#" class="btn_close"><i class="fa fa-times" aria-hidden="true"></i><span class="blind">닫기</span></a>
 					<div class="state_detail">
 						<div class="tit">
-							<h2>주문상세 - 11023</h2>
-							<i class="ic_txt">완료</i>
-							<i class="ic_txt ic_red">취소</i>
-							<i class="ic_txt ic_green">신규</i>
 						</div>
 						<div class="cont add_btn">
 							<div>
 								<ul>
 									<li>
 										<span>등록시간</span>
-										<div>01/25 14:57</div>
+										<div id="createdDatetime">-</div>
 									</li>
 									<li>
 										<span>예약시간</span>
-										<div>정보없음</div>
+										<div id="reservationDatetime">-</div>
 									</li>
 									<li class="clear">
 										<span>경과시간</span>
-										<div>-</div>
+										<div id="passtime">-</div>
 									</li>
 									<li>
 										<span>배정시간</span>
-										<div>01/25 14:57</div>
+										<div id="assignedDatetime">-</div>
 									</li>
 									<li class="clear">
-										<span>픽업시간</span>
-										<div>01/25 14:57</div>
+										<span>배정시간</span>
+										<div id="pickedUpDatetime">-</div>
 									</li>
 									<li>
 										<span>완료시간</span>
-										<div>01/25 14:57</div>
+										<div id="completedDatetime">-</div>
 									</li>
 								</ul>
 							</div>
@@ -90,33 +94,39 @@
 								<ul>
 									<li>
 										<span>주문내용</span>
-										<div>징거버거 세트 외...</div>
+										<div>
+											<input type="text" class="input h20" id="menuName"/>
+										</div>
 									</li>
 									<li>
 										<span>조리시간</span>
 										<div>
-											<select name="" class="select h20">
-												<option value="">10</option>
-											</select>분
+											<input type="text" class="input h20" id="cookingTime" />분
+											<!--<select name="" class="select h20">-->
+												<!--<option value="10">10</option>-->
+											<!--</select>분-->
 										</div>
 									</li>
 									<li class="clear">
 										<span>음식금액</span>
-										<div><input type="text" class="input h20" />원</div>
+										<div><input type="text" class="input h20" id="menuPrice" />원</div>
 									</li>
 									<li>
 										<span>배달금액</span>
-										<div><input type="text" class="input h20" />원</div>
+										<div><input type="text" class="input h20" id="deliveryPrice" />원</div>
 									</li>
 									<li class="clear">
 										<span>결제금액</span>
-										<div><input type="text" class="input h20" />원</div>
+										<div><input type="text" class="input h20" id="totalPrice"/>원</div>
 									</li>
 									<li>
 										<span>결제종류</span>
 										<div>
-											<select name="" class="select h20">
-												<option value="">카드</option>
+											<select name="" class="select h20" id="selectPaid">
+												<option value="0">현금</option>
+												<option value="1">카드</option>
+												<option value="2">선결제</option>
+												<option value="3">서비스</option>
 											</select>
 										</div>
 									</li>
@@ -125,11 +135,11 @@
 							<div>
 								<ul>
 									<li class="full">
-										<label class="checkbox"><input name="" type="checkbox" /><i></i>
+										<label class="checkbox"><input name="combinedChk" id="combinedChk" type="checkbox" /><i></i>
 											<span class="lbl">묶음배송</span>
 										</label>
-										<select name="" class="select h20">
-											<option value="">주문 ID: 11022 | 등록시간: 01/25 14:57</option>
+										<select name="" class="select h20" id="selectCombined" disabled="true">
+											<!--<option value="">주문 ID: 11022 | 등록시간: 01/25 14:57</option>-->
 										</select>
 									</li>
 								</ul>
@@ -139,18 +149,18 @@
 									<li>
 										<span>기사명</span>
 										<div>
-											<select name="" class="select h20">
-												<option value="">정보없음</option>
+											<select name="" class="select h20" id="selectedRider">
+												<!--<option value="">정보없음</option>-->
 											</select>
 										</div>
 									</li>
 									<li>
 										<span>기사연락처</span>
-										<div>010-1234-1234</div>
+										<div id="riderPhone"></div>
 									</li>
 									<li class="clear full">
 										<span>매장 메모</span>
-										<div>빠른배송 바랍니다.</div>
+										<div id="memo">빠른배송 바랍니다.</div>
 									</li>
 								</ul>
 							</div>
@@ -158,92 +168,72 @@
 								<ul>
 									<li class="full">
 										<span>고객 연락처</span>
-										<div>010-1234-1234</div>
+										<div id="userPhone">010-1234-1234</div>
 									</li>
 									<li class="full">
 										<span>고객 주소</span>
-										<div>
-											<a href="#" class="button btn_black h20">주소변경</a>
-											<div class="mt5">
-												<input type="text" class="input w_100 h20" />
-											</div>
-											<div class="mt5">
-												<input type="text" class="input w_100 h20" />
-											</div>
+										<div id="userAddress">
+											<!--<a href="#" class="button btn_black h20">주소변경</a>-->
+											<!--<div class="mt5">-->
+												<!--<input type="text" class="input w_100 h20" />-->
+											<!--</div>-->
+											<!--<div class="mt5">-->
+												<!--<input type="text" class="input w_100 h20" />-->
+											<!--</div>-->
 										</div>
 									</li>
 									<li class="full">
 										<span>거리</span>
-										<div>2.5km</div>
+										<div id="distance"></div>
 									</li>
 									<li class="full">
-										<div class="map">
-											<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
+										<div id="map" style="width: 314px; height: 150px; background-color: gray;">
+											<!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>-->
 										</div>
 									</li>
 								</ul>
 							</div>
 						</div>
 						<div class="btn">
-							<div class="f_left"><a href="#" class="button btn_red w80"><i class="fa fa-close" aria-hidden="true"></i> 주문취소</a></div>
-							<div class="f_right"><a href="#" class="button btn_blue w80"><i class="fa fa-check" aria-hidden="true"></i> 확인</a></div>
+							<div class="f_left"><a href="#" class="button btn_red w80" onclick="javascript:putOrderCancle()"><i class="fa fa-close" aria-hidden="true" ></i> 주문취소</a></div>
+							<div class="f_right"><a href="#" class="button btn_blue w80" onclick="javascript:orderConfirm()"><i class="fa fa-check" aria-hidden="true"></i> 확인</a></div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<script type="text/javascript" th:src="@{/resources/js/site/order/order.js}" layout:fragment="script2">
+		</script>
+		<script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
 	</section>
 	<!-- //컨텐츠 영역 -->
-
-<script layout:fragment="script">
-var mydata = [
-	{No:'1', state:'<i class="ic_txt">확인</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은', button:'<button class="button h20">우선배정</button>'},
-	{No:'2', state:'<i class="ic_txt ic_red">취소</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은', button:'<button class="button h20">우선배정</button>'},
-	{No:'3', state:'<i class="ic_txt ic_green">신규</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은', button:''},
-	{No:'4', state:'<i class="ic_txt ic_blue">배정</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은', button:''},
-	{No:'5', state:'<i class="ic_txt ic_blue">픽업</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은', button:''}
-];	
-$(document).ready(function () {
-	$("#jqGrid").jqGrid({
-		datatype:"local",
-		data:mydata,
-		colModel:[
-	    {label:'No', name:'No', width:25, key:true, align:'center'},
-	    {label:'주문상태', name:'state', width:80, align:'center'},
-	    {label:'주문id', name:'id', width:80, align:'center'},
-	    {label:'등록시간', name:'time1', width:80, align:'center'},
-	    {label:'기본주소', name:'address', width:200},
-	    {label:'주문내용', name:'text', width:150},
-	    {label:'조리시간', name:'time2', width:80, align:'center'},
-	    {label:'결제종류', name:'pay', width:80, align:'center'},
-	    {label:'배정시간', name:'time3', width:80, align:'center'},
-	    {label:'픽업시간', name:'time4', width:80, align:'center'},
-	    {label:'예약시간', name:'time5', width:80, align:'center'},
-	    {label:'기사명', name:'rider', width:80, align:'center'},
-	    {label:'우선배정', name:'button', width:80, align:'center'}
-    ],
-		width:'auto',
-		height:520,
-		autowidth:true,
-		rowNum:20,
-		pager:"#jqGridPager",
-		onCellSelect: function(rowid,icol,cellcontent,e){
-			$('.state_wrap').addClass('on') //상세보기 열기
-			setTimeout(function(){
-				$(window).trigger('resize');
-			},300)//그리드 리사이즈
-    }
-	});
-
-	resizeJqGrid('#jqGrid'); //그리드 리사이즈
-
-	$('.state_wrap .btn_close').click(function(e){
-		e.preventDefault();
-		$('.state_wrap').removeClass('on') //상세보기 닫기
-		setTimeout(function(){
-			$(window).trigger('resize');
-		},300)//그리드 리사이즈
-	})
-});
-</script>
+	<script layout:fragment="script" th:inline="javascript">
+        /*<![CDATA[*/
+        var status_all = /*[[#{status.all}]]*/ 'status_all';
+        var status_new = /*[[#{status.new}]]*/ 'status_new';
+        var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+        var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+        var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
+        var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
+        var order_confirm = /*[[#{order.confirm}]]*/ 'order_confirm';
+        var order_status = /*[[#{order.status}]]*/ 'order_status';
+        var order_id = /*[[#{order.id}]]*/ 'order_id';
+        var order_created = /*[[#{order.created}]]*/ 'order_created';
+        var order_address = /*[[#{order.address}]]*/ 'order_address';
+        var order_summary = /*[[#{order.summary}]]*/ 'order_summary';
+        var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
+        var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
+        var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
+        var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
+        var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
+        var order_payment_cash = /*[[#{order.payment.cash}]]*/ 'order_payment_cash';
+        var order_payment_card = /*[[#{order.payment.card}]]*/ 'order_payment_card';
+        var order_payment_prepayment = /*[[#{order.payment.prepayment}]]*/ 'order_payment_prepayment';
+        var order_payment_service = /*[[#{order.payment.service}]]*/ 'order_payment_service';
+        var order_assigned_advance = /*[[#{order.assigned.advance}]]*/ 'order_assigned_advance';
+        var order_detail = /*[[#{order.detail}]]*/ 'order_detail';
+        var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
+        /*]]>*/
+	</script>
 </html>
+

@@ -3,6 +3,9 @@
 
 <!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
+		<div th:object="${store}" style="display:none">
+			<input type="hidden" id="storeId" th:value="*{id}"/>
+		</div>
 		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.setting')}" />
 		<div class="tabmenu">
 			<ul>
@@ -45,20 +48,20 @@
 						<tbody>
 							<tr>
 								<th th:text="${#messages.msg('notice.subject')}" />
-								<td colspan="5">공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목</td>
+								<td colspan="5" id="nTitle">공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목 공지사항 제목</td>
 							</tr>		
 							<tr>
 								<th th:text="${#messages.msg('notice.target')}" />
-								<td>전매장</td>
+								<td id="nTarget">전매장</td>
 								<th th:text="${#messages.msg('notice.created')}" />
-								<td>02/25 15:10</td>
+								<td id="nDate">02/25 15:10</td>
 								<th th:text="${#messages.msg('notice.confirmed')}" />
-								<td th:text="${#messages.msg('notice.confirmed.before')}" />
+								<td id="nConfirm" th:text="${#messages.msg('notice.confirmed.before')}" />
 							</tr>
 							<tr>
 								<th th:text="${#messages.msg('notice.contents')}" />
 								<td colspan="5">
-									<div class="view_cont">
+									<div class="view_cont" id="nContent">
 										내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 <br />
 										내용 <br />
 										내용 <br />
@@ -76,8 +79,8 @@
 							<tr>
 								<th th:text="${#messages.msg('notice.attach')}" />
 								<td colspan="5">
-									<span class="t_blue">sound.wav(30.11KB)</span>
-									<a href="#" class="button btn_red"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
+									<span class="t_blue" id="nFile">sound.wav(30.11KB)</span>
+									<a href="#" class="button btn_red" id="btnDelete"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
 								</td>
 							</tr>
 						</tbody>
@@ -94,6 +97,8 @@
 	</div>
 	<!-- //팝업영역 -->
 
+<script type="text/javascript" th:src="@{/resources/js/site/notice/notice.js}" layout:fragment="script2"/>
+
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
 var notice_target = /*[[#{notice.target}]]*/ 'notice_target';
@@ -105,45 +110,6 @@ var notice_attach_none = /*[[#{notice.attach.none}]]*/ 'notice_attach_none';
 var notice_created = /*[[#{notice.created}]]*/ 'notice_created';
 var notice_confirmed = /*[[#{notice.confirmed}]]*/ 'notice_confirmed';
 var notice_confirmed_before = /*[[#{notice.confirmed.before}]]*/ 'notice_confirmed_before';
-
-var mydata = [
-	{No:'2', target:notice_target_all, title:'공지사항 제목 공지사항 제목 ', file:notice_attach_none, date:'02/25 15:10', check:notice_confirmed_before},
-	{No:'1', target:'강남/강남A', title:'공지사항 제목 공지사항 제목 ', file:'<a href="#" class="button h20">' + notice_attach_download + '</a>', date:'02/25 15:10', check:'02/25 15:10'}
-];	
-$(document).ready(function () {
-	$("#jqGrid").jqGrid({
-		datatype:"local",
-		data:mydata,
-		colModel:[
-	    {label:'No', name:'No', width:25, key:true, align:'center'},
-	    {label:notice_target, name:'target', width:60, align:'center'},
-	    {label:notice_subject, name:'title', width:300},
-	    {label:notice_attach, name:'file', width:100, align:'center'},
-	    {label:notice_created, name:'date', width:100, align:'center'},
-	    {label:notice_confirmed, name:'check', width:100, align:'center'}
-    ],
-		width:'auto',
-		height:520,
-		autowidth:true,
-		rowNum:20,
-		pager:"#jqGridPager",
-		onCellSelect: function(rowid,icol,cellcontent,e){
-			popOpen('#popNotice') //상세보기 열기			
-    }
-	});
-
-	resizeJqGrid('#jqGrid'); //그리드 리사이즈
-
-	$('.store_chk .open').click(function(e) {
-		e.preventDefault();
-		$(this).next().slideDown();
-	});
-
-	$('.store_chk .close').click(function(e) {
-		e.preventDefault();
-		$(this).closest('div').slideUp();
-	});
-});
 /*]]>*/
 </script>
 </html>

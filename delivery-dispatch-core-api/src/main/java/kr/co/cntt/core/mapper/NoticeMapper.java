@@ -58,13 +58,13 @@ public interface NoticeMapper {
      * @return
      */
     // store Detail
-    public List<Notice> getStoreDetailNoticeList(Notice notice);
+    public Notice getStoreDetailNoticeList(Notice notice);
 
     // rider Store Detail
-    public List<Notice> getRiderDetailNoticeList(Notice notice);
+    public Notice getRiderDetailNoticeList(Notice notice);
 
     // Admin admin
-    public List<Notice> getAdminDetailNoticeList(Notice notice);
+    public Notice getAdminDetailNoticeList(Notice notice);
 
 
 
@@ -83,5 +83,11 @@ public interface NoticeMapper {
     public List<Notice> getAdminNoticeList(Notice notice);
 
     public List<String> selectAllToken();
+
+    public Notice selectNoticeConfirm(Notice notice);
+
+    public int insertNoticeConfirm(Notice notice);
+
+    public int updateNoticeConfirm(Notice notice);
 
 }

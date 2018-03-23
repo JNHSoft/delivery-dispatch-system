@@ -158,9 +158,13 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
     @Override
     public Map detailNotice(Notice notice) throws AppTrException {
         // list 선언
-        List<Notice> A_Notice = new ArrayList<>();
-        List<Notice> S_Notice = new ArrayList<>();
-        List<Notice> R_Notice = new ArrayList<>();
+//        List<Notice> A_Notice = new ArrayList<>();
+//        List<Notice> S_Notice = new ArrayList<>();
+//        List<Notice> R_Notice = new ArrayList<>();
+
+        Notice A_Notice = new Notice();
+        Notice S_Notice = new Notice();
+        Notice R_Notice = new Notice();
 
         // Role 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -190,7 +194,8 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
 
         }
         // map 으로 넘겨준다
-        Map<String, List<Notice>> map = new HashMap<>();
+//        Map<String, List<Notice>> map = new HashMap<>();
+        Map<String, Notice> map = new HashMap<>();
         map.put("adminNotice", A_Notice);
         map.put("storeNotice", S_Notice);
         map.put("riderNotice", R_Notice);
@@ -234,4 +239,29 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         return map;
     }
 
+    /**
+     * <p> 상점 - 공지사항 확인
+     * @param notice
+     * @return
+     * @throws AppTrException
+     */
+    @Secured("ROLE_STORE")
+    @Override
+    public int putNoticeConfirm(Notice notice) throws AppTrException {
+        int ret = 0;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+
+            Notice C_Notice = noticeMapper.selectNoticeConfirm(notice);
+
+            if (C_Notice == null) {
+                ret = noticeMapper.insertNoticeConfirm(notice);
+            } else {
+                ret = noticeMapper.updateNoticeConfirm(notice);
+            }
+        }
+
+        return ret;
+    }
 }

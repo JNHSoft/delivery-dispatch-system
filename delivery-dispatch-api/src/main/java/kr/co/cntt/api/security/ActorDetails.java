@@ -1,15 +1,14 @@
 package kr.co.cntt.api.security;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public class ActorDetails implements UserDetails {
     private static final long serialVersionUID = 1L;
@@ -76,6 +75,8 @@ public class ActorDetails implements UserDetails {
             authorities.add(new SimpleGrantedAuthority("ROLE_STORE"));
         } else if (actor.getLevel().equals("3")) {
             authorities.add(new SimpleGrantedAuthority("ROLE_RIDER"));
+        } else if (actor.getLevel().equals("4")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_TRACKER"));
         } else {
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }

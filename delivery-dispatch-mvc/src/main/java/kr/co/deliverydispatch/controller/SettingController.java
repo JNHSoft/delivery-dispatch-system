@@ -1,12 +1,30 @@
 package kr.co.deliverydispatch.controller;
 
+import com.google.gson.Gson;
+import kr.co.cntt.core.annotation.CnttMethodDescription;
+import kr.co.cntt.core.model.notice.Notice;
+import kr.co.cntt.core.model.store.Store;
+import kr.co.deliverydispatch.security.SecurityUser;
+import kr.co.deliverydispatch.service.StoreNoticeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Slf4j
 @Controller
 public class SettingController {
+
+    private StoreNoticeService storeNoticeService;
+
+    @Autowired
+    public SettingController(StoreNoticeService storeNoticeService) { this.storeNoticeService = storeNoticeService; }
 
     /**
      * 설정 - 계정관리 페이지
@@ -50,6 +68,44 @@ public class SettingController {
      * @return
      */
     @GetMapping("/setting-notice")
-    public String settingNotice() { return "/setting/setting_notice"; }
+    @CnttMethodDescription("공지사항 페이지")
+    public String settingNotice(Store store, @RequestParam(required = false) String frag, Model model) {
+
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
+
+        store.setToken(storeInfo.getStoreAccessToken());
+        System.out.println("!!!!토큰"+store.getToken());
+        Store myStore = storeNoticeService.getStoreInfo(store);
+        model.addAttribute("store", myStore);
+        model.addAttribute("json", new Gson().toJson(store));
+
+        log.info("json : {}", new Gson().toJson(store));
+
+        return "/setting/setting_notice";
+    }
+
+
+    @ResponseBody
+    @GetMapping("/getNoticeList")
+    @CnttMethodDescription("공지사항 리스트 조회")
+    public List<Notice> getNoticeList(Notice notice) {
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(storeInfo.getStoreAccessToken());
+        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
+        return noticeList;
+    }
+
+
+    @ResponseBody
+    @GetMapping("/getNotice")
+    @CnttMethodDescription("공지사항 상세 조회")
+    public Notice getNotice(Notice notice) {
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(storeInfo.getStoreAccessToken());
+        Notice noticeDetail = storeNoticeService.getNotice(notice);
+        log.info(noticeDetail.getTitle());
+        return noticeDetail;
+    }
 
 }
