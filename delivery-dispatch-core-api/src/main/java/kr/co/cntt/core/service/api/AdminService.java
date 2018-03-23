@@ -155,6 +155,25 @@ public interface AdminService {
      */
     public int putSubgroupStoreRel(Store store);
 
+
+
+
+    /**
+     * <p> 상점 서브그룹만 수정 Nick 추가
+     *
+     * @param store
+     * @return
+     */
+    public int putStoreSubgroup(Store store);
+
+
+
+
+
+
+
+
+
     /**
      * <p> deleteSubgroupStoreRel
      *
