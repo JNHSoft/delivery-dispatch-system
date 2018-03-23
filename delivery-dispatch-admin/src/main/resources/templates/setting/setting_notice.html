@@ -72,7 +72,7 @@
 										<input type="text" class="input" />
 										<span class="btn_file">
 											<a href="#" class="button btn_dgray"><i class="fa fa-paperclip" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.attach')}" /></a>
-											<input type="file" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
+											<input type="file" name="file" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
 										</span>
 									</span>
 								</td>
@@ -90,7 +90,7 @@
 	</div>
 
 	<!-- 상세 -->
-	<div id="popNotice" class="pop_wrap" layout:fragment="popup">
+	<div id="popNotice" class="pop_wrap" layout:fragment="popup_2">
 		<article class="popup">
 			<div class="pop_head">
 				<h1 th:text="${#messages.msg('gnb.notice')}" />
@@ -108,20 +108,20 @@
 							<tr>
 								<th th:text="${#messages.msg('notice.target')}" />
 								<td>
-									<select name="" class="select">
+									<select name="" class="select" id="nTargetGroup">
 										<option value="">강남</option>
 									</select>
-									<select name="" class="select">
+									<select name="" class="select" id="nTargetSubGroup">
 										<option value="">강남A</option>
 									</select>
-									<select name="" class="select">
+									<select name="" class="select" id="nTargetStore">
 										<option value="" th:text="${#messages.msg('list.search.all.store')}" />
 									</select>
 								</td>
 								<th th:text="${#messages.msg('notice.confirmed.check')}" />
 								<td>
 									<div class="store_chk">
-										<a href="#" class="open" th:text="'5/4' + ${#messages.msg('notice.confirmed.check.store')}" />
+										<a href="#" class="open" id="nConfirm" th:text="'5/4' + ${#messages.msg('notice.confirmed.check.store')}" />
 										<div>
 											<ul>
 												<li>양세점 O</li>
@@ -137,18 +137,18 @@
 							</tr>
 							<tr>
 								<th th:text="${#messages.msg('notice.subject')}" />
-								<td colspan="3"><input type="text" name="" class="input w_100" value="제목제목제목제목제목제목제목" /></td>
+								<td colspan="3"><input type="text" name="" class="input w_100" id="nTitle" value="제목제목제목제목제목제목제목" /></td>
 							</tr>
 							<tr>
 								<th th:text="${#messages.msg('notice.contents')}" />
 								<td colspan="3">
-									<textarea class="textarea" style="height:170px;">내용 내용 내용 내용 내용 내용 내용 내용 내용 </textarea>
+									<textarea class="textarea" id="nContent" style="height:170px;">내용 내용 내용 내용 내용 내용 내용 내용 내용 </textarea>
 								</td>
 							</tr>
 							<tr>
 								<th th:text="${#messages.msg('notice.attach')}" />
 								<td colspan="3">
-									<span class="t_blue">sound.wav(30.11KB)</span>
+									<span class="t_blue" id="nFile">sound.wav(30.11KB)</span>
 									<a href="#" class="button btn_red"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
 								</td>
 							</tr>
@@ -168,6 +168,8 @@
 	</div>
 	<!-- //팝업영역 -->
 
+<script type="text/javascript" th:src="@{/resources/js/site/setting/notice.js}" layout:fragment="script2"/>
+
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
 var notice_target = /*[[#{notice.target}]]*/ 'notice_target';
@@ -179,45 +181,6 @@ var notice_attach_none = /*[[#{notice.attach.none}]]*/ 'notice_attach_none';
 var notice_created = /*[[#{notice.created}]]*/ 'notice_created';
 var notice_confirmed_check = /*[[#{notice.confirmed.check}]]*/ 'notice_confirmed_check';
 var notice_confirmed_check_store = /*[[#{notice.confirmed.check.store}]]*/ 'notice_confirmed_check_store';
-
-var mydata = [
-	{No:'2', target:notice_target_all, title:'공지사항 제목 공지사항 제목 ', file:notice_attach_none, date:'02/25 15:10', check:'100/50'},
-	{No:'1', target:'강남/강남A', title:'공지사항 제목 공지사항 제목 ', file:'<a href="#" class="button h20">' + notice_attach_download + '</a>', date:'02/25 15:10', check:'5/4'+notice_confirmed_check_store}
-];	
-$(document).ready(function () {
-	$("#jqGrid").jqGrid({
-		datatype:"local",
-		data:mydata,
-		colModel:[
-	    {label:'No', name:'No', width:25, key:true, align:'center'},
-	    {label:notice_target, name:'target', width:60, align:'center'},
-	    {label:notice_subject, name:'title', width:300},
-	    {label:notice_attach, name:'file', width:100, align:'center'},
-	    {label:notice_created, name:'date', width:100, align:'center'},
-	    {label:notice_confirmed_check, name:'check', width:80, align:'center'}
-    ],
-		width:'auto',
-		height:520,
-		autowidth:true,
-		rowNum:20,
-		pager:"#jqGridPager",
-		onCellSelect: function(rowid,icol,cellcontent,e){
-			popOpen('#popNotice') //상세보기 열기			
-    }
-	});
-
-	resizeJqGrid('#jqGrid'); //그리드 리사이즈
-
-	$('.store_chk .open').click(function(e) {
-		e.preventDefault();
-		$(this).next().slideDown();
-	});
-
-	$('.store_chk .close').click(function(e) {
-		e.preventDefault();
-		$(this).closest('div').slideUp();
-	});
-});
 /*]]>*/
 </script>
 </html>
