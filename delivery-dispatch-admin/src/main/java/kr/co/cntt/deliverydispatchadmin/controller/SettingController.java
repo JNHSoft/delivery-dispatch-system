@@ -1,6 +1,7 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
+import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -111,6 +114,44 @@ public class SettingController {
         List<SubGroupStoreRel> storeList = noticeAdminService.getSubGroupStoreRelList(notice);
 
         return storeList;
+    }
+
+
+    @ResponseBody
+    @PutMapping("/putNotice")
+    @CnttMethodDescription("공지사항 수정")
+    public int putNotice(Notice notice){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(adminInfo.getAdminAccessToken());
+        return noticeAdminService.putNotice(notice);
+    }
+
+
+    @ResponseBody
+    @PutMapping("/deleteNotice")
+    @CnttMethodDescription("공지사항 삭제")
+    public int deleteNotice(Notice notice){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(adminInfo.getAdminAccessToken());
+        return noticeAdminService.deleteNotice(notice);
+    }
+
+    @ResponseBody
+    @PutMapping("/getGroupList")
+    @CnttMethodDescription("공지사항 그룹 목록 조회")
+    public List<Group> getGroupList(Notice notice){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(adminInfo.getAdminAccessToken());
+        return noticeAdminService.getGroupList(notice);
+    }
+
+    @ResponseBody
+    @PostMapping("/postNotice")
+    @CnttMethodDescription("공지사항 등록")
+    public int postNotice(Notice notice){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(adminInfo.getAdminAccessToken());
+        return noticeAdminService.postNotice(notice);
     }
 
 }

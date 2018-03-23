@@ -132,4 +132,55 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
 
         return S_SubGroup;
     }
+
+    @Override
+    public int putNotice(Notice notice) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            notice.setRole("ROLE_ADMIN");
+        }
+
+        return noticeMapper.updateNotice(notice);
+    }
+
+    @Override
+    public int deleteNotice(Notice notice) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            notice.setRole("ROLE_ADMIN");
+        }
+
+        return noticeMapper.deleteNotice(notice);
+    }
+
+    @Override
+    public List<Group> getGroupList(Notice notice) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            notice.setRole("ROLE_ADMIN");
+        }
+
+        Common common = new Common();
+        common.setRole("ROLE_ADMIN");
+        common.setToken(notice.getToken());
+
+        List<Group> S_Group = adminMapper.selectGroups(common);
+
+        return S_Group;
+    }
+
+    @Override
+    public int postNotice(Notice notice) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            notice.setRole("ROLE_ADMIN");
+        }
+
+        return noticeMapper.insertNotice(notice);
+    }
+
 }

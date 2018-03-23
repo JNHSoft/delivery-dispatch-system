@@ -16,7 +16,7 @@
             , file_size
         ) VALUES(
               now()
-            , #{adminId}
+            , (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token=#{token})
             , #{title}
             , #{content}
 
@@ -102,7 +102,6 @@
       UPDATE TB_NOTICE
       SET
         modified_datetime = now()
-        , admin_id = #{adminId}
 
       <if test="title != null and title != ''">
         , title = #{title}

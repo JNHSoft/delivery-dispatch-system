@@ -31,6 +31,18 @@ $(document).ready(function() {
         $('#toStoreId').val($(this).val());
     });
 
+    $('#nNewTargetGroup').change(function() {
+        newToGroup($(this).val());
+    });
+
+    $('#nNewTargetSubGroup').change(function() {
+        newToSubGroup($(this).val());
+    });
+
+    $('#nNewTargetStore').change(function() {
+        $('#newToStoreId').val($(this).val());
+    });
+
 });
 
 function getNoticeList() {
@@ -106,6 +118,9 @@ function getNoticeList() {
                         data: mydata,
                         colModel: [
                             {label: 'id', name: 'id', width: 25, key: true, align: 'center', hidden:true},
+                            {label: 'toGroupId', name: 'toGroupId', width: 25, key: true, align: 'center', hidden:true},
+                            {label: 'toSubGroupId', name: 'toSubGroupId', width: 25, key: true, align: 'center', hidden:true},
+                            {label: 'toStoreId', name: 'toStoreId', width: 25, key: true, align: 'center', hidden:true},
                             {label: 'No', name: 'no', width: 25, key: true, align: 'center'},
                             {label: notice_target, name: 'target', width: 60, align: 'center'},
                             {label: notice_subject, name: 'title', width: 300},
@@ -146,6 +161,7 @@ function getNoticeList() {
 function getNoticeDetail(noticeId) {
     console.log('noticeId: ' + noticeId);
 
+    $('#noticeId').val(noticeId);
     $('#toGroupId').val(0);
     $('#toSubGroupId').val(0);
     $('#toStoreId').val(0);
@@ -156,15 +172,17 @@ function getNoticeDetail(noticeId) {
         data : {
             id : noticeId
         },
-        async : false, //비동기 -> 동기
         dataType : 'json',
+        async : false, //비동기 -> 동기
         success : function (data) {
             console.log(data);
 
             $('#nTargetGroup').empty();
             $('#nTargetGroup').append('<option value="0">' + notice_target_all_group + '</option>');
+
             $('#nTargetSubGroup').empty();
             $('#nTargetSubGroup').append('<option value="0">' + notice_target_all_subgroup + '</option>');
+
             $('#nTargetStore').empty();
             $('#nTargetStore').append('<option value="0">' + notice_target_all_store + '</option>');
 
@@ -209,6 +227,13 @@ function getNoticeDetail(noticeId) {
                     $('#nTargetGroup').append('<option value="' + data.S_Group[key].id + '">' + data.S_Group[key].name + '</option>');
                 }
             }
+
+            toGroup(data.S_Notice.toGroupId);
+            toSubGroup(data.S_Notice.toSubGroupId);
+
+            $('#nTargetGroup option[value='+ data.S_Notice.toGroupId +']').attr('selected', 'selected');
+            $('#nTargetSubGroup option[value='+ data.S_Notice.toSubGroupId +']').attr('selected', 'selected');
+            $('#nTargetStore option[value='+ data.S_Notice.toStoreId +']').attr('selected', 'selected');
         }
     });
 }
@@ -221,6 +246,7 @@ function toGroup(toGroupId) {
         type: 'get',
         data: {'toGroupId': toGroupId},
         dataType: 'json',
+        async : false,
         success: function (data) {
             console.log(data);
 
@@ -243,6 +269,7 @@ function toSubGroup(toSubGroupId) {
             ,'toSubGroupId': toSubGroupId
         },
         dataType: 'json',
+        async : false,
         success: function (data) {
             console.log(data);
 
@@ -251,6 +278,136 @@ function toSubGroup(toSubGroupId) {
             for (var key in data) {
                 $('#nTargetStore').append('<option value="' + data[key].id + '">' + data[key].storeName + '</option>');
             }
+        }
+    });
+}
+
+function putNotice() {
+    $.ajax({
+        url: '/putNotice',
+        type: 'put',
+        data: {'id': $('#noticeId').val()
+            ,'toGroupId': $('#toGroupId').val()
+            ,'toSubGroupId': $('#toSubGroupId').val()
+            ,'toStoreId': $('#toStoreId').val()
+            ,'title': $('#nTitle').val()
+            ,'content': $('#nContent').val()
+        },
+        dataType : 'json',
+        async : false,
+        success : function (data) {
+            console.log(data);
+            popClose('#popNotice');
+            getNoticeList();
+        }
+    });
+}
+
+function deleteNotice() {
+    $.ajax({
+        url: '/deleteNotice',
+        type: 'put',
+        data: {'id': $('#noticeId').val()},
+        dataType : 'json',
+        async : false,
+        success : function (data) {
+            console.log(data);
+            popClose('#popNotice');
+            getNoticeList();
+        }
+    });
+}
+
+function getGroupList() {
+    $.ajax({
+        url: "/getGroupList",
+        type: 'get',
+        dataType: 'json',
+        async : false,
+        success: function (data) {
+            console.log(data);
+
+            $('#nNewTargetGroup').empty();
+            $('#nNewTargetGroup').append('<option value="0">' + notice_target_all_group + '</option>');
+
+            $('#nNewTargetSubGroup').empty();
+            $('#nNewTargetSubGroup').append('<option value="0">' + notice_target_all_subgroup + '</option>');
+
+            $('#nNewTargetStore').empty();
+            $('#nNewTargetStore').append('<option value="0">' + notice_target_all_store + '</option>');
+
+            for (var key in data) {
+                $('#nNewTargetGroup').append('<option value="' + data[key].id + '">' + data[key].name + '</option>');
+            }
+        }
+    });
+}
+
+function newToGroup(toGroupId) {
+    $('#newToGroupId').val(toGroupId);
+
+    $.ajax({
+        url: "/getAdminSubGroupList",
+        type: 'get',
+        data: {'toGroupId': toGroupId},
+        dataType: 'json',
+        async : false,
+        success: function (data) {
+            console.log(data);
+
+            $('#nNewTargetSubGroup').empty();
+            $('#nNewTargetSubGroup').append('<option value="0">' + notice_target_all_subgroup + '</option>');
+            for (var key in data) {
+                $('#nNewTargetSubGroup').append('<option value="' + data[key].id + '">' + data[key].name + '</option>');
+            }
+        }
+    });
+}
+
+function newToSubGroup(toSubGroupId) {
+    $('#newToSubGroupId').val(toSubGroupId);
+
+    $.ajax({
+        url: "/getAdminSubGroupStoreList",
+        type: 'get',
+        data: {'toGroupId': $('#newToGroupId').val()
+            ,'toSubGroupId': toSubGroupId
+        },
+        dataType: 'json',
+        async : false,
+        success: function (data) {
+            console.log(data);
+
+            $('#nNewTargetStore').empty();
+            $('#nNewTargetStore').append('<option value="0">' + notice_target_all_store + '</option>');
+            for (var key in data) {
+                $('#nNewTargetStore').append('<option value="' + data[key].id + '">' + data[key].storeName + '</option>');
+            }
+        }
+    });
+}
+
+function postNotice() {
+    $.ajax({
+        url: '/postNotice',
+        type: 'post',
+        data: {'toGroupId': $('#newToGroupId').val()
+            ,'toSubGroupId': $('#newToSubGroupId').val()
+            ,'toStoreId': $('#newToStoreId').val()
+            ,'title': $('#nNewTitle').val()
+            ,'content': $('#nNewContent').val()
+        },
+        dataType : 'json',
+        async : false,
+        success : function (data) {
+            console.log(data);
+            popClose('#popNoticeNew');
+            $('#newToGroupId').val('');
+            $('#newToSubGroupId').val('');
+            $('#newToStoreId').val('');
+            $('#nNewTitle').val('');
+            $('#nNewContent').val('');
+            getNoticeList();
         }
     });
 }
