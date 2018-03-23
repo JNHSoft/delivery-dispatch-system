@@ -249,10 +249,10 @@
             , C.name AS subgroup_name
             , D.name AS store_name
             , IFNULL(COUNT(E.confirmed_datetime),0) AS confirmed_count
-            , (select count(store_id) from TB_SUBGROUP_STORE_REL where admin_id=A.admin_id) AS to_all_count
-            , (select count(store_id) from TB_SUBGROUP_STORE_REL where group_id=B.id) AS to_group_count
-            , (select count(store_id) from TB_SUBGROUP_STORE_REL where group_id=B.id and subgroup_id=C.id) AS to_subgroup_count
-            , (select count(store_id) from TB_SUBGROUP_STORE_REL where group_id=B.id and subgroup_id=C.id and store_id=D.id) AS to_store_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE admin_id=A.admin_id) AS to_all_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND admin_id=A.admin_id) AS to_group_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND subgroup_id=C.id AND admin_id=A.admin_id) AS to_subgroup_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND subgroup_id=C.id AND store_id=D.id AND admin_id=A.admin_id) AS to_store_count
         FROM TB_NOTICE AS A
         LEFT JOIN TB_GROUP AS B
             ON A.to_group_id = B.id
@@ -339,10 +339,10 @@
             , C.name AS subgroup_name
             , D.name AS store_name
             , IFNULL(COUNT(E.confirmed_datetime),0) AS confirmed_count
-            , (select count(store_id) from TB_SUBGROUP_STORE_REL where admin_id=A.admin_id) AS to_all_count
-            , (select count(store_id) from TB_SUBGROUP_STORE_REL where group_id=B.id) AS to_group_count
-            , (select count(store_id) from TB_SUBGROUP_STORE_REL where group_id=B.id and subgroup_id=C.id) AS to_subgroup_count
-            , (select count(store_id) from TB_SUBGROUP_STORE_REL where group_id=B.id and subgroup_id=C.id and store_id=D.id) AS to_store_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE admin_id=A.admin_id) AS to_all_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND admin_id=A.admin_id) AS to_group_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND subgroup_id=C.id AND admin_id=A.admin_id) AS to_subgroup_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND subgroup_id=C.id AND store_id=D.id AND admin_id=A.admin_id) AS to_store_count
         FROM TB_NOTICE AS A
         LEFT JOIN TB_GROUP AS B
             ON A.to_group_id = B.id
