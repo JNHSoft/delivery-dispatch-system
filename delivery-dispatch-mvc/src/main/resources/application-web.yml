@@ -3,7 +3,7 @@ spring:
   profiles: web
   application.name: delivery-dispatch-mvc
   mvc:
-    locale: ko_KR
+    locale: zh_TW
     favicon.enabled: false
   messages:
     cache-seconds: -1
@@ -44,7 +44,6 @@ datasource:
   deliveryDispatch:
     initialize: true
     driver-class-name: com.mysql.jdbc.Driver
-    #url: jdbc:mysql://nanum-taiwan-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/nanum
 #    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
     url: jdbc:mysql://dde-db.cs4wechlbmlc.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
     username: nanum
