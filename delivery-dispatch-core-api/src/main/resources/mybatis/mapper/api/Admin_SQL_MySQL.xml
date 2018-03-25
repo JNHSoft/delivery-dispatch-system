@@ -84,7 +84,7 @@
 		<result property="assignedDatetime" column="assigned_datetime" />
 		<result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="reservationDatetime" column="reservation_datetime" />
-		<result property="complatedDatetime" column="complated_datetime" />
+		<result property="completedDatetime" column="completed_datetime" />
 
 		<result property="cookingTime" column="cooking_time" />
 		<result property="menuPrice" column="menu_price" />
@@ -108,6 +108,7 @@
 		</association>
 
 		<association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
+			<result property="id" column="id" />
 			<result property="name" column="name" />
 			<result property="phone" column="rider_phone" />
 		</association>
@@ -1060,12 +1061,6 @@
 
 		TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		AND TBO.status = 3 AND 4
-		<if test="startDate != null and startDate != ''">
-			AND start_date = #{startDate}
-		</if>
-		<if test="endDate != null and endDate != ''">
-			AND end_date = #{endDate}
-		</if>
 		AND TBO.id = #{id}
 	</select>
 
