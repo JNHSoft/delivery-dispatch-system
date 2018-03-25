@@ -33,6 +33,11 @@ public class Notice extends User implements Dto {
     private String deleted;
 
     private String confirmedDatetime;
+    private String confirmedCount;
+    private String toGroupCount;
+    private String toSubgroupCount;
+    private String toStoreCount;
+    private String toAllCount;
 
     private String groupName;
     private String subgroupName;

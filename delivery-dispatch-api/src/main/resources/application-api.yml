@@ -3,7 +3,7 @@ spring:
   profiles: api
   application.name: delivery-dispatch-api
   mvc:
-    locale: ko_KR
+    locale: zh_TW
     favicon.enabled: false
   messages:
     cache-seconds: -1
@@ -27,8 +27,8 @@ datasource:
   deliveryDispatch:
     initialize: true
     driver-class-name: com.mysql.jdbc.Driver
-    #url: jdbc:mysql://nanum-taiwan-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/nanum
-    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
+#    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://dde-db.cs4wechlbmlc.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
     username: nanum
     password: snaskzhf
     initial-size: 10
@@ -125,9 +125,14 @@ api.token.expiration : 6000
 ---
 spring:
   redis:
+    host: dde-tw-redis.dgc5ym.0001.apn2.cache.amazonaws.com
 #    host: nanum-taiwan-redis.e6yhbk.0001.apn2.cache.amazonaws.com
-    host: 127.0.0.1
+#    host: 127.0.0.1
     port: 6379
 
 ---
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
+
+---
+api.upload.path.notice: /home/nanum/dde-upload/notice
+api.upload.path.alarm: /home/nanum/dde-upload/alarm

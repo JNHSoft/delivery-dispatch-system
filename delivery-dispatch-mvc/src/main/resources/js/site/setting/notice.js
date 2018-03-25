@@ -89,7 +89,7 @@ function getNoticeList() {
                         datatype: 'local',
                         data: mydata,
                         colModel: [
-                            {label: 'id', name: 'id', width: 25, key: true, align: 'center'},
+                            {label: 'id', name: 'id', width: 25, key: true, align: 'center', hidden:true},
                             {label: 'No', name: 'no', width: 25, key: true, align: 'center'},
                             {label: notice_target, name: 'target', width: 60, align: 'center'},
                             {label: notice_subject, name: 'title', width: 300},
@@ -129,13 +129,13 @@ function getNoticeList() {
 
 function getNoticeDetail(noticeId) {
     console.log('noticeId: ' + noticeId);
+    $('#noticeId').val(noticeId);
     $.ajax({
         url : '/getNotice',
         type : 'get',
         data : {
             id : noticeId
         },
-        async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
             console.log(data);
@@ -174,10 +174,26 @@ function getNoticeDetail(noticeId) {
 
             if (data.fileName != null) {
                 $('#nFile').html(data.oriFileName + '(' + data.fileSize + ')');
+                $('#btnDelete').show();
             } else {
                 $('#nFile').html(notice_attach_none);
                 $('#btnDelete').hide();
             }
+        }
+    });
+}
+
+function putNoticeConfirm() {
+    console.log($('#noticeId').val());
+    $.ajax({
+        url: '/putNoticeConfirm',
+        type: 'put',
+        data: {
+            id : $('#noticeId').val()
+        },
+        dataType : 'json',
+        success : function (data) {
+             location.href="/setting-notice";
         }
     });
 }

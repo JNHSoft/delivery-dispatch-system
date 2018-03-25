@@ -84,7 +84,7 @@ public interface NoticeMapper {
 
     public List<String> selectAllToken();
 
-    public Notice selectNoticeConfirm(Notice notice);
+    public List<Notice> selectNoticeConfirm(Notice notice);
 
     public int insertNoticeConfirm(Notice notice);
 

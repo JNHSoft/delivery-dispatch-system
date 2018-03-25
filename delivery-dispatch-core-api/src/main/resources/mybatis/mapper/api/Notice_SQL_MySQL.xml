@@ -16,7 +16,7 @@
             , file_size
         ) VALUES(
               now()
-            , #{adminId}
+            , (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token=#{token})
             , #{title}
             , #{content}
 
@@ -102,7 +102,6 @@
       UPDATE TB_NOTICE
       SET
         modified_datetime = now()
-        , admin_id = #{adminId}
 
       <if test="title != null and title != ''">
         , title = #{title}
@@ -234,26 +233,38 @@
 
     <!--공지사항 상세 보기 ADMIN -->
     <select id="getAdminDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
-        SELECT
-        created_datetime
-        , modified_datetime
-        , id
-        , admin_id
-        , title
-        , content
-        , to_group_id
-        , to_subgroup_id
-        , to_store_id
-        , ori_file_name
-        , file_name
-        , file_size
-
-        FROM
-        TB_NOTICE
-        WHERE
-        id = #{id}
-        AND deleted IS NUll
-        AND admin_id = (select admin_id from TB_ADMIN_SESSION where access_token=#{token})
+        SELECT A.created_datetime
+            , A.modified_datetime
+            , A.id
+            , A.admin_id
+            , A.title
+            , A.content
+            , A.to_group_id
+            , A.to_subgroup_id
+            , A.to_store_id
+            , A.ori_file_name
+            , A.file_name
+            , A.file_size
+            , B.name AS group_name
+            , C.name AS subgroup_name
+            , D.name AS store_name
+            , IFNULL(COUNT(E.confirmed_datetime),0) AS confirmed_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE admin_id=A.admin_id) AS to_all_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND admin_id=A.admin_id) AS to_group_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND subgroup_id=C.id AND admin_id=A.admin_id) AS to_subgroup_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND subgroup_id=C.id AND store_id=D.id AND admin_id=A.admin_id) AS to_store_count
+        FROM TB_NOTICE AS A
+        LEFT JOIN TB_GROUP AS B
+            ON A.to_group_id = B.id
+        LEFT JOIN TB_SUBGROUP AS C
+            ON A.to_subgroup_id = C.id
+        LEFT JOIN TB_STORE AS D
+            ON A.to_store_id = D.id
+        LEFT JOIN TB_NOTICE_CONFIRM AS E
+            ON A.id = E.notice_id
+        WHERE A.deleted IS NUll
+            AND A.id = #{id}
+            AND A.admin_id = (select admin_id from TB_ADMIN_SESSION where access_token=#{token})
     </select>
 
 
@@ -313,23 +324,37 @@
 
     <!--admin 공지사항 list -->
     <select id="getAdminNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
-        SELECT
-              created_datetime
-            , modified_datetime
-            , id
-            , admin_id
-            , title
-            , to_group_id
-            , to_subgroup_id
-            , to_store_id
-            , ori_file_name
-            , file_name
-            , file_size
-        FROM
-          TB_NOTICE
-        WHERE 1=1
-        AND admin_id = (select admin_id from TB_ADMIN_SESSION where access_token=#{token})
-        AND deleted IS NUll
+        SELECT A.created_datetime
+            , A.modified_datetime
+            , A.id
+            , A.admin_id
+            , A.title
+            , A.to_group_id
+            , A.to_subgroup_id
+            , A.to_store_id
+            , A.ori_file_name
+            , A.file_name
+            , A.file_size
+            , B.name AS group_name
+            , C.name AS subgroup_name
+            , D.name AS store_name
+            , IFNULL(COUNT(E.confirmed_datetime),0) AS confirmed_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE admin_id=A.admin_id) AS to_all_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND admin_id=A.admin_id) AS to_group_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND subgroup_id=C.id AND admin_id=A.admin_id) AS to_subgroup_count
+            , (SELECT COUNT(store_id) FROM TB_SUBGROUP_STORE_REL WHERE group_id=B.id AND subgroup_id=C.id AND store_id=D.id AND admin_id=A.admin_id) AS to_store_count
+        FROM TB_NOTICE AS A
+        LEFT JOIN TB_GROUP AS B
+            ON A.to_group_id = B.id
+        LEFT JOIN TB_SUBGROUP AS C
+            ON A.to_subgroup_id = C.id
+        LEFT JOIN TB_STORE AS D
+            ON A.to_store_id = D.id
+        LEFT JOIN TB_NOTICE_CONFIRM AS E
+            ON A.id = E.notice_id
+        WHERE A.deleted IS NULL
+            AND A.admin_id = (select admin_id from TB_ADMIN_SESSION where access_token=#{token})
+        GROUP BY A.id
     </select>
 
     <select id="selectAllToken" resultType="String">
@@ -342,17 +367,27 @@
     <!-- selectNoticeConfirm -->
     <select id="selectNoticeConfirm" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
         SELECT
-            created_datetime
-            , modified_datetime
-            , id
-            , admin_id
-            , store_id
-            , notice_id
-        FROM TB_NOTICE_CONFIRM
-        WHERE deleted IS NULL
-            AND notice_id = #{id}
-            AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}))
-            AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token})
+            A.created_datetime
+            , A.modified_datetime
+            , A.id
+            , A.admin_id
+            , A.store_id
+            , A.notice_id
+            , B.store_name AS store_name
+        FROM TB_NOTICE_CONFIRM AS A
+        LEFT JOIN TB_STORE AS B
+            ON A.store_id = B.id
+        WHERE A.deleted IS NULL
+            AND A.notice_id = #{id}
+            <choose>
+                <when test="(role != null and role != '') and role == 'ROLE_STORE'">
+                    AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}))
+                    AND A.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token})
+                </when>
+                <when test="(role != null and role != '') and role == 'ROLE_ADMIN'">
+                    AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token=#{token})
+                </when>
+            </choose>
     </select>
 
 

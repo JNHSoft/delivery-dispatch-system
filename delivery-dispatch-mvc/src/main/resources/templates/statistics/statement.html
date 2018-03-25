@@ -1,236 +1,195 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
 
-	<!-- 컨텐츠 영역 -->
-	<section id="container" layout:fragment="content">
-		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}" />
-		<div class="search_box">
+<!-- 컨텐츠 영역 -->
+<section id="container" layout:fragment="content">
+	<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}" />
+	<div class="search_box">
+		<div class="left">
+			<label class="checkbox"><input name="srchChk" id="allChk" type="checkbox" checked="checked"/><i></i>
+				<span class="lbl" th:text="${#messages.msg('status.all')}" />
+			</label>
+			<label class="checkbox"><input name="srchChk" id="completeChk" type="checkbox" checked="checked" disabled="disabled"/><i></i>
+				<span class="lbl" th:text="${#messages.msg('status.completed')}" />
+			</label>
+			<label class="checkbox"><input name="srchChk" id="canceledChk" type="checkbox" checked="checked" disabled="disabled"/><i></i>
+				<span class="lbl" th:text="${#messages.msg('status.canceled')}" />
+			</label>
+		</div>
+		<div class="left">
+			<input type="text" name="datepicker" id="day1" class="input datepicker" />
+			~
+			<input type="text" name="datepicker" id="day2" class="input datepicker" />
+		</div>
+		<div class="right">
+			<label class="checkbox"><input name="" type="checkbox" /><i></i>
+				<span class="lbl" th:text="${#messages.msg('order.mine')}" />
+			</label>
+			<span class="inblock">
+					<select name="" id="searchSelect" class="select">
+						<option value="all" th:text="${#messages.msg('list.search.all')}" />
+						<option value="id" th:text="${#messages.msg('list.search.id')}" />
+						<option value="text" th:text="${#messages.msg('list.search.text')}" />
+						<option value="payment" th:text="${#messages.msg('list.search.payment')}" />
+						<option value="rider" th:text="${#messages.msg('list.search.rider')}" />
+					</select>
+					<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}" />
+					<button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" /></button>
+				</span>
+			<button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.excel')}" /></button>
+		</div>
+	</div>
+	<div id="contents">
+		<div class="state_wrap">
 			<div class="left">
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('status.all')}" />
-				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('status.new')}" />
-				</label>
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('status.assigned')}" />
-				</label>
-			</div>
-			<div class="left">
-				<input type="text" name="" class="input datepicker" />
-				~
-				<input type="text" name="" class="input datepicker" />
+				<div class="jq_grid">
+					<div>
+						<table id="jqGrid"></table>
+					</div>
+				</div>
+				<div id="jqGridPager"></div>
 			</div>
 			<div class="right">
-				<label class="checkbox"><input name="" type="checkbox" /><i></i>
-					<span class="lbl" th:text="${#messages.msg('order.mine')}" />
-				</label>
-				<span class="inblock">
-					<select name="" id="" class="select">
-						<option value="" th:text="${#messages.msg('list.search.all')}" />
-					</select>
-					<input type="text" class="input" th:placeholder="${#messages.msg('list.search.placeholder')}" />
-					<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" /></button>
-				</span>
-				<button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.excel')}" /></button>
-			</div>
-		</div>
-		<div id="contents">
-			<div class="state_wrap">
-				<div class="left">
-					<div class="jq_grid">
+				<a href="#" class="btn_close"><i class="fa fa-times" aria-hidden="true"></i><span class="blind">닫기</span></a>
+				<div class="state_detail">
+					<div class="tit">
+					</div>
+					<div class="cont">
 						<div>
-							<table id="jqGrid"></table>
+							<ul>
+								<li>
+									<span th:text="${#messages.msg('order.created')}" />
+									<div id="createdDatetime">-</div>
+								</li>
+								<li>
+									<span th:text="${#messages.msg('order.reserved')}" />
+									<div id="reservationDatetime">-</div>
+								</li>
+								<li class="clear">
+									<span th:text="${#messages.msg('order.time')}" />
+									<div id="passtime">-</div>
+								</li>
+								<li>
+									<span th:text="${#messages.msg('order.assigned')}" />
+									<div id="assignedDatetime">-</div>
+								</li>
+								<li class="clear">
+									<span th:text="${#messages.msg('order.pickedup')}" />
+									<div id="pickedUpDatetime">-</div>
+								</li>
+								<li>
+									<span th:text="${#messages.msg('order.completed')}" />
+									<div id="completedDatetime">-</div>
+								</li>
+							</ul>
 						</div>
-					</div>
-					<div id="jqGridPager"></div>
-				</div>
-				<div class="right">
-					<a href="#" class="btn_close"><i class="fa fa-times" aria-hidden="true"></i><span class="blind">닫기</span></a>
-					<div class="state_detail">
-						<div class="tit">
-							<h2 th:text="${#messages.msg('order.detail', '11023')}" />
-							<i class="ic_txt" th:text="${#messages.msg('status.completed')}" />
-							<i class="ic_txt ic_red" th:text="${#messages.msg('status.canceled')}" />
+						<div>
+							<ul>
+								<li>
+									<span th:text="${#messages.msg('order.summary')}" />
+									<div id="menuName">-</div>
+								</li>
+								<li>
+									<span th:text="${#messages.msg('order.cooking')}" />
+									<div><span id="cookingTime">-</span>분</div>
+								</li>
+								<li class="clear">
+									<span th:text="${#messages.msg('order.menu.price')}" />
+									<div><span id="menuPrice">-</span>원</div>
+								</li>
+								<li>
+									<span th:text="${#messages.msg('order.delivery.price')}" />
+									<div><span id="deliveryPrice">-</span>원</div>
+								</li>
+								<li class="clear">
+									<span th:text="${#messages.msg('order.total.price')}" />
+									<div><span id="totalPrice">-</span>원</div>
+								</li>
+								<li>
+									<span th:text="${#messages.msg('order.payment')}" />
+									<div id="#paid"></div>
+									<!--<div th:text="${#messages.msg('order.payment.card')}" />-->
+								</li>
+							</ul>
 						</div>
-						<div class="cont">
-							<div>
-								<ul>
-									<li>
-										<span th:text="${#messages.msg('order.created')}" />
-										<div>01/25 14:57</div>
-									</li>
-									<li>
-                                        <span th:text="${#messages.msg('order.reserved')}" />
-										<div th:text="${#messages.msg('result.none')}" />
-									</li>
-									<li class="clear">
-										<span th:text="${#messages.msg('order.time')}" />
-										<div>-</div>
-									</li>
-									<li>
-										<span th:text="${#messages.msg('order.assigned')}" />
-										<div>01/25 14:57</div>
-									</li>
-									<li class="clear">
-										<span th:text="${#messages.msg('order.pickedup')}" />
-										<div>01/25 14:57</div>
-									</li>
-									<li>
-										<span th:text="${#messages.msg('order.completed')}" />
-										<div>01/25 14:57</div>
-									</li>
-								</ul>
-							</div>
-							<div>
-								<ul>
-									<li>
-										<span th:text="${#messages.msg('order.summary')}" />
-										<div>징거버거 세트 외...</div>
-									</li>
-									<li>
-										<span th:text="${#messages.msg('order.cooking')}" />
-										<div>10분</div>
-									</li>
-									<li class="clear">
-										<span th:text="${#messages.msg('order.menu.price')}" />
-										<div>20,000원</div>
-									</li>
-									<li>
-										<span th:text="${#messages.msg('order.delivery.price')}" />
-										<div>0원</div>
-									</li>
-									<li class="clear">
-										<span th:text="${#messages.msg('order.total.price')}" />
-										<div>20,000원</div>
-									</li>
-									<li>
-										<span th:text="${#messages.msg('order.payment')}" />
-										<div th:text="${#messages.msg('order.payment.card')}" />
-									</li>
-								</ul>
-							</div>
-							<div>
-								<ul>
-									<li class="full">
-										<span th:text="${#messages.msg('order.combined')}" />
-										<div>-</div>
-									</li>
-								</ul>
-							</div>
-							<div>
-								<ul>
-									<li>
-										<span th:text="${#messages.msg('rider.name')}" />
-										<div>김나은</div>
-									</li>
-									<li>
-										<span th:text="${#messages.msg('rider.phone')}" />
-										<div>010-1234-1234</div>
-									</li>
-									<li class="clear full">
-										<span th:text="${#messages.msg('order.message')}" />
-										<div>빠른배송 바랍니다.</div>
-									</li>
-								</ul>
-							</div>
-							<div>
-								<ul>
-									<li class="full">
-										<span th:text="${#messages.msg('order.customer.phone')}" />
-										<div>010-1234-1234</div>
-									</li>
-									<li class="full">
-										<span th:text="${#messages.msg('order.customer.address')}" />
-										<div>서울시 서대문구 증가로 29길 35 북가좌동, 씨엔티테크 빌딩</div>
-									</li>
-									<li class="full">
-										<span th:text="${#messages.msg('order.distance')}" />
-										<div>2.5km</div>
-									</li>
-									<li class="full">
-										<div class="map">
-											<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
-										</div>
-									</li>
-								</ul>
-							</div>
+						<div>
+							<ul>
+								<li class="full">
+									<span th:text="${#messages.msg('order.combined')}" />
+									<div id="combinedOrder">-</div>
+								</li>
+							</ul>
+						</div>
+						<div>
+							<ul>
+								<li>
+									<span th:text="${#messages.msg('rider.name')}" />
+									<div id="riderName">-</div>
+								</li>
+								<li>
+									<span th:text="${#messages.msg('rider.phone')}" />
+									<div id="riderPhone">-</div>
+								</li>
+								<li class="clear full">
+									<span th:text="${#messages.msg('order.message')}" />
+									<div id="memo">-</div>
+								</li>
+							</ul>
+						</div>
+						<div>
+							<ul>
+								<li class="full">
+									<span th:text="${#messages.msg('order.customer.phone')}" />
+									<div id="userPhone">-</div>
+								</li>
+								<li class="full">
+									<span th:text="${#messages.msg('order.customer.address')}" />
+									<div id="userAddress"></div>
+								</li>
+								<li class="full">
+									<span th:text="${#messages.msg('order.distance')}" />
+									<div id="distance"></div>
+								</li>
+								<li class="full">
+									<div id="map" style="width: 314px; height: 150px; background-color: gray;">
+										<!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>-->
+									</div>
+								</li>
+							</ul>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</section>
-	<!-- //컨텐츠 영역 -->
-
-<script layout:fragment="script" th:inline="javascript">
-/*<![CDATA[*/
-var status_new = /*[[#{status.new}]]*/ 'status_new';
-var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
-var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
-var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
-var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
-var order_confirm = /*[[#{btn.confirm}]]*/ 'order_confirm';
-var order_status = /*[[#{order.status}]]*/ 'order_status';
-var order_id = /*[[#{order.id}]]*/ 'order_id';
-var order_created = /*[[#{order.created}]]*/ 'order_created';
-var order_address = /*[[#{order.address}]]*/ 'order_address';
-var order_summary = /*[[#{order.summary}]]*/ 'order_summary';
-var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
-var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
-var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
-var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
-var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
-var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
-
-var mydata = [
-	{No:'1', state:'<i class="ic_txt">' + order_confirm + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은'},
-	{No:'2', state:'<i class="ic_txt ic_red">' + status_canceled + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'3', state:'<i class="ic_txt ic_green">' + status_new + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'4', state:'<i class="ic_txt ic_blue">' + status_assigned + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' },
-	{No:'5', state:'<i class="ic_txt ic_blue">' + status_pickedup + '</i>', id:'11022', time1:'01-25 14:57', address:'서울시 은평구 증산동 123-12', text:'징거버거, 불고기버거', time2:'01-25 14:57', pay:'카드', time3:'01-25 14:57', time4:'01-25 14:57', time5:'-', rider:'김나은' }
-];	
-$(document).ready(function () {
-	$("#jqGrid").jqGrid({
-		datatype:"local",
-		data:mydata,
-		colModel:[
-	    {label:'No', name:'No', width:25, key:true, align:'center'},
-	    {label:order_status, name:'state', width:80, align:'center'},
-	    {label:order_id, name:'id', width:80, align:'center'},
-	    {label:order_created, name:'time1', width:80, align:'center'},
-	    {label:order_address, name:'address', width:200},
-	    {label:order_summary, name:'text', width:150},
-	    {label:order_cooking, name:'time2', width:80, align:'center'},
-	    {label:order_payment, name:'pay', width:80, align:'center'},
-	    {label:order_assigned, name:'time3', width:80, align:'center'},
-	    {label:order_pickedup, name:'time4', width:80, align:'center'},
-	    {label:order_reserved, name:'time5', width:80, align:'center'},
-	    {label:rider_name, name:'rider', width:80, align:'center'}
-    ],
-		width:'auto',
-		height:520,
-		autowidth:true,
-		rowNum:20,
-		pager:"#jqGridPager",
-		onCellSelect: function(rowid,icol,cellcontent,e){
-			$('.state_wrap').addClass('on') //상세보기 열기
-			setTimeout(function(){
-				$(window).trigger('resize');
-			},300)//그리드 리사이즈
-    }
-	});
-
-	resizeJqGrid('#jqGrid'); //그리드 리사이즈
-
-	$('.state_wrap .btn_close').click(function(e){
-		e.preventDefault();
-		$('.state_wrap').removeClass('on') //상세보기 닫기
-		setTimeout(function(){
-			$(window).trigger('resize');
-		},300)//그리드 리사이즈
-	})
-});
-/*]]>*/
-</script>
+	</div>
+	<script type="text/javascript" th:src="@{/resources/js/site/statistics/statement.js}" layout:fragment="script2"></script>
+	<script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
+    </section>
+    <!-- //컨텐츠 영역 -->
+    <script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var status_new = /*[[#{status.new}]]*/ 'status_new';
+    var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+    var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+    var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
+    var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
+    var order_confirm = /*[[#{btn.confirm}]]*/ 'order_confirm';
+    var order_status = /*[[#{order.status}]]*/ 'order_status';
+    var order_id = /*[[#{order.id}]]*/ 'order_id';
+    var order_created = /*[[#{order.created}]]*/ 'order_created';
+    var order_address = /*[[#{order.address}]]*/ 'order_address';
+    var order_summary = /*[[#{order.summary}]]*/ 'order_summary';
+    var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
+    var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
+    var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
+    var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
+    var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
+    var order_payment_cash = /*[[#{order.payment.cash}]]*/ 'order_payment_cash';
+    var order_payment_card = /*[[#{order.payment.card}]]*/ 'order_payment_card';
+    var order_payment_prepayment = /*[[#{order.payment.prepayment}]]*/ 'order_payment_prepayment';
+    var order_payment_service = /*[[#{order.payment.service}]]*/ 'order_payment_service';
+    var order_detail = /*[[#{order.detail}]]*/ 'order_detail';
+    var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
+    /*]]>*/
+	</script>
 </html>

@@ -253,9 +253,9 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
 
-            Notice C_Notice = noticeMapper.selectNoticeConfirm(notice);
+            List<Notice> C_Notice = noticeMapper.selectNoticeConfirm(notice);
 
-            if (C_Notice == null) {
+            if (C_Notice.size() == 0) {
                 ret = noticeMapper.insertNoticeConfirm(notice);
             } else {
                 ret = noticeMapper.updateNoticeConfirm(notice);

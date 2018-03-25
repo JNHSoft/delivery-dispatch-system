@@ -224,7 +224,7 @@ function getOrderDetail(orderId) {
             $('#pickedUpDatetime').html(timeSet(data.pickedUpDatetime));
             $('#completedDatetime').html(timeSet(data.completedDatetime));
             $('#passtime').html(minusTimeSet(data.createdDatetime, data.completedDatetime));
-            $('#menuName').val(data.menuName);
+            $('#menuName').html(data.menuName);
             $('#cookingTime').val(data.cookingTime);
             $('#menuPrice').val(data.menuPrice);
             $('#deliveryPrice').val(data.deliveryPrice);
@@ -333,8 +333,8 @@ function getOrderList(statusArray, storeId) {
         data: {
             statusArray : statusArray.filter(n => n), //null 제거
         status : statusArray.join('')
-},
-    dataType: 'json',
+        },
+        dataType: 'json',
         success: function (data) {
         var i = 1;
         console.log(data);

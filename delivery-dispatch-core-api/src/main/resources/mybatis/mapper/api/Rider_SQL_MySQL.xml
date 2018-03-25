@@ -3,10 +3,12 @@
 
 	<!-- selectRidersResult -->
 	<resultMap id="selectSubgroupRiderRelsResult" type="kr.co.cntt.core.model.rider.Rider">
+
 		<result property="id" column="id" />
 		<result property="adminId" column="admin_id" />
 
 		<result property="loginId" column="login_id" />
+		<result property="loginPw" column="login_pw" />
 		<result property="name" column="name" />
 		<result property="code" column="code" />
 		<result property="phone" column="phone" />
@@ -292,7 +294,9 @@
 		ON A.id = B.rider_id
 		SET
 			A.modified_datetime = now()
-
+			<if test="loginPw != null and loginPw != ''">
+				, A.login_pw = #{loginPw}
+			</if>
 			<if test="lastAccess != null and lastAccess != ''">
 				, A.last_access = #{lastAccess}
 			</if>
@@ -588,6 +592,54 @@
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			AND A.deleted IS NULL;
 	</select>
+
+
+
+
+	<select id="selectMyStoreRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
+		SELECT A.id
+		, A.name
+		, A.phone
+		, A.status
+		, A.working
+		, A.chat_user_id
+		, A.latitude
+		, A.longitude
+		, A.location_updated
+		, A.gender
+		, A.code
+		, case A.teenager when '0' then 'X' when '1' then 'O' else 'X' end as teenager
+		, A.phone
+		, A.login_id
+		, A.emergency_phone
+		, A.address
+		, A.vehicle_number
+		, B.store_id AS subGroupRiderRel_store_id
+		, C.id AS subgroup_id
+		, C.group_id AS subgroup_group_id
+		, C.name AS subgroup_name
+		, C.admin_id AS subgroup_admin_id
+		, D.id AS group_id
+		, D.name AS group_name
+		, D.admin_id AS group_admin_id
+		FROM TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
+		AND B.deleted IS NULL
+		LEFT JOIN TB_SUBGROUP AS C
+		ON B.subgroup_id = C.id
+		LEFT JOIN TB_GROUP AS D
+		ON B.group_id = D.id
+		AND C.deleted IS NULL
+		AND D.deleted IS NULL
+		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+		AND A.deleted IS NULL
+		AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token});
+	</select>
+
+
+
+
 
 	<!-- selectRiderAssignmentStatus -->
 	<select id="selectRiderAssignmentStatus" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="java.lang.String">
