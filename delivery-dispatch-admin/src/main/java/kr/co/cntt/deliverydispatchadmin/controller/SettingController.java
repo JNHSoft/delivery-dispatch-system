@@ -1,16 +1,19 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
+import kr.co.cntt.core.service.admin.AccountAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,10 +26,14 @@ import java.util.Map;
 @Controller
 public class SettingController {
 
+    private AccountAdminService accountAdminService;
     private NoticeAdminService noticeAdminService;
 
     @Autowired
-    public SettingController(NoticeAdminService noticeAdminService) { this.noticeAdminService = noticeAdminService; }
+    public SettingController(AccountAdminService accountAdminService,  NoticeAdminService noticeAdminService) {
+        this.accountAdminService = accountAdminService;
+        this.noticeAdminService = noticeAdminService;
+    }
 
     /**
      * 설정 - 계정관리 페이지
@@ -34,7 +41,17 @@ public class SettingController {
      * @return
      */
     @GetMapping("/setting-account")
-    public String settingAccount() { return "/setting/setting_account"; }
+    @CnttMethodDescription("계정관리 페이지")
+    public String settingAccount(Admin admin, Model model) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        admin.setToken(adminInfo.getAdminAccessToken());
+
+        Admin retAdmin = accountAdminService.getAdminAccount(admin);
+
+        model.addAttribute("adminInfo", retAdmin);
+
+        return "/setting/setting_account";
+    }
 
 
     /**
