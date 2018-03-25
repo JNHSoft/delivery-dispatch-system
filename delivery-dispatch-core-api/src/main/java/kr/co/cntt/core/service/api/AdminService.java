@@ -168,10 +168,13 @@ public interface AdminService {
 
 
 
-
-
-
-
+    /**
+     * <p> 기사 상점만 수정 Nick 추가
+     *
+     * @param rider
+     * @return
+     */
+    public int putRiderStore(Rider rider);
 
 
     /**

@@ -92,4 +92,9 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     @Override
     public int insertChatRoom(Store store){return adminMapper.insertChatRoom(store);}
 
+    // 기사 삭제
+    @Override
+    public int deleteStore(Store store){return adminMapper.deleteStore(store);}
+
+
 }

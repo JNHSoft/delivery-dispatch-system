@@ -7,6 +7,7 @@
         <result property="name" column="name" />
 		<result property="code" column="code" />
 		<result property="phone" column="phone" />
+		<result property="emergencyPhone" column="emergency_phone" />
         <result property="address" column="address" />
 		<result property="gender" column="gender" />
 		<result property="employmentType" column="employment_type" />
@@ -26,6 +27,17 @@
 			<result property="name" column="subgroup_name" />
 			<result property="adminId" column="subgroup_admin_id" />
 		</association>
+
+		<association property="subGroupRiderRel" column="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
+			<result property="id" column="subGroupRiderRel_id" />
+			<result property="adminId" column="subGroupRiderRel_admin_id" />
+			<result property="groupId" column="subGroupRiderRel_group_id" />
+			<result property="subGroupId" column="subGroupRiderRel_subgroup_id" />
+			<result property="storeId" column="subGroupRiderRel_store_id" />
+			<result property="riderId" column="subGroupRiderRel_rider_id" />
+		</association>
+
+
 	</resultMap>
 
 
@@ -408,13 +420,26 @@
 	</update>
 
 
-	<!-- updateStoreSubGroup -->
+	<!-- updateStoreSubGroup 상점 서브 그룹만 수정 -->
 	<update id="updateStoreSubGroup" parameterType="kr.co.cntt.core.model.store.Store">
 		UPDATE TB_SUBGROUP_STORE_REL
 		SET modified_datetime = now()
 		, subgroup_id = #{subGroupStoreRel.subGroupId}
 		WHERE store_id = #{id}
 		AND group_id = #{subGroupStoreRel.groupId}
+		AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND deleted IS NULL
+	</update>
+
+
+	<!-- updateRiderStore 기사 상점만 수정 -->
+	<update id="updateRiderStore" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_SUBGROUP_RIDER_REL
+		SET modified_datetime = now()
+		, store_id = #{subGroupStoreRel.storeId}
+		WHERE rider_id = #{id}
+		AND group_id = #{subGroupStoreRel.groupId}
+		AND subGroup_id = #{subGroupStoreRel.subGroupId}
 		AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		AND deleted IS NULL
 	</update>
@@ -453,9 +478,9 @@
 		) VALUES (
 			now()
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			, #{subGroupStoreRel.groupId}
-			, #{subGroupStoreRel.subGroupId}
-			, #{subGroupStoreRel.storeId}
+			, #{subGroupRiderRel.groupId}
+			, #{subGroupRiderRel.subGroupId}
+			, #{subGroupRiderRel.storeId}
 			, #{id}
 		)
 	</insert>
@@ -511,6 +536,7 @@
 			, A.address
 			, A.login_id
 			, A.gender
+			, A.emergency_phone
 			, A.employment_type
 			, A.teenager
 			, A.vehicle_number
@@ -521,6 +547,12 @@
 			, D.id AS group_id
 			, D.name AS group_name
 			, D.admin_id AS group_admin_id
+			, B.store_id AS subGroupRiderRel_store_id
+			, B.subgroup_id  AS subGroupRiderRel_subgroup_id
+			, B.group_id AS subGroupRiderRel_group_id
+
+
+
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
@@ -572,7 +604,13 @@
 				, NULL
 			</if>
 			, #{gender}
-			, #{employmentType}
+			<if test="employmentType != null and employmentType != ''">
+				, #{employmentType}
+			</if>
+			<if test="employmentType == null or employmentType == ''">
+				, NULL
+			</if>
+
 			<if test="address != null and address != ''">
 				, #{address}
 			</if>

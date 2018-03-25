@@ -358,6 +358,29 @@ function postStore() {
     }
 
 
+/**
+ * 상점 삭제
+ */
+function deleteStore() {
+    var storeId =  $("#selectedStoreId").val()
+
+    if(!confirm("해당 매장을 삭제하시겠습니까?")) return;
+    console.log(storeId);
+    $.ajax({
+        url: "/deleteStore",
+        type: 'put',
+        dataType: 'text',
+        data: {
+            storeId: storeId
+        },
+        success: function (data) {
+            if (data === 'true') {
+                location.reload();
+            }
+
+        }
+    });
+}
 
 
 

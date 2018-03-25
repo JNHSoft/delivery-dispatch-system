@@ -113,4 +113,14 @@ public interface StoreAdminService {
     public int insertChatRoom(Store store);
 
 
+    /**
+     * <p> 상점 삭제
+     *
+     * @param store
+     * @return
+     */
+    public int deleteStore(Store store);
+
+
+
 }

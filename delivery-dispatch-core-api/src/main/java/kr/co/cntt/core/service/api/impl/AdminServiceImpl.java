@@ -282,6 +282,21 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     }
 
 
+    // 기사 상점만 수정          Nick 추가
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putRiderStore(Rider rider) {
+
+        int result = adminMapper.updateRiderStore(rider);
+
+        List<Admin> resultAdmin = adminMapper.selectAdminInfo(rider);
+
+        if (result != 0) {
+            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+        }
+
+        return result;
+    }
 
 
     @Secured("ROLE_ADMIN")

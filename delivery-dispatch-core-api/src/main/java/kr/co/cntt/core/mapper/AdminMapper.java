@@ -176,6 +176,15 @@ public interface AdminMapper {
     public int updateStoreSubGroup(Store store);
 
 
+    /**
+     * <p> 기사 상점만  수정    Nick 추가
+     *
+     * @param rider
+     * @return
+     */
+    public int updateRiderStore(Rider rider);
+
+
 
     /**
      * <p> 상점 서브그룹 삭제

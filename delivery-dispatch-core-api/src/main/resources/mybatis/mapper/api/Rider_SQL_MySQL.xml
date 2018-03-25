@@ -314,7 +314,7 @@
 			</if>
 
 			<if test="employmentType != null and employmentType != ''">
-				, A.employmentType = #{employmentType}
+				, A.employment_type = #{employmentType}
 			</if>
 
 			<if test="address != null and address != ''">
@@ -338,11 +338,11 @@
 			</if>
 
 			<if test="workingHours != null and workingHours != ''">
-				, A.workingHours = #{workingHours}
+				, A.working_hours = #{workingHours}
 			</if>
 
 			<if test="restHours != null and restHours != ''">
-				, A.restHours = #{restHours}
+				, A.rest_hours = #{restHours}
 			</if>
 
 			<if test="teenager != null and teenager != ''">

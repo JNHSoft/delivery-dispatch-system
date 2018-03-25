@@ -365,4 +365,27 @@ public class StoreController {
     }
 }
 
+    @ResponseBody
+    @PutMapping("/deleteStore")
+    @CnttMethodDescription("상점 삭제")
+    public boolean deleteStore( @RequestParam("storeId") String storeId
+                                   ){
+        // group model 생성
+        Store store = new Store();
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        // token 부여
+        store.setToken(adminInfo.getAdminAccessToken());
+
+        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+        store.setId(storeId);
+
+        if(storeAdminService.deleteStore(store) == 0) {
+            return false;
+        }
+        return true;
+
+    }
+
 }
