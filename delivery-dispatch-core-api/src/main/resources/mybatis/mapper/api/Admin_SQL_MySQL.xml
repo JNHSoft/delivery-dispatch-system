@@ -211,6 +211,16 @@
 	</select>
 
 
+	<!-- updateAdminInfo -->
+	<update id="updateAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin">
+		UPDATE TB_ADMIN
+		SET modified_datetime = now()
+		, login_pw = #{loginPw}
+		WHERE deleted IS NULL
+			AND id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	</update>
+
+
 	<!-- selectGroups -->
 	<select id="selectGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.Group">
 		SELECT
@@ -249,6 +259,7 @@
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		)
 	</insert>
+
 
 	<!-- updateGroup -->
 	<update id="updateGroup" parameterType="kr.co.cntt.core.model.group.Group">

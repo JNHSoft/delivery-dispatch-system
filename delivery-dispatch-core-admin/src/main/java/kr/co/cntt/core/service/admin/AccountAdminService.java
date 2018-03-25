@@ -13,4 +13,13 @@ public interface AccountAdminService {
      */
     public Admin getAdminAccount(Admin admin);
 
+
+    /**
+     * <p> getAdminAccount
+     *
+     * @param admin
+     * @return int
+     */
+    public int putAdminAccount(Admin admin);
+
 }

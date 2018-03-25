@@ -13,6 +13,7 @@
 			</ul>
 		</div>
 		<div id="contents">
+			<form action="/putAdminAccount" name="adminForm" method="post" onsubmit="return formCheck()">
 			<div class="cont_box">
 				<div class="top"><strong th:text="${#messages.msg('gnb.setting.account')}" /></div>
 				<div class="cont">
@@ -23,16 +24,28 @@
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('login.password')}" />
-							<div><input type="password" name="" class="input" /></div>
+							<div><input type="password" name="loginPw" class="input" id="loginPw" /></div>
 						</li>
 					</ul>
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
+				<button type="submit" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
 			</div>
+			</form>
 		</div>
 	</section>
 	<!-- //컨텐츠 영역 -->
 
+<script layout:fragment="script" th:inline="javascript">
+/*<![CDATA[*/
+var none_parameter = /*[[#{alert.none.parameter}]]*/ 'none_parameter';
+function formCheck(){
+	if ($('#loginPw').val() == null || $('#loginPw').val() == '') {
+        alert(none_parameter);
+        return false;
+	}
+}
+/*]]>*/
+</script>
 </html>

@@ -55,6 +55,23 @@ public class SettingController {
 
 
     /**
+     * 설정 - 계정관리 관리자 정보 수정
+     *
+     * @return
+     */
+    @PostMapping("/putAdminAccount")
+    @CnttMethodDescription("관리자 계정 정보 수정")
+    public String putAdminAccount(Admin admin) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        admin.setToken(adminInfo.getAdminAccessToken());
+
+        accountAdminService.putAdminAccount(admin);
+
+        return "redirect:/setting-account";
+    }
+
+
+    /**
      * 설정 - 배정관리 페이지
      *
      * @return
