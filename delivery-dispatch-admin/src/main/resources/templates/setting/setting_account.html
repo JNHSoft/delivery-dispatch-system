@@ -19,7 +19,7 @@
 					<ul class="form_list">
 						<li>
 							<strong th:text="${#messages.msg('login.id')}" />
-							<div><input type="text" name="" class="input readonly" readonly="readonly" /></div>
+							<div><input type="text" name="" class="input readonly" readonly="readonly" th:value="*{adminInfo.loginId}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('login.password')}" />
