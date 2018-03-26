@@ -12,6 +12,7 @@ import kr.co.cntt.core.service.admin.StoreAdminService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.deliverydispatchadmin.enums.SessionEnum;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
+import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public class StoreController {
      */
     StoreAdminService storeAdminService;
 
+    @Autowired
+    private TokenManager tokenManager;
 
     @Autowired
     public StoreController(StoreAdminService storeAdminService){
