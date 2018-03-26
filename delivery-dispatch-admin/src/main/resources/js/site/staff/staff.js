@@ -77,7 +77,7 @@ function getRiderList() {
                     {label:rider_login_id, name:'th9', width:80, align:'center'},
                     {label:'그룹ID', name:'th10', width:60, hidden:'hidden'},
                     {label:'서브그룹ID', name:'th11', width:60, hidden:'hidden'},
-                    {label:'매장ID', name:'th12', width:60, hidden:'hidden'},
+                    {label:'매장ID', name:'th12', width:60, hidden:'hidden'}
                 ],
                 width:'auto',
                 height:520,
