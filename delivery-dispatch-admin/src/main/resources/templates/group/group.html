@@ -19,21 +19,8 @@
     var group_label_no = /*[[#{group.label.no}]]*/ 'group_label_no';
     var store_name = /*[[#{store.name}]]*/ 'store_name';
     var subgroup_add_label = /*[[#{subgroup.add.label}]]*/ 'subgroup_add_label';
-
-
-
-    var subgroup_name = /*[[#{subgroup.name}]]*/ 'subgroup_name';
-
-
-//    var group_mod = /*[[#{group.mod}]]*/ 'store_address_detail';
-//
-//    var order_assign_mode = /*[[#{order.assign.mode}]]*/ 'order_assign_mode';
-//    var order_assign_mode_store = /*[[#{order.assign.mode.store}]]*/ 'order_assign_mode_store';
-//    var order_assign_mode_auto = /*[[#{order.assign.mode.auto}]]*/ 'order_assign_mode_auto';
-//    var order_assign_mode_rider = /*[[#{order.assign.mode.rider}]]*/ 'order_assign_mode_rider';
-//    var btn_cancel = /*[[#{btn.cancel}]]*/ 'btn_cancel';
-//    var btn_confirm = /*[[#{btn.confirm}]]*/ 'btn_confirm';
-//    var btn_close_pop = /*[[#{btn.close.pop}]]*/ 'btn_close_pop';
+    var subgroup_name = /*[[#{subgroup.name}]]*/ 'subgroup_name'
+    var subgroup_add_label_sub = /*[[#{subgroup.add.label.sub}]]*/ 'subgroup_add_label_sub'
     /*]]>*/
 </script>
 
@@ -42,7 +29,7 @@
 
 <!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
-		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.store')}"></h2>
+		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.group')}"></h2>
 		<div id="contents">
 			<div class="group_wrap">
 				<div>
@@ -93,7 +80,7 @@
 					<!-- 미지정 그룹 -->
 					<div id="noneGroupHtml" style="display: none;">
 						<div class="cont_in same-height">
-							<p><strong class="fz13 t_black" th:text="${#messages.msg('group_none')}"></strong> <span class="fz10" th:text="${#messages.msg('group.store.add.label.sub')}"></span></p>
+							<p><strong class="fz13 t_black" th:text="${#messages.msg('group.none')}"></strong> <span class="fz10" th:text="${#messages.msg('group.store.add.label.sub')}"></span></p>
 							<div class="mt10">
 								<input type="text" class="input" />
 								<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="${#messages.msg('list.search')}"></i></button>
@@ -106,7 +93,7 @@
 										<th th:text="${#messages.msg('group.label.no')}"></th>
 										<th th:text="${#messages.msg('store.name')}"></th>
 										<th th:text="${#messages.msg('group.name')}"></th>
-										<th th:text="${#messages.msg('store.belong.subgrou')}"></th>
+										<th th:text="${#messages.msg('store.belong.subgroup')}"></th>
 									</tr>
 									</thead>
 									<tbody>
@@ -115,7 +102,7 @@
 										<td class="t_left" th:text="${noneGroup.storeName}" name="groupName"></td>
 										<td>
 											<select class="select w_100" th:name="groupList" >
-													<option>없음</option>
+													<option value="empty">-</option>
 												<th:block th:each="groupList:${groupList}" >
 													<option th:value="${groupList.id}" th:text="${groupList.name}" ></option>
 												</th:block>
@@ -123,7 +110,7 @@
 										</td>
 										<td>
 											<select th:name="subGroupList" class="select w_100" id="noneStoreSubGroup">
-													<option>없음</option>
+													<option value="empty">-</option>
 											</select>
 										</td>
 									</tr>
@@ -175,6 +162,7 @@
 					<div id="storeHtml" style="display: none;">
 						<div class="cont_in same-height">
 							<p><strong class="fz13 t_black" id="store_subgroup_name"/> <span class="fz10" th:text="${#messages.msg('group.store.add.label.sub')}"></span></p>
+							 <!--검색 기능-->
 							<div class="mt10">
 								<input type="text" class="input" />
 								<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="${#messages.msg('list.search')}"></i> </button>
@@ -202,7 +190,7 @@
 												</select>
 											</td>
 											<td>
-												<button class="button h20" name="delete" th:text="${#messages.msg('group.del')}">삭제</button>
+												<button class="button h20" name="delete" th:text="${#messages.msg('group.del')}"></button>
 											</td>
 										</tr>
 									</tbody>

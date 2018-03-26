@@ -37,6 +37,11 @@
 			<result property="riderId" column="subGroupRiderRel_rider_id" />
 		</association>
 
+		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="storeName" column="store_name" />
+		</association>
+
+
 
 	</resultMap>
 
@@ -558,6 +563,7 @@
 			, A.name
 			, A.code
 			, A.phone
+ 			, TS.store_name
 			, A.address
 			, A.login_id
 			, A.gender
@@ -579,16 +585,25 @@
 
 
 		FROM TB_RIDER AS A
+
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
-			AND B.deleted IS NULL
+		AND B.deleted IS NULL
+
+ 		left join
+        TB_STORE AS TS
+        on B.store_id = TS.id
+        AND TS.deleted is NULL
+
 		LEFT JOIN TB_SUBGROUP AS C
 		ON B.group_id = C.group_id
-			AND B.subgroup_id = C.id
-			AND C.deleted IS NULL
+		AND B.subgroup_id = C.id
+		AND C.deleted IS NULL
+
 		LEFT JOIN  TB_GROUP AS D
 		ON B.group_id = D.id
-			AND D.deleted IS NULL
+		AND D.deleted IS NULL
+
 		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND A.deleted IS NULL
 			ORDER BY A.name

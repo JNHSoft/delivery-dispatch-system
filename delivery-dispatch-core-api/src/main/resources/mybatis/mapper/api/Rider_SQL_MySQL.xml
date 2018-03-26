@@ -195,6 +195,7 @@
 		, TR.id
 		, TR.name
 		, TR.phone
+		, TS.store_name
 		, TR.login_id
 		, TR.login_pw
 		, TR.code
@@ -231,6 +232,11 @@
 		dde.TB_SUBGROUP_RIDER_REL AS SRR
 		on TR.id = SRR.rider_id
 		AND SRR.deleted is NULL
+
+		left join
+		TB_STORE AS TS
+		on SRR.store_id = TS.id
+		AND TS.deleted is NULL
 
 		left join
 		TB_SUBGROUP AS TSG

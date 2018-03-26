@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Rider extends User implements Dto {
+public class  Rider extends User implements Dto {
     private static final long serialVersionUID = 6384739497543017734L;
 
     private String adminId;
@@ -57,7 +57,7 @@ public class Rider extends User implements Dto {
     private Store RiderStore;
     private Store OrderStore;
     private Order Order;
-
+    private Store store;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String isAdmin;
 
