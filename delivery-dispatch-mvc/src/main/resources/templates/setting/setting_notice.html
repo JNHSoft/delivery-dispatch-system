@@ -113,6 +113,7 @@ var notice_confirmed = /*[[#{notice.confirmed}]]*/ 'notice_confirmed';
 var notice_confirmed_before = /*[[#{notice.confirmed.before}]]*/ 'notice_confirmed_before';
 var my_store = /*[[${store}]]*/ 'my_store';
 var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
+var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
 function noticeAlarm() {
     $('#myStoreName').text(my_store.storeName);
     var j = 0;
@@ -132,7 +133,7 @@ function noticeAlarm() {
 $(document).ready(function() {
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
-        var socket = io(/*'13.125.18.185:3000'*/'127.0.0.1:3000', {
+        var socket = io(websocket_localhost, {
             path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
@@ -152,6 +153,7 @@ $(document).ready(function() {
     } else {
         alert('websocket을 지원하지 않는 브라우저입니다.');
     }
+    getNoticeList();
     noticeAlarm();
 });
 /*]]>*/

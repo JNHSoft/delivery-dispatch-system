@@ -1,3 +1,4 @@
+/*<![CDATA[*/
 $(document).ready(function() {
     var storeId = $('#orderMyStoreChk').val();
     console.log("!!!!!!"+storeId);
@@ -7,7 +8,7 @@ $(document).ready(function() {
     getOrderList(statusArray, storeId);
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
-        var socket = io(/*'13.125.18.185:3000'*/'http://localhost:3000', {
+        var socket = io(websocket_localhost, {
             path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
@@ -679,3 +680,4 @@ function putOrderCancle() {
         }
     });
 }
+/*]]>*/
