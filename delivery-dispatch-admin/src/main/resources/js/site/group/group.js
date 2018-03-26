@@ -6,7 +6,7 @@ $(function() {
         $tr.addClass('selected'); // class 에 add 해준다.
         
         // 수정을 눌렀을때
-        if($(this).html() === '수정') {
+        if($(this).html() === group_mod) {
             var $targetTr = $(this).closest('tbody').find('tr');
             if($targetTr.find('td[name="groupName"] input')) {
                 var defaultGroupName = $targetTr.find('td[name="groupName"] input').closest('tr').find('input[name="defaultGroupName"]').val();
@@ -15,10 +15,10 @@ $(function() {
             $tr.find('td[name="groupName"]').html('<input type="text" class="input w_100" value="' + $tr.find('td[name="groupName"]').html() +'"/>');
 
 
-            $(this).closest('tbody').find('button[name="save"]').html('수정');
-            $(this).closest('tbody').find('button[name="delete"]').html('삭제');
-            $(this).closest('td').find('button[name="delete"]').html('취소');
-            $(this).html('저장');
+            $(this).closest('tbody').find('button[name="save"]').html(group_mod);
+            $(this).closest('tbody').find('button[name="delete"]').html(group_del);
+            $(this).closest('td').find('button[name="delete"]').html(btn_cancel);
+            $(this).html(btn_save);
         } else {
             var params = {
                 groupId : $tr.data('group-id'),
@@ -42,17 +42,17 @@ $(function() {
 
     // 삭제
     $(document).on('click','button[name="delete"]', function() {
-        if($(this).html() === '취소') {
+        if($(this).html() === btn_cancel) {
             var defaultGroupName = $(this).closest('tr').find('input[name="defaultGroupName"]').val();
             $(this).closest('tr').removeClass('selected');
-            $(this).closest('td').find('button[name="save"]').html('수정');
+            $(this).closest('td').find('button[name="save"]').html(group_mod);
             $(this).closest('tr').find('td[name="groupName"]').closest('td').html(defaultGroupName);
-            $(this).html('삭제');
+            $(this).html(group_del);
             return;
         }
 
 
-        if(($(this).html() === '삭제' && !confirm("삭제하시겠습니까?"))) return;
+        if(($(this).html() === group_del && !confirm("Delete?"))) return;
         var $tr = $(this).closest('tr');
         var params = {
             groupId : $tr.data('group-id'),
@@ -84,8 +84,8 @@ $(function() {
             $targetTr.find('td[name="groupName"] input').closest('td').html(defaultGroupName);
         }
         $(this).closest('tbody').find('tr').removeClass('selected');
-        $(this).closest('tbody').find('tr').find('button[name="save"]').html('수정');
-        $(this).closest('tbody').find('tr').find('button[name="delete"]').html('삭제');
+        $(this).closest('tbody').find('tr').find('button[name="save"]').html(group_mod);
+        $(this).closest('tbody').find('tr').find('button[name="delete"]').html(group_del);
 
         if(!$(this).is('#noneGroup')){
             $('#subGroupHtml').show();
@@ -114,8 +114,8 @@ $(function() {
             $targetTr.find('td[name="groupName"] input').closest('td').html(defaultGroupName);
         }
         $(this).closest('tbody').find('tr').removeClass('selected');
-        $(this).closest('tbody').find('tr').find('button[name="save"]').html('수정');
-        $(this).closest('tbody').find('tr').find('button[name="delete"]').html('삭제')
+        $(this).closest('tbody').find('tr').find('button[name="save"]').html(group_mod);
+        $(this).closest('tbody').find('tr').find('button[name="delete"]').html(group_del)
         $('#storeList').getLoad('/storeList?groupId=' + $tr.data('group-id') + '&subGroupId=' + $tr.data('sub-id'));
         $tr.addClass('selected');
 
@@ -132,7 +132,7 @@ $(function() {
     });
 
     $('#storeList').on("change", 'select', function() {
-        if(!confirm("수정하시겠습니까?")) return;
+        if(!confirm("你想編輯它嗎?")) return;
         var $tr = $(this).closest('tr');
         var params = {
             groupId : $tr.data('group-id'),
@@ -191,8 +191,8 @@ function putGroupName($target, params) {
                 $target.find('td[name="groupName"]').html(params.groupName);
                 $target.find('input[name="defaultGroupName"]').val(params.groupName);
                 $target.removeClass('selected');
-                $target.find('button[name="save"]').html('수정');
-                $target.find('button[name="delete"]').html('삭제');
+                $target.find('button[name="save"]').html(group_mod);
+                $target.find('button[name="delete"]').html(group_del);
                 alert("수정 완료");
             } else {
                 alert("오류");
@@ -218,8 +218,8 @@ function putSubGroupName($target, params) {
                 $target.find('td[name="groupName"]').html(params.groupName);
                 $target.find('input[name="defaultGroupName"]').val(params.groupName);
                 $target.removeClass('selected');
-                $target.find('button[name="save"]').html('수정');
-                $target.find('button[name="delete"]').html('삭제');
+                $target.find('button[name="save"]').html(group_mod);
+                $target.find('button[name="delete"]').html(group_del);
                 alert("수정 완료");
             } else {
                 alert("오류");

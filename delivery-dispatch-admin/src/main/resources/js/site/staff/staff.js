@@ -1,3 +1,5 @@
+/*<![CDATA[*/
+
 $(document).ready(function () {
     // 검색버튼을 누를시에
     $("#searchButton").click(function () {
@@ -83,6 +85,7 @@ function getRiderList() {
                 if (data.hasOwnProperty(key)) {
                     // 아이디 / 소속 매장 / 이름 / 코드 / 성별 / 연락처 / 긴급연락처 / 주소 / 번호판 / 청소년 / 아이디
                     $tmpData.th0 = data[key].id
+                    $("#selectedRiderId").val(data[key].id);
 
                     if(!data[key].store){
                         $tmpData.th1 = "-";
@@ -112,19 +115,18 @@ function getRiderList() {
 
                     $tmpData.th10 = data[key].loginId
 
-
-
-
                     if(data[key].group != null){
                         $tmpData.th11 = data[key].group.id
-
+                        $("#selectedGroupId").val(data[key].group.id);
                     }
                     if(data[key].subGroup != null) {
                         $tmpData.th12 = data[key].subGroup.id
+                        $("#selectedSubGroupId").val(data[key].subGroup.id);
                     }
 
                     if(data[key].subGroupRiderRel != null) {
                         $tmpData.th13 = data[key].subGroupRiderRel.storeId
+                        $("#selectedStoreId").val(data[key].subGroupRiderRel.storeId);
                     }
 
 
@@ -242,7 +244,8 @@ function getRiderDetail() {
 
                 // 소속 매장
                 if(data.storeList !=null){
-                    var riderDetailStoreNameHtml = "";
+                    var riderDetailStoreNameHtml = "<option value='none'>" + group_choise + "</option>";
+
                     for (var i in data.storeList){
                         riderDetailStoreNameHtml += "<option value='" + data.storeList[i].id  + "'>" + data.storeList[i].storeName + "</option>";
                     }
@@ -308,13 +311,14 @@ function putRiderDetail() {
         tmpHours.push($(element).val());
     });
     var restHours = tmpHours.join("|");
-
+    debugger;
     var tmpWorking = $("#riderDetailWorkStartTime").val() * 60 + "|" + $("#riderDetailWorkEndTime").val() * 60;
     // 수정 보내는 값들
     $.ajax({
         url : "/putRiderDetail",
         type : 'put',
         dataType : 'json',
+        // async : false,
         data : {
             riderId				: riderId,
             storeId				: storeId,
@@ -332,12 +336,9 @@ function putRiderDetail() {
             vehicleNumber       : $("#riderDetailVehicleNumber").val()
         },
         success : function(data){
-                // alert("수정 완료");
+                alert("完成修復");
+                getRiderList();
                 location.reload();
-                // popClose('#popRiderDetail');
-                // getRiderList();
-                // // 완료후 페이지 호출
-                // location.href = "/staff";
         }
     });
 
@@ -347,10 +348,7 @@ function putRiderDetail() {
  * Rider 등록
  */
 function postRider() {
-    // if($("#postRiderStoreList option:selected").val()=="none"){
-    //     alert("매장을 선택해주세요.");
-    //     return;
-    // }
+
 
     var storeId =$("#selectedStoreId").val();
     var groupId = $("#selectedGroupId").val();
@@ -368,6 +366,7 @@ function postRider() {
         url: "/postRider",
         type: 'post',
         dataType: 'json',
+        async : false,
         data: {
             loginId				: $("#postRiderLoginId").val(),
             loginPw             : $("#postRiderLoginPw").val(),
@@ -386,7 +385,8 @@ function postRider() {
             vehicleNumber       : $("#postRiderVehicleNumber").val()
         },
         success: function (data) {
-            // alert("등록완료");
+            console.log(data);
+            alert("完成註冊");
             location.reload();
         }
     });
@@ -467,6 +467,6 @@ function deleteRider() {
         }
     });
 }
-
+/*]]>*/
 
 
