@@ -6,7 +6,10 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
+import kr.co.cntt.core.model.reason.Reason;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.admin.AccountAdminService;
+import kr.co.cntt.core.service.admin.AssignAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +28,13 @@ import java.util.Map;
 public class SettingController {
 
     private AccountAdminService accountAdminService;
+    private AssignAdminService assignAdminService;
     private NoticeAdminService noticeAdminService;
 
     @Autowired
-    public SettingController(AccountAdminService accountAdminService,  NoticeAdminService noticeAdminService) {
+    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, NoticeAdminService noticeAdminService) {
         this.accountAdminService = accountAdminService;
+        this.assignAdminService = assignAdminService;
         this.noticeAdminService = noticeAdminService;
     }
 
@@ -77,7 +80,107 @@ public class SettingController {
      * @return
      */
     @GetMapping("/setting-assign")
-    public String settingAssign() { return "/setting/setting_assign"; }
+    public String settingAssign(Admin admin, Model model) {
+
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        admin.setToken(adminInfo.getAdminAccessToken());
+
+        Admin retAdmin = accountAdminService.getAdminAccount(admin);
+
+        ThirdParty thirdParty = new ThirdParty();
+        thirdParty.setToken(admin.getToken());
+        thirdParty.setLevel("1");
+
+        Reason reason = new Reason();
+        reason.setToken(admin.getToken());
+
+        List<ThirdParty> thirdPartyList = assignAdminService.getThirdParty(thirdParty);
+        List<Reason> assignedAdvanceList = assignAdminService.getAssignedAdvance(reason);
+        List<Reason> assignedRejectList = assignAdminService.getassignedReject(reason);
+
+        model.addAttribute("adminInfo", retAdmin);
+        model.addAttribute("thirdPartyList", thirdPartyList);
+        model.addAttribute("assignedAdvanceList", assignedAdvanceList);
+        model.addAttribute("assignedRejectList", assignedRejectList);
+
+        return "/setting/setting_assign";
+    }
+
+
+    /**
+     * 설정 - 배정관리 관리자 배정모드, 최대오더 수정
+     *
+     * @return
+     */
+    @PostMapping("/putAdminAssign")
+    @CnttMethodDescription("관리자 배정모드, 최대오더 수정")
+    public String putAdminAssign(Admin admin
+            , @RequestParam(value = "assignAuto", required = false) String assignAuto
+            , @RequestParam(value = "assignStore", required = false) String assignStore
+            , @RequestParam(value = "assignRider", required = false) String assignRider) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        admin.setToken(adminInfo.getAdminAccessToken());
+
+        List<String > tmpAssignMod = new ArrayList<>();
+
+        if (assignAuto != null) {
+            tmpAssignMod.add(assignAuto);
+        }
+        if (assignStore != null) {
+            tmpAssignMod.add(assignStore);
+        }
+        if (assignRider != null) {
+            tmpAssignMod.add(assignRider);
+        }
+
+        if (assignAuto == null && assignStore == null && assignRider == null) {
+            admin.setAssignmentStatus("none");
+        } else {
+            admin.setAssignmentStatus(String.join("|", tmpAssignMod));
+        }
+
+        assignAdminService.putAdminAssignmentStatus(admin);
+
+        return "redirect:/setting-assign";
+    }
+
+
+    @ResponseBody
+    @GetMapping("/postThirdParty")
+    @CnttMethodDescription("배정관리 - 서드파티 추가")
+    public ThirdParty postThirdParty(ThirdParty thirdParty) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        thirdParty.setToken(adminInfo.getAdminAccessToken());
+        thirdParty.setLevel("1");
+
+        assignAdminService.postThirdParty(thirdParty);
+
+        return thirdParty;
+    }
+
+    @ResponseBody
+    @GetMapping("/postAssignedAdvance")
+    @CnttMethodDescription("배정관리 - 우선배정 사유 추가")
+    public Reason postAssignedAdvance(Reason reason) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        reason.setToken(adminInfo.getAdminAccessToken());
+
+        assignAdminService.postAssignedAdvance(reason);
+
+        return reason;
+    }
+
+    @ResponseBody
+    @GetMapping("/postAssignedReject")
+    @CnttMethodDescription("배정관리 - 배정거절 사유 추가")
+    public Reason postAssignedReject(Reason reason) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        reason.setToken(adminInfo.getAdminAccessToken());
+
+        assignAdminService.postAssignedReject(reason);
+
+        return reason;
+    }
 
 
     /**

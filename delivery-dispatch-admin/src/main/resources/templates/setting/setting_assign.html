@@ -13,6 +13,7 @@
 			</ul>
 		</div>
 		<div id="contents">
+			<form action="/putAdminAssign" name="adminAssignForm" method="post">
 			<div class="cont_box">
 				<div class="top"><strong th:text="${#messages.msg('gnb.setting.assign')}" /></div>
 				<div class="cont">
@@ -20,13 +21,13 @@
 						<li>
 							<strong th:text="${#messages.msg('order.assign.mode')}" />
 							<div>
-								<label class="checkbox"><input name="" type="checkbox" /><i></i>
+								<label class="checkbox"><input name="assignAuto" id="assignAuto" type="checkbox" value="0" th:checked="${#strings.contains(adminInfo.assignmentStatus, '0')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.auto')}" />
 								</label>
-								<label class="checkbox"><input name="" type="checkbox" /><i></i>
+								<label class="checkbox"><input name="assignStore" type="checkbox" value="1" th:checked="${#strings.contains(adminInfo.assignmentStatus, '1')}" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.store')}" />
 								</label>
-								<label class="checkbox"><input name="" type="checkbox" /><i></i>
+								<label class="checkbox"><input name="assignRider" type="checkbox" value="2" th:checked="${#strings.contains(adminInfo.assignmentStatus, '2')}" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.rider')}" />
 								</label>
 							</div>
@@ -34,8 +35,8 @@
 						<li>
 							<strong th:text="${#messages.msg('order.assign.max')}" />
 							<div>
-								<select name="" class="select">
-									<option value="">10</option>
+								<select name="assignmentLimit" class="select">
+									<option th:each="n:${#numbers.sequence(1, 10)}" th:value="${n}" th:text="${n}" th:selected="${n} == ${adminInfo.assignmentLimit}" />
 								</select>
 								<span th:text="${#messages.msg('order.assign.count.label')}" />
 							</div>
@@ -43,11 +44,11 @@
 						<li class="clear">
 							<strong th:text="${#messages.msg('order.assign.third')}" />
 							<div>
-								<input type="text" class="input" />
-								<a href="#" class="button btn_dgray"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
+								<input type="text" class="input" id="inpThirdParty" />
+								<a href="#" class="button btn_dgray" onclick="javascript:postThirdParty()"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
 								<p class="fz11 mt10" th:text="${#messages.msg('order.assign.third.label')}" />
 								<div class="tbl_wrap mt20">
-									<table class="table">
+									<table class="table" id="tblThirdParty">
 										<thead>
 											<tr>
 												<th scope="col" class="t_center" th:text="${#messages.msg('order.assign.third.name')}" />
@@ -55,20 +56,21 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td class="t_left"><input type="text" class="input w_100" value="푸드판다" /></td>
+											<tr th:each="thirdParty : ${thirdPartyList}" th:attr="data-thirdParty-id=${thirdParty.id}">
+												<input type="hidden" name="defaultThirdPartyName" th:value="${thirdParty.name}" />
+												<td class="t_left" name="tdThirdPartyName" th:text="${thirdParty.name}" />
 												<td>
-													<button class="button h20" th:text="${#messages.msg('btn.save')}" />
-													<button class="button h20" th:text="${#messages.msg('btn.cancel')}" />
+													<button class="button h20" id="thirdPartyMod" th:text="${#messages.msg('group.mod')}" />
+													<button class="button h20" id="thirdPartyDel" th:text="${#messages.msg('group.del')}" />
 												</td>
 											</tr>
-											<tr>
+											<!--<tr>
 												<td class="t_left">딜리버루</td>
 												<td>
 													<button class="button h20" th:text="${#messages.msg('group.mod')}" />
 													<button class="button h20" th:text="${#messages.msg('group.del')}" />
 												</td>
-											</tr>
+											</tr>-->
 										</tbody>
 									</table>
 								</div>
@@ -77,11 +79,11 @@
 						<li>
 							<strong th:text="${#messages.msg('order.assigned.advance.reason')}" />
 							<div>
-								<input type="text" class="input" />
-								<a href="#" class="button btn_dgray"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
+								<input type="text" class="input" id="inpAssignedAdvance" />
+								<a href="#" class="button btn_dgray" onclick="javascript:postAssignedAdvance()"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
 								<p class="fz11 mt10" th:text="${#messages.msg('order.assign.advance.label')}" />
 								<div class="tbl_wrap mt20">
-									<table class="table">
+									<table class="table" id="tblAssignedAdvance">
 										<thead>
 											<tr>
 												<th scope="col" class="t_center" th:text="${#messages.msg('order.assigned.advance.name')}" />
@@ -89,8 +91,16 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td class="t_left"><input type="text" class="input w_100" value="사유1" /></td>
+											<tr th:each="assignedAdvance : ${assignedAdvanceList}" th:attr="data-assignedAdvance-id=${assignedAdvance.id}">
+												<input type="hidden" name="defaultAssignedAdvanceName" th:value="${assignedAdvance.reason}" />
+												<td class="t_left" name="tdAssignedAdvanceName" th:text="${assignedAdvance.reason}" />
+												<td>
+													<button class="button h20" id="assignedAdvanceMod" th:text="${#messages.msg('group.mod')}" />
+													<button class="button h20" id="assignedAdvanceDel" th:text="${#messages.msg('group.del')}" />
+												</td>
+											</tr>
+										<!-- <tr>
+												<td class="t_left" name="tdAssignedAdvanceName"><input type="text" class="input w_100" value="사유1" /></td>
 												<td>
 													<button class="button h20" th:text="${#messages.msg('btn.save')}" />
 													<button class="button h20" th:text="${#messages.msg('btn.cancel')}" />
@@ -102,7 +112,7 @@
 													<button class="button h20" th:text="${#messages.msg('group.mod')}" />
 													<button class="button h20" th:text="${#messages.msg('group.del')}" />
 												</td>
-											</tr>
+											</tr> -->
 										</tbody>
 									</table>
 								</div>
@@ -111,11 +121,11 @@
 						<li class="clear">
 							<strong th:text="${#messages.msg('order.assigned.deny.reason')}" />
 							<div>
-								<input type="text" class="input" />
-								<a href="#" class="button btn_dgray"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
+								<input type="text" class="input" id="inpAssignedReject" />
+								<a href="#" class="button btn_dgray" onclick="javascript:postAssignedReject()"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
 								<p class="fz11 mt10" th:text="${#messages.msg('order.assign.deny.label')}" />
 								<div class="tbl_wrap mt20">
-									<table class="table">
+									<table class="table" id="tblAssignedReject">
 										<thead>
 											<tr>
 												<th scope="col" class="t_center" th:text="${#messages.msg('order.assigned.advance.name')}" />
@@ -123,20 +133,28 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td class="t_left"><input type="text" class="input w_100" value="사유1" /></td>
+											<tr th:each="assignedReject : ${assignedRejectList}" th:attr="data-assignedReject-id=${assignedReject.id}">
+												<input type="hidden" name="defaultassignedRejectName" th:value="${assignedReject.reason}" />
+												<td class="t_left" name="tdassignedRejectName" th:text="${assignedReject.reason}" />
 												<td>
-													<button class="button h20" th:text="${#messages.msg('btn.save')}" />
-													<button class="button h20" th:text="${#messages.msg('btn.cancel')}" />
+													<button class="button h20" id="assignedRejectMod" th:text="${#messages.msg('group.mod')}" />
+													<button class="button h20" id="assignedRejectDel" th:text="${#messages.msg('group.del')}" />
 												</td>
 											</tr>
-											<tr>
-												<td class="t_left">사유2</td>
-												<td>
-													<button class="button h20" th:text="${#messages.msg('group.mod')}" />
-													<button class="button h20" th:text="${#messages.msg('group.del')}" />
-												</td>
-											</tr>
+										<!--<tr>
+                                            <td class="t_left"><input type="text" class="input w_100" value="사유1" /></td>
+                                            <td>
+                                                <button class="button h20" th:text="${#messages.msg('btn.save')}" />
+                                                <button class="button h20" th:text="${#messages.msg('btn.cancel')}" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="t_left">사유2</td>
+                                            <td>
+                                                <button class="button h20" th:text="${#messages.msg('group.mod')}" />
+                                                <button class="button h20" th:text="${#messages.msg('group.del')}" />
+                                            </td>
+                                        </tr>-->
 										</tbody>
 									</table>
 								</div>
@@ -146,10 +164,24 @@
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
+				<button type="submit" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
 			</div>
+			</form>
 		</div>
 	</section>
 	<!-- //컨텐츠 영역 -->
+
+<script type="text/javascript" th:src="@{/resources/js/site/setting/assign.js}" layout:fragment="script2"/>
+
+<script layout:fragment="script" th:inline="javascript">
+/*<![CDATA[*/
+var btn_save = /*[[#{btn.save}]]*/ 'btn_save';
+var btn_cancel = /*[[#{btn.cancel}]]*/ 'btn_cancel';
+var btn_mod = /*[[#{group.mod}]]*/ 'group_mod';
+var btn_del = /*[[#{group.del}]]*/ 'group_del';
+var none_parameter = /*[[#{alert.none.parameter}]]*/ 'none_parameter';
+var befoore_function = /*[[#{alert.befoore.function}]]*/ 'befoore_function';
+/*]]>*/
+</script>
 
 </html>
