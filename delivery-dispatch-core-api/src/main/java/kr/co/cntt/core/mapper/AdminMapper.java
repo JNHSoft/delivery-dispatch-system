@@ -71,6 +71,14 @@ public interface AdminMapper {
     public List<Admin> selectAdminInfo(Common common);
 
     /**
+     * <p> Admin 정보 수정
+     *
+     * @param admin
+     * @return
+     */
+    public int updateAdminInfo(Admin admin);
+
+    /**
      * <p> 그룹 목록 조회
      *
      * @param common

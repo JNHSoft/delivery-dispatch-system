@@ -57,6 +57,15 @@ public interface AdminService {
     public List<Admin> getAdminInfo(Common common) throws AppTrException;
 
     /**
+     * <p> putAdminInfo
+     *
+     * @param admin
+     * @return
+     * @throws AppTrException
+     */
+    public int putAdminInfo(Admin admin) throws AppTrException;
+
+    /**
      * <p> getGroups
      *
      * @param common

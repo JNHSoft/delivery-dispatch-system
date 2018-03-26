@@ -207,9 +207,32 @@
 			, name
 			, login_id
 			, state
+			, assignment_status
+			, assignment_limit
 		FROM TB_ADMIN
 		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>
+
+
+	<!-- updateAdminInfo -->
+	<update id="updateAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin">
+		UPDATE TB_ADMIN
+		SET modified_datetime = now()
+		<if test="loginPw != null and loginPw != ''">
+			, login_pw = #{loginPw}
+		</if>
+		<if test="assignmentStatus != null and assignmentStatus != '' and assignmentStatus != 'none'">
+			, assignment_status = #{assignmentStatus}
+		</if>
+		<if test="assignmentStatus == 'none'">
+			, assignment_status = NULL
+		</if>
+		<if test="assignmentLimit != null and assignmentLimit != ''">
+			, assignment_limit = #{assignmentLimit}
+		</if>
+		WHERE deleted IS NULL
+			AND id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	</update>
 
 
 	<!-- selectGroups -->
@@ -250,6 +273,7 @@
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		)
 	</insert>
+
 
 	<!-- updateGroup -->
 	<update id="updateGroup" parameterType="kr.co.cntt.core.model.group.Group">
@@ -1105,8 +1129,32 @@
 	</select>
 
 
+	<!-- insertOrderFirstAssignmentReason -->
+	<insert id="insertOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+		INSERT INTO TB_ORDER_FIRST_ASSIGNMENT_REASON (
+		created_datetime
+		, reason
+		, admin_id
+		) VALUES(
+		now()
+		, #{reason}
+		, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		)
+	</insert>
 
 
+	<!-- insertRejectReason -->
+	<insert id="insertRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+		INSERT INTO TB_REJECT_REASON (
+		created_datetime
+		, reason
+		, admin_id
+		) VALUES(
+		now()
+		, #{reason}
+		, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		)
+	</insert>
 
 
 </mapper>

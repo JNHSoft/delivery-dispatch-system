@@ -20,7 +20,9 @@ import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.AdminService;
 import kr.co.cntt.core.util.Geocoder;
+import kr.co.cntt.core.util.MD5Encoder;
 import kr.co.cntt.core.util.Misc;
+import kr.co.cntt.core.util.ShaEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +102,28 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         }
 
         return S_Admin;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int putAdminInfo(Admin admin) throws AppTrException {
+
+        MD5Encoder md5 = new MD5Encoder();
+        ShaEncoder sha = new ShaEncoder(512);
+        Admin parameterAdmin = new Admin();
+
+        parameterAdmin.setLoginPw(sha.encode(admin.getLoginPw()));
+        parameterAdmin.setToken(admin.getToken());
+
+        int result = adminMapper.updateAdminInfo(parameterAdmin);
+
+        List<Admin> resultAdmin = adminMapper.selectAdminInfo(admin);
+
+        if (result != 0) {
+            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+        }
+
+        return result;
     }
 
     @Secured("ROLE_ADMIN")

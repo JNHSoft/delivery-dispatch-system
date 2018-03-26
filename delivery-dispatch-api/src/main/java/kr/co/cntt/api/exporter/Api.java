@@ -22,6 +22,9 @@ public interface Api {
     /** [Admin] 정보 조회 */
     String ADMIN_INFO = "/getAdminInfo.json";
 
+    /** [Admin] 정보 수정 */
+    String ADMIN_INFO_PUT = "/putAdminInfo.json";
+
     /** [Admin] 그룹 목록 조회 */
     String ADMIN_GROUP_LIST = "/getGroups.json";
 
@@ -64,8 +67,6 @@ public interface Api {
 
     /** [Admin] 기사 서브 그룹 수정  Nick 추가 */
     String ADMIN_RIDER_STORE_PUT = "/putRiderStore.json";
-
-
 
     /** [Admin] 상점 그룹 삭제 */
     String ADMIN_SUBGROUP_STORE_REL_DELETE = "/deleteSubgroupStoreRel.json";

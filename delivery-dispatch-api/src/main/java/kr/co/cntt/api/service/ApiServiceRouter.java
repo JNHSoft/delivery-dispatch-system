@@ -25,6 +25,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** [Admin] 정보조회 */
 	ADMIN_INFO("adminService", "getAdminInfo", Common.class),
 
+	/** [Admin] 정보수정 */
+	ADMIN_INFO_PUT("adminService", "putAdminInfo", Admin.class),
+
 	/** [Admin] 그룹 목록 조회 */
 	ADMIN_GROUP_LIST("adminService", "getGroups", Common.class),
 
