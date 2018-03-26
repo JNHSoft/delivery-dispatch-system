@@ -387,6 +387,7 @@ function newToSubGroup(toSubGroupId) {
     });
 }
 
+/*
 function postNotice() {
     $.ajax({
         url: '/postNotice',
@@ -411,3 +412,4 @@ function postNotice() {
         }
     });
 }
+*/

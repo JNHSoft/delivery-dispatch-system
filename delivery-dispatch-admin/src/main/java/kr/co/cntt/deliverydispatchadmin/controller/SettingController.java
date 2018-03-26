@@ -40,6 +40,9 @@ public class SettingController {
     @Value("${api.upload.path.alarm}")
     private String alarmFileUploadPath;
 
+    @Value("${api.upload.path.notice}")
+    private String noticeFileUploadPath;
+
     private AccountAdminService accountAdminService;
     private AssignAdminService assignAdminService;
     private FileUploadAdminService fileUploadAdminService;
@@ -399,13 +402,25 @@ public class SettingController {
         return noticeAdminService.getGroupList(notice);
     }
 
-    @ResponseBody
+//    @ResponseBody
     @PostMapping("/postNotice")
     @CnttMethodDescription("공지사항 등록")
-    public int postNotice(Notice notice){
+    public String postNotice(Notice notice, @RequestParam("nNewFile") MultipartFile file){
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         notice.setToken(adminInfo.getAdminAccessToken());
-        return noticeAdminService.postNotice(notice);
+
+        FileUtil fileUtil = new FileUtil();
+        fileUtil.fileUpload(file, noticeFileUploadPath+"/");
+
+        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        notice.setOriFileName(file.getOriginalFilename());
+        notice.setFileName(LocalDateTime.now().format(dateformatter) + "_" + file.getOriginalFilename());
+        notice.setFileSize(Long.toString(file.getSize()));
+
+        noticeAdminService.postNotice(notice);
+
+        return "redirect:/setting-notice";
     }
 
 }

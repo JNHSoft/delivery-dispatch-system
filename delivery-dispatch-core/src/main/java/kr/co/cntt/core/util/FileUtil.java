@@ -35,8 +35,10 @@ public class FileUtil extends ServiceSupport {
 			if (uploadFile != null) { 
 				String directoryPath = savePath;
 				// 파일 이름
-				originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
-				
+//				originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
+				DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+				originalFileName = LocalDateTime.now().format(dateformatter) + "_" + uploadFile.getOriginalFilename();
+
 				// 업로드 경로
 				savePath += originalFileName;
 				
@@ -76,7 +78,7 @@ public class FileUtil extends ServiceSupport {
 					fileInputName = uploadFile.getName();
 					// 파일 이름
 					DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-					String[] tmp = uploadFile.getOriginalFilename().split("\\.");
+//					String[] tmp = uploadFile.getOriginalFilename().split("\\.");
 					originalFileName = LocalDateTime.now().format(dateformatter) + "_" + uploadFile.getOriginalFilename();
 //					originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
 
