@@ -122,5 +122,14 @@ public interface StoreAdminService {
     public int deleteStore(Store store);
 
 
+    /**
+     * insert token
+     *
+     * @param store
+     * @return
+     */
+    public int insertAdminStoreSession(Store store);
+
+
 
 }

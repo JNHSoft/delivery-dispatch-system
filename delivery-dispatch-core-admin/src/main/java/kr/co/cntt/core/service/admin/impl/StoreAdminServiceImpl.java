@@ -96,5 +96,9 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     @Override
     public int deleteStore(Store store){return adminMapper.deleteStore(store);}
 
+    // insert Admin token
+    @Override
+    public int insertAdminStoreSession(Store store){return storeMapper.insertAdminStoreSession(store);}
+
 
 }

@@ -181,6 +181,9 @@ spring:
 #    host: 127.0.0.1
     port: 6379
 
+api.token.serviceKey : testkey
+api.token.secretKey : ATE6OLdQuouPbqyZ5qt1H++taImbDhqSPw53ClPT7+k=
+api.token.expiration : 6000
 ---
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 

@@ -94,5 +94,9 @@ public class StaffAdminServiceImpl implements StaffAdminService {
     @Override
     public int deleteRider(Rider rider){return adminMapper.deleteRider(rider);}
 
+    // insert Admin token
+    @Override
+    public int insertAdminRiderSession(Rider rider){return riderMapper.insertAdminRiderSession(rider);}
+
 
 }

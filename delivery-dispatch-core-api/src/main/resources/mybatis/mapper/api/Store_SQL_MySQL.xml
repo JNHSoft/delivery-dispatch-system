@@ -165,6 +165,19 @@
 		]]>
 	</insert>
 
+	<!-- insertAdminStoreSession 토큰값을 넣어준다.-->
+	<insert id="insertAdminStoreSession" parameterType="kr.co.cntt.core.model.store.Store">
+		<![CDATA[
+		INSERT INTO TB_STORE_SESSION(store_id, access_token, created_datetime)
+		SELECT
+			#{id}
+			, #{accessToken}
+			, now()
+		FROM TB_STORE
+		WHERE login_id = #{loginId}
+		]]>
+	</insert>
+
 
 	<!--store 정보 조회-->
     <select id="selectStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultMap="selectStoreResult">

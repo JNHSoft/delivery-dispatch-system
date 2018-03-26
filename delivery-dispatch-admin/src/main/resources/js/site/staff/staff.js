@@ -136,6 +136,7 @@ function getRiderDetail() {
                 // 아이디
                 $("#riderDetailLoginId").val(data.A_Rider.loginId);
                 //password
+                $("#riderDetailPassword").val(data.A_Rider.loginPw);
                 // 직원코드
                 $("#riderDetailCode").val(data.A_Rider.code);
                 // 기사명

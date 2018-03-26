@@ -6,6 +6,8 @@ var map;
 var marker = [];
 var store;
 var rider;
+var RiderChatUserId = "";
+var chatUserName = "";
 function initMap() {
     store = {lat: storeLatitude, lng: storeLongitude};
     map = new google.maps.Map(document.getElementById('map'), {
@@ -14,22 +16,48 @@ function initMap() {
     });
 }
 $(function() {
-    $(window).load(function () {
-        $('.chat-item').last().focus();
-        getRiderList();
-        $("#orderAllChk").click(function () {
-            if(this.checked){
-                $("input[name=srchChk]:checkbox").each(function() {
-                    $(this).attr("checked", true);
-                    $(this).attr("disabled", true);
-                });
-            }else{
-                $("input[name=srchChk]:checkbox").each(function() {
-                    $(this).attr("checked", false);
-                    $(this).attr("disabled", false);
-                });
+    var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
+    if (supportsWebSockets) {
+        var socket = io(websocket_localhost, {
+            path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
+            transports: ['websocket'] // websocket만을 사용하도록 설정
+        });
+        socket.on('message', function(data){
+            if(data.match('rider_updated')=='rider_updated'){
+                getRiderList();
+            }
+            if(data.match('chat_send')=='chat_send'){
+                var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18, data.lastIndexOf('}'));
+                if(RiderChatUserId == chatUserId){
+                    getChatList(chatUserId,chatUserName);
+                }
+            }
+            if(data.match('notice_update')=='notice_update'){
+                noticeAlarm();
             }
         });
+        $(function() {
+            $('#sendChat').click(function(){
+                socket.emit('message', "push_data:{type:chat_send, recv_chat_user_id:"+RiderChatUserId+"}");//data보내는부분
+            });
+        })
+    } else {
+        alert('websocket을 지원하지 않는 브라우저입니다.');
+    }
+    $('.chat-item').last().focus();
+    getRiderList();
+    $("#orderAllChk").click(function () {
+        if(this.checked){
+            $("input[name=srchChk]:checkbox").each(function() {
+                $(this).attr("checked", true);
+                $(this).attr("disabled", true);
+            });
+        }else{
+            $("input[name=srchChk]:checkbox").each(function() {
+                $(this).attr("checked", false);
+                $(this).attr("disabled", false);
+            });
+        }
     });
     $('.table tr').click(function () {
         $(this).addClass('selected').siblings().removeClass('selected');
@@ -44,8 +72,6 @@ $(function() {
     });
 
 });
-var RiderChatUserId = "";
-var chatUserName = "";
 function addMarker(location, data, i, status) {
     if($('#myStoreChk').prop('checked') && data.riderStore.id != $('#storeId').val()) {
         return i;
@@ -199,6 +225,7 @@ function getChatList(chatUserId, riderName) {
                 }
             }
             $('#chatList').html(shtml);
+            $("#chatList").scrollTop($('#chatList').height());
         }
     });
 }

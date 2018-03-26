@@ -191,8 +191,8 @@
     var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
     var my_store = /*[[${store}]]*/ 'my_store';
     var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
-
-    $(document).ready(function() {
+    var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
+    function noticeAlarm() {
         $('#myStoreName').text(my_store.storeName);
         var j = 0;
         console.log(my_notice_list);
@@ -207,6 +207,26 @@
         }else{
             $("#notice_alarm").removeClass('new');
         }
+    }
+    $(document).ready(function() {
+        var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
+        if (supportsWebSockets) {
+            var socket = io(websocket_localhost, {
+                path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
+                transports: ['websocket'] // websocket만을 사용하도록 설정
+            });
+            socket.on('message', function (data) {
+                if (data.match('assign_updated') == 'notice_updated') {
+                    location.href = "/setting-assign";
+                }
+                if(data.match('notice_update')=='notice_update'){
+                    noticeAlarm();
+                }
+            });
+        } else {
+            alert('websocket을 지원하지 않는 브라우저입니다.');
+        }
+        noticeAlarm();
     });
     /*]]>*/
 	</script>

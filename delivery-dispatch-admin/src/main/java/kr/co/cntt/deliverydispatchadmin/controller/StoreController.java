@@ -10,8 +10,11 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StoreAdminService;
 import kr.co.cntt.core.util.Geocoder;
+import kr.co.cntt.core.util.MD5Encoder;
+import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.cntt.deliverydispatchadmin.enums.SessionEnum;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
+import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +45,8 @@ public class StoreController {
      */
     StoreAdminService storeAdminService;
 
+    @Autowired
+    private TokenManager tokenManager;
 
     @Autowired
     public StoreController(StoreAdminService storeAdminService){
@@ -290,7 +296,9 @@ public class StoreController {
                              @RequestParam("name") String name,
                              @RequestParam("phone") String phone,
                              @RequestParam("address") String address,
-                             @RequestParam("detailAddress") String detailAddress)
+                             @RequestParam("detailAddress") String detailAddress
+
+    )
     {
 
     // store Model 생성
@@ -302,9 +310,19 @@ public class StoreController {
 
     log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
+
+    Store storeSession = new Store();
+
+
+    MD5Encoder md5 = new MD5Encoder();
+    ShaEncoder sha = new ShaEncoder(512);
+
     // param storeId
     store.setLoginId(loginId);
-    store.setLoginPw(loginPw);
+    store.setLoginPw(sha.encode(loginPw));
+
+
+
     store.setCode(code);
     store.setStoreName(storeName);
     store.setStorePhone(storePhone);
@@ -326,6 +344,7 @@ public class StoreController {
     subGroupRel.setGroupId(groupId);
     store.setSubGroupStoreRel(subGroupRel);
 
+
     // 위도 경도
     if ((store.getLatitude() == null || store.getLatitude() == "") || (store.getLongitude() == null || store.getLongitude() == "")) {
         Geocoder geocoder = new Geocoder();
@@ -344,11 +363,25 @@ public class StoreController {
     store.setIsAdmin("1");
     storeAdminService.insertChatUser(store);
     storeAdminService.insertChatRoom(store);
+
+
+
     int A_Store = storeAdminService.insertStore(store);
     int A_Group = 0;
     int A_Assign_Status = 0;
 
-    if (groupId != null && groupId != "" && subGroupId != null && subGroupId != "") {
+    String storeSessionToken = tokenManager.getToken("2",loginId , loginPw);
+    log.info("@@@@@@@@@@@@@@@@ " + storeSessionToken);
+    storeSession.setAccessToken(storeSessionToken);
+    storeSession.setId(store.getId());
+    storeSession.setLoginId(loginId);
+
+    log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION" );
+    storeAdminService.insertAdminStoreSession(storeSession);
+    log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION");
+
+
+        if (groupId != null && groupId != "" && subGroupId != null && subGroupId != "") {
         log.info("@@@@@@@@@@@@@@@@@groupinster@@@@@@@@@@@@@@@@@@@@");
         A_Group = storeAdminService.insertSubGroupStoreRel(store);
     }

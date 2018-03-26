@@ -49,6 +49,16 @@ public interface StoreMapper {
     public int insertStoreSession(Store store);
 
     /**
+     * insert Admin token
+     *
+     * @param store
+     * @return
+     */
+    public int insertAdminStoreSession(Store store);
+
+
+
+    /**
      * store 토큰 만료일, last_access update
      *
      * @param token

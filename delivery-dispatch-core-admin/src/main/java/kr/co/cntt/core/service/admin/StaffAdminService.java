@@ -97,4 +97,13 @@ public interface StaffAdminService {
     public int deleteRider(Rider rider);
 
 
+    /**
+     * insert Admin token
+     *
+     * @param rider
+     * @return
+     */
+    public int insertAdminRiderSession(Rider rider);
+
+
 }
