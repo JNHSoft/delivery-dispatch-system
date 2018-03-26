@@ -1,16 +1,18 @@
 package kr.co.cntt.core.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.CnttBizException;
 import kr.co.cntt.core.service.ServiceSupport;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>kr.co.cntt.core.util
@@ -74,11 +76,14 @@ public class FileUtil extends ServiceSupport {
 					String directoryPath = savePath;
 					fileInputName = uploadFile.getName();
 					// 파일 이름
-					originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
-					
+					DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmSS");
+					String[] tmp = uploadFile.getOriginalFilename().split("\\.");
+					originalFileName = RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1];
+//					originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
+
 					// 업로드 경로
 					initSavePath = savePath + originalFileName;
-					
+
 					// 파일 저장
 					byte[] fileData = uploadFile.getBytes();
 					File checkDirectory = new File(directoryPath);

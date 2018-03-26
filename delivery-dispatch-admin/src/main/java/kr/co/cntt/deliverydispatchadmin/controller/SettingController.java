@@ -2,6 +2,7 @@ package kr.co.cntt.deliverydispatchadmin.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
@@ -10,15 +11,25 @@ import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.admin.AccountAdminService;
 import kr.co.cntt.core.service.admin.AssignAdminService;
+import kr.co.cntt.core.service.admin.FileUploadAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
+import kr.co.cntt.core.util.FileUtil;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,14 +38,19 @@ import java.util.Map;
 @Controller
 public class SettingController {
 
+    @Value("${api.upload.path.alarm}")
+    private String alarmFileUploadPath;
+
     private AccountAdminService accountAdminService;
     private AssignAdminService assignAdminService;
+    private FileUploadAdminService fileUploadAdminService;
     private NoticeAdminService noticeAdminService;
 
     @Autowired
-    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, NoticeAdminService noticeAdminService) {
+    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, FileUploadAdminService fileUploadAdminService, NoticeAdminService noticeAdminService) {
         this.accountAdminService = accountAdminService;
         this.assignAdminService = assignAdminService;
+        this.fileUploadAdminService = fileUploadAdminService;
         this.noticeAdminService = noticeAdminService;
     }
 
@@ -190,6 +206,53 @@ public class SettingController {
      */
     @GetMapping("/setting-alarm")
     public String settingAlarm() { return "/setting/setting_alarm"; }
+
+
+    @PostMapping("/alarmFileUpload")
+    public String alarmFileUpload(HttpServletRequest request, HttpServletResponse response) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        MultipartHttpServletRequest multipartRequest =  (MultipartHttpServletRequest) request;
+        List<MultipartFile> reqFiles = multipartRequest.getFiles("alarmFile");
+        List<MultipartFile> files = new ArrayList<>();
+        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmSS");
+
+        Alarm alarm = new Alarm();
+        alarm.setToken(adminInfo.getAdminAccessToken());
+
+        for (int j = 0; j < reqFiles.size(); j++) {
+            if (reqFiles.get(j).getSize() > 0) {
+                files.add(reqFiles.get(j));
+
+                alarm.setAlarmType(Integer.toString(j));
+                alarm.setOriFileName(reqFiles.get(j).getOriginalFilename());
+                String[] tmp = reqFiles.get(j).getOriginalFilename().split("\\.");
+                alarm.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
+                alarm.setFileSize(Long.toString(reqFiles.get(j).getSize()));
+
+                fileUploadAdminService.alarmFileUpload(alarm);
+            }
+        }
+
+//        for (MultipartFile f : reqFiles) {
+//            if (f.getSize() > 0) {
+//                files.add(f);
+//            }
+//        }
+
+        MultipartFile[] fileArray = new MultipartFile[files.size()];
+        for (int i = 0; i < files.size(); i++) {
+            if (files.get(i).getSize() > 0) {
+                fileArray[i] = files.get(i);
+            }
+        }
+
+        FileUtil fileUtil = new FileUtil();
+//        fileUtil.fileUpload(fileArray, alarmFileUploadPath+"/");
+        fileUtil.fileUpload(fileArray, "c:\\");
+
+        return "redirect:/setting-alarm";
+    }
 
 
     /**

@@ -13,6 +13,7 @@
 			</ul>
 		</div>
 		<div id="contents">
+			<form action="/alarmFileUpload" name="alarmFileUploadForm" method="post" enctype="multipart/form-data">
 			<div class="cont_box">
 				<div class="top"><strong th:text="${#messages.msg('gnb.setting.alarm')}" /></div>
 				<div class="cont">
@@ -24,7 +25,7 @@
 									<input type="text" class="input" />
 									<span class="btn_file">
 										<a href="#" class="button btn_dgray"><i class="fa fa-paperclip" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.attach')}" /></a>
-										<input type="file" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
+										<input type="file" name="alarmFile" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
 									</span>
 								</span>
 							</div>
@@ -44,7 +45,7 @@
 									<input type="text" class="input" />
 									<span class="btn_file">
 										<a href="#" class="button btn_dgray"><i class="fa fa-paperclip" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.attach')}" /></a>
-										<input type="file" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
+										<input type="file" name="alarmFile" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
 									</span>
 								</span>
 							</div>
@@ -56,7 +57,7 @@
 									<input type="text" class="input" />
 									<span class="btn_file">
 										<a href="#" class="button btn_dgray"><i class="fa fa-paperclip" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.attach')}" /></a>
-										<input type="file" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
+										<input type="file" name="alarmFile" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
 									</span>
 								</span>
 							</div>
@@ -68,7 +69,7 @@
 									<input type="text" class="input" />
 									<span class="btn_file">
 										<a href="#" class="button btn_dgray"><i class="fa fa-paperclip" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.attach')}" /></a>
-										<input type="file" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
+										<input type="file" name="alarmFile" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
 									</span>
 								</span>
 							</div>
@@ -77,8 +78,9 @@
 				</div>
 			</div>
 			<div class="button_box">
-				<a href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
+				<button type="submit" href="#" class="button btn_blue w120 h30" th:text="${#messages.msg('btn.confirm')}" />
 			</div>
+			</form>
 		</div>
 	</section>
 	<!-- //컨텐츠 영역 -->
