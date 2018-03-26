@@ -21,13 +21,13 @@
 						<li>
 							<strong th:text="${#messages.msg('order.assign.mode')}" />
 							<div>
-								<label class="radio"><input name="assign" value="1" type="radio"  th:checked="${store.assignmentStatus} == 1" /><i></i>
+								<label class="radio"><input name="assign" value="1" type="radio"  th:checked="${store.assignmentStatus} == 1" th:disabled="${!#strings.contains(store.adminAssignmentStatus, '1')}"/><i></i>
 									<span class="lbl"  th:text="${#messages.msg('order.assign.mode.auto')}"/>
 								</label>
-								<label class="radio"><input name="assign" type="radio" value="0" th:checked="${store.assignmentStatus} == 0" /><i></i>
+								<label class="radio"><input name="assign" value="0" type="radio"  th:checked="${store.assignmentStatus} == 0" th:disabled="${!#strings.contains(store.adminAssignmentStatus, '0')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.store')}" />
 								</label>
-								<label class="radio"><input name="assign" value="2" type="radio" th:checked="${store.assignmentStatus} == 2" /><i></i>
+								<label class="radio"><input name="assign" value="2" type="radio" th:checked="${store.assignmentStatus} == 2" th:disabled="${!#strings.contains(store.adminAssignmentStatus, '2')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.rider')}" />
 								</label>
 							</div>
@@ -37,7 +37,7 @@
 							<div>
 								<select name="" id="maxSelect" class="select">
 									<option value="0" th:selected="${store.assignmentLimit} == null" >없음</option>
-									<option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:selected="${store.assignmentLimit} == ${i}" th:text="${i}"></option>
+									<option th:each="i : ${#numbers.sequence(1, store.adminAssignmentLimit)}" th:value="${i}" th:selected="${store.assignmentLimit} == ${i}" th:text="${i}"></option>
 								</select>
 								<span  th:text="${#messages.msg('order.assign.count.label')}" />
 							</div>
@@ -61,5 +61,27 @@
 		<script type="text/javascript" th:src="@{/resources/js/site/setting/setting.js}" layout:fragment="script2"></script>
 	</section>
 	<!-- //컨텐츠 영역 -->
+	<script layout:fragment="script" th:inline="javascript">
+        /*<![CDATA[*/
+        var my_store = /*[[${store}]]*/ 'my_store';
+        var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
 
+        $(document).ready(function() {
+            $('#myStoreName').text(my_store.storeName);
+            var j = 0;
+            console.log(my_notice_list);
+            for (var i = 0; i < my_notice_list.length; i++) {
+                if (my_notice_list[i].confirmedDatetime == "") {
+                    j++;
+                }
+            }
+            console.log(j);
+            if(j != 0){
+                $("#notice_alarm").addClass('new');
+            }else{
+                $("#notice_alarm").removeClass('new');
+            }
+        });
+        /*]]>*/
+	</script>
 </html>

@@ -41,6 +41,8 @@ public class Rider extends User implements Dto {
     private String restHours;
     private String teenager;
     private String returnTime;
+    private String orderCount;
+    private String workCount;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String assignCount;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

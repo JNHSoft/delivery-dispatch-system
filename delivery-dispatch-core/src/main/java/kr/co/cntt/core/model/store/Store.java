@@ -39,7 +39,9 @@ public class Store extends User implements Dto {
     private String storeStatus;
     private String radius;
     private String storeDistanceSort;
+    private String adminAssignmentStatus;
     private String assignmentStatus;
+    private String adminAssignmentLimit;
     private String assignmentLimit;
     private String thirdParty;
     private String alarm;
@@ -50,7 +52,6 @@ public class Store extends User implements Dto {
 
     private Order order;
     private Payment payment;
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String isAdmin;
 

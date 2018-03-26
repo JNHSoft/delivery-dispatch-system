@@ -16,7 +16,7 @@ function initMap() {
 $(function() {
     $(window).load(function () {
         $('.chat-item').last().focus();
-        getRiderList(storeId);
+        getRiderList();
         $("#orderAllChk").click(function () {
             if(this.checked){
                 $("input[name=srchChk]:checkbox").each(function() {
@@ -34,15 +34,14 @@ $(function() {
     $('.table tr').click(function () {
         $(this).addClass('selected').siblings().removeClass('selected');
         $('.chat_wrap').addClass('active');
-    })
+    });
 
     $('.chat_wrap .close').click(function (e) {
         e.preventDefault();
         $('.table tr').removeClass('selected');
         $('.chat_wrap').removeClass('active');
         $(window).scrollTop(0);
-    })
-    $('#map').css('z-index', '10000');
+    });
 
 });
 var RiderChatUserId = "";
@@ -76,7 +75,7 @@ function addMarker(location, data, i, status) {
     return i;
 }
 
-function getRiderList(storeId) {
+function getRiderList() {
     var shtml = "";
     var mydata = [];
     var i = 1;
@@ -142,7 +141,7 @@ function gridRiderList(data, $status) {
     shtml += "<td>"+data.name+"</td>";
     shtml += "<td>"+$status+"</td>";
     shtml += "<td>"+data.riderStore.storeName+"</td>";
-    if(typeof data.orderStore != "undefined"){
+    if(data.orderStore){
         shtml += "<td>"+data.orderStore.storeName+"</td>";
     }else {
         shtml +="<td>-</td>";
@@ -231,13 +230,13 @@ function putRiderReturnTime(riderId) {
         dataType: 'json',
         success: function (data) {
             console.log(data);
-            getRiderList($('#storeId').val());
+            getRiderList();
         }
     });
 }
 $(function() {
     $('input[type="checkbox"]').on('click',function() {
-        getRiderList($('#storeId').val());
+        getRiderList();
     });
 });
 /*]]>*/

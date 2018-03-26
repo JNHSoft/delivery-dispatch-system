@@ -175,7 +175,6 @@
 .form_list li>strong{float:left;line-height:25px;}
 .form_list li>div{margin-left:80px;}
 
-
 .store_chk{position:relative;}
 .store_chk .open{display:block;text-decoration:underline;}
 .store_chk > div{display:none;position:absolute;left:0;top:100%;background:rgba(0,0,0,0.7);color:#fff;text-align:center;padding:15px 20px;border-radius:10px;}

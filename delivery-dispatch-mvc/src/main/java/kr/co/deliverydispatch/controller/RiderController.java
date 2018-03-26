@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
+import kr.co.deliverydispatch.service.StoreNoticeService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +26,14 @@ public class RiderController {
     /**
      * 객체 주입
      */
-    StoreRiderService storeRiderService;
+    private StoreRiderService storeRiderService;
+    private StoreNoticeService storeNoticeService;
 
     @Autowired
-    public RiderController(StoreRiderService storeRiderService) { this.storeRiderService = storeRiderService;}
+    public RiderController(StoreRiderService storeRiderService, StoreNoticeService storeNoticeService) {
+        this.storeRiderService = storeRiderService;
+        this.storeNoticeService = storeNoticeService;
+    }
 
     /**
      * 기사현황 페이지
@@ -43,6 +49,9 @@ public class RiderController {
         store.setToken(storeInfo.getStoreAccessToken());
         System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeRiderService.getStoreInfo(store);
+        Notice notice = new Notice();
+        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
+        model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
 

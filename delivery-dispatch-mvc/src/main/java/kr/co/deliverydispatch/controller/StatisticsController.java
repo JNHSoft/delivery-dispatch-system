@@ -3,9 +3,13 @@ package kr.co.deliverydispatch.controller;
 import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
+import kr.co.deliverydispatch.service.StoreNoticeService;
+import kr.co.deliverydispatch.service.StoreRiderService;
 import kr.co.deliverydispatch.service.StoreStatementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +30,16 @@ public class StatisticsController {
     /**
      * 객체 주입
      */
-    StoreStatementService storeStatementService;
+    private StoreStatementService storeStatementService;
+    private StoreNoticeService storeNoticeService;
+    private StoreRiderService storeRiderService;
 
     @Autowired
-    public StatisticsController(StoreStatementService storeStatementService) { this.storeStatementService = storeStatementService;}
+    public StatisticsController(StoreStatementService storeStatementService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService) {
+        this.storeStatementService = storeStatementService;
+        this.storeNoticeService = storeNoticeService;
+        this.storeRiderService = storeRiderService;
+    }
 
     /**
      * 통계 페이지
@@ -46,6 +56,9 @@ public class StatisticsController {
         store.setToken(storeInfo.getStoreAccessToken());
         System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeStatementService.getStoreInfo(store);
+        Notice notice = new Notice();
+        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
+        model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
 
@@ -59,7 +72,6 @@ public class StatisticsController {
     @GetMapping("/getStoreStatistics")
     @CnttMethodDescription("통계 리스트 조회")
     public List<Order> getStoreStatistics(Order order){
-        System.out.println(Arrays.toString(order.getStatusArray()));
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
         List<Order> statisticsList = storeStatementService.getStoreStatistics(order);
@@ -75,5 +87,15 @@ public class StatisticsController {
         order.setToken(storeInfo.getStoreAccessToken());
         Order statisticsInfo = storeStatementService.getStoreStatisticsInfo(order);
         return statisticsInfo;
+    }
+
+    @ResponseBody
+    @GetMapping("/getRiderList3")
+    @CnttMethodDescription("그룹소속 기사목록")
+    public List<Rider> getMyRiderList(Common common){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        common.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> riderList = storeRiderService.getRiderNow(common);
+        return riderList;
     }
 }

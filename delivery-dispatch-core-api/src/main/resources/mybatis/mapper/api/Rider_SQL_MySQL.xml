@@ -79,7 +79,8 @@
 		<result property="returnTime" column="return_time" />
 		<result property="assignCount" column="assign_count" />
 		<result property="minAssignedDatetime" column="min_assigned_datetime" />
-
+		<result property="workCount" column="work_count" />
+		<result property="orderCount" column="order_count" />
 		<association property="subGroupRiderRel" column="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
 			<result property="id" column="subGroupRiderRel_id" />
 			<result property="adminId" column="subGroupRiderRel_admin_id" />
@@ -517,7 +518,31 @@
 		WHERE
 			access_token = #{accessToken}
 	</update>
-
+	<!-- selectRiderFooter -->
+	<select id="selectRiderFooter" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderNowResult">
+		SELECT A.working, count(E.id) as order_count, count(*) as work_count
+		FROM TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
+		AND B.deleted IS NULL
+		LEFT JOIN TB_SUBGROUP AS C
+		ON B.subgroup_id = C.id
+		LEFT JOIN TB_GROUP AS D
+		ON B.group_id = D.id
+		AND C.deleted IS NULL
+		AND D.deleted IS NULL
+		LEFT JOIN (
+		SELECT F.id, F.rider_id, F.assigned_datetime, F.store_id, G.name from TB_ORDER as F
+		LEFT JOIN TB_STORE as G
+		ON F.store_id = G.id
+		where F.created_datetime > CURRENT_DATE()
+		and F.id in(select SUBSTRING_INDEX(group_concat(id order by assigned_datetime asc),',',1) from TB_ORDER where assigned_datetime is not null and created_datetime > CURRENT_DATE() group by rider_id )) AS E
+		ON E.rider_id = A.id
+		LEFT JOIN TB_STORE AS I
+		ON B.store_id = I.id
+		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+		AND A.deleted IS NULL AND A.status = 0 AND B.store_id is not null group by working;
+	</select>
 	<!-- selectRiderNow -->
 	<select id="selectRiderNow" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderNowResult">
 		SELECT A.id

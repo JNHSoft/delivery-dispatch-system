@@ -163,7 +163,7 @@ function getNoticeDetail(noticeId) {
 
             $('#nDate').html(data.createdDatetime);
 
-            if (data.confirmedDatetime != null) {
+            if (data.confirmedDatetime) {
                 $('#nConfirm').html(data.confirmedDatetime);
             } else {
                 $('#nConfirm').html(notice_confirmed_before);
@@ -174,10 +174,10 @@ function getNoticeDetail(noticeId) {
 
             if (data.fileName != null) {
                 $('#nFile').html(data.oriFileName + '(' + data.fileSize + ')');
-                $('#btnDelete').show();
+                $('#btnDownload').show();
             } else {
                 $('#nFile').html(notice_attach_none);
-                $('#btnDelete').hide();
+                $('#btnDownload').hide();
             }
         }
     });
