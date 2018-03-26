@@ -26,6 +26,14 @@ public interface StoreRiderService {
     public List<Rider> getRiderNow(Common common);
 
     /**
+     * <p> getRiderFooter
+     *
+     * @param common
+     * @return List<Rider>
+     */
+    public List<Rider> getRiderFooter(Common common);
+
+    /**
      * <p> putRiderReturnTime
      *
      * @param rider

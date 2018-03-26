@@ -81,7 +81,7 @@
 								<th th:text="${#messages.msg('notice.attach')}" />
 								<td colspan="5">
 									<span class="t_blue" id="nFile">sound.wav(30.11KB)</span>
-									<a href="#" class="button btn_red" id="btnDelete"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
+									<a href="#" class="button btn_blue" id="btnDownload"><i class="fa fa-file-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('notice.attach.download')}" /></a>
 								</td>
 							</tr>
 						</tbody>
@@ -93,7 +93,7 @@
 					<a href="#" class="button h40 btn_blue" onclick="javascript:putNoticeConfirm();" th:text="${#messages.msg('btn.confirm')}" />
 				</div>
 			</div>
-			<a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}" />
+			<a href="#" class="btn_close pop_close" onclick="javascript:putNoticeConfirm();" th:text="${#messages.msg('btn.close.pop')}" />
 		</article>
 	</div>
 	<!-- //팝업영역 -->
@@ -111,6 +111,25 @@ var notice_attach_none = /*[[#{notice.attach.none}]]*/ 'notice_attach_none';
 var notice_created = /*[[#{notice.created}]]*/ 'notice_created';
 var notice_confirmed = /*[[#{notice.confirmed}]]*/ 'notice_confirmed';
 var notice_confirmed_before = /*[[#{notice.confirmed.before}]]*/ 'notice_confirmed_before';
+var my_store = /*[[${store}]]*/ 'my_store';
+var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
+
+$(document).ready(function() {
+    $('#myStoreName').text(my_store.storeName);
+    var j = 0;
+    console.log(my_notice_list);
+    for (var i = 0; i < my_notice_list.length; i++) {
+        if (my_notice_list[i].confirmedDatetime == "") {
+            j++;
+        }
+    }
+    console.log(j);
+    if(j != 0){
+        $("#notice_alarm").addClass('new');
+    }else{
+        $("#notice_alarm").removeClass('new');
+    }
+});
 /*]]>*/
 </script>
 </html>

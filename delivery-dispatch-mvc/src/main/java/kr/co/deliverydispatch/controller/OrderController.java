@@ -3,11 +3,14 @@ package kr.co.deliverydispatch.controller;
 import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
+import kr.co.deliverydispatch.service.StoreNoticeService;
 import kr.co.deliverydispatch.service.StoreOrderService;
+import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,10 +28,15 @@ public class OrderController {
     /**
      * 객체 주입
      */
-    StoreOrderService storeOrderService;
-
+    private StoreOrderService storeOrderService;
+    private StoreNoticeService storeNoticeService;
+    private StoreRiderService storeRiderService;
     @Autowired
-    public OrderController(StoreOrderService storeOrderService) { this.storeOrderService = storeOrderService;}
+    public OrderController(StoreOrderService storeOrderService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService) {
+        this.storeOrderService = storeOrderService;
+        this.storeNoticeService = storeNoticeService;
+        this.storeRiderService = storeRiderService;
+    }
 
     /**
      * 주문현황 페이지
@@ -41,11 +49,20 @@ public class OrderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         // Store 정보
         log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
+        Notice notice = new Notice();
         store.setToken(storeInfo.getStoreAccessToken());
-        System.out.println("!!!!토큰"+store.getToken());
+        notice.setToken(storeInfo.getStoreAccessToken());
+        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
+        model.addAttribute("noticeList", noticeList);
+        log.info("@@@@@@@@@@@@@11111111111111111111@@@@@@@@@@@@@@@@@@@@@@@"+noticeList.toString());
+        System.out.println("!!!!토큰"+notice.getToken());
         Store myStore = storeOrderService.getStoreInfo(store);
         model.addAttribute("store", myStore);
+//        Rider rider = new Rider();
+//        rider.setToken(storeInfo.getStoreAccessToken());
+//        List<Rider> riderList = storeRiderService.getRiderFooter(rider);
+//        model.addAttribute("riderList", riderList);
+//        log.info("@@@@@@@@@@@@@2222222222222222222@@@@@@@@@@@@@@@@@@@@@@@"+riderList.get(1).getWorkCount()+""+riderList.get(0).getWorkCount());
         model.addAttribute("json", new Gson().toJson(store));
 
         log.info("json : {}", new Gson().toJson(store));
@@ -96,16 +113,6 @@ public class OrderController {
     }
 
     @ResponseBody
-    @GetMapping("/getMyRiderList")
-    @CnttMethodDescription("그룹소속 기사목록")
-    public List<Rider> getMyRiderList(Common common){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        common.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> riderList = storeOrderService.getSubgroupRiderRels(common);
-        return riderList;
-    }
-
-    @ResponseBody
     @PutMapping("/putOrder")
     @CnttMethodDescription("주문수정")
     public boolean putOrder(Order order){
@@ -133,5 +140,15 @@ public class OrderController {
         order.setToken(storeInfo.getStoreAccessToken());
         storeOrderService.putOrderAssignCanceled(order);
         return true;
+    }
+
+    @ResponseBody
+    @GetMapping("/getRiderList1")
+    @CnttMethodDescription("그룹소속 기사목록")
+    public List<Rider> getMyRiderList(Common common){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        common.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> riderList = storeRiderService.getRiderNow(common);
+        return riderList;
     }
 }

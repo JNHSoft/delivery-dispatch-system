@@ -16,7 +16,8 @@
         <result property="assignmentStatus" column="assignment_status" />
         <result property="assignmentLimit" column="assignment_limit" />
         <result property="name" column="name" />
-
+        <result property="adminAssignmentStatus" column="admin_assignment_status" />
+        <result property="adminAssignmentLimit" column="admin_assignment_limit" />
         <result property="chStoreName" column="ch_store_name" />
         <result property="storePhone" column="store_phone" />
 
@@ -54,9 +55,9 @@
         <result property="createdDatetime" column="created_datetime" />
         <result property="menuName" column="menu_name" />
         <result property="assignedDatetime" column="assigned_datetime" />
-        <result property="pickUpDatetime" column="pick_up_datetime" />
+        <result property="pickedUpDatetime" column="picked_up_datetime" />
         <result property="reservationDatetime" column="reservation_datetime" />
-        <result property="complatedDatetime" column="complated_datetime" />
+        <result property="completedDatetime" column="completed_datetime" />
 
         <result property="cookingTime" column="cooking_time" />
         <result property="menuPrice" column="menu_price" />
@@ -80,6 +81,7 @@
         </association>
 
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
+            <result property="id" column="id" />
             <result property="name" column="name" />
             <result property="phone" column="rider_phone" />
         </association>
@@ -200,6 +202,8 @@
             , TG.name AS group_name
             , TG.id AS group_id
             , TG.admin_id AS group_admin_id
+            , TA.assignment_status AS admin_assignment_status
+            , TA.assignment_limit AS admin_assignment_limit
         FROM TB_STORE TS
 
         LEFT JOIN
@@ -218,6 +222,9 @@
         on TG.id = TSG.group_id
         AND TG.deleted is NULL
 
+        LEFT JOIN
+        TB_ADMIN AS TA
+        on TS.admin_id = TA.id
         WHERE 1=1
         <choose>
             <when test="id != null and id != ''">

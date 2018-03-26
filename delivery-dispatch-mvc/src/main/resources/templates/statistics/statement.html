@@ -107,7 +107,7 @@
 								</li>
 								<li>
 									<span th:text="${#messages.msg('order.payment')}" />
-									<div id="#paid"></div>
+									<div id="paid"></div>
 									<!--<div th:text="${#messages.msg('order.payment.card')}" />-->
 								</li>
 							</ul>
@@ -152,7 +152,6 @@
 								</li>
 								<li class="full">
 									<div id="map" style="width: 314px; height: 150px; background-color: gray;">
-										<!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d790.4796233513088!2d126.9057600836912!3d37.58053693442591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357c99012d11391b%3A0x39269b0f898a99b1!2z7IK87ISx7KCE7J6QIOymneyCsOygkA!5e0!3m2!1sko!2skr!4v1519093234010" frameborder="0" style="border:0" allowfullscreen="true"></iframe>-->
 									</div>
 								</li>
 							</ul>
@@ -190,6 +189,25 @@
     var order_payment_service = /*[[#{order.payment.service}]]*/ 'order_payment_service';
     var order_detail = /*[[#{order.detail}]]*/ 'order_detail';
     var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
+    var my_store = /*[[${store}]]*/ 'my_store';
+    var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
+
+    $(document).ready(function() {
+        $('#myStoreName').text(my_store.storeName);
+        var j = 0;
+        console.log(my_notice_list);
+        for (var i = 0; i < my_notice_list.length; i++) {
+            if (my_notice_list[i].confirmedDatetime == "") {
+                j++;
+            }
+        }
+        console.log(j);
+        if(j != 0){
+            $("#notice_alarm").addClass('new');
+        }else{
+            $("#notice_alarm").removeClass('new');
+        }
+    });
     /*]]>*/
 	</script>
 </html>

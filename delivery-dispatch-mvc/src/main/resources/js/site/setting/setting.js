@@ -103,18 +103,18 @@ function getStatisticsInfo(orderId) {
                 $paid = order_payment_service;
             }
             $('#paid').val($paid);
-            if(data.combinedOrderId != null){
+            if(data.combinedOrderId){
                 $('#combinedOrder').val(data.combinedOrderId);
             }
 
-            if(data.riderId != null){
+            if(data.riderId){
                 $('#riderName').val(data.rider.name);
                 $('#riderPhone').val(data.rider.phone);
             }else {
                 $('#riderName').val("-");
                 $('#riderPhone').val("-");
             }
-            if(data.memo != null){
+            if(data.memo){
                 $('#memo').html(data.message);
             }
             $('#userPhone').html(data.phone);
@@ -171,7 +171,7 @@ function putRIderInfo() {
     var loginPw = $('#riderPw').val();
     var address = $('#address').val();
     var name = $('#riderName').val();
-    var workingTime = $('#workingHour1').val() + "|" + $('#workingHour2').val();
+    var workingHours = $('#workingHour1').val()*60 + "|" + $('#workingHour2').val()*60;
     var gender = $('input[name="gender"]:checked').val();
     var teenager = $('input[name="teenager"]:checked').val();
     var tmpHours = [];
@@ -182,7 +182,7 @@ function putRIderInfo() {
     var restHours = tmpHours.join("|");
     var phone = $('#phone').val();
     var vehicleNumber = $('#vehicleNumber').val();
-    console.log(emergencyPhone, loginPw, address, name,workingTime, gender ,teenager,restHours,phone,vehicleNumber);
+    console.log(emergencyPhone, loginPw, address, name,workingHours, gender ,teenager,restHours,phone,vehicleNumber);
     $.ajax({
         url: '/putRIderInfo',
         type: 'put',
@@ -192,7 +192,7 @@ function putRIderInfo() {
             loginPw : loginPw,
             address : address,
             name : name,
-            workingTime : workingTime,
+            workingHours : workingHours,
             gender : gender,
             teenager : teenager,
             restHours : restHours,
@@ -202,7 +202,7 @@ function putRIderInfo() {
         dataType : 'json',
         success : function (data) {
             alert('success');
-            getRiderInfo(id);
+            location.href="/setting-rider";
         }
     });
 }

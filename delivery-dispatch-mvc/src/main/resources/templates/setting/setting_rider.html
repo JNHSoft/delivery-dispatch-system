@@ -146,7 +146,25 @@
     var rider_teenager = /*[[#{rider.teenager}]]*/ 'rider_teenager';
     var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
     var mydata = /*[[${riderList}]]*/ 'riderList';
+    var my_store = /*[[${store}]]*/ 'my_store';
+    var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
+
     $(document).ready(function () {
+        $('#myStoreName').text(my_store.storeName);
+        var j = 0;
+        console.log(my_notice_list);
+        for (var i = 0; i < my_notice_list.length; i++) {
+            if (my_notice_list[i].confirmedDatetime == "") {
+                j++;
+            }
+        }
+        console.log(j);
+        if(j != 0){
+            $("#notice_alarm").addClass('new');
+        }else{
+            $("#notice_alarm").removeClass('new');
+        }
+        console.log(my_store);
         for (var i = 0; i < mydata.length; i++) {
             var a = mydata[i];
             if (a.gender != "") {

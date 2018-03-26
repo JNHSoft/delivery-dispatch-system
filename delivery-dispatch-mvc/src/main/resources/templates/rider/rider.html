@@ -37,7 +37,7 @@
     </div>
     <div id="contents">
         <div class="rider_wrap">
-            <div id="map" style="width: 76%; height: 750px; background-color: grey;"></div>
+            <div class="map" id="map" style="width: 76%; height: 750px; background-color: grey;"></div>
             <div class="list_wrap">
                 <div class="tbl_wrap">
                     <table class="table">
@@ -81,6 +81,25 @@
         var status_standby = /*[[#{status.standby}]]*/ 'status_standby';
         var status_rest = /*[[#{status.rest}]]*/ 'status_rest';
         var status_off = /*[[#{status.off}]]*/ 'status_off';
+        var my_store = /*[[${store}]]*/ 'my_store';
+        var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
+
+        $(document).ready(function() {
+            $('#myStoreName').text(my_store.storeName);
+            var j = 0;
+            console.log(my_notice_list);
+            for (var i = 0; i < my_notice_list.length; i++) {
+                if (my_notice_list[i].confirmedDatetime == "") {
+                    j++;
+                }
+            }
+            console.log(j);
+            if(j != 0){
+                $("#notice_alarm").addClass('new');
+            }else{
+                $("#notice_alarm").removeClass('new');
+            }
+        });
         /*]]>*/
     </script>
 </section>

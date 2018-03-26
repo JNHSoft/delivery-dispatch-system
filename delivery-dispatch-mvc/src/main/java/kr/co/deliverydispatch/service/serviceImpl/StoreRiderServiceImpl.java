@@ -123,6 +123,20 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
     }
 
     @Override
+    public List<Rider> getRiderFooter(Common common){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            common.setRole("ROLE_STORE");
+        }
+        List<Rider> S_Rider = riderMapper.selectRiderFooter(common);
+        if (S_Rider.size() == 0) {
+            return Collections.<Rider>emptyList();
+        }
+
+        return S_Rider;
+    }
+
+    @Override
     public int putRiderReturnTime(Rider rider){
         int nRet = riderMapper.updateRiderReturnTime(rider);
 

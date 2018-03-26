@@ -16,8 +16,8 @@
 						<div class="clock"></div>
 					</div>
 					<div class="head_info">
-						<a href="#" class="head_notice new" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
-						<a href="#" class="user_id"><i class="fa fa-user-circle-o" aria-hidden="true"></i>본사관리자</a>
+						<a href="#" class="head_notice" id="notice_alarm" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+						<a href="/setting-account" class="user_id"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span id="myStoreName"/></a>
 						<a href="/logout" class="button btn_gray h20" th:text="${#messages.msg('gnb.logout')}" />
 					</div>
 				</div>

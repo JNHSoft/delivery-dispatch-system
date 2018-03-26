@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    getFooterRiderList()
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
         var socket = io('13.125.18.185:3000', {
@@ -144,7 +145,7 @@ $(document).ready(function() {
 });
 
 function timeSet(time) {
-    if(time != null){
+    if(time){
         var d = new Date(time);
         return $.datepicker.formatDate('mm/dd ', d) + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
     }else{
@@ -153,7 +154,7 @@ function timeSet(time) {
 }
 
 function timeSet2(time) {
-    if(time != null){
+    if(time){
         var d = new Date(time);
         return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
     }else{
@@ -162,7 +163,7 @@ function timeSet2(time) {
 }
 
 function minusTimeSet(time1 , time2) {
-    if(time2 != null){
+    if(time2){
         var d1 = new Date(time1);
         var d2 = new Date(time2);
         var minusTime = new Date(d2.getTime()-d1.getTime());
@@ -233,7 +234,7 @@ function getOrderDetail(orderId) {
 
             var statusNewArray = ["0","5"];
 
-            if(data.combinedOrderId != null){
+            if(data.combinedOrderId){
                 for (var key in currentOrderList) {
                     if (currentOrderList.hasOwnProperty(key)) {
                         if(currentOrderList[key].id == data.combinedOrderId){
@@ -270,6 +271,34 @@ function getOrderDetail(orderId) {
         }
     });
 }
+function getFooterRiderList(){
+    var $work = 0;
+    var $standby = 0;
+    var $rest = 0;
+    $.ajax({
+        url: "/getRiderList",
+        type: 'get',
+        data: {
+        },
+        dataType: 'json',
+        success: function (data) {
+            console.log(data);
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    if(data[key].working==1 && typeof data[key].order != "undefined"){
+                        $work++;
+                    }else if (data[key].working==1 && typeof data[key].order == "undefined"){
+                        $standby++;
+                    }else if (data[key].working==3){
+                        $rest++;
+                    }
+                }
+            }
+            console.log($work,$standby,$rest);
+        }
+    });
+}
+
 function getMyRiderList() {
     var shtml = '<option value="0">정보없음</option>';
     var shtml2 = '';
@@ -393,25 +422,25 @@ function getOrderList(statusArray, storeId) {
                 tmpdata.time2 = data[key].cookingTime;
                 tmpdata.pay = $toBePaid;
 
-                if(data[key].assignedDatetime == null){
+                if(!data[key].assignedDatetime){
                     tmpdata.time3 = "-";
                 }else{
                     tmpdata.time3 = timeSet2(data[key].assignedDatetime);
                 }
 
-                if(data[key].pickedUpDatetime == null){
+                if(!data[key].pickedUpDatetime){
                     tmpdata.time4 = "-";
                 }else{
                     tmpdata.time4 = timeSet2(data[key].pickedUpDatetime);
                 }
 
-                if(data[key].reservationDatetime == null){
+                if(!data[key].reservationDatetime){
                     tmpdata.time5 = "-";
                 }else{
                     tmpdata.time5 = timeSet2(data[key].reservationDatetime);
                 }
 
-                if(data[key].rider == null){
+                if(!data[key].rider){
                     tmpdata.rider = "-";
                 }else{
                     tmpdata.rider = data[key].rider.name;
@@ -429,7 +458,7 @@ function getOrderList(statusArray, storeId) {
         }
         console.log("mydata");
         console.log(mydata);
-        if(mydata != null) {
+        if(mydata) {
             jQuery('#jqGrid').jqGrid('clearGridData')
             jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1})
             jQuery('#jqGrid').trigger('reloadGrid');
@@ -594,7 +623,7 @@ function orderConfirm() {
     }
 
     if($('#selectedRider').val()=='0'){
-        if(selectedOriginOrder.riderId != null) {
+        if(selectedOriginOrder.riderId) {
             var result = confirm("배정을 하지않거나 취소 하시겠습니까..?");
             if (result) {
                 putOrderAssignCancle();
@@ -606,7 +635,7 @@ function orderConfirm() {
             putOrder();
         }
     }else{
-        if(selectedOriginOrder.riderId != null) {
+        if(selectedOriginOrder.riderId) {
             if ($('#selectedRider').val() == selectedOriginOrder.riderId) {
                 putOrder();//주문만수정
             } else {

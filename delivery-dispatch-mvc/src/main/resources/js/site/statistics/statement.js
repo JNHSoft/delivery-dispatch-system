@@ -139,16 +139,7 @@ function getStatisticsInfo(orderId) {
         dataType : 'json',
         success : function (data) {
             console.log(data);
-            if (data.status == 0 || data.status == 5) {
-                $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
-            }
-            else if (data.status == 1) {
-                $status = '<i class="ic_txt ic_blue">' + status_assigned + '</i>';
-            }
-            else if (data.status == 2) {
-                $status = '<i class="ic_txt ic_blue">' + status_pickedup + '</i>';
-            }
-            else if (data.status == 3) {
+            if (data.status == 3) {
                 $status = '<i class="ic_txt">' + status_completed + '</i>';
             }
             else {
@@ -168,26 +159,35 @@ function getStatisticsInfo(orderId) {
             $('#menuPrice').html(data.menuPrice);
             $('#deliveryPrice').html(data.deliveryPrice);
             $('#totalPrice').html(data.totalPrice);
-            if(data.paid == 0){
-                $paid = order_payment_cash;
-            }else if(data.paid == 1){
-                $paid = order_payment_card;
-            }else if(data.paid ==2){
-                $paid = order_payment_prepayment;
-            }else{
-                $paid = order_payment_service;
-            }
-            $('#paid').val($paid);
-            if(data.combinedOrderId != null){
-                $('#combinedOrder').val(data.combinedOrderId);
+
+
+            if(data.payment) {
+                if (data.payment.type == "0") {
+                    $paid = order_payment_card;
+                } else if (data.payment.type == "1") {
+                    $paid = order_payment_cash;
+                } else if (data.payment.type == "2") {
+                    $paid = order_payment_prepayment;
+                } else {
+                    $paid = order_payment_service;
+                }
+            }else {
+                $paid = "-";
             }
 
-            if(data.riderId != null){
-                $('#riderName').val(data.rider.name);
-                $('#riderPhone').val(data.rider.phone);
+
+            $('#paid').html($paid);
+
+            if(data.combinedOrderId != null){
+                $('#combinedOrder').html(data.combinedOrderId);
+            }
+
+            if(data.riderId){
+                $('#riderName').html(data.rider.name);
+                $('#riderPhone').html(data.rider.phone);
             }else {
-                $('#riderName').val("-");
-                $('#riderPhone').val("-");
+                $('#riderName').html("-");
+                $('#riderPhone').html("-");
             }
             if(data.memo != null){
                 $('#memo').html(data.message);
@@ -203,6 +203,7 @@ function getStatisticsInfo(orderId) {
 
 function getStoreStatistics() {
     var mydata = [];
+
     $.ajax({
         url: "/getStoreStatistics",
         type: 'get',
@@ -214,77 +215,77 @@ function getStoreStatistics() {
             console.log(data);
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
-                    var tmpdata = new Object();
-                    if (data[key].status == 3) {
-                        if(!$('#completeChk').prop('checked')){
-                            continue;
+                    if (timepickerConfirm($('#day1').val(), $('#day2').val(), data[key].createdDatetime)) {
+                        var tmpdata = new Object();
+                        if (data[key].status == 3) {
+                            if (!$('#completeChk').prop('checked')) {
+                                continue;
+                            }
+                            $status = '<i class="ic_txt">' + status_completed + '</i>';
                         }
-                        $status = '<i class="ic_txt">' + status_completed + '</i>';
-                    }
-                    else {
-                        if(!$('#canceledChk').prop('checked')){canceledChk
-                            continue;
+                        else {
+                            if (!$('#canceledChk').prop('checked')) {
+                                canceledChk
+                                continue;
+                            }
+                            $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
+
                         }
-                        $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
 
-                    }
 
-                    if (data[key].paid == 0) {
-                        $toBePaid = order_payment_cash;
-                    }
-                    else if (data[key].paid == 1) {
-                        $toBePaid = order_payment_card;
-                    }
-                    else if (data[key].paid == 2) {
-                        $toBePaid = order_payment_prepayment;
-                    }
-                    else if (data[key].paid == 3){
-                        $toBePaid = order_payment_service;
-                    }else {
-                        $toBePaid = "-";
-                    }
+                        if (data[key].payment) {
+                            if (data[key].payment.type == "0") {
+                                $toBePaid = order_payment_card;
+                            } else if (data[key].payment.type == "1") {
+                                $toBePaid = order_payment_cash;
+                            } else {
+                                $toBePaid =  "-";
+                            }
+                        } else{
+                            $toBePaid =  "-";
+                        }
+                        tmpdata.pay = $toBePaid;
 
-                    tmpdata.No = i;
-                    i++;
-                    tmpdata.state = $status;
-                    tmpdata.id = data[key].id;
-                    if(data[key].createdDatetime){
-                        tmpdata.time1 = timeSet(data[key].createdDatetime);
-                    }
-                    tmpdata.address = data[key].address;
-                    tmpdata.text = data[key].menuName;
-                    if(data[key].cookingTime){
-                        tmpdata.time2 = data[key].cookingTime;
-                    }
-                    tmpdata.pay = $toBePaid;
-                    if(data[key].assignedDatetime == null){
-                        tmpdata.time3 = "-";
-                    }else{
-                        tmpdata.time3 = timeSet(data[key].assignedDatetime);
-                    }
-                    if(data[key].pickedUpDatetime == null){
-                        tmpdata.time4 = "-";
-                    }else{
-                        tmpdata.time4 = timeSet(data[key].pickedUpDatetime);
-                    }
-                    if(data[key].reservationDatetime == null){
-                        tmpdata.time5 = "-";
-                    }else{
-                        tmpdata.time5 = timeSet(data[key].reservationDatetime);
-                    }
-                    if(data[key].rider == null){
-                        tmpdata.rider = "-";
-                    }else{
-                        tmpdata.rider = data[key].rider.name;
-                    }
-                    if($("input[name=myStoreChk]:checkbox").prop("checked")){
-                        if(data[key].storeId == storeId){
-                            if(timepickerConfirm($('#day1').val(), $('#day2').val(), data[key].createdDatetime)){
+                        tmpdata.No = i;
+                        i++;
+                        tmpdata.state = $status;
+                        tmpdata.id = data[key].id;
+                        if (data[key].createdDatetime) {
+                            tmpdata.time1 = timeSet(data[key].createdDatetime);
+                        }
+                        tmpdata.address = data[key].address;
+
+                        tmpdata.text = data[key].menuName;
+                        if (data[key].cookingTime) {
+                            tmpdata.time2 = data[key].cookingTime;
+                        }
+
+
+                        if (!data[key].assignedDatetime) {
+                            tmpdata.time3 = "-";
+                        } else {
+                            tmpdata.time3 = timeSet(data[key].assignedDatetime);
+                        }
+                        if (!data[key].pickedUpDatetime) {
+                            tmpdata.time4 = "-";
+                        } else {
+                            tmpdata.time4 = timeSet(data[key].pickedUpDatetime);
+                        }
+                        if (!data[key].reservationDatetime) {
+                            tmpdata.time5 = "-";
+                        } else {
+                            tmpdata.time5 = timeSet(data[key].reservationDatetime);
+                        }
+                        if (!data[key].rider) {
+                            tmpdata.rider = "-";
+                        } else {
+                            tmpdata.rider = data[key].rider.name;
+                        }
+                        if ($("input[name=myStoreChk]:checkbox").prop("checked")) {
+                            if (data[key].storeId == storeId) {
                                 mydata.push(tmpdata);
                             }
-                        }
-                    }else{
-                        if(timepickerConfirm($('#day1').val(), $('#day2').val(), data[key].createdDatetime)){
+                        } else {
                             mydata.push(tmpdata);
                         }
                     }

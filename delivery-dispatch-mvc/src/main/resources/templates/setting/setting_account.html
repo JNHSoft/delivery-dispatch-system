@@ -17,10 +17,10 @@
 			<div class="cont_box" >
 				<div class="top"><strong th:text="${#messages.msg('gnb.setting.account.store')}" /></div>
 				<div class="cont">
-					<ul class="form_list" th:object="${store}">
+					<ul class="form_list">
 						<li>
 							<strong th:text="${#messages.msg('login.id')}" />
-							<div><input type="text" name="" class="input readonly" readonly="readonly" th:value="*{loginId}"/></div>
+							<div><input type="text" name="" class="input readonly" readonly="readonly" th:value="${store.loginId}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('login.password')}" />
@@ -28,46 +28,46 @@
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.code')}" />
-							<div><input type="text" name="" id="storeId" class="input readonly" readonly="readonly" th:value="*{id}"/></div>
+							<div><input type="text" name="" id="storeId" class="input readonly" readonly="readonly" th:value="${store.code}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.name')}" />
-							<div><input type="text" name="" id="name" class="input readonly" readonly="readonly" th:value="*{name}"/></div>
+							<div><input type="text" name="" id="name" class="input readonly" readonly="readonly" th:value="${store.storeName}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.phone')}" />
-							<div><input type="text" name="" id="storePhone" class="input" th:value="*{storePhone}"/></div>
+							<div><input type="text" name="" id="storePhone" class="input" th:value="${store.storePhone}"/></div>
 						</li>
 
 						<li>
 							<strong th:text="${#messages.msg('store.belong.group')}" />
 							<div>
 								<select name="" class="select readonly" disabled="disabled">
-									<option th:value="*{group.name}" th:text="*{group.name}"></option>
+									<option th:value="${store.group.name}" th:text="${store.group.name}"></option>
 								</select>
 								<select name="" class="select readonly" disabled="disabled">
-									<option th:value="*{subGroup.name}" th:text="*{subGroup.name}"></option>
+									<option th:value="${store.subGroup.name}" th:text="${store.subGroup.name}"></option>
 								</select>
 							</div>
 						</li>
 						
 						<li>
 							<strong th:text="${#messages.msg('store.manager.name')}" />
-							<div><input type="text" name="" class="input" id="mangerName" th:value="*{name}" /></div>
+							<div><input type="text" name="" class="input" id="mangerName" th:value="${store.name}" /></div>
 						</li>
 						
 						<li>
 							<strong th:text="${#messages.msg('store.manager.phone')}" />
-							<div><input type="text" name="" class="input" id="phone" th:value="*{phone}"/></div>
+							<div><input type="text" name="" class="input" id="phone" th:value="${store.phone}"/></div>
 						</li>
 						
 						<li>
 							<strong th:text="${#messages.msg('store.address')}" />
-							<div><input type="text" name="" id="address" class="input w_100" th:value="*{address}"/></div>
+							<div><input type="text" name="" id="address" class="input w_100" th:value="${store.address}"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.address.detail')}" />
-							<div><input type="text" name="" id="detailAddress" class="input w_100" th:value="*{detailAddress}"/></div>
+							<div><input type="text" name="" id="detailAddress" class="input w_100" th:value="${store.detailAddress}"/></div>
 						</li>
 					</ul>
 				</div>
@@ -79,5 +79,27 @@
 		<script type="text/javascript" th:src="@{/resources/js/site/setting/setting.js}" layout:fragment="script2"></script>
 	</section>
 	<!-- //컨텐츠 영역 -->
+<script layout:fragment="script" th:inline="javascript">
+	/*<![CDATA[*/
+    var my_store = /*[[${store}]]*/ 'my_store';
+    var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
 
+    $(document).ready(function() {
+        $('#myStoreName').text(my_store.storeName);
+        var j = 0;
+        console.log(my_notice_list);
+        for (var i = 0; i < my_notice_list.length; i++) {
+            if (my_notice_list[i].confirmedDatetime == "") {
+                j++;
+            }
+        }
+        console.log(j);
+        if(j != 0){
+            $("#notice_alarm").addClass('new');
+        }else{
+            $("#notice_alarm").removeClass('new');
+        }
+    });
+    /*]]>*/
+</script>
 </html>
