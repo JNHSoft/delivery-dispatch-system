@@ -76,6 +76,8 @@ public class DeliveryDispatchWebConfig {
         String paramAdminPw;
         @Value("${cntt.underConstruction.active:false}")
         boolean active;
+        @Value("${api.upload.path.alarm}")
+        String alarmFilePath;
 
         /**
          * LocaleResolver bean configuration
@@ -188,6 +190,9 @@ public class DeliveryDispatchWebConfig {
                     .addResolver(new PathResourceResolver());
             // file context
             registry.addResourceHandler("/files/**").addResourceLocations("file:" + imageFilePath)
+                    .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS)).resourceChain(true)
+                    .addResolver(new PathResourceResolver());
+            registry.addResourceHandler("/alarmFiles/**").addResourceLocations("file:" + alarmFilePath)
                     .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS)).resourceChain(true)
                     .addResolver(new PathResourceResolver());
         }
