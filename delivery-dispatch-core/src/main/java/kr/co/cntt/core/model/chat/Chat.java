@@ -20,5 +20,6 @@ public class Chat extends Common implements Dto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String type;
     private String lastMessage;
+    private String storeName;
 
 }

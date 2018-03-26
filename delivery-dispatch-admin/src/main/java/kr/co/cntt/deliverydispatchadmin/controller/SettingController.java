@@ -2,6 +2,7 @@ package kr.co.cntt.deliverydispatchadmin.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
@@ -10,15 +11,24 @@ import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.admin.AccountAdminService;
 import kr.co.cntt.core.service.admin.AssignAdminService;
+import kr.co.cntt.core.service.admin.FileUploadAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
+import kr.co.cntt.core.util.FileUtil;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,14 +37,22 @@ import java.util.Map;
 @Controller
 public class SettingController {
 
+    @Value("${api.upload.path.alarm}")
+    private String alarmFileUploadPath;
+
+    @Value("${api.upload.path.notice}")
+    private String noticeFileUploadPath;
+
     private AccountAdminService accountAdminService;
     private AssignAdminService assignAdminService;
+    private FileUploadAdminService fileUploadAdminService;
     private NoticeAdminService noticeAdminService;
 
     @Autowired
-    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, NoticeAdminService noticeAdminService) {
+    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, FileUploadAdminService fileUploadAdminService, NoticeAdminService noticeAdminService) {
         this.accountAdminService = accountAdminService;
         this.assignAdminService = assignAdminService;
+        this.fileUploadAdminService = fileUploadAdminService;
         this.noticeAdminService = noticeAdminService;
     }
 
@@ -189,7 +207,109 @@ public class SettingController {
      * @return
      */
     @GetMapping("/setting-alarm")
-    public String settingAlarm() { return "/setting/setting_alarm"; }
+    public String settingAlarm(Alarm alarm, Model model) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        alarm.setToken(adminInfo.getAdminAccessToken());
+
+        List<Alarm> retAlarm = fileUploadAdminService.getAlarmList(alarm);
+
+        Alarm newAlarm = new Alarm();
+        Alarm assignAlarm = new Alarm();
+        Alarm assignedCancelAlarm = new Alarm();
+        Alarm completeAlarm = new Alarm();
+        Alarm cancelAlarm = new Alarm();
+
+        for (Alarm a : retAlarm) {
+            if (a.getAlarmType().equals("0")) {
+                newAlarm = a;
+            } else if (a.getAlarmType().equals("1")) {
+                assignAlarm = a;
+            } else if (a.getAlarmType().equals("2")) {
+                assignedCancelAlarm = a;
+            } else if (a.getAlarmType().equals("3")) {
+                completeAlarm = a;
+            } else if (a.getAlarmType().equals("4")) {
+                cancelAlarm = a;
+            }
+
+        }
+
+        log.info(newAlarm.getOriFileName());
+        log.info(newAlarm.getAlarmType());
+        model.addAttribute("newAlarm", newAlarm);
+        model.addAttribute("assignAlarm", assignAlarm);
+        model.addAttribute("assignedCancelAlarm", assignedCancelAlarm);
+        model.addAttribute("completeAlarm", completeAlarm);
+        model.addAttribute("cancelAlarm", cancelAlarm);
+
+        return "/setting/setting_alarm";
+    }
+
+
+    @PostMapping("/alarmFileUpload")
+    public String alarmFileUpload(HttpServletRequest request, HttpServletResponse response) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        MultipartHttpServletRequest multipartRequest =  (MultipartHttpServletRequest) request;
+
+        List<MultipartFile> reqFiles = multipartRequest.getFiles("alarmFile");
+        List<MultipartFile> files = new ArrayList<>();
+
+        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        Alarm alarm = new Alarm();
+        alarm.setToken(adminInfo.getAdminAccessToken());
+
+        for (int j = 0; j < reqFiles.size(); j++) {
+            if (reqFiles.get(j).getSize() > 0) {
+                files.add(reqFiles.get(j));
+
+                alarm.setAlarmType(Integer.toString(j));
+                alarm.setOriFileName(reqFiles.get(j).getOriginalFilename());
+//                String[] tmp = reqFiles.get(j).getOriginalFilename().split("\\.");
+//                alarm.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
+                alarm.setFileName(LocalDateTime.now().format(dateformatter) + "_" + reqFiles.get(j).getOriginalFilename());
+                alarm.setFileSize(Long.toString(reqFiles.get(j).getSize()));
+
+                fileUploadAdminService.alarmFileUpload(alarm);
+            }
+        }
+
+//        for (MultipartFile f : reqFiles) {
+//            if (f.getSize() > 0) {
+//                files.add(f);
+//            }
+//        }
+
+        MultipartFile[] fileArray = new MultipartFile[files.size()];
+        for (int i = 0; i < files.size(); i++) {
+            if (files.get(i).getSize() > 0) {
+                fileArray[i] = files.get(i);
+            }
+        }
+
+        FileUtil fileUtil = new FileUtil();
+        fileUtil.fileUpload(fileArray, alarmFileUploadPath+"/");
+//        fileUtil.fileUpload(fileArray, "c:\\");
+
+        return "redirect:/setting-alarm";
+    }
+
+
+    /**
+     * 설정 - 알람 삭제
+     *
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/deleteAlarm")
+    @CnttMethodDescription("알람 삭제")
+    public int deleteAlarm(Alarm alarm) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        alarm.setToken(adminInfo.getAdminAccessToken());
+
+        return fileUploadAdminService.deleteAlarm(alarm);
+    }
 
 
     /**
@@ -282,13 +402,39 @@ public class SettingController {
         return noticeAdminService.getGroupList(notice);
     }
 
-    @ResponseBody
+//    @ResponseBody
     @PostMapping("/postNotice")
     @CnttMethodDescription("공지사항 등록")
-    public int postNotice(Notice notice){
+    public String postNotice(Notice notice, @RequestParam("nNewFile") MultipartFile file){
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         notice.setToken(adminInfo.getAdminAccessToken());
-        return noticeAdminService.postNotice(notice);
+
+        FileUtil fileUtil = new FileUtil();
+        fileUtil.fileUpload(file, noticeFileUploadPath+"/");
+
+        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        notice.setOriFileName(file.getOriginalFilename());
+        notice.setFileName(LocalDateTime.now().format(dateformatter) + "_" + file.getOriginalFilename());
+        notice.setFileSize(Long.toString(file.getSize()));
+
+        noticeAdminService.postNotice(notice);
+
+        return "redirect:/setting-notice";
+    }
+
+
+    @ResponseBody
+    @PutMapping("/deleteNoticeFile")
+    @CnttMethodDescription("공지사항 수정")
+    public int deleteNoticeFile(Notice notice){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(adminInfo.getAdminAccessToken());
+        notice.setOriFileName("none");
+        notice.setFileName("none");
+        notice.setFileSize("none");
+
+        return noticeAdminService.putNotice(notice);
     }
 
 }

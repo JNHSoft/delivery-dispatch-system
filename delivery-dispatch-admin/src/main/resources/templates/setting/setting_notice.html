@@ -37,6 +37,7 @@
 	<!-- 팝업영역 -->
 	<!-- 등록 -->
 	<div id="popNoticeNew" class="pop_wrap" layout:fragment="popup">
+		<form action="/postNotice" name="nNewFileForm" method="post" enctype="multipart/form-data">
 		<article class="popup">
 			<div class="pop_head">
 				<h1 th:text="${#messages.msg('notice.register')}" />
@@ -65,12 +66,12 @@
 							</tr>
 							<tr>
 								<th th:text="${#messages.msg('notice.subject')}" />
-								<td><input type="text" name="" class="input w_100" id="nNewTitle" value="" /></td>
+								<td><input type="text" name="title" class="input w_100" id="nNewTitle" value="" /></td>
 							</tr>
 							<tr>
 								<th th:text="${#messages.msg('notice.contents')}" />
 								<td>
-									<textarea class="textarea" id="nNewContent" style="height:170px;"></textarea>
+									<textarea name="content" class="textarea" id="nNewContent" style="height:170px;"></textarea>
 								</td>
 							</tr>
 							<tr>
@@ -80,7 +81,7 @@
 										<input type="text" class="input" />
 										<span class="btn_file">
 											<a href="#" class="button btn_dgray"><i class="fa fa-paperclip" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.attach')}" /></a>
-											<input type="file" name="file" id="nNewFile" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
+											<input type="file" name="nNewFile" th:placeholder="${#messages.msg('alarm.placeholder')}" th:title="${#messages.msg('alarm.attach')}" />
 										</span>
 									</span>
 								</td>
@@ -91,10 +92,12 @@
 			</div>
 			<div class="pop_foot">
 				<div class="left"><a href="#" class="button h40 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}" /></div>
-				<div class="right"><a href="#" class="button h40 btn_blue" onclick="javascript:postNotice()" th:text="${#messages.msg('btn.confirm')}" /></div>
+				<!--<div class="right"><a href="#" class="button h40 btn_blue" onclick="javascript:postNotice()" th:text="${#messages.msg('btn.confirm')}" /></div>-->
+				<div class="right"><button type="submit" href="#" class="button h40 btn_blue" th:text="${#messages.msg('btn.confirm')}" /></div>
 			</div>
 			<a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}" />
 		</article>
+		</form>
 	</div>
 
 	<!-- 상세 -->
@@ -157,7 +160,7 @@
 								<th th:text="${#messages.msg('notice.attach')}" />
 								<td colspan="3">
 									<span class="t_blue" id="nFile">sound.wav(30.11KB)</span>
-									<a href="#" class="button btn_red" id="btnDelete"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
+									<a href="#" class="button btn_red" id="btnDelete"  onclick="javascript:deleteNoticeFile()"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
 								</td>
 							</tr>
 						</tbody>
@@ -192,6 +195,7 @@ var notice_confirmed_check_store = /*[[#{notice.confirmed.check.store}]]*/ 'noti
 var notice_target_all_group = /*[[#{list.search.all.group}]]*/ 'notice_target_all_group';
 var notice_target_all_subgroup = /*[[#{list.search.all.subgroup}]]*/ 'notice_target_all_subgroup';
 var notice_target_all_store = /*[[#{list.search.all.store}]]*/ 'notice_target_all_store';
+var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
 /*]]>*/
 </script>
 </html>

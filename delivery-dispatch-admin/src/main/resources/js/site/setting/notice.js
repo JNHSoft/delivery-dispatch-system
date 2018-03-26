@@ -387,6 +387,7 @@ function newToSubGroup(toSubGroupId) {
     });
 }
 
+/*
 function postNotice() {
     $.ajax({
         url: '/postNotice',
@@ -408,6 +409,22 @@ function postNotice() {
             $('#nNewTitle').val('');
             $('#nNewContent').val('');
             getNoticeList();
+        }
+    });
+}
+*/
+
+function deleteNoticeFile () {
+    $.ajax({
+        url: "/deleteNoticeFile",
+        type: 'put',
+        data: {'id':$("#noticeId").val()
+        },
+        dataType: 'json',
+        async : false,
+        success: function (data) {
+            console.log(data);
+            location.reload();
         }
     });
 }

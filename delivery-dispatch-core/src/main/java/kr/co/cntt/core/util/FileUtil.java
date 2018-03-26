@@ -1,16 +1,17 @@
 package kr.co.cntt.core.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.CnttBizException;
 import kr.co.cntt.core.service.ServiceSupport;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>kr.co.cntt.core.util
@@ -34,8 +35,10 @@ public class FileUtil extends ServiceSupport {
 			if (uploadFile != null) { 
 				String directoryPath = savePath;
 				// 파일 이름
-				originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
-				
+//				originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
+				DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+				originalFileName = LocalDateTime.now().format(dateformatter) + "_" + uploadFile.getOriginalFilename();
+
 				// 업로드 경로
 				savePath += originalFileName;
 				
@@ -74,11 +77,14 @@ public class FileUtil extends ServiceSupport {
 					String directoryPath = savePath;
 					fileInputName = uploadFile.getName();
 					// 파일 이름
-					originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
-					
+					DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+//					String[] tmp = uploadFile.getOriginalFilename().split("\\.");
+					originalFileName = LocalDateTime.now().format(dateformatter) + "_" + uploadFile.getOriginalFilename();
+//					originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
+
 					// 업로드 경로
 					initSavePath = savePath + originalFileName;
-					
+
 					// 파일 저장
 					byte[] fileData = uploadFile.getBytes();
 					File checkDirectory = new File(directoryPath);

@@ -27,7 +27,7 @@
         <if test="toGroupId == null or toGroupId == ''">
             , 0
         </if>
-``
+
         <if test="toSubGroupId != null and toSubGroupId != ''">
             , #{toSubGroupId}
         </if>
@@ -136,21 +136,31 @@
         , to_store_id = 0
       </if>
 
-      <if test="oriFileName != null and oriFileName != ''">
+      <if test="oriFileName != null and oriFileName != '' and oriFileName != 'none'">
         , ori_file_name = #{oriFileName}
       </if>
 
+      <if test="oriFileName == 'none'">
+        , ori_file_name = NULL
+      </if>
 
-      <if test="fileName != null and fileName != ''">
+
+      <if test="fileName != null and fileName != '' and fileName != 'none'">
         , file_name = #{fileName}
       </if>
 
-
-
-      <if test="fileSize != null and fileSize != ''">
-        , file_size = #{fileSize}
+      <if test="fileName == 'none'">
+          , file_name = NULL
       </if>
 
+
+      <if test="fileSize != null and fileSize != '' and fileSize != 'none'">
+          , file_size = #{fileSize}
+      </if>
+
+      <if test="fileSize == 'none'">
+          , file_size = NULL
+      </if>
       WHERE 1=1
       AND id = #{id}
       AND admin_id = (select admin_id from TB_ADMIN_SESSION where access_token=#{token})
