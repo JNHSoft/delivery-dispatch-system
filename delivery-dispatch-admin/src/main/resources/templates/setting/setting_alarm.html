@@ -58,7 +58,7 @@
 							<strong th:text="${#messages.msg('alarm.assigned.canceled')}" />
 							<div th:if="*{assignedCancelAlarm.fileName} != null">
 								<input type="file" hidden="hidden" name="alarmFile" />
-								<span class="t_blue" th:text="${assignedCancelAlarm.oriFileName} + '(' + ${assignedCancelAlarm.fileSize / 1000} + ')'">sound.wav(30.11KB)</span>
+								<span class="t_blue" th:text="${assignedCancelAlarm.oriFileName} + '(' + ${assignedCancelAlarm.fileSize} + ')'">sound.wav(30.11KB)</span>
 								<a href="#" class="button btn_red" th:onclick="|javascript:deleteAlarm('${assignedCancelAlarm.id}')|"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
 								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${assignedCancelAlarm.fileName}')|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>

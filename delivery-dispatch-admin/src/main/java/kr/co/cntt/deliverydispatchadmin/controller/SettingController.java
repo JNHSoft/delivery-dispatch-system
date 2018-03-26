@@ -423,4 +423,18 @@ public class SettingController {
         return "redirect:/setting-notice";
     }
 
+
+    @ResponseBody
+    @PutMapping("/deleteNoticeFile")
+    @CnttMethodDescription("공지사항 수정")
+    public int deleteNoticeFile(Notice notice){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(adminInfo.getAdminAccessToken());
+        notice.setOriFileName("none");
+        notice.setFileName("none");
+        notice.setFileSize("none");
+
+        return noticeAdminService.putNotice(notice);
+    }
+
 }

@@ -160,7 +160,7 @@
 								<th th:text="${#messages.msg('notice.attach')}" />
 								<td colspan="3">
 									<span class="t_blue" id="nFile">sound.wav(30.11KB)</span>
-									<a href="#" class="button btn_red" id="btnDelete"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
+									<a href="#" class="button btn_red" id="btnDelete"  onclick="javascript:deleteNoticeFile()"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
 								</td>
 							</tr>
 						</tbody>
