@@ -4,15 +4,15 @@
 	<!-- 푸터영역 -->
 	<footer id="footer">
 		<div class="f_left">
-			<span class="inblock" th:text="${#messages.msg('rider.work', '1')}" />
-			<span class="inblock" th:text="${#messages.msg('rider.standby', '3')}" />
-			<span class="inblock" th:text="${#messages.msg('rider.rest', '2')}" />
+			<span class="inblock" th:text="${#messages.msg('rider.work')}" /><span id="work"/>
+			<span class="inblock" th:text="${#messages.msg('rider.standby')}" /><span id="standby"/>
+			<span class="inblock" th:text="${#messages.msg('rider.rest')}" /><span id="rest"/>
 		</div>
 		<div class="f_right">
-			<span class="inblock" th:text="${#messages.msg('order.count.new', ': 2')}" />
-			<span class="inblock" th:text="${#messages.msg('order.count.assigned', ': 1')}" />
-			<span class="inblock" th:text="${#messages.msg('order.count.completed', ': 1')}" />
-			<span class="inblock" th:text="${#messages.msg('order.count.canceled', ': 1')}" />
+			<span class="inblock" th:text="${#messages.msg('order.count.new')}" /><span id="new" />
+			<span class="inblock" th:text="${#messages.msg('order.count.assigned')}" /><span id="assigned"/>
+			<span class="inblock" th:text="${#messages.msg('order.count.completed')}" /><span id="completed"/>
+			<span class="inblock" th:text="${#messages.msg('order.count.canceled')}" /><span id="canceled"/>
 		</div>
 	</footer>
 <!-- //푸터영역 -->

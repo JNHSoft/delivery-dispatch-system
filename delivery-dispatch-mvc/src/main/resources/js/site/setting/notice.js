@@ -1,4 +1,52 @@
+function footerRiders() {
+    if(footerRiderList[2]){
+        $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
+    }else {
+        $('#rest').text('0');
+    }
+    if(footerRiderList[1]){
+        $('#standby').text(parseInt(footerRiderList[1].workCount) - parseInt(footerRiderList[1].orderCount));// 대기
+        $('#work').text(footerRiderList[1].orderCount);//근무
+    }else {
+        $('#standby').text('0');
+        $('#work').text('0');
+    }
+}
+function footerOrders() {
+    if(footerOrderList[0]) {
+        if (footerOrderList[5]) {
+            $('#new').text(parseInt(footerOrderList[0].count)+parseInt(footerOrderList[5].count));
+        } else {
+            $('#new').text(parseInt(footerOrderList[0].count));
+        }
+    } else if(footerOrderList[5]){
+        $('#new').text(parseInt(footerOrderList[5].count));
+    } else {
+        $('#new').text('0');
+    }
 
+    if(footerOrderList[1]){
+        $('#assigned').text(parseInt(footerOrderList[1].count));
+    }else {
+        $('#assigned').text('0');
+    }
+
+    if(footerOrderList[3]){
+        $('#completed').text(parseInt(footerOrderList[3].count));
+    }else {
+        $('#completed').text('0');
+    }
+
+    if(footerOrderList[4]){
+        $('#canceled').text(parseInt(footerOrderList[4].count));
+    }else{
+        $('#canceled').text('0')
+    }
+}
+$(function() {
+    footerRiders();
+    footerOrders();
+});
 function getNoticeList() {
     var mydata = [];
 

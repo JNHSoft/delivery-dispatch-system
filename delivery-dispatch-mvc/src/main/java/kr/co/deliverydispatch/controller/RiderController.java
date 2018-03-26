@@ -5,10 +5,12 @@ import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notice.Notice;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
+import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +30,14 @@ public class RiderController {
      */
     private StoreRiderService storeRiderService;
     private StoreNoticeService storeNoticeService;
+    private StoreOrderService storeOrderService;
+
 
     @Autowired
-    public RiderController(StoreRiderService storeRiderService, StoreNoticeService storeNoticeService) {
+    public RiderController(StoreRiderService storeRiderService, StoreNoticeService storeNoticeService, StoreOrderService storeOrderService) {
         this.storeRiderService = storeRiderService;
         this.storeNoticeService = storeNoticeService;
+        this.storeOrderService = storeOrderService;
     }
 
     /**
@@ -53,9 +58,14 @@ public class RiderController {
         List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
-        model.addAttribute("json", new Gson().toJson(store));
-
-        log.info("json : {}", new Gson().toJson(store));
+        Rider rider = new Rider();
+        rider.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
+        model.addAttribute("footerRiderList", footerRiderList);
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+        model.addAttribute("footerOrderList", footerOrderList);
         return "/rider/rider";
     }
 

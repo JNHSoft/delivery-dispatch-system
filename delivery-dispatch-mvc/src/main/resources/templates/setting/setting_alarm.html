@@ -22,10 +22,10 @@
 						<li id="newAlarm" class="full">
 							<strong th:text="${#messages.msg('alarm.new')}" />
 							<div>
-								<label class="radio"><input name="newAlarm" value="0" type="radio" th:checked="${#strings.contains(store.alarm, '0')}" /><i></i>
+								<label class="radio"><input name="newAlarm" value="0" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '0')}" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="newAlarm" type="radio" th:checked="${!#strings.contains(store.alarm, '0')}"/><i></i>
+								<label class="radio"><input name="newAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '0')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a class="button" id="newAlarmBtn" onclick="javascript:newClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -34,10 +34,10 @@
 						<li id="assignAlarm" class="full">
 							<strong th:text="${#messages.msg('alarm.assigned')}" />
 							<div>
-								<label class="radio"><input name="assignAlarm" value="1" type="radio" th:checked="${#strings.contains(store.alarm, '1')}"/><i></i>
+								<label class="radio"><input name="assignAlarm" value="1" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '1')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="assignAlarm" type="radio" th:checked="${!#strings.contains(store.alarm, '1')}"/><i></i>
+								<label class="radio"><input name="assignAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '1')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="assignAlarmBtn"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -46,10 +46,10 @@
 						<li id="assignCancelAlarm" class="full">
 							<strong th:text="${#messages.msg('alarm.assigned.canceled')}" />
 							<div>
-								<label class="radio"><input name="assignCancelAlarm" value="2" type="radio" th:checked="${#strings.contains(store.alarm, '2')}"/><i></i>
+								<label class="radio"><input name="assignCancelAlarm" value="2" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '2')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="assignCancelAlarm" type="radio" th:checked="${!#strings.contains(store.alarm, '2')}"/><i></i>
+								<label class="radio"><input name="assignCancelAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '2')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="assignCancelAlarmBtn"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -58,10 +58,10 @@
 						<li id="completeAlarm" class="full">
 							<strong th:text="${#messages.msg('alarm.completed')}" />
 							<div>
-								<label class="radio"><input name="completeAlarm" type="radio" value="3" th:checked="${#strings.contains(store.alarm, '3')}"/><i></i>
+								<label class="radio"><input name="completeAlarm" type="radio" value="3" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '3')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="completeAlarm" type="radio" th:checked="${!#strings.contains(store.alarm, '3')}"/><i></i>
+								<label class="radio"><input name="completeAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '3')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="completeAlarmBtn" onclick="javascript:completeClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -70,10 +70,10 @@
 						<li id="cancelAlarm" class="full">
 							<strong th:text="${#messages.msg('alarm.canceled')}" />
 							<div>
-								<label class="radio"><input name="cancelAlarm" type="radio" value="4" th:checked="${#strings.contains(store.alarm, '4')}"/><i></i>
+								<label class="radio"><input name="cancelAlarm" type="radio" value="4" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '4')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="cancelAlarm" type="radio" th:checked="${!#strings.contains(store.alarm, '4')}"/><i></i>
+								<label class="radio"><input name="cancelAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '4')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="cancelAlarmBtn"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -101,6 +101,8 @@
     var my_store = /*[[${store}]]*/ 'my_store';
     var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
     var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
+    var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
+    var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
     function noticeAlarm() {
         $('#myStoreName').text(my_store.storeName);
         var j = 0;
@@ -130,6 +132,13 @@
                 }
                 if(data.match('notice_update')=='notice_update'){
                     noticeAlarm();
+
+                }
+                if(data.match('rider_update')=='rider_update'){
+                    footerRiders();
+                }
+                if(data.match('order_updated')=='order_updated'){
+                    footerOrders()
                 }
             });
             $(function () {

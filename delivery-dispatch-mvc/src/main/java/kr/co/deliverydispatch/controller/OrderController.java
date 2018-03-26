@@ -58,14 +58,19 @@ public class OrderController {
         System.out.println("!!!!토큰"+notice.getToken());
         Store myStore = storeOrderService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-//        Rider rider = new Rider();
-//        rider.setToken(storeInfo.getStoreAccessToken());
-//        List<Rider> riderList = storeRiderService.getRiderFooter(rider);
-//        model.addAttribute("riderList", riderList);
-//        log.info("@@@@@@@@@@@@@2222222222222222222@@@@@@@@@@@@@@@@@@@@@@@"+riderList.get(1).getWorkCount()+""+riderList.get(0).getWorkCount());
+        Rider rider = new Rider();
+        rider.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
+        model.addAttribute("footerRiderList", footerRiderList);
         model.addAttribute("json", new Gson().toJson(store));
-
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> orderList = storeOrderService.getOrders(order);
         log.info("json : {}", new Gson().toJson(store));
+        model.addAttribute("orderList", orderList);
+        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+        model.addAttribute("footerOrderList", footerOrderList);
+
 
         return "/order/order";
     }

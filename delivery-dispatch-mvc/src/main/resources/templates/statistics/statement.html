@@ -192,6 +192,9 @@
     var my_store = /*[[${store}]]*/ 'my_store';
     var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
     var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
+	var order_reg_order_id = /*[[#{order.reg.order.id}]]*/ 'order_reg_order_id';
+    var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
+    var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
     function noticeAlarm() {
         $('#myStoreName').text(my_store.storeName);
         var j = 0;
@@ -222,6 +225,9 @@
                 if(data.match('notice_update')=='notice_update'){
                     noticeAlarm();
                 }
+                if(data.match('rider_update')=='rider_update'){
+                    footerRiders();
+				}
             });
         } else {
             alert('websocket을 지원하지 않는 브라우저입니다.');

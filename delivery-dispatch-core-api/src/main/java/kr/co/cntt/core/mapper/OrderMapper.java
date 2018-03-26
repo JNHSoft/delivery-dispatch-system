@@ -132,4 +132,5 @@ public interface OrderMapper {
 
     public List<String> selectPushToken(SubGroup subGroup);
 
+    public List<Order> selectFooterOrders(Order order);
 }

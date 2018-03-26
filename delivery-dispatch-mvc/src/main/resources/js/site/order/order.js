@@ -1,5 +1,54 @@
 /*<![CDATA[*/
+function footerRiders() {
+    if(footerRiderList[2]){
+        $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
+    }else {
+        $('#rest').text('0');
+    }
+    if(footerRiderList[1]){
+        $('#standby').text(parseInt(footerRiderList[1].workCount) - parseInt(footerRiderList[1].orderCount));// 대기
+        $('#work').text(footerRiderList[1].orderCount);//근무
+    }else {
+        $('#standby').text('0');
+        $('#work').text('0');
+    }
+}
+function footerOrders() {
+    debugger;
+    if(footerOrderList[0]) {
+        if (footerOrderList[5]) {
+            $('#new').text(parseInt(footerOrderList[0].count)+parseInt(footerOrderList[5].count));
+        } else {
+            $('#new').text(parseInt(footerOrderList[0].count));
+            }
+        } else if(footerOrderList[5]){
+        $('#new').text(parseInt(footerOrderList[5].count));
+        } else {
+        $('#new').text('0');
+    }
+
+    if(footerOrderList[1]){
+        $('#assigned').text(parseInt(footerOrderList[1].count));
+    }else {
+        $('#assigned').text('0');
+    }
+
+    if(footerOrderList[3]){
+        $('#completed').text(parseInt(footerOrderList[3].count));
+    }else {
+        $('#completed').text('0');
+    }
+
+    if(footerOrderList[4]){
+        $('#canceled').text(parseInt(footerOrderList[4].count));
+    }else{
+        $('#canceled').text('0')
+    }
+}
+
 $(document).ready(function() {
+    footerOrders();
+    footerRiders();
     var storeId = $('#orderMyStoreChk').val();
     console.log("!!!!!!"+storeId);
     var statusArray = ["0","1","2","3","4","5"];
@@ -16,9 +65,13 @@ $(document).ready(function() {
                 alert(data);//data 받는부분
             if(data.match('order_updated')=='order_updated'){
                 getOrderList(statusArray, storeId);
+                footerOrders()
             }
             if(data.match('notice_update')=='notice_update'){
                 noticeAlarm();
+            }
+            if(data.match('rider_update')=='rider_update'){
+                footerRiders();
             }
         });
         $(function() {
@@ -126,8 +179,8 @@ $(document).ready(function() {
                 data : searchText
             });
             filter.rules.push({
-                field : 'text',
-                op : "cn",
+                field : 'reg_order_id',
+                op : "eq",
                 data : searchText
             });
             filter.rules.push({
@@ -194,6 +247,7 @@ function initMap() {
 }
 
 function getOrderDetail(orderId) {
+    var regOrderId = "";
     console.log("orderId: " + orderId);
     $.ajax({
         url : "/getOrderDetail",
@@ -221,7 +275,12 @@ function getOrderDetail(orderId) {
             else {
                 $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
             }
-            $('.tit').html('<h2>'+order_detail + ' - '+ data.id + '</h2>'+$status);
+            if(data.regOrderId){
+                regOrderId = data.regOrderId;
+            }else{
+                regOrderId = "-";
+            }
+            $('.tit').html('<h2>'+order_detail + ' - '+ data.id + '('+ regOrderId +')</h2>'+$status);
             $('.tit').attr("orderId", data.id);
 
             $('#createdDatetime').html(timeSet(data.createdDatetime));
@@ -423,7 +482,12 @@ function getOrderList(statusArray, storeId) {
                 tmpdata.id = data[key].id;
                 tmpdata.time1 = data[key].createdDatetime;
                 tmpdata.address = data[key].address;
-                tmpdata.text = data[key].menuName;
+                if (data[key].regOrderId){
+                    tmpdata.reg_order_id = data[key].regOrderId;
+                }else{
+                    tmpdata.reg_order_id = '-';
+                }
+
                 tmpdata.time2 = data[key].cookingTime;
                 tmpdata.pay = $toBePaid;
 
@@ -480,7 +544,7 @@ function getOrderList(statusArray, storeId) {
                 {label:order_id, name:'id', width:80, align:'center'},
                 {label:order_created, name:'time1', width:80, align:'center'},
                 {label:order_address, name:'address', width:200},
-                {label:order_summary, name:'text', width:150},
+                {label:order_reg_order_id, name: 'reg order id', width:150},
                 {label:order_cooking, name:'time2', width:80, align:'center'},
                 {label:order_payment, name:'pay', width:80, align:'center'},
                 {label:order_assigned, name:'time3', width:80, align:'center'},

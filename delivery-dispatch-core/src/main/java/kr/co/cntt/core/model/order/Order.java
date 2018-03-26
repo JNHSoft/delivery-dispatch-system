@@ -57,6 +57,7 @@ public class Order extends Common implements Dto {
     private String assignedFirst;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private char[] statusArray;
+    private String count;
 
     private OrderCheckAssignment orderCheckAssignment;
     private Rider rider;

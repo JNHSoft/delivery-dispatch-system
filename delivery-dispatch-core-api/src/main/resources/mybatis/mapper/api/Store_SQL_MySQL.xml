@@ -75,6 +75,7 @@
         <result property="detailAddress" column="detail_address" />
         <result property="latitude" column="latitude" />
         <result property="longitude" column="longitude" />
+        <result property="regOrderId" column="reg_order_id" />
 
         <association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
             <result property="storeName" column="store_name" />
@@ -621,6 +622,7 @@
         , TBO.detail_address
         , TBO.latitude
         , TBO.longitude
+        , TBO.reg_order_id
 
         FROM TB_ORDER AS TBO
 

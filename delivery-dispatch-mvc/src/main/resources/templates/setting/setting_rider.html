@@ -149,6 +149,8 @@
     var my_store = /*[[${store}]]*/ 'my_store';
     var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
     var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
+    var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
+    var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
     function noticeAlarm() {
         $('#myStoreName').text(my_store.storeName);
         var j = 0;
@@ -166,6 +168,9 @@
         }
     }
     $(document).ready(function () {
+        for (var i = 0; i< mydata.length; i++){
+            mydata[i].gender = mydata[i].gender==0 ? '남' : '여';
+        }
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
         if (supportsWebSockets) {
             var socket = io(websocket_localhost, {
@@ -176,8 +181,11 @@
                 if(data.match('rider_updated')=='rider_updated'){
                     location.href = "/setting-rider";
                 }
-                if(data.match('notice_update')=='notice_update'){
+                if(data.match('notice_update')=='rider_update'){
                     noticeAlarm();
+                }
+                if(data.match('order_updated')=='order_updated'){
+                    footerOrders()
                 }
             });
             $(function() {

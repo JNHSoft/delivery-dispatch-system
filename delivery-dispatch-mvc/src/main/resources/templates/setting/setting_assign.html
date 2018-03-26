@@ -46,7 +46,7 @@
 							<strong th:text="${#messages.msg('order.assign.third')}" />
 							<div>
 								<label class="checkbox" th:each="test: ${thirdParty}">
-									<input name="" type="checkbox" id="thirdPartyId" th:value="${test.id}" th:checked="${#strings.contains(store.thirdParty, test.id)}" /><i></i>
+									<input name="" type="checkbox" id="thirdPartyId" th:value="${test.id}" th:checked="${#lists.isEmpty(store.thirdParty) ? 'false':#strings.contains(store.thirdParty, test.id)}" /><i></i>
 									<span class="lbl" th:text="${test.name}"/>
 								</label>
 							</div>
@@ -66,6 +66,8 @@
         var my_store = /*[[${store}]]*/ 'my_store';
         var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
         var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
+        var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
+        var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
         function noticeAlarm() {
             $('#myStoreName').text(my_store.storeName);
             var j = 0;
@@ -95,6 +97,12 @@
                     }
                     if(data.match('notice_update')=='notice_update'){
                         noticeAlarm();
+                    }
+                    if(data.match('rider_update')=='rider_update'){
+                        footerRiders();
+                    }
+                    if(data.match('order_updated')=='order_updated'){
+                        footerOrders()
                     }
                 });
                 $(function () {
