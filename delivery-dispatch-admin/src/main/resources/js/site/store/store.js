@@ -1,3 +1,4 @@
+/*<![CDATA[*/
 $(document).ready(function () {
     getStoreList();
     getGroupList();
@@ -20,7 +21,7 @@ function getStoreList() {
 
             for(var key in data) {
                 var $tmpData = new Object();
-
+                console.log(data);
                 if (data.hasOwnProperty(key)) {
 
 
@@ -42,15 +43,16 @@ function getStoreList() {
                     $tmpData.th8 = data[key].address
                     $tmpData.th9 = data[key].detailAddress
                     $tmpData.th10 = data[key].loginId
+
                     // 0: 수동배정, 1: 자동배정, 2: 기사배정
                     if(data[key].assignmentStatus == "0"){
-                        $tmpData.th11 = "수동"
+                        $tmpData.th11 = order_assign_mode_store;
                     }
                     else if (data[key].assignmentStatus == "1"){
-                        $tmpData.th11 = "자동"
+                        $tmpData.th11 = order_assign_mode_auto;
                     }
                     else if (data[key].assignmentStatus == "2"){
-                        $tmpData.th11 = "기사배정"
+                        $tmpData.th11 = order_assign_mode_rider;
                     }
 
                     $mydata.push($tmpData);
@@ -68,17 +70,17 @@ function getStoreList() {
                 data:$mydata,
                 colModel:[
                     {label:'No', name:'th0', width:25, align:'center'},
-                    {label:'소속그룹', name:'th1', width:60, align:'center'},
-                    {label:'소그룹', name:'th2', width:60, align:'center'},
-                    {label:'매장명', name:'th3', width:80, align:'center'},
-                    {label:'매장코드', name:'th4', width:60, align:'center'},
-                    {label:'매장전화번호', name:'th5', width:80, align:'center'},
-                    {label:'점장명', name:'th6', width:60, align:'center'},
-                    {label:'점장 전화번호', name:'th7', width:80, align:'center'},
-                    {label:'주소', name:'th8', width:200},
-                    {label:'상세주소', name:'th9', width:200},
-                    {label:'아이디', name:'th10', width:60, align:'center'},
-                    {label:'배정모드', name:'th11', width:60, align:'center'},
+                    {label:store_belong_group, name:'th1', width:60, align:'center'},
+                    {label:store_belong_subgroup, name:'th2', width:60, align:'center'},
+                    {label:store_name, name:'th3', width:80, align:'center'},
+                    {label:store_code, name:'th4', width:60, align:'center'},
+                    {label:store_phone, name:'th5', width:80, align:'center'},
+                    {label:store_manager_name, name:'th6', width:60, align:'center'},
+                    {label:store_manager_phone, name:'th7', width:80, align:'center'},
+                    {label:store_address, name:'th8', width:200},
+                    {label:store_address_detail, name:'th9', width:200},
+                    {label:login_id, name:'th10', width:60, align:'center'},
+                    {label:order_assign_mode, name:'th11', width:60, align:'center'},
                     {label:'그룹ID', name:'th12', width:60, hidden:'hidden'},
                     {label:'서브그룹ID', name:'th13', width:60, hidden:'hidden'}
         ],
@@ -384,3 +386,4 @@ function deleteStore() {
 
 
 
+/*]]>*/

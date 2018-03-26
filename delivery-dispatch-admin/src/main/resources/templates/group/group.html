@@ -1,29 +1,67 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
-<script type="text/javascript" th:src="@{/resources/js/site/group/group.js}" layout:fragment="script"></script>
+<script type="text/javascript" th:src="@{/resources/js/site/group/group.js}" layout:fragment="script2"></script>
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var gnb_group = /*[[#{gnb.group}]]*/ 'gnb_group';
+    var group_add_label = /*[[#{group.add.label}]]*/ 'group_add_label';
+    var group_add_label_sub = /*[[#{group.add.label.sub}]]*/ 'group_add_label_sub';
+    var group_add = /*[[#{group.add}]]*/ 'group_add';
+    var group_name = /*[[#{group.name}]]*/ 'group_name';
+    var store_belong_subgroup  = /*[[#{store.belong.subgroup}]]*/ 'store_belong_subgroup';
+    var group_store_count = /*[[#{lgroup.store.count}]]*/ 'group_store_count';
+    var group_mod_del = /*[[#{group.mod.del}]]*/ 'group_mod_del';
+    var group_mod = /*[[#{group.mod}]]*/ 'group_mod';
+    var group_del = /*[[#{group.del}]]*/ 'group_del';
+    var group_none = /*[[#{group.none}]]*/ 'group_none';
+    var group_store_add_label_sub = /*[[#{group.store.add.label.sub}]]*/ 'group_store_add_label_sub';
+    var list_search = /*[[#{list.search}]]*/ 'list_search';
+    var group_label_no = /*[[#{group.label.no}]]*/ 'group_label_no';
+    var store_name = /*[[#{store.name}]]*/ 'store_name';
+    var subgroup_add_label = /*[[#{subgroup.add.label}]]*/ 'subgroup_add_label';
+
+
+
+    var subgroup_name = /*[[#{subgroup.name}]]*/ 'subgroup_name';
+
+
+//    var group_mod = /*[[#{group.mod}]]*/ 'store_address_detail';
+//
+//    var order_assign_mode = /*[[#{order.assign.mode}]]*/ 'order_assign_mode';
+//    var order_assign_mode_store = /*[[#{order.assign.mode.store}]]*/ 'order_assign_mode_store';
+//    var order_assign_mode_auto = /*[[#{order.assign.mode.auto}]]*/ 'order_assign_mode_auto';
+//    var order_assign_mode_rider = /*[[#{order.assign.mode.rider}]]*/ 'order_assign_mode_rider';
+//    var btn_cancel = /*[[#{btn.cancel}]]*/ 'btn_cancel';
+//    var btn_confirm = /*[[#{btn.confirm}]]*/ 'btn_confirm';
+//    var btn_close_pop = /*[[#{btn.close.pop}]]*/ 'btn_close_pop';
+    /*]]>*/
+</script>
+
+
+
 
 <!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
-		<h2 id="pageTit" class="blind">그룹관리</h2>		
+		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.store')}"></h2>
 		<div id="contents">
 			<div class="group_wrap">
 				<div>
 					<div>
 						<div class="cont_in same-height">
-							<p><strong class="fz13 t_black">추가 그룹명</strong> <span class="fz10">그룹명은 최대 15자까지 입력 가능합니다.</span></p>
+							<p><strong class="fz13 t_black" th:text="${#messages.msg('group.add.label')}"></strong> <span class="fz10" th:text="${#messages.msg('group.add.label.sub')}"></span></p>
 							<div class="mt10">
 								<input type="text" class="input" id="postGroupName"/>
-								<button class="button btn_dgray" onClick="javascript:postGroup()"><i class="fa fa-plus" aria-hidden="true" ></i> 추가</button>
+								<button class="button btn_dgray" onClick="javascript:postGroup()"><i class="fa fa-plus" aria-hidden="true" th:text="${#messages.msg('group.add')}"></i></button>
 							</div>
 							<hr />
 							<div class="tbl_wrap" id="groupList">
 								<table class="table">
 									<thead>
 										<tr>
-											<th>그룹명</th>
-											<th>소그룹</th>
-											<th>매장수</th>
-											<th>수정/삭제</th>
+											<th th:text="${#messages.msg('group.name')}"></th>
+											<th th:text="${#messages.msg('store.belong.subgroup')}"></th>
+											<th th:text="${#messages.msg('group.store.count')}"></th>
+											<th th:text="${#messages.msg('group.mod.del')}"></th>
 										</tr>
 									</thead>
 
@@ -33,17 +71,14 @@
 											<td th:text="${group.subGroupCount}"></td>
 											<td th:text="${group.subGroupStoreCount}"></td>
 											<td>
-												<button class="button h20" name="save">수정</button>
-												<button class="button h20" name="delete">삭제</button>
+												<button class="button h20" name="save" th:text="${#messages.msg('group.mod')}"></button>
+												<button class="button h20" name="delete" th:text="${#messages.msg('group.del')}"></button>
 											</td>
 											<input type="hidden" name="defaultGroupName" th:value="${group.name}" />
-
-
-
 										</tr>
 
 										<tr id="noneGroup">
-											<td class="t_left">미지정</td>
+											<td class="t_left" th:text="${#messages.msg('group.none')}"></td>
 											<td>0</td>
 											<td th:text="${noneGroupList.size()}"></td>
 											<td></td>
@@ -58,20 +93,20 @@
 					<!-- 미지정 그룹 -->
 					<div id="noneGroupHtml" style="display: none;">
 						<div class="cont_in same-height">
-							<p><strong class="fz13 t_black">미지정</strong> <span class="fz10">그룹 내 매장</span></p>
+							<p><strong class="fz13 t_black" th:text="${#messages.msg('group_none')}"></strong> <span class="fz10" th:text="${#messages.msg('group.store.add.label.sub')}"></span></p>
 							<div class="mt10">
 								<input type="text" class="input" />
-								<button class="button"><i class="fa fa-search" aria-hidden="true"></i> 검색</button>
+								<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="${#messages.msg('list.search')}"></i></button>
 							</div>
 							<hr />
 							<div class="tbl_wrap" id="noneGroupList" th:fragment="noneGroupList">
 								<table class="table">
 									<thead>
 									<tr>
-										<th>NO</th>
-										<th>매장명</th>
-										<th>그룹명</th>
-										<th>소그룹</th>
+										<th th:text="${#messages.msg('group.label.no')}"></th>
+										<th th:text="${#messages.msg('store.name')}"></th>
+										<th th:text="${#messages.msg('group.name')}"></th>
+										<th th:text="${#messages.msg('store.belong.subgrou')}"></th>
 									</tr>
 									</thead>
 									<tbody>
@@ -105,21 +140,21 @@
 								<label class="checkbox"><input name="checkbox" type="checkbox" /><i></i>
 									<strong class="lbl fz13 t_black" id="store_group_name"/>
 								</label>
-									<strong>소그룹 추가</strong>
-									<span class="fz10">소그룹 미지정 시 각매장은 개별적으로 주문을 처리합니다.</span>
+									<strong th:text="${#messages.msg('subgroup.add.label')}"></strong>
+									<span class="fz10" th:text="${#messages.msg('subgroup.add.label.sub')}"></span>
 							</p>
 							<div class="mt10">
 								<input type="text" class="input" id="postSubGroupName" disabled="disabled"/>
-								<button class="button btn_dgray" onClick="javascript:postSubGroup()"><i class="fa fa-plus" aria-hidden="true" ></i> 추가</button>
+								<button class="button btn_dgray" onClick="javascript:postSubGroup()"><i class="fa fa-plus" aria-hidden="true" th:text="${#messages.msg('group.add')}"></i></button>
 							</div>
 							<hr />
 							<div class="tbl_wrap" id="subGroupList" th:fragment="subGroupList">
 								<table class="table">
 									<thead>
 										<tr>
-											<th>소그룹명</th>
-											<th>매장수</th>
-											<th>수정/삭제</th>
+											<th th:text="${#messages.msg('subgroup.name')}"></th>
+											<th th:text="${#messages.msg('group.store.count')}"></th>
+											<th th:text="${#messages.msg('group.mod.del')}"></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -127,8 +162,8 @@
 											<td class="t_left" th:text="${subGroup.name}" name="groupName"></td>
 											<td th:text="${subGroup.subGroupStoreCount}"></td>
 											<td>
-												<button class="button h20" name="save">수정</button>
-												<button class="button h20" name="delete">삭제</button>
+												<button class="button h20" name="save" th:text="${#messages.msg('group.mod')}"></button>
+												<button class="button h20" name="delete" th:text="${#messages.msg('group.del')}"></button>
 											</td>
 											<input type="hidden" name="defaultGroupName" th:value="${subGroup.name}" />
 										</tr>
@@ -139,20 +174,20 @@
 					</div>
 					<div id="storeHtml" style="display: none;">
 						<div class="cont_in same-height">
-							<p><strong class="fz13 t_black" id="store_subgroup_name"/> <span class="fz10">그룹 내 매장</span></p>
+							<p><strong class="fz13 t_black" id="store_subgroup_name"/> <span class="fz10" th:text="${#messages.msg('group.store.add.label.sub')}"></span></p>
 							<div class="mt10">
 								<input type="text" class="input" />
-								<button class="button"><i class="fa fa-search" aria-hidden="true"></i> 검색</button>
+								<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="${#messages.msg('list.search')}"></i> </button>
 							</div>
 							<hr />
 							<div class="tbl_wrap" th:fragment="storeList" id="storeList">
 								<table class="table">
 									<thead>
 										<tr>
-											<th>NO</th>
-											<th>매장명</th>
-											<th>소그룹</th>
-											<th>삭제</th>
+											<th th:text="${#messages.msg('group.label.no')}"></th>
+											<th th:text="${#messages.msg('store.name')}"></th>
+											<th th:text="${#messages.msg('group.name')}"></th>
+											<th th:text="${#messages.msg('group.del')}"></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -167,7 +202,7 @@
 												</select>
 											</td>
 											<td>
-												<button class="button h20" name="delete">삭제</button>
+												<button class="button h20" name="delete" th:text="${#messages.msg('group.del')}">삭제</button>
 											</td>
 										</tr>
 									</tbody>

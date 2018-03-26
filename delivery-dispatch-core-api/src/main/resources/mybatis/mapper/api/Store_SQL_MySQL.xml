@@ -449,10 +449,8 @@
                     AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
                 </if>
             </when>
-            <otherwise>
-            </otherwise>
         </choose>
-        ORDER BY A.name asc
+--         ORDER BY A.name asc
     </select>
 
 

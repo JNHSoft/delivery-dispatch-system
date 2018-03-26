@@ -15,7 +15,7 @@ public interface AccountAdminService {
 
 
     /**
-     * <p> getAdminAccount
+     * <p> putAdminAccount
      *
      * @param admin
      * @return int

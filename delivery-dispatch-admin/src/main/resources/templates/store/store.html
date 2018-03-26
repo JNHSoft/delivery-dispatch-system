@@ -1,6 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
-<script type="text/javascript" th:src="@{/resources/js/site/store/store.js}" layout:fragment="script"></script>
+<script type="text/javascript" th:src="@{/resources/js/site/store/store.js}" layout:fragment="script2"></script>
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var gnb_store = /*[[#{gnb.store}]]*/ 'gnb_store';
+    var list_search_all = /*[[#{list.search.all}]]*/ 'list_search_all';
+    var list_search_placeholder = /*[[#{list.search.placeholder}]]*/ 'list_search_placeholder';
+    var list_search = /*[[#{list.search}]]*/ 'list_search';
+    var btn_store = /*[[#{btn.store}]]*/ 'btn_store';
+    var store_detail  = /*[[#{store.detail}]]*/ 'store_detail';
+    var login_id = /*[[#{login.id}]]*/ 'login_id';
+    var btn_duplicated = /*[[#{btn.duplicated}]]*/ 'btn_duplicated';
+    var store_belong_group = /*[[#{store.belong.group}]]*/ 'store_belong_group';
+    var store_belong_subgroup = /*[[#{store.belong.subgroup}]]*/ 'store_belong_subgroup';
+    var login_password = /*[[#{login.password}]]*/ 'login_password';
+    var store_manager_name = /*[[#{store.manager.name}]]*/ 'store_manager_name';
+    var store_code = /*[[#{store.code}]]*/ 'store_code';
+    var store_manager_phone = /*[[#{store.manager.phone}]]*/ 'store_manager_phone';
+    var store_name = /*[[#{store.name}]]*/ 'store_name';
+    var store_address = /*[[#{store.address}]]*/ 'store_address';
+    var store_phone = /*[[#{store.phone}]]*/ 'store_phone';
+    var store_address_detail = /*[[#{store.address.detail}]]*/ 'store_address_detail';
+    var order_assign_mode = /*[[#{order.assign.mode}]]*/ 'order_assign_mode';
+    var order_assign_mode_store = /*[[#{order.assign.mode.store}]]*/ 'order_assign_mode_store';
+    var order_assign_mode_auto = /*[[#{order.assign.mode.auto}]]*/ 'order_assign_mode_auto';
+    var order_assign_mode_rider = /*[[#{order.assign.mode.rider}]]*/ 'order_assign_mode_rider';
+    var btn_cancel = /*[[#{btn.cancel}]]*/ 'btn_cancel';
+    var btn_confirm = /*[[#{btn.confirm}]]*/ 'btn_confirm';
+    var btn_close_pop = /*[[#{btn.close.pop}]]*/ 'btn_close_pop';
+    /*]]>*/
+</script>
+
+
+
 	<!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
 
@@ -13,17 +45,17 @@
 		<input type="hidden" id="hasGroup"/>
 
 
-		<h2 id="pageTit" class="blind">매장관리</h2>
+		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.store')}"></h2>
 		<div class="search_box">
 			<div class="left">
 				<select name="" class="select">
-					<option value="">전체</option>
+					<option value="" th:text="${#messages.msg('list.search.all')}"></option>
 				</select>
-				<input type="text" class="input" placeholder="검색명을 입력하세요" />
-				<button class="button"><i class="fa fa-search" aria-hidden="true"></i> 검색</button>
+				<input type="text" class="input" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
+				<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" ></i></button>
 			</div>
 			<div class="right">
-				<a href="#popStore" class="button btn_blue pop_open"><i class="fa fa-plus" aria-hidden="true" onClick="javascript:getGroupList()"></i> 신규매장</a>
+				<a href="#popStore" class="button btn_blue pop_open"><i class="fa fa-plus" aria-hidden="true" onClick="javascript:getGroupList()" th:text="${#messages.msg('btn.store')}"></i></a>
 			</div>
 		</div>
 		<div id="contents">
@@ -43,7 +75,7 @@
 <div id="popStore" class="pop_wrap" layout:fragment="popup">
 	<article class="popup">
 		<div class="pop_head">
-			<h1>매장 정보</h1>
+			<h1 th:text="${#messages.msg('store.detail')}"></h1>
 		</div>
 		<div class="pop_cont">
 			<div class="tbl_wrap">
@@ -56,12 +88,12 @@
 					</colgroup>
 					<tbody>
 					<tr>
-						<th>아이디</th>
+						<th th:text="${#messages.msg('login.id')}"></th>
 						<td>
 							<input type="text" name="" id="postStoreLoginId" class="input" value="" />
-							<button class="button btn_black" onclick="alertTip('#postStoreLoginId','중복된 아이디 입니다.')">중복확인</button>
+							<button class="button btn_black" onclick="alertTip('#postStoreLoginId','중복된 아이디 입니다.')" th:text="${#messages.msg('btn.duplicated')}"></button>
 						</td>
-						<th>소속그룹</th>
+						<th th:text="${#messages.msg('store.belong.group')}"></th>
 						<td>
 							<select name="" class="select" id="postStoreGroup">
 								<!--<option value="">서초동부</option>-->
@@ -72,36 +104,36 @@
 						</td>
 					</tr>
 					<tr>
-						<th>패스워드</th>
+						<th th:text="${#messages.msg('login.password')}"></th>
 						<td><input type="password" name="" class="input" value="" id="postStoreloginPw"/></td>
-						<th>점장명</th>
+						<th th:text="${#messages.msg('store.manager.name')}"></th>
 						<td><input type="text" name="" class="input" value="" id="postStoreUserName"/></td>
 					</tr>
 					<tr>
-						<th>매장코드</th>
+						<th th:text="${#messages.msg('store.code')}"></th>
 						<td><input type="text" name="" class="input" value="" id="postStoreCode"/></td>
-						<th>점장 전화번호</th>
+						<th th:text="${#messages.msg('store.manager.phone')}"></th>
 						<td><input type="text" name="" class="input" value="" id="postStoreUserPhone"/></td>
 					</tr>
 					<tr>
-						<th>매장명</th>
+						<th th:text="${#messages.msg('store.name')}"></th>
 						<td><input type="text" name="" class="input" value="" id="postStoreName"/></td>
-						<th>매장주소</th>
+						<th th:text="${#messages.msg('store.address')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="postStoreAddress"/></td>
 					</tr>
 					<tr>
-						<th>매장 전화번호</th>
+						<th th:text="${#messages.msg('store.phone')}"></th>
 						<td><input type="text" name="" class="input" value="" id="postStorePhone"/></td>
-						<th>매장 상세주소</th>
+						<th th:text="${#messages.msg('store.address.detail')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="postStoreDetailAddress"/></td>
 					</tr>
 					<tr>
-						<th>배정 모드</th>
+						<th th:text="${#messages.msg('order.assign.mode')}"></th>
 						<td>
 							<select name="" class="select" id="postStoreAssignStatusSelectBox">
-								<option value="0">수동</option>
-								<option value="1">자동</option>
-								<option value="2">기사배정</option>
+								<option value="0" th:text="${#messages.msg('order.assign.mode.store')}"></option>
+								<option value="1" th:text="${#messages.msg('order.assign.mode.auto')}"></option>
+								<option value="2" th:text="${#messages.msg('order.assign.mode.rider')}"></option>
 							</select>
 						</td>
 						<th></th>
@@ -112,13 +144,13 @@
 			</div>
 		</div>
 		<div class="pop_foot">
-			<div class="left"><a href="#" class="button h30 btn_gray pop_close">취소</a></div>
+			<div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
 			<div class="right">
 				<!--<a href="#" class="button h30 btn_red">삭제</a>-->
-				<a href="" class="button h30 btn_blue" onClick="javascript:postStore()">확인</a>
+				<a href="" class="button h30 btn_blue" onClick="javascript:postStore()" th:text="${#messages.msg('btn.confirm')}"></a>
 			</div>
 		</div>
-		<a href="#" class="btn_close pop_close">팝업닫기</a>
+		<a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>
 	</article>
 </div>
 <!-- //팝업영역 -->
@@ -129,7 +161,7 @@
 <div id="popStoreDetail" class="pop_wrap" layout:fragment="popup_2">
 	<article class="popup">
 		<div class="pop_head">
-			<h1>매장 정보</h1>
+			<h1 th:text="${#messages.msg('store.detail')}"></h1>
 		</div>
 		<div class="pop_cont">
 			<div class="tbl_wrap">
@@ -142,12 +174,12 @@
 					</colgroup>
 					<tbody>
 					<tr>
-						<th>아이디</th>
+						<th th:text="${#messages.msg('login.id')}"></th>
 						<td>
 							<input type="text" name="" id="storeDetailLoginId" class="input" value="" readonly="true"/>
 
 						</td>
-						<th>소속그룹</th>
+						<th th:text="${#messages.msg('store.belong.group')}"></th>
 						<td>
 							<select name="" class="select" id="storeDetailGroup">
 								<!--<option value="">서초동부</option>-->
@@ -158,38 +190,38 @@
 						</td>
 					</tr>
 					<tr>
-						<th>패스워드</th>
+						<th th:text="${#messages.msg('login.password')}"></th>
 						<td><input type="password" name="" class="input" value="" id="storeDetailPassword" readonly="true"/></td>
 
-						<th>점장명</th>
+						<th th:text="${#messages.msg('store.manager.name')}"></th>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserName"/></td>
 					</tr>
 					<tr>
-						<th>매장코드</th>
+						<th th:text="${#messages.msg('store.code')}"></th>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStoreCode"/></td>
-						<th>점장 전화번호</th>
+						<th th:text="${#messages.msg('store.manager.phone')}"></th>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserPhone" /></td>
 					</tr>
 					<tr>
-						<th>매장명</th>
+						<th th:text="${#messages.msg('store.name')}"></th>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStoreName"/></td>
-						<th>매장주소</th>
+						<th th:text="${#messages.msg('store.address')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="storeDetailStoreAddress"/></td>
 					</tr>
 					<tr>
-						<th>매장 전화번호</th>
+						<th th:text="${#messages.msg('store.phone')}"></th>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStorePhone"/></td>
-						<th>매장 상세주소</th>
+						<th th:text="${#messages.msg('store.address.detail')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="storeDetailStoreDetailAddress"/></td>
 					</tr>
 					 <!--0: 수동배정, 1: 자동배정, 2: 기사배정-->
 					<tr>
-						<th>배정 모드</th>
+						<th th:text="${#messages.msg('order.assign.mode')}"></th>
 						<td>
 							<select name="" class="select" id="storeDetailAssignStatusSelectBox">
-								<option value="0">수동</option>
-								<option value="1">자동</option>
-								<option value="2">기사배정</option>
+								<option value="0" th:text="${#messages.msg('order.assign.mode.store')}"></option>
+								<option value="1" th:text="${#messages.msg('order.assign.mode.auto')}"></option>
+								<option value="2" th:text="${#messages.msg('order.assign.mode.rider')}"></option>
 							</select>
 						</td>
 						<th></th>
@@ -200,19 +232,14 @@
 			</div>
 		</div>
 		<div class="pop_foot">
-			<div class="left"><a href="#" class="button h30 btn_gray pop_close">취소</a></div>
+			<div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
 			<div class="right">
-				<a href="" class="button h30 btn_red" onClick="javascript:deleteStore()">삭제</a>
-				<a href="" class="button h30 btn_blue" onClick="javascript:putStoreDetail()">확인</a>
+				<a href="" class="button h30 btn_red" onClick="javascript:deleteStore()" th:text="${#messages.msg('btn.delete')}"></a>
+				<a href="" class="button h30 btn_blue" onClick="javascript:putStoreDetail()" th:text="${#messages.msg('btn.confirm')}"></a>
 			</div>
 		</div>
-		<a href="#" class="btn_close pop_close">팝업닫기</a>
+		<a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>
 	</article>
 </div>
-
-
-
-
-
 
 </html>
