@@ -248,8 +248,8 @@ public class SettingController {
         }
 
         FileUtil fileUtil = new FileUtil();
-//        fileUtil.fileUpload(fileArray, alarmFileUploadPath+"/");
-        fileUtil.fileUpload(fileArray, "c:\\");
+        fileUtil.fileUpload(fileArray, alarmFileUploadPath+"/");
+//        fileUtil.fileUpload(fileArray, "c:\\");
 
         return "redirect:/setting-alarm";
     }
