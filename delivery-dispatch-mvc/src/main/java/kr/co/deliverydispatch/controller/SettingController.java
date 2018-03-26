@@ -271,14 +271,4 @@ public class SettingController {
         storeSettingService.putNoticeConfirm(notice);
         return true;
     }
-
-    @ResponseBody
-    @GetMapping("/getRiderList2")
-    @CnttMethodDescription("그룹소속 기사목록")
-    public List<Rider> getMyRiderList(Common common){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        common.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> riderList = storeRiderService.getRiderNow(common);
-        return riderList;
-    }
 }

@@ -66,7 +66,7 @@
                 </div>
                 <div class="inp_chat">
                     <textarea class="textarea" id="chatTextarea"></textarea>
-                    <button class="button btn_blue" th:text="${#messages.msg('rider.chat.send')}" onclick="javascript:postChat()"/>
+                    <button class="button btn_blue" th:text="${#messages.msg('rider.chat.send')}" id="sendChat" onclick="javascript:postChat()"/>
                 </div>
             </div>
         </div>
@@ -83,8 +83,7 @@
         var status_off = /*[[#{status.off}]]*/ 'status_off';
         var my_store = /*[[${store}]]*/ 'my_store';
         var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
-
-        $(document).ready(function() {
+        function noticeAlarm() {
             $('#myStoreName').text(my_store.storeName);
             var j = 0;
             console.log(my_notice_list);
@@ -99,6 +98,9 @@
             }else{
                 $("#notice_alarm").removeClass('new');
             }
+        }
+        $(document).ready(function() {
+            noticeAlarm();
         });
         /*]]>*/
     </script>

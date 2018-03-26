@@ -6,6 +6,7 @@
 		<div th:object="${store}" style="display:none">
 			<input type="hidden" id="statusArray"/>
 			<input type="hidden" id="assignmentStatus" th:value="*{assignmentStatus}"/>
+			<input type="hidden" id="adminId" th:value="*{adminId}" />
 		</div>
 		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.order')}"></h2>
 		<div class="search_box">
@@ -194,7 +195,7 @@
 						</div>
 						<div class="btn">
 							<div class="f_left"><a href="#" class="button btn_red w80" onclick="javascript:putOrderCancle()"><i class="fa fa-close" aria-hidden="true" ></i> 주문취소</a></div>
-							<div class="f_right"><a href="#" class="button btn_blue w80" onclick="javascript:orderConfirm()"><i class="fa fa-check" aria-hidden="true"></i> 확인</a></div>
+							<div class="f_right"><a href="#" class="button btn_blue w80" id="orderUpdate" onclick="javascript:orderConfirm()"><i class="fa fa-check" aria-hidden="true"></i> 확인</a></div>
 						</div>
 					</div>
 				</div>
@@ -233,8 +234,7 @@
         var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
         var my_store = /*[[${store}]]*/ 'my_store';
         var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
-
-        $(document).ready(function() {
+        function noticeAlarm() {
             $('#myStoreName').text(my_store.storeName);
             var j = 0;
             console.log(my_notice_list);
@@ -248,7 +248,10 @@
                 $("#notice_alarm").addClass('new');
             }else{
                 $("#notice_alarm").removeClass('new');
-			}
+            }
+        }
+        $(document).ready(function() {
+            noticeAlarm()
         });
         /*]]>*/
 	</script>

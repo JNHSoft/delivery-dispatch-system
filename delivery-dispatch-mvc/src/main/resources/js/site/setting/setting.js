@@ -201,7 +201,6 @@ function putRIderInfo() {
         },
         dataType : 'json',
         success : function (data) {
-            alert('success');
             location.href="/setting-rider";
         }
     });

@@ -1,30 +1,34 @@
 $(document).ready(function() {
-    getFooterRiderList()
-    var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
-    if (supportsWebSockets) {
-        var socket = io('13.125.18.185:3000', {
-            path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
-            transports: ['websocket'] // websocket만을 사용하도록 설정
-        });
-        socket.on('message', function(data){
-//                alert(data);//data 받는부분
-        });
-        $(function() {
-            $('#test').click(function(){
-                alert("!!!");
-                socket.emit('message', "websocketTest");//data보내는부분
-            });
-        })
-    } else {
-        alert('websocket을 지원하지 않는 브라우저입니다.');
-    }
-
     var storeId = $('#orderMyStoreChk').val();
     console.log("!!!!!!"+storeId);
     var statusArray = ["0","1","2","3","4","5"];
     $('#statusArray').val(statusArray);
     console.log($('#statusArray').val());
     getOrderList(statusArray, storeId);
+    var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
+    if (supportsWebSockets) {
+        var socket = io(/*'13.125.18.185:3000'*/'http://localhost:3000', {
+            path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
+            transports: ['websocket'] // websocket만을 사용하도록 설정
+        });
+        socket.on('message', function(data){
+                alert(data);//data 받는부분
+            if(data.match('order_updated')=='order_updated'){
+                getOrderList(statusArray, storeId);
+            }
+            if(data.match('notice_update')=='notice_update'){
+                noticeAlarm();
+            }
+        });
+        $(function() {
+            $('#orderUpdate').click(function(){
+                socket.emit('message', "push_data:{type:order_updated, storeId:"+storeId+"}");
+            });
+        })
+    } else {
+        alert('websocket을 지원하지 않는 브라우저입니다.');
+    }
+
 
     $("#orderAllChk").click(function () {
         if(this.checked){

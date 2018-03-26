@@ -260,7 +260,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         int ret = this.putOrder(orderAssigned);
 
         if (ret != 0) {
-            redisService.setPublisher("order_assigned", "id:"+order.getId()+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
+            redisService.setPublisher("order_assigned", "id:"+order.getId()+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
 
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
