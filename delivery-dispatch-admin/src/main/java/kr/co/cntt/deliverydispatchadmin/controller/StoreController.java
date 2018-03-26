@@ -1,6 +1,8 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 import com.google.gson.Gson;
+import kr.co.cntt.api.security.Actor;
+import kr.co.cntt.api.security.ActorDetails;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
@@ -10,6 +12,8 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StoreAdminService;
 import kr.co.cntt.core.util.Geocoder;
+import kr.co.cntt.core.util.MD5Encoder;
+import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.cntt.deliverydispatchadmin.enums.SessionEnum;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -290,7 +295,9 @@ public class StoreController {
                              @RequestParam("name") String name,
                              @RequestParam("phone") String phone,
                              @RequestParam("address") String address,
-                             @RequestParam("detailAddress") String detailAddress)
+                             @RequestParam("detailAddress") String detailAddress
+
+    )
     {
 
     // store Model 생성
@@ -302,9 +309,21 @@ public class StoreController {
 
     log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
+
+
+
+
+    MD5Encoder md5 = new MD5Encoder();
+    ShaEncoder sha = new ShaEncoder(512);
+
+
+
     // param storeId
     store.setLoginId(loginId);
-    store.setLoginPw(loginPw);
+    store.setLoginPw(sha.encode(loginPw));
+
+
+
     store.setCode(code);
     store.setStoreName(storeName);
     store.setStorePhone(storePhone);
@@ -325,6 +344,7 @@ public class StoreController {
     subGroupRel.setSubGroupId(subGroupId);
     subGroupRel.setGroupId(groupId);
     store.setSubGroupStoreRel(subGroupRel);
+
 
     // 위도 경도
     if ((store.getLatitude() == null || store.getLatitude() == "") || (store.getLongitude() == null || store.getLongitude() == "")) {

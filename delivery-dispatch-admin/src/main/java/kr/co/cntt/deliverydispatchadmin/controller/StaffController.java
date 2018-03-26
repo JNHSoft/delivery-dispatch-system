@@ -9,6 +9,8 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StaffAdminService;
+import kr.co.cntt.core.util.MD5Encoder;
+import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -234,8 +236,13 @@ public class StaffController {
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
+        MD5Encoder md5 = new MD5Encoder();
+        ShaEncoder sha = new ShaEncoder(512);
+
         rider.setLoginId(loginId);
-        rider.setLoginPw(loginPw);
+
+        rider.setLoginPw(sha.encode(loginPw));
+
         rider.setCode(code);
         rider.setName(name);
         rider.setGender(gender);
