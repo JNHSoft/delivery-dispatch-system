@@ -3,7 +3,6 @@ package kr.co.cntt.core.util;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.CnttBizException;
 import kr.co.cntt.core.service.ServiceSupport;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -76,9 +75,9 @@ public class FileUtil extends ServiceSupport {
 					String directoryPath = savePath;
 					fileInputName = uploadFile.getName();
 					// 파일 이름
-					DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmSS");
+					DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 					String[] tmp = uploadFile.getOriginalFilename().split("\\.");
-					originalFileName = RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1];
+					originalFileName = LocalDateTime.now().format(dateformatter) + "_" + uploadFile.getOriginalFilename();
 //					originalFileName = uploadFile.getOriginalFilename().replaceAll("^.*\\/|^.*\\\\", "");
 
 					// 업로드 경로

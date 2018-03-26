@@ -16,7 +16,6 @@ import kr.co.cntt.core.service.admin.NoticeAdminService;
 import kr.co.cntt.core.util.FileUtil;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -205,7 +204,43 @@ public class SettingController {
      * @return
      */
     @GetMapping("/setting-alarm")
-    public String settingAlarm() { return "/setting/setting_alarm"; }
+    public String settingAlarm(Alarm alarm, Model model) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        alarm.setToken(adminInfo.getAdminAccessToken());
+
+        List<Alarm> retAlarm = fileUploadAdminService.getAlarmList(alarm);
+
+        Alarm newAlarm = new Alarm();
+        Alarm assignAlarm = new Alarm();
+        Alarm assignedCancelAlarm = new Alarm();
+        Alarm completeAlarm = new Alarm();
+        Alarm cancelAlarm = new Alarm();
+
+        for (Alarm a : retAlarm) {
+            if (a.getAlarmType().equals("0")) {
+                newAlarm = a;
+            } else if (a.getAlarmType().equals("1")) {
+                assignAlarm = a;
+            } else if (a.getAlarmType().equals("2")) {
+                assignedCancelAlarm = a;
+            } else if (a.getAlarmType().equals("3")) {
+                completeAlarm = a;
+            } else if (a.getAlarmType().equals("4")) {
+                cancelAlarm = a;
+            }
+
+        }
+
+        log.info(newAlarm.getOriFileName());
+        log.info(newAlarm.getAlarmType());
+        model.addAttribute("newAlarm", newAlarm);
+        model.addAttribute("assignAlarm", assignAlarm);
+        model.addAttribute("assignedCancelAlarm", assignedCancelAlarm);
+        model.addAttribute("completeAlarm", completeAlarm);
+        model.addAttribute("cancelAlarm", cancelAlarm);
+
+        return "/setting/setting_alarm";
+    }
 
 
     @PostMapping("/alarmFileUpload")
@@ -213,9 +248,11 @@ public class SettingController {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
         MultipartHttpServletRequest multipartRequest =  (MultipartHttpServletRequest) request;
+
         List<MultipartFile> reqFiles = multipartRequest.getFiles("alarmFile");
         List<MultipartFile> files = new ArrayList<>();
-        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmSS");
+
+        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         Alarm alarm = new Alarm();
         alarm.setToken(adminInfo.getAdminAccessToken());
@@ -226,8 +263,9 @@ public class SettingController {
 
                 alarm.setAlarmType(Integer.toString(j));
                 alarm.setOriFileName(reqFiles.get(j).getOriginalFilename());
-                String[] tmp = reqFiles.get(j).getOriginalFilename().split("\\.");
-                alarm.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
+//                String[] tmp = reqFiles.get(j).getOriginalFilename().split("\\.");
+//                alarm.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
+                alarm.setFileName(LocalDateTime.now().format(dateformatter) + "_" + reqFiles.get(j).getOriginalFilename());
                 alarm.setFileSize(Long.toString(reqFiles.get(j).getSize()));
 
                 fileUploadAdminService.alarmFileUpload(alarm);
@@ -252,6 +290,22 @@ public class SettingController {
 //        fileUtil.fileUpload(fileArray, "c:\\");
 
         return "redirect:/setting-alarm";
+    }
+
+
+    /**
+     * 설정 - 알람 삭제
+     *
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/deleteAlarm")
+    @CnttMethodDescription("알람 삭제")
+    public int deleteAlarm(Alarm alarm) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        alarm.setToken(adminInfo.getAdminAccessToken());
+
+        return fileUploadAdminService.deleteAlarm(alarm);
     }
 
 

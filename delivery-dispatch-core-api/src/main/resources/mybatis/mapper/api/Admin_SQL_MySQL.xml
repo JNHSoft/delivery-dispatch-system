@@ -928,7 +928,7 @@
 		UPDATE TB_ALARM
 			SET deleted = now()
 		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			AND alarm_type = #{alarmType}
+			AND id = #{id}
 			AND deleted IS NULL
 	</update>
 
