@@ -2,6 +2,7 @@ package kr.co.cntt.deliverydispatchadmin.controller;
 
 import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
@@ -12,6 +13,7 @@ import kr.co.cntt.core.service.admin.StaffAdminService;
 import kr.co.cntt.core.util.MD5Encoder;
 import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
+import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +30,8 @@ import java.util.Map;
 public class StaffController {
 
 
+    @Autowired
+    private TokenManager tokenManager;
 
     /**
      * 객체 주입
@@ -145,6 +149,7 @@ public class StaffController {
     @CnttMethodDescription("기사 정보 수정")
     public String putStoreDetail(
             @RequestParam("riderId") String riderId,
+//            @RequestParam("loginPw") String loginPw,
             @RequestParam("storeId") String storeId,
             @RequestParam("code") String code,
             @RequestParam("name") String name,
@@ -167,6 +172,17 @@ public class StaffController {
         rider.setToken(adminInfo.getAdminAccessToken());
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+
+
+
+//        D5Encoder md5 = new MD5Encoder();
+//        ShaEncoder sha = new ShaEncoder(512);
+//        Rider parameterRidern = new Rider();
+//
+//        parameterRidern.setLoginPw(sha.encode(rider.getLoginPw()));
+//        parameterRidern.setToken(rider.getToken());
+//        parameterRidern.setRole("ROLE_ADMIN");
+
 
         // param storeId
         rider.setId(riderId);
@@ -236,11 +252,12 @@ public class StaffController {
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
+        Rider riderSession = new Rider();
+
         MD5Encoder md5 = new MD5Encoder();
         ShaEncoder sha = new ShaEncoder(512);
 
         rider.setLoginId(loginId);
-
         rider.setLoginPw(sha.encode(loginPw));
 
         rider.setCode(code);
@@ -274,6 +291,18 @@ public class StaffController {
         int A_Rider = staffAdminService.insertRider(rider);
         int A_Group = 0 ;
 
+
+
+        String riderSessionToken = tokenManager.getToken("3",loginId , loginPw);
+        log.info("@@@@@@@@@@@@@@@@ " + riderSessionToken);
+        riderSession.setAccessToken(riderSessionToken);
+        riderSession.setId(rider.getId());
+        riderSession.setLoginId(loginId);
+
+        log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION" );
+        staffAdminService.insertAdminRiderSession(riderSession);
+        log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION");
+
         log.info("@@@@@@@@@@@@@@@@@groupinsert@@@@@@@@@@@@@@@@@@@@");
         A_Group = staffAdminService.insertSubGroupRiderRel(rider);
 
@@ -283,6 +312,11 @@ public class StaffController {
             return "ok";
         }
     }
+
+
+
+
+
     // 기사 등록시 매장 리스트 불러오기
     @ResponseBody
     @GetMapping("/getRiderStoreList")

@@ -228,8 +228,6 @@ public class TokenManager implements Serializable {
         String token = "";
 
         try {
-
-
             /*
                 level "3" -> Rider
                 level "2" -> Store
@@ -241,21 +239,16 @@ public class TokenManager implements Serializable {
             log.info("===> [getToken RequestParam][loginId : {}]", loginId);
             log.info("===> [getToken RequestParam][loginPw : {}]", loginPw);
 
-//            Actor actor = customAuthentificateService.createActor(loginId, loginPw);
             Actor actor = customAuthentificateService.createActor(loginId, loginPw, level);
 
-            final Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(actor.getLoginId(), actor.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
             final ActorDetails actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
             token = this.generateCustomToken(actorDetails, null);
 
-            log.info("[AppApiExporter][createAuthenticate][actor][loginId : {}]", actor.getLoginId());
-            log.info("[AppApiExporter][createAuthenticate][actor][loginPw : {}]", actor.getLoginPw());
-            log.info("[AppApiExporter][createAuthenticate][actor][uuid : {}]", actor.getUsername());
-            //log.info("[AppApiExporter][createAuthenticate][actor][ip : {}]", actor.getIp());
-            log.info("[AppApiExporter][createAuthenticate][actor][time : {}]", actor.getTime());
-            log.info("[AppApiExporter][createAuthenticate][actor][token : {}]", token);
+            log.info("[ToeknManager][getToken][actor][loginId : {}]", actor.getLoginId());
+            log.info("[ToeknManager][getToken][actor][loginPw : {}]", actor.getLoginPw());
+            log.info("[ToeknManager][getToken][actor][uuid : {}]", actor.getUsername());
+            log.info("[ToeknManager][getToken][actor][time : {}]", actor.getTime());
+            log.info("[ToeknManager][getToken][actor][token : {}]", token);
 
         } catch(Exception e) {
             e.printStackTrace();

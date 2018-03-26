@@ -301,6 +301,7 @@ function putStoreDetail() {
         url : "/putStoreDetail",
         type : 'put',
         dataType : 'json',
+        async : false,
         data : {
             storeId				: $("#selectedStoreId").val(),
             code    			: $("#storeDetailStoreCode").val(),
@@ -335,6 +336,7 @@ function postStore() {
         url: "/postStore",
         type: 'post',
         dataType: 'json',
+        async : false,
         data: {
             loginId				: $("#postStoreLoginId").val(),
             loginPw             : $("#postStoreloginPw").val(),
@@ -350,10 +352,10 @@ function postStore() {
             detailAddress		: $("#postStoreDetailAddress").val()
         },
         success: function (data) {
-
-            popClose('#popStore');
-            getStoreList()
-            location.href = "/store";
+            console.log(data);
+            //popClose('#popStore');
+            //getStoreList();
+            location.reload();
 
         }
     });

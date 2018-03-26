@@ -157,6 +157,21 @@
 	</insert>
 
 
+	<!-- insertAdminRiderSession -->
+	<insert id="insertAdminRiderSession" parameterType="kr.co.cntt.core.model.rider.Rider">
+		<![CDATA[
+		INSERT INTO TB_RIDER_SESSION(rider_id, access_token, created_datetime)
+		SELECT
+			#{id}
+			, #{accessToken}
+			, now()
+		FROM TB_RIDER
+		WHERE login_id = #{loginId}
+		]]>
+	</insert>
+
+
+
 	<!-- updateRiderSession -->
 	<update id="updateRiderSession" parameterType="String">
 		UPDATE TB_RIDER AS A

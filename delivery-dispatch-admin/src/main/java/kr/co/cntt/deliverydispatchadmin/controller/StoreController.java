@@ -1,8 +1,6 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 import com.google.gson.Gson;
-import kr.co.cntt.api.security.Actor;
-import kr.co.cntt.api.security.ActorDetails;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
@@ -313,13 +311,11 @@ public class StoreController {
     log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
 
-
+    Store storeSession = new Store();
 
 
     MD5Encoder md5 = new MD5Encoder();
     ShaEncoder sha = new ShaEncoder(512);
-
-
 
     // param storeId
     store.setLoginId(loginId);
@@ -367,11 +363,25 @@ public class StoreController {
     store.setIsAdmin("1");
     storeAdminService.insertChatUser(store);
     storeAdminService.insertChatRoom(store);
+
+
+
     int A_Store = storeAdminService.insertStore(store);
     int A_Group = 0;
     int A_Assign_Status = 0;
 
-    if (groupId != null && groupId != "" && subGroupId != null && subGroupId != "") {
+    String storeSessionToken = tokenManager.getToken("2",loginId , loginPw);
+    log.info("@@@@@@@@@@@@@@@@ " + storeSessionToken);
+    storeSession.setAccessToken(storeSessionToken);
+    storeSession.setId(store.getId());
+    storeSession.setLoginId(loginId);
+
+    log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION" );
+    storeAdminService.insertAdminStoreSession(storeSession);
+    log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION");
+
+
+        if (groupId != null && groupId != "" && subGroupId != null && subGroupId != "") {
         log.info("@@@@@@@@@@@@@@@@@groupinster@@@@@@@@@@@@@@@@@@@@");
         A_Group = storeAdminService.insertSubGroupStoreRel(store);
     }
