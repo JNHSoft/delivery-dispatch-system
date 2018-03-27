@@ -251,16 +251,13 @@ function getRiderDetail() {
                     }
                     $("#riderDetailStoreName").html(riderDetailStoreNameHtml);
 
+                    $("#riderDetailStoreName").val($("#riderDetailStoreName option:selected").val());
 
                     $("#riderDetailStoreName").on("change", function(){
                         getStoreInfo($("#riderDetailStoreName option:selected").val());
                         console.log($("#riderDetailStoreName option:selected").val());
 
                     });
-
-                    $("#riderDetailStoreName").val($("#riderDetailStoreName option:selected").val());
-
-
                     if(data.A_Rider.group == null){
                         $("#riderDetailStoreName").val();
                         $("#hasGroup").val("F");
