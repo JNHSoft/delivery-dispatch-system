@@ -443,11 +443,11 @@
 	<update id="updateSubGroupStoreRel" parameterType="kr.co.cntt.core.model.store.Store">
 		UPDATE TB_SUBGROUP_STORE_REL
 		SET modified_datetime = now()
-        <if test="subGroupRiderRel.groupId != null and subGroupRiderRel.groupId != ''">
+        <if test="subGroupStoreRel.groupId != null and subGroupStoreRel.groupId != '' and subGroupStoreRel.subGroupId != null and subGroupStoreRel.subGroupId != ''">
 			, group_id = #{subGroupStoreRel.groupId}
 			, subgroup_id = #{subGroupStoreRel.subGroupId}
         </if>
-        <if test="subGroupRiderRel.groupId == null and subGroupRiderRel.groupId == ''">
+        <if test="subGroupStoreRel.groupId == null and subGroupStoreRel.groupId == '' and subGroupStoreRel.subGroupId == null and subGroupStoreRel.subGroupId == ''">
             , deleted = now()
         </if>
 

@@ -319,7 +319,7 @@ function getGroupList() {
         success : function(data) {
             if (data) {
 
-                var postStoreGroupHtml = "<option value=''>" + group_choise + "</option>";
+                var postStoreGroupHtml = "<option value=''>" + "不明" + "</option>";
                 // var postStoreGroupHtml = "";
                 for (var i in data) {
                     postStoreGroupHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
