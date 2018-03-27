@@ -79,10 +79,10 @@ function getNoticeList() {
                     } else {
                         tmpdata.target = notice_target_all;
                     }
-
+                    /*onclick="javascript:noticeFileDownload(\''+data[key].fileName+'\')">*/
                     tmpdata.title = data[key].title;
                     if (data[key].fileName != null) {
-                        tmpdata.file = '<a href="#" class="button h20" onclick="javascript:noticeFileDownload(\''+data[key].fileName+'\')">' + notice_attach_download + '</a>'
+                        tmpdata.file = '<a href="/noticeFileDownload?fileName=' + data[key].fileName + ' " class="button h20" download> ' + notice_attach_download + '</a>'
                     } else {
                         tmpdata.file = notice_attach_none;
                     }
@@ -431,8 +431,14 @@ function deleteNoticeFile () {
 
 function noticeFileDownload(fileName) {
     console.log("fileName: " + fileName);
+    var form = document.getElementById("fileForm");
+    var fileField = form.elements["fileName"];
 
-    $.ajax({
+    fileField.value = fileName;
+
+    form.submit();
+
+    /*$.ajax({
         url: "/noticeFileDownload",
         type: 'get',
         data: {'fileName':fileName
@@ -443,5 +449,5 @@ function noticeFileDownload(fileName) {
             console.log(data);
             // location.reload();
         }
-    });
+    });*/
 }
