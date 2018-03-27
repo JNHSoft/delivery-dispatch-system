@@ -61,7 +61,6 @@ $(document).ready(function() {
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
         socket.on('message', function(data){
-                alert(data);//data 받는부분
             if(data.match('order_updated')=='order_updated'){
                 getOrderList(statusArray, storeId);
                 footerOrders()
@@ -301,7 +300,7 @@ function getOrderDetail(orderId) {
                 for (var key in currentOrderList) {
                     if (currentOrderList.hasOwnProperty(key)) {
                         if(currentOrderList[key].id == data.combinedOrderId){
-                            var shtml = '<option value="'+ currentOrderList[key].id+'">'+'주문 ID'+':'+ currentOrderList[key].id + '|'+ '등록시간'+':'+ timeSet(currentOrderList[key].createdDatetime) + '</option>';
+                            var shtml = '<option value="'+ currentOrderList[key].id+'">'+order_id+':'+ currentOrderList[key].id + '|'+ 'order_created'+':'+ timeSet(currentOrderList[key].createdDatetime) + '</option>';
                             $('#selectCombined').html(shtml);
                         }
 
@@ -364,7 +363,7 @@ function getFooterRiderList(){
 
 function getMyRiderList() {
     debugger;
-    var shtml = '<option value="0">정보없음</option>';
+    var shtml = '<option value="0">-</option>';
     var shtml2 = '';
     $.ajax({
         url:"/getMyRiderList",
