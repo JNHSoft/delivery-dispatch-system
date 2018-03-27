@@ -49,26 +49,24 @@ public class OrderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         // Store 정보
         log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
+
         Notice notice = new Notice();
+        Rider rider = new Rider();
+        Order order = new Order();
         store.setToken(storeInfo.getStoreAccessToken());
         notice.setToken(storeInfo.getStoreAccessToken());
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
-        model.addAttribute("noticeList", noticeList);
-        log.info("@@@@@@@@@@@@@11111111111111111111@@@@@@@@@@@@@@@@@@@@@@@"+noticeList.toString());
-        System.out.println("!!!!토큰"+notice.getToken());
-        Store myStore = storeOrderService.getStoreInfo(store);
-        model.addAttribute("store", myStore);
-        Rider rider = new Rider();
         rider.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
-        model.addAttribute("footerRiderList", footerRiderList);
-        model.addAttribute("json", new Gson().toJson(store));
-        Order order = new Order();
         order.setToken(storeInfo.getStoreAccessToken());
+        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
+        Store myStore = storeOrderService.getStoreInfo(store);
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
         List<Order> orderList = storeOrderService.getOrders(order);
-        log.info("json : {}", new Gson().toJson(store));
-        model.addAttribute("orderList", orderList);
         List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+
+        model.addAttribute("store", myStore);
+        model.addAttribute("noticeList", noticeList);
+        model.addAttribute("footerRiderList", footerRiderList);
+        model.addAttribute("orderList", orderList);
         model.addAttribute("footerOrderList", footerOrderList);
 
 
@@ -148,12 +146,12 @@ public class OrderController {
     }
 
     @ResponseBody
-    @GetMapping("/getRiderList1")
+    @GetMapping("/getMyRiderList")
     @CnttMethodDescription("그룹소속 기사목록")
     public List<Rider> getMyRiderList(Common common){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         common.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> riderList = storeRiderService.getRiderNow(common);
+        List<Rider> riderList = storeOrderService.getSubgroupRiderRels(common);
         return riderList;
     }
 }
