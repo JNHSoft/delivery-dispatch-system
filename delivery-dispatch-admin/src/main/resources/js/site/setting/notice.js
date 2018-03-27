@@ -82,7 +82,7 @@ function getNoticeList() {
 
                     tmpdata.title = data[key].title;
                     if (data[key].fileName != null) {
-                        tmpdata.file = '<a href="#" class="button h20">' + notice_attach_download + '</a>'
+                        tmpdata.file = '<a href="#" class="button h20" onclick="javascript:noticeFileDownload(\''+data[key].fileName+'\')">' + notice_attach_download + '</a>'
                     } else {
                         tmpdata.file = notice_attach_none;
                     }
@@ -425,6 +425,23 @@ function deleteNoticeFile () {
         success: function (data) {
             console.log(data);
             location.reload();
+        }
+    });
+}
+
+function noticeFileDownload(fileName) {
+    console.log("fileName: " + fileName);
+
+    $.ajax({
+        url: "/noticeFileDownload",
+        type: 'get',
+        data: {'fileName':fileName
+        },
+        dataType: 'json',
+        async : false,
+        success: function (data) {
+            console.log(data);
+            // location.reload();
         }
     });
 }

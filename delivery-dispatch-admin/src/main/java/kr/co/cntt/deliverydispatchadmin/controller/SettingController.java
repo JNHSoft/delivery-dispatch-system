@@ -14,10 +14,15 @@ import kr.co.cntt.core.service.admin.AssignAdminService;
 import kr.co.cntt.core.service.admin.FileUploadAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
 import kr.co.cntt.core.util.FileUtil;
+import kr.co.cntt.core.util.MediaTypeUtils;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,8 +30,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -55,6 +64,9 @@ public class SettingController {
         this.fileUploadAdminService = fileUploadAdminService;
         this.noticeAdminService = noticeAdminService;
     }
+
+    @Autowired
+    private ServletContext servletContext;
 
     /**
      * 설정 - 계정관리 페이지
@@ -435,6 +447,20 @@ public class SettingController {
         notice.setFileSize("none");
 
         return noticeAdminService.putNotice(notice);
+    }
+
+    @GetMapping("/noticeFileDownload")
+    @CnttMethodDescription("공지사항 첨부파일 다운로드")
+    public ResponseEntity<InputStreamResource> noticeFileDownload(Notice notice) throws IOException {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        notice.setToken(adminInfo.getAdminAccessToken());
+
+        MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext,  notice.getFileName());
+
+        File file = new File(noticeFileUploadPath + "/" + notice.getFileName());
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName()).contentType(mediaType).contentLength(file.length()).body(resource);
     }
 
 }
