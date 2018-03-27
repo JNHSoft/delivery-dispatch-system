@@ -98,9 +98,9 @@ function getRiderList() {
                     $tmpData.th3 = data[key].code
 
                     if(data[key].gender == "0"){
-                        $tmpData.th4 = "남자"
+                        $tmpData.th4 = "男"
                     } else if (data[key].gender == "1"){
-                        $tmpData.th4 = "여자"
+                        $tmpData.th4 = "女"
                     }
                     $tmpData.th5 = data[key].phone
                     $tmpData.th6 = data[key].emergencyPhone
@@ -243,10 +243,9 @@ function getRiderDetail() {
                 // 주소
                 $("#riderDetailAddress").val(data.A_Rider.address);
 
+                var riderDetailStoreNameHtml = "<option value=''>" + "不明" + "</option>";
                 // 소속 매장
                 if(data.storeList !=null){
-                    var riderDetailStoreNameHtml = "<option value=''>" + "不明" + "</option>";
-
                     for (var i in data.storeList){
                         riderDetailStoreNameHtml += "<option value='" + data.storeList[i].id  + "'>" + data.storeList[i].storeName + "</option>";
                     }

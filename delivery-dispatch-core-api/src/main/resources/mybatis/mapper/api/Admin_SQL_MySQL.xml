@@ -60,6 +60,7 @@
 		<result property="detailAddress" column="detail_address" />
 		<result property="chAddress" column="ch_address" />
 		<result property="chDetailAddress" column="ch_detail_address" />
+		<result property="assignmentStatus" column="assignment_status" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -1125,6 +1126,7 @@
 		, A.login_id
 		, A.address
 		, A.detail_address
+		, A.assignment_status
 		, A.ch_address
 		, A.ch_detail_address
 		, C.id AS subgroup_id
