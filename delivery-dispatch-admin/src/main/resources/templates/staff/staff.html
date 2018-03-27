@@ -29,6 +29,7 @@ var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
 		<input type="hidden" id="selectedRiderId"/>
 		<input type="hidden" id="selectedGroupId"/>
 		<input type="hidden" id="selectedSubGroupId"/>
+		<input type="hidden" id="hasGroup"/>
 
 
 		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.staff')}" />
@@ -102,7 +103,7 @@ var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
 								<th th:text="${#messages.msg('rider.belong.store')}" />
 								<td>
 									<select name="" class="select" id="riderDetailStoreName">
-										<option value="empty">-</option>
+										<option value="empty">請選擇</option>
 									</select>
 								</td>
 							</tr>
@@ -113,13 +114,13 @@ var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
 								<th th:text="${#messages.msg('rider.time.work')}" />
 								<td>
 									<select name="" class="select" id="riderDetailWorkStartTime">
-										<option value="empty">-</option>
+										<option value="empty">請選擇</option>
 										<option th:each="i : ${#numbers.sequence(0, 23)}" th:value="${i}" th:text="${i}"></option>
 									</select><span th:text="${#messages.msg('rider.time.label')}" />
 
 
 									<select name="" class="select" id="riderDetailWorkEndTime">
-										<option value="empty">-</option>
+										<option value="empty">請選擇</option>
 										<option th:each="i : ${#numbers.sequence(1, 24)}" th:value="${i}" th:text="${i}"></option>
 									</select><span th:text="${#messages.msg('rider.time.label')}" />
 
@@ -244,7 +245,7 @@ var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
 						<!--소속 매장 -->
 						<td>
 							<select name="" class="select" id="postRiderStoreList">
-								<!--<option value="">양재점</option>-->
+								<!--<option value="empty">請選擇</option>-->
 							</select>
 						</td>
 					</tr>
@@ -256,12 +257,12 @@ var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
 						<th th:text="${#messages.msg('rider.time.work')}" />
 						<td>
 							<select name="" class="select" id="postRiderWorkStartTime">
-								<option value="empty">-</option>
+								<option value="empty">請選擇</option>
 								<option th:each="i : ${#numbers.sequence(0, 23)}" th:value="${i}" th:text="${i}"></option>
 							</select><span th:text="${#messages.msg('rider.time.label')}" /> ~
 
 							<select name="" class="select" id="postRiderWorkEndTime">
-								<option value="empty">-</option>
+								<option value="empty">請選擇</option>
 								<option th:each="i : ${#numbers.sequence(1, 24)}" th:value="${i}" th:text="${i}"></option>
 							</select><span th:text="${#messages.msg('rider.time.label')}" />
 						</td>

@@ -117,16 +117,16 @@ function getRiderList() {
 
                     if(data[key].group != null){
                         $tmpData.th11 = data[key].group.id
-                        $("#selectedGroupId").val(data[key].group.id);
+
                     }
                     if(data[key].subGroup != null) {
                         $tmpData.th12 = data[key].subGroup.id
-                        $("#selectedSubGroupId").val(data[key].subGroup.id);
+
                     }
 
                     if(data[key].subGroupRiderRel != null) {
                         $tmpData.th13 = data[key].subGroupRiderRel.storeId
-                        $("#selectedStoreId").val(data[key].subGroupRiderRel.storeId);
+
                     }
 
 
@@ -180,6 +180,7 @@ function getRiderList() {
 
                      var storeId = rowData['th13']
                      $("#selectedStoreId").val(storeId);
+
                      getRiderDetail();
                 }
             });
@@ -244,7 +245,7 @@ function getRiderDetail() {
 
                 // 소속 매장
                 if(data.storeList !=null){
-                    var riderDetailStoreNameHtml = "<option value='none'>" + group_choise + "</option>";
+                    var riderDetailStoreNameHtml = "<option value=''>" + "不明" + "</option>";
 
                     for (var i in data.storeList){
                         riderDetailStoreNameHtml += "<option value='" + data.storeList[i].id  + "'>" + data.storeList[i].storeName + "</option>";
@@ -253,7 +254,9 @@ function getRiderDetail() {
 
 
                     $("#riderDetailStoreName").on("change", function(){
+                        getStoreInfo($("#riderDetailStoreName option:selected").val());
                         console.log($("#riderDetailStoreName option:selected").val());
+
                     });
 
                     $("#riderDetailStoreName").val($("#riderDetailStoreName option:selected").val());
@@ -261,9 +264,27 @@ function getRiderDetail() {
 
                     if(data.A_Rider.group == null){
                         $("#riderDetailStoreName").val();
-                    } else if (data.A_Rider.subGroup == null){
+                        $("#hasGroup").val("F");
+                        $("#riderDetailStoreName").val("");
+                    } else if (data.A_Rider.group.id != null){
+                        $("#hasGroup").val("T");
                         $("#riderDetailStoreName").val();
-                    } else if (data.A_Rider.subGroupRiderRel == null) {
+                    }
+
+                    if(data.A_Rider.subGroup == null){
+                        $("#riderDetailStoreName").val();
+                        $("#hasGroup").val("F");
+                        $("#riderDetailStoreName").val("");
+                    } else if (data.A_Rider.subGroup.id != null){
+                        $("#hasGroup").val("T");
+                        $("#riderDetailStoreName").val();
+                    }
+
+                    if (data.A_Rider.subGroupRiderRel == null) {
+                        $("#hasGroup").val("F");
+                        $("#riderDetailStoreName").val();
+                    }else if (data.A_Rider.subGroupRiderRel.storeId){
+                        $("#hasGroup").val("T");
                         $("#riderDetailStoreName").val();
                     }
 
@@ -303,37 +324,37 @@ function getRiderDetail() {
  */
 function putRiderDetail() {
     var riderId = $("#selectedRiderId").val();
-
     var storeId = $("#riderDetailStoreName option:selected").val();
-
+    var groupId = $("#selectedGroupId").val();
+    var subGroupId = $("#selectedSubGroupId").val();
     var tmpHours = [];
     $('input[name="riderRestTime"]:checked').each(function(index, element) {
         tmpHours.push($(element).val());
     });
     var restHours = tmpHours.join("|");
-    debugger;
     var tmpWorking = $("#riderDetailWorkStartTime").val() * 60 + "|" + $("#riderDetailWorkEndTime").val() * 60;
     // 수정 보내는 값들
     $.ajax({
         url : "/putRiderDetail",
         type : 'put',
         dataType : 'json',
-        // async : false,
+        async : false,
         data : {
             riderId				: riderId,
             storeId				: storeId,
             code    			: $("#riderDetailCode").val(),
             name	            : $("#riderDetailName").val(),
             gender              : $("input[type='radio'][name='riderDetailGender']:checked").val(),
-            groupId		        : $("#selectedGroupId").val(),
-            subGroupId			: $("#selectedSubGroupId").val(),
+            groupId		        : groupId,
+            subGroupId			: subGroupId,
             phone			    : $("#riderDetailPhone").val(),
             emergencyPhone      : $("#riderDetailEmergencyPhone").val(),
             address				: $("#riderDetailAddress").val(),
             teenager            : $("input[type='radio'][name='riderDetailTeenager']:checked").val(),
             workingHours        : tmpWorking,
             restHours           : restHours,
-            vehicleNumber       : $("#riderDetailVehicleNumber").val()
+            vehicleNumber       : $("#riderDetailVehicleNumber").val(),
+            hasGroup		    : $("#hasGroup").val()
         },
         success : function(data){
                 alert("完成修復");
@@ -405,7 +426,7 @@ function getRiderStoreList() {
         dataType : 'json',
         success : function(data) {
             if (data) {
-                 var postRiderStoreHtml = "<option value='none'>" + "-" + "</option>";
+                 var postRiderStoreHtml = "<option value='none'>" + "請選擇" + "</option>";
 
                 // var postRiderStoreHtml = "";
                 for (var i in data) {

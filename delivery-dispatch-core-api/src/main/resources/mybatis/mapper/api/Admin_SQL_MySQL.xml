@@ -466,10 +466,17 @@
 	<update id="updateRiderStore" parameterType="kr.co.cntt.core.model.rider.Rider">
 		UPDATE TB_SUBGROUP_RIDER_REL
 		SET modified_datetime = now()
-		, store_id = #{subGroupStoreRel.storeId}
+		<if test="subGroupRiderRel.storeId != null and subGroupRiderRel.storeId != ''">
+			, store_id = #{subGroupRiderRel.storeId}
+			, group_id = #{subGroupRiderRel.groupId}
+			, subGroup_id = #{subGroupRiderRel.subGroupId}
+		</if>
+
+		<if test="subGroupRiderRel.storeId == null and subGroupRiderRel.storeId == ''">
+			, deleted = now()
+		</if>
+
 		WHERE rider_id = #{id}
-		AND group_id = #{subGroupStoreRel.groupId}
-		AND subGroup_id = #{subGroupStoreRel.subGroupId}
 		AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		AND deleted IS NULL
 	</update>
