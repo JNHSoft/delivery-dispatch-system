@@ -482,8 +482,7 @@ public class SettingController {
             //Copy bytes from source to destination(outputstream in this example), closes both streams.
             FileCopyUtils.copy(inputStream, response.getOutputStream());
         }else{
-
-            return;
+            response.sendError(404, "잘못된 접근입니다.");
         }
 
 
