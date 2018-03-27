@@ -19,13 +19,16 @@ import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -33,9 +36,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -449,18 +450,74 @@ public class SettingController {
         return noticeAdminService.putNotice(notice);
     }
 
+
     @GetMapping("/noticeFileDownload")
     @CnttMethodDescription("공지사항 첨부파일 다운로드")
-    public ResponseEntity<InputStreamResource> noticeFileDownload(Notice notice) throws IOException {
+    public void noticeFileDownload(HttpServletResponse response,/*Notice notice*/@RequestParam(value = "fileName", required = false) String fileName)  throws IOException {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Notice notice = new Notice();
+        notice.setFileName(fileName);
         notice.setToken(adminInfo.getAdminAccessToken());
 
         MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext,  notice.getFileName());
 
         File file = new File(noticeFileUploadPath + "/" + notice.getFileName());
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+//        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        if(file.exists()){
+            response.setContentType(mediaType.getType());
 
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName()).contentType(mediaType).contentLength(file.length()).body(resource);
+        /* "Content-Disposition : inline" will show viewable types [like images/text/pdf/anything viewable by browser] right on browser
+            while others(zip e.g) will be directly downloaded [may provide save as popup, based on your browser setting.]*/
+            response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() +"\""));
+
+
+            /* "Content-Disposition : attachment" will be directly download, may provide save as popup, based on your browser setting*/
+            //response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+
+            response.setContentLength((int)file.length());
+
+
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+
+            //Copy bytes from source to destination(outputstream in this example), closes both streams.
+            FileCopyUtils.copy(inputStream, response.getOutputStream());
+        }else{
+
+            return;
+        }
+
+
+
+//        String path = String.format("%s%s", fsResource.getPath(), filename);
+
+        /*FileSystemResource resource = new FileSystemResource(noticeFileUploadPath + "/" + notice.getFileName());
+        InputStreamResource isResource = new InputStreamResource(resource.getInputStream());
+
+
+
+
+
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+
+        responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+        responseHeaders.set("Content-Disposition", "attachment;filename=\"" + notice.getFileName() + "\";");
+
+        responseHeaders.set("Content-Transfer-Encoding", "binary");
+
+        return new ResponseEntity<InputStreamResource>(isResource, responseHeaders, HttpStatus.OK);*/
+
+
+
+
+        /*return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
+                .contentType(mediaType)
+                .contentLength(file.length())
+                .body(resource);*/
+
+//        return "redirect:/setting-account";
     }
 
 }

@@ -102,6 +102,9 @@
 
 	<!-- 상세 -->
 	<div id="popNotice" class="pop_wrap" layout:fragment="popup_2">
+		<form id="fileForm" name="fileForm" action="/noticeFileDownload" method="post">
+			<input type="hidden" id="fileName" name="fileName" value="" />
+		</form>
 		<article class="popup">
 			<div class="pop_head">
 				<h1 th:text="${#messages.msg('gnb.notice')}" />
@@ -178,6 +181,7 @@
 		</article>
 	</div>
 	<!-- //팝업영역 -->
+
 
 <script type="text/javascript" th:src="@{/resources/js/site/setting/notice.js}" layout:fragment="script2"/>
 
