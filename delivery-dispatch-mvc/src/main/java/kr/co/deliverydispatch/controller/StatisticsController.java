@@ -99,13 +99,4 @@ public class StatisticsController {
         return statisticsInfo;
     }
 
-    @ResponseBody
-    @GetMapping("/getRiderList3")
-    @CnttMethodDescription("그룹소속 기사목록")
-    public List<Rider> getMyRiderList(Common common){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        common.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> riderList = storeRiderService.getRiderNow(common);
-        return riderList;
-    }
 }

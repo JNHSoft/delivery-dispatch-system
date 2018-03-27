@@ -14,7 +14,6 @@ function footerRiders() {
     }
 }
 function footerOrders() {
-    debugger;
     if(footerOrderList[0]) {
         if (footerOrderList[5]) {
             $('#new').text(parseInt(footerOrderList[0].count)+parseInt(footerOrderList[5].count));
@@ -364,6 +363,7 @@ function getFooterRiderList(){
 }
 
 function getMyRiderList() {
+    debugger;
     var shtml = '<option value="0">정보없음</option>';
     var shtml2 = '';
     $.ajax({
