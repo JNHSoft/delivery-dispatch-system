@@ -1,5 +1,72 @@
+/*<![CDATA[*/
+
 $(document).ready(function () {
+    // 검색버튼을 누를시에
+    $("#searchButton").click(function () {
+        // 입력받는 text 값 가져온다
+        var searchText = $("#searchText").val();
+        console.log(searchText);
+        // 필터 설정
+        var filter = {
+            groupOp: "OR",
+            rules: []
+        };
+        // 검색 select 박스 변경 시 값 전송
+        var select = $("#searchSelect option:selected").val();
+        console.log(select);
+
+        // html option 값의 value에 jq 그리드에 name 값을 넣어서 매칭시킨다.
+        if(select == 'th0'){
+            filter.rules.push({
+                field : select,
+                op : "eq",
+                data : searchText
+            });
+            // 전체 검색 일때 다 뿌린다. eq 는 같다라는 뜻임
+        }else if(select == 'all'){
+            filter.rules.push({
+                field : 'th1',
+                op : "eq",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th2',
+                op : "eq",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th3',
+                op : "cn",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th8',
+                op : "cn",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th10',
+                op : "cn",
+                data : searchText
+            });
+        }else{
+            filter.rules.push({
+                field : select,
+                op : "cn",
+                data : searchText
+            });
+        }
+        var grid = jQuery('#jqGrid');
+        grid[0].p.search = filter.rules.length > 0;
+        $.extend(grid[0].p.postData, { filters: JSON.stringify(filter) });
+        grid.trigger("reloadGrid", [{ page: 1 }]);
+    });
     getRiderList();
+
 });
 
 /**
@@ -12,42 +79,54 @@ function getRiderList() {
         type: 'get',
         dataType: 'json',
         success: function (data) {
-
             for(var key in data) {
                 var $tmpData = new Object();
                 console.log(data);
                 if (data.hasOwnProperty(key)) {
-
-
+                    // 아이디 / 소속 매장 / 이름 / 코드 / 성별 / 연락처 / 긴급연락처 / 주소 / 번호판 / 청소년 / 아이디
                     $tmpData.th0 = data[key].id
-                    $tmpData.th1 = data[key].name
-                    $tmpData.th2 = data[key].code
+                    $("#selectedRiderId").val(data[key].id);
+
+                    if(!data[key].store){
+                        $tmpData.th1 = "-";
+                    } else{
+                        $tmpData.th1 = data[key].store.storeName
+                    }
+
+                    $tmpData.th2 = data[key].name
+
+                    $tmpData.th3 = data[key].code
+
                     if(data[key].gender == "0"){
-                        $tmpData.th3 = "남자"    
+                        $tmpData.th4 = "남자"
                     } else if (data[key].gender == "1"){
-                        $tmpData.th3 = "여자"
+                        $tmpData.th4 = "여자"
                     }
-                    $tmpData.th4 = data[key].phone
-                    $tmpData.th5 = data[key].emergencyPhone
-                    $tmpData.th6 = data[key].address
-                    $tmpData.th7 = data[key].vehicleNumber
+                    $tmpData.th5 = data[key].phone
+                    $tmpData.th6 = data[key].emergencyPhone
+                    $tmpData.th7 = data[key].address
+                    $tmpData.th8 = data[key].vehicleNumber
+
                     if(data[key].teenager=="0"){
-                        $tmpData.th8 = "X"
+                        $tmpData.th9 = "X"
                     } else if(data[key].teenager=="1"){
-                        $tmpData.th8 = "O"
+                        $tmpData.th9 = "O"
                     }
-                    $tmpData.th9 = data[key].loginId
+
+                    $tmpData.th10 = data[key].loginId
 
                     if(data[key].group != null){
-                        $tmpData.th10 = data[key].group.id
+                        $tmpData.th11 = data[key].group.id
 
                     }
                     if(data[key].subGroup != null) {
-                        $tmpData.th11 = data[key].subGroup.id
+                        $tmpData.th12 = data[key].subGroup.id
+
                     }
 
                     if(data[key].subGroupRiderRel != null) {
-                        $tmpData.th12 = data[key].subGroupRiderRel.storeId
+                        $tmpData.th13 = data[key].subGroupRiderRel.storeId
+
                     }
 
 
@@ -66,21 +145,23 @@ function getRiderList() {
                 data:$mydata,
                 colModel:[
                     {label:'No', name:'th0', width:25, key:true, align:'center'},
-                    {label:rider_name, name:'th1', width:80, align:'center'},
-                    {label:rider_code, name:'th2', width:60, align:'center'},
-                    {label:rider_gender, name:'th3', width:40, align:'center'},
-                    {label:rider_phone, name:'th4', width:100, align:'center'},
-                    {label:rider_phone_emergency, name:'th5', width:100, align:'center'},
-                    {label:rider_address, name:'th6', width:200},
-                    {label:rider_vehicle_number, name:'th7', width:80, align:'center'},
-                    {label:rider_teenager, name:'th8', width:60, align:'center'},
-                    {label:rider_login_id, name:'th9', width:80, align:'center'},
-                    {label:'그룹ID', name:'th10', width:60, hidden:'hidden'},
-                    {label:'서브그룹ID', name:'th11', width:60, hidden:'hidden'},
-                    {label:'매장ID', name:'th12', width:60, hidden:'hidden'}
+                    {label:rider_belong_store, name:'th1', width:80, align:'center'},
+                    {label:rider_name, name:'th2', width:80, align:'center'},
+                    {label:rider_code, name:'th3', width:60, align:'center'},
+                    {label:rider_gender, name:'th4', width:40, align:'center'},
+                    {label:rider_phone, name:'th5', width:100, align:'center'},
+                    {label:rider_phone_emergency, name:'th6', width:100, align:'center'},
+                    {label:rider_address, name:'th7', width:200},
+                    {label:rider_vehicle_number, name:'th8', width:80, align:'center'},
+                    {label:rider_teenager, name:'th9', width:60, align:'center'},
+                    {label:rider_login_id, name:'th10', width:80, align:'center'},
+                    {label:'그룹ID', name:'th11', width:60, hidden:'hidden'},
+                    {label:'서브그룹ID', name:'th12', width:60, hidden:'hidden'},
+                    {label:'매장ID', name:'th13', width:60, hidden:'hidden'}
                 ],
                 width:'auto',
                 height:520,
+                async : false,
                 autowidth:true,
                 rowNum:20,
                 pager:"#jqGridPager",
@@ -91,14 +172,15 @@ function getRiderList() {
                      var riderId = rowData['th0']
                      $("#selectedRiderId").val(riderId);
 
-                     var groupId = rowData['th10']
+                     var groupId = rowData['th11']
                      $("#selectedGroupId").val(groupId);
 
-                     var subGroupId = rowData['th11']
+                     var subGroupId = rowData['th12']
                      $("#selectedSubGroupId").val(subGroupId);
 
-                     var storeId = rowData['th12']
+                     var storeId = rowData['th13']
                      $("#selectedStoreId").val(storeId);
+
                      getRiderDetail();
                 }
             });
@@ -107,7 +189,6 @@ function getRiderList() {
         }
     });
 }
-
 /**
  * Rider 상세 보기
  */
@@ -164,7 +245,8 @@ function getRiderDetail() {
 
                 // 소속 매장
                 if(data.storeList !=null){
-                    var riderDetailStoreNameHtml = "";
+                    var riderDetailStoreNameHtml = "<option value=''>" + "不明" + "</option>";
+
                     for (var i in data.storeList){
                         riderDetailStoreNameHtml += "<option value='" + data.storeList[i].id  + "'>" + data.storeList[i].storeName + "</option>";
                     }
@@ -172,7 +254,9 @@ function getRiderDetail() {
 
 
                     $("#riderDetailStoreName").on("change", function(){
+                        getStoreInfo($("#riderDetailStoreName option:selected").val());
                         console.log($("#riderDetailStoreName option:selected").val());
+
                     });
 
                     $("#riderDetailStoreName").val($("#riderDetailStoreName option:selected").val());
@@ -180,18 +264,33 @@ function getRiderDetail() {
 
                     if(data.A_Rider.group == null){
                         $("#riderDetailStoreName").val();
-                    } else if (data.A_Rider.subGroup == null){
+                        $("#hasGroup").val("F");
+                        $("#riderDetailStoreName").val("");
+                    } else if (data.A_Rider.group.id != null){
+                        $("#hasGroup").val("T");
                         $("#riderDetailStoreName").val();
-                    } else if (data.A_Rider.subGroupRiderRel == null) {
+                    }
+
+                    if(data.A_Rider.subGroup == null){
+                        $("#riderDetailStoreName").val();
+                        $("#hasGroup").val("F");
+                        $("#riderDetailStoreName").val("");
+                    } else if (data.A_Rider.subGroup.id != null){
+                        $("#hasGroup").val("T");
+                        $("#riderDetailStoreName").val();
+                    }
+
+                    if (data.A_Rider.subGroupRiderRel == null) {
+                        $("#hasGroup").val("F");
+                        $("#riderDetailStoreName").val();
+                    }else if (data.A_Rider.subGroupRiderRel.storeId){
+                        $("#hasGroup").val("T");
                         $("#riderDetailStoreName").val();
                     }
 
                     if(data.A_Rider.group != null && data.A_Rider.subGroup != null && data.A_Rider.subGroupRiderRel != null){
                         $("#riderDetailStoreName").val(data.A_Rider.subGroupRiderRel.storeId).prop("selected", true);
                     }
-
-
-
                 }
 
                 // 근무 시간
@@ -225,43 +324,42 @@ function getRiderDetail() {
  */
 function putRiderDetail() {
     var riderId = $("#selectedRiderId").val();
-
     var storeId = $("#riderDetailStoreName option:selected").val();
-
+    var groupId = $("#selectedGroupId").val();
+    var subGroupId = $("#selectedSubGroupId").val();
     var tmpHours = [];
     $('input[name="riderRestTime"]:checked').each(function(index, element) {
         tmpHours.push($(element).val());
     });
     var restHours = tmpHours.join("|");
-
     var tmpWorking = $("#riderDetailWorkStartTime").val() * 60 + "|" + $("#riderDetailWorkEndTime").val() * 60;
     // 수정 보내는 값들
     $.ajax({
         url : "/putRiderDetail",
         type : 'put',
         dataType : 'json',
+        async : false,
         data : {
             riderId				: riderId,
             storeId				: storeId,
             code    			: $("#riderDetailCode").val(),
             name	            : $("#riderDetailName").val(),
             gender              : $("input[type='radio'][name='riderDetailGender']:checked").val(),
-            groupId		        : $("#selectedGroupId").val(),
-            subGroupId			: $("#selectedSubGroupId").val(),
+            groupId		        : groupId,
+            subGroupId			: subGroupId,
             phone			    : $("#riderDetailPhone").val(),
             emergencyPhone      : $("#riderDetailEmergencyPhone").val(),
             address				: $("#riderDetailAddress").val(),
             teenager            : $("input[type='radio'][name='riderDetailTeenager']:checked").val(),
             workingHours        : tmpWorking,
             restHours           : restHours,
-            vehicleNumber       : $("#riderDetailVehicleNumber").val()
+            vehicleNumber       : $("#riderDetailVehicleNumber").val(),
+            hasGroup		    : $("#hasGroup").val()
         },
         success : function(data){
-                alert("수정 완료");
-                popClose('#popRiderDetail');
+                alert("完成修復");
                 getRiderList();
-                // // 완료후 페이지 호출
-                // location.href = "/staff";
+                location.reload();
         }
     });
 
@@ -271,10 +369,7 @@ function putRiderDetail() {
  * Rider 등록
  */
 function postRider() {
-    if($("#postRiderStoreList option:selected").val()=="none"){
-        alert("매장을 선택해주세요.");
-        return;
-    }
+
 
     var storeId =$("#selectedStoreId").val();
     var groupId = $("#selectedGroupId").val();
@@ -292,6 +387,7 @@ function postRider() {
         url: "/postRider",
         type: 'post',
         dataType: 'json',
+        async : false,
         data: {
             loginId				: $("#postRiderLoginId").val(),
             loginPw             : $("#postRiderLoginPw").val(),
@@ -310,7 +406,9 @@ function postRider() {
             vehicleNumber       : $("#postRiderVehicleNumber").val()
         },
         success: function (data) {
-            alert("등록완료");
+            console.log(data);
+            alert("完成註冊");
+            location.reload();
         }
     });
     }
@@ -328,7 +426,7 @@ function getRiderStoreList() {
         dataType : 'json',
         success : function(data) {
             if (data) {
-                 var postRiderStoreHtml = "<option value='none'>" + "매장을 선택해주세요" + "</option>";
+                 var postRiderStoreHtml = "<option value='none'>" + "請選擇" + "</option>";
 
                 // var postRiderStoreHtml = "";
                 for (var i in data) {
@@ -371,7 +469,7 @@ function getStoreInfo(storeId) {
 function deleteRider() {
     var riderId =  $("#selectedRiderId").val()
 
-    if(!confirm("해당 기사를 삭제하시겠습니까?")) return;
+    if(!confirm("Delete?")) return;
 
 
     console.log(riderId);
@@ -390,6 +488,6 @@ function deleteRider() {
         }
     });
 }
-
+/*]]>*/
 
 

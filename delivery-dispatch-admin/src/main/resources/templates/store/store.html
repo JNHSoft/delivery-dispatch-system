@@ -28,6 +28,9 @@
     var btn_cancel = /*[[#{btn.cancel}]]*/ 'btn_cancel';
     var btn_confirm = /*[[#{btn.confirm}]]*/ 'btn_confirm';
     var btn_close_pop = /*[[#{btn.close.pop}]]*/ 'btn_close_pop';
+    var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
+
+
     /*]]>*/
 </script>
 
@@ -48,11 +51,18 @@
 		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.store')}"></h2>
 		<div class="search_box">
 			<div class="left">
-				<select name="" class="select">
-					<option value="" th:text="${#messages.msg('list.search.all')}"></option>
+				<!--전체 /소속 그룹/ 매장명 / 매장 코드 / 점장명 / 주소 / 아이디-->
+				<select name="" class="select" id="searchSelect">
+					<option value="all" th:text="${#messages.msg('list.search.all')}"></option>
+					<option value="th1" th:text="${#messages.msg('store.belong.group')}"></option>
+					<option value="th3" th:text="${#messages.msg('store.name')}"></option>
+					<option value="th4" th:text="${#messages.msg('store.code')}"></option>
+					<option value="th3" th:text="${#messages.msg('store.manager.name')}"></option>
+					<option value="th8" th:text="${#messages.msg('store.address')}"></option>
+					<option value="th10" th:text="${#messages.msg('login.id')}"></option>
 				</select>
-				<input type="text" class="input" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
-				<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" ></i></button>
+				<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
+				<button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" ></i></button>
 			</div>
 			<div class="right">
 				<a href="#popStore" class="button btn_blue pop_open"><i class="fa fa-plus" aria-hidden="true" onClick="javascript:getGroupList()" th:text="${#messages.msg('btn.store')}"></i></a>
@@ -96,10 +106,11 @@
 						<th th:text="${#messages.msg('store.belong.group')}"></th>
 						<td>
 							<select name="" class="select" id="postStoreGroup">
-								<!--<option value="">서초동부</option>-->
+								<option  value="empty" th:text="${#messages.msg('selected.choise')}"></option>
 							</select>
+
 							<select name="" class="select" id="postStoreSubGroup">
-								<!--<option value="">서초A</option>-->
+								<option  value="empty"></option>
 							</select>
 						</td>
 					</tr>
@@ -182,10 +193,10 @@
 						<th th:text="${#messages.msg('store.belong.group')}"></th>
 						<td>
 							<select name="" class="select" id="storeDetailGroup">
-								<!--<option value="">서초동부</option>-->
+								<option value="empty">group_choise</option>
 							</select>
 							<select name="" class="select" id="storeDetailSubGroup">
-								<!--<option value="">서초A</option>-->
+								<!--<option value="empty">-</option>-->
 							</select>
 						</td>
 					</tr>

@@ -23,6 +23,7 @@
         <result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
+		<result property="count" column="count" />
 
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
             <result property="id" column="rider_id" />
@@ -144,7 +145,6 @@
 			SELECT LAST_INSERT_ID()
 		</selectKey>
 	</insert>
-
 
 	<!-- selectOrders -->
 	<select id="selectOrders" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
@@ -513,6 +513,23 @@
         	AND A.denied_datetime > CURRENT_DATE()
     </select>
 
+	<!-- selectFooterOrders -->
+	<select id="selectFooterOrders" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
+		SELECT
+		A.status, count(*)as count
+		FROM TB_ORDER AS A
+		LEFT JOIN TB_RIDER AS B
+		ON A.rider_id = B.id
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
+		ON A.store_id = C.store_id
+		LEFT JOIN TB_STORE AS D
+		ON A.store_id = D.id
+		WHERE	A.created_datetime > current_date()
+		AND A.status IN (0,1,2,3,4,5)
+		AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+		AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+		AND C.deleted IS NULL group by A.status;
+	</select>
 
 	<!-- selectForAssignOrders -->
 	<select id="selectForAssignOrders" resultMap="selectOrdersResult">

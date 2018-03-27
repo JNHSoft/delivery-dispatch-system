@@ -195,6 +195,7 @@
 		, TR.id
 		, TR.name
 		, TR.phone
+		, TS.store_name
 		, TR.login_id
 		, TR.login_pw
 		, TR.code
@@ -231,6 +232,11 @@
 		dde.TB_SUBGROUP_RIDER_REL AS SRR
 		on TR.id = SRR.rider_id
 		AND SRR.deleted is NULL
+
+		left join
+		TB_STORE AS TS
+		on SRR.store_id = TS.id
+		AND TS.deleted is NULL
 
 		left join
 		TB_SUBGROUP AS TSG
@@ -369,12 +375,17 @@
 				, A.teenager = #{teenager}
 			</if>
 
-			<if test="subGroupRiderRel != null">
+			<if test="subGroupRiderRel.storeId =='' or subGroupRiderRel.storeId == null" >
+				, B.deleted = now()
+			</if>
+
+			<if test="subGroupRiderRel != null and (subGroupRiderRel.storeId !='' and subGroupRiderRel.storeId != null)">
 				, B.modified_datetime = now()
 				, B.store_id = #{subGroupRiderRel.storeId}
 				, B.subgroup_id = #{subGroupRiderRel.subGroupId}
 				, B.group_id = #{subGroupRiderRel.groupId}
 			</if>
+
 			, A.id = LAST_INSERT_ID(A.id)
 		WHERE 1=1
 		<choose>

@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
+import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import kr.co.deliverydispatch.service.StoreStatementService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +34,14 @@ public class StatisticsController {
     private StoreStatementService storeStatementService;
     private StoreNoticeService storeNoticeService;
     private StoreRiderService storeRiderService;
+    private StoreOrderService storeOrderService;
 
     @Autowired
-    public StatisticsController(StoreStatementService storeStatementService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService) {
+    public StatisticsController(StoreStatementService storeStatementService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService, StoreOrderService storeOrderService) {
         this.storeStatementService = storeStatementService;
         this.storeNoticeService = storeNoticeService;
         this.storeRiderService = storeRiderService;
+        this.storeOrderService = storeOrderService;
     }
 
     /**
@@ -61,7 +64,14 @@ public class StatisticsController {
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
-
+        Rider rider = new Rider();
+        rider.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
+        model.addAttribute("footerRiderList", footerRiderList);
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+        model.addAttribute("footerOrderList", footerOrderList);
         log.info("json : {}", new Gson().toJson(store));
 
         return "/statistics/statement";
@@ -89,13 +99,4 @@ public class StatisticsController {
         return statisticsInfo;
     }
 
-    @ResponseBody
-    @GetMapping("/getRiderList3")
-    @CnttMethodDescription("그룹소속 기사목록")
-    public List<Rider> getMyRiderList(Common common){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        common.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> riderList = storeRiderService.getRiderNow(common);
-        return riderList;
-    }
 }

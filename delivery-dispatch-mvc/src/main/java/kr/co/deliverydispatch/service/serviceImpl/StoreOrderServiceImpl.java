@@ -101,6 +101,22 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
     }
 
     @Override
+    public List<Order> getFooterOrders(Order order){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            order.setRole("ROLE_STORE");
+        }
+        List<Order> S_Order = orderMapper.selectFooterOrders(order);
+
+        if (S_Order.size() == 0) {
+            return Collections.<Order>emptyList();
+        }
+
+        return S_Order;
+    }
+
+    @Override
     public List<Order> getOrders(Order order){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

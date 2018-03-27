@@ -85,4 +85,6 @@ public interface StoreOrderService {
      * @throws
      */
     public int putOrderAssignCanceled(Order order);
+
+    public List<Order> getFooterOrders(Order order);
 }

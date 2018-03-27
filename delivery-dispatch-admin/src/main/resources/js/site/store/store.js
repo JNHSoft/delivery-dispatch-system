@@ -2,7 +2,91 @@
 $(document).ready(function () {
     getStoreList();
     getGroupList();
-    getPostSubGroupList();
+
+
+    // 검색버튼을 누를시에 
+    $("#searchButton").click(function () {
+        // 입력받는 text 값 가져온다 
+        var searchText = $("#searchText").val();
+        console.log(searchText);
+        // 필터 설정
+        var filter = {
+            groupOp: "OR",
+            rules: []
+        };
+        // 검색 select 박스 변경 시 값 전송
+        var select = $("#searchSelect option:selected").val();
+        console.log(select);
+
+         // html option 값의 value에 jq 그리드에 name 값을 넣어서 매칭시킨다.
+        if(select == 'th0'){
+            filter.rules.push({
+                field : select,
+                op : "eq",
+                data : searchText
+            });
+            // 전체 검색 일때 다 뿌린다. eq 는 같다라는 뜻임
+        }else if(select == 'all'){
+            filter.rules.push({
+                field : 'th0',
+                op : "eq",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th1',
+                op : "eq",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th3',
+                op : "cn",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th5',
+                op : "cn",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th3',
+                op : "cn",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th8',
+                op : "cn",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'th10',
+                op : "eq",
+                data : searchText
+            });
+
+        }else{
+            filter.rules.push({
+                field : select,
+                op : "cn",
+                data : searchText
+            });
+        }
+        var grid = jQuery('#jqGrid');
+        grid[0].p.search = filter.rules.length > 0;
+        $.extend(grid[0].p.postData, { filters: JSON.stringify(filter) });
+        grid.trigger("reloadGrid", [{ page: 1 }]);
+    });
+    getStoreList();
+
+
+
+
+
 
 
 });
@@ -137,6 +221,7 @@ function getStoreDetail() {
             dataType : 'json',
 
             success : function(data){
+                console.log(data);
                 // loginid
                 $("#storeDetailLoginId").val(data.A_Store.loginId);
                 // password
@@ -151,8 +236,10 @@ function getStoreDetail() {
                 $("#storeDetailAssignStatusSelectBox").val(data.A_Store.assignmentStatus);
 
                 // 소속 그룹
-                if(data.groupList != null) {
-                    var storeDetailGroupHtml = "";
+                if(data.groupList !=null) {
+                    var storeDetailGroupHtml = "<option value='none'>" + group_choise + "</option>";
+                        // "<option value='none'>" + group_choise + "</option>";
+
                     for (var i in data.groupList){
                         storeDetailGroupHtml += "<option value='" + data.groupList[i].id  + "'>" + data.groupList[i].name + "</option>";
                     }
@@ -175,7 +262,8 @@ function getStoreDetail() {
                 if(data.subGroupList != null ) {
                     // groupId , subGroupId 값 넘겨줌
                     getSubGroupList($("#storeDetailGroup option:selected").val(),data.A_Store.subGroup);
-                    var storeDetailSubGroupHtml = "";
+
+                    var storeDetailSubGroupHtml = "<option value='none'>" +group_choise+ "</option>";
                     for (var i in data.subGroupList){
                         storeDetailSubGroupHtml += "<option value='" + data.subGroupList[i].id  + "'>" + data.subGroupList[i].name + "</option>";
                     }
@@ -214,6 +302,7 @@ function getSubGroupList(gId, subGroup) {
         success : function(data){
             if(data) {
                 var storeDetailSubGroupHtml = "";
+                    // "<option value='none'>" + "-" + "</option>";
                 for (var i in data){
                     storeDetailSubGroupHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
                 }
@@ -235,12 +324,13 @@ function getGroupList() {
         url : "/getGroupList",
         type : 'get',
         data : {
-
         },
         dataType : 'json',
         success : function(data) {
             if (data) {
-                var postStoreGroupHtml = "";
+
+                var postStoreGroupHtml = "<option value=''>" + group_choise + "</option>";
+                // var postStoreGroupHtml = "";
                 for (var i in data) {
                     postStoreGroupHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
                 }
@@ -275,7 +365,9 @@ function getPostSubGroupList(gId, subGroup) {
         dataType : 'json',
         success : function(data){
             if(data) {
-                var postStoreSubGroupHtml = "";
+
+                var postStoreSubGroupHtml = "<option value=''>" + group_choise + "</option>";
+                // var postStoreSubGroupHtml = "";
                 for (var i in data){
                     postStoreSubGroupHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
                 }
@@ -288,9 +380,6 @@ function getPostSubGroupList(gId, subGroup) {
         }
     });
 }
-
-
-
 
 /**
  * Store 수정
@@ -317,11 +406,11 @@ function putStoreDetail() {
             hasGroup		    : $("#hasGroup").val()
         },
         success : function(data){
-                alert("수정 완료");
+                alert("完成修復");
                 popClose('#popStoreDetail');
                 getStoreList()
                 // 완료후 페이지 호출
-                location.href = "/store";
+                location.reload();
         }
     });
 
@@ -331,7 +420,60 @@ function putStoreDetail() {
  * Store 등록
  */
 function postStore() {
+    var $loginId = $("#postStoreLoginId").val();
+    var $loginPw = $("#postStoreloginPw").val();
+    var $code = $("#postStoreCode").val();
+    var $storeName = $("#postStoreName").val();
+    var $storePhone = $("#postStorePhone").val();
+    var $name = $("#postStoreUserName").val();
+    var $phone = $("#postStoreUserPhone").val();
+    var $address = $("#postStoreAddress").val();
+    var $detailAddress = $("#postStoreDetailAddress").val();
 
+    if($loginId==""){
+        alert("請檢查您的ID");
+        return;
+    }
+
+    if($loginPw==""){
+        alert("請檢查您的密碼");
+        return;
+    }
+
+    if($code==""){
+        alert("請輸入代碼");
+        return;
+    }
+
+    if($storeName==""){
+        alert("請輸入商店名稱");
+        return;
+    }
+
+    if($storePhone==""){
+        alert("請輸入您的商店編號");
+        return;
+    }
+
+    if($name==""){
+        alert("請輸入經理姓名");
+        return;
+    }
+
+    if($phone==""){
+        alert("請輸入經理電話號碼");
+        return;
+    }
+
+    if($address==""){
+        alert("請輸入地址");
+        return;
+    }
+
+    if($detailAddress==""){
+        alert("請輸入您的街道地址");
+        return;
+    }
     $.ajax({
         url: "/postStore",
         type: 'post',
@@ -352,11 +494,12 @@ function postStore() {
             detailAddress		: $("#postStoreDetailAddress").val()
         },
         success: function (data) {
-            console.log(data);
-            //popClose('#popStore');
-            //getStoreList();
-            location.reload();
 
+            console.log(data);
+            alert("商店註冊完成");
+            popClose('#popStore');
+            getStoreList();
+            location.reload();
         }
     });
     }
@@ -368,7 +511,7 @@ function postStore() {
 function deleteStore() {
     var storeId =  $("#selectedStoreId").val()
 
-    if(!confirm("해당 매장을 삭제하시겠습니까?")) return;
+    if(!confirm("您確定要刪除此商店嗎?")) return;
     console.log(storeId);
     $.ajax({
         url: "/deleteStore",
@@ -381,7 +524,6 @@ function deleteStore() {
             if (data === 'true') {
                 location.reload();
             }
-
         }
     });
 }

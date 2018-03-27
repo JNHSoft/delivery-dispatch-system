@@ -15,7 +15,72 @@ function initMap() {
         center: store
     });
 }
+function noticeAlarm() {
+    $('#myStoreName').text(my_store.storeName);
+    var j = 0;
+    console.log(my_notice_list);
+    for (var i = 0; i < my_notice_list.length; i++) {
+        if (my_notice_list[i].confirmedDatetime == "") {
+            j++;
+        }
+    }
+    console.log(j);
+    if(j != 0){
+        $("#notice_alarm").addClass('new');
+    }else{
+        $("#notice_alarm").removeClass('new');
+    }
+}
+function footerRiders() {
+    if(footerRiderList[2]){
+        $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
+    }else {
+        $('#rest').text('0');
+    }
+    if(footerRiderList[1]){
+        $('#standby').text(parseInt(footerRiderList[1].workCount) - parseInt(footerRiderList[1].orderCount));// 대기
+        $('#work').text(footerRiderList[1].orderCount);//근무
+    }else {
+        $('#standby').text('0');
+        $('#work').text('0');
+    }
+}
+function footerOrders() {
+    if(footerOrderList[0]) {
+        if (footerOrderList[5]) {
+            $('#new').text(parseInt(footerOrderList[0].count)+parseInt(footerOrderList[5].count));
+        } else {
+            $('#new').text(parseInt(footerOrderList[0].count));
+        }
+    } else if(footerOrderList[5]){
+        $('#new').text(parseInt(footerOrderList[5].count));
+    } else {
+        $('#new').text('0');
+    }
+
+    if(footerOrderList[1]){
+        $('#assigned').text(parseInt(footerOrderList[1].count));
+    }else {
+        $('#assigned').text('0');
+    }
+
+    if(footerOrderList[3]){
+        $('#completed').text(parseInt(footerOrderList[3].count));
+    }else {
+        $('#completed').text('0');
+    }
+
+    if(footerOrderList[4]){
+        $('#canceled').text(parseInt(footerOrderList[4].count));
+    }else{
+        $('#canceled').text('0')
+    }
+}
 $(function() {
+    console.log(footerOrderList);
+    footerRiders();
+    footerOrders();
+    noticeAlarm();
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
         var socket = io(websocket_localhost, {
@@ -25,6 +90,7 @@ $(function() {
         socket.on('message', function(data){
             if(data.match('rider_updated')=='rider_updated'){
                 getRiderList();
+                footerRiders();
             }
             if(data.match('chat_send')=='chat_send'){
                 var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18, data.lastIndexOf('}'));
@@ -34,6 +100,9 @@ $(function() {
             }
             if(data.match('notice_update')=='notice_update'){
                 noticeAlarm();
+            }
+            if(data.match('order_updated')=='order_updated'){
+                footerOrders()
             }
         });
         $(function() {

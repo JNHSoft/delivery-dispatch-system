@@ -24,7 +24,7 @@
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('login.password')}" />
-							<div><input type="password" name="" class="input"/></div>
+							<div><input type="password" name="" id="storePw" class="input"/></div>
 						</li>
 						<li>
 							<strong th:text="${#messages.msg('store.code')}" />
@@ -43,10 +43,10 @@
 							<strong th:text="${#messages.msg('store.belong.group')}" />
 							<div>
 								<select name="" class="select readonly" disabled="disabled">
-									<option th:value="${store.group.name}" th:text="${store.group.name}"></option>
+									<option th:value="${#lists.isEmpty(store.group)  ? '미지정' : store.group.name}" th:text="${#lists.isEmpty(store.group) ? '미지정' : store.group.name}"></option>
 								</select>
 								<select name="" class="select readonly" disabled="disabled">
-									<option th:value="${store.subGroup.name}" th:text="${store.subGroup.name}"></option>
+									<option th:value="${#lists.isEmpty(store.subGroup) ? '미지정' : store.subGroup.name}" th:text="${#lists.isEmpty(store.subGroup) ? '미지정' : store.subGroup.name}"></option>
 								</select>
 							</div>
 						</li>
@@ -84,6 +84,8 @@
     var my_store = /*[[${store}]]*/ 'my_store';
     var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
     var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
+    var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
+    var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
     function noticeAlarm() {
         $('#myStoreName').text(my_store.storeName);
         var j = 0;
@@ -113,6 +115,12 @@
                 }
                 if(data.match('notice_update')=='notice_update'){
                     noticeAlarm();
+                }
+                if(data.match('rider_update')=='rider_update'){
+                    footerRiders();
+                }
+                if(data.match('order_updated')=='order_updated'){
+                    footerOrders()
                 }
             });
             $(function () {

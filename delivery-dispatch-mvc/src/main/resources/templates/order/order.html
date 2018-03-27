@@ -39,7 +39,7 @@
 						<option value="all" th:text="${#messages.msg('list.search.all')}"/>
 						<option value="id" th:text="${#messages.msg('list.search.id')}"/>
 						<option value="address" th:text="${#messages.msg('list.search.address')}"/>
-						<option value="text" th:text="${#messages.msg('list.search.text')}"/>
+						<option value="reg_order_id" th:text="${#messages.msg('list.search.text')}"/>
 						<option value="rider" th:text="${#messages.msg('list.search.rider')}"/>
 					</select>
 					<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
@@ -100,7 +100,7 @@
 									<li>
 										<span th:text="${#messages.msg('order.cooking')}" />
 										<div>
-											<input type="text" class="input h20" id="cookingTime" />분
+											<input type="text" class="input h20" id="cookingTime" /><span th:text="${#messages.msg('order.minute')}"/>
 											<!--<select name="" class="select h20">-->
 												<!--<option value="10">10</option>-->
 											<!--</select>분-->
@@ -108,15 +108,15 @@
 									</li>
 									<li class="clear">
 										<span th:text="${#messages.msg('order.menu.price')}" />
-										<div><input type="text" class="input h20" id="menuPrice" />원</div>
+										<div><input type="text" class="input h20" id="menuPrice" /><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 									</li>
 									<li>
 										<span th:text="${#messages.msg('order.delivery.price')}" />
-										<div><input type="text" class="input h20" id="deliveryPrice" />원</div>
+										<div><input type="text" class="input h20" id="deliveryPrice" /><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 									</li>
 									<li class="clear">
 										<span th:text="${#messages.msg('order.total.price')}" />
-										<div><input type="text" class="input h20" id="totalPrice"/>원</div>
+										<div><input type="text" class="input h20" id="totalPrice"/><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 									</li>
 									<li>
 										<span th:text="${#messages.msg('order.payment')}" />
@@ -194,8 +194,8 @@
 							</div>
 						</div>
 						<div class="btn">
-							<div class="f_left"><a href="#" class="button btn_red w80" onclick="javascript:putOrderCancle()"><i class="fa fa-close" aria-hidden="true" ></i> 주문취소</a></div>
-							<div class="f_right"><a href="#" class="button btn_blue w80" id="orderUpdate" onclick="javascript:orderConfirm()"><i class="fa fa-check" aria-hidden="true"></i> 확인</a></div>
+							<div class="f_left"><a href="#" class="button btn_red w80" onclick="javascript:putOrderCancle()"><i class="fa fa-close" aria-hidden="true" ></i> <span th:text="${#messages.msg('alarm.canceled')}"/> </a></div>
+							<div class="f_right"><a href="#" class="button btn_blue w80" id="orderUpdate" onclick="javascript:orderConfirm()"><i class="fa fa-check" aria-hidden="true"></i><span th:text="${#messages.msg('btn.confirm')}"/></a></div>
 						</div>
 					</div>
 				</div>
@@ -235,6 +235,9 @@
         var my_store = /*[[${store}]]*/ 'my_store';
         var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
         var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
+        var order_reg_order_id = /*[[#{order.reg.order.id}]]*/ 'order_reg_order_id';
+		var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
+        var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
         function noticeAlarm() {
             $('#myStoreName').text(my_store.storeName);
             var j = 0;
@@ -252,7 +255,9 @@
             }
         }
         $(document).ready(function() {
-            noticeAlarm()
+            noticeAlarm();
+            console.log('footerRiderList');
+            console.log(footerRiderList);
         });
         /*]]>*/
 	</script>

@@ -114,6 +114,8 @@ var notice_confirmed_before = /*[[#{notice.confirmed.before}]]*/ 'notice_confirm
 var my_store = /*[[${store}]]*/ 'my_store';
 var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
 var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
+var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
+var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
 function noticeAlarm() {
     $('#myStoreName').text(my_store.storeName);
     var j = 0;
@@ -143,6 +145,12 @@ $(document).ready(function() {
             }
             if(data.match('notice_update')=='notice_update'){
                 noticeAlarm();
+            }
+            if(data.match('rider_update')=='rider_update'){
+                footerRiders();
+            }
+            if(data.match('order_updated')=='order_updated'){
+                footerOrders()
             }
         });
         $(function () {

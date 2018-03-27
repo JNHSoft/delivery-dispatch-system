@@ -1,3 +1,4 @@
+/*<![CDATA[*/
 $(document).ready(function () {
 
     // 날짜 변경될때마다
@@ -71,7 +72,7 @@ function getGroupList() {
         success : function(data) {
             if (data) {
 
-                var statisticsGroupListHtml = "<option value=''>" + "그룹 전체" + "</option>";
+                var statisticsGroupListHtml = "<option value=''>" + list_search_all_group + "</option>";
                 // var statisticsGroupListHtml = "";
                 for (var i in data) {
                     statisticsGroupListHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
@@ -458,6 +459,6 @@ function getStatisticsInfo(orderId) {
 
     });
 }
-
+/*]]>*/
 
 

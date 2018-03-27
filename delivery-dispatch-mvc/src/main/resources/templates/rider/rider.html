@@ -71,10 +71,9 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" th:src="@{/resources/js/site/rider/rider.js}" layout:fragment="script"></script>
-
-    <script layout:fragment="script2" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
-    <script layout:fragment="script3" th:inline="javascript">
+    <script type="text/javascript" th:src="@{/resources/js/site/rider/rider.js}" layout:fragment="script2"></script>
+    <script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
+    <script layout:fragment="script" th:inline="javascript">
         /*<![CDATA[*/
         var rider_chat_title = /*[[#{rider.chat.title}]]*/ 'rider_chat_title';
         var status_work = /*[[#{status.work}]]*/ 'status_work';
@@ -84,25 +83,8 @@
         var my_store = /*[[${store}]]*/ 'my_store';
         var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
         var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
-        function noticeAlarm() {
-            $('#myStoreName').text(my_store.storeName);
-            var j = 0;
-            console.log(my_notice_list);
-            for (var i = 0; i < my_notice_list.length; i++) {
-                if (my_notice_list[i].confirmedDatetime == "") {
-                    j++;
-                }
-            }
-            console.log(j);
-            if(j != 0){
-                $("#notice_alarm").addClass('new');
-            }else{
-                $("#notice_alarm").removeClass('new');
-            }
-        }
-        $(document).ready(function() {
-            noticeAlarm();
-        });
+        var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
+        var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
         /*]]>*/
     </script>
 </section>

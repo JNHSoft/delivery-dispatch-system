@@ -9,8 +9,11 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
+import kr.co.cntt.core.util.MD5Encoder;
+import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
+import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import kr.co.deliverydispatch.service.StoreSettingService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +37,13 @@ public class SettingController {
     private StoreSettingService storeSettingService;
     private StoreNoticeService storeNoticeService;
     private StoreRiderService storeRiderService;
-
+    private StoreOrderService storeOrderService;
     @Autowired
-    public SettingController(StoreSettingService storeSettingService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService) {
+    public SettingController(StoreSettingService storeSettingService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService, StoreOrderService storeOrderService) {
         this.storeSettingService = storeSettingService;
         this.storeNoticeService = storeNoticeService;
         this.storeRiderService = storeRiderService;
+        this.storeOrderService = storeOrderService;
     }
 
     /**
@@ -59,7 +63,14 @@ public class SettingController {
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
-
+        Rider rider = new Rider();
+        rider.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
+        model.addAttribute("footerRiderList", footerRiderList);
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+        model.addAttribute("footerOrderList", footerOrderList);
         log.info("json : {}", new Gson().toJson(store));
         return "/setting/setting_account";
     }
@@ -69,6 +80,9 @@ public class SettingController {
     public Boolean putStoreInfo(Store store) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
+        MD5Encoder md5 = new MD5Encoder();
+        ShaEncoder sha = new ShaEncoder(512);
+        store.setLoginPw(sha.encode(store.getLoginPw()));
         storeSettingService.updateStoreInfo(store);
         return true;
     }
@@ -96,7 +110,14 @@ public class SettingController {
         model.addAttribute("store", myStore);
         model.addAttribute("thirdParty", allThirdParty);
         model.addAttribute("json", new Gson().toJson(store));
-
+        Rider rider = new Rider();
+        rider.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
+        model.addAttribute("footerRiderList", footerRiderList);
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+        model.addAttribute("footerOrderList", footerOrderList);
         log.info("json : {}", new Gson().toJson(store));
         return "/setting/setting_assign";
     }
@@ -131,7 +152,14 @@ public class SettingController {
         model.addAttribute("riderList", myRiderList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
-
+        Rider rider = new Rider();
+        rider.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
+        model.addAttribute("footerRiderList", footerRiderList);
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+        model.addAttribute("footerOrderList", footerOrderList);
         log.info("json : {}", new Gson().toJson(model));
         return "/setting/setting_rider";
     }
@@ -150,6 +178,8 @@ public class SettingController {
     public Boolean putRIderInfo(Rider rider) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         rider.setToken(storeInfo.getStoreAccessToken());
+        ShaEncoder sha = new ShaEncoder(512);
+        rider.setLoginPw(sha.encode(rider.getLoginPw()));
         storeSettingService.updateRiderInfo(rider);
         return true;
     }
@@ -200,7 +230,14 @@ public class SettingController {
         Notice notice = new Notice();
         List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
         model.addAttribute("noticeList", noticeList);
-
+        Rider rider = new Rider();
+        rider.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
+        model.addAttribute("footerRiderList", footerRiderList);
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+        model.addAttribute("footerOrderList", footerOrderList);
         log.info("json : {}", new Gson().toJson(model));
         return "/setting/setting_alarm";
     }
@@ -233,7 +270,14 @@ public class SettingController {
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
-
+        Rider rider = new Rider();
+        rider.setToken(storeInfo.getStoreAccessToken());
+        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
+        model.addAttribute("footerRiderList", footerRiderList);
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
+        model.addAttribute("footerOrderList", footerOrderList);
         log.info("json : {}", new Gson().toJson(store));
 
         return "/setting/setting_notice";

@@ -147,9 +147,8 @@ public class StaffController {
     @ResponseBody
     @PutMapping("/putRiderDetail")
     @CnttMethodDescription("기사 정보 수정")
-    public String putStoreDetail(
+    public String putRiderDetail(
             @RequestParam("riderId") String riderId,
-//            @RequestParam("loginPw") String loginPw,
             @RequestParam("storeId") String storeId,
             @RequestParam("code") String code,
             @RequestParam("name") String name,
@@ -162,27 +161,24 @@ public class StaffController {
             @RequestParam("teenager") String teenager,
             @RequestParam("workingHours") String workingHours,
             @RequestParam("restHours") String restHours,
-            @RequestParam("vehicleNumber") String vehicleNumber
+            @RequestParam("vehicleNumber") String vehicleNumber,
+            @RequestParam("hasGroup") String hasGroup
     ) {
         Rider rider = new Rider();
 
+        System.out.print(riderId);
+        System.out.print("@@@@@@@@@@@@@@@@@@");
+        System.out.print(storeId);
+        System.out.print("##################");
+        System.out.print(groupId);
+        System.out.print("##################");
+        System.out.print(subGroupId);
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         // token 부여
         rider.setToken(adminInfo.getAdminAccessToken());
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-
-
-
-//        D5Encoder md5 = new MD5Encoder();
-//        ShaEncoder sha = new ShaEncoder(512);
-//        Rider parameterRidern = new Rider();
-//
-//        parameterRidern.setLoginPw(sha.encode(rider.getLoginPw()));
-//        parameterRidern.setToken(rider.getToken());
-//        parameterRidern.setRole("ROLE_ADMIN");
-
 
         // param storeId
         rider.setId(riderId);
@@ -199,24 +195,43 @@ public class StaffController {
         rider.setVehicleNumber(vehicleNumber);
 
         // group model 생성
-        Group group = new Group();
-        group.setId(groupId);
-
-        rider.setGroup(group);
+//        Group group = new Group();
+//        group.setId(groupId);
+//
+//        rider.setGroup(group);
 
         // subgroup model 생성
         SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
+
         subGroupRiderRel.setSubGroupId(subGroupId);
+
         subGroupRiderRel.setGroupId(groupId);
+
         subGroupRiderRel.setStoreId(storeId);
+
         subGroupRiderRel.setRiderId(riderId);
+
         rider.setSubGroupRiderRel(subGroupRiderRel);
 
         int A_Rider = staffAdminService.updateRiderInfo(rider);
+        log.info("@@@@@@@@@@updateRiderInfo@@@@@@@@@@@@"+A_Rider);
+
+
         int A_Store = 0;
+        if(hasGroup.equals("T")){
+            log.info("update group.................................");
+            if (storeId != null || storeId != "") {
+                A_Store = staffAdminService.updateRiderStore(rider);
+            } else {
+                log.info("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNupdate group.................................");
+                rider.getSubGroupStoreRel().setStoreId(null);
+                A_Store = staffAdminService.updateRiderStore(rider);
+            }
 
-        A_Store = staffAdminService.updateRiderStore(rider);
-
+        } else{
+          log.info("insert group..................................");
+          A_Store = staffAdminService.insertSubGroupRiderRel(rider);
+        }
         if (A_Rider == 0) {
             return "err";
         } else {
@@ -280,9 +295,11 @@ public class StaffController {
 
         // subgroup model 생성
         SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
+
         subGroupRiderRel.setSubGroupId(subGroupId);
         subGroupRiderRel.setGroupId(groupId);
         subGroupRiderRel.setStoreId(storeId);
+
         rider.setSubGroupRiderRel(subGroupRiderRel);
 
 
@@ -291,15 +308,12 @@ public class StaffController {
         int A_Rider = staffAdminService.insertRider(rider);
         int A_Group = 0 ;
 
-
-
         String riderSessionToken = tokenManager.getToken("3",loginId , loginPw);
         log.info("@@@@@@@@@@@@@@@@ " + riderSessionToken);
         riderSession.setAccessToken(riderSessionToken);
         riderSession.setId(rider.getId());
         riderSession.setLoginId(loginId);
 
-        log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION" );
         staffAdminService.insertAdminRiderSession(riderSession);
         log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION");
 

@@ -320,9 +320,6 @@ public class StoreController {
     // param storeId
     store.setLoginId(loginId);
     store.setLoginPw(sha.encode(loginPw));
-
-
-
     store.setCode(code);
     store.setStoreName(storeName);
     store.setStorePhone(storePhone);
@@ -363,34 +360,32 @@ public class StoreController {
     store.setIsAdmin("1");
     storeAdminService.insertChatUser(store);
     storeAdminService.insertChatRoom(store);
-
-
-
     int A_Store = storeAdminService.insertStore(store);
+    log.info("@@@@@@@insertStore@@@@@@@@@@@"+store);
+
+
     int A_Group = 0;
     int A_Assign_Status = 0;
 
     String storeSessionToken = tokenManager.getToken("2",loginId , loginPw);
-    log.info("@@@@@@@@@@@@@@@@ " + storeSessionToken);
     storeSession.setAccessToken(storeSessionToken);
     storeSession.setId(store.getId());
     storeSession.setLoginId(loginId);
 
-    log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION" );
+
+
     storeAdminService.insertAdminStoreSession(storeSession);
-    log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION");
+    log.info("@@@@@@@insertStoreSession@@@@@@@@@@@"+storeSession);
 
 
-        if (groupId != null && groupId != "" && subGroupId != null && subGroupId != "") {
-        log.info("@@@@@@@@@@@@@@@@@groupinster@@@@@@@@@@@@@@@@@@@@");
-        A_Group = storeAdminService.insertSubGroupStoreRel(store);
-    }
+    A_Group = storeAdminService.insertSubGroupStoreRel(store);
+    log.info("@@@@@@@insertSubGroupRel@@@@@@@@@@@"+store);
+
 
     if (assignmentStatus != null) {
         log.info("@@@@@@@@@@@@@@@@@배정상태 insert@@@@@@@@@@@@@@@@@@@@");
         A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
     }
-
     if (A_Store == 0 && A_Group == 0 && A_Assign_Status == 0) {
         return "err";
     } else {

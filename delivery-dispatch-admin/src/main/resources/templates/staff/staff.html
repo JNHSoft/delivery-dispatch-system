@@ -14,6 +14,9 @@ var rider_address = /*[[#{rider.address}]]*/ 'rider_address';
 var rider_vehicle_number = /*[[#{rider.vehicle.number}]]*/ 'rider_vehicle_number';
 var rider_teenager = /*[[#{rider.teenager}]]*/ 'rider_teenager';
 var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
+var rider_belong_store = /*[[#{rider.belong.store}]]*/ 'rider_belong_store';
+var gnb_staff = /*[[#{gnb.staff}]]*/ 'gnb_staff';
+var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
 /*]]>*/
 </script>
 
@@ -26,16 +29,24 @@ var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
 		<input type="hidden" id="selectedRiderId"/>
 		<input type="hidden" id="selectedGroupId"/>
 		<input type="hidden" id="selectedSubGroupId"/>
+		<input type="hidden" id="hasGroup"/>
 
 
 		<h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.staff')}" />
 		<div class="search_box">
 			<div class="left">
-				<select name="" class="select">
-					<option value="" th:text="${#messages.msg('list.search.all')}" />
+				<!--검색 기능 -->
+				<!--전체 /소속매장 / 직원명 / 직원 코드 / 번호판 번호 / 아이디 -->
+				<select name="" class="select" id="searchSelect">
+					<option value="all" th:text="${#messages.msg('list.search.all')}" />
+					<option value="th1" th:text="${#messages.msg('rider.belong.store')}" />
+					<option value="th2" th:text="${#messages.msg('rider.name')}" />
+					<option value="th3" th:text="${#messages.msg('rider.code')}" />
+					<option value="th8" th:text="${#messages.msg('rider.vehicle.number')}" />
+					<option value="th10" th:text="${#messages.msg('login.id')}" />
 				</select>
-				<input type="text" class="input" th:placeholder="${#messages.msg('list.search.placeholder')}" />
-				<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" /></button>
+				<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}" />
+				<button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" /></button>
 			</div>
 			<div class="right">
 				<a href="#postPopStaff" class="button btn_blue pop_open"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.rider')}" onClick="javascript:getRiderStoreList()"/></a>
@@ -92,7 +103,7 @@ var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
 								<th th:text="${#messages.msg('rider.belong.store')}" />
 								<td>
 									<select name="" class="select" id="riderDetailStoreName">
-										<!--<option value="">매장을 선택해주세요.</option>-->
+										<option value="empty">請選擇</option>
 									</select>
 								</td>
 							</tr>
@@ -103,13 +114,13 @@ var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
 								<th th:text="${#messages.msg('rider.time.work')}" />
 								<td>
 									<select name="" class="select" id="riderDetailWorkStartTime">
-										<option value="empty">없음</option>
+										<option value="empty">請選擇</option>
 										<option th:each="i : ${#numbers.sequence(0, 23)}" th:value="${i}" th:text="${i}"></option>
 									</select><span th:text="${#messages.msg('rider.time.label')}" />
 
 
 									<select name="" class="select" id="riderDetailWorkEndTime">
-										<option value="empty">없음</option>
+										<option value="empty">請選擇</option>
 										<option th:each="i : ${#numbers.sequence(1, 24)}" th:value="${i}" th:text="${i}"></option>
 									</select><span th:text="${#messages.msg('rider.time.label')}" />
 
@@ -234,7 +245,7 @@ var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
 						<!--소속 매장 -->
 						<td>
 							<select name="" class="select" id="postRiderStoreList">
-								<!--<option value="">양재점</option>-->
+								<!--<option value="empty">請選擇</option>-->
 							</select>
 						</td>
 					</tr>
@@ -246,12 +257,12 @@ var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
 						<th th:text="${#messages.msg('rider.time.work')}" />
 						<td>
 							<select name="" class="select" id="postRiderWorkStartTime">
-								<option value="empty">없음</option>
+								<option value="empty">請選擇</option>
 								<option th:each="i : ${#numbers.sequence(0, 23)}" th:value="${i}" th:text="${i}"></option>
 							</select><span th:text="${#messages.msg('rider.time.label')}" /> ~
 
 							<select name="" class="select" id="postRiderWorkEndTime">
-								<option value="empty">없음</option>
+								<option value="empty">請選擇</option>
 								<option th:each="i : ${#numbers.sequence(1, 24)}" th:value="${i}" th:text="${i}"></option>
 							</select><span th:text="${#messages.msg('rider.time.label')}" />
 						</td>
