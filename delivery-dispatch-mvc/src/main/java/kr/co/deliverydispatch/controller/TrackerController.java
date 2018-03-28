@@ -69,15 +69,21 @@ public class TrackerController {
     @GetMapping("/tracker")
     public String getTracker(@RequestParam(required=false) String encParam, Model model) throws Exception {
 
-        Tracker trackerResult = new Tracker();
-
         if (encParam != null) {
-            trackerResult = trackerService.getTracker(encParam);
-        } else {
-            trackerResult = new Tracker();
-        }
+            Tracker trackerResult = trackerService.getTracker(encParam);
 
-        model.addAttribute("tracker", trackerResult);
+            if (trackerResult != null) {
+                model.addAttribute("tracker", trackerResult);
+            } else {
+                trackerResult = new Tracker();
+
+                model.addAttribute("tracker", trackerResult);
+            }
+        } else {
+            Tracker trackerResult = new Tracker();
+
+            model.addAttribute("tracker", trackerResult);
+        }
 
         return "/tracker/tracker";
     }
