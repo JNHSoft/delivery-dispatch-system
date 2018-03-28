@@ -45,10 +45,27 @@
 
 	<!-- selectTracker -->
 	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
-		SELECT A.reg_order_id, A.id, A.status, B.code
+		SELECT	A.created_datetime
+			, A.reg_order_id
+			, A.id
+			, A.status
+			, A.latitude
+			, A.longitude
+			, A.cooking_time
+			, B.code
+			, B.name AS store_name
+			, B.phone AS store_phone
+			, B.latitude AS store_latitude
+			, B.longitude AS store_longitude
+			, C.name AS rider_name
+			, C.phone AS rider_phone
+			, C.latitude AS rider_latitude
+			, C.longitude AS rider_longitude
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_STORE AS B
 		ON A.store_id = B.id
+		LEFT JOIN TB_RIDER AS C
+		ON A.rider_id = C.id
 		WHERE A.reg_order_id = #{regOrderId}
 			AND B.code = #{code}
 	</select>

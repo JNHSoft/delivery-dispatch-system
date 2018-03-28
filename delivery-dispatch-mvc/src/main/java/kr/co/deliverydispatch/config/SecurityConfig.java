@@ -85,6 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 권한 상관 없이 접근 허용
                 .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/tracker").permitAll()    // 트래커 페이지
                 // 슈퍼, 개발자만 허용
                 .antMatchers("/admin/list/**").access("hasRole('SUPER') or hasRole('GOD')")
                 .antMatchers("/admin/delete/**").access("hasRole('SUPER') or hasRole('GOD')")
@@ -92,10 +93,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").access("hasRole('STORE')")
                 .and()
                 .formLogin()
-                .loginPage("/login").permitAll()				// 로그인 페이지
+                .loginPage("/login").permitAll()    				// 로그인 페이지
                 .usernameParameter("storeId")						// 로그인 아이디
                 .passwordParameter("storePassword")					// 로그인 패스워드
-                .loginProcessingUrl("/loginProcess")			// 로그인 처리 URL
+                .loginProcessingUrl("/loginProcess")		    	// 로그인 처리 URL
                 //.successForwardUrl("/store/loginSuccess")			// 로그인 후 URL
                 .successHandler(customAuthenticationSuccessHandler)	// 인증 성공 핸들러
                 .failureHandler(customAuthenticationFailureHandler) // 인증 실패 핸들러
