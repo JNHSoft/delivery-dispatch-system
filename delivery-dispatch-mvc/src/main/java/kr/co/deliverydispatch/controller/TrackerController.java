@@ -1,6 +1,7 @@
 package kr.co.deliverydispatch.controller;
 
 import kr.co.cntt.core.model.tracker.Tracker;
+import kr.co.cntt.core.util.Misc;
 import kr.co.deliverydispatch.service.TrackerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,9 @@ public class TrackerController {
 
         if (encParam != null) {
             Tracker trackerResult = trackerService.getTracker(encParam);
+
+            Misc misc = new Misc();
+            trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getLatitude(), trackerResult.getLongitude(), trackerResult.getStoreLatitude(), trackerResult.getLongitude())/(double) 1000));
 
             if (trackerResult != null) {
                 model.addAttribute("tracker", trackerResult);
