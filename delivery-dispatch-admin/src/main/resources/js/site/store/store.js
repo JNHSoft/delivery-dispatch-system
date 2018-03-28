@@ -1,10 +1,7 @@
 /*<![CDATA[*/
 $(document).ready(function () {
     getStoreList();
-    getGroupList();
-
-
-    // 검색버튼을 누를시에 
+    // 검색버튼을 누를시에
     $("#searchButton").click(function () {
         // 입력받는 text 값 가져온다 
         var searchText = $("#searchText").val();
@@ -81,14 +78,6 @@ $(document).ready(function () {
         $.extend(grid[0].p.postData, { filters: JSON.stringify(filter) });
         grid.trigger("reloadGrid", [{ page: 1 }]);
     });
-    getStoreList();
-
-
-
-
-
-
-
 });
 
 /**
@@ -107,10 +96,7 @@ function getStoreList() {
                 var $tmpData = new Object();
                 console.log(data);
                 if (data.hasOwnProperty(key)) {
-
-
                     $tmpData.th0 = data[key].id
-
                     if(data[key].group != null){
                         $tmpData.th12 = data[key].group.id
                         $tmpData.th13 = data[key].subGroup.id
@@ -130,13 +116,13 @@ function getStoreList() {
 
                     // 0: 수동배정, 1: 자동배정, 2: 기사배정
                     if(data[key].assignmentStatus == "0"){
-                        $tmpData.th11 = order_assign_mode_store;
+                        $tmpData.th11 = order_assign_mode_store
                     }
                     else if (data[key].assignmentStatus == "1"){
-                        $tmpData.th11 = order_assign_mode_auto;
+                        $tmpData.th11 = order_assign_mode_auto
                     }
                     else if (data[key].assignmentStatus == "2"){
-                        $tmpData.th11 = order_assign_mode_rider;
+                        $tmpData.th11 = order_assign_mode_rider
                     }
 
                     $mydata.push($tmpData);
@@ -148,7 +134,6 @@ function getStoreList() {
                 jQuery('#jqGrid').trigger('reloadGrid');
             }
             $("#jqGrid").trigger("reloadGrid");
-
             $("#jqGrid").jqGrid({
                 datatype:"local",
                 data:$mydata,
@@ -188,7 +173,6 @@ function getStoreList() {
 
                      getStoreDetail();
                 }
-
             });
 
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
@@ -235,11 +219,12 @@ function getStoreDetail() {
                 // 배정 모드
                 $("#storeDetailAssignStatusSelectBox").val(data.A_Store.assignmentStatus);
 
+
+
+                var storeDetailGroupHtml = "<option value=''>" + "그룹선택" + "</option>";
+                var storeDetailGroupHtml = "<option value=''>" + "不明" + "</option>";
                 // 소속 그룹
                 if(data.groupList !=null) {
-                    var storeDetailGroupHtml = "<option value='none'>" + group_choise + "</option>";
-                        // "<option value='none'>" + group_choise + "</option>";
-
                     for (var i in data.groupList){
                         storeDetailGroupHtml += "<option value='" + data.groupList[i].id  + "'>" + data.groupList[i].name + "</option>";
                     }
@@ -257,6 +242,9 @@ function getStoreDetail() {
                         $("#storeDetailGroup").val(data.A_Store.group.id).prop("selected", true);
                     }
                 }
+
+
+
 
                 // 소속 소그룹
                 if(data.subGroupList != null ) {
@@ -300,6 +288,8 @@ function getSubGroupList(gId, subGroup) {
         },
         dataType : 'json',
         success : function(data){
+            console.log("그룹 변경시 서브그룹 리스트 불러오기!");
+            console.log(data);
             if(data) {
                 var storeDetailSubGroupHtml = "";
                     // "<option value='none'>" + "-" + "</option>";
@@ -329,7 +319,7 @@ function getGroupList() {
         success : function(data) {
             if (data) {
 
-                var postStoreGroupHtml = "<option value=''>" + group_choise + "</option>";
+                var postStoreGroupHtml = "<option value=''>" + "不明" + "</option>";
                 // var postStoreGroupHtml = "";
                 for (var i in data) {
                     postStoreGroupHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
@@ -406,11 +396,11 @@ function putStoreDetail() {
             hasGroup		    : $("#hasGroup").val()
         },
         success : function(data){
-                alert("完成修復");
-                popClose('#popStoreDetail');
-                getStoreList()
-                // 완료후 페이지 호출
-                location.reload();
+            if(!confirm("你想编辑它吗？")) return;
+            popClose('#popStoreDetail');
+            getStoreList()
+            // 완료후 페이지 호출
+            location.reload();
         }
     });
 

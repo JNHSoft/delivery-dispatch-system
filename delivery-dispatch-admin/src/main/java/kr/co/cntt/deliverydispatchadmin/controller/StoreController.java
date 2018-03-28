@@ -260,15 +260,17 @@ public class StoreController {
         int A_Group = 0;
         int A_Assign_Status = 0;
 
-        if (groupId != null && groupId != "" && subGroupId != null && subGroupId != "") {
-            if (hasGroup.equals("T")) {
-                log.info("update group.................................");
+        if (hasGroup.equals("T")) {
+            log.info("update group.................................");
+            if(groupId !=null || groupId !=""){
                 A_Group = storeAdminService.updateSubGroupStoreRel(store);
-            } else {
-                log.info("insert group..................................");
-                A_Group = storeAdminService.insertSubGroupStoreRel(store);
             }
+        } else {
+            log.info("insert group..................................");
+            A_Group = storeAdminService.insertSubGroupStoreRel(store);
         }
+
+
         if (assignmentStatus != null && assignmentStatus != "") {
             A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
         }

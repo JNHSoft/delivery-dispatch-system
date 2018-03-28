@@ -60,6 +60,7 @@
 		<result property="detailAddress" column="detail_address" />
 		<result property="chAddress" column="ch_address" />
 		<result property="chDetailAddress" column="ch_detail_address" />
+		<result property="assignmentStatus" column="assignment_status" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -442,8 +443,14 @@
 	<update id="updateSubGroupStoreRel" parameterType="kr.co.cntt.core.model.store.Store">
 		UPDATE TB_SUBGROUP_STORE_REL
 		SET modified_datetime = now()
+        <if test="subGroupStoreRel.groupId != null and subGroupStoreRel.groupId != '' and subGroupStoreRel.subGroupId != null and subGroupStoreRel.subGroupId != ''">
 			, group_id = #{subGroupStoreRel.groupId}
 			, subgroup_id = #{subGroupStoreRel.subGroupId}
+        </if>
+        <if test="subGroupStoreRel.groupId == null and subGroupStoreRel.groupId == '' and subGroupStoreRel.subGroupId == null and subGroupStoreRel.subGroupId == ''">
+            , deleted = now()
+        </if>
+
 		WHERE store_id = #{id}
 			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND deleted IS NULL
@@ -1125,6 +1132,7 @@
 		, A.login_id
 		, A.address
 		, A.detail_address
+		, A.assignment_status
 		, A.ch_address
 		, A.ch_detail_address
 		, C.id AS subgroup_id
