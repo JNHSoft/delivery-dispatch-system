@@ -9,6 +9,7 @@
         <input type="hidden" id="statusArray"/>
         <input type="hidden" id="storeLatitude" th:value="*{latitude}"/>
         <input type="hidden" id="storeLongitude" th:value="*{longitude}"/>
+        <input type="hidden" id="storeChatUserId" th:value="*{chatUserId}"/>
     </div>
     <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}"/>
     <div class="search_box">
@@ -81,7 +82,6 @@
         var status_rest = /*[[#{status.rest}]]*/ 'status_rest';
         var status_off = /*[[#{status.off}]]*/ 'status_off';
         var my_store = /*[[${store}]]*/ 'my_store';
-        var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
         var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
         var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
         var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';

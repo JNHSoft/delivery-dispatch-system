@@ -190,27 +190,10 @@
     var order_detail = /*[[#{order.detail}]]*/ 'order_detail';
     var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
     var my_store = /*[[${store}]]*/ 'my_store';
-    var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
     var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
 	var order_reg_order_id = /*[[#{order.reg.order.id}]]*/ 'order_reg_order_id';
     var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
     var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
-    function noticeAlarm() {
-        $('#myStoreName').text(my_store.storeName);
-        var j = 0;
-        console.log(my_notice_list);
-        for (var i = 0; i < my_notice_list.length; i++) {
-            if (my_notice_list[i].confirmedDatetime == "") {
-                j++;
-            }
-        }
-        console.log(j);
-        if(j != 0){
-            $("#notice_alarm").addClass('new');
-        }else{
-            $("#notice_alarm").removeClass('new');
-        }
-    }
     $(document).ready(function() {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
         if (supportsWebSockets) {
@@ -232,7 +215,6 @@
         } else {
             alert('websocket을 지원하지 않는 브라우저입니다.');
         }
-        noticeAlarm();
     });
     /*]]>*/
 	</script>

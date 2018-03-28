@@ -3,7 +3,6 @@ package kr.co.deliverydispatch.controller;
 import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.alarm.Alarm;
-import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
@@ -21,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +42,14 @@ public class SettingController {
         this.storeOrderService = storeOrderService;
     }
 
+    @RequestMapping("/getNotice")
+    @ResponseBody
+    public Notice getNotice() {
+        // TODO : Notice 불러오기
+
+        return new Notice();
+    }
+
     /**
      * 설정 - 계정관리 페이지
      *
@@ -58,9 +62,6 @@ public class SettingController {
 
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeSettingService.getStoreInfo(store);
-        Notice notice = new Notice();
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
-        model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
         Rider rider = new Rider();
@@ -104,9 +105,6 @@ public class SettingController {
         ThirdParty thirdParty = new ThirdParty();
         thirdParty.setToken(storeInfo.getStoreAccessToken());
         List<ThirdParty> allThirdParty= storeSettingService.getThirdParty(thirdParty);
-        Notice notice = new Notice();
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
-        model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("thirdParty", allThirdParty);
         model.addAttribute("json", new Gson().toJson(store));
@@ -146,9 +144,6 @@ public class SettingController {
         System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeSettingService.getStoreInfo(store);
         List<Rider> myRiderList = storeSettingService.getMyStoreRiderRels(store);
-        Notice notice = new Notice();
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
-        model.addAttribute("noticeList", noticeList);
         model.addAttribute("riderList", myRiderList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
@@ -227,9 +222,6 @@ public class SettingController {
         model.addAttribute("completeAlarm", completeAlarm);
         model.addAttribute("cancelAlarm", cancelAlarm);
         model.addAttribute("json", new Gson().toJson(store));
-        Notice notice = new Notice();
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
-        model.addAttribute("noticeList", noticeList);
         Rider rider = new Rider();
         rider.setToken(storeInfo.getStoreAccessToken());
         List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
@@ -265,9 +257,6 @@ public class SettingController {
         store.setToken(storeInfo.getStoreAccessToken());
         System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeNoticeService.getStoreInfo(store);
-        Notice notice = new Notice();
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
-        model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
         Rider rider = new Rider();

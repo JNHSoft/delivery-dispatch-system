@@ -424,7 +424,7 @@ function getOrderList(statusArray, storeId) {
         type: 'get',
         data: {
             statusArray : statusArray.filter(n => n), //null 제거
-        status : statusArray.join('')
+            status : statusArray.join('')
         },
         dataType: 'json',
         success: function (data) {
@@ -543,7 +543,7 @@ function getOrderList(statusArray, storeId) {
                 {label:order_id, name:'id', width:80, align:'center'},
                 {label:order_created, name:'time1', width:80, align:'center'},
                 {label:order_address, name:'address', width:200},
-                {label:order_reg_order_id, name: 'reg order id', width:150},
+                {label:order_reg_order_id, name: 'reg_order_id', width:150},
                 {label:order_cooking, name:'time2', width:80, align:'center'},
                 {label:order_payment, name:'pay', width:80, align:'center'},
                 {label:order_assigned, name:'time3', width:80, align:'center'},

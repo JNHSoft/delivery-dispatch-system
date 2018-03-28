@@ -10,7 +10,7 @@
 		WHERE
 		<if test="role != null and role == 'ROLE_STORE'">
 			chat_user_id = #{chatUserId}
-				AND chatroom_id = (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = #{chatUserId})
+				AND chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = (SELECT chat_user_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})))
 		</if>
 		<if test="role != null and role == 'ROLE_RIDER'">
 			chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
@@ -117,6 +117,22 @@
 			<if test="role != null and role == 'ROLE_RIDER'">
 				chatroom_id IN (select chatroom_id from TB_CHAT_USER_CHATROOM_REL where chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})))
 			</if>
+	</select>
+
+	<!-- selectStoreChat -->
+	<select id="selectStoreChat" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="kr.co.cntt.core.model.chat.Chat">
+		SELECT
+		created_datetime
+		, chat_user_id
+		, chatroom_id
+		, message
+		FROM
+		TB_CHAT
+		WHERE
+		<if test="role != null and role == 'ROLE_STORE'">
+			chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = #{chatUserId})
+			AND chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = (SELECT chat_user_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})))
+		</if>
 	</select>
 
 

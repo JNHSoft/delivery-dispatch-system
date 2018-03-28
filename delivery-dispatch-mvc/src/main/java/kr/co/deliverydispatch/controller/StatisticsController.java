@@ -59,9 +59,6 @@ public class StatisticsController {
         store.setToken(storeInfo.getStoreAccessToken());
         System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeStatementService.getStoreInfo(store);
-        Notice notice = new Notice();
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
-        model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         model.addAttribute("json", new Gson().toJson(store));
         Rider rider = new Rider();

@@ -161,8 +161,13 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
         } else if (authentication.getAuthorities().toString().matches(".*ROLE_RIDER.*")) {
             chat.setRole("ROLE_RIDER");
         }
-
-        List<Chat> S_Chat = chatMapper.selectChat(chat);
+        Chat chatRoomChecked = chatMapper.selectChatUserChatRoomRel(chat);
+        if (chatRoomChecked == null) {
+            chatMapper.insertChatRoom(chat);
+            chatMapper.insertChatRoomRelRecv(chat);
+            chatMapper.insertChatRoomRelTran(chat);
+        }
+        List<Chat> S_Chat = chatMapper.selectStoreChat(chat);
 
         if (S_Chat.size() == 0) {
             return Collections.<Chat>emptyList();
@@ -175,7 +180,6 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
     public int postChat(Chat chat){
 
         Store resultStore = new Store();
-        Rider resultRider = new Rider();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -185,17 +189,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
             Store store = new Store();
             store.setToken(chat.getToken());
             store.setAccessToken(chat.getToken());
-
             resultStore = storeMapper.selectStoreInfo(store);
-
-        } else if (authentication.getAuthorities().toString().matches(".*ROLE_RIDER.*")) {
-            chat.setRole("ROLE_RIDER");
-
-            Rider rider = new Rider();
-            rider.setToken(chat.getToken());
-            rider.setAccessToken(chat.getToken());
-
-            resultRider = riderMapper.getRiderInfo(rider);
         }
 
         Chat resultSelectChatRoomRel = chatMapper.selectChatUserChatRoomRel(chat);
@@ -216,16 +210,14 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
             chat.setLastMessage(chat.getMessage());
         }
 
-        chatMapper.updateChatRoomLastMessage(chat);
         int S_Chat = chatMapper.insertChat(chat);
+        chatMapper.updateChatRoomLastMessage(chat);
 
         if (S_Chat == 0) {
             return  0;
         } else {
             if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
-            } else if (authentication.getAuthorities().toString().matches(".*ROLE_RIDER.*")) {
-                redisService.setPublisher("chat_send", "admin_id:" + resultRider.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
             }
         }
 

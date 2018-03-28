@@ -54,9 +54,6 @@ public class RiderController {
         store.setToken(storeInfo.getStoreAccessToken());
         System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeRiderService.getStoreInfo(store);
-        Notice notice = new Notice();
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
-        model.addAttribute("noticeList", noticeList);
         model.addAttribute("store", myStore);
         Rider rider = new Rider();
         rider.setToken(storeInfo.getStoreAccessToken());

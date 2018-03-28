@@ -57,14 +57,12 @@ public class OrderController {
         notice.setToken(storeInfo.getStoreAccessToken());
         rider.setToken(storeInfo.getStoreAccessToken());
         order.setToken(storeInfo.getStoreAccessToken());
-        List<Notice> noticeList = storeNoticeService.getNoticeList(notice);
         Store myStore = storeOrderService.getStoreInfo(store);
         List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
         List<Order> orderList = storeOrderService.getOrders(order);
         List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
 
         model.addAttribute("store", myStore);
-        model.addAttribute("noticeList", noticeList);
         model.addAttribute("footerRiderList", footerRiderList);
         model.addAttribute("orderList", orderList);
         model.addAttribute("footerOrderList", footerOrderList);
