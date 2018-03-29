@@ -14,35 +14,29 @@ function footerRiders() {
     }
 }
 function footerOrders() {
-    if(footerOrderList[0]) {
-        if (footerOrderList[5]) {
-            $('#new').text(parseInt(footerOrderList[0].count)+parseInt(footerOrderList[5].count));
-        } else {
-            $('#new').text(parseInt(footerOrderList[0].count));
-            }
-        } else if(footerOrderList[5]){
-        $('#new').text(parseInt(footerOrderList[5].count));
-        } else {
-        $('#new').text('0');
+    var newCnt = 0;
+    var assignedCnt = 0;
+    var completedCnt = 0;
+    var canceledCnt = 0;
+    for (i =0; i <footerOrderList.length; i++){
+        if(footerOrderList[i].status=="0"){
+            newCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="1"){
+            assignedCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="2"){
+            assignedCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="3"){
+            completedCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="4"){
+            canceledCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="5"){
+            newCnt += parseInt(footerOrderList[i].count);
+        }
     }
-
-    if(footerOrderList[1]){
-        $('#assigned').text(parseInt(footerOrderList[1].count));
-    }else {
-        $('#assigned').text('0');
-    }
-
-    if(footerOrderList[3]){
-        $('#completed').text(parseInt(footerOrderList[3].count));
-    }else {
-        $('#completed').text('0');
-    }
-
-    if(footerOrderList[4]){
-        $('#canceled').text(parseInt(footerOrderList[4].count));
-    }else{
-        $('#canceled').text('0')
-    }
+    $('#new').text(newCnt);
+    $('#assigned').text(assignedCnt);
+    $('#completed').text(completedCnt);
+    $('#canceled').text(canceledCnt);
 }
 
 $(document).ready(function() {
@@ -291,10 +285,9 @@ function getOrderDetail(orderId) {
                 for (var key in currentOrderList) {
                     if (currentOrderList.hasOwnProperty(key)) {
                         if(currentOrderList[key].id == data.combinedOrderId){
-                            var shtml = '<option value="'+ currentOrderList[key].id+'">'+order_id+':'+ currentOrderList[key].id + '|'+ 'order_created'+':'+ timeSet(currentOrderList[key].createdDatetime) + '</option>';
+                            var shtml = '<option value="'+ currentOrderList[key].id+'">'+order_id+':'+ currentOrderList[key].id + '|'+ order_created+':'+ timeSet(currentOrderList[key].createdDatetime) + '</option>';
                             $('#selectCombined').html(shtml);
                         }
-
                     }
                 }
                 $('input[name=combinedChk]:checkbox').attr("checked", true);
@@ -388,10 +381,11 @@ function getNewOrderList(statusNewArray) {
         },
         datatype: 'json',
         success: function (data) {
+            console.log(data)
             $('#selectCombined').html("");
             for (var key in data) {
                 if (data.hasOwnProperty(key)){
-                    if(data[key].id != selectedOriginOrder.id){
+                    if(data[key].id != selectedOriginOrder.id && !data[key].combinedOrderId){
                         shtml += '<option value="'+data[key].id+'">'+'주문 ID'+':'+ data[key].id + '|'+ '등록시간'+':'+ timeSet(data[key].createdDatetime) + '</option>';
                         $('#selectCombined').html(shtml);
                     }
@@ -660,18 +654,18 @@ function putAssignedAdvance() {
 
 function orderConfirm() {
     if(selectedOriginOrder.status == "3" ){
-        alert("완료된 주문은 수정이 불가능합니다.");
+        alert(order_confirm_completed);
         return;
     }
 
     if(selectedOriginOrder.status == "4"){
-        alert("취소된 주문은 수정이 불가능합니다.");
+        alert(order_confirm_canceled);
         return;
     }
 
     if($('#selectedRider').val()=='0'){
         if(selectedOriginOrder.riderId) {
-            var result = confirm("배정을 하지않거나 취소 하시겠습니까..?");
+            var result = confirm(order_confirm_assigned);
             if (result) {
                 putOrderAssignCancle();
                 putOrder();
@@ -698,12 +692,12 @@ function orderConfirm() {
 }
 function putOrderCancle() {
     if(selectedOriginOrder.status == "3" ){
-        alert("완료된 주문은 수정이 불가능합니다.");
+        alert(order_confirm_completed);
         return;
     }
 
     if(selectedOriginOrder.status == "4"){
-        alert("취소된 주문은 수정이 불가능합니다.");
+        alert(order_confirm_canceled);
         return;
     }
     var id = $('.tit').attr("orderId");

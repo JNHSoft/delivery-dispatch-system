@@ -200,7 +200,6 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         }
 
         int S_Order = orderMapper.updateOrder(order);
-
         if (S_Order == 0) {
             return 0;
         }

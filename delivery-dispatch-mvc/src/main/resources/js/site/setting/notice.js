@@ -13,35 +13,29 @@ function footerRiders() {
     }
 }
 function footerOrders() {
-    if(footerOrderList[0]) {
-        if (footerOrderList[5]) {
-            $('#new').text(parseInt(footerOrderList[0].count)+parseInt(footerOrderList[5].count));
-        } else {
-            $('#new').text(parseInt(footerOrderList[0].count));
+    var newCnt = 0;
+    var assignedCnt = 0;
+    var completedCnt = 0;
+    var canceledCnt = 0;
+    for (i =0; i <footerOrderList.length; i++){
+        if(footerOrderList[i].status=="0"){
+            newCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="1"){
+            assignedCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="2"){
+            assignedCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="3"){
+            completedCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="4"){
+            canceledCnt += parseInt(footerOrderList[i].count);
+        }else if(footerOrderList[i].status=="5"){
+            newCnt += parseInt(footerOrderList[i].count);
         }
-    } else if(footerOrderList[5]){
-        $('#new').text(parseInt(footerOrderList[5].count));
-    } else {
-        $('#new').text('0');
     }
-
-    if(footerOrderList[1]){
-        $('#assigned').text(parseInt(footerOrderList[1].count));
-    }else {
-        $('#assigned').text('0');
-    }
-
-    if(footerOrderList[3]){
-        $('#completed').text(parseInt(footerOrderList[3].count));
-    }else {
-        $('#completed').text('0');
-    }
-
-    if(footerOrderList[4]){
-        $('#canceled').text(parseInt(footerOrderList[4].count));
-    }else{
-        $('#canceled').text('0')
-    }
+    $('#new').text(newCnt);
+    $('#assigned').text(assignedCnt);
+    $('#completed').text(completedCnt);
+    $('#canceled').text(canceledCnt);
 }
 $(function() {
     footerRiders();
