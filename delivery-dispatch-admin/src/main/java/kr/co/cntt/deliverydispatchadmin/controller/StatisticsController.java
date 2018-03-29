@@ -114,11 +114,8 @@ public class StatisticsController {
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@ " + startDate);
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@ " + endDate);
 
         order.setCurrentDatetime(startDate);
-        log.info("dateeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"+order.getCurrentDatetime());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date sdfStartDate = formatter.parse(startDate);
@@ -127,10 +124,6 @@ public class StatisticsController {
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
             order.setDays(Integer.toString((int) (long) diffDays + 1));
-
-            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@ " + diffDays);
-
-
         } catch (ParseException e) {
             e.printStackTrace();
         }
