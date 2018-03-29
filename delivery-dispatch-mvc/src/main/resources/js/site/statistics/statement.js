@@ -161,8 +161,6 @@ function initMap() {
     });
 }
 function minusTime(time1, time2) {
-    time1 += " 00:00:00";
-    time2 += " 00:00:00";
     var d1 = new Date(time1);
     var d2 = new Date(time2);
     var minusTime = d2.getTime()-d1.getTime();
@@ -171,6 +169,9 @@ function minusTime(time1, time2) {
 function timepickerConfirm(time1 , time2, createdTime) {
     var d1 = new Date(time1);
     var d2 = new Date(time2);
+    d1.setHours(0,0,0);
+    d2.setHours(0,0,0);
+    d2.setDate(d2.getDate()+1);
     var cT = new Date(createdTime);
     if(minusTime(cT,d2)>=0 && minusTime(d1,cT)>=0){
         return true;

@@ -291,10 +291,9 @@ function getOrderDetail(orderId) {
                 for (var key in currentOrderList) {
                     if (currentOrderList.hasOwnProperty(key)) {
                         if(currentOrderList[key].id == data.combinedOrderId){
-                            var shtml = '<option value="'+ currentOrderList[key].id+'">'+order_id+':'+ currentOrderList[key].id + '|'+ 'order_created'+':'+ timeSet(currentOrderList[key].createdDatetime) + '</option>';
+                            var shtml = '<option value="'+ currentOrderList[key].id+'">'+order_id+':'+ currentOrderList[key].id + '|'+ order_created+':'+ timeSet(currentOrderList[key].createdDatetime) + '</option>';
                             $('#selectCombined').html(shtml);
                         }
-
                     }
                 }
                 $('input[name=combinedChk]:checkbox').attr("checked", true);
@@ -388,10 +387,11 @@ function getNewOrderList(statusNewArray) {
         },
         datatype: 'json',
         success: function (data) {
+            console.log(data)
             $('#selectCombined').html("");
             for (var key in data) {
                 if (data.hasOwnProperty(key)){
-                    if(data[key].id != selectedOriginOrder.id){
+                    if(data[key].id != selectedOriginOrder.id && !data[key].combinedOrderId){
                         shtml += '<option value="'+data[key].id+'">'+'주문 ID'+':'+ data[key].id + '|'+ '등록시간'+':'+ timeSet(data[key].createdDatetime) + '</option>';
                         $('#selectCombined').html(shtml);
                     }
@@ -659,6 +659,7 @@ function putAssignedAdvance() {
 }
 
 function orderConfirm() {
+    debugger;
     if(selectedOriginOrder.status == "3" ){
         alert("완료된 주문은 수정이 불가능합니다.");
         return;
