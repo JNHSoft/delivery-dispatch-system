@@ -91,6 +91,8 @@
 		<result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="reservationDatetime" column="reservation_datetime" />
 		<result property="completedDatetime" column="completed_datetime" />
+		<result property="paid" column="paid" />
+
 
 		<result property="cookingTime" column="cooking_time" />
 		<result property="menuPrice" column="menu_price" />
@@ -989,6 +991,7 @@
 	, TBO.reservation_datetime
 	, TBR.name
 	, TBO.address
+	, TBO.paid
 
 
 	FROM TB_ORDER AS TBO
@@ -1027,6 +1030,10 @@
 
 	TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	AND TBO.status = 3 AND 4
+ 	AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > TBO.created_datetime
+    AND TBO.created_datetime > #{currentDatetime}
+
+	ORDER BY TBO.created_datetime ASC
 	<!--<if test="startDate != null and startDate != ''">-->
 		<!--AND start_date = #{startDate}-->
 	<!--</if>-->

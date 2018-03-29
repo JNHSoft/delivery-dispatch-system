@@ -204,6 +204,17 @@ function minusTime(time1, time2) {
     return minusTime;
 }
 
+
+// function minusTime(time1, time2) {
+//     time1 += " 00:00:00";
+//     time2 += " 00:00:00";
+//     var d1 = new Date(time1);
+//     var d2 = new Date(time2);
+//     var minusTime = d2.getTime()-d1.getTime();
+//     return minusTime;
+// }
+
+
 /**
  * 날짜 계산 
  * 날짜 사이에 주문등록 날짜가 있는지
@@ -245,41 +256,55 @@ function getStatisticsList() {
     $.ajax({
         url: "/getStatisticsList",
         type: 'get',
+        data: {
+            startDate: $('#startDate').val(),
+            endDate: $('#endDate').val()
+        },
         dataType: 'json',
         success: function (data) {
 
             var i = 1;
             for (var key in data) {
                 var $tmpData = new Object();
+                var tmpStart = new Date($('#startDate').val());
+                tmpStart.setHours('00');
+                tmpStart.setMinutes('00');
+                tmpStart.setSeconds('00');
 
-                if (timepickerConfirm($('#startDate').val(), $('#endDate').val(), data[key].createdDatetime)) {
+                var tmpEnd = new Date($('#endDate').val());
+                tmpEnd.setHours('23');
+                tmpEnd.setMinutes('59');
+                tmpEnd.setSeconds('59');
+                tmpEnd.setDate(tmpEnd.getDate()+1);
 
-
+                if (timepickerConfirm(tmpStart, tmpEnd, data[key].createdDatetime)) {
                 console.log(data);
                 if (data.hasOwnProperty(key)) {
-
 
                     $tmpData.th0 = i++
                     $tmpData.th1 = data[key].group.name
                     $tmpData.th2 = data[key].subGroup.name
                     $tmpData.th3 = data[key].store.storeName
                     if (data[key].status == "3") {
-                        $tmpData.th4 = "완료"
+                        $tmpData.th4 = status_completed
                     } else if (data[key].status == "4") {
-                        $tmpData.th4 = "취소"
+                        $tmpData.th4 = status_canceled
                     }
                     $tmpData.th5 = data[key].id
                     $tmpData.th6 = timeSet(data[key].createdDatetime);
                     $tmpData.th7 = data[key].address
                     $tmpData.th8 = data[key].menuName
                     $tmpData.th9 = data[key].cookingTime
-                    if (data[key].payment) {
-                        if (data[key].payment.type == "0") {
+
+                    if (data[key].paid != null) {
+                        if (data[key].paid == "0") {
                             $tmpData.th10 = order_payment_card;
-                        } else if (data[key].payment.type == "1") {
-                            $tmpData.th10 = order_payment_cash
-                        } else if (data[key].payment.type == null) {
-                            $tmpData.th10 = "-"
+                        } else if (data[key].paid == "1") {
+                            $tmpData.th10 = order_payment_cash;
+                        } else if (data[key].paid == "2") {
+                            $tmpData.th10 = order_payment_prepayment;
+                        } else if (data[key].paid == "3"){
+                            $tmpData.th10 = order_payment_service;
                         }
                     }
                     if (!data[key].assignedDatetime) {
@@ -346,7 +371,7 @@ function getStatisticsList() {
                     {label: order_assigned, name: 'th11', width: 80, align: 'center'},
                     {label: order_pickedup, name: 'th12', width: 80, align: 'center'},
                     {label: order_reserved, name: 'th13', width: 80, align: 'center'},
-                    {label: rider_name, name: 'th114', width: 80, align: 'center'},
+                    {label: rider_name, name: 'th14', width: 80, align: 'center'},
                     {label:'그룹ID', name:'th15', width:60, hidden:'hidden'},
                     {label:'서브그룹ID', name:'th16', width:60, hidden:'hidden'},
                     {label:'매장ID', name:'th17', width:60, hidden:'hidden'}
@@ -406,7 +431,7 @@ function getStatisticsInfo(orderId) {
             else {
                 $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
             }
-            $('.tit').html('<h2>'+order_detail + ' - '+ data.id + '</h2>'+$status);
+            $('.tit').html('<h2>' +order_detail + ' - '+ data.id + '</h2>'+$status);
 
             $('.tit').attr("orderId", data.id);
 
@@ -425,13 +450,13 @@ function getStatisticsInfo(orderId) {
 
             if(data.payment) {
                 if (data.payment.type == "0") {
-                    $paid = order_payment_card;
+                    $paid = "CARD";
                 } else if (data.payment.type == "1") {
-                    $paid = order_payment_cash;
+                    $paid = "CASH";
                 } else if (data.payment.type == "2") {
-                    $paid = order_payment_prepayment;
+                    $paid = "PREPAYMENT";
                 } else {
-                    $paid = order_payment_service;
+                    $paid = "SERVICE";
                 }
                 $('#paid').html($paid);
             }

@@ -221,7 +221,7 @@ function getStoreDetail() {
 
 
 
-                var storeDetailGroupHtml = "<option value=''>" + "그룹선택" + "</option>";
+                // var storeDetailGroupHtml = "<option value=''>" + "그룹선택" + "</option>";
                 var storeDetailGroupHtml = "<option value=''>" + "不明" + "</option>";
                 // 소속 그룹
                 if(data.groupList !=null) {
@@ -380,7 +380,7 @@ function putStoreDetail() {
         url : "/putStoreDetail",
         type : 'put',
         dataType : 'json',
-        async : false,
+        // async : false,
         data : {
             storeId				: $("#selectedStoreId").val(),
             code    			: $("#storeDetailStoreCode").val(),
@@ -398,7 +398,6 @@ function putStoreDetail() {
         success : function(data){
             if(!confirm("你想编辑它吗？")) return;
             popClose('#popStoreDetail');
-            getStoreList()
             // 완료후 페이지 호출
             location.reload();
         }

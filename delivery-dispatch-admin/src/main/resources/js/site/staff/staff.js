@@ -281,12 +281,12 @@ function getRiderDetail() {
                         $("#riderDetailStoreName").val();
                     }else if (data.A_Rider.subGroupRiderRel.storeId){
                         $("#hasGroup").val("T");
-                        $("#riderDetailStoreName").val();
-                    }
-
-                    if(data.A_Rider.group != null && data.A_Rider.subGroup != null && data.A_Rider.subGroupRiderRel != null){
                         $("#riderDetailStoreName").val(data.A_Rider.subGroupRiderRel.storeId).prop("selected", true);
                     }
+
+                    // if(data.A_Rider.group != null && data.A_Rider.subGroup != null && data.A_Rider.subGroupRiderRel != null){
+                    //
+                    // }
                 }
 
                 // 근무 시간

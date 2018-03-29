@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.terracotta.statistics.Statistic;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,12 +83,12 @@ public class StatisticsController {
 
         order.setToken(adminInfo.getAdminAccessToken());
 
-        List<Order> statisticsList = statisticsAdminService.selectAdminStatistics(order);
+//        List<Order> statisticsList = statisticsAdminService.selectAdminStatistics(order);
 
-        model.addAttribute("statisticsList", statisticsList);
-        model.addAttribute("jsonList", new Gson().toJson(statisticsList));
+//        model.addAttribute("statisticsList", statisticsList);
+//        model.addAttribute("jsonList", new Gson().toJson(statisticsList));
 
-        log.info("json : {}", new Gson().toJson(statisticsList));
+//        log.info("json : {}", new Gson().toJson(statisticsList));
 
 
         return "/statistics/statement"; }
@@ -100,6 +103,8 @@ public class StatisticsController {
     @GetMapping("/getStatisticsList")
     @CnttMethodDescription("통계 페이지 조회")
     public List<Order> getStatisticsList(@RequestParam(required=false) String frag
+                                         ,@RequestParam(value = "startDate", required=false) String startDate
+                                         ,@RequestParam(value = "endDate", required=false) String endDate
 
     ) {
         Order order = new Order();
@@ -108,6 +113,30 @@ public class StatisticsController {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@ " + startDate);
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@ " + endDate);
+
+        order.setCurrentDatetime(startDate);
+        log.info("dateeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"+order.getCurrentDatetime());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+
+            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@ " + diffDays);
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
 
         order.setToken(adminInfo.getAdminAccessToken());
 

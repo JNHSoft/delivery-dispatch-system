@@ -68,12 +68,12 @@ public class StoreController {
 
         store.setToken(adminInfo.getAdminAccessToken());
 
-        List<Store> storeList = storeAdminService.selectStoreList(store);
-
-        model.addAttribute("storeList", storeList);
-        model.addAttribute("jsonList", new Gson().toJson(storeList));
-
-        log.info("json : {}", new Gson().toJson(storeList));
+//        List<Store> storeList = storeAdminService.selectStoreList(store);
+//
+//        model.addAttribute("storeList", storeList);
+//        model.addAttribute("jsonList", new Gson().toJson(storeList));
+//
+//        log.info("json : {}", new Gson().toJson(storeList));
 
         return "/store/store";
     }
@@ -100,6 +100,8 @@ public class StoreController {
 
         return storeList;
     }
+
+
     // map 적용!!!
     @ResponseBody
     @GetMapping("/getStoreDetail")
@@ -262,7 +264,7 @@ public class StoreController {
 
         if (hasGroup.equals("T")) {
             log.info("update group.................................");
-            if(groupId !=null || groupId !=""){
+            if(groupId !=null || groupId !="" || subGroupId !=null || subGroupId != ""){
                 A_Group = storeAdminService.updateSubGroupStoreRel(store);
             }
         } else {
