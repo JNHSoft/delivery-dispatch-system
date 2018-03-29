@@ -117,6 +117,7 @@
 			<if test="role != null and role == 'ROLE_RIDER'">
 				chatroom_id IN (select chatroom_id from TB_CHAT_USER_CHATROOM_REL where chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})))
 			</if>
+		ORDER BY created_datetime ASC
 	</select>
 
 	<!-- selectStoreChat -->
