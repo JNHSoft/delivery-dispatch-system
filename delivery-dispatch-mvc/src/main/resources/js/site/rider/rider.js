@@ -15,22 +15,6 @@ function initMap() {
         center: store
     });
 }
-function noticeAlarm() {
-    $('#myStoreName').text(my_store.storeName);
-    var j = 0;
-    console.log(my_notice_list);
-    for (var i = 0; i < my_notice_list.length; i++) {
-        if (my_notice_list[i].confirmedDatetime == "") {
-            j++;
-        }
-    }
-    console.log(j);
-    if(j != 0){
-        $("#notice_alarm").addClass('new');
-    }else{
-        $("#notice_alarm").removeClass('new');
-    }
-}
 function footerRiders() {
     if(footerRiderList[2]){
         $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
@@ -77,10 +61,8 @@ function footerOrders() {
     }
 }
 $(function() {
-    console.log(footerOrderList);
     footerRiders();
     footerOrders();
-    noticeAlarm();
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
         var socket = io(websocket_localhost, {
@@ -146,7 +128,6 @@ function addMarker(location, data, i, status) {
         return i;
     }
     if(data.latitude != null){
-        console.log(i);
         marker[i] = new google.maps.Marker({
             position : location,
             riderMapId : data.id,
@@ -156,7 +137,6 @@ function addMarker(location, data, i, status) {
         });
         marker[i].addListener('click', function () {
             chatUserName = this.label
-            console.log(this.riderMapId);
             RiderChatUserId = this.riderChatUserId;
             $('tr').removeClass('selected');
             $('#riderMapId' + this.riderMapId).addClass('selected');
@@ -190,7 +170,6 @@ function getRiderList() {
             position : {lat: storeLatitude, lng: storeLongitude},
             map : map
         });
-        console.log(data);
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                     var lattitude = parseFloat(data[key].latitude);
@@ -275,7 +254,6 @@ function getChatList(chatUserId, riderName) {
         },
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     if(tmpDate != daySet(data[key].createdDatetime)){
@@ -300,7 +278,6 @@ function getChatList(chatUserId, riderName) {
 }
 function postChat() {
     var chatUserId = RiderChatUserId;
-    console.log(chatUserId);
     var message = $('#chatTextarea').val();
     $.ajax({
         url: "/postChat",
@@ -325,7 +302,6 @@ function putRiderReturnTime(riderId) {
         },
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             getRiderList();
         }
     });

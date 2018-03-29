@@ -72,6 +72,13 @@ public interface ChatMapper {
      */
     public List<Chat> selectChat(Chat chat);
 
+    /**
+     * <p> 상점 채팅 읽기
+     *
+     * @param chat
+     * @return
+     */
+    public List<Chat> selectStoreChat(Chat chat);
 
     /**
      * <p> 채팅방 목록

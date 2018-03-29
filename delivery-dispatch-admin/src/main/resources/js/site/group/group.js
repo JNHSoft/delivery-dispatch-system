@@ -357,7 +357,7 @@ function getNoneStoreSubGroupList(params) {
                 }
                 $("#noneStoreSubGroup").html(noneStoreSubGroupHtml);
             } else{
-                $("#noneStoreSubGroup").html('<option>없음</option>');
+                $("#noneStoreSubGroup").html('<option>-</option>');
             }
 
         }

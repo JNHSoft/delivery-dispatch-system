@@ -70,11 +70,11 @@
                         <th th:text="${#messages.msg('rider.time.work')}"/>
                         <td>
                             <select name="" id="workingHour1" class="select">
-                                <option value="empty">없음</option>
+                                <option value="empty">-</option>
                                 <option th:each="i : ${#numbers.sequence(0, 23)}" th:value="${i}" th:text="${i}"></option>
                             </select><span th:text="${#messages.msg('rider.time.label')}"/> ~
                             <select name="" id="workingHour2" class="select">
-                                <option value="empty">없음</option>
+                                <option value="empty">-</option>
                                 <option th:each="i : ${#numbers.sequence(1, 24)}" th:value="${i}" th:text="${i}"></option>
                             </select><span th:text="${#messages.msg('rider.time.label')}"/>
                         </td>
@@ -124,7 +124,7 @@
             <div class="left"><a href="#" class="button h40 btn_gray pop_close"
                                  th:text="${#messages.msg('btn.cancel')}"/></div>
             <div class="right">
-                <a href="#" class="button h40 btn_blue" onclick="javascript:putRIderInfo()" id="putRider" th:text="${#messages.msg('btn.confirm')}"/>
+                <a href="#" class="button h40 btn_blue" onclick="javascript:putRiderInfo()" id="putRider" th:text="${#messages.msg('btn.confirm')}"/>
             </div>
         </div>
         <a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"/>
@@ -147,29 +147,12 @@
     var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
     var mydata = /*[[${riderList}]]*/ 'riderList';
     var my_store = /*[[${store}]]*/ 'my_store';
-    var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
     var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
     var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
     var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
-    function noticeAlarm() {
-        $('#myStoreName').text(my_store.storeName);
-        var j = 0;
-        console.log(my_notice_list);
-        for (var i = 0; i < my_notice_list.length; i++) {
-            if (my_notice_list[i].confirmedDatetime == "") {
-                j++;
-            }
-        }
-        console.log(j);
-        if(j != 0){
-            $("#notice_alarm").addClass('new');
-        }else{
-            $("#notice_alarm").removeClass('new');
-        }
-    }
     $(document).ready(function () {
         for (var i = 0; i< mydata.length; i++){
-            mydata[i].gender = mydata[i].gender==0 ? '남' : '여';
+            mydata[i].gender = mydata[i].gender==0 ? rider_gender_male : rider_gender_female;
         }
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
         if (supportsWebSockets) {
@@ -196,8 +179,6 @@
         } else {
             alert('websocket을 지원하지 않는 브라우저입니다.');
         }
-        noticeAlarm();
-        console.log(mydata);
         $("#jqGrid").jqGrid({
             datatype: "local",
             data: mydata,

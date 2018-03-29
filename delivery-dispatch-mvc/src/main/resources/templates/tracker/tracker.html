@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/trackerLayout">
+
+<div class="tracker" layout:fragment="content">
+	<div class="tracker-top">
+		<div class="state">
+			<span id="tNew">商家接單</span>
+			<i class="fa fa-angle-right"></i>
+			<span id="tAssign">餐品準備中</span>
+			<i class="fa fa-angle-right"></i>
+			<span id="tPickup">派送中</span>
+			<i class="fa fa-angle-right"></i>
+			<span id="tComplete">派送完成</span>
+		</div>
+		<div class="clear">
+			<div class="f_left t_yellow">美味的餐品在過去到您的路上</div>
+			<div class="f_right">
+				<span>預計到達時間</span>
+				<span class="time">20:10</span>
+			</div>
+		</div>
+	</div>
+	<div id="map">
+		<!-- 지도삽입 -->
+	</div>
+	<div class="tracker-bottom">
+		<div>
+			<p>訂購ID : <span id="regId">11022</span></p>
+			<p>下單時間 : <span id="createdDatetime">2018-1-30 19:40</span></p>
+		</div>
+		<div>
+			<p><span class="t_red" id="riderName">洪吉同</span> 司機</p>
+			<p>親愛的顧客我們馬上到您的位置</p>
+		</div>
+		<div class="btn">
+			<a href="#" id="riderSms"><img th:src="@{/resources/images/tracker/ICON_sms.png}" alt="" /></a>
+			<a href="#" id="riderTel"><img th:src="@{/resources/images/tracker/ICON_call.png}" alt="" /></a>
+		</div>
+	</div>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+/*<![CDATA[*/
+var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
+var regOrderId = /*[[${tracker.regOrderId}]]*/ 'regOrderId';
+var status = /*[[${tracker.status}]]*/ 'status';
+var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
+var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
+var cookingTime = /*[[${tracker.cookingTime}]]*/ 'cookingTime';
+var storeName = /*[[${tracker.storeName}]]*/ 'storeName';
+var storePhone = /*[[${tracker.storePhone}]]*/ 'storePhone';
+var storeLatitude = /*[[${tracker.storeLatitude}]]*/ 'storeLatitude';
+var storeLongitude = /*[[${tracker.storeLongitude}]]*/ 'storeLongitude';
+var riderName = /*[[${tracker.riderName}]]*/ 'riderName';
+var riderPhone = /*[[${tracker.riderPhone}]]*/ 'riderPhone';
+var riderLatitude = /*[[${tracker.riderLatitude}]]*/ 'riderLatitude';
+var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
+var distance = /*[[${tracker.distance}]]*/ 'distance';
+/*]]>*/
+
+console.log(regOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude);
+
+var arriveTime = new Date(Date.parse(createdDatetime) + 1000 * 60 * cookingTime);
+
+window.onload = function() {
+    if (cookingTime == null || cookingTime == '') {
+        cookingTime = 0;
+    }
+
+    if (createdDatetime != null) {
+        $('.time').text(arriveTime.getHours() + ':' + arriveTime.getMinutes());
+    }
+
+    $('.state > span').removeClass('on');
+
+    if (status == 0) {
+        $('#tNew').addClass('on');
+    } else if (status == 1) {
+        $('#tAssign').addClass('on');
+    } else if (status == 2) {
+        $('#tPickup').addClass('on');
+    } else {
+        $('#tComplete').addClass('on');
+    }
+
+    $('#regId').text(regOrderId);
+
+    $('#createdDatetime').text(createdDatetime);
+
+    $('#riderName').text(riderName);
+
+    $('#riderSms').attr('href', 'sms:' + riderPhone);
+
+    $('#riderTel').attr('href', 'tel:' + riderPhone);
+}
+
+
+function initMap() {
+	var myLatlng = new google.maps.LatLng(riderLatitude, riderLongitude);
+	var map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 17,
+    center: myLatlng
+});
+
+var date = new Date();
+var tmpDate = new Date(arriveTime - date);
+
+var contentString = '<div class="map_info">'+
+	'<img src="./img/ICON_helmet.png" alt="" /> '+
+	'<span class="t_blk" id="distance">剩下距離' + distance + 'km</span>'+
+	'<span class="t_blk">|</span> '+
+	'<span class="t_red">' + parseInt(tmpDate.getTime() / (1000 * 60)) + '分鐘以後能到達</span>'+
+    '</div>';
+
+var infowindow = new google.maps.InfoWindow({
+    content: contentString
+});
+
+var markerImg = '/resources/images/tracker/PIN_delivery.png';
+var marker = new google.maps.Marker({
+    position: myLatlng,
+    map: map,
+    icon: markerImg
+});
+
+  //marker.addListener('click', function() {
+infowindow.open(map, marker);
+  //});
+}
+</script>
+
+<script type="text/javascript" async="async" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}" layout:fragment="script2" />
+</html>

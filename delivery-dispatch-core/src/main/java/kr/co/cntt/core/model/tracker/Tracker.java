@@ -20,9 +20,25 @@ import lombok.Setter;
 public class Tracker implements Dto {
     private static final long serialVersionUID = 4143172714593838816L;
 
-    private String code;
-    private String regOrderId;
     private String id;
+    private String createdDatetime;
+    private String regOrderId;
     private String status;
+    private String latitude;
+    private String longitude;
+    private String cookingTime;
+
+    private String code;
+    private String storeName;
+    private String storePhone;
+    private String storeLatitude;
+    private String storeLongitude;
+
+    private String riderName;
+    private String riderPhone;
+    private String riderLatitude;
+    private String riderLongitude;
+
+    private String distance;
 
 }

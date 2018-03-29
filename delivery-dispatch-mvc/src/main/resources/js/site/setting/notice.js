@@ -57,8 +57,6 @@ function getNoticeList() {
         success: function (data) {
             var i = 1;
 
-            console.log(data);
-
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     var tmpdata = new Object();
@@ -100,9 +98,6 @@ function getNoticeList() {
                     i++;
 
                     mydata.push(tmpdata);
-
-                    console.log('mydata');
-                    console.log(mydata);
 
                     if (mydata != null) {
                         jQuery('#jqGrid').jqGrid('clearGridData')
@@ -153,7 +148,6 @@ function getNoticeList() {
 }
 
 function getNoticeDetail(noticeId) {
-    console.log('noticeId: ' + noticeId);
     $('#noticeId').val(noticeId);
     $.ajax({
         url : '/getNotice',
@@ -163,7 +157,6 @@ function getNoticeDetail(noticeId) {
         },
         dataType : 'json',
         success : function (data) {
-            console.log(data);
 
             $('#nTitle').html(data.title);
 
@@ -209,7 +202,6 @@ function getNoticeDetail(noticeId) {
 }
 
 function putNoticeConfirm() {
-    console.log($('#noticeId').val());
     $.ajax({
         url: '/putNoticeConfirm',
         type: 'put',

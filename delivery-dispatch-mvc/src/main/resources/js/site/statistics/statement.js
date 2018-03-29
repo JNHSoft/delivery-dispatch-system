@@ -89,7 +89,7 @@ $(function() {
                 data : searchText
             });
             filter.rules.push({
-                field : 'text',
+                field : 'reg_order_id',
                 op : "cn",
                 data : searchText
             });
@@ -161,6 +161,8 @@ function initMap() {
     });
 }
 function minusTime(time1, time2) {
+    time1 += " 00:00:00";
+    time2 += " 00:00:00";
     var d1 = new Date(time1);
     var d2 = new Date(time2);
     var minusTime = d2.getTime()-d1.getTime();

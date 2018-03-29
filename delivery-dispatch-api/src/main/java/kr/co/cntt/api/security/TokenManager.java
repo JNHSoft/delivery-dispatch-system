@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
+@Slf4j
 @Component
 public class TokenManager implements Serializable {
 
@@ -195,6 +197,10 @@ public class TokenManager implements Serializable {
 		ActorDetails actorDetails = (ActorDetails) userDetails;
 		final String username = getUsernameFromToken(token);
 		final Date created = getCreatedDateFromToken(token);
+
+		log.info("===========> [TokenManager][validateCustomToken] username : {}", username);
+		log.info("===========> [TokenManager][validateCustomToken] actorDetails.getUsername() : {}", actorDetails.getUsername());
+		log.info("===========> [TokenManager][validateCustomToken] created : {}", created);
 
 		return (username.equals(actorDetails.getUsername()));
 	}

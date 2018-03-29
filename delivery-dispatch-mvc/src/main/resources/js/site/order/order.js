@@ -49,10 +49,8 @@ $(document).ready(function() {
     footerOrders();
     footerRiders();
     var storeId = $('#orderMyStoreChk').val();
-    console.log("!!!!!!"+storeId);
     var statusArray = ["0","1","2","3","4","5"];
     $('#statusArray').val(statusArray);
-    console.log($('#statusArray').val());
     getOrderList(statusArray, storeId);
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
@@ -92,7 +90,6 @@ $(document).ready(function() {
                 statusArray[a] = a;
             }
             $('#statusArray').val(statusArray);
-            console.log(statusArray);
             getOrderList(statusArray, storeId);
         }else{
             $("input[name=srchChk]:checkbox").each(function() {
@@ -102,7 +99,6 @@ $(document).ready(function() {
             for(a in statusArray){
                 statusArray[a] = null;
             }
-            console.log(statusArray);
         }
     });
 
@@ -118,7 +114,6 @@ $(document).ready(function() {
                 statusArray[5] = null;
             }
         }
-        console.log(statusArray);
         $('#statusArray').val(statusArray);
         getOrderList(statusArray, storeId);
     });
@@ -151,13 +146,11 @@ $(document).ready(function() {
 
     $("#searchButton").click(function () {
         var searchText = $("#searchText").val();
-        console.log(searchText);
         var filter = {
             groupOp: "OR",
             rules: []
         };
         var select = $("#searchSelect option:selected").val();
-        console.log(select);
 
         if(select == 'id'){
             filter.rules.push({
@@ -246,7 +239,6 @@ function initMap() {
 
 function getOrderDetail(orderId) {
     var regOrderId = "";
-    console.log("orderId: " + orderId);
     $.ajax({
         url : "/getOrderDetail",
         type : 'get',
@@ -257,7 +249,6 @@ function getOrderDetail(orderId) {
         dataType : 'json',
         success : function (data) {
             selectedOriginOrder = data;
-            console.log(selectedOriginOrder);
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
             }
@@ -344,7 +335,6 @@ function getFooterRiderList(){
         },
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     if(data[key].working==1 && typeof data[key].order != "undefined"){
@@ -356,7 +346,6 @@ function getFooterRiderList(){
                     }
                 }
             }
-            console.log($work,$standby,$rest);
         }
     });
 }
@@ -372,7 +361,6 @@ function getMyRiderList() {
         },
         async : false,
         success: function (data) {
-            console.log(data);
             for (var key in data) {
                 if (data.hasOwnProperty(key)){
                     if(data[key].working=="1"){
@@ -424,12 +412,11 @@ function getOrderList(statusArray, storeId) {
         type: 'get',
         data: {
             statusArray : statusArray.filter(n => n), //null 제거
-        status : statusArray.join('')
+            status : statusArray.join('')
         },
         dataType: 'json',
         success: function (data) {
         var i = 1;
-        console.log(data);
         currentOrderList = data;
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
@@ -524,8 +511,6 @@ function getOrderList(statusArray, storeId) {
                 }
             }
         }
-        console.log("mydata");
-        console.log(mydata);
         if(mydata) {
             jQuery('#jqGrid').jqGrid('clearGridData')
             jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1})
@@ -543,7 +528,7 @@ function getOrderList(statusArray, storeId) {
                 {label:order_id, name:'id', width:80, align:'center'},
                 {label:order_created, name:'time1', width:80, align:'center'},
                 {label:order_address, name:'address', width:200},
-                {label:order_reg_order_id, name: 'reg order id', width:150},
+                {label:order_reg_order_id, name: 'reg_order_id', width:150},
                 {label:order_cooking, name:'time2', width:80, align:'center'},
                 {label:order_payment, name:'pay', width:80, align:'center'},
                 {label:order_assigned, name:'time3', width:80, align:'center'},
@@ -588,7 +573,6 @@ function putAssignedAdvanceFirst(id) {
         },
         dataType : 'json',
         success : function (data) {
-            console.log(data);
             var statusArray = $('#statusArray').val().split(",");
             var storeId = $('#orderMyStoreChk').val();
             getOrderList(statusArray, storeId);
@@ -627,8 +611,6 @@ function putOrder() {
             var statusArray = $('#statusArray').val().split(",");
             var storeId = $('#orderMyStoreChk').val();
             getOrderList(statusArray, storeId);
-            console.log("test");
-            console.log(data);
         }
     });
 }
@@ -650,7 +632,6 @@ function putOrderAssignCancle() {
         async : false,
         dataType : 'json',
         success : function (data) {
-            console.log(data)
         }
     });
 }
@@ -673,13 +654,11 @@ function putAssignedAdvance() {
         async : false,
         dataType : 'json',
         success : function (data) {
-            console.log(data)
         }
     });
 }
 
 function orderConfirm() {
-    console.log("status: " + selectedOriginOrder.status);
     if(selectedOriginOrder.status == "3" ){
         alert("완료된 주문은 수정이 불가능합니다.");
         return;

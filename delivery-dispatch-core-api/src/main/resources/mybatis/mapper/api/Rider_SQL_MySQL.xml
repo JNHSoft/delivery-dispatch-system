@@ -412,6 +412,98 @@
 		</selectKey>
 	</update>
 
+	<!-- rider 정보 수정 스토어 -->
+	<update id="updateRiderInfoStore" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_RIDER AS A
+		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
+		ON A.id = B.rider_id
+		SET
+		A.modified_datetime = now()
+		<if test="loginPw != null and loginPw != ''">
+			, A.login_pw = #{loginPw}
+		</if>
+		<if test="lastAccess != null and lastAccess != ''">
+			, A.last_access = #{lastAccess}
+		</if>
+
+		<if test="name != null and name != ''">
+			, A.name = #{name}
+		</if>
+
+		<if test="phone != null and phone != ''">
+			, A.phone = #{phone}
+		</if>
+
+		<if test="code != null and code != ''">
+			, A.code = #{code}
+		</if>
+
+		<if test="gender != null and gender != ''">
+			, A.gender = #{gender}
+		</if>
+
+		<if test="employmentType != null and employmentType != ''">
+			, A.employment_type = #{employmentType}
+		</if>
+
+		<if test="address != null and address != ''">
+			, A.address = #{address}
+		</if>
+
+		<if test="working != null and working != ''">
+			, A.working = #{working}
+		</if>
+
+		<if test="status != null and status != ''">
+			, A.status = #{status}
+		</if>
+
+		<if test="vehicleNumber != null and vehicleNumber != ''">
+			, A.vehicle_number = #{vehicleNumber}
+		</if>
+
+		<if test="emergencyPhone != null and emergencyPhone != ''">
+			, A.emergency_phone = #{emergencyPhone}
+		</if>
+
+		<if test="workingHours != null and workingHours != ''">
+			, A.working_hours = #{workingHours}
+		</if>
+
+		<if test="restHours != null and restHours != ''">
+			, A.rest_hours = #{restHours}
+		</if>
+
+		<if test="teenager != null and teenager != ''">
+			, A.teenager = #{teenager}
+		</if>
+
+		<if test="subGroupRiderRel != null and (subGroupRiderRel.storeId !='' and subGroupRiderRel.storeId != null)">
+			, B.modified_datetime = now()
+			, B.store_id = #{subGroupRiderRel.storeId}
+			, B.subgroup_id = #{subGroupRiderRel.subGroupId}
+			, B.group_id = #{subGroupRiderRel.groupId}
+		</if>
+
+		, A.id = LAST_INSERT_ID(A.id)
+		WHERE 1=1
+		<choose>
+			<when test="id != null and id != ''">
+				AND A.id = #{id}
+			</when>
+			<otherwise>
+				AND A.admin_id = (SELECT * FROM (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})) AS D)
+				AND A.id = (
+				SELECT rider_id
+				FROM TB_RIDER_SESSION
+				WHERE access_token=#{accessToken}
+				)
+			</otherwise>
+		</choose>
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</update>
 	<!-- rider 출/퇴근  -->
 	<update id="updateWorkingRider" parameterType="kr.co.cntt.core.model.rider.Rider">
 		UPDATE TB_RIDER
@@ -772,13 +864,13 @@
 		from dde.TB_RIDER_SESSION AS TBRS
         LEFT JOIN dde.TB_RIDER AS B
         ON B.chat_user_id = #{chatUserId}
-		where TBRS.rider_id = B.id and TBRS.push_token is not null
+		where TBRS.rider_id = B.id and TBRS.push_token is not null and TBRS.expiry_datetime is null
     </select>
 
 	<select id="selectRiderToken" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
 		select TBRS.push_token
 		from dde.TB_RIDER_SESSION AS TBRS
-		where TBRS.rider_id = #{riderId} and TBRS.push_token is not null
+		where TBRS.rider_id = #{riderId} and TBRS.push_token is not null and TBRS.expiry_datetime is null
 	</select>
 
 	<select id="selectRiderTokenByOrderId" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
@@ -786,7 +878,7 @@
 		from dde.TB_RIDER_SESSION AS TBRS
         left join TB_ORDER AS TBO
         on TBO.id = #{id}
-		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null
+		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null and TBRS.expiry_datetime is null
 	</select>
 
 	<select id="selectRejectReason" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.reason.Reason">

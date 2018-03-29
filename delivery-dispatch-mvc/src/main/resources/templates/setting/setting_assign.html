@@ -36,7 +36,7 @@
 							<strong th:text="${#messages.msg('order.assign.max')}" />
 							<div>
 								<select name="" id="maxSelect" class="select">
-									<option value="0" th:selected="${store.assignmentLimit} == null" >없음</option>
+									<option value="0" th:selected="${store.assignmentLimit} == null" >-</option>
 									<option th:each="i : ${#numbers.sequence(1, store.adminAssignmentLimit)}" th:value="${i}" th:selected="${store.assignmentLimit} == ${i}" th:text="${i}"></option>
 								</select>
 								<span  th:text="${#messages.msg('order.assign.count.label')}" />
@@ -64,26 +64,9 @@
 	<script layout:fragment="script" th:inline="javascript">
         /*<![CDATA[*/
         var my_store = /*[[${store}]]*/ 'my_store';
-        var my_notice_list = /*[[${noticeList}]]*/ 'my_notice_list';
         var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
         var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
         var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
-        function noticeAlarm() {
-            $('#myStoreName').text(my_store.storeName);
-            var j = 0;
-            console.log(my_notice_list);
-            for (var i = 0; i < my_notice_list.length; i++) {
-                if (my_notice_list[i].confirmedDatetime == "") {
-                    j++;
-                }
-            }
-            console.log(j);
-            if(j != 0){
-                $("#notice_alarm").addClass('new');
-            }else{
-                $("#notice_alarm").removeClass('new');
-            }
-        }
         $(document).ready(function() {
             var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
             if (supportsWebSockets) {
@@ -113,7 +96,6 @@
             } else {
                 alert('websocket을 지원하지 않는 브라우저입니다.');
             }
-            noticeAlarm();
         });
         /*]]>*/
 	</script>

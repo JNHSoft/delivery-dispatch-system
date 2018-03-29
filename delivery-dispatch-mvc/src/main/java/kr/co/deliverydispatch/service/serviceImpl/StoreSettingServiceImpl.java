@@ -196,26 +196,8 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
 
     @Override
     public int updateRiderInfo(Rider rider){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.getAuthorities().toString().matches(".*ROLE_RIDER.*")) {
-            rider.setAccessToken(rider.getToken());
-            rider.setId(null);
-            rider.setIsAdmin(null);
-            rider.setCode(null);
-            rider.setSubGroupRiderRel(null);
-        } else if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
-            rider.setCode(null);
-            rider.setSubGroupRiderRel(null);
-        } else if (authentication.getAuthorities().toString().matches(".*ROLE_USER.*")) {
-            rider.setAccessToken(null);
-            rider.setId(null);
-            rider.setIsAdmin(null);
-            rider.setCode(null);
-            rider.setSubGroupRiderRel(null);
-        }
-
-        int nRet = riderMapper.updateRiderInfo(rider);
+        int nRet = riderMapper.updateRiderInfoStore(rider);
 
         Rider S_Rider = riderMapper.getRiderInfo(rider);
 
