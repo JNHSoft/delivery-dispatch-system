@@ -603,7 +603,7 @@
 		   left join TB_SUBGROUP_RIDER_REL AS TSRR
 		       on TSRR.subgroup_id = #{groupId}
 		and TBRS.rider_id = TSRR.rider_id
-		where TBRS.push_token is not null
+		where TBRS.push_token is not null and TBRS.expiry_datetime is null
 	</select>
 
 </mapper>
