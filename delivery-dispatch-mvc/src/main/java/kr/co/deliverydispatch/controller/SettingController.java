@@ -169,8 +169,8 @@ public class SettingController {
     }
 
     @ResponseBody
-    @PutMapping("/putRIderInfo")
-    public Boolean putRIderInfo(Rider rider) {
+    @PutMapping("/putRiderInfo")
+    public Boolean putRiderInfo(Rider rider) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         rider.setToken(storeInfo.getStoreAccessToken());
         ShaEncoder sha = new ShaEncoder(512);

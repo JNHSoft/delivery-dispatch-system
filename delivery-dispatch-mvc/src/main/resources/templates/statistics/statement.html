@@ -29,8 +29,8 @@
 					<select name="" id="searchSelect" class="select">
 						<option value="all" th:text="${#messages.msg('list.search.all')}" />
 						<option value="id" th:text="${#messages.msg('list.search.id')}" />
-						<option value="text" th:text="${#messages.msg('list.search.text')}" />
-						<option value="payment" th:text="${#messages.msg('list.search.payment')}" />
+						<option value="reg_order_id" th:text="${#messages.msg('order.reg.order.id')}" />
+						<option value="pay" th:text="${#messages.msg('list.search.payment')}" />
 						<option value="rider" th:text="${#messages.msg('list.search.rider')}" />
 					</select>
 					<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}" />
@@ -91,19 +91,19 @@
 								</li>
 								<li>
 									<span th:text="${#messages.msg('order.cooking')}" />
-									<div><span id="cookingTime">-</span>분</div>
+									<div><span id="cookingTime">-</span><span th:text="${#messages.msg('order.minute')}"/></div>
 								</li>
 								<li class="clear">
 									<span th:text="${#messages.msg('order.menu.price')}" />
-									<div><span id="menuPrice">-</span>원</div>
+									<div><span id="menuPrice">-</span><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 								</li>
 								<li>
 									<span th:text="${#messages.msg('order.delivery.price')}" />
-									<div><span id="deliveryPrice">-</span>원</div>
+									<div><span id="deliveryPrice">-</span><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 								</li>
 								<li class="clear">
 									<span th:text="${#messages.msg('order.total.price')}" />
-									<div><span id="totalPrice">-</span>원</div>
+									<div><span id="totalPrice">-</span><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 								</li>
 								<li>
 									<span th:text="${#messages.msg('order.payment')}" />
@@ -187,6 +187,7 @@
     var order_payment_card = /*[[#{order.payment.card}]]*/ 'order_payment_card';
     var order_payment_prepayment = /*[[#{order.payment.prepayment}]]*/ 'order_payment_prepayment';
     var order_payment_service = /*[[#{order.payment.service}]]*/ 'order_payment_service';
+	var order_reg_order_id = /*[[#{order.reg.order.id}]]*/ 'order_reg_order_id';
     var order_detail = /*[[#{order.detail}]]*/ 'order_detail';
     var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
     var my_store = /*[[${store}]]*/ 'my_store';

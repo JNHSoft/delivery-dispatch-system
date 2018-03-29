@@ -61,7 +61,6 @@ function footerOrders() {
     }
 }
 $(function() {
-    console.log(footerOrderList);
     footerRiders();
     footerOrders();
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
@@ -129,7 +128,6 @@ function addMarker(location, data, i, status) {
         return i;
     }
     if(data.latitude != null){
-        console.log(i);
         marker[i] = new google.maps.Marker({
             position : location,
             riderMapId : data.id,
@@ -139,7 +137,6 @@ function addMarker(location, data, i, status) {
         });
         marker[i].addListener('click', function () {
             chatUserName = this.label
-            console.log(this.riderMapId);
             RiderChatUserId = this.riderChatUserId;
             $('tr').removeClass('selected');
             $('#riderMapId' + this.riderMapId).addClass('selected');
@@ -173,7 +170,6 @@ function getRiderList() {
             position : {lat: storeLatitude, lng: storeLongitude},
             map : map
         });
-        console.log(data);
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                     var lattitude = parseFloat(data[key].latitude);
@@ -258,7 +254,6 @@ function getChatList(chatUserId, riderName) {
         },
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     if(tmpDate != daySet(data[key].createdDatetime)){
@@ -283,7 +278,6 @@ function getChatList(chatUserId, riderName) {
 }
 function postChat() {
     var chatUserId = RiderChatUserId;
-    console.log(chatUserId);
     var message = $('#chatTextarea').val();
     $.ajax({
         url: "/postChat",
@@ -308,7 +302,6 @@ function putRiderReturnTime(riderId) {
         },
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             getRiderList();
         }
     });

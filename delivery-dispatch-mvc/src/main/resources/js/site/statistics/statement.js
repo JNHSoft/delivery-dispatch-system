@@ -89,7 +89,7 @@ $(function() {
                 data : searchText
             });
             filter.rules.push({
-                field : 'text',
+                field : 'reg_order_id',
                 op : "cn",
                 data : searchText
             });

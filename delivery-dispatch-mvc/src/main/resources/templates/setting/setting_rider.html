@@ -124,7 +124,7 @@
             <div class="left"><a href="#" class="button h40 btn_gray pop_close"
                                  th:text="${#messages.msg('btn.cancel')}"/></div>
             <div class="right">
-                <a href="#" class="button h40 btn_blue" onclick="javascript:putRIderInfo()" id="putRider" th:text="${#messages.msg('btn.confirm')}"/>
+                <a href="#" class="button h40 btn_blue" onclick="javascript:putRiderInfo()" id="putRider" th:text="${#messages.msg('btn.confirm')}"/>
             </div>
         </div>
         <a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"/>
@@ -179,7 +179,6 @@
         } else {
             alert('websocket을 지원하지 않는 브라우저입니다.');
         }
-        console.log(mydata);
         $("#jqGrid").jqGrid({
             datatype: "local",
             data: mydata,

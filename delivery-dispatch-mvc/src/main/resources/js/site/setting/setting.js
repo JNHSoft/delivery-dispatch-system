@@ -56,7 +56,7 @@ function putStoreInfo() {
     var phone = $('#phone').val();
     var address = $('#address').val();
     var detailAddress = $('#detailAddress').val();
-    console.log(id, storePhone, name, phone, address,detailAddress)
+    console.log(id, storePhone, name, phone, address,detailAddress);
     $.ajax({
         url: '/putStoreInfo',
         type: 'put',
@@ -216,7 +216,7 @@ function getRiderInfo(riderId) {
     });
 }
 
-function putRIderInfo() {
+function putRiderInfo() {
     var id = $('#riderId').val();
     var emergencyPhone = $('#emergencyPhone').val();
     var loginPw = $('#loginPw').val();
@@ -235,7 +235,7 @@ function putRIderInfo() {
     var vehicleNumber = $('#vehicleNumber').val();
     console.log(emergencyPhone, loginPw, address, name,workingHours, gender ,teenager,restHours,phone,vehicleNumber);
     $.ajax({
-        url: '/putRIderInfo',
+        url: '/putRiderInfo',
         type: 'put',
         data: {
             id : id,
