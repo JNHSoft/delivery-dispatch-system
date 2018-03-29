@@ -28,7 +28,7 @@
     var btn_cancel = /*[[#{btn.cancel}]]*/ 'btn_cancel';
     var btn_confirm = /*[[#{btn.confirm}]]*/ 'btn_confirm';
     var btn_close_pop = /*[[#{btn.close.pop}]]*/ 'btn_close_pop';
-    var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
+    var selected_choise = /*[[#{selected.choise}]]*/ 'selected_choise';
 
 
     /*]]>*/
@@ -106,7 +106,7 @@
 						<th th:text="${#messages.msg('store.belong.group')}"></th>
 						<td>
 							<select name="" class="select" id="postStoreGroup">
-								<option  value="empty" th:text="${#messages.msg('selected.choise')}"></option>
+								<!--<option  value="empty" th:text="${#messages.msg('selected.choise')}"></option>-->
 							</select>
 
 							<select name="" class="select" id="postStoreSubGroup">

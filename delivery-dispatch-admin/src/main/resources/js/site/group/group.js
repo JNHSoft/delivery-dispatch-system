@@ -19,7 +19,9 @@ $(function() {
             $(this).closest('tbody').find('button[name="delete"]').html(group_del);
             $(this).closest('td').find('button[name="delete"]').html(btn_cancel);
             $(this).html(btn_save);
-        } else {
+        }
+        // 저장으로 바뀌고 버튼 눌렀을때
+        else {
             var params = {
                 groupId : $tr.data('group-id'),
                 groupName : $tr.find('td[name="groupName"] input').val(),

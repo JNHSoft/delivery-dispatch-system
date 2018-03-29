@@ -25,6 +25,27 @@ public interface AssignAdminService {
      */
     public int postThirdParty(ThirdParty thirdParty);
 
+
+    /**
+     * <p> 배정 서드파티 수정
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int updateThirdParty(ThirdParty thirdParty);
+
+
+    /**
+     * <p> 배정 서드파티 삭제
+     *
+     * @param thirdParty
+     * @return
+     */
+    public int deleteThirdParty(ThirdParty thirdParty);
+
+
+
+
     /**
      * <p> postThirdParty
      *

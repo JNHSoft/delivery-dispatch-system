@@ -189,6 +189,34 @@ public class SettingController {
         return thirdParty;
     }
 
+
+    @ResponseBody
+    @PutMapping("/putThirdParty")
+    @CnttMethodDescription("배정관리 - 서드파티 수정")
+    public ThirdParty putThirdParty(ThirdParty thirdParty) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        thirdParty.setToken(adminInfo.getAdminAccessToken());
+
+        assignAdminService.updateThirdParty(thirdParty);
+
+        return thirdParty;
+    }
+
+
+    @ResponseBody
+    @PutMapping("/deleteThirdParty")
+    @CnttMethodDescription("배정관리 - 서드파티 삭제")
+    public ThirdParty deleteThirdParty(ThirdParty thirdParty) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        thirdParty.setToken(adminInfo.getAdminAccessToken());
+
+        assignAdminService.deleteThirdParty(thirdParty);
+
+        return thirdParty;
+    }
+
+
+
     @ResponseBody
     @GetMapping("/postAssignedAdvance")
     @CnttMethodDescription("배정관리 - 우선배정 사유 추가")
@@ -212,6 +240,51 @@ public class SettingController {
 
         return reason;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
