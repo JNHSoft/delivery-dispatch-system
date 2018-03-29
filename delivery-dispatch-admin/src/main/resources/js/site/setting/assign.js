@@ -34,9 +34,9 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
             // 다른 수정을 눌렀을때 색깔 지운다.
             $inputTr.removeClass('selected');
             // 다른 수정을 누르면 저장 -> 수정
-            $inputTr.find('button[name="thirdPartySave"]').html('수정');
+            $inputTr.find('button[name="thirdPartySave"]').html(group_mod);
             // 다른 수정을 누르면 취소 -> 삭제
-            $inputTr.find('button[name="thirdPartyDelete"]').html('삭제');
+            $inputTr.find('button[name="thirdPartyDelete"]').html(group_del);
 
             // closest 가까운 부모를 찾고 input 테그의 기본 값을 가져온다. 주의 input hidden ㅋㅋ
             $tbodyTr.find('td input[type="text"]').closest('td').html($inputTr.find('input[name="defaultThirdPartyName"]').val());
@@ -47,9 +47,9 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
         $targetTr.find('td[name="tdThirdPartyName"]').html('<input type="text" value="'+ $targetTr.find('td[name="tdThirdPartyName"]').html()+'"/>');
 
         // 수정 -> 저장 변경!
-        $(this).html('저장');
+        $(this).html(btn_save);
         // 삭제 -> 취소 변경!
-        $targetTr.find('button[name="thirdPartyDelete"]').html('취소');
+        $targetTr.find('button[name="thirdPartyDelete"]').html(btn_cancel);
         // 선택하는거 색칠
         $targetTr.addClass('selected');
     } 
@@ -69,7 +69,6 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
     // 서드 파티 삭제 버튼을 눌렀을때
     $(document).on('click', 'button[name="thirdPartyDelete"]', function() {
         var $tr = $(this).closest('tr');
-
         if($(this).html() === group_del){
             var param = {
                 id : $tr.data('thirdpartyId')
@@ -77,31 +76,15 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
             console.log(param);
             deleteThirdParty(param);
         }
-
         // 취소 버튼을 눌렀을때
         else{
             $(this).closest('tr').find('td input[type="text"]').closest('td').html($(this).closest('tr').find('input[name="defaultThirdPartyName"]').val());
             $(this).closest('tr').removeClass('selected');
-            $(this).html('삭제');
-            $(this).closest('tr').find('button[name="thirdPartySave"]').html('수정');
+            $(this).html(group_del);
+            $(this).closest('tr').find('button[name="thirdPartySave"]').html(group_mod);
         }
-
-
-
-
     });
-
-
-
-
-
-
-
-
-
-
-
-    });
+});
 
 
 
@@ -133,6 +116,7 @@ $(document).on('click', 'button[id="assignedRejectDel"]', function() {
     alert(befoore_function);
     return false;
 });
+
 // 서드 파티 추가
 function postThirdParty() {
     if ($('#inpThirdParty').val() == null || $('#inpThirdParty').val() == '') {
@@ -168,14 +152,14 @@ function putThirdParty($target,param) {
             $target.find('input[name="defaultThirdPartyName"]').val(param.name);
             $target.removeClass('selected');
             $target.find('button[name="thirdPartySave"]').html(group_mod);
-            $target.find('button[name="thirdPartyDelete"]').html('삭제');
+            $target.find('button[name="thirdPartyDelete"]').html(group_del);
         }
     });
 }
 
 // 서드 파티 삭제
 function deleteThirdParty(param) {
-    if(!confirm("Delete?")) return;
+    if(!confirm("你确定吗?")) return;
     $.ajax({
         url: "/deleteThirdParty",
         type: 'put',

@@ -154,7 +154,7 @@ $(function() {
         }
         // 서브그룹 select 박스 변경시 insert
         else if($(this).attr('name') === 'subGroupList') {
-            if(!confirm("수정하시겠습니까?")) return;
+            if(!confirm("你想编辑它吗?")) return;
             var $tr = $(this).closest('tr');
             var params = {
                 groupId : $tr.find('select[name="groupList"]').val(),
