@@ -47,7 +47,7 @@
 								<input type="text" class="input" id="inpThirdParty" />
 								<a href="#" class="button btn_dgray" onclick="javascript:postThirdParty()"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
 								<p class="fz11 mt10" th:text="${#messages.msg('order.assign.third.label')}" />
-								<div class="tbl_wrap mt20">
+								<div class="tbl_wrap mt20" id="thirdPratyList">
 									<table class="table" id="tblThirdParty">
 										<thead>
 											<tr>
@@ -55,14 +55,15 @@
 												<th scope="col" class="t_center" th:text="${#messages.msg('group.mod.del')}" />
 											</tr>
 										</thead>
+										<!--서드 파티 부분 -->
 										<tbody>
 											<tr th:each="thirdParty : ${thirdPartyList}" th:attr="data-thirdParty-id=${thirdParty.id}">
-												<input type="hidden" name="defaultThirdPartyName" th:value="${thirdParty.name}" />
 												<td class="t_left" name="tdThirdPartyName" th:text="${thirdParty.name}" />
 												<td>
-													<button class="button h20" id="thirdPartyMod" th:text="${#messages.msg('group.mod')}" />
-													<button class="button h20" id="thirdPartyDel" th:text="${#messages.msg('group.del')}" />
+													<button class="button h20" name="thirdPartySave" th:text="${#messages.msg('group.mod')}" type="button"/>
+													<button class="button h20" name="thirdPartyDelete" th:text="${#messages.msg('group.del')}" type="button"/>
 												</td>
+												<input type="hidden" name="defaultThirdPartyName" th:value="${thirdParty.name}" />
 											</tr>
 											<!--<tr>
 												<td class="t_left">딜리버루</td>
@@ -177,8 +178,8 @@
 /*<![CDATA[*/
 var btn_save = /*[[#{btn.save}]]*/ 'btn_save';
 var btn_cancel = /*[[#{btn.cancel}]]*/ 'btn_cancel';
-var btn_mod = /*[[#{group.mod}]]*/ 'group_mod';
-var btn_del = /*[[#{group.del}]]*/ 'group_del';
+var group_mod = /*[[#{group.mod}]]*/ 'group_mod';
+var group_del = /*[[#{group.del}]]*/ 'group_del';
 var none_parameter = /*[[#{alert.none.parameter}]]*/ 'none_parameter';
 var befoore_function = /*[[#{alert.befoore.function}]]*/ 'befoore_function';
 /*]]>*/

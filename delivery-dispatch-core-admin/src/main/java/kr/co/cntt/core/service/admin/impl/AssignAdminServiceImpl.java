@@ -76,7 +76,7 @@ public class AssignAdminServiceImpl implements AssignAdminService {
 
         return adminMapper.updateAdminInfo(admin);
     }
-
+    // 서드 파티 등록
     @Override
     public int postThirdParty(ThirdParty thirdParty) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -87,7 +87,32 @@ public class AssignAdminServiceImpl implements AssignAdminService {
 
         return adminMapper.insertThirdParty(thirdParty);
     }
+    // 서드 파티 수정
+    @Override
+    public int updateThirdParty(ThirdParty thirdParty) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            thirdParty.setRole("ROLE_ADMIN");
+        }
+
+        return adminMapper.updateThirdParty(thirdParty);
+    }
+
+
+    // 서드 파티 수정
+    @Override
+    public int deleteThirdParty(ThirdParty thirdParty) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            thirdParty.setRole("ROLE_ADMIN");
+        }
+
+        return adminMapper.deleteThirdParty(thirdParty);
+    }
+
+    // 서드파티 리스트
     @Override
     public List<ThirdParty> getThirdParty(ThirdParty thirdParty) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

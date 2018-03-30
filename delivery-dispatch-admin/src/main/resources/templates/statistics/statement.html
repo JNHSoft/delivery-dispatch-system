@@ -24,14 +24,13 @@
     var order_payment_card = /*[[#{order.payment.card}]]*/ 'order_payment_card';
     var order_payment_prepayment = /*[[#{order.payment.prepayment}]]*/ 'order_payment_prepayment';
     var order_payment_service = /*[[#{order.payment.service}]]*/ 'order_payment_service';
-
     var group_name = /*[[#{group.name}]]*/ 'group_name';
-
     var list_search_all_group = /*[[#{list.search.all.group}]]*/ 'list_search_all_group';
     var subGroup_name = /*[[#{subgroup.name}]]*/ 'subGroup_name';
     var store_name = /*[[#{store.name}]]*/ 'store_name';
-
     var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
+    var order_minute = /*[[#{order.minute}]]*/ 'order_minute';
+    var order_currency_unit = /*[[#{order.currency.unit}]]*/ 'order_currency_unit';
     /*]]>*/
 </script>
 
@@ -132,19 +131,23 @@
 									</li>
 									<li>
 										<span th:text="${#messages.msg('order.cooking')}" />
-										<div><span id="cookingTime">-</span>분</div>
+										<!--분-->
+										<div><span id="cookingTime">-</span><span th:text="${#messages.msg('order.minute')}" /> </div>
 									</li>
 									<li class="clear">
+										<!--원-->
 										<span th:text="${#messages.msg('order.menu.price')}" />
-										<div><span id="menuPrice">-</span>원</div>
+										<div><span id="menuPrice">-</span><span th:text="${#messages.msg('order.currency.unit')}" /></div>
 									</li>
 									<li>
+										<!--원-->
 										<span th:text="${#messages.msg('order.delivery.price')}" />
-										<div><span id="deliveryPrice">-</span>원</div>
+										<div><span id="deliveryPrice">-</span><span th:text="${#messages.msg('order.currency.unit')}" /></div>
 									</li>
 									<li class="clear">
+										<!--원-->
 										<span th:text="${#messages.msg('order.total.price')}" />
-										<div><span id="totalPrice">-</span>원</div>
+										<div><span id="totalPrice">-</span><span th:text="${#messages.msg('order.currency.unit')}" /></div>
 									</li>
 									<li>
 										<span th:text="${#messages.msg('order.payment')}" />

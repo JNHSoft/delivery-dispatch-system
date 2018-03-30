@@ -78,6 +78,8 @@ $(document).ready(function () {
         $.extend(grid[0].p.postData, { filters: JSON.stringify(filter) });
         grid.trigger("reloadGrid", [{ page: 1 }]);
     });
+    getGroupList();
+
 });
 
 /**
@@ -251,7 +253,7 @@ function getStoreDetail() {
                     // groupId , subGroupId 값 넘겨줌
                     getSubGroupList($("#storeDetailGroup option:selected").val(),data.A_Store.subGroup);
 
-                    var storeDetailSubGroupHtml = "<option value='none'>" +group_choise+ "</option>";
+                    var storeDetailSubGroupHtml = "<option value='none'>" +selected_choise+ "</option>";
                     for (var i in data.subGroupList){
                         storeDetailSubGroupHtml += "<option value='" + data.subGroupList[i].id  + "'>" + data.subGroupList[i].name + "</option>";
                     }
@@ -318,7 +320,6 @@ function getGroupList() {
         dataType : 'json',
         success : function(data) {
             if (data) {
-
                 var postStoreGroupHtml = "<option value=''>" + "不明" + "</option>";
                 // var postStoreGroupHtml = "";
                 for (var i in data) {
@@ -356,7 +357,7 @@ function getPostSubGroupList(gId, subGroup) {
         success : function(data){
             if(data) {
 
-                var postStoreSubGroupHtml = "<option value=''>" + group_choise + "</option>";
+                var postStoreSubGroupHtml = "<option value=''>" + selected_choise + "</option>";
                 // var postStoreSubGroupHtml = "";
                 for (var i in data){
                     postStoreSubGroupHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
