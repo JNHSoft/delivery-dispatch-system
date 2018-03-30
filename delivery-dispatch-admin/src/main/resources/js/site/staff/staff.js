@@ -66,6 +66,7 @@ $(document).ready(function () {
         grid.trigger("reloadGrid", [{ page: 1 }]);
     });
     getRiderList();
+    getRiderStoreList();
 
 });
 
