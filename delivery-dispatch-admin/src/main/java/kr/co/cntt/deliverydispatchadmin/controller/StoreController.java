@@ -420,4 +420,36 @@ public class StoreController {
 
     }
 
+
+    /**
+     * 매장 아이디 중복 조회
+     *
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/selectStoreLoginIdCheck")
+    @CnttMethodDescription("상점 아이디 중복 조회")
+    public int selectStoreLoginIdCheck(@RequestParam("loginId") String loginId) {
+
+        Store store = new Store();
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+
+        store.setToken(adminInfo.getAdminAccessToken());
+        store.setLoginId(loginId);
+
+        int S_Id = storeAdminService.selectStoreLoginIdCheck(store);
+
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+S_Id);
+
+
+        return S_Id;
+    }
+
+
+
+
 }

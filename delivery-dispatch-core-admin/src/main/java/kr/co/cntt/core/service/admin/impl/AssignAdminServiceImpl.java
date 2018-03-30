@@ -100,7 +100,7 @@ public class AssignAdminServiceImpl implements AssignAdminService {
     }
 
 
-    // 서드 파티 수정
+    // 서드 파티 삭제
     @Override
     public int deleteThirdParty(ThirdParty thirdParty) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -123,7 +123,7 @@ public class AssignAdminServiceImpl implements AssignAdminService {
 
         return storeMapper.selectThirdParty(thirdParty);
     }
-
+    // 우선 배정 사유 리스트
     @Override
     public List<Reason> getAssignedAdvance(Reason reason) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -134,18 +134,7 @@ public class AssignAdminServiceImpl implements AssignAdminService {
 
         return orderMapper.selectOrderFirstAssignmentReason(reason);
     }
-
-    @Override
-    public List<Reason> getassignedReject(Reason reason) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
-            reason.setRole("ROLE_ADMIN");
-        }
-
-        return riderMapper.selectRejectReason(reason);
-    }
-
+    // 우선 배정 사유 추가
     @Override
     public int postAssignedAdvance(Reason reason) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -157,6 +146,44 @@ public class AssignAdminServiceImpl implements AssignAdminService {
         return adminMapper.insertOrderFirstAssignmentReason(reason);
     }
 
+    // 우선 배정 사유 수정
+    @Override
+    public int putAssignedAdvance(Reason reason) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            reason.setRole("ROLE_ADMIN");
+        }
+
+        return adminMapper.updateOrderFirstAssignmentReason(reason);
+    }
+
+    // 우선 배정 사유 삭제
+    @Override
+    public int deleteAssignedAdvance(Reason reason) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            reason.setRole("ROLE_ADMIN");
+        }
+
+        return adminMapper.deleteOrderFirstAssignmentReason(reason);
+    }
+
+    // 배정 거절 사유 리스트
+    @Override
+    public List<Reason> getassignedReject(Reason reason) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            reason.setRole("ROLE_ADMIN");
+        }
+
+        return riderMapper.selectRejectReason(reason);
+    }
+
+
+    // 배정 거절 사유 추가
     @Override
     public int postAssignedReject(Reason reason) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -167,5 +194,32 @@ public class AssignAdminServiceImpl implements AssignAdminService {
 
         return adminMapper.insertRejectReason(reason);
     }
+
+    // 배정 거절 사유 수정
+    @Override
+    public int putAssignedReject(Reason reason) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            reason.setRole("ROLE_ADMIN");
+        }
+
+        return adminMapper.updateRejectReason(reason);
+    }
+
+    // 배정 거절 사유 삭제
+    @Override
+    public int deleteRejectReason(Reason reason) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
+            reason.setRole("ROLE_ADMIN");
+        }
+
+        return adminMapper.deleteRejectReason(reason);
+    }
+
+
+
 
 }

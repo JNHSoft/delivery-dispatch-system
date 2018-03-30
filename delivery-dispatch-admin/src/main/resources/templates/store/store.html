@@ -30,6 +30,9 @@
     var btn_close_pop = /*[[#{btn.close.pop}]]*/ 'btn_close_pop';
     var selected_choise = /*[[#{selected.choise}]]*/ 'selected_choise';
 
+    var loginid_check = /*[[#{loginid.check}]]*/ 'loginid_check';
+    var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
+
 
     /*]]>*/
 </script>
@@ -101,7 +104,7 @@
 						<th th:text="${#messages.msg('login.id')}"></th>
 						<td>
 							<input type="text" name="" id="postStoreLoginId" class="input" value="" />
-							<button class="button btn_black" onclick="alertTip('#postStoreLoginId','중복된 아이디 입니다.')" th:text="${#messages.msg('btn.duplicated')}"></button>
+							<button class="button btn_black" onclick="storeLoginIdCheck()" th:text="${#messages.msg('btn.duplicated')}"></button>
 						</td>
 						<th th:text="${#messages.msg('store.belong.group')}"></th>
 						<td>

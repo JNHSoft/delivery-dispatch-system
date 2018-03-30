@@ -99,4 +99,10 @@ public class StaffAdminServiceImpl implements StaffAdminService {
     public int insertAdminRiderSession(Rider rider){return riderMapper.insertAdminRiderSession(rider);}
 
 
+    // 기사 아이디 중복 체크
+    @Override
+    public int selectRiderLoginIdCheck(Rider rider) {
+        return adminMapper.selectRiderLoginIdCheck(rider);
+    }
+
 }

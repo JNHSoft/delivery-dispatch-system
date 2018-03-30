@@ -355,4 +355,23 @@ public interface AdminService {
      */
     public int deleteOrderFirstAssignmentReason(Reason reason);
 
+
+    /**
+     * 상점 아이디 중복 체크
+     * @param store
+     * @return
+     * @throws AppTrException
+     */
+    public int selectStoreLoginIdCheck(Store store) throws AppTrException;
+
+    /**
+     * 기사 아이디 중복 체크
+     * @param rider
+     * @return
+     * @throws AppTrException
+     */
+    public int selectRiderLoginIdCheck(Rider rider) throws AppTrException;
+
+
+
 }

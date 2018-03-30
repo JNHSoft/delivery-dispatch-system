@@ -695,4 +695,41 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         return result;
     }
 
+
+
+    // 상점 로그인 아이디 중복 조회
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int selectStoreLoginIdCheck(Store store) throws AppTrException {
+
+        int A_Store = adminMapper.selectStoreLoginIdCheck(store);
+
+//        if (A_Store == null) {
+//            // 에러 코드 수정해야함
+//            throw new AppTrException(getMessage(ErrorCodeEnum.E00034), ErrorCodeEnum.E00034.name());
+//        }
+        return A_Store;
+    }
+
+
+    // 상점 로그인 아이디 중복 조회
+    @Secured("ROLE_ADMIN")
+    @Override
+    public int selectRiderLoginIdCheck(Rider rider) throws AppTrException {
+
+        int A_Rider = adminMapper.selectRiderLoginIdCheck(rider);
+
+//        if (A_Store == null) {
+//            // 에러 코드 수정해야함
+//            throw new AppTrException(getMessage(ErrorCodeEnum.E00034), ErrorCodeEnum.E00034.name());
+//        }
+        return A_Rider;
+    }
+
+
+
+
+
+
+
 }

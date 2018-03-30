@@ -100,5 +100,9 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     @Override
     public int insertAdminStoreSession(Store store){return storeMapper.insertAdminStoreSession(store);}
 
-
+    // 상점 아이디 중복 체크
+    @Override
+    public int selectStoreLoginIdCheck(Store store) {
+        return adminMapper.selectStoreLoginIdCheck(store);
+    }
 }
