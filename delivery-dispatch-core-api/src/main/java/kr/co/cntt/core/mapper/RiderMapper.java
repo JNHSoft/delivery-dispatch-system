@@ -12,6 +12,7 @@ import kr.co.cntt.core.model.login.User;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p> kr.co.cntt.core.mapper </p>
@@ -28,7 +29,7 @@ public interface RiderMapper {
      *
      * @return loginId String
      */
-    public String selectLoginRider(Rider rider);
+    public Map selectLoginRider(Rider rider);
 
     /**
      * <p> selectRiderTokenCheck

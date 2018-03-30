@@ -126,11 +126,15 @@
     </select>
 
     <!--로그인 ID 확인 -->
-	<select id="selectLoginStore" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">
-		SELECT login_id FROM TB_STORE
+	<select id="selectLoginStore" parameterType="kr.co.cntt.core.model.store.Store" resultType="Map">
+		SELECT A.login_id AS loginId
+		    , B.access_token AS accessToken
+		FROM TB_STORE AS A
+		LEFT JOIN TB_STORE_SESSION AS B
+		ON A.id = B.store_id
 		WHERE 1=1
-			AND login_id = #{loginId}
-		<!--AND login_pw = #{loginPw}-->
+		AND login_id = #{loginId}
+			AND login_pw = #{loginPw}
 		limit 1
 	</select>
 
@@ -180,7 +184,7 @@
 			, #{accessToken}
 			, now()
 		FROM TB_STORE
-		WHERE login_id = #{loginId} AND deleted IS NOT NULL
+		WHERE login_id = #{loginId} AND deleted IS NULL
 		]]>
 	</insert>
 

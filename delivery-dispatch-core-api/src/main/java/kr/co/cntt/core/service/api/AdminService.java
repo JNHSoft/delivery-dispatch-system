@@ -16,6 +16,7 @@ import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.model.login.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AdminService {
 
@@ -24,7 +25,7 @@ public interface AdminService {
      *
      * @return
      */
-    public String selectLoginAdmin(Admin admin);
+    public Map selectLoginAdmin(Admin admin);
 
     /**
      * <p> selectAdminTokenCheck

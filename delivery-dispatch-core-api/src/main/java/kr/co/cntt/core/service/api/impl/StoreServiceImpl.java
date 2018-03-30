@@ -57,7 +57,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
     // login_id 체크하는 함수
     @Override
-    public String selectLoginStore(Store store) {
+    public Map selectLoginStore(Store store) {
         return storeMapper.selectLoginStore(store);
     }
 

@@ -7,6 +7,8 @@ import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
+import java.util.Map;
+
 import kr.co.cntt.core.model.login.User;
 
 /**
@@ -31,7 +33,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
-    public String selectLoginStore(Store store);
+    public Map selectLoginStore(Store store);
 
     /**
      * token 값 확인

@@ -17,7 +17,7 @@ public interface RiderService {
      *
      * @return
      */
-    public String selectLoginRider(Rider rider);
+    public Map selectLoginRider(Rider rider);
 
     /**
      * <p> selectRiderTokenCheck

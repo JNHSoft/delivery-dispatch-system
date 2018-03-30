@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Slf4j
 @Service("trackerService")
 public class TrackerServiceImpl extends ServiceSupport implements TrackerService {
@@ -39,7 +41,7 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
     }
 
     @Override
-    public String selectLoginTracker(User user) {
+    public Map selectLoginTracker(User user) {
         return trackerMapper.selectLoginTracker(user);
     }
 
