@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.api.impl;
 
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.TrackerMapper;
@@ -45,6 +46,11 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
     @Override
     public int selectTrackerTokenCheck(User user) {
         return trackerMapper.selectTrackerTokenCheck(user);
+    }
+
+    @Override
+    public User selectTrackerTokenLoginCheck(User user) {
+        return trackerMapper.selectTrackerTokenLoginCheck(user);
     }
 
     @Override

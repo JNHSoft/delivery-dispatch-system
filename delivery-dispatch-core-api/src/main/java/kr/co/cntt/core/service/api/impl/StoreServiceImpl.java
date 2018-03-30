@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.api.impl;
 
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.OrderMapper;
@@ -64,6 +65,12 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     @Override
     public int selectStoreTokenCheck(Store store) {
         return storeMapper.selectStoreTokenCheck(store);
+    }
+
+    // login_id 에 맞는 token 값 체크 하는 함수
+    @Override
+    public User selectStoreTokenLoginCheck(Store store) {
+        return storeMapper.selectStoreTokenLoginCheck(store);
     }
 
     // token 값 insert 해주는 함수

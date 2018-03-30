@@ -4,6 +4,7 @@ package kr.co.cntt.core.service.api;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.tracker.Tracker;
+import kr.co.cntt.core.model.login.User;
 
 public interface TrackerService {
     /**
@@ -19,6 +20,13 @@ public interface TrackerService {
      * @return
      */
     public int selectTrackerTokenCheck(User user);
+
+    /**
+     * <p> selectAdminTokenLoginCheck
+     *
+     * @return
+     */
+    public User selectTrackerTokenLoginCheck(User user);
 
     /**
      * <p> insertTrackerSession
