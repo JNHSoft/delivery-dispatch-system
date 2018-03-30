@@ -266,7 +266,7 @@ function getChatList(chatUserId, riderName) {
                 }
             }
             $('#chatList').html(shtml);
-            $("#chatList").scrollTop($('#chatList').height());
+            $('.chat-item').focus();
         }
     });
 }
