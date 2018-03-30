@@ -116,32 +116,34 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                         userInfo = trackerService.selectTrackerTokenLoginCheck(trackerInfo);
                     }
 
-                    log.debug("=======> userInfo.getLoginId() : {}", userInfo.getLoginId());
-                    if (username.equals(userInfo.getLoginId())) {
-                        ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
+//                    log.debug("=======> userInfo.getLoginId() : {}", userInfo.getLoginId());
+                    if(userInfo != null) {
+                        if (username.equals(userInfo.getLoginId())) {
+                            ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
 
-                        if (actorDetails == null) {
-//                            log.debug("=======> actorDetails  null");
-//                            Actor actor = new Actor(username, username);
-//                            Actor actor = new Actor(username, username, authLevel);
-//                            actorDetails = new ActorDetails(actor, null);
-                            Actor actor = customAuthentificateService.createActor(userInfo.getLoginId(), userInfo.getLoginPw(), authLevel);
-                            actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
-                        }
+                            if (actorDetails == null) {
+                                //                            log.debug("=======> actorDetails  null");
+                                //                            Actor actor = new Actor(username, username);
+                                //                            Actor actor = new Actor(username, username, authLevel);
+                                //                            actorDetails = new ActorDetails(actor, null);
+                                Actor actor = customAuthentificateService.createActor(userInfo.getLoginId(), userInfo.getLoginPw(), authLevel);
+                                actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
+                            }
 
-                        if(!username.equals(actorDetails.getUsername())){
-//                            log.debug("=======> !username.equals(actorDetails.getUsername()) ");
-                            Actor actor = customAuthentificateService.createActor(userInfo.getLoginId(), userInfo.getLoginPw(), authLevel);
-                            actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
-                        }
+                            if (!username.equals(actorDetails.getUsername())) {
+                                //                            log.debug("=======> !username.equals(actorDetails.getUsername()) ");
+                                Actor actor = customAuthentificateService.createActor(userInfo.getLoginId(), userInfo.getLoginPw(), authLevel);
+                                actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
+                            }
 
-                        log.debug("======= actorDetails.getUsername() : {}", actorDetails.getUsername());
-                        if (tokenManager.validateCustomToken(authToken, actorDetails)) {
-                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                    actorDetails, null, actorDetails.getAuthorities());
-                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                            logger.info("authenticated device " + username + ", setting security context");
-                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                            log.debug("======= actorDetails.getUsername() : {}", actorDetails.getUsername());
+                            if (tokenManager.validateCustomToken(authToken, actorDetails)) {
+                                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                        actorDetails, null, actorDetails.getAuthorities());
+                                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                                logger.info("authenticated device " + username + ", setting security context");
+                                SecurityContextHolder.getContext().setAuthentication(authentication);
+                            }
                         }
                     }
                 }
