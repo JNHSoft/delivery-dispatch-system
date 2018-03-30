@@ -42,14 +42,6 @@ public class SettingController {
         this.storeOrderService = storeOrderService;
     }
 
-    @RequestMapping("/getNotice")
-    @ResponseBody
-    public Notice getNotice() {
-        // TODO : Notice 불러오기
-
-        return new Notice();
-    }
-
     /**
      * 설정 - 계정관리 페이지
      *

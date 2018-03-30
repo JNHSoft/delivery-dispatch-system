@@ -53,14 +53,14 @@ $(document).ready(function() {
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
         socket.on('message', function(data){
-            if(data.match('order_updated')=='order_updated'){
+            if(data.match('order_')=='order_'){
                 getOrderList(statusArray, storeId);
                 footerOrders()
             }
-            if(data.match('notice_update')=='notice_update'){
+            if(data.match('notice_')=='notice_'){
                 noticeAlarm();
             }
-            if(data.match('rider_update')=='rider_update'){
+            if(data.match('rider_')=='rider_'){
                 footerRiders();
             }
         });
@@ -344,7 +344,6 @@ function getFooterRiderList(){
 }
 
 function getMyRiderList() {
-    debugger;
     var shtml = '<option value="0">-</option>';
     var shtml2 = '';
     $.ajax({
