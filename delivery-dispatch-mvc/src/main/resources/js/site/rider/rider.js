@@ -215,7 +215,7 @@ function gridRiderList(data, $status) {
         shtml +="<td>-</td>";
     }
     if(typeof data.order != "undefined" && typeof data.orderStore != "undefined"){
-        if(data.riderStore.id != data.orderStore.id && typeof data.returnTime == "undefined"){
+        if(data.riderStore.id == $('#storeId').val() && data.riderStore.id != data.orderStore.id && typeof data.returnTime == "undefined"){
             shtml += "<td>" + '<button class="button h20" onclick="javascript:putRiderReturnTime('+ data.id +');">' + 'rider_rest' +'</button></td>';
         }else {
             shtml +="<td>-</td>";
