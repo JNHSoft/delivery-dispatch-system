@@ -117,7 +117,7 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
             if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
                 redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
             } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
-                redisService.setPublisher("chat_send", "admin_id:" + resultRider.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
+                redisService.setPublisher("chat_send", "admin_id:" + resultRider.getAdminId() + ", recv_chat_user_id:" + resultRider.getChatUserId());
             }
         }
 

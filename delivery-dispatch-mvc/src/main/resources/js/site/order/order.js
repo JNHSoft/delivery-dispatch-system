@@ -386,7 +386,7 @@ function getNewOrderList(statusNewArray) {
             for (var key in data) {
                 if (data.hasOwnProperty(key)){
                     if(data[key].id != selectedOriginOrder.id && !data[key].combinedOrderId){
-                        shtml += '<option value="'+data[key].id+'">'+'주문 ID'+':'+ data[key].id + '|'+ '등록시간'+':'+ timeSet(data[key].createdDatetime) + '</option>';
+                        shtml += '<option value="'+data[key].id+'">'+order_id+':'+ data[key].id + '|'+ order_created+':'+ timeSet(data[key].createdDatetime) + '</option>';
                         $('#selectCombined').html(shtml);
                     }
                 }
