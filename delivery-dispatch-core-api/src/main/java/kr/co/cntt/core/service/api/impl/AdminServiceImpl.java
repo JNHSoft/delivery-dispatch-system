@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.api.impl;
 
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
@@ -35,6 +36,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @Slf4j
 @Service("adminService")
@@ -79,6 +81,11 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Override
     public int selectAdminTokenCheck(Admin admin) {
         return adminMapper.selectAdminTokenCheck(admin);
+    }
+
+    @Override
+    public User selectAdminTokenLoginCheck(Admin admin) {
+        return adminMapper.selectAdminTokenLoginCheck(admin);
     }
 
     @Override

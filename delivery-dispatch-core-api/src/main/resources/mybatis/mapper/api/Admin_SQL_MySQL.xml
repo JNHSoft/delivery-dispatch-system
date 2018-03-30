@@ -191,6 +191,25 @@
 	</select>
 
 
+	<!--
+		- login ID  및 Aceess 토근 값체크
+		- expiry_datetime 이 NULL 이거나 금일 datetime 보다 큰 값
+	-->
+	<select id="selectAdminTokenLoginCheck" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.login.User">
+		<![CDATA[
+		SELECT
+			A.login_id, A.login_pw
+		FROM TB_ADMIN A JOIN TB_ADMIN_SESSION B
+		ON A.id = B.admin_id
+		WHERE 1=1
+			AND A.login_id = #{loginId}
+			AND B.access_token = #{accessToken}
+			AND (expiry_datetime IS NULL OR expiry_datetime > now())
+		LIMIT 1
+		]]>
+	</select>
+
+
 	<!-- insertAdminSession -->
 	<insert id="insertAdminSession" parameterType="kr.co.cntt.core.model.admin.Admin">
 		<![CDATA[

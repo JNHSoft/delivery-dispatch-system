@@ -104,7 +104,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .addLogoutHandler(createCustomLogoutHandler())
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logoutProcess"))	// 로그아웃 처리 URL
-                .logoutSuccessUrl("/logoutSuccess").permitAll()						// 로그아웃 후 URL
+//                .logoutSuccessUrl("/logoutSuccess").permitAll()						// 로그아웃 후 URL
                 .clearAuthentication(true)			// 초기화
                 .deleteCookies("JSESSIONID")		// 쿠키 삭제
                 .invalidateHttpSession(true)		// 세션 삭제

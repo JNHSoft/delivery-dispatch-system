@@ -31,6 +31,14 @@ public interface TrackerMapper {
     public int selectTrackerTokenCheck(User user);
 
     /**
+     * <p> selectTrackerTokenLoginCheck
+     *
+     * @param user
+     * @return Count Int
+     */
+    public User selectTrackerTokenLoginCheck(User user);
+
+    /**
      * <p> insertTrackerSession
      *
      * @param user

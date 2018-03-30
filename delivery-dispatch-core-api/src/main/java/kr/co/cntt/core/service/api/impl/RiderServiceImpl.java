@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.api.impl;
 
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
@@ -53,6 +54,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Override
     public int selectRiderTokenCheck(Rider rider) {
         return riderMapper.selectRiderTokenCheck(rider);
+    }
+
+    @Override
+    public User selectRiderTokenLoginCheck(Rider rider) {
+        return riderMapper.selectRiderTokenLoginCheck(rider);
     }
 
     @Override

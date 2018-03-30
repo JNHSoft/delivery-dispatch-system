@@ -8,6 +8,7 @@ import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
+import kr.co.cntt.core.model.login.User;
 
 /**
  * <per>
@@ -35,6 +36,15 @@ public interface StoreService {
     *
     */
     public int selectStoreTokenCheck(Store store);
+
+    /**
+     * token 값 확인
+     * @author Nick
+     * @since  2018-01-26
+     *
+     */
+    public User selectStoreTokenLoginCheck(Store store);
+
 
     /**
      * token 값 insert

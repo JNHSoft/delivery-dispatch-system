@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.rider.Rider;
 
 import java.util.List;
 import java.util.Map;
+import kr.co.cntt.core.model.login.User;
 
 public interface RiderService {
     /**
@@ -24,6 +25,13 @@ public interface RiderService {
      * @return
      */
     public int selectRiderTokenCheck(Rider rider);
+
+    /**
+     * <p> selectRiderTokenCheck
+     *
+     * @return
+     */
+    public User selectRiderTokenLoginCheck(Rider rider);
 
     /**
      * <p> insertRiderSession

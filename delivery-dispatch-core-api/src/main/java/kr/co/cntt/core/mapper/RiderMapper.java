@@ -8,6 +8,7 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.login.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,13 @@ public interface RiderMapper {
      * @return Count Int
      */
     public int selectRiderTokenCheck(Rider rider);
+
+    /**
+     * <p> selectRiderTokenLoginCheck
+     *
+     * @return Count Int
+     */
+    public User selectRiderTokenLoginCheck(Rider rider);
 
     /**
      * <p> Rider Session Insert

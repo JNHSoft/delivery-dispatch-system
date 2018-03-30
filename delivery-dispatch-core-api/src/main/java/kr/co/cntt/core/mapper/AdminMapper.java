@@ -12,6 +12,7 @@ import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
+import kr.co.cntt.core.model.login.User;
 
 import java.util.List;
 
@@ -46,6 +47,13 @@ public interface AdminMapper {
      * @return Count Int
      */
     public int selectAdminTokenCheck(Admin admin);
+
+    /**
+     * <p> selectAdminTokenCheck
+     *
+     * @return Count Int
+     */
+    public User selectAdminTokenLoginCheck(Admin admin);
 
     /**
      * <p> Admin Session Insert
