@@ -60,6 +60,8 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
         String requestUri = servletRequest.getRequestURI();
         log.debug("======= api request uri : {}", requestUri);
 
+        User userInfo = null;
+
         if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do")) && !(requestUri.contains("putToken.do")) && !(requestUri.contains("versionCheck.do")) && !requestUri.contains("getTracker.do")) {
             try {
                 //log.debug("======= try");
@@ -86,13 +88,12 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                     Store storeInfo = new Store();
                     Admin adminInfo = new Admin();
                     User trackerInfo = new User();
-                    int checkUserCount = 0;
 
                     if (authLevel.equals("3")) {
                         riderInfo.setAccessToken(authToken);
                         riderInfo.setLoginId(username);
 
-                        checkUserCount = riderService.selectRiderTokenCheck(riderInfo);
+                        userInfo = riderService.selectRiderTokenLoginCheck(riderInfo);
 
                         //					if(checkRiderCount < 1){
                         //						throw new UsernameNotFoundException("No found for username or token ");
@@ -102,30 +103,39 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                         storeInfo.setAccessToken(authToken);
                         storeInfo.setLoginId(username);
 
-                        checkUserCount = storeService.selectStoreTokenCheck(storeInfo);
+                        userInfo = storeService.selectStoreTokenLoginCheck(storeInfo);
                     } else if (authLevel.equals("1")) {
                         adminInfo.setAccessToken(authToken);
                         adminInfo.setLoginId(username);
 
-                        checkUserCount = adminService.selectAdminTokenCheck(adminInfo);
+                        userInfo = adminService.selectAdminTokenLoginCheck(adminInfo);
                     } else if (authLevel.equals("4")) {
                         trackerInfo.setAccessToken(authToken);
                         trackerInfo.setLoginId(username);
 
-                        checkUserCount = trackerService.selectTrackerTokenCheck(trackerInfo);
+                        userInfo = trackerService.selectTrackerTokenLoginCheck(trackerInfo);
                     }
 
-                    log.debug("=======> checkUserCount : {}", checkUserCount);
-                    if (checkUserCount > 0) {
+                    log.debug("=======> userInfo.getLoginId() : {}", userInfo.getLoginId());
+                    if (username.equals(userInfo.getLoginId())) {
                         ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
 
                         if (actorDetails == null) {
+//                            log.debug("=======> actorDetails  null");
 //                            Actor actor = new Actor(username, username);
-                            Actor actor = new Actor(username, username, authLevel);
-                            actorDetails = new ActorDetails(actor, null);
+//                            Actor actor = new Actor(username, username, authLevel);
+//                            actorDetails = new ActorDetails(actor, null);
+                            Actor actor = customAuthentificateService.createActor(userInfo.getLoginId(), userInfo.getLoginPw(), authLevel);
+                            actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
                         }
 
-                        log.debug("======= actorDetails : {}", actorDetails);
+                        if(!username.equals(actorDetails.getUsername())){
+//                            log.debug("=======> !username.equals(actorDetails.getUsername()) ");
+                            Actor actor = customAuthentificateService.createActor(userInfo.getLoginId(), userInfo.getLoginPw(), authLevel);
+                            actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
+                        }
+
+                        log.debug("======= actorDetails.getUsername() : {}", actorDetails.getUsername());
                         if (tokenManager.validateCustomToken(authToken, actorDetails)) {
                             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                                     actorDetails, null, actorDetails.getAuthorities());
@@ -174,22 +184,30 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                     User trackerInfo = new User();
-                    int checkUserCount = 0;
 
                     if (authLevel.equals("4")) {
                         trackerInfo.setAccessToken(authToken);
                         trackerInfo.setLoginId(username);
 
-                        checkUserCount = trackerService.selectTrackerTokenCheck(trackerInfo);
+                        userInfo = trackerService.selectTrackerTokenLoginCheck(trackerInfo);
                     }
 
-                    log.debug("=======> checkUserCount : {}", checkUserCount);
-                    if (checkUserCount > 0) {
+                    log.debug("=======> userInfo.getLoginId() : {}", userInfo.getLoginId());
+                    if (username.equals(userInfo.getLoginId())) {
                         ActorDetails actorDetails = this.customAuthentificateService.loadUserCustomByUsername(username);
 
                         if (actorDetails == null) {
-                            Actor actor = new Actor(username, username, authLevel);
-                            actorDetails = new ActorDetails(actor, null);
+                            //Actor actor = new Actor(username, username, authLevel);
+                            //actorDetails = new ActorDetails(actor, null);
+
+                            Actor actor = customAuthentificateService.createActor(userInfo.getLoginId(), userInfo.getLoginPw(), authLevel);
+                            actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
+                        }
+
+                        if(!username.equals(actorDetails.getUsername())){
+//                            log.debug("=======> !username.equals(actorDetails.getUsername()) ");
+                            Actor actor = customAuthentificateService.createActor(userInfo.getLoginId(), userInfo.getLoginPw(), authLevel);
+                            actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
                         }
 
                         log.debug("======= actorDetails : {}", actorDetails);

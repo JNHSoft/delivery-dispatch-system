@@ -54,10 +54,13 @@ public class CustomAuthentificateService extends ServiceSupport implements UserD
 	}
 
 	public ActorDetails loadUserCustomByUsername(String loginId) throws UsernameNotFoundException {
-		log.debug("=========== loadUserByUsername param: "+loginId);
+//		log.debug("=========== loadUserByUsername param: "+loginId);
 		ActorDetails actorDetails = null;
+//		log.debug("=========== loadUserByUsername userDataBase.size() : "+userDataBase.size());
+
 		for (String key : userDataBase.keySet()) {
 			actorDetails = userDataBase.get(key);
+//			log.debug("#################### [loadUserByUsername] key : {} / loginId :{}  / actorDetails.getActor().getLoginId() : {} / actorDetails.getActor().getUsername() : {} ", key, loginId, actorDetails.getActor().getLoginId(), actorDetails.getActor().getUsername());
 			if (loginId.equals(actorDetails.getActor().getLoginId())) {
 				return actorDetails;
 			}
