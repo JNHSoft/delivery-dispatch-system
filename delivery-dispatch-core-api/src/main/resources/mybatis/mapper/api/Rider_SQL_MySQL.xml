@@ -124,7 +124,7 @@
 		ON A.id = B.rider_id
 		WHERE 1=1
 		AND login_id = #{loginId}
-			AND login_pw = #{loginPw}
+			<!-- AND login_pw = #{loginPw} -->
 		limit 1
 	</select>
 
