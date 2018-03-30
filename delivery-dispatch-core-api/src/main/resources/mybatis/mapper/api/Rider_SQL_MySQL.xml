@@ -116,11 +116,15 @@
 		</association>
 	</resultMap>
 
-	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="String">
-		SELECT login_id FROM TB_RIDER
+	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="Map">
+		SELECT A.login_id AS loginId
+		    , B.access_token AS accessToken
+		FROM TB_RIDER AS A
+		LEFT JOIN TB_RIDER_SESSION AS B
+		ON A.id = B.rider_id
 		WHERE 1=1
 		AND login_id = #{loginId}
-			<!--AND login_pw = #{loginPw}-->
+			AND login_pw = #{loginPw}
 		limit 1
 	</select>
 
@@ -170,7 +174,7 @@
 			, #{accessToken}
 			, now()
 		FROM TB_RIDER
-		WHERE login_id = #{loginId} AND deleted IS NOT NULL
+		WHERE login_id = #{loginId} AND deleted IS NULL
 		]]>
 	</insert>
 

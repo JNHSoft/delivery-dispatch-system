@@ -6,13 +6,15 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.model.login.User;
 
+import java.util.Map;
+
 public interface TrackerService {
     /**
      * <p> selectLoginTracker
      *
      * @return
      */
-    public String selectLoginTracker(User user);
+    public Map selectLoginTracker(User user);
 
     /**
      * <p> selectAdminTokenCheck

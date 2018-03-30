@@ -110,17 +110,17 @@
                 transports: ['websocket'] // websocket만을 사용하도록 설정
             });
             socket.on('message', function (data) {
-                if (data.match('assign_updated') == 'notice_updated') {
+                if (data.match('config_') == 'config_') {
                     location.href = "/setting-account";
                 }
-                if(data.match('notice_update')=='notice_update'){
+                if(data.match('notice_')=='notice_'){
                     noticeAlarm();
 
                 }
-                if(data.match('rider_update')=='rider_update'){
+                if(data.match('rider_')=='rider_'){
                     footerRiders();
                 }
-                if(data.match('order_updated')=='order_updated'){
+                if(data.match('order_')=='order_'){
                     footerOrders()
                 }
             });

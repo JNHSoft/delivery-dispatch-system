@@ -8,6 +8,8 @@ import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
+import java.util.Map;
+
 import kr.co.cntt.core.model.login.User;
 
 /**
@@ -27,7 +29,7 @@ public interface StoreService {
    * @since  2018-01-26
    *
    */
-    public String selectLoginStore(Store store);
+    public Map selectLoginStore(Store store);
 
    /**
     * token 값 확인

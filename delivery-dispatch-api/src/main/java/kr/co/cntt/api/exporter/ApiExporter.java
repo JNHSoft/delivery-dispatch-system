@@ -92,7 +92,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
 
-        String userLoginId = null;
+        Map<String, String> userSelectLoginMap = new HashMap<>();
         Rider riderInfo = new Rider();
         Store storeInfo = new Store();
         Admin adminInfo = new Admin();
@@ -102,27 +102,27 @@ public class ApiExporter extends ExporterSupportor implements Api {
             if (level.equals("3")) {
                 riderInfo.setLoginId(loginId);
                 riderInfo.setLoginPw(loginPw);
-                userLoginId = riderService.selectLoginRider(riderInfo);
+                userSelectLoginMap = riderService.selectLoginRider(riderInfo);
             } else if (level.equals("2")) {
                 storeInfo.setLoginId(loginId);
                 storeInfo.setLoginPw(loginPw);
-                userLoginId = storeService.selectLoginStore(storeInfo);
+                userSelectLoginMap = storeService.selectLoginStore(storeInfo);
             } else if (level.equals("1")) {
                 adminInfo.setLoginId(loginId);
                 adminInfo.setLoginPw(loginPw);
-                userLoginId = adminService.selectLoginAdmin(adminInfo);
+                userSelectLoginMap = adminService.selectLoginAdmin(adminInfo);
             } else if (level.equals("4")) {
                 trackerInfo.setLoginId(loginId);
                 trackerInfo.setLoginPw(loginPw);
-                userLoginId = trackerService.selectLoginTracker(trackerInfo);
+                userSelectLoginMap = trackerService.selectLoginTracker(trackerInfo);
             }
 
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
             log.info("===> [createAuthenticate RequestParam][loginPw : {}]", loginPw);
-            log.info("===> [createAuthenticate RequestParam][userLoginId : {}]", userLoginId);
+            log.info("===> [createAuthenticate RequestParam][userLoginId : {}]", userSelectLoginMap.get("loginId"));
 
 
-            if (!loginId.equals(userLoginId)) {
+            if (!loginId.equals(userSelectLoginMap.get("loginId"))) {
                 // 로그인 정보가 다르다.
                 //throw new AppTrException(getMessage(ErrorCodeEnum.S0001), ErrorCodeEnum.S0001.name());
                 throw new AppTrException("로그인정보가 다릅니다.", "LOERR");
@@ -138,7 +138,14 @@ public class ApiExporter extends ExporterSupportor implements Api {
                     .authenticate(new UsernamePasswordAuthenticationToken(actor.getLoginId(), actor.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             final ActorDetails actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
-            final String token = tokenManager.generateCustomToken(actorDetails, device);
+
+            String token = null;
+            if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                token = tokenManager.generateCustomToken(actorDetails, device);
+            } else {
+                token = userSelectLoginMap.get("accessToken");
+            }
+
             log.info("[AppApiExporter][createAuthenticate][actor][loginId : {}]", actor.getLoginId());
             log.info("[AppApiExporter][createAuthenticate][actor][loginPw : {}]", actor.getLoginPw());
             log.info("[AppApiExporter][createAuthenticate][actor][uuid : {}]", actor.getUsername());
@@ -172,11 +179,15 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
             // Token을 Insert
             if (level.equals("3")) {
-                riderInfo.setAccessToken(token);
-                riderService.insertRiderSession(riderInfo);
+                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                    riderInfo.setAccessToken(token);
+                    riderService.insertRiderSession(riderInfo);
+                }
             } else if (level.equals("2")) {
-                storeInfo.setAccessToken(token);
-                int getTokenResult = storeService.insertStoreSession(storeInfo);
+                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                    storeInfo.setAccessToken(token);
+                    int getTokenResult = storeService.insertStoreSession(storeInfo);
+                }
 
 //                if (getTokenResult == 1) {
 //                    Order order = new Order();
@@ -193,11 +204,15 @@ public class ApiExporter extends ExporterSupportor implements Api {
 //                    orderService.assignOrder(order);
 //                }
             } else if (level.equals("1")) {
-                adminInfo.setAccessToken(token);
-                adminService.insertAdminSession(adminInfo);
+                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                    adminInfo.setAccessToken(token);
+                    adminService.insertAdminSession(adminInfo);
+                }
             } else if (level.equals("4")) {
-                trackerInfo.setAccessToken(token);
-                trackerService.insertTrackerSession(trackerInfo);
+                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                    trackerInfo.setAccessToken(token);
+                    trackerService.insertTrackerSession(trackerInfo);
+                }
             }
 
             return ResponseEntity.ok(new Gson().toJson(response).toString());

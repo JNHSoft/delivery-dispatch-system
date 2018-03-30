@@ -47,7 +47,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
     @Override
-    public String selectLoginRider(Rider rider) {
+    public Map selectLoginRider(Rider rider) {
         return riderMapper.selectLoginRider(rider);
     }
 

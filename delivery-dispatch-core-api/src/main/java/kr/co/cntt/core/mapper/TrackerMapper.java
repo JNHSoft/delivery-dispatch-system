@@ -4,6 +4,8 @@ import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.tracker.Tracker;
 
+import java.util.Map;
+
 /**
  * <p> kr.co.cntt.core.mapper </p>
  * <p> TrackerMapper.java </p>
@@ -20,7 +22,7 @@ public interface TrackerMapper {
      * @param user
      * @return loginId String
      */
-    public String selectLoginTracker(User user);
+    public Map selectLoginTracker(User user);
 
     /**
      * <p> selectTrackerTokenCheck

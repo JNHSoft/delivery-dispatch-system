@@ -64,20 +64,20 @@ $(function() {
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
         socket.on('message', function(data){
-            if(data.match('rider_updated')=='rider_updated'){
+            if(data.match('rider_')=='rider_'){
                 getRiderList();
                 footerRiders();
             }
-            if(data.match('chat_send')=='chat_send'){
+            if(data.match('chat_')=='chat_'){
                 var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18, data.lastIndexOf('}'));
                 if(RiderChatUserId == chatUserId){
                     getChatList(chatUserId,chatUserName);
                 }
             }
-            if(data.match('notice_update')=='notice_update'){
+            if(data.match('notice_')=='notice_'){
                 noticeAlarm();
             }
-            if(data.match('order_updated')=='order_updated'){
+            if(data.match('order_')=='order_'){
                 footerOrders()
             }
         });
@@ -215,7 +215,7 @@ function gridRiderList(data, $status) {
         shtml +="<td>-</td>";
     }
     if(typeof data.order != "undefined" && typeof data.orderStore != "undefined"){
-        if(data.riderStore.id != data.orderStore.id && typeof data.returnTime == "undefined"){
+        if(data.riderStore.id == $('#storeId').val() && data.riderStore.id != data.orderStore.id && typeof data.returnTime == "undefined"){
             shtml += "<td>" + '<button class="button h20" onclick="javascript:putRiderReturnTime('+ data.id +');">' + 'rider_rest' +'</button></td>';
         }else {
             shtml +="<td>-</td>";

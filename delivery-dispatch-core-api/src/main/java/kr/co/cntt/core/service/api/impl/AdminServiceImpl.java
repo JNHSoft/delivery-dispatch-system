@@ -74,7 +74,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     }
 
     @Override
-    public String selectLoginAdmin(Admin admin) {
+    public Map selectLoginAdmin(Admin admin) {
         return adminMapper.selectLoginAdmin(admin);
     }
 
