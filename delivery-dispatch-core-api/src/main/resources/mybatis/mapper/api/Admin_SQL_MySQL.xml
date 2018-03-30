@@ -410,7 +410,7 @@
 	      , store_name
 	      , ch_store_name
         FROM TB_STORE
-        WHERE id not in ((SELECT store_id FROM TB_SUBGROUP_STORE_REL))
+        WHERE id not in ((SELECT store_id FROM TB_SUBGROUP_STORE_REL WHERE deleted is null))
           AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
           AND deleted IS NULL
 	</select>
