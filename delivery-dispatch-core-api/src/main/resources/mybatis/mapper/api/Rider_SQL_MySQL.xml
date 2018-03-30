@@ -146,6 +146,24 @@
 		]]>
 	</select>
 
+	<!--
+		- login ID  및 Aceess 토근 값체크
+		- expiry_datetime 이 NULL 이거나 금일 datetime 보다 큰 값
+	-->
+	<select id="selectRiderTokenLoginCheck" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.login.User">
+		<![CDATA[
+		SELECT
+			A.login_id, A.login_pw
+		FROM TB_RIDER A JOIN TB_RIDER_SESSION B
+		ON A.id = B.rider_id
+		WHERE 1=1
+			AND A.login_id = #{loginId}
+			AND B.access_token = #{accessToken}
+			AND (expiry_datetime IS NULL OR expiry_datetime > now())
+		LIMIT 1
+		]]>
+	</select>
+
 
 	<!-- insertRiderSession -->
 	<insert id="insertRiderSession" parameterType="kr.co.cntt.core.model.rider.Rider">
