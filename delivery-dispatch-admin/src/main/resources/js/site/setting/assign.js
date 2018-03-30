@@ -361,6 +361,7 @@ function deleteAssignedReject(param) {
         dataType: 'json',
         async : false,
         success: function (data) {
+            console.log(data);
             location.reload();
         }
     });

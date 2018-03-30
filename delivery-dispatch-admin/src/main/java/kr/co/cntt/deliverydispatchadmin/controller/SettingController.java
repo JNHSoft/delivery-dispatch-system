@@ -279,9 +279,8 @@ public class SettingController {
     }
 
 
-
     @ResponseBody
-    @GetMapping("/deleteAssignedReject")
+    @PutMapping("/deleteAssignedReject")
     @CnttMethodDescription("배정관리 - 배정거절 사유 삭제")
     public Reason deleteAssignedReject(Reason reason) {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -291,45 +290,6 @@ public class SettingController {
 
         return reason;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**

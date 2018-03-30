@@ -1263,7 +1263,7 @@
 		login_id = #{loginId}
 	</select>
 
-
+	<!--기사 아이디 중복 체크-->
 	<select id="selectRiderLoginIdCheck" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="int">
 		SELECT
 		count(*) as user_count
