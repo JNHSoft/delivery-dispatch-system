@@ -161,13 +161,13 @@
                 transports: ['websocket'] // websocket만을 사용하도록 설정
             });
             socket.on('message', function(data){
-                if(data.match('rider_updated')=='rider_updated'){
+                if(data.match('rider_')=='rider_'){
                     location.href = "/setting-rider";
                 }
-                if(data.match('notice_update')=='rider_update'){
+                if(data.match('notice_')=='rider_'){
                     noticeAlarm();
                 }
-                if(data.match('order_updated')=='order_updated'){
+                if(data.match('order_')=='order_'){
                     footerOrders()
                 }
             });
