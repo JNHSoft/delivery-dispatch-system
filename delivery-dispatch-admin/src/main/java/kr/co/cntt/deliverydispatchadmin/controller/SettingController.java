@@ -230,6 +230,30 @@ public class SettingController {
     }
 
     @ResponseBody
+    @PutMapping("/putAssignedAdvance")
+    @CnttMethodDescription("배정관리 - 우선배정 사유 수정")
+    public Reason putAssignedAdvance(Reason reason) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        reason.setToken(adminInfo.getAdminAccessToken());
+
+        assignAdminService.putAssignedAdvance(reason);
+
+        return reason;
+    }
+
+    @ResponseBody
+    @PutMapping("/deleteAssignedAdvance")
+    @CnttMethodDescription("배정관리 - 우선배정 사유 삭제")
+    public Reason deleteAssignedAdvance(Reason reason) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        reason.setToken(adminInfo.getAdminAccessToken());
+
+        assignAdminService.deleteAssignedAdvance(reason);
+
+        return reason;
+    }
+
+    @ResponseBody
     @GetMapping("/postAssignedReject")
     @CnttMethodDescription("배정관리 - 배정거절 사유 추가")
     public Reason postAssignedReject(Reason reason) {
@@ -242,10 +266,31 @@ public class SettingController {
     }
 
 
+    @ResponseBody
+    @PutMapping("/putAssignedReject")
+    @CnttMethodDescription("배정관리 - 배정거절 사유 수정")
+    public Reason putAssignedReject(Reason reason) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        reason.setToken(adminInfo.getAdminAccessToken());
+
+        assignAdminService.putAssignedReject(reason);
+
+        return reason;
+    }
 
 
 
+    @ResponseBody
+    @GetMapping("/deleteAssignedReject")
+    @CnttMethodDescription("배정관리 - 배정거절 사유 삭제")
+    public Reason deleteAssignedReject(Reason reason) {
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        reason.setToken(adminInfo.getAdminAccessToken());
 
+        assignAdminService.deleteRejectReason(reason);
+
+        return reason;
+    }
 
 
 

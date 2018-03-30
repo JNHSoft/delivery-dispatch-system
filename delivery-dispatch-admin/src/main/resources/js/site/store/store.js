@@ -518,6 +518,34 @@ function deleteStore() {
     });
 }
 
+/**
+ * 상점 아이디 중복 체크
+ */
+function storeLoginIdCheck() {
+    var loginId = $("#postStoreLoginId").val();
+
+    $.ajax({
+        url: "/selectStoreLoginIdCheck",
+        type: 'get',
+        dataType: 'text',
+        data: {
+            loginId: loginId
+        },
+        success: function (data) {
+            console.log(data);
+            if(data>0){
+                alertTip('#postStoreLoginId',loginid_uncheck);
+            } else{
+                alertTip('#postStoreLoginId',loginid_check);
+            }
+
+
+        }
+    });
+}
+
+
+
 
 
 /*]]>*/

@@ -1184,7 +1184,7 @@
 		ORDER BY A.name
 	</select>
 
-
+	<!--우선 배정 추가 -->
 	<!-- insertOrderFirstAssignmentReason -->
 	<insert id="insertOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.reason.Reason">
 		INSERT INTO TB_ORDER_FIRST_ASSIGNMENT_REASON (
@@ -1198,7 +1198,25 @@
 		)
 	</insert>
 
+	<!--우선 배정 수정 -->
+	<update id="updateOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+		UPDATE TB_ORDER_FIRST_ASSIGNMENT_REASON
+		SET modified_datetime = now()
+		,reason = #{reason}
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND id = #{id}
+		AND deleted IS NULL
+	</update>
 
+	<!-- 우선 배정 삭제 -->
+	<update id="deleteOrderFirstAssignmentReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+		UPDATE TB_ORDER_FIRST_ASSIGNMENT_REASON
+		SET deleted = now()
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND id = #{id}
+		AND deleted IS NULL
+	</update>
+	<!--배정 거절 사유 추가 -->
 	<!-- insertRejectReason -->
 	<insert id="insertRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
 		INSERT INTO TB_REJECT_REASON (
@@ -1212,6 +1230,46 @@
 		)
 	</insert>
 
+	<!--배정 거절 사유 수정 -->
+	<update id="updateRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+		UPDATE TB_REJECT_REASON
+		SET modified_datetime = now()
+		,reason = #{reason}
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND id = #{id}
+		AND deleted IS NULL
+	</update>
+
+	<!-- 배정 거절 사유 삭제 -->
+	<update id="deleteRejectReason" parameterType="kr.co.cntt.core.model.reason.Reason">
+		UPDATE TB_REJECT_REASON
+		SET deleted = now()
+		WHERE admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND id = #{id}
+		AND deleted IS NULL
+	</update>
+
+
+	<!--상점 아이디 중복 체크  -->
+	<select id="selectStoreLoginIdCheck" parameterType="kr.co.cntt.core.model.store.Store" resultType="int">
+	SELECT
+		count(*) as user_count
+	FROM TB_STORE
+	WHERE
+		login_id = #{loginId}
+	</select>
+
+
+	<select id="selectRiderLoginIdCheck" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="int">
+		SELECT
+		count(*) as user_count
+		FROM TB_RIDER
+		WHERE
+		login_id = #{loginId}
+	</select>
+
+
+
+
 
 </mapper>
- 

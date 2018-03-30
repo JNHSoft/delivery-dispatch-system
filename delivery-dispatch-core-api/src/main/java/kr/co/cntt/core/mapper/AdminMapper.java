@@ -412,4 +412,21 @@ public interface AdminMapper {
      */
     public int deleteOrderFirstAssignmentReason(Reason reason);
 
+
+    /**
+     * 상점 아이디 중복 확인
+     * @param store
+     * @return
+     */
+    public int selectStoreLoginIdCheck(Store store);
+
+    /**
+     * 기사 아이디 중복 확인
+     * @param rider
+     * @return
+     */
+    public int selectRiderLoginIdCheck(Rider rider);
+
+
+
 }

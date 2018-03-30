@@ -17,6 +17,8 @@ var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
 var rider_belong_store = /*[[#{rider.belong.store}]]*/ 'rider_belong_store';
 var gnb_staff = /*[[#{gnb.staff}]]*/ 'gnb_staff';
 var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
+var loginid_check = /*[[#{loginid.check}]]*/ 'loginid_check';
+var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 /*]]>*/
 </script>
 
@@ -225,7 +227,7 @@ var group_choise = /*[[#{group.choise}]]*/ 'group_choise';
 						<th th:text="${#messages.msg('login.id')}" />
 						<td>
 							<input type="text" name="" id="postRiderLoginId" class="input" value="" />
-							<button class="button btn_black" onclick="alertTip('#userId','중복된 아이디 입니다.')" th:text="${#messages.msg('btn.duplicated')}" />
+							<button class="button btn_black" onclick="riderLoginIdCheck()" th:text="${#messages.msg('btn.duplicated')}" />
 						</td>
 						<th th:text="${#messages.msg('rider.phone.emergency')}" />
 						<td><input type="text" name="" class="input" value="" id="postRiderEmergencyPhone"/></td>

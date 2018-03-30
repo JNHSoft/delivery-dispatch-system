@@ -79,11 +79,49 @@ public interface AssignAdminService {
     public int postAssignedAdvance(Reason reason);
 
     /**
+     * order 우선 배정 사유 수정
+     *
+     * @param reason
+     * @return
+     */
+    public int putAssignedAdvance(Reason reason);
+
+
+    /**
+     * <p> order 우선 배정 사유 삭제
+     *
+     * @param reason
+     * @return
+     */
+    public int deleteAssignedAdvance(Reason reason);
+
+    /**
      * <p> postAssignedReject
      *
      * @param reason
      * @return int
      */
     public int postAssignedReject(Reason reason);
+
+    /**
+     * <p> 배정 거절 사유 수정
+     *
+     * @param reason
+     * @return
+     */
+    public int putAssignedReject(Reason reason);
+
+
+    /**
+     * <p> 배정 거절 사유 삭제
+     *
+     * @param reason
+     * @return
+     */
+    public int deleteRejectReason(Reason reason);
+
+
+
+
 
 }

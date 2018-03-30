@@ -106,4 +106,14 @@ public interface StaffAdminService {
     public int insertAdminRiderSession(Rider rider);
 
 
+
+    /**
+     * 기사 아이디 중복 확인
+     * @param rider
+     * @return
+     */
+    public int selectRiderLoginIdCheck(Rider rider);
+
+
+
 }

@@ -131,5 +131,13 @@ public interface StoreAdminService {
     public int insertAdminStoreSession(Store store);
 
 
+    /**
+     * 상점 아이디 중복 확인
+     * @param store
+     * @return
+     */
+    public int selectStoreLoginIdCheck(Store store);
+
+
 
 }

@@ -61,10 +61,10 @@ public class StaffController {
 
         List<Rider> riderList = staffAdminService.selectRiderList(rider);
 
-        model.addAttribute("riderList", riderList);
-        model.addAttribute("jsonList", new Gson().toJson(riderList));
-
-        log.info("json : {}", new Gson().toJson(riderList));
+//        model.addAttribute("riderList", riderList);
+//        model.addAttribute("jsonList", new Gson().toJson(riderList));
+//
+//        log.info("json : {}", new Gson().toJson(riderList));
 
         return "/staff/staff";
     }
@@ -414,6 +414,36 @@ public class StaffController {
         return true;
 
     }
+
+    /**
+     * 기사 아이디 중복 조회
+     *
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/selectRiderLoginIdCheck")
+    @CnttMethodDescription("기사 아이디 중복 조회")
+    public int selectRiderLoginIdCheck(@RequestParam("loginId") String loginId) {
+
+        Rider rider = new Rider();
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+
+        rider.setToken(adminInfo.getAdminAccessToken());
+        rider.setLoginId(loginId);
+
+        int R_Id = staffAdminService.selectRiderLoginIdCheck(rider);
+
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+R_Id);
+
+
+        return R_Id;
+    }
+
+
 
 
 

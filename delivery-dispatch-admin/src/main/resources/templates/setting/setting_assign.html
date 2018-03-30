@@ -83,7 +83,7 @@
 								<input type="text" class="input" id="inpAssignedAdvance" />
 								<a href="#" class="button btn_dgray" onclick="javascript:postAssignedAdvance()"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
 								<p class="fz11 mt10" th:text="${#messages.msg('order.assign.advance.label')}" />
-								<div class="tbl_wrap mt20">
+								<div class="tbl_wrap mt20" id="assignedAdvanceList">
 									<table class="table" id="tblAssignedAdvance">
 										<thead>
 											<tr>
@@ -91,14 +91,16 @@
 												<th scope="col" class="t_center" th:text="${#messages.msg('group.mod.del')}" />
 											</tr>
 										</thead>
+
 										<tbody>
 											<tr th:each="assignedAdvance : ${assignedAdvanceList}" th:attr="data-assignedAdvance-id=${assignedAdvance.id}">
-												<input type="hidden" name="defaultAssignedAdvanceName" th:value="${assignedAdvance.reason}" />
+
 												<td class="t_left" name="tdAssignedAdvanceName" th:text="${assignedAdvance.reason}" />
 												<td>
-													<button class="button h20" id="assignedAdvanceMod" th:text="${#messages.msg('group.mod')}" />
-													<button class="button h20" id="assignedAdvanceDel" th:text="${#messages.msg('group.del')}" />
+													<button class="button h20" name="assignedAdvanceSave" th:text="${#messages.msg('group.mod')}" type="button" />
+													<button class="button h20" name="assignedAdvanceDelete" th:text="${#messages.msg('group.del')}" type="button"/>
 												</td>
+												<input type="hidden" name="defaultAssignedAdvanceName" th:value="${assignedAdvance.reason}" />
 											</tr>
 										<!-- <tr>
 												<td class="t_left" name="tdAssignedAdvanceName"><input type="text" class="input w_100" value="사유1" /></td>
@@ -125,7 +127,7 @@
 								<input type="text" class="input" id="inpAssignedReject" />
 								<a href="#" class="button btn_dgray" onclick="javascript:postAssignedReject()"><i class="fa fa-plus" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('group.add')}" /></a>
 								<p class="fz11 mt10" th:text="${#messages.msg('order.assign.deny.label')}" />
-								<div class="tbl_wrap mt20">
+								<div class="tbl_wrap mt20" id="assignedRejectList">
 									<table class="table" id="tblAssignedReject">
 										<thead>
 											<tr>
@@ -135,12 +137,13 @@
 										</thead>
 										<tbody>
 											<tr th:each="assignedReject : ${assignedRejectList}" th:attr="data-assignedReject-id=${assignedReject.id}">
-												<input type="hidden" name="defaultassignedRejectName" th:value="${assignedReject.reason}" />
+
 												<td class="t_left" name="tdassignedRejectName" th:text="${assignedReject.reason}" />
 												<td>
-													<button class="button h20" id="assignedRejectMod" th:text="${#messages.msg('group.mod')}" />
-													<button class="button h20" id="assignedRejectDel" th:text="${#messages.msg('group.del')}" />
+													<button class="button h20" name="assignedRejectSave" th:text="${#messages.msg('group.mod')}" type="button" />
+													<button class="button h20" name="assignedRejectDelete" th:text="${#messages.msg('group.del')}" type="button"  />
 												</td>
+												<input type="hidden" name="defaultassignedRejectName" th:value="${assignedReject.reason}" />
 											</tr>
 										<!--<tr>
                                             <td class="t_left"><input type="text" class="input w_100" value="사유1" /></td>

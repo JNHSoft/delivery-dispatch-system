@@ -485,6 +485,32 @@ function deleteRider() {
         }
     });
 }
+
+
+/**
+ * 기사 아이디 중복 체크
+ */
+function riderLoginIdCheck() {
+    var loginId = $("#postRiderLoginId").val();
+
+    $.ajax({
+        url: "/selectRiderLoginIdCheck",
+        type: 'get',
+        dataType: 'text',
+        data: {
+            loginId: loginId
+        },
+        success: function (data) {
+            console.log(data);
+            if(data>0){
+                alertTip('#postRiderLoginId',loginid_uncheck);
+            } else{
+                alertTip('#postRiderLoginId',loginid_check);
+            }
+        }
+    });
+}
+
 /*]]>*/
 
 
