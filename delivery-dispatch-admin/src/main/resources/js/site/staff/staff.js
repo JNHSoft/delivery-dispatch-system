@@ -507,20 +507,9 @@ function riderLoginIdCheck() {
             } else{
                 alertTip('#postRiderLoginId',loginid_check);
             }
-
-
         }
     });
 }
-
-
-
-
-
-
-
-
-
 
 /*]]>*/
 
