@@ -113,10 +113,8 @@ $(document).ready(function() {
         });
         socket.on('message', function (data) {
             if (data.match('notice_') == 'notice_') {
-                location.href = "/setting-notice";
-            }
-            if(data.match('notice_')=='notice_'){
                 noticeAlarm();
+                location.href = "/setting-notice";
             }
             if(data.match('rider_')=='rider_'){
                 footerRiders();
