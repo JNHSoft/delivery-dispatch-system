@@ -697,7 +697,15 @@
     </select>
 
 
-
+    <!-- updateStoreSession -->
+    <update id="updateStoreSession" parameterType="String">
+        UPDATE TB_STORE AS A
+        LEFT JOIN TB_STORE_SESSION AS B
+        ON A.id = B.store_id
+        SET A.last_access = now()
+        --			, B.expiry_datetime = now()
+        WHERE B.access_token = #{token}
+    </update>
 
 </mapper>
  
