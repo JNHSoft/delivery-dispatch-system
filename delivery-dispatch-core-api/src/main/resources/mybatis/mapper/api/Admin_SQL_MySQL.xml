@@ -1065,6 +1065,88 @@
 	<!--</if>-->
 	</select>
 
+	<!-- 통계 조회 List  EXcel-->
+	<select id="selectAdminStatisticsExcel" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
+		SELECT
+			TG.name AS group_name
+		, TG.id AS group_id
+		, TG.admin_id AS group_admin_id
+		, TSG.id AS subgroup_id
+		, TSG.name AS subgroup_name
+		, TSG.admin_id AS subgroup_admin_id
+		, TSG.group_id AS subgroup_group_id
+		, SSR.store_id AS subGroupStoreRel_store_id
+		, TBS.store_name
+		, TBO.admin_id
+		, TBO.store_id
+		, TBO.rider_id
+		, TBO.status
+		, TBO.id
+		, TBO.created_datetime
+        , TBO.reservation_datetime
+        , TBO.assigned_datetime
+		, TBO.picked_up_datetime
+        , TBO.completed_datetime
+		, TBO.menu_name
+		, TBO.cooking_time
+		, TBO.menu_price
+        , TBO.delivery_price
+        , TBO.total_price
+		, TBP.type
+        , TBO.combined_order_id
+        , TBR.name AS riderName
+        , TBR.phone AS riderPhone
+        , TBO.message
+        , TBO.phone AS customerPhone
+		, TBO.address AS customerAddress
+        , TBO.detail_address AS customerDetailAddress
+
+
+		FROM TB_ORDER AS TBO
+
+		LEFT JOIN
+		TB_RIDER AS TBR
+		on TBR.id = TBO.rider_id
+		AND TBR.deleted is NULL
+
+		LEFT JOIN
+		TB_STORE AS TBS
+		on TBS.id = TBO.store_id
+		AND TBS.deleted is NULL
+
+		LEFT JOIN
+		TB_PAYMENT AS TBP
+		on TBP.order_id = TBO.id
+		AND TBP.deleted is NULL
+
+		LEFT JOIN
+		TB_SUBGROUP_STORE_REL AS SSR
+		on TBO.store_id = SSR.store_id
+		AND SSR.deleted is NULL
+
+		LEFT JOIN
+		TB_SUBGROUP AS TSG
+		on SSR.group_id = TSG.id
+		AND TSG.deleted is NULL
+
+		LEFT JOIN
+		TB_GROUP AS TG
+		on SSR.group_id = TG.id
+		AND TG.deleted is NULL
+
+		WHERE
+
+		TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND TBO.status = 3 AND 4
+		<if test="startDate != null and startDate != ''">
+		AND start_date = #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+		AND end_date = #{endDate}
+		</if>
+		ORDER BY TBO.created_datetime ASC
+
+	</select>
 
 	<!-- 통계 조회 info -->
 	<select id="selectAdminStatisticsInfo" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">

@@ -381,9 +381,14 @@ public class StoreController {
     storeAdminService.insertAdminStoreSession(storeSession);
     log.info("@@@@@@@insertStoreSession@@@@@@@@@@@"+storeSession);
 
+    if(groupId != null && groupId !="" && subGroupId !=null && subGroupId !=""){
+        A_Group = storeAdminService.insertSubGroupStoreRel(store);
+        log.info("@@@@@@@insertSubGroupRel@@@@@@@@@@@"+store);
+    }
 
-    A_Group = storeAdminService.insertSubGroupStoreRel(store);
-    log.info("@@@@@@@insertSubGroupRel@@@@@@@@@@@"+store);
+
+
+
 
 
     if (assignmentStatus != null) {

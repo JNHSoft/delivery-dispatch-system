@@ -478,12 +478,48 @@ function getStatisticsInfo(orderId) {
             $('#userPhone').html(data.phone);
             $('#userAddress').html(data.address);
             $('#distance').html(data.distance);
+
             map.setCenter({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
             marker.setPosition({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
         }
 
     });
 }
+
+
+
+function excelDownload(){
+    // console.log("@@@@");
+
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@downdown");
+    document.searchForm.action="/excelDownload";
+    document.searchForm.method="GET";
+    document.searchForm.submit();
+
+    // $.ajax({
+    //     url : "/excelDownload",
+    //     type : 'get',
+    //     data : {
+    //         startDate : startDate,
+    //         endDate : endDate
+    //     },
+    //     async : false,
+    //     dataType : 'json',
+    //     success : function(data){
+    //         console.log(data);
+    //     }
+    // });
+
+
+}
+
+
+
+
+
+
+
+
 /*]]>*/
 
 

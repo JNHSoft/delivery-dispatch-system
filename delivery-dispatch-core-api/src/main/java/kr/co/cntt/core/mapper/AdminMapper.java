@@ -350,6 +350,14 @@ public interface AdminMapper {
     public List<Order> selectAdminStatistics(Order order);
 
     /**
+     * 통계 목록 Excel admin 에서 쓰기위해서 mapper 만추가했음 api는 등록하지않음
+     * @param order
+     * @return
+     */
+    public List<Order> selectAdminStatisticsExcel(Order order);
+
+
+    /**
      * 통계 조회
      * @param order
      * @return

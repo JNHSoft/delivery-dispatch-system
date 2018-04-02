@@ -320,7 +320,7 @@ function getGroupList() {
         dataType : 'json',
         success : function(data) {
             if (data) {
-                var postStoreGroupHtml = "<option value=''>" + "不明" + "</option>";
+                var postStoreGroupHtml = "<option value='none'>" + "不明" + "</option>";
                 // var postStoreGroupHtml = "";
                 for (var i in data) {
                     postStoreGroupHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
@@ -357,7 +357,7 @@ function getPostSubGroupList(gId, subGroup) {
         success : function(data){
             if(data) {
 
-                var postStoreSubGroupHtml = "<option value=''>" + selected_choise + "</option>";
+                var postStoreSubGroupHtml = "<option value='none'>" + selected_choise + "</option>";
                 // var postStoreSubGroupHtml = "";
                 for (var i in data){
                     postStoreSubGroupHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
