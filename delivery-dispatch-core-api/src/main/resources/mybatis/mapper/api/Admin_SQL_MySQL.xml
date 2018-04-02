@@ -1273,7 +1273,14 @@
 	</select>
 
 
-
-
+	<!-- updateAdminSession -->
+	<update id="updateAdminSession" parameterType="String">
+		UPDATE TB_ADMIN AS A
+		LEFT JOIN TB_ADMIN_SESSION AS B
+		ON A.id = B.admin_id
+		SET A.last_access = now()
+		--			, B.expiry_datetime = now()
+		WHERE B.access_token = #{token}
+	</update>
 
 </mapper>
