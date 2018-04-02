@@ -67,6 +67,10 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
         return adminMapper.selectSubgroupStoreRels(subGroupStoreRel);
     }
 
-
+    // 통계 리스트 Excel
+    @Override
+    public List<Order> selectAdminStatisticsExcel(Order order) {
+        return adminMapper.selectAdminStatisticsExcel(order);
+    }
 
 }

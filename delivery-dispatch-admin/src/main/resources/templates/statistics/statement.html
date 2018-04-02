@@ -36,6 +36,7 @@
 
 	<!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
+		<form name="searchForm" id="filter-form" class="form-horizontal" role="form" action="">
 		<input type="hidden" id="selectedStoreId"/>
 		<input type="hidden" id="selectedGroupId"/>
 		<input type="hidden" id="selectedSubGroupId"/>
@@ -73,7 +74,7 @@
 					<input type="text" class="input" th:placeholder="${#messages.msg('list.search.placeholder')}" />
 					<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" /></button>
 				</span>
-				<button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.excel')}" /></button>
+				<button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownload();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}" /></button>
 			</div>
 		</div>
 
@@ -208,6 +209,7 @@
 		</div>
 		<script type="text/javascript" th:src="@{/resources/js/site/statistics/statistics.js}" layout:fragment="script2"></script>
 		<script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}"></script>
+		</form>
 	</section>
 	<!-- //컨텐츠 영역 -->
 </html>

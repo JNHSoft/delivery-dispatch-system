@@ -20,12 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import org.terracotta.statistics.Statistic;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -277,7 +277,48 @@ public class StatisticsController {
     }
 
 
+    // excel 다운로드
+    @ResponseBody
+    @GetMapping("/excelDownload")
+    public ModelAndView statisticsExcelDownload(ModelMap model,
+                                                HttpServletRequest request,
+                                                @RequestParam(value = "startDate", required = false, defaultValue = "") String startDate,
+                                                @RequestParam(value = "endDate", required = false, defaultValue = "") String endDate
+
+    ) {
+//        if (StringUtils.isBlank(startDate)) startDate = StringHelper.getDate("yyyyMMdd", -1);
+//        if (StringUtils.isBlank(endDate)) endDate = StringHelper.getDate("yyyyMMdd", -1);
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        Order order = new Order();
+
+        order.setCurrentDatetime(startDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        order.setToken(adminInfo.getAdminAccessToken());
 
 
+        ModelAndView modelAndView = new ModelAndView("StatisticsAdminExcelBuilderServiceImpl");
+
+        // List 불러오기                                               Nick
+        List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(order);
+
+        modelAndView.addObject("selectAdminStatisticsExcel", orderStatisticsByAdminList);
+
+
+        return modelAndView;
+    }
 
 }
