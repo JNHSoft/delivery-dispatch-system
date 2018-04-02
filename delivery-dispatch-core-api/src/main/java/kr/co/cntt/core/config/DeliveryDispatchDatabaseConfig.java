@@ -39,13 +39,13 @@ public class DeliveryDispatchDatabaseConfig {
 
     @Bean(name = "deliveryDispatchDatasource")
     @ConfigurationProperties(prefix="datasource.deliveryDispatch")
-    @Profile("local")
+    @Profile({"local","oper"})
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean(name = "deliveryDispatchDatasource")
-    @Profile({"dev", "oper"})
+    @Profile({"dev"})
     public DataSource jndiDataSource() throws IllegalArgumentException, NamingException {
         JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
         bean.setJndiName("java:comp/env/jdbc/deliveryDispatch_api");
