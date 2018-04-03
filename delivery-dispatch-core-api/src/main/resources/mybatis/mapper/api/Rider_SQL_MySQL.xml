@@ -717,6 +717,7 @@
 			LEFT JOIN TB_STORE as G
     		ON F.store_id = G.id
 			where F.created_datetime > CURRENT_DATE()
+			and F.status in(1,2)
         	and F.id in(select SUBSTRING_INDEX(group_concat(id order by assigned_datetime asc),',',1) from TB_ORDER where assigned_datetime is not null and created_datetime > CURRENT_DATE() group by rider_id )) AS E
 		ON E.rider_id = A.id
 		LEFT JOIN TB_STORE AS I
