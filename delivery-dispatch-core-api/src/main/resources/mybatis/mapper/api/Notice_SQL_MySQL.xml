@@ -330,6 +330,7 @@
             ON A.id = E.notice_id
         WHERE A.deleted IS NULL
             AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(select store_id from TB_STORE_SESSION where access_token=#{token}))
+        ORDER BY A.id DESC
     </select>
 
 
