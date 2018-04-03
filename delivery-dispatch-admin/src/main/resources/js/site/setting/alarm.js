@@ -39,6 +39,6 @@ function preview(fileName) {
         return false;
     }
     
-    var audio = new Audio('/alarmFiles/'+fileName);
+    var audio = new Audio('/alarmFiles/alarm/'+fileName);
     audio.play();
 }
