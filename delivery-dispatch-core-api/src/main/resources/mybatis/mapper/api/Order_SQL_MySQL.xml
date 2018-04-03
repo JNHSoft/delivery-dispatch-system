@@ -207,7 +207,7 @@
                     AND C.deleted IS NULL
 				</when>
 				<when test="role != null and role == 'ROLE_RIDER'">
-					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+					AND A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 					AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE deleted IS NULL AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 					AND C.deleted IS NULL
                 </when>
@@ -268,7 +268,7 @@
 					AND C.deleted IS NULL
 				</when>
 				<when test="role != null and role == 'ROLE_RIDER'">
-					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+					AND A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 					AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE deleted IS NULL AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 					AND C.deleted IS NULL
 				</when>
@@ -389,7 +389,7 @@
 					AND C.deleted IS NULL
 				</when>
 				<when test="role != null and role == 'ROLE_RIDER'">
-					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+					AND A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 					AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE deleted IS NULL AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 					AND B.deleted IS NULL
 					AND C.deleted IS NULL
