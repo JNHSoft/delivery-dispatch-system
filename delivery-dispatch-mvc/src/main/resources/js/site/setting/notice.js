@@ -41,7 +41,7 @@ function footerOrders() {
 $(function() {
     footerRiders();
     footerOrders();
-    getNoticeList()
+    getNoticeList();
 });
 function getNoticeList() {
     var mydata = [];
@@ -77,7 +77,7 @@ function getNoticeList() {
 
                     tmpdata.title = data[key].title;
                     if (data[key].fileName) {
-                        tmpdata.file = '<a href="#" class="button h20">' + notice_attach_download + '</a>'
+                        tmpdata.file = '<a href="/noticeFileDownload?fileName=' + data[key].fileName + ' " class="button h20" download>' + notice_attach_download + '</a>'
                     } else {
                         tmpdata.file = notice_attach_none;
                     }
@@ -188,6 +188,8 @@ function getNoticeDetail(noticeId) {
             if (data.fileName != null) {
                 $('#nFile').html(data.oriFileName + '(' + data.fileSize + ')');
                 $('#btnDownload').show();
+                $('#btnDownload').attr("href","/noticeFileDownload?fileName="+data.fileName);
+                $('#btnDownload').attr("download", true);
             } else {
                 $('#nFile').html(notice_attach_none);
                 $('#btnDownload').hide();
@@ -208,5 +210,14 @@ function putNoticeConfirm() {
              location.href="/setting-notice";
         }
     });
+}
+function noticeFileDownload(fileName) {
+    console.log("fileName: " + fileName);
+    var form = document.getElementById("fileForm");
+    var fileField = form.elements["fileName"];
+
+    fileField.value = fileName;
+
+    form.submit();
 }
 /*]]>*/

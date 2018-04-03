@@ -31,6 +31,9 @@
 	<!-- 팝업영역 -->
 	<!-- 상세 -->
 	<div id="popNotice" class="pop_wrap" layout:fragment="popup">
+		<form id="fileForm" name="fileForm" action="/noticeFileDownload" method="post">
+			<input type="hidden" id="fileName" name="fileName" value="" />
+		</form>
 		<article class="popup">
 			<div class="pop_head">
 				<h1 th:text="${#messages.msg('notice.detail')}" />
@@ -69,8 +72,8 @@
 							<tr>
 								<th th:text="${#messages.msg('notice.attach')}" />
 								<td colspan="5">
-									<span class="t_blue" id="nFile">sound.wav(30.11KB)</span>
-									<a href="#" class="button btn_blue" id="btnDownload"><i class="fa fa-file-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('notice.attach.download')}" /></a>
+									<span class="t_blue" id="nFile"></span>
+									<a href="" class="button btn_blue" id="btnDownload"><i class="fa fa-file-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('notice.attach.download')}" /></a>
 								</td>
 							</tr>
 						</tbody>

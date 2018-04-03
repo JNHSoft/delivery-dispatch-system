@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.util.MD5Encoder;
+import kr.co.cntt.core.util.MediaTypeUtils;
 import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
@@ -17,11 +18,18 @@ import kr.co.deliverydispatch.service.StoreRiderService;
 import kr.co.deliverydispatch.service.StoreSettingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +37,9 @@ import java.util.List;
 @Slf4j
 @Controller
 public class SettingController {
+
+    @Value("${api.upload.path.notice}")
+    private String noticeFileUploadPath;
 
     private StoreSettingService storeSettingService;
     private StoreNoticeService storeNoticeService;
@@ -41,6 +52,8 @@ public class SettingController {
         this.storeRiderService = storeRiderService;
         this.storeOrderService = storeOrderService;
     }
+    @Autowired
+    private ServletContext servletContext;
 
     /**
      * 설정 - 계정관리 페이지
@@ -296,4 +309,47 @@ public class SettingController {
         storeSettingService.putNoticeConfirm(notice);
         return true;
     }
+
+   /* @GetMapping("/downloadFile/{id}")
+    public ModelAndView downloadFile(@PathVariable String id) {
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Notice notice = new Notice();
+        notice.setId(id);
+        notice.setToken(storeInfo.getStoreAccessToken());
+        Notice noticeDetail = storeNoticeService.getNotice(notice);
+        noticeDetail.getFileName();
+        noticeDetail.getOriFileName();
+        String savePath = noticeFileUploadPath;
+        String fullPath = noticeFileUploadPath + "/" + noticeDetail.getFileName();
+
+        return ;
+    }*/
+   @GetMapping("/noticeFileDownload")
+   @CnttMethodDescription("공지사항 첨부파일 다운로드")
+   public void noticeFileDownload(HttpServletResponse response, @RequestParam(value = "fileName", required = false) String fileName)  throws IOException {
+       SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+       Notice notice = new Notice();
+       notice.setFileName(fileName);
+       notice.setToken(storeInfo.getStoreAccessToken());
+
+       MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext,  notice.getFileName());
+
+       File file = new File(noticeFileUploadPath + "/" + notice.getFileName());
+//        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+       if(file.exists()){
+           response.setContentType(mediaType.getType());
+
+           response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() +"\""));
+
+           response.setContentLength((int)file.length());
+
+           InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+
+           FileCopyUtils.copy(inputStream, response.getOutputStream());
+
+       }else{
+           response.sendError(404, "잘못된 접근입니다.");
+       }
+
+   }
 }

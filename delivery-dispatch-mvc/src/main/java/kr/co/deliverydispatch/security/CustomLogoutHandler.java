@@ -1,6 +1,8 @@
 package kr.co.deliverydispatch.security;
 
 import kr.co.cntt.core.model.store.StorePerformanceHistory;
+import kr.co.cntt.core.service.api.StoreService;
+import kr.co.cntt.core.service.api.impl.StoreServiceImpl;
 import kr.co.deliverydispatch.config.DeliveryDispatchStoreAudit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -29,11 +31,13 @@ public class CustomLogoutHandler implements LogoutHandler {
     /* (non-Javadoc)
      * @see org.springframework.security.web.authentication.logout.LogoutHandler#logout(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.security.core.Authentication)
      */
+    @Autowired private StoreService storeService;
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         StorePerformanceHistory storePerformanceHistory = new StorePerformanceHistory();
         storePerformanceHistory.setStoreSeq(authenticationInfo.getStoreSeq());
         storePerformanceHistory.setStoreId(authenticationInfo.getStoreId());
+        storeService.updateStoreSession(authenticationInfo.getStoreAccessToken());
         deliveryDispatchStoreAudit.insertStorePerformanceHistoryLog(request, storePerformanceHistory);
     }
 }
