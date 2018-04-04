@@ -3,10 +3,10 @@
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<springProfile name="api">
 		<springProfile name="dev">
-			<property value="/home/logs/delivery-dispatch/api_application" name="LOG_FILE_PREFIX" />
+			<property value="/home/nanum/logs/delivery-dispatch/dev/api/dde_api_application" name="LOG_FILE_PREFIX" />
 		</springProfile>
 		<springProfile name="oper">
-			<property value="/web/app/tomcat_delivery-dispatch/logs/application" name="LOG_FILE_PREFIX" />
+			<property value="/home/nanum/logs/delivery-dispatch/oper/api/dde_api_application" name="LOG_FILE_PREFIX" />
 		</springProfile>
 	</springProfile>
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -43,7 +43,7 @@
 	</springProfile>
 	
 	<springProfile name="!local">
-		<logger name="kr.co.cntt" level="INFO" additivity="false">
+		<logger name="kr.co.cntt" level="DEBUG" additivity="false">
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="FILE" />
 		</logger>
