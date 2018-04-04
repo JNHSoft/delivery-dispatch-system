@@ -273,6 +273,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setId(((Order) map.get("order")).getId());
             order.setRiderId(((Rider) map.get("rider")).getId());
             order.setStatus("1");
+            if (((Rider) map.get("rider")).getLatitude() != null || ((Rider) map.get("rider")).getLatitude() != "") {
+                order.setAssignXy(((Rider) map.get("rider")).getLatitude()+"|"+((Rider) map.get("rider")).getLongitude());
+            }
 
             ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(order);
             Order notiOrder = (Order) map.get("order");
@@ -690,9 +693,24 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 throw new AppTrException(getMessage(ErrorCodeEnum.E00027), ErrorCodeEnum.E00027.name());
             }
         } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-            if (!S_Store.getAssignmentStatus().equals("0")) {
+            if (!S_Store.getAssignmentStatus().equals("1")) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.E00028), ErrorCodeEnum.E00028.name());
             }
+        }
+
+        Rider S_Rider = null;
+        if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            Rider tmpRider = new Rider();
+            tmpRider.setToken(order.getToken());
+            tmpRider.setAccessToken(order.getToken());
+            S_Rider = riderMapper.getRiderInfo(tmpRider);
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            Rider tmpRider = new Rider();
+            tmpRider.setIsAdmin("0");
+            tmpRider.setToken(order.getToken());
+            tmpRider.setAccessToken(order.getToken());
+            tmpRider.setId(order.getRiderId());
+            S_Rider = riderMapper.getRiderInfo(tmpRider);
         }
 
         Order orderAssigned = new Order();
@@ -702,6 +720,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssigned.setRiderId(order.getRiderId());
         orderAssigned.setStatus("1");
         orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+        if (S_Rider.getLatitude() != null || S_Rider.getLatitude() != "") {
+            orderAssigned.setAssignXy(S_Rider.getLatitude()+"|"+S_Rider.getLongitude());
+        }
 
         Order combinedOrderAssigned = new Order();
 
@@ -711,6 +732,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
+            if (S_Rider.getLatitude() != null || S_Rider.getLatitude() != "") {
+                combinedOrderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
+            }
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
@@ -774,6 +798,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderPickedUp.setId(order.getId());
         orderPickedUp.setStatus("2");
         orderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
+        orderPickedUp.setPickupXy(order.getPickupXy());
 
         Order combinedOrderPickedUp = new Order();
 
@@ -782,6 +807,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderPickedUp.setStatus("2");
             combinedOrderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
             combinedOrderPickedUp.setToken(order.getToken());
+            combinedOrderPickedUp.setPickupXy(order.getPickupXy());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
@@ -819,6 +845,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderCompleted.setId(order.getId());
         orderCompleted.setStatus("3");
         orderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
+        orderCompleted.setCompleteXy(order.getCompleteXy());
 
         Order combinedOrderCompleted = new Order();
 
@@ -827,6 +854,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderCompleted.setStatus("3");
             combinedOrderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
             combinedOrderCompleted.setToken(order.getToken());
+            combinedOrderCompleted.setCompleteXy(order.getCompleteXy());
 
             this.putOrder(combinedOrderCompleted);
         }

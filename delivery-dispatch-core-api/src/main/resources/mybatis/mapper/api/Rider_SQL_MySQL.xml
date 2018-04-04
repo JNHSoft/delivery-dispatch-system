@@ -853,7 +853,7 @@
 		ON A.id = B.rider_id
 		WHERE A.deleted IS NULL
 			AND B.deleted IS NULL
-			AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{storeId} GROUP BY subgroup_id)
+			AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{storeId} AND deleted IS NULL GROUP BY subgroup_id)
 			AND A.working = 1
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
