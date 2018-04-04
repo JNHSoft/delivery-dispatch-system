@@ -383,8 +383,11 @@
 			<if test="role == 'ROLE_STORE' and assignedFirst == 'True'">
 				, A.assigned_first = (SELECT * FROM (SELECT IFNULL(MAX(assigned_first), 0) + 1 FROM TB_ORDER) AS D)
 			</if>
-			<if test="assignXy != null and assignXy != ''">
+			<if test="assignXy != null and assignXy != '' and assignXy != 'none'">
 				, A.assign_xy = #{assignXy}
+			</if>
+			<if test="assignXy != null and assignXy != '' and assignXy == 'none'">
+				, A.assign_xy = NULL
 			</if>
 			<if test="pickupXy != null and pickupXy != ''">
 				, A.pickup_xy = #{pickupXy}

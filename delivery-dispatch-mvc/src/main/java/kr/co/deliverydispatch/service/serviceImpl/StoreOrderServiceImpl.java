@@ -255,8 +255,10 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         orderAssigned.setRiderId(order.getRiderId());
         orderAssigned.setStatus("1");
         orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
-        if (S_Rider.getLatitude() != null || S_Rider.getLatitude() != "") {
+        if (S_Rider.getLatitude() != null && S_Rider.getLatitude() != "") {
             orderAssigned.setAssignXy(S_Rider.getLatitude()+"|"+S_Rider.getLongitude());
+        } else {
+            orderAssigned.setAssignXy("none");
         }
 
         Order combinedOrderAssigned = new Order();
@@ -267,10 +269,12 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
-            if (S_Rider.getLatitude() != null || S_Rider.getLatitude() != "") {
+            if (S_Rider.getLatitude() != null && S_Rider.getLatitude() != "") {
                 combinedOrderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
+            } else {
+                combinedOrderAssigned.setAssignXy("none");
             }
-            
+
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
 

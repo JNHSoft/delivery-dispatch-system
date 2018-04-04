@@ -273,8 +273,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setId(((Order) map.get("order")).getId());
             order.setRiderId(((Rider) map.get("rider")).getId());
             order.setStatus("1");
-            if (((Rider) map.get("rider")).getLatitude() != null || ((Rider) map.get("rider")).getLatitude() != "") {
+            if (((Rider) map.get("rider")).getLatitude() != null && ((Rider) map.get("rider")).getLatitude() != "") {
                 order.setAssignXy(((Rider) map.get("rider")).getLatitude()+"|"+((Rider) map.get("rider")).getLongitude());
+            } else {
+                order.setAssignXy("none");
             }
 
             ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(order);
@@ -720,8 +722,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssigned.setRiderId(order.getRiderId());
         orderAssigned.setStatus("1");
         orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
-        if (S_Rider.getLatitude() != null || S_Rider.getLatitude() != "") {
+        if (S_Rider.getLatitude() != null && S_Rider.getLatitude() != "") {
             orderAssigned.setAssignXy(S_Rider.getLatitude()+"|"+S_Rider.getLongitude());
+        } else {
+            orderAssigned.setAssignXy("none");
         }
 
         Order combinedOrderAssigned = new Order();
@@ -732,8 +736,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
-            if (S_Rider.getLatitude() != null || S_Rider.getLatitude() != "") {
+            if (S_Rider.getLatitude() != null && S_Rider.getLatitude() != "") {
                 combinedOrderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
+            } else {
+                combinedOrderAssigned.setAssignXy("none");
             }
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
