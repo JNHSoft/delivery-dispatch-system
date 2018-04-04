@@ -376,22 +376,24 @@
 				, A.assignment_limit = #{assignmentLimit}
 			</if>
 
+            <choose>
+                <when test="isAdmin == 1">
+                    <if test="subGroupStoreRel.groupId =='' or subGroupStoreRel.groupId == null and subGroupStoreRel.subGroupId =='' or subGroupStoreRel.subGroupId == null" >
+                        , B.deleted = now()
+                    </if>
 
-            <if test="subGroupStoreRel.groupId =='' or subGroupStoreRel.groupId == null and subGroupStoreRel.subGroupId =='' or subGroupStoreRel.subGroupId == null" >
-                , B.deleted = now()
-            </if>
-
-
-            <if test="subGroupStoreRel != null and (subGroupStoreRel.groupId !='' and subGroupStoreRel.groupId != null and subGroupStoreRel.subGroupId =='' or subGroupStoreRel.subGroupId == null)">
-				, B.modified_datetime = now()
-				, B.store_id = #{id}
-				, B.subgroup_id = #{subGroupStoreRel.subGroupId}
-				, B.group_id = #{subGroupStoreRel.groupId}
-				, C.modified_datetime = now()
-				, C.store_id = #{id}
-				, C.subgroup_id = #{subGroupStoreRel.subGroupId}
-				, C.group_id = #{subGroupStoreRel.groupId}
-			</if>
+                    <if test="subGroupStoreRel != null and (subGroupStoreRel.groupId !='' and subGroupStoreRel.groupId != null and subGroupStoreRel.subGroupId =='' or subGroupStoreRel.subGroupId == null)">
+                        , B.modified_datetime = now()
+                        , B.store_id = #{id}
+                        , B.subgroup_id = #{subGroupStoreRel.subGroupId}
+                        , B.group_id = #{subGroupStoreRel.groupId}
+                        , C.modified_datetime = now()
+                        , C.store_id = #{id}
+                        , C.subgroup_id = #{subGroupStoreRel.subGroupId}
+                        , C.group_id = #{subGroupStoreRel.groupId}
+                    </if>
+                </when>
+            </choose>
 
 		WHERE 1=1
             AND A.deleted IS NULL
