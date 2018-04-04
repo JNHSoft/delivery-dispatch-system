@@ -55,6 +55,11 @@ public class Order extends Common implements Dto {
     private String deviceOs;
     private String distance;
     private String assignedFirst;
+    private String assignXy;
+    private String pickupXy;
+    private String completeXy;
+
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private char[] statusArray;
     private String count;

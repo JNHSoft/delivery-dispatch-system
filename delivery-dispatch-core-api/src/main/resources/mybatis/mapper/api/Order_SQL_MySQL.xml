@@ -380,6 +380,15 @@
 			<if test="role == 'ROLE_STORE' and assignedFirst == 'True'">
 				, A.assigned_first = (SELECT * FROM (SELECT IFNULL(MAX(assigned_first), 0) + 1 FROM TB_ORDER) AS D)
 			</if>
+			<if test="assignXy != null and assignXy != ''">
+				, A.assign_xy = #{assignXy}
+			</if>
+			<if test="pickupXy != null and pickupXy != ''">
+				, A.pickup_xy = #{pickupXy}
+			</if>
+			<if test="completeXy != null and completeXy != ''">
+				, A.complete_xy = #{completeXy}
+			</if>
 			, A.id = LAST_INSERT_ID(A.id)
 		WHERE A.id = #{id}
 			<choose>
