@@ -1022,7 +1022,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         Order S_Order = orderMapper.selectOrderInfo(orderAssignCanceled);
 
         if (ret != 0) {
-            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId());
+            redisService.setPublisher("order_assign_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId());
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
                 if(tokens.size() > 0){

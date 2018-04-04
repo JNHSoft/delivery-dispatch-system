@@ -310,20 +310,6 @@ public class SettingController {
         return true;
     }
 
-   /* @GetMapping("/downloadFile/{id}")
-    public ModelAndView downloadFile(@PathVariable String id) {
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Notice notice = new Notice();
-        notice.setId(id);
-        notice.setToken(storeInfo.getStoreAccessToken());
-        Notice noticeDetail = storeNoticeService.getNotice(notice);
-        noticeDetail.getFileName();
-        noticeDetail.getOriFileName();
-        String savePath = noticeFileUploadPath;
-        String fullPath = noticeFileUploadPath + "/" + noticeDetail.getFileName();
-
-        return ;
-    }*/
    @GetMapping("/noticeFileDownload")
    @CnttMethodDescription("공지사항 첨부파일 다운로드")
    public void noticeFileDownload(HttpServletResponse response, @RequestParam(value = "fileName", required = false) String fileName)  throws IOException {
@@ -335,7 +321,7 @@ public class SettingController {
        MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext,  notice.getFileName());
 
        File file = new File(noticeFileUploadPath + "/" + notice.getFileName());
-//        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
        if(file.exists()){
            response.setContentType(mediaType.getType());
 
