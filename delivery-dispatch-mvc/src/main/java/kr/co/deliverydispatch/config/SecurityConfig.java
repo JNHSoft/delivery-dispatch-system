@@ -4,11 +4,13 @@ import kr.co.deliverydispatch.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -83,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()	// 1회성 인증키 csrf토큰 미사용
                 .authorizeRequests()
                 // 권한 상관 없이 접근 허용
-                .antMatchers("/").permitAll()
+                // .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/tracker").permitAll()    // 트래커 페이지
                 // 슈퍼, 개발자만 허용
@@ -104,6 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .addLogoutHandler(createCustomLogoutHandler())
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logoutProcess"))	// 로그아웃 처리 URL
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED))
 //                .logoutSuccessUrl("/logoutSuccess").permitAll()						// 로그아웃 후 URL
                 .clearAuthentication(true)			// 초기화
                 .deleteCookies("JSESSIONID")		// 쿠키 삭제

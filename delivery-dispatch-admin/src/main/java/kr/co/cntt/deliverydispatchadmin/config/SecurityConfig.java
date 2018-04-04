@@ -4,6 +4,7 @@ import kr.co.cntt.deliverydispatchadmin.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -96,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()	// 1회성 인증키 csrf토큰 미사용
                 .authorizeRequests()
                 // 권한 상관 없이 접근 허용
-                .antMatchers("/").permitAll()
+                // .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 // 슈퍼, 개발자만 허용
                 .antMatchers("/admin/list/**").access("hasRole('SUPER') or hasRole('GOD')")
@@ -116,6 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .addLogoutHandler(createCustomLogoutHandler())
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logoutProcess"))	// 로그아웃 처리 URL
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED))
 //                .logoutSuccessUrl("/logoutSuccess").permitAll()						// 로그아웃 후 URL
                 .clearAuthentication(true)			// 초기화
                 .deleteCookies("JSESSIONID")		// 쿠키 삭제
@@ -125,7 +128,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedPage("/error/403")	// 403(권한없음) URL
                 .and()
                 .addFilterAfter(createAdminPerformanceHistoryFilter(), BasicAuthenticationFilter.class);
-        ;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)
