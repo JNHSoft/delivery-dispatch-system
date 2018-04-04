@@ -241,6 +241,13 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             }
         }
 
+        Rider tmpRider = new Rider();
+        tmpRider.setIsAdmin("0");
+        tmpRider.setToken(order.getToken());
+        tmpRider.setAccessToken(order.getToken());
+        tmpRider.setId(order.getRiderId());
+        Rider S_Rider = riderMapper.getRiderInfo(tmpRider);
+
         Order orderAssigned = new Order();
 
         orderAssigned.setToken(order.getToken());
@@ -248,6 +255,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         orderAssigned.setRiderId(order.getRiderId());
         orderAssigned.setStatus("1");
         orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+        if (S_Rider.getLatitude() != null || S_Rider.getLatitude() != "") {
+            orderAssigned.setAssignXy(S_Rider.getLatitude()+"|"+S_Rider.getLongitude());
+        }
 
         Order combinedOrderAssigned = new Order();
 
@@ -257,7 +267,10 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
-
+            if (S_Rider.getLatitude() != null || S_Rider.getLatitude() != "") {
+                combinedOrderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
+            }
+            
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
 
