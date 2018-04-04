@@ -25,7 +25,7 @@
 								<label class="radio"><input name="newAlarm" value="0" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '0')}" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="newAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '0')}"/><i></i>
+								<label class="radio"><input name="newAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '0')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a class="button" id="newAlarmBtn" onclick="javascript:newClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -37,10 +37,10 @@
 								<label class="radio"><input name="assignAlarm" value="1" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '1')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="assignAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '1')}"/><i></i>
+								<label class="radio"><input name="assignAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '1')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
-								<a href="#" class="button" id="assignAlarmBtn"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
+								<a href="#" class="button" id="assignAlarmBtn" onclick="javascript:assignClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
 							</div>
 						</li>
 						<li id="assignCancelAlarm" class="full">
@@ -49,10 +49,10 @@
 								<label class="radio"><input name="assignCancelAlarm" value="2" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '2')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="assignCancelAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '2')}"/><i></i>
+								<label class="radio"><input name="assignCancelAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '2')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
-								<a href="#" class="button" id="assignCancelAlarmBtn"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
+								<a href="#" class="button" id="assignCancelAlarmBtn" onclick="javascript:assignCancelClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
 							</div>
 						</li>
 						<li id="completeAlarm" class="full">
@@ -61,7 +61,7 @@
 								<label class="radio"><input name="completeAlarm" type="radio" value="3" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '3')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="completeAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '3')}"/><i></i>
+								<label class="radio"><input name="completeAlarm" type="radio" value="" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '3')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="completeAlarmBtn" onclick="javascript:completeClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -73,10 +73,10 @@
 								<label class="radio"><input name="cancelAlarm" type="radio" value="4" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '4')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="cancelAlarm" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '4')}"/><i></i>
+								<label class="radio"><input name="cancelAlarm" type="radio" value="" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '4')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
-								<a href="#" class="button" id="cancelAlarmBtn"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
+								<a href="#" class="button" id="cancelAlarmBtn" onclick="javascript:cancelClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
 							</div>
 						</li>
 					</ul>
@@ -99,13 +99,12 @@
     var completeAlarm = /*[[${completeAlarm}]]*/ 'completeAlarm';
     var cancelAlarm = /*[[${cancelAlarm}]]*/ 'cancelAlarm';
     var my_store = /*[[${store}]]*/ 'my_store';
-    var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
     var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
     var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
     $(document).ready(function () {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
         if (supportsWebSockets) {
-            var socket = io(websocket_localhost, {
+            var socket = io(websocketHost, {
                 path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
                 transports: ['websocket'] // websocket만을 사용하도록 설정
             });
@@ -123,11 +122,12 @@
                 if(data.match('order_')=='order_'){
                     footerOrders()
                 }
+                alarmSound(data)
             });
             $(function () {
-                $('#alarmUpdate').click(function () {
+                /*$('#alarmUpdate').click(function () {
                     socket.emit('message', "push_data:{type:alarm_updated, id:"+my_store.id+"}");
-                });
+                });*/
             })
         } else {
             alert('websocket을 지원하지 않는 브라우저입니다.');
@@ -161,15 +161,25 @@
 	})
 
 	function newClick() {
-		alert(newAlarm.fileName);
+        var audio = new Audio('/alarmFiles/alarm/'+newAlarm.fileName);
+        audio.play();
     }
-
+    function assignClick() {
+        var audio = new Audio('/alarmFiles/alarm/'+assignAlarm.fileName);
+        audio.play();
+    }
+    function assignCancelClick() {
+        var audio = new Audio('/alarmFiles/alarm/'+assignCancelAlarm.fileName);
+        audio.play();
+    }
     function completeClick() {
-        alert(completeAlarm.fileName);
-        var $assigned_audio = new Audio('/home/nanum/dde-upload/alarm/'+completeAlarm.fileName);
-        $assigned_audio.play();
+        var audio = new Audio('/alarmFiles/alarm/'+completeAlarm.fileName);
+        audio.play();
     }
-
+    function cancelClick() {
+        var audio = new Audio('/alarmFiles/alarm/'+cancelAlarm.fileName);
+        audio.play();
+    }
     /*]]>*/
 </script>
 </html>

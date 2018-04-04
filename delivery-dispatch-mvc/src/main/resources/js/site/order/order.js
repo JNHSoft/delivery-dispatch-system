@@ -48,14 +48,15 @@ $(document).ready(function() {
     getOrderList(statusArray, storeId);
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
-        var socket = io(websocket_localhost, {
+        var socket = io(websocketHost, {
             path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
         socket.on('message', function(data){
+            alarmSound(data);
             if(data.match('order_')=='order_'){
                 getOrderList(statusArray, storeId);
-                footerOrders()
+                footerOrders();
             }
             if(data.match('notice_')=='notice_'){
                 noticeAlarm();
@@ -65,9 +66,9 @@ $(document).ready(function() {
             }
         });
         $(function() {
-            $('#orderUpdate').click(function(){
+            /*$('#orderUpdate').click(function(){
                 socket.emit('message', "push_data:{type:order_updated, storeId:"+storeId+"}");
-            });
+            });*/
         })
     } else {
         alert('websocket을 지원하지 않는 브라우저입니다.');
@@ -242,6 +243,7 @@ function getOrderDetail(orderId) {
         async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
+            console.log(data);
             selectedOriginOrder = data;
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';

@@ -723,6 +723,7 @@
 		LEFT JOIN TB_STORE AS I
 		ON B.store_id = I.id
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+		AND B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 		AND A.deleted IS NULL AND A.status = 0 AND B.store_id is not null;
 	</select>
 
@@ -756,6 +757,7 @@
 			AND C.deleted IS NULL
 			AND D.deleted IS NULL
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+			AND B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			AND A.deleted IS NULL;
 	</select>
 

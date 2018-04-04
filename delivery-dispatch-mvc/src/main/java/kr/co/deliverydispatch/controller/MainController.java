@@ -5,6 +5,7 @@ import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,9 @@ import java.util.List;
 @Slf4j
 @Controller
 public class MainController {
+
+    @Value("${websocket.localhost}")
+    private String websocketHost;
 
     @Autowired
     StoreNoticeService storeNoticeService;
@@ -56,4 +60,11 @@ public class MainController {
         notice.setToken(storeInfo.getStoreAccessToken());
         return storeNoticeService.getNoticeList(notice);
     }
+
+    @RequestMapping("/websocketHost")
+    @ResponseBody
+    public String getWebsocketHost() {
+        return websocketHost;
+    }
+
 }

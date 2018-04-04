@@ -59,7 +59,7 @@ $(function() {
     footerOrders();
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
-        var socket = io(websocket_localhost, {
+        var socket = io(websocketHost, {
             path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
@@ -80,11 +80,12 @@ $(function() {
             if(data.match('order_')=='order_'){
                 footerOrders()
             }
+            alarmSound(data);
         });
         $(function() {
-            $('#sendChat').click(function(){
+            /*$('#sendChat').click(function(){
                 socket.emit('message', "push_data:{type:chat_send, recv_chat_user_id:"+RiderChatUserId+"}");//data보내는부분
-            });
+            });*/
         })
     } else {
         alert('websocket을 지원하지 않는 브라우저입니다.');

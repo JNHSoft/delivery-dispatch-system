@@ -268,13 +268,16 @@
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
 					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-					AND (C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE deleted IS NULL AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-					OR C.subgroup_id = null AND D.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE deleted IS NULL AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})) IS NOT NULL
+					, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE deleted IS NULL AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+					, C.subgroup_id IS NULL AND D.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 					AND C.deleted IS NULL
 				</when>
 				<when test="role != null and role == 'ROLE_RIDER'">
 					AND A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-					AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE deleted IS NULL AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE deleted IS NULL AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})) IS NOT NULL
+					, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE deleted IS NULL AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+					, C.subgroup_id IS NULL)
 					AND C.deleted IS NULL
 				</when>
 				<otherwise>

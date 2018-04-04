@@ -64,13 +64,12 @@
 	<script layout:fragment="script" th:inline="javascript">
         /*<![CDATA[*/
         var my_store = /*[[${store}]]*/ 'my_store';
-        var websocket_localhost = /*[[#{websocket.localhost}]]*/ 'websocket_localhost';
         var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
         var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
         $(document).ready(function() {
             var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
             if (supportsWebSockets) {
-                var socket = io(websocket_localhost, {
+                var socket = io(websocketHost, {
                     path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
                     transports: ['websocket'] // websocket만을 사용하도록 설정
                 });
@@ -87,11 +86,12 @@
                     if(data.match('order_')=='order_'){
                         footerOrders()
                     }
+                    alarmSound(data)
                 });
                 $(function () {
-                    $('#putAssign').click(function () {
+                    /*$('#putAssign').click(function () {
                         socket.emit('message', "push_data:{type:assign_updated, id:"+$('#riderId').val()+"}");
-                    });
+                    });*/
                 })
             } else {
                 alert('websocket을 지원하지 않는 브라우저입니다.');

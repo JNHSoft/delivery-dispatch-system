@@ -88,7 +88,7 @@
     $(document).ready(function() {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
         if (supportsWebSockets) {
-            var socket = io(websocket_localhost, {
+            var socket = io(websocketHost, {
                 path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
                 transports: ['websocket'] // websocket만을 사용하도록 설정
             });
@@ -105,11 +105,12 @@
                 if(data.match('order_')=='order_'){
                     footerOrders()
                 }
+                alarmSound(data)
             });
             $(function () {
-                $('#accountUpdate').click(function () {
+                /*$('#accountUpdate').click(function () {
                     socket.emit('message', "push_data:{type:account_updated, id:"+my_store.id+"}");
-                });
+                });*/
             })
         } else {
             alert('websocket을 지원하지 않는 브라우저입니다.');
