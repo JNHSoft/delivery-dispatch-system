@@ -44,8 +44,8 @@ datasource:
   deliveryDispatch:
     initialize: true
     driver-class-name: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
     url: jdbc:mysql://dde-db.cs4wechlbmlc.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
+#    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
     username: nanum
     password: snaskzhf
     initial-size: 10
@@ -190,6 +190,8 @@ api.upload.path.notice: /home/nanum/dde-upload/notice
 api.upload.path.alarm: /home/nanum/dde-upload/alarm
 
 ---
-websocket.localhost: 52.78.71.21:3000
+websocket.localhost: https://ddetw-store.cntt.co.kr/socket.io
+#websocket.localhost: 52.78.71.21:3000
+#websocket.localhost: https://dev-store.cntt.co.kr
 #websocket.localhost: 13.125.18.185:3000
 #websocket.localhost: 127.0.0.1:3000

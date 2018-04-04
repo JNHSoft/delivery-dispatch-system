@@ -22,7 +22,7 @@ $(document).ready(function() {
         $.ajax({
             url : "/logoutProcess",
             success : function () {
-                location.href = "/login"
+                location.href = "/login";
             }
         });
     })
