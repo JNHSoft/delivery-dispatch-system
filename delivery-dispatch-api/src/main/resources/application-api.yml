@@ -27,8 +27,8 @@ datasource:
   deliveryDispatch:
     initialize: true
     driver-class-name: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://dde-db.cs4wechlbmlc.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
-    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://dde-db.cs4wechlbmlc.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
+#    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
     username: nanum
     password: snaskzhf
     initial-size: 10
@@ -148,8 +148,8 @@ api.token.expiration : 6000
 ---
 spring:
   redis:
-#    host: dde-tw-redis.dgc5ym.0001.apn2.cache.amazonaws.com
-    host: nanum-taiwan-redis.e6yhbk.0001.apn2.cache.amazonaws.com
+    host: dde-tw-redis.dgc5ym.0001.apn2.cache.amazonaws.com
+#    host: nanum-taiwan-redis.e6yhbk.0001.apn2.cache.amazonaws.com
 #    host: 127.0.0.1
     port: 6379
 
