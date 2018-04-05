@@ -221,6 +221,6 @@ api.upload.path.alarm: /home/nanum/dde-upload/alarm
 ---
 websocket.localhost: https://ddetw-admin.cntt.co.kr
 #websocket.localhost: 52.78.71.21:3000
-#websocket.localhost: https://ddetw-store.cntt.co.kr
+#websocket.localhost: https://dev-admin.cntt.co.kr
 #websocket.localhost: 13.125.18.185:3000
 #websocket.localhost: 127.0.0.1:3000
