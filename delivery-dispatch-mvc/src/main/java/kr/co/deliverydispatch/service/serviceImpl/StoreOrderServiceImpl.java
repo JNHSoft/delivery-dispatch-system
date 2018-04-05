@@ -292,7 +292,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         int ret = this.putOrder(orderAssigned);
 
         if (ret != 0) {
-            redisService.setPublisher("order_assigned", "id:"+order.getId()+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
+            redisService.setPublisher("order_assigned", "id:"+order.getId()+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId()+", subgroup_id:"+S_Store.getSubGroup().getId());
 
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
@@ -445,7 +445,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         }
 
         if (nRet != 0) {
-            redisService.setPublisher("order_updated", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+            redisService.setPublisher("order_updated", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
         }
 
         return nRet;
@@ -526,7 +526,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         }
 
         if (nRet != 0) {
-            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
         }
 
         return nRet;
@@ -589,7 +589,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         Order S_Order = orderMapper.selectOrderInfo(orderAssignCanceled);
 
         if (ret != 0) {
-            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId());
+            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
