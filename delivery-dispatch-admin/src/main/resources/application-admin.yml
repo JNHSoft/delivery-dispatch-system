@@ -148,25 +148,51 @@ cntt.restPool:
   hosts:
     -
       scheme: http
-      host: burgerking.cntt.kr
-      port: 8081
+      host: ddetw-api.cntt.co.kr
+      port: 8091
       maxPerRoute: 20
+
+      #scheme: http
+      #host: dev-api.cntt.co.kr
+      #port: 8091
+      #maxPerRoute: 20
+
+      #scheme: http
+      #host: burgerking.cntt.kr
+      #port: 8081
+      #maxPerRoute: 20
+
       #scheme: http
       #host: 211.219.135.107
       #port: 8081
       #maxPerRoute: 20
     -
       scheme: https
-      host: burgerking.cntt.kr
-      port: 9443
+      host: ddetw-api.cntt.co.kr
+      port: 443
       maxPerRoute: 20
+
+      #scheme: https
+      #host: dev-api.cntt.co.kr
+      #port: 443
+      #maxPerRoute: 20
+
+      #scheme: https
+      #host: burgerking.cntt.kr
+      #port: 9443
+      #maxPerRoute: 20
+
       #scheme: https
       #host: apitest.cntt.kr
       #port: 9441
       #maxPerRoute: 20
 
-api.pos.server : http://burgerking.cntt.kr:8081
-api.app.server : https://burgerking.cntt.kr:9443
+api.pos.server : http://ddetw-api.cntt.co.kr:8091
+api.app.server : https://ddetw-api.cntt.co.kr
+#api.pos.server : http://dev-api.cntt.co.kr:8091
+#api.app.server : https://dev-api.cntt.co.kr
+#api.pos.server : http://burgerking.cntt.kr:8081
+#api.app.server : https://burgerking.cntt.kr:9443
 #api.pos.server : http://211.219.135.107:8081
 #api.app.server : https://apitest.cntt.kr:9441
 # Logger
@@ -184,9 +210,17 @@ spring:
 api.token.serviceKey : testkey
 api.token.secretKey : ATE6OLdQuouPbqyZ5qt1H++taImbDhqSPw53ClPT7+k=
 api.token.expiration : 6000
+
 ---
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
 api.upload.path.notice: /home/nanum/dde-upload/notice
 api.upload.path.alarm: /home/nanum/dde-upload/alarm
+
+---
+websocket.localhost: https://ddetw-admin.cntt.co.kr
+#websocket.localhost: 52.78.71.21:3000
+#websocket.localhost: https://ddetw-store.cntt.co.kr
+#websocket.localhost: 13.125.18.185:3000
+#websocket.localhost: 127.0.0.1:3000

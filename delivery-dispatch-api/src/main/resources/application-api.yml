@@ -97,12 +97,35 @@ cntt.restPool:
   pool-size: 20
   defaultMaxPerRoute: 20
   hosts:
-    scheme: http
-    host: oper.co.kr
-    port: 8081
-    maxPerRoute: 20
+    -
+      scheme: http
+      host: ddetw-api.cntt.co.kr
+      port: 8091
+      maxPerRoute: 20
 
-api.server : https://oper.kr:9443
+      #scheme: http
+      #host: dev-api.cntt.co.kr
+      #port: 8091
+      #maxPerRoute: 20
+
+      #scheme: http
+      #host: oper.co.kr
+      #port: 8081
+      #maxPerRoute: 20
+    -
+      scheme: https
+      host: ddetw-api.cntt.co.kr
+      port: 443
+      maxPerRoute: 20
+
+      #scheme: https
+      #host: dev-api.cntt.co.kr
+      #port: 443
+      #maxPerRoute: 20
+
+api.server : https://ddetw-api.cntt.co.kr
+#api.server : https://dev-api.cntt.co.kr
+#api.server : https://oper.kr:9443
 
 # Logger 설정
 cntt.monitor.enable: true
