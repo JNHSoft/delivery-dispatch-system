@@ -50,6 +50,12 @@ function putStoreInfo() {
     var phone = $('#phone').val();
     var address = $('#address').val();
     var detailAddress = $('#detailAddress').val();
+
+    if(loginPw == ''){
+        alert(alert_password_none);
+        return;
+    }
+
     console.log(id, storePhone, name, phone, address,detailAddress);
     $.ajax({
         url: '/putStoreInfo',
@@ -65,7 +71,7 @@ function putStoreInfo() {
         },
         dataType : 'json',
         success : function (data) {
-            alert('success');
+            alert(alert_confirm_success);
             location.href = "/setting-account";
         }
     });
@@ -92,7 +98,7 @@ function putStoreAssignInfo() {
         },
         dataType : 'json',
         success : function (data) {
-            alert('success');
+            alert(alert_confirm_success);
             location.href = "/setting-assign";
         }
     });
@@ -294,7 +300,7 @@ function putStoreAlarm() {
             }else {
                 $.removeCookie("cancelAlarm_alarm");
             }
-            alert('success');
+            alert(alert_confirm_success);
             location.href="/setting-alarm";
         }
     });

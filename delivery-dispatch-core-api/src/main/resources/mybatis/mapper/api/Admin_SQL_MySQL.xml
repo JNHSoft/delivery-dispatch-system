@@ -793,8 +793,6 @@
 		, longitude
 		, expiration_date
 		, code
--- 		, name
--- 		, phone
 		, ch_store_name
 		, detail_address
 		, ch_address
@@ -826,18 +824,6 @@
 		</if>
 		<if test="code == null or code == ''">
 			, NULL
-		</if>
-		<if test="name != null and name != ''">
--- 			, #{name}
-		</if>
-		<if test="name == null or name == ''">
--- 			, NULL
-		</if>
-		<if test="phone != null and phone != ''">
--- 			, #{phone}
-		</if>
-		<if test="phone == null or phone == ''">
--- 			, NULL
 		</if>
 		<if test="chStoreName != null and chStoreName != ''">
 			, #{chStoreName}

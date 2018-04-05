@@ -72,7 +72,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             int storeSeq =  Integer.parseInt(returnStore.getId());
             int storeChatUserId = Integer.parseInt(returnStore.getChatUserId());
 
-            String storeName = returnStore.getName();
+            String storeName = returnStore.getLoginId();
             String storeStoreStatus = returnStore.getStoreStatus();
             String storeAssignmentStatus = returnStore.getAssignmentStatus();
             String storeAccessToken = returnStore.getAccessToken();
