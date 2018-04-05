@@ -33,7 +33,9 @@
     var loginid_check = /*[[#{loginid.check}]]*/ 'loginid_check';
     var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 
+    var alert_confirm = /*[[#{alert.confirm}]]*/ 'alert_confirm';
     var alert_confirm_success = /*[[#{alert.confirm.success}]]*/ 'alert_confirm_success';
+    var alert_created_success = /*[[#{alert.created.success}]]*/ 'alert_created_success';
     var alert_address_error = /*[[#{alert.address.error}]]*/ 'alert_address_error';
 
     /*]]>*/
@@ -122,28 +124,22 @@
 					<tr>
 						<th th:text="${#messages.msg('login.password')}"></th>
 						<td><input type="password" name="" class="input" value="" id="postStoreloginPw"/></td>
-						<th th:text="${#messages.msg('store.manager.name')}"></th>
-						<td><input type="text" name="" class="input" value="" id="postStoreUserName"/></td>
-					</tr>
-					<tr>
-						<th th:text="${#messages.msg('store.code')}"></th>
-						<td><input type="text" name="" class="input" value="" id="postStoreCode"/></td>
-						<th th:text="${#messages.msg('store.manager.phone')}"></th>
-						<td><input type="text" name="" class="input" value="" id="postStoreUserPhone"/></td>
-					</tr>
-					<tr>
-						<th th:text="${#messages.msg('store.name')}"></th>
-						<td><input type="text" name="" class="input" value="" id="postStoreName"/></td>
+						<!--<th th:text="${#messages.msg('store.manager.name')}"></th>-->
+						<!--<td><input type="text" name="" class="input" value="" id="postStoreUserName"/></td>-->
 						<th th:text="${#messages.msg('store.address')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="postStoreAddress"/></td>
 					</tr>
 					<tr>
-						<th th:text="${#messages.msg('store.phone')}"></th>
-						<td><input type="text" name="" class="input" value="" id="postStorePhone"/></td>
+						<th th:text="${#messages.msg('store.code')}"></th>
+						<td><input type="text" name="" class="input" value="" id="postStoreCode"/></td>
+						<!--<th th:text="${#messages.msg('store.manager.phone')}"></th>-->
+						<!--<td><input type="text" name="" class="input" value="" id="postStoreUserPhone"/></td>-->
 						<th th:text="${#messages.msg('store.address.detail')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="postStoreDetailAddress"/></td>
 					</tr>
 					<tr>
+						<th th:text="${#messages.msg('store.name')}"></th>
+						<td><input type="text" name="" class="input" value="" id="postStoreName"/></td>
 						<th th:text="${#messages.msg('order.assign.mode')}"></th>
 						<td>
 							<select name="" class="select" id="postStoreAssignStatusSelectBox">
@@ -152,6 +148,10 @@
 								<option value="2" th:text="${#messages.msg('order.assign.mode.rider')}"></option>
 							</select>
 						</td>
+					</tr>
+					<tr>
+						<th th:text="${#messages.msg('store.phone')}"></th>
+						<td><input type="text" name="" class="input" value="" id="postStorePhone"/></td>
 						<th></th>
 						<td></td>
 					</tr>
@@ -208,30 +208,23 @@
 					<tr>
 						<th th:text="${#messages.msg('login.password')}"></th>
 						<td><input type="password" name="" class="input" value="" id="storeDetailPassword" readonly="true"/></td>
-
-						<th th:text="${#messages.msg('store.manager.name')}"></th>
-						<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserName"/></td>
-					</tr>
-					<tr>
-						<th th:text="${#messages.msg('store.code')}"></th>
-						<td><input type="text" name="" class="input" value="" id="storeDetailStoreCode"/></td>
-						<th th:text="${#messages.msg('store.manager.phone')}"></th>
-						<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserPhone" /></td>
-					</tr>
-					<tr>
-						<th th:text="${#messages.msg('store.name')}"></th>
-						<td><input type="text" name="" class="input" value="" id="storeDetailStoreName"/></td>
+						<!--<th th:text="${#messages.msg('store.manager.name')}"></th>-->
+						<!--<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserName"/></td>-->
 						<th th:text="${#messages.msg('store.address')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="storeDetailStoreAddress"/></td>
 					</tr>
 					<tr>
-						<th th:text="${#messages.msg('store.phone')}"></th>
-						<td><input type="text" name="" class="input" value="" id="storeDetailStorePhone"/></td>
+						<th th:text="${#messages.msg('store.code')}"></th>
+						<td><input type="text" name="" class="input" value="" id="storeDetailStoreCode"/></td>
+						<!--<th th:text="${#messages.msg('store.manager.phone')}"></th>-->
+						<!--<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserPhone" /></td>-->
 						<th th:text="${#messages.msg('store.address.detail')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="storeDetailStoreDetailAddress"/></td>
 					</tr>
-					 <!--0: 수동배정, 1: 자동배정, 2: 기사배정-->
 					<tr>
+						<th th:text="${#messages.msg('store.name')}"></th>
+						<td><input type="text" name="" class="input" value="" id="storeDetailStoreName"/></td>
+						<!--0: 수동배정, 1: 자동배정, 2: 기사배정-->
 						<th th:text="${#messages.msg('order.assign.mode')}"></th>
 						<td>
 							<select name="" class="select" id="storeDetailAssignStatusSelectBox">
@@ -240,6 +233,10 @@
 								<option value="2" th:text="${#messages.msg('order.assign.mode.rider')}"></option>
 							</select>
 						</td>
+					</tr>
+					<tr>
+						<th th:text="${#messages.msg('store.phone')}"></th>
+						<td><input type="text" name="" class="input" value="" id="storeDetailStorePhone"/></td>
 						<th></th>
 						<td></td>
 					</tr>
@@ -251,7 +248,7 @@
 			<div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
 			<div class="right">
 				<a href="" class="button h30 btn_red" onClick="javascript:deleteStore()" th:text="${#messages.msg('btn.delete')}"></a>
-				<a href="" class="button h30 btn_blue" onClick="javascript:putStoreDetail()" th:text="${#messages.msg('btn.confirm')}"></a>
+				<a href="#" class="button h30 btn_blue" onClick="javascript:putStoreDetail()" th:text="${#messages.msg('btn.confirm')}"></a>
 			</div>
 		</div>
 		<a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>

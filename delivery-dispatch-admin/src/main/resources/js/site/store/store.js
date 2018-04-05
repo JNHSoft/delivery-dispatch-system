@@ -110,8 +110,8 @@ function getStoreList() {
                     $tmpData.th3 = data[key].storeName
                     $tmpData.th4 = data[key].code
                     $tmpData.th5 = data[key].storePhone
-                    $tmpData.th6 = data[key].name
-                    $tmpData.th7 = data[key].phone
+                    // $tmpData.th6 = data[key].name
+                    // $tmpData.th7 = data[key].phone
                     $tmpData.th8 = data[key].address
                     $tmpData.th9 = data[key].detailAddress
                     $tmpData.th10 = data[key].loginId
@@ -146,8 +146,8 @@ function getStoreList() {
                     {label:store_name, name:'th3', width:80, align:'center'},
                     {label:store_code, name:'th4', width:60, align:'center'},
                     {label:store_phone, name:'th5', width:80, align:'center'},
-                    {label:store_manager_name, name:'th6', width:60, align:'center'},
-                    {label:store_manager_phone, name:'th7', width:80, align:'center'},
+                    // {label:store_manager_name, name:'th6', width:60, align:'center'},
+                    // {label:store_manager_phone, name:'th7', width:80, align:'center'},
                     {label:store_address, name:'th8', width:200},
                     {label:store_address_detail, name:'th9', width:200},
                     {label:login_id, name:'th10', width:60, align:'center'},
@@ -261,9 +261,9 @@ function getStoreDetail() {
 
                 }
                 // 점장명
-                $("#storeDetailStoreUserName").val(data.A_Store.name);
+                // $("#storeDetailStoreUserName").val(data.A_Store.name);
                 // 점장 전화번호
-                $("#storeDetailStoreUserPhone").val(data.A_Store.phone);
+                // $("#storeDetailStoreUserPhone").val(data.A_Store.phone);
                 // 매장 주소
                 $("#storeDetailStoreAddress").val(data.A_Store.address);
                 // 매장 상세 주소
@@ -376,11 +376,13 @@ function getPostSubGroupList(gId, subGroup) {
  * Store 수정
  */
 function putStoreDetail() {
+    if(!confirm(alert_confirm)) return;
+
     // 수정 보내는 값들
     $.ajax({
         url : "/putStoreDetail",
         type : 'put',
-        dataType : 'json',
+        dataType : 'text',
         // async : false,
         data : {
             storeId				: $("#selectedStoreId").val(),
@@ -390,17 +392,22 @@ function putStoreDetail() {
             assignmentStatus	: $("#storeDetailAssignStatusSelectBox").val(),
             groupId		        : $("#storeDetailGroup").val(),
             subGroupId			: $("#storeDetailSubGroup").val(),
-            name	            : $("#storeDetailStoreUserName").val(),
-            phone			    : $("#storeDetailStoreUserPhone").val(),
+            // name	            : $("#storeDetailStoreUserName").val(),
+            // phone			    : $("#storeDetailStoreUserPhone").val(),
             address				: $("#storeDetailStoreAddress").val(),
             detailAddress		: $("#storeDetailStoreDetailAddress").val(),
             hasGroup		    : $("#hasGroup").val()
         },
         success : function(data){
-            if(!confirm("你想编辑它吗？")) return;
-            popClose('#popStoreDetail');
-            // 완료후 페이지 호출
-            location.reload();
+            if (data == 'geo_err') {
+                alert(alert_address_error);
+                return false;
+            } else {
+                alert(alert_confirm_success);
+                popClose('#popStoreDetail');
+                // 완료후 페이지 호출
+                location.reload();
+            }
         }
     });
 
@@ -415,8 +422,8 @@ function postStore() {
     var $code = $("#postStoreCode").val();
     var $storeName = $("#postStoreName").val();
     var $storePhone = $("#postStorePhone").val();
-    var $name = $("#postStoreUserName").val();
-    var $phone = $("#postStoreUserPhone").val();
+    // var $name = $("#postStoreUserName").val();
+    // var $phone = $("#postStoreUserPhone").val();
     var $address = $("#postStoreAddress").val();
     var $detailAddress = $("#postStoreDetailAddress").val();
 
@@ -445,15 +452,15 @@ function postStore() {
         return;
     }
 
-    if($name==""){
-        alert("請輸入經理姓名");
-        return;
-    }
-
-    if($phone==""){
-        alert("請輸入經理電話號碼");
-        return;
-    }
+    // if($name==""){
+    //     alert("請輸入經理姓名");
+    //     return;
+    // }
+    //
+    // if($phone==""){
+    //     alert("請輸入經理電話號碼");
+    //     return;
+    // }
 
     if($address==""){
         alert("請輸入地址");
@@ -478,8 +485,8 @@ function postStore() {
             assignmentStatus	: $("#postStoreAssignStatusSelectBox").val(),
             groupId		        : $("#postStoreGroup").val(),
             subGroupId			: $("#postStoreSubGroup").val(),
-            name	            : $("#postStoreUserName").val(),
-            phone			    : $("#postStoreUserPhone").val(),
+            // name	            : $("#postStoreUserName").val(),
+            // phone			    : $("#postStoreUserPhone").val(),
             address				: $("#postStoreAddress").val(),
             detailAddress		: $("#postStoreDetailAddress").val()
         },
@@ -489,7 +496,7 @@ function postStore() {
                 alert(alert_address_error);
                 return false;
             } else {
-                alert(alert_confirm_success);
+                alert(alert_created_success);
                 popClose('#popStore');
                 getStoreList();
                 location.reload();

@@ -216,8 +216,8 @@ public class StoreController {
             @RequestParam("assignmentStatus") String assignmentStatus,
             @RequestParam("groupId") String groupId,
             @RequestParam("subGroupId") String subGroupId,
-            @RequestParam("name") String name,
-            @RequestParam("phone") String phone,
+            //@RequestParam("name") String name,
+            //@RequestParam("phone") String phone,
             @RequestParam("address") String address,
             @RequestParam("detailAddress") String detailAddress,
             @RequestParam("hasGroup") String hasGroup
@@ -238,10 +238,28 @@ public class StoreController {
         store.setCode(code);
         store.setStoreName(storeName);
         store.setStorePhone(storePhone);
-        store.setName(name);
-        store.setPhone(phone);
+//        store.setName(name);
+//        store.setPhone(phone);
         store.setAddress(address);
         store.setDetailAddress(detailAddress);
+
+        // 위도 경도
+        if (store.getAddress() != null && store.getAddress() != "") {
+            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+store.getAddress());
+            Geocoder geocoder = new Geocoder();
+            try {
+                Map<String, String> geo = geocoder.getLatLng(store.getAddress());
+                store.setLatitude(geo.get("lat"));
+                store.setLongitude(geo.get("lng"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@" + store.getLatitude());
+        if (store.getLatitude() == null || store.getLongitude() == null) {
+            return "geo_err";
+        }
 
         store.setAssignmentStatus(assignmentStatus);
 
@@ -297,8 +315,8 @@ public class StoreController {
                              @RequestParam("assignmentStatus") String assignmentStatus,
                              @RequestParam("groupId") String groupId,
                              @RequestParam("subGroupId") String subGroupId,
-                             @RequestParam("name") String name,
-                             @RequestParam("phone") String phone,
+                             // @RequestParam("name") String name,
+                             // @RequestParam("phone") String phone,
                              @RequestParam("address") String address,
                              @RequestParam("detailAddress") String detailAddress
 
@@ -327,8 +345,8 @@ public class StoreController {
     store.setCode(code);
     store.setStoreName(storeName);
     store.setStorePhone(storePhone);
-    store.setName(name);
-    store.setPhone(phone);
+//    store.setName(name);
+//    store.setPhone(phone);
     store.setAddress(address);
     store.setDetailAddress(detailAddress);
     store.setAssignmentStatus(assignmentStatus);
