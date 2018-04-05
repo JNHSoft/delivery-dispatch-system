@@ -39,10 +39,10 @@
 
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
-var none_parameter = /*[[#{alert.none.parameter}]]*/ 'none_parameter';
+var alert_password_none = /*[[#{alert.password.none}]]*/ 'alert_password_none';
 function formCheck(){
 	if ($('#loginPw').val() == null || $('#loginPw').val() == '') {
-        alert(none_parameter);
+        alert(alert_password_none);
         return false;
 	}
 }
