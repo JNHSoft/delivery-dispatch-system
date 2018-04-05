@@ -467,7 +467,7 @@ function postStore() {
     $.ajax({
         url: "/postStore",
         type: 'post',
-        dataType: 'json',
+        dataType: 'text',
         async : false,
         data: {
             loginId				: $("#postStoreLoginId").val(),
@@ -484,15 +484,19 @@ function postStore() {
             detailAddress		: $("#postStoreDetailAddress").val()
         },
         success: function (data) {
-
             console.log(data);
-            alert("商店註冊完成");
-            popClose('#popStore');
-            getStoreList();
-            location.reload();
+            if (data == 'geo_err') {
+                alert(alert_address_error);
+                return false;
+            } else {
+                alert(alert_confirm_success);
+                popClose('#popStore');
+                getStoreList();
+                location.reload();
+            }
         }
     });
-    }
+}
 
 
 /**

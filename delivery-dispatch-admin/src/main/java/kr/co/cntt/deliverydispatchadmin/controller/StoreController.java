@@ -358,6 +358,9 @@ public class StoreController {
         }
     }
 
+    if (store.getLatitude() == null || store.getLongitude() == null) {
+        return "geo_err";
+    }
 
     // chatuser , room 등록
     store.setType("2");

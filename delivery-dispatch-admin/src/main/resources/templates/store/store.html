@@ -33,6 +33,8 @@
     var loginid_check = /*[[#{loginid.check}]]*/ 'loginid_check';
     var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 
+    var alert_confirm_success = /*[[#{alert.confirm.success}]]*/ 'alert_confirm_success';
+    var alert_address_error = /*[[#{alert.address.error}]]*/ 'alert_address_error';
 
     /*]]>*/
 </script>
@@ -161,7 +163,7 @@
 			<div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
 			<div class="right">
 				<!--<a href="#" class="button h30 btn_red">삭제</a>-->
-				<a href="" class="button h30 btn_blue" onClick="javascript:postStore()" th:text="${#messages.msg('btn.confirm')}"></a>
+				<a href="#" class="button h30 btn_blue" onClick="javascript:postStore()" th:text="${#messages.msg('btn.confirm')}"></a>
 			</div>
 		</div>
 		<a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>

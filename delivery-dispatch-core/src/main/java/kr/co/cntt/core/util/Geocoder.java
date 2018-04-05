@@ -35,8 +35,10 @@ public class Geocoder {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         Map<String, String> map = new HashMap<>();
-        map.put("lat", gson.toJson(results[0].geometry.location.lat));
-        map.put("lng", gson.toJson(results[0].geometry.location.lng));
+        if (results.length > 0) {
+            map.put("lat", gson.toJson(results[0].geometry.location.lat));
+            map.put("lng", gson.toJson(results[0].geometry.location.lng));
+        }
 
         return map;
     }
