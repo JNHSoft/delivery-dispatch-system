@@ -38,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Service("orderService")
 public class OrderServiceImpl extends ServiceSupport implements OrderService {
-	@Autowired
+    @Autowired
     AndroidPushNotificationsService androidPushNotificationsService;
 
     /**
@@ -375,7 +375,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         if (postOrder != 0) {
-            redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId());
+            redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
 
             if(storeDTO.getAssignmentStatus().equals("2")){
 
@@ -650,7 +650,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         if (nRet != 0) {
-            redisService.setPublisher("order_updated", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+            redisService.setPublisher("order_updated", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
         }
 
         return nRet;
@@ -759,7 +759,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         int ret = this.putOrder(orderAssigned);
 
         if (ret != 0) {
-            redisService.setPublisher("order_assigned", "id:"+order.getId()+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
+            redisService.setPublisher("order_assigned", "id:"+order.getId()+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId()+", subgroup_id:"+S_Store.getSubGroup().getId());
 
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
                 ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(S_Store.getSubGroup());
@@ -835,8 +835,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Order S_Order = orderMapper.selectOrderInfo(orderPickedUp);
 
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+        Store S_Store = storeMapper.selectStoreInfo(storeDTO);
+
         if (result != 0) {
-            redisService.setPublisher("order_picked_up", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getStoreId());
+            redisService.setPublisher("order_picked_up", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getStoreId()+", subgroup_id:"+S_Store.getSubGroup().getId());
         }
 
         return result;
@@ -871,8 +876,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Order S_Order = orderMapper.selectOrderInfo(orderCompleted);
 
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+        Store S_Store = storeMapper.selectStoreInfo(storeDTO);
+
         if (result != 0) {
-            redisService.setPublisher("order_completed", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getStoreId());
+            redisService.setPublisher("order_completed", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getStoreId()+", subgroup_id:"+S_Store.getSubGroup().getId());
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(S_Order);
@@ -965,7 +975,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         if (nRet != 0) {
-            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
         }
 
         return nRet;
@@ -1028,7 +1038,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         Order S_Order = orderMapper.selectOrderInfo(orderAssignCanceled);
 
         if (ret != 0) {
-            redisService.setPublisher("order_assign_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId());
+            redisService.setPublisher("order_assign_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
                 if(tokens.size() > 0){
