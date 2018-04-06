@@ -49,24 +49,20 @@
                         <td>
                             <input type="text" name="" id="userId" class="input readonly" value="" readonly="readonly"/>
                         </td>
-                        <th th:text="${#messages.msg('rider.phone.emergency')}"/>
-                        <td><input type="text" name="" id="emergencyPhone" class="input" value=""/></td>
-                    </tr>
-                    <tr>
-                        <th th:text="${#messages.msg('login.password')}"/>
-                        <td><input type="password" name="" id="loginPw" class="input" value=""/></td>
-                        <th th:text="${#messages.msg('rider.address')}"/>
-                        <td><input type="text" name="" id="address" class="input w_100" value=""/></td>
-                    </tr>
-                    <tr>
-                        <th th:text="${#messages.msg('rider.code')}"/>
-                        <td><input type="text" name="" id="code" class="input readonly" value="" readonly="readonly"/></td>
+                        <!--<th th:text="${#messages.msg('rider.phone.emergency')}"/>-->
+                        <!--<td><input type="text" name="" id="emergencyPhone" class="input" value=""/></td>-->
                         <th th:text="${#messages.msg('rider.belong.store')}"/>
                         <td id="riderStoreName"></td>
                     </tr>
+                    <!--<tr>-->
+                        <!--<th th:text="${#messages.msg('login.password')}"/>-->
+                        <!--<td><input type="password" name="" id="loginPw" class="input" value=""/></td>-->
+                        <!--<th th:text="${#messages.msg('rider.address')}"/>-->
+                        <!--<td><input type="text" name="" id="address" class="input w_100" value=""/></td>-->
+                    <!--</tr>-->
                     <tr>
-                        <th th:text="${#messages.msg('rider.name')}"/>
-                        <td><input type="text" id="riderName" name="" class="input" value=""/></td>
+                        <th th:text="${#messages.msg('rider.code')}"/>
+                        <td><input type="text" name="" id="code" class="input readonly" value="" readonly="readonly"/></td>
                         <th th:text="${#messages.msg('rider.time.work')}"/>
                         <td>
                             <select name="" id="workingHour1" class="select">
@@ -80,6 +76,17 @@
                         </td>
                     </tr>
                     <tr>
+                        <th th:text="${#messages.msg('rider.name')}"/>
+                        <td><input type="text" id="riderName" name="" class="input" value=""/></td>
+                        <th rowspan="2" th:text="${#messages.msg('rider.time.rest')}"/>
+                        <td rowspan="2">
+                            <label class="checkbox" th:each="i : ${#numbers.sequence(10, 18)}">
+                                <input th:name="restChk" th:value="${i}" th:class="${i}" type="checkbox"/><i></i>
+                                <span class="lbl" th:text="${#messages.msg('rider.time.label.rest', i)}"/>
+                            </label>
+                        </td>
+                    </tr>
+                    <!--<tr>
                         <th th:text="${#messages.msg('rider.gender')}"/>
                         <td>
                             <label class="radio">
@@ -91,15 +98,8 @@
                                 <span class="lbl" th:text="${#messages.msg('rider.gender.female')}"/>
                             </label>
                         </td>
-                        <th rowspan="2" th:text="${#messages.msg('rider.time.rest')}"/>
-                        <td rowspan="2">
-                            <label class="checkbox" th:each="i : ${#numbers.sequence(10, 18)}">
-                                <input th:name="restChk" th:value="${i}" th:class="${i}" type="checkbox"/><i></i>
-                                <span class="lbl" th:text="${#messages.msg('rider.time.label.rest', i)}"/>
-                            </label>
-                        </td>
-                    </tr>
-                    <tr>
+                    </tr>-->
+                    <!--<tr>
                         <th th:text="${#messages.msg('rider.teenager')}"/>
                         <td>
                             <label class="radio"><input name="teenager" value="1" type="radio"/><i></i>
@@ -109,12 +109,16 @@
                                 <span class="lbl" th:text="${#messages.msg('answer.no')}"/>
                             </label>
                         </td>
-                    </tr>
+                    </tr>-->
                     <tr>
                         <th th:text="${#messages.msg('rider.phone')}"/>
                         <td><input type="text" name="" id="phone" class="input" value=""/></td>
+                    </tr>
+                    <tr>
                         <th th:text="${#messages.msg('rider.vehicle.number')}"/>
                         <td><input type="text" name="" id="vehicleNumber" class="input" value=""/></td>
+                        <th></th>
+                        <td></td>
                     </tr>
                     </tbody>
                 </table>
@@ -136,21 +140,15 @@
     /*<![CDATA[*/
     var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
     var rider_code = /*[[#{rider.code}]]*/ 'rider_code';
-    var rider_gender = /*[[#{rider.gender}]]*/ 'rider_gender';
-    var rider_gender_male = /*[[#{rider.gender.male}]]*/ 'rider_gender_male';
-    var rider_gender_female = /*[[#{rider.gender.female}]]*/ 'rider_gender_female';
     var rider_phone = /*[[#{rider.phone}]]*/ 'rider_phone';
-    var rider_phone_emergency = /*[[#{rider.phone.emergency}]]*/ 'rider_phone_emergency';
-    var rider_address = /*[[#{rider.address}]]*/ 'rider_address';
     var rider_vehicle_number = /*[[#{rider.vehicle.number}]]*/ 'rider_vehicle_number';
-    var rider_teenager = /*[[#{rider.teenager}]]*/ 'rider_teenager';
     var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
     var mydata = /*[[${riderList}]]*/ 'riderList';
     var my_store = /*[[${store}]]*/ 'my_store';
     $(document).ready(function () {
-        for (var i = 0; i< mydata.length; i++){
+        /*for (var i = 0; i< mydata.length; i++){
             mydata[i].gender = mydata[i].gender==0 ? rider_gender_male : rider_gender_female;
-        }
+        }*/
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
         if (supportsWebSockets) {
             var socket = io(websocketHost, {
@@ -189,12 +187,12 @@
                 {label: 'No', name: 'id', width: 25, key: true, align: 'center'},
                 {label: rider_name, name: 'name', width: 80, align: 'center'},
                 {label: rider_code, name: 'code', width: 60, align: 'center'},
-                {label: rider_gender, name: 'gender', width: 40, align: 'center'},
+                // {label: rider_gender, name: 'gender', width: 40, align: 'center'},
                 {label: rider_phone, name: 'phone', width: 100, align: 'center'},
-                {label: rider_phone_emergency, name: 'emergencyPhone', width: 100, align: 'center'},
-                {label: rider_address, name: 'address', width: 200},
+                // {label: rider_phone_emergency, name: 'emergencyPhone', width: 100, align: 'center'},
+                // {label: rider_address, name: 'address', width: 200},
                 {label: rider_vehicle_number, name: 'vehicleNumber', width: 80, align: 'center'},
-                {label: rider_teenager, name: 'teenager', width: 60, align: 'center'},
+                // {label: rider_teenager, name: 'teenager', width: 60, align: 'center'},
                 {label: rider_login_id, name: 'loginId', width: 80, align: 'center'}
             ],
             width: 'auto',

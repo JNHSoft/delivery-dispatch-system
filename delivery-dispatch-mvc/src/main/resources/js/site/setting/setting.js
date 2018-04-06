@@ -145,8 +145,8 @@ function getRiderInfo(riderId) {
         dataType : 'json',
         success : function (data) {
             $('#userId').val(data.loginId);
-            $('#emergencyPhone').val(data.emergencyPhone);
-            $('#address').val(data.address);
+            // $('#emergencyPhone').val(data.emergencyPhone);
+            // $('#address').val(data.address);
             $('#code').val(data.code);
             $('#riderStoreName').text($('#storeName').val());
             $('#riderName').val(data.name);
@@ -158,14 +158,14 @@ function getRiderInfo(riderId) {
                 $('#workingHour1').val('empty').prop('selected', true);
                 $('#workingHour2').val('empty').prop('selected', true);
             }
-            $('input[name="gender"]:input[value="'+data.gender+'"]').prop('checked', true);
+            // $('input[name="gender"]:input[value="'+data.gender+'"]').prop('checked', true);
             if(data.restHours){
                 var restHours = (data.restHours).split('|');
                 for(var i = 0; i < data.restHours.length; i++){
                     $('input[name="restChk"]:input[value="'+restHours[i] +'"]').prop('checked', true);
                 }
             }
-            $('input[name="teenager"]:input[value="'+data.teenager+'"]').prop('checked', true);
+            // $('input[name="teenager"]:input[value="'+data.teenager+'"]').prop('checked', true);
             $('#phone').val(data.phone);
             $('#vehicleNumber').val(data.vehicleNumber);
             $('#riderId').val(riderId);
@@ -175,13 +175,13 @@ function getRiderInfo(riderId) {
 
 function putRiderInfo() {
     var id = $('#riderId').val();
-    var emergencyPhone = $('#emergencyPhone').val();
-    var loginPw = $('#loginPw').val();
-    var address = $('#address').val();
+    // var emergencyPhone = $('#emergencyPhone').val();
+    // var loginPw = $('#loginPw').val();
+    // var address = $('#address').val();
     var name = $('#riderName').val();
     var workingHours = $('#workingHour1').val()*60 + "|" + $('#workingHour2').val()*60;
-    var gender = $('input[name="gender"]:checked').val();
-    var teenager = $('input[name="teenager"]:checked').val();
+    // var gender = $('input[name="gender"]:checked').val();
+    // var teenager = $('input[name="teenager"]:checked').val();
     var tmpHours = [];
     $('input[name="restChk"]:checked').each(function(index, element) {
         tmpHours.push($(element).val());
@@ -194,13 +194,13 @@ function putRiderInfo() {
         type: 'put',
         data: {
             id : id,
-            emergencyPhone : emergencyPhone,
-            loginPw : loginPw,
-            address : address,
+            // emergencyPhone : emergencyPhone,
+            // loginPw : loginPw,
+            // address : address,
             name : name,
             workingHours : workingHours,
-            gender : gender,
-            teenager : teenager,
+            // gender : gender,
+            // teenager : teenager,
             restHours : restHours,
             phone : phone,
             vehicleNumber : vehicleNumber

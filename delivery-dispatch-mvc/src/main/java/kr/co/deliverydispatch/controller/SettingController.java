@@ -1,10 +1,8 @@
 package kr.co.deliverydispatch.controller;
 
-import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.notice.Notice;
-import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -25,14 +23,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -167,8 +166,8 @@ public class SettingController {
     public Boolean putRiderInfo(Rider rider) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         rider.setToken(storeInfo.getStoreAccessToken());
-        ShaEncoder sha = new ShaEncoder(512);
-        rider.setLoginPw(sha.encode(rider.getLoginPw()));
+//        ShaEncoder sha = new ShaEncoder(512);
+//        rider.setLoginPw(sha.encode(rider.getLoginPw()));
         storeSettingService.updateRiderInfo(rider);
         return true;
     }
