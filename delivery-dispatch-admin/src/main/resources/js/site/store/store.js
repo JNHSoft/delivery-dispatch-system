@@ -376,7 +376,7 @@ function getPostSubGroupList(gId, subGroup) {
  * Store 수정
  */
 function putStoreDetail() {
-    if(!confirm(alert_confirm)) return;
+    if(!confirm(alert_confirm_mod)) return;
 
     // 수정 보내는 값들
     $.ajax({
@@ -403,7 +403,7 @@ function putStoreDetail() {
                 alert(alert_address_error);
                 return false;
             } else {
-                alert(alert_confirm_success);
+                alert(alert_confirm_mod_success);
                 popClose('#popStoreDetail');
                 // 완료후 페이지 호출
                 location.reload();

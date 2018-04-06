@@ -354,7 +354,7 @@ function putRiderDetail() {
             hasGroup		    : $("#hasGroup").val()
         },
         success : function(data){
-                alert("完成修復");
+                alert(alert_confirm_mod_success);
                 getRiderList();
                 location.reload();
         }
@@ -404,7 +404,7 @@ function postRider() {
         },
         success: function (data) {
             console.log(data);
-            alert("完成註冊");
+            alert(alert_created_success);
             location.reload();
         }
     });

@@ -31,7 +31,7 @@ function putStoreInfo() {
                 alert(alert_address_error);
                 return false;
             } else {
-                alert(alert_confirm_success);
+                alert(alert_confirm_mod_success);
                 location.href = "/setting-account";
             }
         }
@@ -58,7 +58,7 @@ function putStoreAssignInfo() {
         },
         dataType : 'json',
         success : function (data) {
-            alert(alert_confirm_success);
+            alert(alert_confirm_mod_success);
             location.href = "/setting-assign";
         }
     });
@@ -207,6 +207,7 @@ function putRiderInfo() {
         },
         dataType : 'json',
         success : function (data) {
+            alert(alert_confirm_mod_success);
             location.href="/setting-rider";
         }
     });
@@ -256,7 +257,7 @@ function putStoreAlarm() {
             }else {
                 $.removeCookie("cancel_alarm");
             }
-            alert(alert_confirm_success);
+            alert(alert_confirm_mod_success);
             location.href="/setting-alarm";
         }
     });

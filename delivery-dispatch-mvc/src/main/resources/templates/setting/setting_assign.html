@@ -64,7 +64,7 @@
 	<script layout:fragment="script" th:inline="javascript">
         /*<![CDATA[*/
         var my_store = /*[[${store}]]*/ 'my_store';
-        var alert_confirm_success = /*[[#{alert.confirm.success}]]*/ 'alert_confirm_success';
+        var alert_confirm_mod_success = /*[[#{alert.confirm.mod.success}]]*/ 'alert_confirm_mod_success';
         $(document).ready(function() {
             var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
             if (supportsWebSockets) {
