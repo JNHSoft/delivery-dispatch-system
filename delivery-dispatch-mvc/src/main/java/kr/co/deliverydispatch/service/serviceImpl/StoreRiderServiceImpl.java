@@ -217,7 +217,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
             return  0;
         } else {
             if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
-                redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId()+", subgroup_id:"+resultStore.getSubGroup().getId());
+                redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
             }
         }
 
