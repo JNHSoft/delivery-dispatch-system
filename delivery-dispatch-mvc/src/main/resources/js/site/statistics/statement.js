@@ -1,45 +1,4 @@
-function footerRiders() {
-    if(footerRiderList[2]){
-        $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
-    }else {
-        $('#rest').text('0');
-    }
-    if(footerRiderList[1]){
-        $('#standby').text(parseInt(footerRiderList[1].workCount) - parseInt(footerRiderList[1].orderCount));// 대기
-        $('#work').text(footerRiderList[1].orderCount);//근무
-    }else {
-        $('#standby').text('0');
-        $('#work').text('0');
-    }
-}
-function footerOrders() {
-    var newCnt = 0;
-    var assignedCnt = 0;
-    var completedCnt = 0;
-    var canceledCnt = 0;
-    for (i =0; i <footerOrderList.length; i++){
-        if(footerOrderList[i].status=="0"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="1"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="2"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="3"){
-            completedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="4"){
-            canceledCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="5"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }
-    }
-    $('#new').text(newCnt);
-    $('#assigned').text(assignedCnt);
-    $('#completed').text(completedCnt);
-    $('#canceled').text(canceledCnt);
-}
 $(function() {
-    footerRiders();
-    footerOrders();
     $('input[type="checkbox"]').on('click',function() {
         getStoreStatistics();
     });
@@ -62,13 +21,11 @@ $(function() {
     $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd',new Date));
     $("#searchButton").click(function () {
         var searchText = $("#searchText").val();
-        console.log(searchText);
         var filter = {
             groupOp: "OR",
             rules: []
         };
         var select = $("#searchSelect option:selected").val();
-        console.log(select);
 
         if(select == 'id'){
             filter.rules.push({
@@ -183,7 +140,6 @@ function getStatisticsInfo(orderId) {
         },
         dataType : 'json',
         success : function (data) {
-            console.log(data);
             if (data.status == 3) {
                 $status = '<i class="ic_txt">' + status_completed + '</i>';
             }
@@ -262,7 +218,6 @@ function getStoreStatistics() {
         dataType: 'json',
         success: function (data) {
             var i = 1;
-            console.log(data);
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     if (timepickerConfirm($('#day1').val(), $('#day2').val(), data[key].createdDatetime)) {
@@ -341,8 +296,6 @@ function getStoreStatistics() {
                     }
                 }
             }
-            console.log("mydata");
-            console.log(mydata);
              if(mydata != null) {
                  jQuery('#jqGrid').jqGrid('clearGridData')
                  jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1})

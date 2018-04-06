@@ -104,8 +104,6 @@ var notice_created = /*[[#{notice.created}]]*/ 'notice_created';
 var notice_confirmed = /*[[#{notice.confirmed}]]*/ 'notice_confirmed';
 var notice_confirmed_before = /*[[#{notice.confirmed.before}]]*/ 'notice_confirmed_before';
 var my_store = /*[[${store}]]*/ 'my_store';
-var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
-var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
 $(document).ready(function() {
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
@@ -114,17 +112,22 @@ $(document).ready(function() {
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
         socket.on('message', function (data) {
+            var subgroup_id = data.substring(data.indexOf("subgroup_id:")+12, data.lastIndexOf('}'));
+            var store_id = data.substring(data.indexOf("store_id:")+9,
+                (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
+            if((!my_store.subGroup && my_store.id == store_id)||subgroup_id == my_store.subGroup.id){
+                if(data.match('rider_')=='rider_'){
+                    footerRiders();
+                }
+                if(data.match('order_')=='order_'){
+                    footerOrders()
+                }
+                alarmSound(data);
+            }
             if (data.match('notice_') == 'notice_') {
                 noticeAlarm();
                 location.href = "/setting-notice";
             }
-            if(data.match('rider_')=='rider_'){
-                footerRiders();
-            }
-            if(data.match('order_')=='order_'){
-                footerOrders()
-            }
-            alarmSound(data)
         });
         $(function () {
             /*$('#putRider').click(function () {

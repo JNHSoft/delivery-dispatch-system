@@ -1,9 +1,11 @@
 var my_notice_list = [];
 var websocketHost = "";
 $(document).ready(function() {
+    $.ajaxSetup({ cache: false });
     $.ajax({
         url : "/commonNotice",
         async : false,
+        cache : false,
         success : function(data) {
         	if(typeof data == 'object') {
                 my_notice_list = data;
@@ -26,6 +28,8 @@ $(document).ready(function() {
             }
         });
     })
+    footerOrders();
+    footerRiders();
 });
 
 function noticeAlarm() {
@@ -45,10 +49,10 @@ function alarmSound(data) {
     var assign_alarm = $.cookie("assign_alarm");
     var assignCancel_alarm = $.cookie("assignCancel_alarm");
     var complete_alarm = $.cookie("complete_alarm");
-    var cancelAlarm_alarm = $.cookie("cancelAlarm_alarm");
+    var cancel_alarm = $.cookie("cancel_alarm");
     if(my_store){
         if(data.match('order_')=='order_'){
-            if(data.match('update')=='update'){
+            if(data.match('new')=='new'){
                 if ((my_store.alarm).match('0')=='0'){
                     var audio = new Audio('/alarmFiles/alarm/'+new_alarm);
                     audio.play();
@@ -74,11 +78,69 @@ function alarmSound(data) {
             }
             if(data.match('order_canceled')=='order_canceled'){
                 if ((my_store.alarm).match('4')=='4'){
-                    var audio = new Audio('/alarmFiles/alarm/'+cancelAlarm_alarm);
+                    var audio = new Audio('/alarmFiles/alarm/'+cancel_alarm);
                     audio.play();
                 }
             }
         }
     }
+}
 
+function footerOrders() {
+    $.ajax({
+        url : "/footerOrderList",
+        type : "get",
+        cache : false,
+        dataType : 'json',
+        success : function(data) {
+            if(typeof data == 'object') {
+                console.log(data)
+                var newCnt = 0;
+                var assignedCnt = 0;
+                var completedCnt = 0;
+                var canceledCnt = 0;
+                for (i =0; i <data.length; i++){
+                    if(data[i].status=="0"){
+                        newCnt += parseInt(data[i].count);
+                    }else if(data[i].status=="1"){
+                        assignedCnt += parseInt(data[i].count);
+                    }else if(data[i].status=="2"){
+                        assignedCnt += parseInt(data[i].count);
+                    }else if(data[i].status=="3"){
+                        completedCnt += parseInt(data[i].count);
+                    }else if(data[i].status=="4"){
+                        canceledCnt += parseInt(data[i].count);
+                    }else if(data[i].status=="5"){
+                        newCnt += parseInt(data[i].count);
+                    }
+                }
+                $('#new').text(newCnt);
+                $('#assigned').text(assignedCnt);
+                $('#completed').text(completedCnt);
+                $('#canceled').text(canceledCnt);
+            }
+        }
+    });
+}
+function footerRiders() {
+    $.ajax({
+        url : "/footerRiderList",
+        cache : false,
+        success : function(data) {
+            if(typeof data == 'object') {
+                if(data[2]){
+                    $('#rest').text(parseInt(data[2].workCount) + parseInt(data[2].orderCount));//휴식
+                }else {
+                    $('#rest').text('0');
+                }
+                if(data[1]){
+                    $('#standby').text(parseInt(data[1].workCount) - parseInt(data[1].orderCount));// 대기
+                    $('#work').text(data[1].orderCount);//근무
+                }else {
+                    $('#standby').text('0');
+                    $('#work').text('0');
+                }
+            }
+        }
+    });
 }

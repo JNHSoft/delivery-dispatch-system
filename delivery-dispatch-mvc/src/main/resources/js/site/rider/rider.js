@@ -15,48 +15,7 @@ function initMap() {
         center: store
     });
 }
-function footerRiders() {
-    if(footerRiderList[2]){
-        $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
-    }else {
-        $('#rest').text('0');
-    }
-    if(footerRiderList[1]){
-        $('#standby').text(parseInt(footerRiderList[1].workCount) - parseInt(footerRiderList[1].orderCount));// 대기
-        $('#work').text(footerRiderList[1].orderCount);//근무
-    }else {
-        $('#standby').text('0');
-        $('#work').text('0');
-    }
-}
-function footerOrders() {
-    var newCnt = 0;
-    var assignedCnt = 0;
-    var completedCnt = 0;
-    var canceledCnt = 0;
-    for (i =0; i <footerOrderList.length; i++){
-        if(footerOrderList[i].status=="0"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="1"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="2"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="3"){
-            completedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="4"){
-            canceledCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="5"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }
-    }
-    $('#new').text(newCnt);
-    $('#assigned').text(assignedCnt);
-    $('#completed').text(completedCnt);
-    $('#canceled').text(canceledCnt);
-}
 $(function() {
-    footerRiders();
-    footerOrders();
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
     if (supportsWebSockets) {
         var socket = io(websocketHost, {
@@ -64,23 +23,29 @@ $(function() {
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
         socket.on('message', function(data){
-            if(data.match('rider_')=='rider_'){
-                getRiderList();
-                footerRiders();
-            }
-            if(data.match('chat_')=='chat_'){
-                var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18, data.lastIndexOf('}'));
-                if(RiderChatUserId == chatUserId){
-                    getChatList(chatUserId,chatUserName);
+            var subgroup_id = data.substring(data.indexOf("subgroup_id:")+12, data.lastIndexOf('}'));
+            var store_id = data.substring(data.indexOf("store_id:")+9,
+                (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
+            if((!my_store.subGroup && my_store.id == store_id)||subgroup_id == my_store.subGroup.id){
+                if(data.match('chat_')=='chat_'){
+                    var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18,
+                        (data.substring(data.indexOf("recv_chat_user_id:")+18, data.length)).indexOf(',') + data.indexOf("recv_chat_user_id:")+18);
+                    if(RiderChatUserId == chatUserId){
+                        getChatList(chatUserId, chatUserName);
+                    }
                 }
+                if(data.match('rider_')=='rider_'){
+                    getRiderList();
+                    footerRiders();
+                }
+                if(data.match('order_')=='order_'){
+                    footerOrders()
+                }
+                alarmSound(data);
             }
             if(data.match('notice_')=='notice_'){
                 noticeAlarm();
             }
-            if(data.match('order_')=='order_'){
-                footerOrders()
-            }
-            alarmSound(data);
         });
         $(function() {
             /*$('#sendChat').click(function(){

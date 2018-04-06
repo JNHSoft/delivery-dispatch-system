@@ -1,47 +1,6 @@
 /*<![CDATA[*/
-function footerRiders() {
-    if(footerRiderList[2]){
-        $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
-    }else {
-        $('#rest').text('0');
-    }
-    if(footerRiderList[1]){
-        $('#standby').text(parseInt(footerRiderList[1].workCount) - parseInt(footerRiderList[1].orderCount));// 대기
-        $('#work').text(footerRiderList[1].orderCount);//근무
-    }else {
-        $('#standby').text('0');
-        $('#work').text('0');
-    }
-}
-function footerOrders() {
-    var newCnt = 0;
-    var assignedCnt = 0;
-    var completedCnt = 0;
-    var canceledCnt = 0;
-    for (i =0; i <footerOrderList.length; i++){
-        if(footerOrderList[i].status=="0"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="1"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="2"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="3"){
-            completedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="4"){
-            canceledCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="5"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }
-    }
-    $('#new').text(newCnt);
-    $('#assigned').text(assignedCnt);
-    $('#completed').text(completedCnt);
-    $('#canceled').text(canceledCnt);
-}
 
 $(document).ready(function() {
-    footerOrders();
-    footerRiders();
     var storeId = $('#orderMyStoreChk').val();
     var statusArray = ["0","1","2","3","4","5"];
     $('#statusArray').val(statusArray);
@@ -53,16 +12,21 @@ $(document).ready(function() {
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
         socket.on('message', function(data){
-            alarmSound(data);
-            if(data.match('order_')=='order_'){
-                getOrderList(statusArray, storeId);
-                footerOrders();
+            var subgroup_id = data.substring(data.indexOf("subgroup_id:")+12, data.lastIndexOf('}'));
+            var store_id = data.substring(data.indexOf("store_id:")+9,
+                (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
+            if((!my_store.subGroup && my_store.id == store_id)||subgroup_id == my_store.subGroup.id){
+                alarmSound(data);
+                if(data.match('order_')=='order_'){
+                    getOrderList(statusArray, storeId);
+                    footerOrders();
+                }
+                if(data.match('rider_')=='rider_'){
+                    footerRiders();
+                }
             }
             if(data.match('notice_')=='notice_'){
                 noticeAlarm();
-            }
-            if(data.match('rider_')=='rider_'){
-                footerRiders();
             }
         });
         $(function() {
@@ -243,7 +207,6 @@ function getOrderDetail(orderId) {
         async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
-            console.log(data);
             selectedOriginOrder = data;
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
@@ -382,7 +345,6 @@ function getNewOrderList(statusNewArray) {
         },
         datatype: 'json',
         success: function (data) {
-            console.log(data)
             $('#selectCombined').html("");
             for (var key in data) {
                 if (data.hasOwnProperty(key)){

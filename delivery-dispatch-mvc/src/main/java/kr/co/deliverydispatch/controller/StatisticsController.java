@@ -51,26 +51,10 @@ public class StatisticsController {
      */
     @GetMapping("/statistics")
     public String statistics(Store store, @RequestParam(required = false) String frag, Model model) {
-
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        // Store 정보
-        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
         store.setToken(storeInfo.getStoreAccessToken());
-        System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-        model.addAttribute("json", new Gson().toJson(store));
-        Rider rider = new Rider();
-        rider.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
-        model.addAttribute("footerRiderList", footerRiderList);
-        Order order = new Order();
-        order.setToken(storeInfo.getStoreAccessToken());
-        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
-        model.addAttribute("footerOrderList", footerOrderList);
-        log.info("json : {}", new Gson().toJson(store));
-
         return "/statistics/statement";
     }
 
@@ -89,7 +73,6 @@ public class StatisticsController {
     @GetMapping("/getStatisticsInfo")
     @CnttMethodDescription("통계 상세 조회")
     public Order getStatisticsInfoDetail(Order order){
-        System.out.println("!!!!!!!!!!!!!!!!!!!common : "+order.getId());
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
         Order statisticsInfo = storeStatementService.getStoreStatisticsInfo(order);
