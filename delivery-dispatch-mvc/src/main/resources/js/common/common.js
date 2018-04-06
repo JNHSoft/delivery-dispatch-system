@@ -94,7 +94,6 @@ function footerOrders() {
         dataType : 'json',
         success : function(data) {
             if(typeof data == 'object') {
-                console.log(data)
                 var newCnt = 0;
                 var assignedCnt = 0;
                 var completedCnt = 0;
@@ -128,18 +127,21 @@ function footerRiders() {
         cache : false,
         success : function(data) {
             if(typeof data == 'object') {
-                if(data[2]){
-                    $('#rest').text(parseInt(data[2].workCount) + parseInt(data[2].orderCount));//휴식
-                }else {
-                    $('#rest').text('0');
+                var restCnt = 0;
+                var workCnt = 0;
+                var standbyCnt = 0;
+                for (i =0; i <data.length; i++){
+                    if(data[i].working == "1"){
+                        standbyCnt = parseInt(data[i].workCount) - parseInt(data[i].orderCount);
+                        workCnt = data[i].orderCount;
+                    }
+                    if(data[i].working == "3"){
+                        restCnt = parseInt(data[i].workCount) + parseInt(data[i].orderCount);
+                    }
                 }
-                if(data[1]){
-                    $('#standby').text(parseInt(data[1].workCount) - parseInt(data[1].orderCount));// 대기
-                    $('#work').text(data[1].orderCount);//근무
-                }else {
-                    $('#standby').text('0');
-                    $('#work').text('0');
-                }
+                $('#work').text(workCnt);
+                $('#standby').text(standbyCnt);
+                $('#rest').text(restCnt);
             }
         }
     });
