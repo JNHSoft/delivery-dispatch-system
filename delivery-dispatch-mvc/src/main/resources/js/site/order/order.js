@@ -17,13 +17,13 @@ $(document).ready(function() {
                 (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
             if((!my_store.subGroup && my_store.id == store_id)||subgroup_id == my_store.subGroup.id){
                 alarmSound(data);
-                if(data.match('order_')=='order_'){
-                    getOrderList(statusArray, storeId);
-                    footerOrders();
-                }
-                if(data.match('rider_')=='rider_'){
-                    footerRiders();
-                }
+            }
+            if(data.match('order_')=='order_'){
+                getOrderList(statusArray, storeId);
+                footerOrders();
+            }
+            if(data.match('rider_')=='rider_'){
+                footerRiders();
             }
             if(data.match('notice_')=='notice_'){
                 noticeAlarm();

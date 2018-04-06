@@ -162,13 +162,13 @@
                 var store_id = data.substring(data.indexOf("store_id:")+9,
                     (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
                 if((!my_store.subGroup && my_store.id == store_id)||subgroup_id == my_store.subGroup.id){
-                    if(data.match('rider_')=='rider_'){
-                        location.href = "/setting-rider";
-                    }
-                    if(data.match('order_')=='order_'){
-                        footerOrders()
-                    }
                     alarmSound(data);
+                }
+                if(data.match('rider_')=='rider_'){
+                    location.href = "/setting-rider";
+                }
+                if(data.match('order_')=='order_'){
+                    footerOrders()
                 }
                 if(data.match('notice_')=='rider_'){
                     noticeAlarm();

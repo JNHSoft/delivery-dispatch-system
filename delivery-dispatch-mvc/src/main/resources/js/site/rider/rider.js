@@ -26,23 +26,21 @@ $(function() {
             var subgroup_id = data.substring(data.indexOf("subgroup_id:")+12, data.lastIndexOf('}'));
             var store_id = data.substring(data.indexOf("store_id:")+9,
                 (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
-            if((!my_store.subGroup && my_store.id == store_id)||subgroup_id == my_store.subGroup.id){
-                if(data.match('chat_')=='chat_'){
-                    var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18,
-                        (data.substring(data.indexOf("recv_chat_user_id:")+18, data.length)).indexOf(',') + data.indexOf("recv_chat_user_id:")+18);
-                    if(RiderChatUserId == chatUserId){
-                        getChatList(chatUserId, chatUserName);
-                    }
+            if(data.match('chat_')=='chat_'){
+                var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18,
+                    (data.substring(data.indexOf("recv_chat_user_id:")+18, data.length)).indexOf(',') + data.indexOf("recv_chat_user_id:")+18);
+                if(RiderChatUserId == chatUserId){
+                    getChatList(chatUserId, chatUserName);
                 }
-                if(data.match('rider_')=='rider_'){
-                    getRiderList();
-                    footerRiders();
-                }
-                if(data.match('order_')=='order_'){
-                    footerOrders()
-                }
-                alarmSound(data);
             }
+            if(data.match('rider_')=='rider_'){
+                getRiderList();
+                footerRiders();
+            }
+            if(data.match('order_')=='order_'){
+                footerOrders()
+            }
+                alarmSound(data);
             if(data.match('notice_')=='notice_'){
                 noticeAlarm();
             }
