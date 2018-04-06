@@ -555,8 +555,4 @@ function storeLoginIdCheck() {
     });
 }
 
-
-
-
-
 /*]]>*/

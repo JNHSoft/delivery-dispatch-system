@@ -8,6 +8,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
+import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.MD5Encoder;
 import kr.co.cntt.core.util.MediaTypeUtils;
 import kr.co.cntt.core.util.ShaEncoder;
@@ -33,6 +34,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -71,14 +73,38 @@ public class SettingController {
 
     @ResponseBody
     @PutMapping("/putStoreInfo")
-    public Boolean putStoreInfo(Store store) {
+    public String  putStoreInfo(Store store) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
+        store.setAccessToken(storeInfo.getStoreAccessToken());
+
+        Store tmpStore = storeSettingService.getStoreInfo(store);
+
         MD5Encoder md5 = new MD5Encoder();
         ShaEncoder sha = new ShaEncoder(512);
-        store.setLoginPw(sha.encode(store.getLoginPw()));
+
+        if (!store.getLoginPw().equals("")) {
+            store.setLoginPw(sha.encode(store.getLoginPw()));
+        }
+
+        // 위도 경도
+        if (store.getAddress() != null && store.getAddress() != "") {
+            Geocoder geocoder = new Geocoder();
+            try {
+                Map<String, String> geo = geocoder.getLatLng(store.getAddress());
+                store.setLatitude(geo.get("lat"));
+                store.setLongitude(geo.get("lng"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (store.getLatitude() == null || store.getLongitude() == null) {
+            return "geo_err";
+        }
+
         storeSettingService.updateStoreInfo(store);
-        return true;
+        return "ok";
     }
 
 

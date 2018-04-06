@@ -3,15 +3,15 @@ function putStoreInfo() {
     var id = $('#storeId').val();
     var loginPw = $('#storePw').val();
     var storePhone = $('#storePhone').val();
-    var name = $('#mangerName').val();
-    var phone = $('#phone').val();
+    // var name = $('#mangerName').val();
+    // var phone = $('#phone').val();
     var address = $('#address').val();
     var detailAddress = $('#detailAddress').val();
 
-    if(loginPw == ''){
+    /*if(loginPw == ''){
         alert(alert_password_none);
         return;
-    }
+    }*/
 
     $.ajax({
         url: '/putStoreInfo',
@@ -20,15 +20,20 @@ function putStoreInfo() {
             id : id,
             loginPw : loginPw,
             storePhone : storePhone,
-            name : name,
-            phone : phone,
+            // name : name,
+            // phone : phone,
             address : address,
             detailAddress : detailAddress
         },
-        dataType : 'json',
+        dataType : 'text',
         success : function (data) {
-            alert(alert_confirm_success);
-            location.href = "/setting-account";
+            if (data == 'geo_err') {
+                alert(alert_address_error);
+                return false;
+            } else {
+                alert(alert_confirm_success);
+                location.href = "/setting-account";
+            }
         }
     });
 }

@@ -51,15 +51,15 @@
 							</div>
 						</li>
 						
-						<li>
+						<!--<li>
 							<strong th:text="${#messages.msg('store.manager.name')}" />
 							<div><input type="text" name="" class="input" id="mangerName" th:value="${store.name}" /></div>
-						</li>
+						</li>-->
 						
-						<li>
+						<!--<li>
 							<strong th:text="${#messages.msg('store.manager.phone')}" />
 							<div><input type="text" name="" class="input" id="phone" th:value="${store.phone}"/></div>
-						</li>
+						</li>-->
 						
 						<li>
 							<strong th:text="${#messages.msg('store.address')}" />
@@ -82,8 +82,8 @@
 <script layout:fragment="script" th:inline="javascript">
 	/*<![CDATA[*/
     var my_store = /*[[${store}]]*/ 'my_store';
-    var alert_password_none = /*[[#{alert.password.none}]]*/ 'alert_password_none';
     var alert_confirm_success = /*[[#{alert.confirm.success}]]*/ 'alert_confirm_success';
+    var alert_address_error = /*[[#{alert.address.error}]]*/ 'alert_address_error';
 
     $(document).ready(function() {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
