@@ -221,19 +221,15 @@
 		, TR.login_id
 		, TR.login_pw
 		, TR.code
-		, TR.gender
 		, TR.employment_type
-		, TR.address
 		, TR.working
 		, TR.status
 		, TR.latitude
 		, TR.longitude
 		, TR.location_updated
 		, TR.vehicle_number
-		, TR.emergency_phone
 		, TR.working_hours
 		, TR.rest_hours
-		, TR.teenager
 		, TSG.id AS subgroup_id
 		, TSG.group_id AS subgroup_group_id
 		, TG.name AS group_name
@@ -357,16 +353,8 @@
 				, A.code = #{code}
 			</if>
 
-			<if test="gender != null and gender != ''">
-				, A.gender = #{gender}
-			</if>
-
 			<if test="employmentType != null and employmentType != ''">
 				, A.employment_type = #{employmentType}
-			</if>
-
-			<if test="address != null and address != ''">
-				, A.address = #{address}
 			</if>
 
 			<if test="working != null and working != ''">
@@ -381,20 +369,12 @@
 				, A.vehicle_number = #{vehicleNumber}
 			</if>
 
-			<if test="emergencyPhone != null and emergencyPhone != ''">
-				, A.emergency_phone = #{emergencyPhone}
-			</if>
-
 			<if test="workingHours != null and workingHours != ''">
 				, A.working_hours = #{workingHours}
 			</if>
 
 			<if test="restHours != null and restHours != ''">
 				, A.rest_hours = #{restHours}
-			</if>
-
-			<if test="teenager != null and teenager != ''">
-				, A.teenager = #{teenager}
 			</if>
 
 			<if test="subGroupRiderRel.storeId =='' or subGroupRiderRel.storeId == null" >
@@ -460,16 +440,8 @@
 			, A.code = #{code}
 		</if>
 
-		<if test="gender != null and gender != ''">
-			, A.gender = #{gender}
-		</if>
-
 		<if test="employmentType != null and employmentType != ''">
 			, A.employment_type = #{employmentType}
-		</if>
-
-		<if test="address != null and address != ''">
-			, A.address = #{address}
 		</if>
 
 		<if test="working != null and working != ''">
@@ -484,20 +456,12 @@
 			, A.vehicle_number = #{vehicleNumber}
 		</if>
 
-		<if test="emergencyPhone != null and emergencyPhone != ''">
-			, A.emergency_phone = #{emergencyPhone}
-		</if>
-
 		<if test="workingHours != null and workingHours != ''">
 			, A.working_hours = #{workingHours}
 		</if>
 
 		<if test="restHours != null and restHours != ''">
 			, A.rest_hours = #{restHours}
-		</if>
-
-		<if test="teenager != null and teenager != ''">
-			, A.teenager = #{teenager}
 		</if>
 
 		<if test="subGroupRiderRel != null and (subGroupRiderRel.storeId !='' and subGroupRiderRel.storeId != null)">
@@ -775,13 +739,9 @@
 		, A.latitude
 		, A.longitude
 		, A.location_updated
-		, A.gender
 		, A.code
-		, case A.teenager when '0' then 'X' when '1' then 'O' else 'X' end as teenager
 		, A.phone
 		, A.login_id
-		, A.emergency_phone
-		, A.address
 		, A.vehicle_number
 		, B.store_id AS subGroupRiderRel_store_id
 		, C.id AS subgroup_id

@@ -98,21 +98,21 @@ function getRiderList() {
 
                     $tmpData.th3 = data[key].code
 
-                    if(data[key].gender == "0"){
+                    /*if(data[key].gender == "0"){
                         $tmpData.th4 = "男"
                     } else if (data[key].gender == "1"){
                         $tmpData.th4 = "女"
-                    }
+                    }*/
                     $tmpData.th5 = data[key].phone
-                    $tmpData.th6 = data[key].emergencyPhone
-                    $tmpData.th7 = data[key].address
+                    // $tmpData.th6 = data[key].emergencyPhone
+                    // $tmpData.th7 = data[key].address
                     $tmpData.th8 = data[key].vehicleNumber
 
-                    if(data[key].teenager=="0"){
+                    /*if(data[key].teenager=="0"){
                         $tmpData.th9 = "X"
                     } else if(data[key].teenager=="1"){
                         $tmpData.th9 = "O"
-                    }
+                    }*/
 
                     $tmpData.th10 = data[key].loginId
 
@@ -149,12 +149,12 @@ function getRiderList() {
                     {label:rider_belong_store, name:'th1', width:80, align:'center'},
                     {label:rider_name, name:'th2', width:80, align:'center'},
                     {label:rider_code, name:'th3', width:60, align:'center'},
-                    {label:rider_gender, name:'th4', width:40, align:'center'},
+                    // {label:rider_gender, name:'th4', width:40, align:'center'},
                     {label:rider_phone, name:'th5', width:100, align:'center'},
-                    {label:rider_phone_emergency, name:'th6', width:100, align:'center'},
-                    {label:rider_address, name:'th7', width:200},
+                    // {label:rider_phone_emergency, name:'th6', width:100, align:'center'},
+                    // {label:rider_address, name:'th7', width:200},
                     {label:rider_vehicle_number, name:'th8', width:80, align:'center'},
-                    {label:rider_teenager, name:'th9', width:60, align:'center'},
+                    // {label:rider_teenager, name:'th9', width:60, align:'center'},
                     {label:rider_login_id, name:'th10', width:80, align:'center'},
                     {label:'그룹ID', name:'th11', width:60, hidden:'hidden'},
                     {label:'서브그룹ID', name:'th12', width:60, hidden:'hidden'},
@@ -218,31 +218,31 @@ function getRiderDetail() {
                 // 아이디
                 $("#riderDetailLoginId").val(data.A_Rider.loginId);
                 //password
-                $("#riderDetailPassword").val(data.A_Rider.loginPw);
+                // $("#riderDetailPassword").val(data.A_Rider.loginPw);
                 // 직원코드
                 $("#riderDetailCode").val(data.A_Rider.code);
                 // 기사명
                 $("#riderDetailName").val(data.A_Rider.name);
                 // 성별
-                if(data.A_Rider.gender == "0"){
+                /*if(data.A_Rider.gender == "0"){
                     $("#riderDetailGenderMale").attr("checked", true);
                 }
                 else if(data.A_Rider.gender == "1"){
                     $("#riderDetailGenderFeMale").attr("checked", true);
-                }
+                }*/
                 // 청소년 여부
-                if(data.A_Rider.teenager == "0"){
+                /*if(data.A_Rider.teenager == "0"){
                     $("#riderDetailNoneTeenager").attr("checked", true);
                 }
                 else if(data.A_Rider.teenager == "1"){
                     $("#riderDetailTeenager").attr("checked", true);
-                }
+                }*/
                 // 기사 연락처
                 $("#riderDetailPhone").val(data.A_Rider.phone);
                 // 지원 긴급 연락처
-                $("#riderDetailEmergencyPhone").val(data.A_Rider.emergencyPhone);
+                // $("#riderDetailEmergencyPhone").val(data.A_Rider.emergencyPhone);
                 // 주소
-                $("#riderDetailAddress").val(data.A_Rider.address);
+                // $("#riderDetailAddress").val(data.A_Rider.address);
 
                 var riderDetailStoreNameHtml = "<option value=''>" + "不明" + "</option>";
                 // 소속 매장
@@ -341,13 +341,13 @@ function putRiderDetail() {
             storeId				: storeId,
             code    			: $("#riderDetailCode").val(),
             name	            : $("#riderDetailName").val(),
-            gender              : $("input[type='radio'][name='riderDetailGender']:checked").val(),
+            // gender              : $("input[type='radio'][name='riderDetailGender']:checked").val(),
             groupId		        : groupId,
             subGroupId			: subGroupId,
             phone			    : $("#riderDetailPhone").val(),
-            emergencyPhone      : $("#riderDetailEmergencyPhone").val(),
-            address				: $("#riderDetailAddress").val(),
-            teenager            : $("input[type='radio'][name='riderDetailTeenager']:checked").val(),
+            // emergencyPhone      : $("#riderDetailEmergencyPhone").val(),
+            // address				: $("#riderDetailAddress").val(),
+            // teenager            : $("input[type='radio'][name='riderDetailTeenager']:checked").val(),
             workingHours        : tmpWorking,
             restHours           : restHours,
             vehicleNumber       : $("#riderDetailVehicleNumber").val(),
@@ -391,13 +391,13 @@ function postRider() {
             storeId             : storeId,
             code    			: $("#postRiderCode").val(),
             name	            : $("#postRiderName").val(),
-            gender              : $("input[type='radio'][name='postRiderGender']:checked").val(),
+            // gender              : $("input[type='radio'][name='postRiderGender']:checked").val(),
             groupId		        : groupId,
             subGroupId			: subGroupId,
             phone			    : $("#postRiderPhone").val(),
-            emergencyPhone		: $("#postRiderEmergencyPhone").val(),
-            address				: $("#postRiderAddress").val(),
-            teenager            : $("input[type='radio'][name='postRiderTeenager']:checked").val(),
+            // emergencyPhone		: $("#postRiderEmergencyPhone").val(),
+            // address				: $("#postRiderAddress").val(),
+            // teenager            : $("input[type='radio'][name='postRiderTeenager']:checked").val(),
             workingHours        : tmpWorking,
             restHours           : restHours,
             vehicleNumber       : $("#postRiderVehicleNumber").val()

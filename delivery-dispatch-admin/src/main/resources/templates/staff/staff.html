@@ -5,14 +5,14 @@
 /*<![CDATA[*/
 var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
 var rider_code = /*[[#{rider.code}]]*/ 'rider_code';
-var rider_gender = /*[[#{rider.gender}]]*/ 'rider_gender';
-var rider_gender_male = /*[[#{rider.gender.male}]]*/ 'rider_gender_male';
-var rider_gender_female = /*[[#{rider.gender.female}]]*/ 'rider_gender_female';
+//var rider_gender = /*[[#{rider.gender}]]*/ 'rider_gender';
+//var rider_gender_male = /*[[#{rider.gender.male}]]*/ 'rider_gender_male';
+//var rider_gender_female = /*[[#{rider.gender.female}]]*/ 'rider_gender_female';
 var rider_phone = /*[[#{rider.phone}]]*/ 'rider_phone';
-var rider_phone_emergency = /*[[#{rider.phone.emergency}]]*/ 'rider_phone_emergency';
-var rider_address = /*[[#{rider.address}]]*/ 'rider_address';
+//var rider_phone_emergency = /*[[#{rider.phone.emergency}]]*/ 'rider_phone_emergency';
+//var rider_address = /*[[#{rider.address}]]*/ 'rider_address';
 var rider_vehicle_number = /*[[#{rider.vehicle.number}]]*/ 'rider_vehicle_number';
-var rider_teenager = /*[[#{rider.teenager}]]*/ 'rider_teenager';
+//var rider_teenager = /*[[#{rider.teenager}]]*/ 'rider_teenager';
 var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
 var rider_belong_store = /*[[#{rider.belong.store}]]*/ 'rider_belong_store';
 var gnb_staff = /*[[#{gnb.staff}]]*/ 'gnb_staff';
@@ -87,20 +87,8 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 									<input type="text" name=""  class="input" id="riderDetailLoginId" value="" readonly="true"/>
 								</td>
 
-								<th th:text="${#messages.msg('rider.phone.emergency')}" />
-								<td><input type="text" name="" class="input" value="" id="riderDetailEmergencyPhone"/></td>
-							</tr>
-							<tr>
-								<th th:text="${#messages.msg('login.password')}" />
-								<td><input type="password" name="" class="input" id="riderDetailPassword" value="" readonly="true"/></td>
-
-								<th th:text="${#messages.msg('rider.address')}" />
-								<td><input type="text" name="" class="input w_100" value="" id="riderDetailAddress"/></td>
-							</tr>
-							<tr>
-								<th th:text="${#messages.msg('rider.code')}" />
-								<td><input type="text" name="" class="input" value="" id="riderDetailCode"/></td>
-
+								<!--<th th:text="${#messages.msg('rider.phone.emergency')}" />-->
+								<!--<td><input type="text" name="" class="input" value="" id="riderDetailEmergencyPhone"/></td>-->
 
 								<th th:text="${#messages.msg('rider.belong.store')}" />
 								<td>
@@ -110,10 +98,16 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 								</td>
 							</tr>
 							<tr>
-								<th th:text="${#messages.msg('rider.name')}" />
-								<td><input type="text" name="" class="input" value="" id="riderDetailName"/></td>
+								<!--<th th:text="${#messages.msg('login.password')}" />-->
+								<!--<td><input type="password" name="" class="input" id="riderDetailPassword" value="" readonly="true"/></td>-->
+
+								<!--<th th:text="${#messages.msg('rider.address')}" />-->
+								<!--<td><input type="text" name="" class="input w_100" value="" id="riderDetailAddress"/></td>-->
+								<th th:text="${#messages.msg('rider.code')}" />
+								<td><input type="text" name="" class="input" value="" id="riderDetailCode"/></td>
 
 								<th th:text="${#messages.msg('rider.time.work')}" />
+
 								<td>
 									<select name="" class="select" id="riderDetailWorkStartTime">
 										<option value="empty">請選擇</option>
@@ -128,20 +122,12 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 
 								</td>
 							</tr>
-
 							<tr>
-								<th th:text="${#messages.msg('rider.gender')}" />
-								<td>
-									<label class="radio"><input name="riderDetailGender" type="radio" id="riderDetailGenderMale" value="0"/><i></i>
-										<span class="lbl" th:text="${#messages.msg('rider.gender.male')}" />
-									</label>
-									<label class="radio"><input name="riderDetailGender" type="radio" id="riderDetailGenderFeMale" value="1"/><i></i>
-										<span class="lbl" th:text="${#messages.msg('rider.gender.female')}" />
-									</label>
-								</td>
+								<th th:text="${#messages.msg('rider.name')}" />
+								<td><input type="text" name="" class="input" value="" id="riderDetailName"/></td>
+
 								<!--기사 휴식 시간-->
 								<th rowspan="2" th:text="${#messages.msg('rider.time.rest')}" />
-
 								<td rowspan="2">
 									<label class="checkbox"><input name="riderRestTime" type="checkbox"  value="10" id="riderRestTime10"/><i></i>
 										<span class="lbl" th:text="${#messages.msg('rider.time.label.rest', '10')}" />
@@ -172,25 +158,42 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 									</label>
 								</td>
 							</tr>
-							<!--기사 청소년 여부 -->
 							<tr>
-								<th th:text="${#messages.msg('rider.teenager')}" />
-								<td>
+								<th th:text="${#messages.msg('rider.phone')}" />
+								<td><input type="text" name="" class="input" value="" id="riderDetailPhone"/></td>
+							</tr>
+							<tr>
+								<th th:text="${#messages.msg('rider.vehicle.number')}" />
+								<td><input type="text" name="" class="input" value="" id="riderDetailVehicleNumber"/></td>
+								<th></th>
+								<td></td>
+							</tr>
+
+							<!--<tr>-->
+								<!--<th th:text="${#messages.msg('rider.gender')}" />-->
+								<!--<td>
+									<label class="radio"><input name="riderDetailGender" type="radio" id="riderDetailGenderMale" value="0"/><i></i>
+										<span class="lbl" th:text="${#messages.msg('rider.gender.male')}" />
+									</label>
+									<label class="radio"><input name="riderDetailGender" type="radio" id="riderDetailGenderFeMale" value="1"/><i></i>
+										<span class="lbl" th:text="${#messages.msg('rider.gender.female')}" />
+									</label>
+								</td>-->
+							<!--</tr>-->
+							<!--기사 청소년 여부 -->
+							<!--<tr>-->
+								<!--<th th:text="${#messages.msg('rider.teenager')}" />-->
+								<!--<td>
 									<label class="radio"><input name="riderDetailTeenager" type="radio" id="riderDetailTeenager" value="1"/><i></i>
 										<span class="lbl" th:text="${#messages.msg('answer.yes')}" />
 									</label>
 									<label class="radio"><input name="riderDetailTeenager" type="radio" id="riderDetailNoneTeenager" value="0"/><i></i>
 										<span class="lbl" th:text="${#messages.msg('answer.no')}" />
 									</label>
-								</td>
-							</tr>
-							<tr>
-								<th th:text="${#messages.msg('rider.phone')}" />
-								<td><input type="text" name="" class="input" value="" id="riderDetailPhone"/></td>
-
-								<th th:text="${#messages.msg('rider.vehicle.number')}" />
-								<td><input type="text" name="" class="input" value="" id="riderDetailVehicleNumber"/></td>
-							</tr>
+								</td>-->
+							<!--</tr>-->
+							<!--<tr>-->
+							<!--</tr>-->
 						</tbody>
 					</table>
 				</div>
@@ -229,19 +232,9 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 							<input type="text" name="" id="postRiderLoginId" class="input" value="" />
 							<button class="button btn_black" onclick="riderLoginIdCheck()" th:text="${#messages.msg('btn.duplicated')}" />
 						</td>
-						<th th:text="${#messages.msg('rider.phone.emergency')}" />
-						<td><input type="text" name="" class="input" value="" id="postRiderEmergencyPhone"/></td>
-					</tr>
-					<tr>
-						<th th:text="${#messages.msg('login.password')}" />
-						<td><input type="password" name="" class="input" value="" id="postRiderLoginPw"/></td>
 
-						<th th:text="${#messages.msg('rider.address')}" />
-						<td><input type="text" name="" class="input w_100" value="" id="postRiderAddress"/></td>
-					</tr>
-					<tr>
-						<th th:text="${#messages.msg('rider.code')}" />
-						<td><input type="text" name="" class="input" value="" id="postRiderCode"/></td>
+						<!--<th th:text="${#messages.msg('rider.phone.emergency')}" />-->
+						<!--<td><input type="text" name="" class="input" value="" id="postRiderEmergencyPhone"/></td>-->
 
 						<th th:text="${#messages.msg('rider.belong.store')}" />
 						<!--소속 매장 -->
@@ -252,8 +245,11 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 						</td>
 					</tr>
 					<tr>
-						<th th:text="${#messages.msg('rider.name')}" />
-						<td><input type="text" name="" class="input" value="" id="postRiderName"/></td>
+						<th th:text="${#messages.msg('login.password')}" />
+						<td><input type="password" name="" class="input" value="" id="postRiderLoginPw"/></td>
+
+						<!--<th th:text="${#messages.msg('rider.address')}" />-->
+						<!--<td><input type="text" name="" class="input w_100" value="" id="postRiderAddress"/></td>-->
 
 						<!--근무시간-->
 						<th th:text="${#messages.msg('rider.time.work')}" />
@@ -270,16 +266,8 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 						</td>
 					</tr>
 					<tr>
-						<th th:text="${#messages.msg('rider.gender')}" />
-						<!--성별-->
-						<td>
-							<label class="radio"><input name="postRiderGender" type="radio" id="postRiderGenderMale" value="0"/><i></i>
-								<span class="lbl" th:text="${#messages.msg('rider.gender.male')}" />
-							</label>
-							<label class="radio"><input name="postRiderGender" type="radio" id="postRiderGenderFeMale" value="1"/><i></i>
-								<span class="lbl" th:text="${#messages.msg('rider.gender.female')}" />
-							</label>
-						</td>
+						<th th:text="${#messages.msg('rider.code')}" />
+						<td><input type="text" name="" class="input" value="" id="postRiderCode"/></td>
 
 						<th rowspan="2" th:text="${#messages.msg('rider.time.rest')}" />
 						<!--휴식시간-->
@@ -314,17 +302,34 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 						</td>
 					</tr>
 					<tr>
-						<th th:text="${#messages.msg('rider.teenager')}" />
+						<th th:text="${#messages.msg('rider.name')}" />
+						<td><input type="text" name="" class="input" value="" id="postRiderName"/></td>
+					</tr>
+					<!--<tr>-->
+						<!--<th th:text="${#messages.msg('rider.gender')}" />-->
+						<!--성별-->
+						<!--<td>
+							<label class="radio"><input name="postRiderGender" type="radio" id="postRiderGenderMale" value="0"/><i></i>
+								<span class="lbl" th:text="${#messages.msg('rider.gender.male')}" />
+							</label>
+							<label class="radio"><input name="postRiderGender" type="radio" id="postRiderGenderFeMale" value="1"/><i></i>
+								<span class="lbl" th:text="${#messages.msg('rider.gender.female')}" />
+							</label>
+						</td>-->
+
+					<!--</tr>-->
+					<!--<tr>-->
+						<!--<th th:text="${#messages.msg('rider.teenager')}" />-->
 						<!--청소년 여부-->
-						<td>
+						<!--<td>
 							<label class="radio"><input name="postRiderTeenager" type="radio" id="postRiderTeenager" value="1" /><i></i>
 								<span class="lbl" th:text="${#messages.msg('answer.yes')}" />
 							</label>
 							<label class="radio"><input name="postRiderTeenager" type="radio" id="postRiderNoneTeenager" value="0"/><i></i>
 								<span class="lbl" th:text="${#messages.msg('answer.no')}" />
 							</label>
-						</td>
-					</tr>
+						</td>-->
+					<!--</tr>-->
 					<tr>
 						<th th:text="${#messages.msg('rider.phone')}" />
 						<td><input type="text" name="" class="input" value="" id="postRiderPhone"/></td>

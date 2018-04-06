@@ -1,12 +1,8 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
-import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
-import kr.co.cntt.core.model.admin.Admin;
-import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
-import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StaffAdminService;
@@ -152,13 +148,13 @@ public class StaffController {
             @RequestParam("storeId") String storeId,
             @RequestParam("code") String code,
             @RequestParam("name") String name,
-            @RequestParam("gender") String gender,
+            // @RequestParam("gender") String gender,
             @RequestParam("groupId") String groupId,
             @RequestParam("subGroupId") String subGroupId,
             @RequestParam("phone") String phone,
-            @RequestParam("emergencyPhone") String emergencyPhone,
-            @RequestParam("address") String address,
-            @RequestParam("teenager") String teenager,
+            // @RequestParam("emergencyPhone") String emergencyPhone,
+            // @RequestParam("address") String address,
+            // @RequestParam("teenager") String teenager,
             @RequestParam("workingHours") String workingHours,
             @RequestParam("restHours") String restHours,
             @RequestParam("vehicleNumber") String vehicleNumber,
@@ -185,11 +181,11 @@ public class StaffController {
         rider.setIsAdmin("1");
         rider.setCode(code);
         rider.setName(name);
-        rider.setGender(gender);
-        rider.setEmergencyPhone(emergencyPhone);
+//        rider.setGender(gender);
+//        rider.setEmergencyPhone(emergencyPhone);
         rider.setPhone(phone);
-        rider.setAddress(address);
-        rider.setTeenager(teenager);
+//        rider.setAddress(address);
+//        rider.setTeenager(teenager);
         rider.setWorkingHours(workingHours);
         rider.setRestHours(restHours);
         rider.setVehicleNumber(vehicleNumber);
@@ -248,13 +244,13 @@ public class StaffController {
                              @RequestParam("storeId") String storeId,
                              @RequestParam("code") String code,
                              @RequestParam("name") String name,
-                             @RequestParam("gender") String gender,
+                             // @RequestParam("gender") String gender,
                              @RequestParam("groupId") String groupId,
                              @RequestParam("subGroupId") String subGroupId,
                              @RequestParam("phone") String phone,
-                             @RequestParam("emergencyPhone") String emergencyPhone,
-                             @RequestParam("address") String address,
-                             @RequestParam("teenager") String teenager,
+                             // @RequestParam("emergencyPhone") String emergencyPhone,
+                             // @RequestParam("address") String address,
+                             // @RequestParam("teenager") String teenager,
                              @RequestParam("workingHours") String workingHours,
                              @RequestParam("restHours") String restHours,
                              @RequestParam("vehicleNumber") String vehicleNumber)
@@ -277,12 +273,12 @@ public class StaffController {
 
         rider.setCode(code);
         rider.setName(name);
-        rider.setGender(gender);
+//        rider.setGender(gender);
 
-        rider.setEmergencyPhone(emergencyPhone);
+//        rider.setEmergencyPhone(emergencyPhone);
         rider.setPhone(phone);
-        rider.setAddress(address);
-        rider.setTeenager(teenager);
+//        rider.setAddress(address);
+//        rider.setTeenager(teenager);
         rider.setWorkingHours(workingHours);
         rider.setRestHours(restHours);
         rider.setVehicleNumber(vehicleNumber);

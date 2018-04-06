@@ -603,12 +603,8 @@
 			, A.code
 			, A.phone
  			, TS.store_name
-			, A.address
 			, A.login_id
-			, A.gender
-			, A.emergency_phone
 			, A.employment_type
-			, A.teenager
 			, A.vehicle_number
 			, C.id AS subgroup_id
 			, C.group_id AS subgroup_group_id
@@ -620,9 +616,6 @@
 			, B.store_id AS subGroupRiderRel_store_id
 			, B.subgroup_id  AS subGroupRiderRel_subgroup_id
 			, B.group_id AS subGroupRiderRel_group_id
-
-
-
 		FROM TB_RIDER AS A
 
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
@@ -660,14 +653,10 @@
 			, login_id
 			, login_pw
 			, code
-			, gender
 			, employment_type
-			, address
 			, vehicle_number
-			, emergency_phone
 			, working_hours
 			, rest_hours
-			, teenager
 		) VALUES (
 			now()
 			, #{chatUserId}
@@ -682,30 +671,16 @@
 			<if test="code == null or code == ''">
 				, NULL
 			</if>
-			, #{gender}
 			<if test="employmentType != null and employmentType != ''">
 				, #{employmentType}
 			</if>
 			<if test="employmentType == null or employmentType == ''">
 				, NULL
 			</if>
-
-			<if test="address != null and address != ''">
-				, #{address}
-			</if>
-			<if test="address == null or address == ''">
-				, NULL
-			</if>
 			<if test="vehicleNumber != null and vehicleNumber != ''">
 				, #{vehicleNumber}
 			</if>
 			<if test="vehicleNumber == null or vehicleNumber == ''">
-				, NULL
-			</if>
-			<if test="emergencyPhone != null and emergencyPhone != ''">
-				, #{emergencyPhone}
-			</if>
-			<if test="emergencyPhone == null or emergencyPhone == ''">
 				, NULL
 			</if>
 			, #{workingHours}
@@ -715,7 +690,6 @@
 			<if test="restHours == null or restHours == ''">
 				, NULL
 			</if>
-			, #{teenager}
 		)
 		<selectKey keyProperty="id" resultType="String">
 			SELECT LAST_INSERT_ID()
