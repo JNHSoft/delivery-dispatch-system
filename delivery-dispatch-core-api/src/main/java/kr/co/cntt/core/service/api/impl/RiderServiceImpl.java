@@ -143,7 +143,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         if (nRet != 0) {
             if (S_Rider.getSubGroupStoreRel() != null) {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId()+", subgroup_id:"+S_Rider.getSubGroupStoreRel().getSubGroupId());
             } else {
                 redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
             }
@@ -171,7 +171,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         if (nRet != 0) {
             if (S_Rider.getSubGroupStoreRel() != null) {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId()+", subgroup_id:"+S_Rider.getSubGroupStoreRel().getSubGroupId());
             } else {
                 redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
             }
@@ -198,7 +198,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         if (nRet != 0) {
             if (S_Rider.getSubGroupStoreRel() != null) {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId()+", subgroup_id:"+S_Rider.getSubGroupStoreRel().getSubGroupId());
             } else {
                 redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
             }
@@ -297,7 +297,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         if (nRet != 0) {
             if (S_Rider.getSubGroupStoreRel() != null) {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId()+", subgroup_id:"+S_Rider.getSubGroupStoreRel().getSubGroupId());
             } else {
                 redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
             }

@@ -589,7 +589,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         Order S_Order = orderMapper.selectOrderInfo(orderAssignCanceled);
 
         if (ret != 0) {
-            redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
+            redisService.setPublisher("order_assign_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 if(tokens.size() > 0){
                     Notification noti = new Notification();

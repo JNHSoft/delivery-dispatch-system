@@ -1,47 +1,4 @@
 /*<![CDATA[*/
-function footerRiders() {
-    if(footerRiderList[2]){
-        $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
-    }else {
-        $('#rest').text('0');
-    }
-    if(footerRiderList[1]){
-        $('#standby').text(parseInt(footerRiderList[1].workCount) - parseInt(footerRiderList[1].orderCount));// 대기
-        $('#work').text(footerRiderList[1].orderCount);//근무
-    }else {
-        $('#standby').text('0');
-        $('#work').text('0');
-    }
-}
-function footerOrders() {
-    var newCnt = 0;
-    var assignedCnt = 0;
-    var completedCnt = 0;
-    var canceledCnt = 0;
-    for (i =0; i <footerOrderList.length; i++){
-        if(footerOrderList[i].status=="0"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="1"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="2"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="3"){
-            completedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="4"){
-            canceledCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="5"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }
-    }
-    $('#new').text(newCnt);
-    $('#assigned').text(assignedCnt);
-    $('#completed').text(completedCnt);
-    $('#canceled').text(canceledCnt);
-}
-$(function() {
-    footerRiders();
-    footerOrders()
-});
 function putStoreInfo() {
     var id = $('#storeId').val();
     var loginPw = $('#storePw').val();
@@ -56,7 +13,6 @@ function putStoreInfo() {
         return;
     }
 
-    console.log(id, storePhone, name, phone, address,detailAddress);
     $.ajax({
         url: '/putStoreInfo',
         type: 'put',
@@ -81,7 +37,6 @@ function putStoreAssignInfo() {
     var checkboxs = [];
     $('input[type="checkbox"]:checked').each(function(index, element) {
         checkboxs.push($(element).val());
-        console.log(index, element, $(element).val());
     });
 
     var assignmentLimit = $("#maxSelect option:selected").val();
@@ -113,7 +68,6 @@ function getStatisticsInfo(orderId) {
         },
         dataType : 'json',
         success : function (data) {
-            console.log(data);
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
             }
@@ -185,7 +139,6 @@ function getRiderInfo(riderId) {
         },
         dataType : 'json',
         success : function (data) {
-            console.log(data);
             $('#userId').val(data.loginId);
             $('#emergencyPhone').val(data.emergencyPhone);
             $('#address').val(data.address);
@@ -227,12 +180,10 @@ function putRiderInfo() {
     var tmpHours = [];
     $('input[name="restChk"]:checked').each(function(index, element) {
         tmpHours.push($(element).val());
-        console.log(tmpHours);
     });
     var restHours = tmpHours.join("|");
     var phone = $('#phone').val();
     var vehicleNumber = $('#vehicleNumber').val();
-    console.log(emergencyPhone, loginPw, address, name,workingHours, gender ,teenager,restHours,phone,vehicleNumber);
     $.ajax({
         url: '/putRiderInfo',
         type: 'put',
@@ -296,9 +247,9 @@ function putStoreAlarm() {
                 $.removeCookie("complete_alarm");
             }
             if(alarm.match('4')=='4'){
-                $.cookie("cancelAlarm_alarm", cancelAlarm.fileName, {"expires" : 365});
+                $.cookie("cancel_alarm", cancelAlarm.fileName, {"expires" : 365});
             }else {
-                $.removeCookie("cancelAlarm_alarm");
+                $.removeCookie("cancel_alarm");
             }
             alert(alert_confirm_success);
             location.href="/setting-alarm";

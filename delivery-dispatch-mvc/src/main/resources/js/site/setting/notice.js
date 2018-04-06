@@ -1,46 +1,6 @@
 /*<![CDATA[*/
-function footerRiders() {
-    if(footerRiderList[2]){
-        $('#rest').text(parseInt(footerRiderList[2].workCount) + parseInt(footerRiderList[2].orderCount));//휴식
-    }else {
-        $('#rest').text('0');
-    }
-    if(footerRiderList[1]){
-        $('#standby').text(parseInt(footerRiderList[1].workCount) - parseInt(footerRiderList[1].orderCount));// 대기
-        $('#work').text(footerRiderList[1].orderCount);//근무
-    }else {
-        $('#standby').text('0');
-        $('#work').text('0');
-    }
-}
-function footerOrders() {
-    var newCnt = 0;
-    var assignedCnt = 0;
-    var completedCnt = 0;
-    var canceledCnt = 0;
-    for (i =0; i <footerOrderList.length; i++){
-        if(footerOrderList[i].status=="0"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="1"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="2"){
-            assignedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="3"){
-            completedCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="4"){
-            canceledCnt += parseInt(footerOrderList[i].count);
-        }else if(footerOrderList[i].status=="5"){
-            newCnt += parseInt(footerOrderList[i].count);
-        }
-    }
-    $('#new').text(newCnt);
-    $('#assigned').text(assignedCnt);
-    $('#completed').text(completedCnt);
-    $('#canceled').text(canceledCnt);
-}
+
 $(function() {
-    footerRiders();
-    footerOrders();
     getNoticeList();
 });
 function getNoticeList() {
@@ -212,7 +172,6 @@ function putNoticeConfirm() {
     });
 }
 function noticeFileDownload(fileName) {
-    console.log("fileName: " + fileName);
     var form = document.getElementById("fileForm");
     var fileField = form.elements["fileName"];
 

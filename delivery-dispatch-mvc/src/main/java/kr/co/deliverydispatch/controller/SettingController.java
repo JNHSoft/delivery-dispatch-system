@@ -63,21 +63,9 @@ public class SettingController {
     @GetMapping("/setting-account")
     public String settingAccount(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeSettingService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-        model.addAttribute("json", new Gson().toJson(store));
-        Rider rider = new Rider();
-        rider.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
-        model.addAttribute("footerRiderList", footerRiderList);
-        Order order = new Order();
-        order.setToken(storeInfo.getStoreAccessToken());
-        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
-        model.addAttribute("footerOrderList", footerOrderList);
-        log.info("json : {}", new Gson().toJson(store));
         return "/setting/setting_account";
     }
 
@@ -102,26 +90,13 @@ public class SettingController {
     @GetMapping("/setting-assign")
     public String settingAssign(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
         store.setToken(storeInfo.getStoreAccessToken());
-        System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeSettingService.getStoreInfo(store);
         ThirdParty thirdParty = new ThirdParty();
         thirdParty.setToken(storeInfo.getStoreAccessToken());
         List<ThirdParty> allThirdParty= storeSettingService.getThirdParty(thirdParty);
         model.addAttribute("store", myStore);
         model.addAttribute("thirdParty", allThirdParty);
-        model.addAttribute("json", new Gson().toJson(store));
-        Rider rider = new Rider();
-        rider.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
-        model.addAttribute("footerRiderList", footerRiderList);
-        Order order = new Order();
-        order.setToken(storeInfo.getStoreAccessToken());
-        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
-        model.addAttribute("footerOrderList", footerOrderList);
-        log.info("json : {}", new Gson().toJson(store));
         return "/setting/setting_assign";
     }
 
@@ -143,26 +118,14 @@ public class SettingController {
     @GetMapping("/setting-rider")
     public String settingRider(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
         store.setToken(storeInfo.getStoreAccessToken());
-        System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeSettingService.getStoreInfo(store);
         List<Rider> myRiderList = storeSettingService.getMyStoreRiderRels(store);
         model.addAttribute("riderList", myRiderList);
         model.addAttribute("store", myStore);
-        model.addAttribute("json", new Gson().toJson(store));
-        Rider rider = new Rider();
-        rider.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
-        model.addAttribute("footerRiderList", footerRiderList);
-        Order order = new Order();
-        order.setToken(storeInfo.getStoreAccessToken());
-        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
-        model.addAttribute("footerOrderList", footerOrderList);
-        log.info("json : {}", new Gson().toJson(model));
         return "/setting/setting_rider";
     }
+
     @ResponseBody
     @GetMapping("/getRiderInfo")
     public Rider getRiderInfo(Rider rider){
@@ -192,10 +155,7 @@ public class SettingController {
     @GetMapping("/setting-alarm")
     public String settingAlarm(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
         store.setToken(storeInfo.getStoreAccessToken());
-        System.out.println("!!!!토큰"+store.getToken());
 
         Store myStore = storeSettingService.getStoreInfo(store);
         ArrayList<Alarm> alarmList = (ArrayList)storeSettingService.getAlarm(store);
@@ -226,16 +186,6 @@ public class SettingController {
         model.addAttribute("assignCancelAlarm", assignCancelAlarm);
         model.addAttribute("completeAlarm", completeAlarm);
         model.addAttribute("cancelAlarm", cancelAlarm);
-        model.addAttribute("json", new Gson().toJson(store));
-        Rider rider = new Rider();
-        rider.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
-        model.addAttribute("footerRiderList", footerRiderList);
-        Order order = new Order();
-        order.setToken(storeInfo.getStoreAccessToken());
-        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
-        model.addAttribute("footerOrderList", footerOrderList);
-        log.info("json : {}", new Gson().toJson(model));
         return "/setting/setting_alarm";
     }
     @ResponseBody
@@ -255,25 +205,10 @@ public class SettingController {
     @GetMapping("/setting-notice")
     @CnttMethodDescription("공지사항 페이지")
     public String settingNotice(Store store, @RequestParam(required = false) String frag, Model model) {
-
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
         store.setToken(storeInfo.getStoreAccessToken());
-        System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeNoticeService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-        model.addAttribute("json", new Gson().toJson(store));
-        Rider rider = new Rider();
-        rider.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
-        model.addAttribute("footerRiderList", footerRiderList);
-        Order order = new Order();
-        order.setToken(storeInfo.getStoreAccessToken());
-        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
-        model.addAttribute("footerOrderList", footerOrderList);
-        log.info("json : {}", new Gson().toJson(store));
-
         return "/setting/setting_notice";
     }
 

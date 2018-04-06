@@ -147,8 +147,6 @@
     var rider_login_id = /*[[#{login.id}]]*/ 'rider_login_id';
     var mydata = /*[[${riderList}]]*/ 'riderList';
     var my_store = /*[[${store}]]*/ 'my_store';
-    var footerRiderList = /*[[${footerRiderList}]]*/ 'footerRiderList';
-    var footerOrderList = /*[[${footerOrderList}]]*/ 'footerOrderList';
     $(document).ready(function () {
         for (var i = 0; i< mydata.length; i++){
             mydata[i].gender = mydata[i].gender==0 ? rider_gender_male : rider_gender_female;
@@ -160,16 +158,21 @@
                 transports: ['websocket'] // websocket만을 사용하도록 설정
             });
             socket.on('message', function(data){
-                if(data.match('rider_')=='rider_'){
-                    location.href = "/setting-rider";
+                var subgroup_id = data.substring(data.indexOf("subgroup_id:")+12, data.lastIndexOf('}'));
+                var store_id = data.substring(data.indexOf("store_id:")+9,
+                    (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
+                if((!my_store.subGroup && my_store.id == store_id)||subgroup_id == my_store.subGroup.id){
+                    if(data.match('rider_')=='rider_'){
+                        location.href = "/setting-rider";
+                    }
+                    if(data.match('order_')=='order_'){
+                        footerOrders()
+                    }
+                    alarmSound(data);
                 }
                 if(data.match('notice_')=='rider_'){
                     noticeAlarm();
                 }
-                if(data.match('order_')=='order_'){
-                    footerOrders()
-                }
-                alarmSound(data)
             });
             $(function() {
                 /*$('#putRider').click(function(){

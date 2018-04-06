@@ -144,7 +144,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
 
         if (nRet != 0) {
             if (S_Rider.getSubGroupStoreRel() != null) {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId()+", subgroup_id:"+S_Rider.getSubGroupStoreRel().getSubGroupId());
             } else {
                 redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
             }
@@ -217,7 +217,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
             return  0;
         } else {
             if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
-                redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
+                redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId()+", subgroup_id:"+resultStore.getSubGroup().getId());
             }
         }
 

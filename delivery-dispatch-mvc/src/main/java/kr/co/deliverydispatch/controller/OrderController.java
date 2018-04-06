@@ -47,27 +47,13 @@ public class OrderController {
     @CnttMethodDescription("오더 페이지")
     public String order(Store store, @RequestParam(required = false) String frag, Model model){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        // Store 정보
-        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
-        Notice notice = new Notice();
-        Rider rider = new Rider();
         Order order = new Order();
         store.setToken(storeInfo.getStoreAccessToken());
-        notice.setToken(storeInfo.getStoreAccessToken());
-        rider.setToken(storeInfo.getStoreAccessToken());
         order.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeOrderService.getStoreInfo(store);
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
         List<Order> orderList = storeOrderService.getOrders(order);
-        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
-
         model.addAttribute("store", myStore);
-        model.addAttribute("footerRiderList", footerRiderList);
         model.addAttribute("orderList", orderList);
-        model.addAttribute("footerOrderList", footerOrderList);
-
-
         return "/order/order";
     }
 
@@ -86,7 +72,6 @@ public class OrderController {
     @GetMapping("/getOrderDetail")
     @CnttMethodDescription("오더 상세 조회")
     public Order getOrderDetail(Common common){
-        System.out.println("!!!!!!!!!!!!!!!!!!!common : "+common.getId());
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         common.setToken(storeInfo.getStoreAccessToken());
         Order order = storeOrderService.getOrderInfo(common);

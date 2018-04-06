@@ -48,21 +48,9 @@ public class RiderController {
     @GetMapping("/rider")
     public String rider(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        // Store 정보
-        log.info("===============> storeInfo.getStoreAccessToken()    : {}", storeInfo.getStoreAccessToken());
-
         store.setToken(storeInfo.getStoreAccessToken());
-        System.out.println("!!!!토큰"+store.getToken());
         Store myStore = storeRiderService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-        Rider rider = new Rider();
-        rider.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> footerRiderList = storeRiderService.getRiderFooter(rider);
-        model.addAttribute("footerRiderList", footerRiderList);
-        Order order = new Order();
-        order.setToken(storeInfo.getStoreAccessToken());
-        List<Order> footerOrderList = storeOrderService.getFooterOrders(order);
-        model.addAttribute("footerOrderList", footerOrderList);
         return "/rider/rider";
     }
 

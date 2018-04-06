@@ -284,8 +284,14 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             int result = orderMapper.updateOrder(order);
 
+            Store storeDTO = new Store();
+            storeDTO.setAccessToken(order.getToken());
+            storeDTO.setToken(order.getToken());
+
+            storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
             if (result != 0) {
-                redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+notiOrder.getAdminId() + ", store_id:"+notiOrder.getStoreId());
+                redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+notiOrder.getAdminId() + ", store_id:"+notiOrder.getStoreId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN_AUTO);
