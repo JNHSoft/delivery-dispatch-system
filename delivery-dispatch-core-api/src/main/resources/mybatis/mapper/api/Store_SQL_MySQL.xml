@@ -432,11 +432,11 @@
         <choose>
             <when test="id != null and id != ''">
                 AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-                AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id})
+                AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id} ORDER BY created_datetime DESC LIMIT 1)
             </when>
             <otherwise>
                 AND A.admin_id = (SELECT * FROM (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})) AS D)
-                AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+                AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})  ORDER BY created_datetime DESC LIMIT 1)
             </otherwise>
         </choose>
 	</select>
