@@ -611,6 +611,9 @@ function putAssignedAdvance() {
         async : false,
         dataType : 'json',
         success : function (data) {
+            if (data == false) {
+                alert(alert_order_assign_max);
+            }
         }
     });
 }
