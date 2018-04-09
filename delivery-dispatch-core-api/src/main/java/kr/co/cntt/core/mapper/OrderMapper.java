@@ -133,4 +133,10 @@ public interface OrderMapper {
     public List<String> selectPushToken(SubGroup subGroup);
 
     public List<Order> selectFooterOrders(Order order);
+
+    /**
+     * 예약 배정 푸시 관련
+     * @return
+     */
+    public List<Order> selectReservationOrders();
 }

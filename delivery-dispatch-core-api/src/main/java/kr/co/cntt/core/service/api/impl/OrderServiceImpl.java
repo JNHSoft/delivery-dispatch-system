@@ -76,12 +76,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     @Override
     public void autoAssignOrder() throws AppTrException {
-        String nowDate = String.format("%02d", LocalDateTime.now().getYear())
-                + String.format("%02d", LocalDateTime.now().getMonthValue())
-                + String.format("%02d", LocalDateTime.now().getDayOfMonth())
-                + String.format("%02d", LocalDateTime.now().getHour())
-                + String.format("%02d", LocalDateTime.now().getMinute())
-                + "00";
+        LocalDateTime ldt = LocalDateTime.now().plusMinutes(50);
+        String nowDate = String.format("%02d", ldt.getYear())
+                + "-" + String.format("%02d", ldt.getMonthValue())
+                + "-" + String.format("%02d", ldt.getDayOfMonth())
+                + " " + String.format("%02d", ldt.getHour())
+                + ":" + String.format("%02d", ldt.getMinute())
+                + ":00.0";
 
         Map map = new HashMap();
 
@@ -226,6 +227,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 if (flag == Boolean.TRUE) {
 
                     if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
+
                         if (orderList.get(i).getReservationDatetime().equals(nowDate)) {
                             // 예약 배정
                             log.info(">>> 예약 배정 " + orderList.get(i).getId());
@@ -311,6 +313,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     }
 
+    @Override
+    public void reservationOrders() throws AppTrException {
+        List<Order> reservationOrders = orderMapper.selectReservationOrders();
+        if (reservationOrders.size() > 0) {
+            for (Order order : reservationOrders) {
+                log.info("!!!!!!!!!!!!!!!!!!!!!!!" + order.getSubGroup().getId());
+                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId()+", subgroup_id:"+ ( (order.getSubGroup() == null) ? "noSubgroup" : order.getSubGroup().getId()) );
+            }
+        }
+
+    }
+
     @Secured("ROLE_STORE")
     @Override
     public int postOrder(Order order) throws AppTrException {
@@ -381,7 +395,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         if (postOrder != 0) {
-            redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+            redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId()+", subgroup_id:"+ ( (storeDTO.getSubGroup() == null) ? "noSubgroup" : storeDTO.getSubGroup().getId()) );
 
             if(storeDTO.getAssignmentStatus().equals("2")){
 

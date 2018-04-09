@@ -35,6 +35,7 @@ public class Schedule {
     public void autoAssignOrder() throws InterruptedException, AppTrException {
         log.info("주문 자동 배정 스케줄링 - 5분마다다");
         orderService.autoAssignOrder();
+        orderService.reservationOrders();
     }
 
     // 기사 휴식 시간 스케줄링
