@@ -720,6 +720,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             storeDTO.setId(subGroupRiderRel.getStoreId());
             storeDTO.setIsAdmin("0");
+            storeDTO.setId(subGroupRiderRel.getStoreId());
         }
 
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);
@@ -873,12 +874,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         int result = this.putOrder(orderPickedUp);
 
         orderPickedUp.setId(order.getId());
+        orderPickedUp.setRole("ROLE_RIDER");
 
         Order S_Order = orderMapper.selectOrderInfo(orderPickedUp);
 
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
+        storeDTO.setIsAdmin("0");
+        storeDTO.setId(S_Order.getStoreId());
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);
 
         if (result != 0) {
@@ -919,11 +923,25 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         orderCompleted.setId(order.getId());
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            orderCompleted.setRole("ROLE_STORE");
+        } else {
+            orderCompleted.setRole("ROLE_RIDER");
+        }
+
         Order S_Order = orderMapper.selectOrderInfo(orderCompleted);
 
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
+
+        if(authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            storeDTO.setIsAdmin("0");
+            storeDTO.setId(S_Order.getStoreId());
+        }
+
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);
 
         if (result != 0) {
@@ -932,7 +950,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }else {
                 redisService.setPublisher("order_completed", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getStoreId());
             }
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(S_Order);
                 if(tokens.size() > 0){
@@ -1088,6 +1106,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         orderAssignCanceled.setId(order.getId());
 
+        if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            orderAssignCanceled.setRole("ROLE_STORE");
+        } else {
+            orderAssignCanceled.setRole("ROLE_RIDER");
+        }
         Order S_Order = orderMapper.selectOrderInfo(orderAssignCanceled);
 
         if (ret != 0) {
