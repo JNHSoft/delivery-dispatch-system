@@ -207,6 +207,7 @@ function getOrderDetail(orderId) {
         async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
+            console.log(data);
             selectedOriginOrder = data;
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
