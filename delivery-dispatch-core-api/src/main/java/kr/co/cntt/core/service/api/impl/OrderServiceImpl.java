@@ -390,8 +390,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (order.getPaid() == null || order.getPaid() == "") {
             order.setPaid("0");
+        } else if (!order.getPaid().equals("0") && !order.getPaid().equals("1") && !order.getPaid().equals("2") && !order.getPaid().equals("3")) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.S0002), ErrorCodeEnum.S0002.name());
         }
-        
+
         order.setStatus("0");
 
         int postOrder = orderMapper.insertOrder(order);
