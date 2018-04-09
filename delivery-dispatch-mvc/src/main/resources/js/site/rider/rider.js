@@ -85,7 +85,11 @@ $(function() {
 
 });
 function addMarker(location, data, i, status) {
-    if($('#myStoreChk').prop('checked') && data.riderStore.id != $('#storeId').val()) {
+    if($('#myStoreChk').prop('checked') && data.riderStore) {
+        if (data.riderStore.id != $('#storeId').val()){
+            return i;
+        }
+    }else if($('#myStoreChk').prop('checked') && !data.riderStore){
         return i;
     }
     if(data.latitude != null){
@@ -133,9 +137,9 @@ function getRiderList() {
         });
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
-                    var lattitude = parseFloat(data[key].latitude);
-                    var longitude = parseFloat(data[key].longitude)
-                    var location = {lat: lattitude, lng: longitude};
+                var latitude = parseFloat(data[key].latitude);
+                var longitude = parseFloat(data[key].longitude)
+                var location = {lat: latitude, lng: longitude};
                 if(data[key].working==1 && typeof data[key].order != "undefined"){
                     $status = '<i class="ic_txt ic_blue">'+ status_work +'</i>';
                 }else if (data[key].working==1 && typeof data[key].order == "undefined"){
@@ -168,14 +172,22 @@ function getRiderList() {
     });
 }
 function gridRiderList(data, $status) {
-    if($('#myStoreChk').prop('checked') && data.riderStore.id != $('#storeId').val()) {
+    if($('#myStoreChk').prop('checked') && data.riderStore) {
+        if (data.riderStore.id != $('#storeId').val()){
+            return '';
+        }
+    }else if($('#myStoreChk').prop('checked') && !data.riderStore){
         return '';
     }
     var shtml = "";
     shtml += "<tr id='riderMapId"  + data.id + "'><td>" +data.id+"</td>";
     shtml += "<td>"+data.name+"</td>";
     shtml += "<td>"+$status+"</td>";
-    shtml += "<td>"+data.riderStore.storeName+"</td>";
+    if(data.riderStore){
+        shtml += "<td>"+data.riderStore.storeName+"</td>";
+    }else {
+        shtml +="<td>-</td>";
+    }
     if(data.orderStore){
         shtml += "<td>"+data.orderStore.storeName+"</td>";
     }else {

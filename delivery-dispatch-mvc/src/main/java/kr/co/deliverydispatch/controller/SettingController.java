@@ -166,8 +166,6 @@ public class SettingController {
     public Boolean putRiderInfo(Rider rider) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         rider.setToken(storeInfo.getStoreAccessToken());
-//        ShaEncoder sha = new ShaEncoder(512);
-//        rider.setLoginPw(sha.encode(rider.getLoginPw()));
         storeSettingService.updateRiderInfo(rider);
         return true;
     }
