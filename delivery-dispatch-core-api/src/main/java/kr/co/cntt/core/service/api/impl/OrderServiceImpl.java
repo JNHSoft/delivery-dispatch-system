@@ -388,6 +388,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setCookingTime("0");
         }
 
+        if (order.getPaid() == null || order.getPaid() == "") {
+            order.setPaid("0");
+        }
+        
         order.setStatus("0");
 
         int postOrder = orderMapper.insertOrder(order);
