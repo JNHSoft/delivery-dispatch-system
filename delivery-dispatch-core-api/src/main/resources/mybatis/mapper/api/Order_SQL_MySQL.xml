@@ -230,7 +230,7 @@
 				</otherwise>
 			</choose>
 			AND (A.reservation_datetime IS NULL
-			OR (A.created_datetime > CURRENT_DATE() AND date_add(now(), interval 2 hour) > A.reservation_datetime))
+			OR (A.created_datetime > CURRENT_DATE() AND date_add(now(), interval 2 hour) > A.reservation_datetime AND A.reservation_datetime > CURRENT_DATE()))
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime DESC
 	</select>
 
