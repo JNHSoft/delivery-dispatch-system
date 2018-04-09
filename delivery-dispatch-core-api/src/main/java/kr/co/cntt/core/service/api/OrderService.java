@@ -16,6 +16,11 @@ public interface OrderService {
     public void autoAssignOrder() throws AppTrException;
 
     /**
+     * <p> reservationOrders
+     */
+    public void reservationOrders() throws AppTrException;
+
+    /**
      * <p> insertOrder
      *
      * @param order

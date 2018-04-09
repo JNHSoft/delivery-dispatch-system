@@ -76,12 +76,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     @Override
     public void autoAssignOrder() throws AppTrException {
-        String nowDate = String.format("%02d", LocalDateTime.now().getYear())
-                + String.format("%02d", LocalDateTime.now().getMonthValue())
-                + String.format("%02d", LocalDateTime.now().getDayOfMonth())
-                + String.format("%02d", LocalDateTime.now().getHour())
-                + String.format("%02d", LocalDateTime.now().getMinute())
-                + "00";
+        LocalDateTime ldt = LocalDateTime.now().plusMinutes(50);
+        String nowDate = String.format("%02d", ldt.getYear())
+                + "-" + String.format("%02d", ldt.getMonthValue())
+                + "-" + String.format("%02d", ldt.getDayOfMonth())
+                + " " + String.format("%02d", ldt.getHour())
+                + ":" + String.format("%02d", ldt.getMinute())
+                + ":00.0";
 
         Map map = new HashMap();
 
@@ -311,6 +312,23 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             return result;
 
+        }
+
+    }
+
+    @Override
+    public void reservationOrders() throws AppTrException {
+        List<Order> reservationOrders = orderMapper.selectReservationOrders();
+        if (reservationOrders.size() > 0) {
+            for (Order order : reservationOrders) {
+                if(order.getSubGroup() != null){
+                    redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId()+", subgroup_id:"+order.getSubGroup().getId());
+                }else{
+                    redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId());
+                }
+
+//                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId()+", subgroup_id:"+ ( (order.getSubGroup() == null) ? "noSubgroup" : order.getSubGroup().getId()) );
+            }
         }
 
     }
