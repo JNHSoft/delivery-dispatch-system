@@ -220,9 +220,7 @@ function putStoreAlarm() {
             tmpAlarm.push($(element).val());
         }
     });
-    console.log(tmpAlarm);
     var alarm = tmpAlarm.join("|");
-    console.log(alarm);
     $.ajax({
         url: '/putStoreAlarm',
         type: 'put',

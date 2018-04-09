@@ -377,6 +377,10 @@
 				, A.rest_hours = #{restHours}
 			</if>
 
+			<if test="restHours == null or restHours == ''">
+				, A.rest_hours = null
+			</if>
+
 			<if test="subGroupRiderRel.storeId =='' or subGroupRiderRel.storeId == null" >
 				, B.deleted = now()
 			</if>
@@ -462,6 +466,10 @@
 
 		<if test="restHours != null and restHours != ''">
 			, A.rest_hours = #{restHours}
+		</if>
+
+		<if test="restHours == null or restHours == ''">
+			, A.rest_hours = null
 		</if>
 
 		<if test="subGroupRiderRel != null and (subGroupRiderRel.storeId !='' and subGroupRiderRel.storeId != null)">
@@ -640,13 +648,18 @@
 		LEFT JOIN TB_STORE as G
 		ON F.store_id = G.id
 		where F.created_datetime > CURRENT_DATE()
+		and F.status in(1,2)
 		and F.id in(select SUBSTRING_INDEX(group_concat(id order by assigned_datetime asc),',',1) from TB_ORDER where assigned_datetime is not null and created_datetime > CURRENT_DATE() group by rider_id )) AS E
 		ON E.rider_id = A.id
 		LEFT JOIN TB_STORE AS I
 		ON B.store_id = I.id
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-		AND B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
-		AND A.deleted IS NULL AND A.status = 0 AND B.store_id is not null group by working;
+		AND (
+			(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)
+			OR B.store_id is null
+			OR (B.subgroup_id is null AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+		)
+		AND A.deleted IS NULL AND A.status = 0 group by working;
 	</select>
 	<!-- selectRiderNow -->
 	<select id="selectRiderNow" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderNowResult">
@@ -688,8 +701,13 @@
 		LEFT JOIN TB_STORE AS I
 		ON B.store_id = I.id
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-		AND B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
-		AND A.deleted IS NULL AND A.status = 0 AND B.store_id is not null;
+		AND (
+			(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)
+			OR B.store_id is null
+			OR (B.subgroup_id is null AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+			OR (select B.created_datetime where B.deleted is not null group by B.rider_id desc)
+		)
+		AND A.deleted IS NULL AND A.status = 0;
 	</select>
 
 	<!-- selectSubgroupRiderRels -->
@@ -816,7 +834,12 @@
 		ON A.id = B.rider_id
 		WHERE A.deleted IS NULL
 			AND B.deleted IS NULL
-			AND B.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{storeId} ORDER BY created_datetime DESC LIMIT 1)
+			AND (
+				(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)
+				OR B.store_id is null
+				OR (B.subgroup_id is null AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+				OR (select max(B.created_datetime) where B.deleted is not null group by B.rider_id)
+			)
 			AND A.working = 1
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
