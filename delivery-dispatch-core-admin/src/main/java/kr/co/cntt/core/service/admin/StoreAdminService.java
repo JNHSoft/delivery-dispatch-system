@@ -6,6 +6,7 @@ package kr.co.cntt.core.service.admin;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.store.Store;
 
@@ -139,5 +140,10 @@ public interface StoreAdminService {
     public int selectStoreLoginIdCheck(Store store);
 
 
-
+    /**
+     * 기사 서브그룹 수정 by store_id
+     * @param store
+     * @return
+     */
+    public int putSubGroupRiderRelByStoreId(Store store);
 }

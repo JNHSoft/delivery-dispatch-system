@@ -277,25 +277,23 @@ public class StoreController {
 
         // store 정보 조회
         int A_Store = storeAdminService.updateStoreInfo(store);
-        int A_Group = 0;
         int A_Assign_Status = 0;
-
+        int A_Group = 0;
         if (hasGroup.equals("T")) {
             log.info("update group.................................");
-            if(groupId !=null || groupId !="" || subGroupId !=null || subGroupId != ""){
-                A_Group = storeAdminService.updateSubGroupStoreRel(store);
-            }
+               A_Group = storeAdminService.updateSubGroupStoreRel(store);
         } else {
             log.info("insert group..................................");
             A_Group = storeAdminService.insertSubGroupStoreRel(store);
         }
 
+        int B_Group = storeAdminService.putSubGroupRiderRelByStoreId(store);
 
         if (assignmentStatus != null && assignmentStatus != "") {
             A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
         }
 
-        if (A_Store == 0 && A_Group == 0 && A_Assign_Status == 0) {
+        if (A_Store == 0 && A_Group == 0 && A_Assign_Status == 0 && B_Group ==0) {
             return "err";
         } else {
             return "ok";
