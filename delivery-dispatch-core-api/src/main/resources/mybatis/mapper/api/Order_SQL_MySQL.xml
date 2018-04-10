@@ -277,7 +277,7 @@
 		ON A.store_id = C.store_id
 		LEFT JOIN TB_STORE AS D
 		ON A.store_id = D.id
-		WHERE A.id = #{id}
+		WHERE A.reg_order_id = #{id}
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
 					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
@@ -409,7 +409,7 @@
 				, A.complete_xy = #{completeXy}
 			</if>
 			, A.id = LAST_INSERT_ID(A.id)
-		WHERE A.id = #{id}
+		WHERE A.reg_order_id = #{id}
 			<choose>
 				<when test="role != null and role == 'ROLE_SYSTEM'">
 					AND B.deleted IS NULL
@@ -443,7 +443,7 @@
 			COUNT(*)
 		FROM TB_ORDER AS A INNER JOIN TB_PAYMENT AS B
 		ON A.id = B.order_id
-		WHERE A.id = #{id}
+		WHERE A.id = (SELECT id FROM TB_ORDER WHERE reg_order_id=#{id})
 			AND B.status = 0
 	</select>
 
@@ -453,7 +453,7 @@
 		SELECT
 			COUNT(*)
 		FROM TB_ORDER
-		WHERE id = #{id}
+		WHERE id = (SELECT id FROM TB_ORDER WHERE reg_order_id=#{id})
 			AND (status = 3 OR status = 4)
 	</select>
 

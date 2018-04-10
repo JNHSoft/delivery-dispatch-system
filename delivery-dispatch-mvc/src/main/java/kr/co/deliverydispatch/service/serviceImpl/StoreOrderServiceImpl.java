@@ -289,13 +289,17 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             this.putOrder(combinedOrderAssigned);
         }
 
+        String tmpRegOrderId = order.getId();
+
         int ret = this.putOrder(orderAssigned);
+
+        String tmpOrderId = orderAssigned.getId();
 
         if (ret != 0) {
             if (S_Store.getSubGroup() != null){
-                redisService.setPublisher("order_assigned", "id:"+order.getId()+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId()+", subgroup_id:"+S_Store.getSubGroup().getId());
+                redisService.setPublisher("order_assigned", "id:"+tmpOrderId+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId()+", subgroup_id:"+S_Store.getSubGroup().getId());
             }else {
-                redisService.setPublisher("order_assigned", "id:"+order.getId()+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
+                redisService.setPublisher("order_assigned", "id:"+tmpOrderId+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
             }
 
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
@@ -412,7 +416,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             this.putOrder(combinedOrder);
         }
 
+        String tmpRegOrderId = order.getId();
+
         int nRet = this.putOrder(order);
+
+        String tmpOrderId = order.getId();
 
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
@@ -421,6 +429,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         if(nRet == 1){
+            order.setId(tmpRegOrderId);
             Order curOrder = getOrderInfo(order);
             if(curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")){
                 // 해당 라이더한테만 푸쉬
@@ -450,9 +459,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (nRet != 0) {
             if (storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_updated", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
             }else {
-                redisService.setPublisher("order_updated", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
             }
         }
 

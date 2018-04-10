@@ -230,7 +230,7 @@ function getOrderDetail(orderId) {
                 regOrderId = "-";
             }
             $('.tit').html('<h2>'+order_detail + ' - '+ data.id + '('+ regOrderId +')</h2>'+$status);
-            $('.tit').attr("orderId", data.id);
+            $('.tit').attr("orderId", regOrderId);
 
             $('#createdDatetime').html(timeSet(data.createdDatetime));
             $('#reservationDatetime').html(timeSet(data.reservationDatetime));
@@ -250,8 +250,8 @@ function getOrderDetail(orderId) {
             if(data.combinedOrderId){
                 for (var key in currentOrderList) {
                     if (currentOrderList.hasOwnProperty(key)) {
-                        if(currentOrderList[key].id == data.combinedOrderId){
-                            var shtml = '<option value="'+ currentOrderList[key].id+'">'+order_id+':'+ currentOrderList[key].id + '|'+ order_created+':'+ timeSet(currentOrderList[key].createdDatetime) + '</option>';
+                        if(currentOrderList[key].regOrderId == data.combinedOrderId){
+                            var shtml = '<option value="'+ currentOrderList[key].regOrderId+'">'+order_id+':'+ currentOrderList[key].regOrderId + '|'+ order_created+':'+ timeSet(currentOrderList[key].createdDatetime) + '</option>';
                             $('#selectCombined').html(shtml);
                         }
                     }
@@ -349,8 +349,8 @@ function getNewOrderList(statusNewArray) {
             $('#selectCombined').html("");
             for (var key in data) {
                 if (data.hasOwnProperty(key)){
-                    if(data[key].id != selectedOriginOrder.id && !data[key].combinedOrderId){
-                        shtml += '<option value="'+data[key].id+'">'+order_id+':'+ data[key].id + '|'+ order_created+':'+ timeSet(data[key].createdDatetime) + '</option>';
+                    if(data[key].regOrderId != selectedOriginOrder.regOrderId && !data[key].combinedOrderId){
+                        shtml += '<option value="'+data[key].regOrderId+'">'+order_id+':'+ data[key].regOrderId + '|'+ order_created+':'+ timeSet(data[key].createdDatetime) + '</option>';
                         $('#selectCombined').html(shtml);
                     }
                 }
@@ -500,7 +500,7 @@ function getOrderList(statusArray, storeId) {
             pager:"#jqGridPager",
             ondblClickRow: function(rowid,icol,cellcontent,e){
                 var rowData = jQuery(this).getRowData(rowid);
-                var orderId = rowData['id'];
+                var orderId = rowData['reg_order_id'];
                 getOrderDetail(orderId);
                 $('.state_wrap').addClass('on'); //상세보기 열기
                 setTimeout(function(){
@@ -565,7 +565,7 @@ function putOrder() {
         dataType : 'json',
         async : false,
         success : function (data) {
-            getOrderDetail(selectedOriginOrder.id);
+            getOrderDetail(selectedOriginOrder.regOrderId);
             var statusArray = $('#statusArray').val().split(",");
             var storeId = $('#orderMyStoreChk').val();
             getOrderList(statusArray, storeId);
@@ -601,6 +601,7 @@ function putAssignedAdvance() {
     if($('#combinedChk').prop("checked")){
         combinedOrderId = $('#selectCombined').val();
     }
+
     $.ajax({
         url: '/putAssignedAdvance',
         type: 'put',
