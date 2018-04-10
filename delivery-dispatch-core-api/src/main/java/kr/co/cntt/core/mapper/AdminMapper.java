@@ -6,6 +6,7 @@ import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
@@ -436,6 +437,10 @@ public interface AdminMapper {
      */
     public int selectRiderLoginIdCheck(Rider rider);
 
-
-
+    /**
+     * 기사 서브그룹 수정 by store_id
+     * @param store
+     * @return
+     */
+    public int updateSubGroupRiderRelByStoreId(Store store);
 }

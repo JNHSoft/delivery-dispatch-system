@@ -4,6 +4,7 @@ import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
+import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StoreAdminService;
@@ -105,4 +106,8 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     public int selectStoreLoginIdCheck(Store store) {
         return adminMapper.selectStoreLoginIdCheck(store);
     }
+
+    // 기사 서브그룹 수정 by store_id
+    @Override
+    public int putSubGroupRiderRelByStoreId(Store store){ return adminMapper.updateSubGroupRiderRelByStoreId(store);}
 }

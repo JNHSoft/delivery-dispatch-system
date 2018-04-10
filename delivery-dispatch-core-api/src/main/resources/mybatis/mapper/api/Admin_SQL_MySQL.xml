@@ -501,9 +501,9 @@
 		UPDATE TB_SUBGROUP_RIDER_REL
 		SET modified_datetime = now()
 		<if test="subGroupRiderRel.storeId != null and subGroupRiderRel.storeId != ''">
-			, store_id = #{subGroupRiderRel.storeId}
-			, group_id = #{subGroupRiderRel.groupId}
-			, subGroup_id = #{subGroupRiderRel.subGroupId}
+			, store_id = #{subGroupRiderRel.storeId,jdbcType=VARCHAR}
+			, group_id = #{subGroupRiderRel.groupId,jdbcType=VARCHAR}
+			, subGroup_id = #{subGroupRiderRel.subGroupId,jdbcType=VARCHAR}
 		</if>
 
 		<if test="subGroupRiderRel.storeId == null and subGroupRiderRel.storeId == ''">
@@ -523,17 +523,12 @@
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.store_id = B.store_id
 			AND A.subgroup_id = B.subgroup_id
-		LEFT JOIN TB_SUBGROUP_RIDER_REL AS C
-		ON A.store_id = C.store_id
-			AND A.subgroup_id = C.subgroup_id
 		SET A.deleted = now()
-			, B.deleted = now()
-			, C.deleted = now()
+			, B.subgroup_id = NULL
 		WHERE A.store_id = #{storeId}
 			AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND A.deleted IS NULL
 			AND B.deleted IS NULL
-			AND C.deleted IS NULL
 	</update>
 
 
@@ -549,9 +544,9 @@
 		) VALUES (
 			now()
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			, #{subGroupRiderRel.groupId}
-			, #{subGroupRiderRel.subGroupId}
-			, #{subGroupRiderRel.storeId}
+			, #{subGroupRiderRel.groupId,jdbcType=VARCHAR}
+			, #{subGroupRiderRel.subGroupId,jdbcType=VARCHAR}
+			, #{subGroupRiderRel.storeId,jdbcType=VARCHAR}
 			, #{id}
 		)
 	</insert>
@@ -1327,4 +1322,20 @@
 		WHERE B.access_token = #{token}
 	</update>
 
+	<!-- updateSubGroupRiderRelByStoreId -->
+	<update id="updateSubGroupRiderRelByStoreId" parameterType="kr.co.cntt.core.model.store.Store">
+		UPDATE dde.TB_SUBGROUP_RIDER_REL
+		SET
+		<if test="subGroupStoreRel.groupId != null and subGroupStoreRel.subGroupId != ''">
+			group_id = #{subGroupStoreRel.groupId,jdbcType=VARCHAR}
+  			, subgroup_id = #{subGroupStoreRel.subGroupId,jdbcType=VARCHAR}
+		</if>
+		<if test="subGroupStoreRel.groupId == null or subGroupStoreRel.subGroupId == ''">
+			group_id = null
+			, subgroup_id = null
+		</if>
+		WHERE store_id = #{id}
+			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			AND deleted IS NULL
+	</update>
 </mapper>
