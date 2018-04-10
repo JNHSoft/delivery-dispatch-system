@@ -28,6 +28,7 @@ public class Store extends User implements Dto {
     private String code;
     private String phone;
     private String storeName;
+    private String storeRealName;
     private String chStoreName;
     private String storePhone;
     private String address;
