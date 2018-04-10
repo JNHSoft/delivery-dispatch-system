@@ -225,7 +225,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
 
                 if (flag == Boolean.TRUE) {
-
                     if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
                         if (orderList.get(i).getReservationDatetime().equals(nowDate)) {
                             // 예약 배정
@@ -272,8 +271,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Order order = new Order();
             order.setRole("ROLE_SYSTEM");
             order.setId(((Order) map.get("order")).getId());
+            order.setStoreId(((Order) map.get("order")).getStoreId());
             order.setRiderId(((Rider) map.get("rider")).getId());
             order.setStatus("1");
+            order.setAssignedDatetime(LocalDateTime.now().toString());
             if (((Rider) map.get("rider")).getLatitude() != null && ((Rider) map.get("rider")).getLatitude() != "") {
                 order.setAssignXy(((Rider) map.get("rider")).getLatitude()+"|"+((Rider) map.get("rider")).getLongitude());
             } else {
@@ -286,8 +287,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             int result = orderMapper.updateOrder(order);
 
             Store storeDTO = new Store();
-            storeDTO.setAccessToken(order.getToken());
-            storeDTO.setToken(order.getToken());
+//            storeDTO.setAccessToken(order.getToken());
+//            storeDTO.setToken(order.getToken());
+            storeDTO.setRole("ROLE_SYSTEM");
+            storeDTO.setId(((Order) map.get("order")).getStoreId());
 
             storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
@@ -326,6 +329,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }else{
                     redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId());
                 }
+
+                ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(order.getSubGroup());
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.ORDER_NEW);
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
+
 
 //                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId()+", subgroup_id:"+ ( (order.getSubGroup() == null) ? "noSubgroup" : order.getSubGroup().getId()) );
             }
@@ -410,9 +422,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (postOrder != 0) {
             if(storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                if (order.getReservationDatetime() == null || order.getReservationDatetime().equals("")){
+                    redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                }
             }else{
-                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId());
+                if (order.getReservationDatetime() == null || order.getReservationDatetime().equals("")){
+                    redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId());
+                }
             }
 
             if(storeDTO.getAssignmentStatus().equals("2")){
@@ -724,7 +740,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             rider.setRole("ROLE_RIDER");
             SubGroupRiderRel subGroupRiderRel = riderMapper.selectMySubgroupRiderRels(rider);
 
-            storeDTO.setId(subGroupRiderRel.getStoreId());
             storeDTO.setIsAdmin("0");
             storeDTO.setId(subGroupRiderRel.getStoreId());
         }

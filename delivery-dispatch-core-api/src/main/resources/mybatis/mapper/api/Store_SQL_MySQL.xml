@@ -263,22 +263,29 @@
         on TS.admin_id = TA.id
         WHERE 1=1
         <choose>
-            <when test="id != null and id != ''">
-                <if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-                    AND TS.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-                </if>
-                <if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-                    AND TS.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-                </if>
+            <when test="role != null and role == 'ROLE_SYSTEM'">
                 AND TS.id = #{id}
             </when>
             <otherwise>
-                AND TS.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-                AND TS.id = (
-                SELECT store_id
-                FROM TB_STORE_SESSION
-                WHERE access_token=#{accessToken}
-                )
+                <choose>
+                    <when test="id != null and id != ''">
+                        <if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
+                            AND TS.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                        </if>
+                        <if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
+                            AND TS.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                        </if>
+                        AND TS.id = #{id}
+                    </when>
+                    <otherwise>
+                        AND TS.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+                        AND TS.id = (
+                        SELECT store_id
+                        FROM TB_STORE_SESSION
+                        WHERE access_token=#{accessToken}
+                        )
+                    </otherwise>
+                </choose>
             </otherwise>
         </choose>
     </select>
