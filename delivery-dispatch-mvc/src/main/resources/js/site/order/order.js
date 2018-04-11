@@ -281,7 +281,11 @@ function getOrderDetail(orderId) {
             }
             $('#memo').html(data.message);
             $('#userPhone').html(data.phone);
-            $('#userAddress').html(data.address);
+            if (data.detailAddress != null) {
+                $('#userAddress').html(data.address + ', ' + data.detailAddress);
+            } else {
+                $('#userAddress').html(data.address);
+            }
             $('#distance').html(data.distance);
             map.setCenter({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
             marker.setPosition({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
