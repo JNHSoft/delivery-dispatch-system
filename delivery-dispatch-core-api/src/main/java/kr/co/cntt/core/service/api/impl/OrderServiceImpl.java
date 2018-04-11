@@ -228,7 +228,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
                         if (orderList.get(i).getReservationDatetime().equals(nowDate)) {
                             // 예약 배정
-                            log.info(">>> 예약 배정 " + orderList.get(i).getId());
+                            log.info(">>> 예약 배정 " + orderList.get(i).getRegOrderId());
                             int proc = this.autoAssignOrderProc(map);
                             if (proc == 1) {
                                 orderList.remove(i);
@@ -236,13 +236,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 log.info("============================================================================");
                             }
                         } else {
-                            log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getId());
+                            log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getRegOrderId());
                             log.info("============================================================================");
                         }
 
                     } else {
                         // 자동 배정
-                        log.info(">>> 자동 배정 " + orderList.get(i).getId());
+                        log.info(">>> 자동 배정 " + orderList.get(i).getRegOrderId());
                         int proc = this.autoAssignOrderProc(map);
 
                         if (proc == 1) {
@@ -260,7 +260,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     public int autoAssignOrderProc(Map map) throws AppTrException {
         log.info(">>> proc!!!");
-        log.info(">>> order.getId() " + ((Order) map.get("order")).getId());
+        log.info(">>> order.getRegOrderId() " + ((Order) map.get("order")).getRegOrderId());
         log.info(">>> order.getStore().getId() " + ((Order) map.get("order")).getStore().getId());
         log.info(">>> order.getStore().getAdminId() " + ((Order) map.get("order")).getStore().getAdminId());
 
@@ -270,7 +270,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             log.info(">>> rider.getId() " + ((Rider) map.get("rider")).getId());
             Order order = new Order();
             order.setRole("ROLE_SYSTEM");
-            order.setId(((Order) map.get("order")).getId());
+            order.setId(((Order) map.get("order")).getRegOrderId());
             order.setStoreId(((Order) map.get("order")).getStoreId());
             order.setRiderId(((Rider) map.get("rider")).getId());
             order.setStatus("1");
@@ -296,9 +296,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             if (result != 0) {
                 if (storeDTO.getSubGroup() != null){
-                    redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+notiOrder.getAdminId() + ", store_id:"+notiOrder.getStoreId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                    redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+storeDTO.getAdminId() + ", store_id:"+notiOrder.getStoreId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
                 }else {
-                    redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+notiOrder.getAdminId() + ", store_id:"+notiOrder.getStoreId());
+                    redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+storeDTO.getAdminId() + ", store_id:"+notiOrder.getStoreId());
                 }
                 if(tokens.size() > 0){
                     Notification noti = new Notification();

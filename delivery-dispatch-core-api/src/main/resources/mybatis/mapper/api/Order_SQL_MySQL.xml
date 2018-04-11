@@ -571,6 +571,7 @@
 	<!-- selectForAssignOrders -->
 	<select id="selectForAssignOrders" resultMap="selectOrdersResult">
 		SELECT A.id
+			, A.reg_order_id
 		    , A.created_datetime
 		    , A.reservation_datetime
 		    , A.latitude
