@@ -29,14 +29,9 @@ public class OrderController {
      * 객체 주입
      */
     private StoreOrderService storeOrderService;
-    private StoreNoticeService storeNoticeService;
-    private StoreRiderService storeRiderService;
+
     @Autowired
-    public OrderController(StoreOrderService storeOrderService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService) {
-        this.storeOrderService = storeOrderService;
-        this.storeNoticeService = storeNoticeService;
-        this.storeRiderService = storeRiderService;
-    }
+    public OrderController(StoreOrderService storeOrderService) { this.storeOrderService = storeOrderService; }
 
     /**
      * 주문현황 페이지

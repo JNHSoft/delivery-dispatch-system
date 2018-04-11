@@ -29,16 +29,9 @@ public class RiderController {
      * 객체 주입
      */
     private StoreRiderService storeRiderService;
-    private StoreNoticeService storeNoticeService;
-    private StoreOrderService storeOrderService;
-
 
     @Autowired
-    public RiderController(StoreRiderService storeRiderService, StoreNoticeService storeNoticeService, StoreOrderService storeOrderService) {
-        this.storeRiderService = storeRiderService;
-        this.storeNoticeService = storeNoticeService;
-        this.storeOrderService = storeOrderService;
-    }
+    public RiderController(StoreRiderService storeRiderService) { this.storeRiderService = storeRiderService; }
 
     /**
      * 기사현황 페이지

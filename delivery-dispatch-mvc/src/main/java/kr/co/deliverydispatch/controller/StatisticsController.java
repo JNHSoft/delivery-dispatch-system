@@ -32,17 +32,9 @@ public class StatisticsController {
      * 객체 주입
      */
     private StoreStatementService storeStatementService;
-    private StoreNoticeService storeNoticeService;
-    private StoreRiderService storeRiderService;
-    private StoreOrderService storeOrderService;
 
     @Autowired
-    public StatisticsController(StoreStatementService storeStatementService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService, StoreOrderService storeOrderService) {
-        this.storeStatementService = storeStatementService;
-        this.storeNoticeService = storeNoticeService;
-        this.storeRiderService = storeRiderService;
-        this.storeOrderService = storeOrderService;
-    }
+    public StatisticsController(StoreStatementService storeStatementService) { this.storeStatementService = storeStatementService; }
 
     /**
      * 통계 페이지

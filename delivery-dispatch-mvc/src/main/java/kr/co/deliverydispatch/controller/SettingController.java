@@ -44,14 +44,10 @@ public class SettingController {
 
     private StoreSettingService storeSettingService;
     private StoreNoticeService storeNoticeService;
-    private StoreRiderService storeRiderService;
-    private StoreOrderService storeOrderService;
     @Autowired
-    public SettingController(StoreSettingService storeSettingService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService, StoreOrderService storeOrderService) {
+    public SettingController(StoreSettingService storeSettingService, StoreNoticeService storeNoticeService) {
         this.storeSettingService = storeSettingService;
         this.storeNoticeService = storeNoticeService;
-        this.storeRiderService = storeRiderService;
-        this.storeOrderService = storeOrderService;
     }
     @Autowired
     private ServletContext servletContext;
