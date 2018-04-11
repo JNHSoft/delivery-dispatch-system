@@ -252,7 +252,7 @@ function getRiderDetail() {
                     }
                     $("#riderDetailStoreName").html(riderDetailStoreNameHtml);
 
-                    $("#riderDetailStoreName").val($("#riderDetailStoreName option:selected").val());
+                    // $("#riderDetailStoreName").val($("#riderDetailStoreName option:selected").val());
 
                     $("#riderDetailStoreName").on("change", function(){
                         getStoreInfo($("#riderDetailStoreName option:selected").val());
@@ -342,8 +342,8 @@ function putRiderDetail() {
             code    			: $("#riderDetailCode").val(),
             name	            : $("#riderDetailName").val(),
             // gender              : $("input[type='radio'][name='riderDetailGender']:checked").val(),
-            groupId		        : groupId,
-            subGroupId			: subGroupId,
+            //groupId		        : groupId,
+            //subGroupId			: subGroupId,
             phone			    : $("#riderDetailPhone").val(),
             // emergencyPhone      : $("#riderDetailEmergencyPhone").val(),
             // address				: $("#riderDetailAddress").val(),
@@ -368,9 +368,9 @@ function putRiderDetail() {
 function postRider() {
 
 
-    var storeId =$("#selectedStoreId").val();
-    var groupId = $("#selectedGroupId").val();
-    var subGroupId = $("#selectedSubGroupId").val();
+    var storeId =$("#postRiderStoreList option:selected").val();
+    /*var groupId = $("#selectedGroupId").val();
+    var subGroupId = $("#selectedSubGroupId").val();*/
 
     var tmpHours = [];
     $('input[name="riderRestTime"]:checked').each(function(index, element) {
@@ -392,8 +392,8 @@ function postRider() {
             code    			: $("#postRiderCode").val(),
             name	            : $("#postRiderName").val(),
             // gender              : $("input[type='radio'][name='postRiderGender']:checked").val(),
-            groupId		        : groupId,
-            subGroupId			: subGroupId,
+            // groupId		        : groupId,
+            // subGroupId			: subGroupId,
             phone			    : $("#postRiderPhone").val(),
             // emergencyPhone		: $("#postRiderEmergencyPhone").val(),
             // address				: $("#postRiderAddress").val(),
