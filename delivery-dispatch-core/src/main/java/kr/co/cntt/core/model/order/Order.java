@@ -52,6 +52,7 @@ public class Order extends Common implements Dto {
     private String assignedDatetime;
     private String pickedUpDatetime;
     private String completedDatetime;
+    private String returnDatetime;
     private String deviceOs;
     private String distance;
     private String assignedFirst;

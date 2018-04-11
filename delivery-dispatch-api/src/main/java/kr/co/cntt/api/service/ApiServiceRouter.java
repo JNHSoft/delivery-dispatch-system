@@ -246,6 +246,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Order 우선 배정 사유 목록 조회 */
 	ORDER_FIRST_ASSIGNMENT_REASON_GET("orderService", "getOrderFirstAssignmentReason", Common.class),
 
+	/** Order 복귀 */
+	ORDER_RETURN("orderService", "putOrderReturn", Order.class),
+
 	// ############################################################################################ //
 
 	/** Payment  결제 정보 조회 */

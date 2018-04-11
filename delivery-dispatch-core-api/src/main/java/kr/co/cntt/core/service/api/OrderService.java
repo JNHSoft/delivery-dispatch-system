@@ -137,4 +137,13 @@ public interface OrderService {
      */
     public List<Reason> getOrderFirstAssignmentReason(Common common) throws AppTrException;
 
+    /**
+     * <p> putOrderReturn
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    public int putOrderReturn(Order order) throws AppTrException;
+
 }

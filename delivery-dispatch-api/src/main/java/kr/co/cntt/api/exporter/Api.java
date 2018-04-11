@@ -243,6 +243,9 @@ public interface Api {
     /** 우선 배정 사유 목록 조회 **/
     String ORDER_FIRST_ASSIGNMENT_REASON_GET = "/getOrderFirstAssignmentReason.json";
 
+    /** Order 복귀 */
+    String ORDER_RETURN = "/putOrderReturn.json";
+
     // ############################################################################################ //
 
     /** Payment 카드 결제 정보 조회 */

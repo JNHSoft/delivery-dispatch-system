@@ -410,6 +410,9 @@
 			<if test="completeXy != null and completeXy != ''">
 				, A.complete_xy = #{completeXy}
 			</if>
+			<if test="returnDatetime != null and returnDatetime != ''">
+				, A.return_datetime = now()
+			</if>
 			, A.id = LAST_INSERT_ID(A.id)
 		WHERE A.reg_order_id = #{id}
 			<choose>

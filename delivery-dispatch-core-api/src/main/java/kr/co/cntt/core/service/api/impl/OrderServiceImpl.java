@@ -1339,6 +1339,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return reasonList;
     }
 
+    @Secured("ROLE_RIDER")
+    @Override
+    public int putOrderReturn(Order order) throws AppTrException {
+        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+            Order combinedOrder = new Order();
 
+            combinedOrder.setReturnDatetime(LocalDateTime.now().toString());
+            combinedOrder.setToken(order.getToken());
+            combinedOrder.setId(order.getCombinedOrderId());
+
+            this.putOrder(combinedOrder);
+        }
+
+        order.setReturnDatetime(LocalDateTime.now().toString());
+
+        return this.putOrder(order);
+    }
 
 }
