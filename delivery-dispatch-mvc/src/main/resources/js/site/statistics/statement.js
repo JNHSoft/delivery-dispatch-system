@@ -130,13 +130,12 @@ function timepickerConfirm(time1 , time2, createdTime) {
         return false;
     }
 }
-function getStatisticsInfo(orderId) {
-    var regOrderId
+function getStatisticsInfo(regOrderId) {
     $.ajax({
         url : "/getStatisticsInfo",
         type : 'get',
         data : {
-            id : orderId
+            id : regOrderId
         },
         dataType : 'json',
         success : function (data) {
@@ -146,12 +145,12 @@ function getStatisticsInfo(orderId) {
             else {
                 $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
             }
-            if(data.regOrderId){
+            /*if(data.regOrderId){
                 regOrderId = data.regOrderId;
             }else{
                 regOrderId = "-";
-            }
-            $('.tit').html('<h2>'+order_detail + ' - '+ data.id + '('+ regOrderId +')</h2>'+$status);
+            }*/
+            $('.tit').html('<h2>'+order_detail + ' - '+ regOrderId +'</h2>'+$status);
             $('.tit').attr("orderId", data.id);
 
             $('#createdDatetime').html(timeSet(data.createdDatetime));
@@ -167,7 +166,7 @@ function getStatisticsInfo(orderId) {
             $('#totalPrice').html(data.totalPrice);
 
 
-            if(data.payment) {
+            /*if(data.payment) {
                 if (data.payment.type == "0") {
                     $paid = order_payment_card;
                 } else if (data.payment.type == "1") {
@@ -177,6 +176,20 @@ function getStatisticsInfo(orderId) {
                 } else {
                     $paid = order_payment_service;
                 }
+            }else {
+                $paid = "-";
+            }*/
+            if (data.paid == 0) {
+                $paid = order_payment_cash;
+            }
+            else if (data.paid == 1) {
+                $paid = order_payment_card;
+            }
+            else if (data.paid == 2) {
+                $paid = order_payment_prepayment;
+            }
+            else if (data.paid == 3){
+                $paid = order_payment_service;
             }else {
                 $paid = "-";
             }
@@ -237,8 +250,7 @@ function getStoreStatistics() {
 
                         }
 
-
-                        if (data[key].payment) {
+                        /*if (data[key].payment) {
                             if (data[key].payment.type == "0") {
                                 $toBePaid = order_payment_card;
                             } else if (data[key].payment.type == "1") {
@@ -248,7 +260,22 @@ function getStoreStatistics() {
                             }
                         } else{
                             $toBePaid =  "-";
+                        }*/
+                        if (data[key].paid == 0) {
+                            $toBePaid = order_payment_cash;
                         }
+                        else if (data[key].paid == 1) {
+                            $toBePaid = order_payment_card;
+                        }
+                        else if (data[key].paid == 2) {
+                            $toBePaid = order_payment_prepayment;
+                        }
+                        else if (data[key].paid == 3){
+                            $toBePaid = order_payment_service;
+                        }else {
+                            $toBePaid = "-";
+                        }
+
                         tmpdata.pay = $toBePaid;
 
                         tmpdata.No = i;
@@ -308,10 +335,10 @@ function getStoreStatistics() {
                 colModel:[
                     {label:'No', name:'No', width:25, key:true, align:'center'},
                     {label:order_status, name:'state', width:80, align:'center'},
-                    {label:order_id, name:'id', width:80, align:'center'},
+                    {label:order_reg_order_id, name:'reg_order_id', width:80, align:'center'},
+                    {label:order_id, name:'id', width:80, align:'center', hidden:true},
                     {label:order_created, name:'time1', width:80, align:'center'},
                     {label:order_address, name:'address', width:200},
-                    {label:order_reg_order_id, name:'reg_order_id', width:150},
                     {label:order_cooking, name:'time2', width:80, align:'center'},
                     {label:order_payment, name:'pay', width:80, align:'center'},
                     {label:order_assigned, name:'time3', width:80, align:'center'},
@@ -326,8 +353,8 @@ function getStoreStatistics() {
                 pager:"#jqGridPager",
                 ondblClickRow: function(rowid,icol,cellcontent,e){
                     var rowData = jQuery(this).getRowData(rowid);
-                    var orderId = rowData['id'];
-                    getStatisticsInfo(orderId);
+                    var regOrderId = rowData['reg_order_id'];
+                    getStatisticsInfo(regOrderId);
                     $('.state_wrap').addClass('on'); //상세보기 열기
                     setTimeout(function(){
                         $(window).trigger('resize');
