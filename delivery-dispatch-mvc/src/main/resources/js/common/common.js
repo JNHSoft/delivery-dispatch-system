@@ -37,9 +37,11 @@ function noticeAlarm() {
     	$('#myStoreName').text(my_store.storeName);
     }
     $("#notice_alarm").removeClass('new');
+    $("#notice_alarm_mobile").removeClass('new');
     for (var i = 0; i < my_notice_list.length; i++) {
         if (!my_notice_list[i].confirmedDatetime) {
             $("#notice_alarm").addClass('new');
+            $("#notice_alarm_mobile").addClass('new');
         }
     }
 }

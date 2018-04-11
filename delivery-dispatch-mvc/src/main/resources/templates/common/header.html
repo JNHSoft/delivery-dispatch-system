@@ -5,7 +5,7 @@
 	<header id="header" th:fragment="commonHeader">
 		<div class="mobile_head">
 			<h2 class="head_tit"><img src="../resources/images/common/logo.png" alt="KFC" /></h2>
-			<a href="#" class="head_notice new" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+			<a href="/setting-notice" id="notice_alarm_mobile" class="head_notice" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
 		</div>
 		<a href="#" class="btn_gnb"><i></i><span class="blind">GNB 메뉴</span></a>
 		<div class="web_head">
