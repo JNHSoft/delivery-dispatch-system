@@ -274,7 +274,8 @@ function getOrderDetail(orderId) {
             var riderPhone = '#rider'+data.riderId;
             if(data.riderId != null){
                 $('#selectedRider').val(data.riderId).prop("selected", true);
-                $(riderPhone).css('display', 'block');
+                // $(riderPhone).css('display', 'block');
+                $(riderPhone).css('display', 'none');
             }else {
                 $('#selectedRider').val("0").prop("selected", true);
                 $(riderPhone).css('display', 'none');
@@ -408,7 +409,7 @@ function getOrderList(statusArray, storeId) {
                 i++;
                 tmpdata.state = $status;
                 tmpdata.id = data[key].id;
-                tmpdata.time1 = data[key].createdDatetime;
+                tmpdata.time1 = timeSet2(data[key].createdDatetime);
                 tmpdata.address = data[key].address;
                 if (data[key].regOrderId){
                     tmpdata.reg_order_id = data[key].regOrderId;
