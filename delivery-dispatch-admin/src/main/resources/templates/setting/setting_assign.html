@@ -21,10 +21,10 @@
 						<li>
 							<strong th:text="${#messages.msg('order.assign.mode')}" />
 							<div>
-								<label class="checkbox"><input name="assignAuto" id="assignAuto" type="checkbox" value="0" th:checked="${#strings.contains(adminInfo.assignmentStatus, '0')}"/><i></i>
+								<label class="checkbox"><input name="assignAuto" id="assignAuto" type="checkbox" value="1" th:checked="${#strings.contains(adminInfo.assignmentStatus, '1')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.auto')}" />
 								</label>
-								<label class="checkbox"><input name="assignStore" type="checkbox" value="1" th:checked="${#strings.contains(adminInfo.assignmentStatus, '1')}" /><i></i>
+								<label class="checkbox"><input name="assignStore" type="checkbox" value="0" th:checked="${#strings.contains(adminInfo.assignmentStatus, '0')}" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.store')}" />
 								</label>
 								<label class="checkbox"><input name="assignRider" type="checkbox" value="2" th:checked="${#strings.contains(adminInfo.assignmentStatus, '2')}" /><i></i>
