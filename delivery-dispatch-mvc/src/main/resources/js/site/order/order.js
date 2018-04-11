@@ -287,31 +287,6 @@ function getOrderDetail(orderId) {
         }
     });
 }
-function getFooterRiderList(){
-    var $work = 0;
-    var $standby = 0;
-    var $rest = 0;
-    $.ajax({
-        url: "/getRiderList",
-        type: 'get',
-        data: {
-        },
-        dataType: 'json',
-        success: function (data) {
-            for (var key in data) {
-                if (data.hasOwnProperty(key)) {
-                    if(data[key].working==1 && typeof data[key].order != "undefined"){
-                        $work++;
-                    }else if (data[key].working==1 && typeof data[key].order == "undefined"){
-                        $standby++;
-                    }else if (data[key].working==3){
-                        $rest++;
-                    }
-                }
-            }
-        }
-    });
-}
 
 function getMyRiderList() {
     var shtml = '<option value="0">-</option>';
