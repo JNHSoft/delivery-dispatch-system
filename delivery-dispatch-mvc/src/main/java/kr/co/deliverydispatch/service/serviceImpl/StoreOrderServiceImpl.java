@@ -509,7 +509,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             this.putOrder(combinedOrderCanceled);
         }
 
+        String tmpRegOrderId = order.getId();
+
         int nRet = this.putOrder(orderCanceled);
+
+        String tmpOrderId = orderCanceled.getId();
 
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
@@ -544,9 +548,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (nRet != 0) {
             if (storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
             }else {
-                redisService.setPublisher("order_canceled", "id:"+order.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
             }
         }
 
@@ -601,7 +605,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             this.putOrder(combinedOrderAssignCanceled);
         }
 
+        String tmpRegOrderId = order.getId();
+
         int ret = this.putOrder(orderAssignCanceled);
+
+        String tmpOrderId = orderAssignCanceled.getId();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -609,11 +617,17 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         Order S_Order = orderMapper.selectOrderInfo(orderAssignCanceled);
 
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+
+        storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
         if (ret != 0) {
             if (S_Order.getSubGroup() != null){
-                redisService.setPublisher("order_assign_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
+                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
             }else {
-                redisService.setPublisher("order_assign_canceled", "id:"+order.getId()+", admin_id:"+S_Order.getAdminId()+", store_id:"+S_Order.getId());
+                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId());
             }
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 if(tokens.size() > 0){
