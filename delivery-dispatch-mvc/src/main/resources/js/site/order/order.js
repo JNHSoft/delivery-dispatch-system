@@ -233,7 +233,8 @@ function getOrderDetail(orderId) {
             }else{
                 regOrderId = "-";
             }
-            $('.tit').html('<h2>'+order_detail + ' - '+ data.id + '('+ regOrderId +')</h2>'+$status);
+            // $('.tit').html('<h2>'+order_detail + ' - '+ data.id + '('+ regOrderId +')</h2>'+$status);
+            $('.tit').html('<h2>'+order_detail + ' - '+ regOrderId + '</h2>'+$status);
             $('.tit').attr("orderId", regOrderId);
 
             $('#createdDatetime').html(timeSet(data.createdDatetime));
@@ -461,11 +462,11 @@ function getOrderList(statusArray, storeId) {
             autowidth:true,
             colModel:[
                 {label:'No', name:'No', width:25, key:true, align:'center'},
+                {label:order_reg_order_id, name: 'reg_order_id', width:80, align:'center'},
                 {label:order_status, name:'state', width:80, align:'center'},
-                {label:order_id, name:'id', width:80, align:'center'},
+                {label:order_id, name:'id', width:80, align:'center', hidden:true},
                 {label:order_created, name:'time1', width:80, align:'center'},
                 {label:order_address, name:'address', width:200},
-                {label:order_reg_order_id, name: 'reg_order_id', width:150},
                 {label:order_cooking, name:'time2', width:80, align:'center'},
                 {label:order_payment, name:'pay', width:80, align:'center'},
                 {label:order_assigned, name:'time3', width:80, align:'center'},

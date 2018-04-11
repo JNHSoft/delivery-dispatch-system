@@ -21,6 +21,7 @@
         <result property="reservationDatetime" column="reservation_datetime" />
         <result property="assignedDatetime" column="assigned_datetime" />
         <result property="pickedUpDatetime" column="picked_up_datetime" />
+        <result property="returnDatetime" column="return_datetime" />
 		<result property="combinedOrderId" column="combined_order_id" />
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
@@ -68,6 +69,7 @@
 		<result property="assignedDatetime" column="assigned_datetime" />
 		<result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="completedDatetime" column="completed_datetime" />
+        <result property="returnDatetime" column="return_datetime" />
 		<result property="combinedOrderId" column="combined_order_id" />
 		<result property="device_os" column="device_os" />
 
@@ -177,6 +179,7 @@
 			, A.reservation_datetime
 			, A.assigned_datetime
 			, A.picked_up_datetime
+            , A.return_datetime
 			, A.menu_price
 			, A.assigned_first
 			, A.combined_order_id
@@ -262,6 +265,7 @@
             , A.assigned_datetime
             , A.picked_up_datetime
             , A.completed_datetime
+            , A.return_datetime
             , A.combined_order_id
             , A.device_os
 			, B.id AS rider_id
