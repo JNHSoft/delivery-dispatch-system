@@ -400,7 +400,7 @@ public class StoreController {
     storeAdminService.insertAdminStoreSession(storeSession);
     log.info("@@@@@@@insertStoreSession@@@@@@@@@@@"+storeSession);
 
-    if(groupId != null && groupId !="" && subGroupId !=null && subGroupId !=""){
+    if(subGroupId !=""){
         A_Group = storeAdminService.insertSubGroupStoreRel(store);
         log.info("@@@@@@@insertSubGroupRel@@@@@@@@@@@"+store);
     }
