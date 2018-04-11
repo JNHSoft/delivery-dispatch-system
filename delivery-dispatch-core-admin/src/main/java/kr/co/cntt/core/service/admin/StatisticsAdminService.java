@@ -54,5 +54,10 @@ public interface StatisticsAdminService {
     public List<SubGroupStoreRel> selectSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel);
 
 
-
+    /**
+     * 통계 목록 Excel
+     * @param order
+     * @return
+     */
+    public List<Order> selectAdminStatisticsExcel(Order order);
 }
