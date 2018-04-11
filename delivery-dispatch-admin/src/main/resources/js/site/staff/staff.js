@@ -366,8 +366,6 @@ function putRiderDetail() {
  * Rider 등록
  */
 function postRider() {
-
-
     var storeId =$("#postRiderStoreList option:selected").val();
     /*var groupId = $("#selectedGroupId").val();
     var subGroupId = $("#selectedSubGroupId").val();*/
@@ -379,12 +377,14 @@ function postRider() {
     var restHours = tmpHours.join("|");
     var tmpWorking = $("#postRiderWorkStartTime").val() * 60 + "|" + $("#postRiderWorkEndTime").val() * 60;
 
-
+    if($.cookie('riderLoginIdChk')!=$("#postRiderLoginId").val()){
+        alert(loginid_check);
+        return;
+    }
     $.ajax({
         url: "/postRider",
         type: 'post',
-        dataType: 'json',
-        async : false,
+        dataType: 'text',
         data: {
             loginId				: $("#postRiderLoginId").val(),
             loginPw             : $("#postRiderLoginPw").val(),
@@ -403,12 +403,18 @@ function postRider() {
             vehicleNumber       : $("#postRiderVehicleNumber").val()
         },
         success: function (data) {
-            console.log(data);
-            alert(alert_created_success);
-            location.reload();
+            if(data == 'err'){
+                return false;
+            }else{
+                $.removeCookie("riderLoginIdChk");
+                alert(alert_created_success);
+                popClose('#popRiderDetail');
+                getRiderList();
+                location.reload();
+            }
         }
     });
-    }
+}
 
 /**
  * Rider 등록시 상점 List 불러오기
@@ -505,6 +511,7 @@ function riderLoginIdCheck() {
             if(data>0){
                 alertTip('#postRiderLoginId',loginid_uncheck);
             } else{
+                $.cookie("riderLoginIdChk", loginId, {"expires" : 1});
                 alertTip('#postRiderLoginId',loginid_check);
             }
         }
