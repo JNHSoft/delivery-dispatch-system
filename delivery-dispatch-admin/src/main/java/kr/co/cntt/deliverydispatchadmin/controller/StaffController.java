@@ -149,8 +149,8 @@ public class StaffController {
             @RequestParam("code") String code,
             @RequestParam("name") String name,
             // @RequestParam("gender") String gender,
-            @RequestParam("groupId") String groupId,
-            @RequestParam("subGroupId") String subGroupId,
+            //@RequestParam("groupId") String groupId,
+            //@RequestParam("subGroupId") String subGroupId,
             @RequestParam("phone") String phone,
             // @RequestParam("emergencyPhone") String emergencyPhone,
             // @RequestParam("address") String address,
@@ -165,10 +165,10 @@ public class StaffController {
         System.out.print(riderId);
         System.out.print("@@@@@@@@@@@@@@@@@@");
         System.out.print(storeId);
-        System.out.print("##################");
+        /*System.out.print("##################");
         System.out.print(groupId);
         System.out.print("##################");
-        System.out.print(subGroupId);
+        System.out.print(subGroupId);*/
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         // token 부여
@@ -195,13 +195,18 @@ public class StaffController {
 //        group.setId(groupId);
 //
 //        rider.setGroup(group);
+        Store store = new Store();
+        store.setToken(adminInfo.getAdminAccessToken());
+        store.setId(storeId);
+        Store storeInfo = staffAdminService.selectStoreInfo(store);
 
         // subgroup model 생성
         SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
 
-        subGroupRiderRel.setSubGroupId(subGroupId);
-
-        subGroupRiderRel.setGroupId(groupId);
+        if (storeInfo.getSubGroup() != null){
+            subGroupRiderRel.setSubGroupId(storeInfo.getSubGroup().getId());
+            subGroupRiderRel.setGroupId(storeInfo.getGroup().getId());
+        }
 
         subGroupRiderRel.setStoreId(storeId);
 
@@ -223,7 +228,6 @@ public class StaffController {
                 rider.getSubGroupStoreRel().setStoreId(null);
                 A_Store = staffAdminService.updateRiderStore(rider);
             }
-
         } else{
           log.info("insert group..................................");
           A_Store = staffAdminService.insertSubGroupRiderRel(rider);
@@ -245,8 +249,8 @@ public class StaffController {
                              @RequestParam("code") String code,
                              @RequestParam("name") String name,
                              // @RequestParam("gender") String gender,
-                             @RequestParam("groupId") String groupId,
-                             @RequestParam("subGroupId") String subGroupId,
+                             //@RequestParam("groupId") String groupId,
+                             //@RequestParam("subGroupId") String subGroupId,
                              @RequestParam("phone") String phone,
                              // @RequestParam("emergencyPhone") String emergencyPhone,
                              // @RequestParam("address") String address,
@@ -283,21 +287,27 @@ public class StaffController {
         rider.setRestHours(restHours);
         rider.setVehicleNumber(vehicleNumber);
         // group model 생성
-        Group group = new Group();
-        group.setId(groupId);
-        rider.setGroup(group);
+        Store store = new Store();
+        store.setToken(adminInfo.getAdminAccessToken());
+        store.setId(storeId);
+        Store storeInfo = staffAdminService.selectStoreInfo(store);
+        if (storeInfo.getGroup() != null){
+            Group group = new Group();
+            group.setId(storeInfo.getGroup().getId());
+            rider.setGroup(group);
+        }
 
         rider.setType("2");
 
         // subgroup model 생성
         SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
-
-        subGroupRiderRel.setSubGroupId(subGroupId);
-        subGroupRiderRel.setGroupId(groupId);
+        if (storeInfo.getSubGroup() != null){
+            subGroupRiderRel.setSubGroupId(storeInfo.getSubGroup().getId());
+            subGroupRiderRel.setGroupId(storeInfo.getGroup().getId());
+        }
         subGroupRiderRel.setStoreId(storeId);
 
         rider.setSubGroupRiderRel(subGroupRiderRel);
-
 
         staffAdminService.insertChatUser(rider);
 

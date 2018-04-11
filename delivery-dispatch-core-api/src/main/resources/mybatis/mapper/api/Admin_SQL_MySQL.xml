@@ -544,8 +544,14 @@
 		) VALUES (
 			now()
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			<if test="subGroupRiderRel.groupId != null and subGroupRiderRel.subGroupId != ''">
 			, #{subGroupRiderRel.groupId,jdbcType=VARCHAR}
 			, #{subGroupRiderRel.subGroupId,jdbcType=VARCHAR}
+			</if>
+			<if test="subGroupRiderRel.groupId == null or subGroupRiderRel.subGroupId == ''">
+			, null
+			, null
+			</if>
 			, #{subGroupRiderRel.storeId,jdbcType=VARCHAR}
 			, #{id}
 		)
