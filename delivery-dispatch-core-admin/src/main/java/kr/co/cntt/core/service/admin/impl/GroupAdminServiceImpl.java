@@ -93,6 +93,10 @@ public class GroupAdminServiceImpl implements GroupAdminService {
         return adminMapper.updateStoreSubGroup(store);
     }
 
+    //라이더 서브 그룹 수정(상점 서브그룹만 수정 시)
+    @Override
+    public int updateRiderSubGroup(Store store) { return adminMapper.updateRiderSubGroup(store); }
+
 
     // 서브 그룹 등록
     @Override

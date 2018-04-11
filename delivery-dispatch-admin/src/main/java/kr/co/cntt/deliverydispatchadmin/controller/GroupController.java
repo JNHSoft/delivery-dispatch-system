@@ -374,9 +374,9 @@ public class GroupController {
 
 
         log.info("=========@@@@@@@@@@@@@@@@@@======>"+adminInfo.getAdminAccessToken());
-
-
-        if(groupAdminService.updateStoreSubGroup(store) == 0) {
+        int updateStoreSub = groupAdminService.updateStoreSubGroup(store);
+        groupAdminService.updateRiderSubGroup(store);
+        if(updateStoreSub == 0) {
             return false;
         }
         return true;

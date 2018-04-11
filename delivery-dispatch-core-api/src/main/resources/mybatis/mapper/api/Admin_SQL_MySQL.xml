@@ -1338,4 +1338,14 @@
 			AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 			AND deleted IS NULL
 	</update>
+
+	<!-- updateRiderSubGroup 라이더 서브 그룹 수정(상점 서브그룹만 수정 시) -->
+	<update id="updateRiderSubGroup" parameterType="kr.co.cntt.core.model.store.Store">
+		UPDATE TB_SUBGROUP_RIDER_REL
+		SET modified_datetime = now()
+		, subgroup_id = #{subGroupStoreRel.subGroupId}
+		WHERE store_id = #{id}
+		AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND deleted IS NULL
+	</update>
 </mapper>
