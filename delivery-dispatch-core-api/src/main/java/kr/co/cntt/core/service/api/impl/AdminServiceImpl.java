@@ -302,7 +302,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     public int putStoreSubgroup(Store store) {
 
         int result = adminMapper.updateStoreSubGroup(store);
-
+        adminMapper.updateRiderSubGroup(store);//rider도 바꿔줌
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(store);
 
         if (result != 0) {

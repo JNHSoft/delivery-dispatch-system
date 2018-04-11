@@ -261,7 +261,6 @@ public class SettingController {
     @ResponseBody
     @PutMapping("/putNoticeConfirm")
     public Boolean putNoticeConfirm(Notice notice) {
-        log.info("!!!!!!!!!!!!putNoticeConfirm");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         notice.setToken(storeInfo.getStoreAccessToken());
         storeSettingService.putNoticeConfirm(notice);

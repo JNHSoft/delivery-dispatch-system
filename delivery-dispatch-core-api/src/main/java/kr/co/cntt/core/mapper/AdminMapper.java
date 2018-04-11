@@ -443,4 +443,12 @@ public interface AdminMapper {
      * @return
      */
     public int updateSubGroupRiderRelByStoreId(Store store);
+
+    /**
+     * <p> 라이더 서브 그룹 수정(상점 서브그룹만 수정 시)
+     *
+     * @param store
+     * @return
+     */
+    public int updateRiderSubGroup(Store store);
 }
