@@ -315,19 +315,19 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Map<String, Object> recommand = new HashMap<String, Object>();
 
         String userAgent = request.getHeader("user-agent");
-        String[] browser = {"Android", "iPhone", "iPod"};
+        String[] os = {"android", "ios", "macintosh", "windows"};
 
         String device = null;
-        for (int i = 0; i < browser.length; i++) {
-            if(userAgent.matches(".*"+browser[i]+".*")){
-                device = browser[i];
+        for (int i = 0; i < os.length; i++) {
+            if(userAgent.matches(".*"+os[i]+".*")){
+                device = os[i];
                 break;
             }
         }
 
         // 테스트용 - device android set
         if (device == null) {
-            device = browser[0];
+            device = os[0];
         }
 
         if (device != null) {
