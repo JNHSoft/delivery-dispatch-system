@@ -58,6 +58,7 @@
         <result property="pickedUpDatetime" column="picked_up_datetime" />
         <result property="reservationDatetime" column="reservation_datetime" />
         <result property="completedDatetime" column="completed_datetime" />
+        <result property="paid" column="paid" />
 
         <result property="cookingTime" column="cooking_time" />
         <result property="menuPrice" column="menu_price" />
@@ -86,9 +87,6 @@
             <result property="name" column="name" />
             <result property="phone" column="rider_phone" />
         </association>
-
-
-
 
         <association property="payment" column="payment" javaType="kr.co.cntt.core.model.payment.Payment">
             <result property="type" column="type" />
@@ -571,6 +569,7 @@
         , TBO.assigned_datetime
         , TBO.picked_up_datetime
         , TBO.reservation_datetime
+        , TBO.reg_order_id
         , TBR.name
 
         FROM TB_ORDER AS TBO
@@ -652,6 +651,7 @@
         , TBO.latitude
         , TBO.longitude
         , TBO.reg_order_id
+        , TBO.paid
 
         FROM TB_ORDER AS TBO
 
@@ -694,7 +694,7 @@
         <if test="endDate != null and endDate != ''">
             AND end_date = #{endDate}
         </if>
-        AND TBO.id = #{id}
+        AND TBO.reg_order_id = #{id}
     </select>
 
 

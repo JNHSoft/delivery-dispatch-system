@@ -253,7 +253,7 @@ function getStoreDetail() {
                     // groupId , subGroupId 값 넘겨줌
                     getSubGroupList($("#storeDetailGroup option:selected").val(),data.A_Store.subGroup);
 
-                    var storeDetailSubGroupHtml = "<option value='none'>" +selected_choise+ "</option>";
+                    var storeDetailSubGroupHtml = "<option value=''>" +selected_choise+ "</option>";
                     for (var i in data.subGroupList){
                         storeDetailSubGroupHtml += "<option value='" + data.subGroupList[i].id  + "'>" + data.subGroupList[i].name + "</option>";
                     }
@@ -320,7 +320,7 @@ function getGroupList() {
         dataType : 'json',
         success : function(data) {
             if (data) {
-                var postStoreGroupHtml = "<option value='none'>" + "不明" + "</option>";
+                var postStoreGroupHtml = "<option value=''>" + "不明" + "</option>";
                 // var postStoreGroupHtml = "";
                 for (var i in data) {
                     postStoreGroupHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
@@ -357,7 +357,7 @@ function getPostSubGroupList(gId, subGroup) {
         success : function(data){
             if(data) {
 
-                var postStoreSubGroupHtml = "<option value='none'>" + selected_choise + "</option>";
+                var postStoreSubGroupHtml = "<option value=''>" + selected_choise + "</option>";
                 // var postStoreSubGroupHtml = "";
                 for (var i in data){
                     postStoreSubGroupHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
@@ -471,6 +471,11 @@ function postStore() {
         alert("請輸入您的街道地址");
         return;
     }
+
+    if($.cookie('storeLoginIdChk')!=$("#postStoreLoginId").val()){
+        alert(loginid_check);
+        return;
+    }
     $.ajax({
         url: "/postStore",
         type: 'post',
@@ -491,11 +496,11 @@ function postStore() {
             detailAddress		: $("#postStoreDetailAddress").val()
         },
         success: function (data) {
-            console.log(data);
             if (data == 'geo_err') {
                 alert(alert_address_error);
                 return false;
             } else {
+                $.removeCookie("storeLoginIdChk");
                 alert(alert_created_success);
                 popClose('#popStore');
                 getStoreList();
@@ -510,7 +515,7 @@ function postStore() {
  * 상점 삭제
  */
 function deleteStore() {
-    var storeId =  $("#selectedStoreId").val()
+    var storeId =  $("#selectedStoreId").val();
 
     if(!confirm("您確定要刪除此商店嗎?")) return;
     console.log(storeId);
@@ -547,6 +552,7 @@ function storeLoginIdCheck() {
             if(data>0){
                 alertTip('#postStoreLoginId',loginid_uncheck);
             } else{
+                $.cookie("storeLoginIdChk", loginId, {"expires" : 1});
                 alertTip('#postStoreLoginId',loginid_check);
             }
 
