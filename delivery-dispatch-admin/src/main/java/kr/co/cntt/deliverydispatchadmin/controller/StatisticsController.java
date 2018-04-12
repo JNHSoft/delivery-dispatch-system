@@ -103,8 +103,8 @@ public class StatisticsController {
     @GetMapping("/getStatisticsList")
     @CnttMethodDescription("통계 페이지 조회")
     public List<Order> getStatisticsList(@RequestParam(required=false) String frag
-                                         ,@RequestParam(value = "startDate", required=false) String startDate
-                                         ,@RequestParam(value = "endDate", required=false) String endDate
+            ,@RequestParam(value = "startDate", required=false) String startDate
+            ,@RequestParam(value = "endDate", required=false) String endDate
 
     ) {
         Order order = new Order();
@@ -150,7 +150,7 @@ public class StatisticsController {
     @ResponseBody
     @GetMapping("/getStatisticsInfo")
     @CnttMethodDescription("통계 상세 보기")
-    public Order getStatisticsInfo(@RequestParam(required=false) String frag,@RequestParam("orderId") String orderId
+    public Order getStatisticsInfo(@RequestParam(required=false) String frag,@RequestParam("regOrderId") String regOrderId
 
     ) {
         Order order = new Order();
@@ -162,7 +162,7 @@ public class StatisticsController {
 
         order.setToken(adminInfo.getAdminAccessToken());
 
-        order.setId(orderId);
+        order.setRegOrderId(regOrderId);
 
         Order statisticsInfo = statisticsAdminService.selectAdminStatisticsInfo(order);
 
@@ -240,7 +240,7 @@ public class StatisticsController {
     public List<SubGroupStoreRel> getStatisticsStoreList(
             @RequestParam(value ="groupId", required = false) String groupId,
             @RequestParam(value ="subGroupId", required = false) String subGroupId
-            ) {
+    ) {
         log.info("=>>>>>>>>>>>>>>>="+groupId);
         log.info("=>>>>>>>>>>>>="+subGroupId);
         SubGroupStoreRel subGroupStoreRel = new SubGroupStoreRel();

@@ -1,6 +1,5 @@
 /*<![CDATA[*/
-$(document).ready(function () {
-
+$(function () {
     // 날짜 변경될때마다
     $('input[name="datepicker"]').change(function () {
         getStatisticsList();
@@ -13,50 +12,120 @@ $(document).ready(function () {
     getGroupList();
 
     $(".select").change(function () {
-       var searchText1= $("#statisticsGroupList").text();
-       var searchText2= $("#statisticsSubGroupList").text();
-       var searchText3= $("#statisticsStoreList").text();
+        selectId = $(this);
+        selectIdOption = $('option:selected',this);
+        getStatisticsList();
+        searchList(selectId, selectIdOption);
+    });
+    $("#searchButton").click(function () {
+        getStatisticsList();
+        searchList(selectId, selectIdOption);
+    });
+});
+var selectId =$("#statisticsStoreList");
+var selectIdOption = $("#statisticsStoreList option:selected");
+function searchList(selectId, selectIdOption) {
+    console.log(selectId.attr('id'));
+    if(selectId.attr('id')=="statisticsGroupList"){
+        $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
+        if(selectIdOption.val() == "rest"){
+            $("#statisticsSubGroupList").html("<option value='reset'>" + list_search_all_subgroup + "</option>");
+        }else{
+            $("#statisticsSubGroupList").val("reset").prop("selected", true);
+        }
+    }else if(selectId.attr('id')=="statisticsSubGroupList"){
+        if(selectIdOption.val() == "rest") {
+            $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
+        }else{
+            $("#statisticsStoreList").val("reset").prop("selected", true);
+        }
+    }
 
+    var searchText = $("#searchText").val();
 
+    var filter2= {
+        groupOp: "OR",
+        rules: []
+    };
 
-       console.log("change valalalalvlavlalvl");
-       console.log(searchText1);
-       console.log(searchText2);
-       console.log(searchText3);
+    var select = $("#searchSelect option:selected").val();
 
-        var filter = {
-            groupOp: "OR",
-            rules: []
-        };
-        if(searchText1 != ""){
+    if(select == 'reg_order_id'){
+        filter2.rules.push({
+            field : 'th5',
+            op : "eq",
+            data : searchText
+        });
+    }else if(select == 'all'){
+        filter2.rules.push({
+            field : 'th5',
+            op : "eq",
+            data : searchText
+        });
+        filter2.rules.push({
+            field : 'th10',
+            op : "cn",
+            data : searchText
+        });
+        filter2.rules.push({
+            field : 'th14',
+            op : "cn",
+            data : searchText
+        });
+    }else if (select == 'pay'){
+        filter2.rules.push({
+            field : 'th10',
+            op : "cn",
+            data : searchText
+        });
+    }else if (select == 'rider'){
+        filter2.rules.push({
+            field : 'th14',
+            op : "cn",
+            data : searchText
+        });
+    }
+
+    var searchText1= $("#statisticsGroupList option:selected").text();
+    var searchTextVal1= $("#statisticsGroupList option:selected").val();
+    var searchText2= $("#statisticsSubGroupList option:selected").text();
+    var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
+    var searchText3= $("#statisticsStoreList option:selected").text();
+    var searchTextVal3= $("#statisticsStoreList option:selected").val();
+
+    var filter = {
+        groupOp: "AND",
+        rules: [],
+        groups : [filter2]
+    };
+    if(searchTextVal1 != "reset"){
+        filter.rules.push({
+            field : 'th1',
+            op : "eq",
+            data : searchText1
+        });
+        if(searchTextVal2 != "reset"){
             filter.rules.push({
-                field : 'th1',
+                field : 'th2',
                 op : "eq",
-                data : searchText1
+                data : searchText2
             });
-            if(searchText2 != ""){
+            if(searchTextVal3 != "reset"){
                 filter.rules.push({
-                    field : 'th2',
+                    field : 'th3',
                     op : "eq",
-                    data : searchText2
+                    data : searchText3
                 });
-                if(searchText3 != ""){
-                    filter.rules.push({
-                        field : 'th3',
-                        op : "eq",
-                        data : searchText3
-                    });
-                }
             }
         }
-        var grid = jQuery('#jqGrid');
-        grid[0].p.search = filter.rules.length > 0;
-        $.extend(grid[0].p.postData, { filters: JSON.stringify(filter) });
-        grid.trigger("reloadGrid", [{ page: 1 }]);
-    });
-
-});
-
+    }
+    var grid = jQuery('#jqGrid');
+    if(filter.rules.length > 0 || filter2.rules.length >0){
+        grid[0].p.search = true;
+    }
+    $.extend(grid[0].p.postData, { filters: filter });
+    grid.trigger("reloadGrid", [{ page: 1 }]);
+}
 /**
  * 그룹 List 불러오기
  */
@@ -72,7 +141,7 @@ function getGroupList() {
         success : function(data) {
             if (data) {
 
-                var statisticsGroupListHtml = "<option value=''>" + list_search_all_group + "</option>";
+                var statisticsGroupListHtml = "<option value='reset'>" + list_search_all_group + "</option>";
                 // var statisticsGroupListHtml = "";
                 for (var i in data) {
                     statisticsGroupListHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
@@ -109,12 +178,11 @@ function getStatisticsSubGroupList(gId, subGroup) {
         dataType : 'json',
         success : function(data){
             if(data) {
-                var pstatisticsSubGroupListHtml = "";
+                var pstatisticsSubGroupListHtml = "<option value='reset'>" + list_search_all_subgroup + "</option>";
                 for (var i in data){
                     pstatisticsSubGroupListHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
-
 
                 $("#statisticsSubGroupList").on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
@@ -151,12 +219,11 @@ function getStatisticsStoreList(subId, gId) {
         dataType : 'json',
         success : function(data){
             if(data) {
-                var statisticsStoreListHtml = "";
+                var statisticsStoreListHtml = "<option value='reset'>" + list_search_all_store + "</option>";
                 for (var i in data){
                     statisticsStoreListHtml += "<option value='" + data[i].id  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
-
 
                 $("#statisticsStoreList").on("change", function () {
                     getStatisticsList();
@@ -262,7 +329,7 @@ function getStatisticsList() {
         },
         dataType: 'json',
         success: function (data) {
-
+            console.log(data);
             var i = 1;
             for (var key in data) {
                 var $tmpData = new Object();
@@ -278,19 +345,22 @@ function getStatisticsList() {
                 tmpEnd.setDate(tmpEnd.getDate()+1);
 
                 if (timepickerConfirm(tmpStart, tmpEnd, data[key].createdDatetime)) {
-                console.log(data);
                 if (data.hasOwnProperty(key)) {
 
-                    $tmpData.th0 = i++
-                    $tmpData.th1 = data[key].group.name
-                    $tmpData.th2 = data[key].subGroup.name
+                    $tmpData.th0 = i++;
+                    if(data[key].group){
+                        $tmpData.th1 = data[key].group.name
+                    }
+                    if(data[key].subGroup){
+                        $tmpData.th2 = data[key].subGroup.name
+                    }
                     $tmpData.th3 = data[key].store.storeName
                     if (data[key].status == "3") {
                         $tmpData.th4 = status_completed
                     } else if (data[key].status == "4") {
                         $tmpData.th4 = status_canceled
                     }
-                    $tmpData.th5 = data[key].id
+                    $tmpData.th5 = data[key].regOrderId;
                     $tmpData.th6 = timeSet(data[key].createdDatetime);
                     $tmpData.th7 = data[key].address
                     $tmpData.th8 = data[key].menuName
@@ -298,9 +368,9 @@ function getStatisticsList() {
 
                     if (data[key].paid != null) {
                         if (data[key].paid == "0") {
-                            $tmpData.th10 = order_payment_card;
-                        } else if (data[key].paid == "1") {
                             $tmpData.th10 = order_payment_cash;
+                        } else if (data[key].paid == "1") {
+                            $tmpData.th10 = order_payment_card;
                         } else if (data[key].paid == "2") {
                             $tmpData.th10 = order_payment_prepayment;
                         } else if (data[key].paid == "3"){
@@ -327,8 +397,7 @@ function getStatisticsList() {
 
                     $tmpData.th14 = data[key].rider.name
 
-
-                    if(data[key].group != null){
+                    /*if(data[key].group != null){
                         $tmpData.th15 = data[key].group.id
 
                     }
@@ -338,11 +407,14 @@ function getStatisticsList() {
 
                     if(data[key].storeId != null) {
                         $tmpData.th17 = data[key].storeId
+                    }*/
+                    if($('#selectStatus option:selected').val()=="all"){
+                        $mydata.push($tmpData);
+                    }else if ($('#selectStatus option:selected').val()=="complete" && data[key].status =="3"){
+                        $mydata.push($tmpData);
+                    }else if ($('#selectStatus option:selected').val()=="cancel" && data[key].status =="4"){
+                        $mydata.push($tmpData);
                     }
-
-
-                    $mydata.push($tmpData);
-
                 }
             }
         }
@@ -362,7 +434,7 @@ function getStatisticsList() {
                     {label: subGroup_name, name: 'th2', width: 80, align: 'center'},
                     {label: store_name, name: 'th3', width: 120, align: 'center'},
                     {label: order_status, name: 'th4', width: 80, align: 'center'},
-                    {label: order_id, name: 'th5', width: 80, align: 'center'},
+                    {label: order_reg_order_id, name: 'th5', width: 80, align: 'center'},
                     {label: order_created, name: 'th6', width: 80, align: 'center'},
                     {label: order_address, name: 'th7', width: 200},
                     {label: order_summary, name: 'th8', width: 80},
@@ -371,10 +443,10 @@ function getStatisticsList() {
                     {label: order_assigned, name: 'th11', width: 80, align: 'center'},
                     {label: order_pickedup, name: 'th12', width: 80, align: 'center'},
                     {label: order_reserved, name: 'th13', width: 80, align: 'center'},
-                    {label: rider_name, name: 'th14', width: 80, align: 'center'},
+                    {label: rider_name, name: 'th14', width: 80, align: 'center'}/*,
                     {label:'그룹ID', name:'th15', width:60, hidden:'hidden'},
                     {label:'서브그룹ID', name:'th16', width:60, hidden:'hidden'},
-                    {label:'매장ID', name:'th17', width:60, hidden:'hidden'}
+                    {label:'매장ID', name:'th17', width:60, hidden:'hidden'}*/
                 ],
                 width: 'auto',
                 height: 520,
@@ -419,7 +491,7 @@ function getStatisticsInfo(orderId) {
         url : "/getStatisticsInfo",
         type : 'get',
         data : {
-            orderId : orderId
+            regOrderId : orderId
         },
         dataType : 'json',
         success : function (data) {
@@ -431,9 +503,9 @@ function getStatisticsInfo(orderId) {
             else {
                 $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
             }
-            $('.tit').html('<h2>' +order_detail + ' - '+ data.id + '</h2>'+$status);
+            $('.tit').html('<h2>' +order_detail + ' - '+ data.regOrderId + '</h2>'+$status);
 
-            $('.tit').attr("orderId", data.id);
+            $('.tit').attr("orderId", data.regOrderId);
 
             $('#createdDatetime').html(timeSet(data.createdDatetime));
             $('#reservationDatetime').html(timeSet(data.reservationDatetime));
@@ -447,8 +519,19 @@ function getStatisticsInfo(orderId) {
             $('#deliveryPrice').html(data.deliveryPrice);
             $('#totalPrice').html(data.totalPrice);
 
-
-            if(data.payment) {
+            if (data.paid) {
+                if (data.paid == "0") {
+                    $paid = order_payment_cash;
+                } else if (data.paid == "1") {
+                    $paid = order_payment_card;
+                } else if (data.paid == "2") {
+                    $paid = order_payment_prepayment;
+                } else if (data.paid == "3"){
+                    $paid = order_payment_service;
+                }
+                $('#paid').html($paid);
+            }
+            /*if(data.payment) {
                 if (data.payment.type == "0") {
                     $paid = "CARD";
                 } else if (data.payment.type == "1") {
@@ -459,7 +542,7 @@ function getStatisticsInfo(orderId) {
                     $paid = "SERVICE";
                 }
                 $('#paid').html($paid);
-            }
+            }*/
 
             if(data.combinedOrderId != null){
                 $('#combinedOrder').html(data.combinedOrderId);

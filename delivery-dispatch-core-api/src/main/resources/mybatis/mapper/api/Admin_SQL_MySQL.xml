@@ -93,7 +93,6 @@
 		<result property="completedDatetime" column="completed_datetime" />
 		<result property="paid" column="paid" />
 
-
 		<result property="cookingTime" column="cooking_time" />
 		<result property="menuPrice" column="menu_price" />
 		<result property="deliveryPrice" column="delivery_price" />
@@ -110,6 +109,7 @@
 		<result property="detailAddress" column="detail_address" />
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
+		<result property="regOrderId" column="reg_order_id" />
 
 		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="storeName" column="store_name" />
@@ -120,9 +120,6 @@
 			<result property="name" column="name" />
 			<result property="phone" column="rider_phone" />
 		</association>
-
-
-
 
 		<association property="payment" column="payment" javaType="kr.co.cntt.core.model.payment.Payment">
 			<result property="type" column="type" />
@@ -144,8 +141,6 @@
 		</association>
 
 	</resultMap>
-
-
 
 	<!-- loginAdminInfo -->
 	<select id="loginAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
@@ -978,6 +973,7 @@
 	, TBR.name
 	, TBO.address
 	, TBO.paid
+	, TBO.reg_order_id
 
 
 	FROM TB_ORDER AS TBO
@@ -1015,7 +1011,7 @@
 	WHERE
 
 	TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-	AND TBO.status = 3 AND 4
+	AND TBO.status in (3,4)
  	AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > TBO.created_datetime
     AND TBO.created_datetime > #{currentDatetime}
 
@@ -1063,7 +1059,8 @@
         , TBO.phone AS customerPhone
 		, TBO.address AS customerAddress
         , TBO.detail_address AS customerDetailAddress
-
+		, TBO.paid
+		, TBO.reg_order_id
 
 		FROM TB_ORDER AS TBO
 
@@ -1100,7 +1097,7 @@
 		WHERE
 
 		TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-		AND TBO.status = 3 AND 4
+		AND TBO.status in (3,4)
 		<if test="startDate != null and startDate != ''">
 		AND start_date = #{startDate}
 		</if>
@@ -1152,7 +1149,8 @@
 		, TBO.detail_address
 		, TBO.latitude
 		, TBO.longitude
-
+		, TBO.paid
+		, TBO.reg_order_id
 
 		FROM TB_ORDER AS TBO
 
@@ -1188,8 +1186,8 @@
 		where
 
 		TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-		AND TBO.status = 3 AND 4
-		AND TBO.id = #{id}
+		AND TBO.status in (3, 4)
+		AND TBO.reg_order_id = #{regOrderId}
 	</select>
 
 
