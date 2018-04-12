@@ -607,7 +607,7 @@
         WHERE
 
         TBO.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-        AND TBO.status = 3 AND 4
+        AND TBO.status in (3, 4)
         <if test="startDate != null and startDate != ''">
             AND start_date = #{startDate}
         </if>
@@ -687,7 +687,7 @@
         where
 
         TBO.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-        AND TBO.status = 3 AND 4
+        AND TBO.status in (3, 4)
         <if test="startDate != null and startDate != ''">
             AND start_date = #{startDate}
         </if>

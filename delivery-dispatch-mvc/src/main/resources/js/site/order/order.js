@@ -115,18 +115,18 @@ $(document).ready(function() {
         };
         var select = $("#searchSelect option:selected").val();
 
-        if(select == 'id'){
+        if(select == 'reg_order_id'){
             filter.rules.push({
                 field : select,
                 op : "eq",
                 data : searchText
             });
         }else if(select == 'all'){
-            filter.rules.push({
+            /*filter.rules.push({
                 field : 'id',
                 op : "eq",
                 data : searchText
-            });
+            });*/
             filter.rules.push({
                 field : 'address',
                 op : "cn",

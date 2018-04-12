@@ -27,18 +27,18 @@ $(function() {
         };
         var select = $("#searchSelect option:selected").val();
 
-        if(select == 'id'){
+        if(select == 'reg_order_id'){
             filter.rules.push({
                 field : select,
                 op : "eq",
                 data : searchText
             });
         }else if(select == 'all'){
-            filter.rules.push({
+            /*filter.rules.push({
                 field : 'id',
                 op : "eq",
                 data : searchText
-            });
+            });*/
             filter.rules.push({
                 field : 'reg_order_id',
                 op : "cn",
@@ -194,10 +194,9 @@ function getStatisticsInfo(regOrderId) {
                 $paid = "-";
             }
 
-
             $('#paid').html($paid);
 
-            if(data.combinedOrderId != null){
+            if(data.combinedOrderId){
                 $('#combinedOrder').html(data.combinedOrderId);
             }
 
@@ -278,8 +277,7 @@ function getStoreStatistics() {
 
                         tmpdata.pay = $toBePaid;
 
-                        tmpdata.No = i;
-                        i++;
+                        tmpdata.No = i++;
                         tmpdata.state = $status;
                         tmpdata.id = data[key].id;
                         if (data[key].createdDatetime) {
