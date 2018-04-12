@@ -314,17 +314,42 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Map<String, Object> min = new HashMap<String, Object>();
         Map<String, Object> recommand = new HashMap<String, Object>();
 
-        min.put("android", null);
-        min.put("ios", null);
-        min.put("pc", null);
+        String userAgent = request.getHeader("user-agent");
+        String[] browser = {"Android", "iPhone", "iPod"};
 
-        recommand.put("android", null);
-        recommand.put("ios", null);
-        recommand.put("pc", null);
+        String device = null;
+        for (int i = 0; i < browser.length; i++) {
+            if(userAgent.matches(".*"+browser[i]+".*")){
+                device = browser[i];
+                break;
+            }
+        }
 
-        response.put("result", CODE_SUCCESS);
-        response.put("min", min);
-        response.put("recommanded", recommand);
+        // 테스트용 - device android set
+        if (device == null) {
+            device = browser[0];
+        }
+
+        if (device != null) {
+            String version = riderService.getMobileVersion(device);
+            response.put("result", CODE_SUCCESS);
+            response.put("version", version);
+        } else {
+            response.put("result", CODE_ERROR);
+        }
+
+
+//        min.put("android", null);
+//        min.put("ios", null);
+//        min.put("pc", null);
+
+//        recommand.put("android", null);
+//        recommand.put("ios", null);
+//        recommand.put("pc", null);
+
+//        response.put("result", CODE_SUCCESS);
+//        response.put("min", min);
+//        response.put("recommanded", recommand);
 
         Gson gson = new GsonBuilder().serializeNulls().create();
 

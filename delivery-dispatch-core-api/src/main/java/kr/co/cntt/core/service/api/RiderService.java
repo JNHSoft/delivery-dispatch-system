@@ -142,4 +142,12 @@ public interface RiderService {
      */
     public List<Reason> getRejectReasonList(Common common) throws AppTrException;
 
+    /**
+     * <p> getMobileVersion
+     *
+     * @param device
+     * @return
+     */
+    public String getMobileVersion(String device);
+
 }

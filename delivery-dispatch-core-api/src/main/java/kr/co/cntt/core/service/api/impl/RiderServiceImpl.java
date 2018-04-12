@@ -350,4 +350,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return reasonList;
     }
 
+    @Override
+    public String getMobileVersion(String device) {
+        return riderMapper.selectMobileVersion(device);
+    }
+
+
 }

@@ -72,6 +72,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			//.antMatchers("/BkrApp/setservicekey.do").permitAll()
 			.antMatchers("/API/getToken.do").permitAll()
 			.antMatchers("/API/putToken.do").permitAll()
+			.antMatchers("/API/versionCheck.do").permitAll()
 			.antMatchers("/POS/*").permitAll()
 //			.antMatchers("/API/*").permitAll()
 			.anyRequest().authenticated();

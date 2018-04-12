@@ -934,5 +934,15 @@
 		</choose>
 	</select>
 
+
+	<!-- selectMobileVersion -->
+	<select id="selectMobileVersion" parameterType="String" resultType="String">
+		SELECT version
+		FROM TB_MOBILE_VERSION
+		WHERE device = #{device}
+			AND deleted IS NULL
+		ORDER BY created_datetime DESC LIMIT 1
+	</select>
+
 </mapper>
  

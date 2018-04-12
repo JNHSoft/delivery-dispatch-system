@@ -211,4 +211,13 @@ public interface RiderMapper {
     public List<Rider> selectRiderNow(Common common);
     public List<Rider> selectRiderFooter(Common common);
     public List<Rider> selectMyStoreRiderRels(Common common);
+
+    /**
+     * <p> 모바일 버전 조회
+     *
+     * @param device
+     * @return
+     */
+    public String selectMobileVersion(String device);
+
 }
