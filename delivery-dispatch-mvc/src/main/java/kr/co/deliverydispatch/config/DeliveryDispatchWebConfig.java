@@ -204,7 +204,7 @@ public class DeliveryDispatchWebConfig {
          */
         @Override
         public void addViewControllers(ViewControllerRegistry registry) {
-            registry.addViewController("/").setViewName("forward:/main");
+            registry.addViewController("/").setViewName("forward:/order");
             registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
             super.addViewControllers(registry);
         }

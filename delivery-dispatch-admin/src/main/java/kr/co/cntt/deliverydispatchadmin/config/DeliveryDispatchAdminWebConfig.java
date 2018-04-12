@@ -197,6 +197,19 @@ public class DeliveryDispatchAdminWebConfig {
          * This implementation is empty.
          */
         @Override
+        public void addViewControllers(ViewControllerRegistry registry) {
+            registry.addViewController("/").setViewName("forward:/store");
+            registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
+            super.addViewControllers(registry);
+        }
+
+
+        /**
+         * {@inheritDoc}
+         * <p>
+         * This implementation is empty.
+         */
+        @Override
         public void addInterceptors(final InterceptorRegistry registry) {
             registry.addInterceptor(localeChangeInterceptor()).addPathPatterns("/**");
         }
