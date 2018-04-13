@@ -150,7 +150,8 @@ $(function() {
             var params = {
                 groupId : $(this).val()
             }
-            getNoneStoreSubGroupList(params);
+            var $subGroupList = $(this).closest('tr').find('select[name="subGroupList"]');
+            getNoneStoreSubGroupList(params, $subGroupList);
         }
         // 서브그룹 select 박스 변경시 insert
         else if($(this).attr('name') === 'subGroupList') {
@@ -345,7 +346,7 @@ function postSubGroup() {
 /**
  * 미등록 상점 등록시 서브 그룹 List 불러오기
  */
-function getNoneStoreSubGroupList(params) {
+function getNoneStoreSubGroupList(params, $subGroupList) {
     $.ajax({
         url : "/getNoneStoreSubGroupList",
         type : 'get',
@@ -357,9 +358,9 @@ function getNoneStoreSubGroupList(params) {
                 for (var i in data){
                     noneStoreSubGroupHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
                 }
-                $("#noneStoreSubGroup").html(noneStoreSubGroupHtml);
+                $subGroupList.html(noneStoreSubGroupHtml);
             } else{
-                $("#noneStoreSubGroup").html('<option>-</option>');
+                $subGroupList.html('<option>-</option>');
             }
 
         }

@@ -161,7 +161,7 @@ function getRiderList() {
                     {label:'매장ID', name:'th13', width:60, hidden:'hidden'}
                 ],
                 width:'auto',
-                height:520,
+                height:700,
                 async : false,
                 autowidth:true,
                 rowNum:20,

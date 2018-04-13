@@ -368,7 +368,7 @@ function getStatisticsList() {
                     $tmpData.th5 = data[key].regOrderId;
                     $tmpData.th6 = timeSet(data[key].createdDatetime);
                     $tmpData.th7 = data[key].address
-                    $tmpData.th8 = data[key].menuName
+                    // $tmpData.th8 = data[key].menuName
                     $tmpData.th9 = data[key].cookingTime
 
                     if (data[key].paid != null) {
@@ -435,14 +435,14 @@ function getStatisticsList() {
                 data: $mydata,
                 colModel: [
                     {label: 'No', name: 'th0', width: 25, key: true, align: 'center'},
+                    {label: order_reg_order_id, name: 'th5', width: 80, align: 'center'},
                     {label: group_name, name: 'th1', width: 80, align: 'center'},
                     {label: subGroup_name, name: 'th2', width: 80, align: 'center'},
                     {label: store_name, name: 'th3', width: 120, align: 'center'},
                     {label: order_status, name: 'th4', width: 80, align: 'center'},
-                    {label: order_reg_order_id, name: 'th5', width: 80, align: 'center'},
                     {label: order_created, name: 'th6', width: 80, align: 'center'},
                     {label: order_address, name: 'th7', width: 200},
-                    {label: order_summary, name: 'th8', width: 80},
+                    /*{label: order_summary, name: 'th8', width: 80},*/
                     {label: order_cooking, name: 'th9', width: 80, align: 'center'},
                     {label: order_payment, name: 'th10', width: 80, align: 'center'},
                     {label: order_assigned, name: 'th11', width: 80, align: 'center'},
@@ -454,7 +454,7 @@ function getStatisticsList() {
                     {label:'매장ID', name:'th17', width:60, hidden:'hidden'}*/
                 ],
                 width: 'auto',
-                height: 520,
+                height: 700,
                 autowidth: true,
                 rowNum: 20,
                 pager: "#jqGridPager",

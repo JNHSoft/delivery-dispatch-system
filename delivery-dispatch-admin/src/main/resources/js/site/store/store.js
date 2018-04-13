@@ -156,7 +156,7 @@ function getStoreList() {
                     {label:'서브그룹ID', name:'th13', width:60, hidden:'hidden'}
         ],
                 width:'auto',
-                height:520,
+                height:700,
                 autowidth:true,
                 rowNum:20,
                 pager:"#jqGridPager",
