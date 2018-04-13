@@ -146,6 +146,7 @@ function getGroupList() {
                 for (var i in data) {
                     statisticsGroupListHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
                 }
+                statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
                 $("#statisticsGroupList").on("change", function () {
@@ -350,9 +351,13 @@ function getStatisticsList() {
                     $tmpData.th0 = i++;
                     if(data[key].group){
                         $tmpData.th1 = data[key].group.name
+                    }else {
+                        $tmpData.th1 = group_none;
                     }
                     if(data[key].subGroup){
                         $tmpData.th2 = data[key].subGroup.name
+                    }else{
+                        $tmpData.th2 = group_none;
                     }
                     $tmpData.th3 = data[key].store.storeName
                     if (data[key].status == "3") {
