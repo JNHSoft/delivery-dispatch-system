@@ -5,7 +5,6 @@ import kr.co.cntt.core.mapper.*;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notice.Notice;
-import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -13,7 +12,6 @@ import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.util.Misc;
 import kr.co.deliverydispatch.service.StoreSettingService;
-import kr.co.deliverydispatch.service.StoreStatementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +34,6 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
      */
     @Autowired
     private RedisService redisService;
-    /**
-     * Order DAO
-     */
-    private OrderMapper orderMapper;
 
     /**
      * Store DAO
@@ -57,14 +50,12 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
      */
     private NoticeMapper noticeMapper;
     /**
-     * @param orderMapper ORDER D A O
      * @param storeMapper STORE D A O
      * @param riderMapper Rider D A O
      * @param noticeMapper Notice D A O
      */
     @Autowired
-    public StoreSettingServiceImpl(OrderMapper orderMapper, StoreMapper storeMapper, RiderMapper riderMapper, NoticeMapper noticeMapper) {
-        this.orderMapper = orderMapper;
+    public StoreSettingServiceImpl(StoreMapper storeMapper, RiderMapper riderMapper, NoticeMapper noticeMapper) {
         this.storeMapper = storeMapper;
         this.riderMapper = riderMapper;
         this.noticeMapper = noticeMapper;

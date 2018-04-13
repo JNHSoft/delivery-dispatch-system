@@ -1,9 +1,6 @@
 package kr.co.deliverydispatch.service;
 
-import kr.co.cntt.core.model.chat.Chat;
-import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
-import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;

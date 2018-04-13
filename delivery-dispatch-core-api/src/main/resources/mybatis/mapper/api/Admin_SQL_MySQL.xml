@@ -1056,7 +1056,7 @@
         , TBR.name AS riderName
         , TBR.phone AS riderPhone
         , TBO.message
-        , TBO.phone AS customerPhone
+        , TBO.phone
 		, TBO.address AS customerAddress
         , TBO.detail_address AS customerDetailAddress
 		, TBO.paid
@@ -1098,12 +1098,14 @@
 
 		TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		AND TBO.status in (3,4)
-		<if test="startDate != null and startDate != ''">
+		AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > TBO.created_datetime
+		AND TBO.created_datetime > #{currentDatetime}
+		<!--<if test="startDate != null and startDate != ''">
 		AND start_date = #{startDate}
 		</if>
 		<if test="endDate != null and endDate != ''">
 		AND end_date = #{endDate}
-		</if>
+		</if>-->
 		ORDER BY TBO.created_datetime ASC
 
 	</select>

@@ -220,8 +220,8 @@ function getStoreDetail() {
                 $("#storeDetailStorePhone").val(data.A_Store.storePhone);
                 // 배정 모드
                 $("#storeDetailAssignStatusSelectBox").val(data.A_Store.assignmentStatus);
-
-
+                //accessToken
+                $("#storeAccessToken").val(data.A_Store.accessToken);
 
                 // var storeDetailGroupHtml = "<option value=''>" + "그룹선택" + "</option>";
                 var storeDetailGroupHtml = "<option value=''>" + "不明" + "</option>";
@@ -561,4 +561,14 @@ function storeLoginIdCheck() {
     });
 }
 
+/**
+ * accessToken 클릭시 복사
+ */
+function copyAccessToken() {
+    $("#storeAccessToken").select();
+    var successful = document.execCommand('copy');
+    if (successful){
+        alert("Copy completed");
+    }
+}
 /*]]>*/

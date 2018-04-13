@@ -110,9 +110,9 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         }
         Misc misc = new Misc();
         if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
-            Order orderInfo = orderMapper.selectOrderLocation(S_Order.getStoreId());
+            Store storeInfo = storeMapper.selectStoreLocation(S_Order.getStoreId());
             try {
-                S_Order.setDistance(Double.toString(misc.getHaversine(orderInfo.getLatitude(), orderInfo.getLongitude(), S_Order.getLatitude(), S_Order.getLongitude()) / (double) 1000));
+                S_Order.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), S_Order.getLatitude(), S_Order.getLongitude()) / (double) 1000));
             } catch (Exception e) {
                 e.printStackTrace();
             }

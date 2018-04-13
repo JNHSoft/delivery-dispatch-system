@@ -578,8 +578,10 @@ function getStatisticsInfo(orderId) {
 
 function excelDownload(){
     // console.log("@@@@");
+    $('input[name=startDate]').val($('#startDate').val());
+    $('input[name=endDate]').val($('#endDate').val());
 
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@downdown");
+    console.log(document.searchForm);
     document.searchForm.action="/excelDownload";
     document.searchForm.method="GET";
     document.searchForm.submit();
@@ -600,14 +602,6 @@ function excelDownload(){
 
 
 }
-
-
-
-
-
-
-
-
 /*]]>*/
 
 

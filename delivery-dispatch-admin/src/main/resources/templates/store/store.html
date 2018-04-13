@@ -21,6 +21,8 @@
     var store_address = /*[[#{store.address}]]*/ 'store_address';
     var store_phone = /*[[#{store.phone}]]*/ 'store_phone';
     var store_address_detail = /*[[#{store.address.detail}]]*/ 'store_address_detail';
+    var store_token_copy = /*[[#{store.token.copy}]]*/ 'store_token_copy';
+
     var order_assign_mode = /*[[#{order.assign.mode}]]*/ 'order_assign_mode';
     var order_assign_mode_store = /*[[#{order.assign.mode.store}]]*/ 'order_assign_mode_store';
     var order_assign_mode_auto = /*[[#{order.assign.mode.auto}]]*/ 'order_assign_mode_auto';
@@ -235,6 +237,11 @@
 								<option value="2" th:text="${#messages.msg('order.assign.mode.rider')}"></option>
 							</select>
 						</td>
+					</tr>
+					<tr>
+						<th>access_token</th>
+						<td><input id="storeAccessToken" style="position:absolute;top:-9999em;"/><a class="button btn_green" th:text="${#messages.msg('store.token.copy')}" onclick="javascript:copyAccessToken()"/></td>
+						<!-- input 박스 hidden 시키지말 것!(클립보드 복사시 크롬에서 사용가능하려면 hidden이나 display:none을 하면 안된다 -> 스타일로 안보이게 해놓음) -->
 					</tr>
 					</tbody>
 				</table>

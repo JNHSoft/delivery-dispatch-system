@@ -84,8 +84,13 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             // 제목 부분
             XSSFRow titleRow = sheet.createRow(rowNum);
 
-            sheet.setColumnWidth(colNum, 20*256);
+            sheet.setColumnWidth(colNum, 15*256);
             XSSFCell addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue("regOrderID");
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 20*256);
+            addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue("Group");
             addTitle.setCellStyle(titleCellStyle);
 
@@ -104,12 +109,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue("Status");
             addTitle.setCellStyle(titleCellStyle);
 
-            sheet.setColumnWidth(colNum, 15*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("OrderID");
-            addTitle.setCellStyle(titleCellStyle);
-
-            sheet.setColumnWidth(colNum, 15*256);
+            sheet.setColumnWidth(colNum, 20*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue("CreatedDateTime");
             addTitle.setCellStyle(titleCellStyle);
@@ -134,10 +134,10 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue("CompletedDatetime");
             addTitle.setCellStyle(titleCellStyle);
 
-            sheet.setColumnWidth(colNum, 15*256);
+           /* sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue("MenuName");
-            addTitle.setCellStyle(titleCellStyle);
+            addTitle.setCellStyle(titleCellStyle);*/
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
@@ -152,17 +152,17 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("DeliveryPaid");
+            addTitle.setCellValue("DeliveryPrice");
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Price");
+            addTitle.setCellValue("MenuPrice");
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Payment");
+            addTitle.setCellValue("TotalPrice");
             addTitle.setCellStyle(titleCellStyle);
 
 
@@ -224,6 +224,10 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             XSSFRow addListRow = sheet.createRow(rowNum);
 
             XSSFCell cell = addListRow.createCell(colNum++);
+            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getRegOrderId());
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getGroup().getName());
             cell.setCellStyle(dataCellStyle);
 
@@ -236,12 +240,16 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getStatus());
+            if(orderStatisticsByAdminList.get(i).getStatus().equals("3")){
+                cell.setCellValue("已送達");
+            }else if(orderStatisticsByAdminList.get(i).getStatus().equals("4")){
+                cell.setCellValue("取消");
+            }
             cell.setCellStyle(dataCellStyle);
 
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getId());
-            cell.setCellStyle(dataCellStyle);
+//            cell = addListRow.createCell(colNum++);
+//            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getId());
+//            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getCreatedDatetime());
@@ -263,25 +271,33 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getCompletedDatetime());
             cell.setCellStyle(dataCellStyle);
 
-            cell = addListRow.createCell(colNum++);
+            /*cell = addListRow.createCell(colNum++);
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getMenuName());
-            cell.setCellStyle(dataCellStyle);
+            cell.setCellStyle(dataCellStyle);*/
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getCookingTime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getPaid());
+            if(orderStatisticsByAdminList.get(i).getPaid().equals("0")){
+                cell.setCellValue("現金");
+            }else if(orderStatisticsByAdminList.get(i).getPaid().equals("1")){
+                cell.setCellValue("銀行卡");
+            }else if(orderStatisticsByAdminList.get(i).getPaid().equals("2")){
+                cell.setCellValue("預付");
+            }else if(orderStatisticsByAdminList.get(i).getPaid().equals("3")){
+                cell.setCellValue("服務或者免費");
+            }
             cell.setCellStyle(dataCellStyle);
-
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getPaid());
-            cell.setCellStyle(dataCellStyle);
-
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getDeliveryPrice());
+            cell.setCellStyle(dataCellStyle);
+
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getMenuPrice());
             cell.setCellStyle(dataCellStyle);
 
 
@@ -324,10 +340,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell = addListRow.createCell(colNum++);
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getDistance());
             cell.setCellStyle(dataCellStyle);
-
-
-
-
 
             rowNum ++;
         }

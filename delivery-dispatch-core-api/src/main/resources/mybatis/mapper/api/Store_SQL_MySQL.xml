@@ -30,6 +30,7 @@
         <result property="chDetailAddress" column="ch_detail_address" />
         <result property="thirdParty" column="third_party"/>
         <result property="alarm" column="alarm"/>
+        <result property="accessToken" column="access_token"/>
 
         <association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
             <result property="id" column="group_id" />
@@ -238,6 +239,7 @@
             , TG.admin_id AS group_admin_id
             , TA.assignment_status AS admin_assignment_status
             , TA.assignment_limit AS admin_assignment_limit
+            , TSS.access_token
         FROM TB_STORE TS
 
         LEFT JOIN
@@ -259,6 +261,11 @@
         LEFT JOIN
         TB_ADMIN AS TA
         on TS.admin_id = TA.id
+
+        LEFT JOIN
+        TB_STORE_SESSION AS TSS
+        on TS.id = TSS.store_id
+
         WHERE 1=1
         <choose>
             <when test="role != null and role == 'ROLE_SYSTEM'">

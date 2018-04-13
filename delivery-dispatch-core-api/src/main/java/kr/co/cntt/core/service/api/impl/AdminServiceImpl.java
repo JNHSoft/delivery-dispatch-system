@@ -54,11 +54,6 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     private AdminMapper adminMapper;
 
     /**
-     * Order DAO
-     */
-    private OrderMapper orderMapper;
-
-    /**
      * Store DAO
      */
     private StoreMapper storeMapper;
@@ -67,10 +62,9 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
      * @param adminMapper USER D A O
      */
     @Autowired
-    public AdminServiceImpl(AdminMapper adminMapper, StoreMapper storeMapper, OrderMapper orderMapper) {
+    public AdminServiceImpl(AdminMapper adminMapper, StoreMapper storeMapper) {
         this.adminMapper = adminMapper;
         this.storeMapper = storeMapper;
-        this.orderMapper = orderMapper;
     }
 
     @Override
@@ -607,10 +601,10 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         if (A_Order.getLatitude() != null && A_Order.getLongitude() != null) {
 
 
-            Order orderInfo = orderMapper.selectOrderLocation(A_Order.getId());
+            Store storeInfo = storeMapper.selectStoreLocation(A_Order.getStoreId());
 
             try {
-                A_Order.setDistance(Double.toString(misc.getHaversine(orderInfo.getLatitude(), orderInfo.getLongitude(), orderInfo.getLatitude(), orderInfo.getLongitude()) / (double) 1000));
+                A_Order.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), A_Order.getLatitude(), A_Order.getLongitude()) / (double) 1000));
             } catch (Exception e) {
                 e.printStackTrace();
             }

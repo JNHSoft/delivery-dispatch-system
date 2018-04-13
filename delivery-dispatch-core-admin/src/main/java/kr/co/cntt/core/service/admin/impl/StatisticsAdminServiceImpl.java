@@ -1,13 +1,18 @@
 package kr.co.cntt.core.service.admin.impl;
 
+import kr.co.cntt.core.enums.ErrorCodeEnum;
+import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
+import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
+import kr.co.cntt.core.util.Misc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +36,19 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
      */
     private RiderMapper riderMapper;
 
+    /**
+     * Order DAO
+     */
+    private OrderMapper orderMapper;
+
 
 
     @Autowired
-    public StatisticsAdminServiceImpl(AdminMapper adminMapper , StoreMapper storeMapper, RiderMapper riderMapper) {
+    public StatisticsAdminServiceImpl(AdminMapper adminMapper , StoreMapper storeMapper, RiderMapper riderMapper, OrderMapper orderMapper) {
         this.adminMapper = adminMapper;
         this.storeMapper = storeMapper;
         this.riderMapper = riderMapper;
+        this.orderMapper = orderMapper;
     }
 
     // 통계 리스트
@@ -47,8 +58,23 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     }
     // 통계 상세 보기
     @Override
-    public Order selectAdminStatisticsInfo(Order order){return adminMapper.selectAdminStatisticsInfo(order);}
+    public Order selectAdminStatisticsInfo(Order order) {
+        Order A_Order = adminMapper.selectAdminStatisticsInfo(order);
 
+        Misc misc = new Misc();
+
+        if (A_Order.getLatitude() != null && A_Order.getLongitude() != null) {
+
+            Store storeInfo = storeMapper.selectStoreLocation(A_Order.getStoreId());
+
+            try {
+                A_Order.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), A_Order.getLatitude(), A_Order.getLongitude()) / (double) 1000));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return A_Order;
+    }
     // 그룹 조회
     @Override
     public List<Group> getGroupList(Order order) {
