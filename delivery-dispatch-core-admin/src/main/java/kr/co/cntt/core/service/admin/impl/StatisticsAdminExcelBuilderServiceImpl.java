@@ -38,7 +38,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
         // Get now date & time
         // 파일 명 날짜가져온다.
 //        SimpleDateFormat formatter = new SimpleDateFormat ( "yy-mm-dd", Locale.KOREA );
-        SimpleDateFormat formatter = new SimpleDateFormat ( "yyyy.MM.dd HH:mm:ss", Locale.KOREA );
+        SimpleDateFormat formatter = new SimpleDateFormat ( "yyyy.MM.dd HH:mm:ss", locale );
         Date currentTime = new Date ( );
         String dTime = formatter.format ( currentTime );
 
@@ -57,7 +57,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             // 파일 이름은 이렇게 한다. 											Nick
             fileName += " Order_Report.xlsx";
 
-
         }
 
         String encordedFilename = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
@@ -65,7 +64,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
         response.setHeader("Content-Transfer-Encoding", "binary");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-
 
         OutputStream fs = response.getOutputStream();
         workbook.write(fs);
@@ -88,9 +86,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
         Font dataCellFont = setDataCellFont(wb);
         dataCellStyle.setFont(dataCellFont);
 
-
         {
-
             // 제목 부분
             XSSFRow titleRow = sheet.createRow(rowNum);
 
@@ -104,22 +100,22 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("group.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            sheet.setColumnWidth(colNum, 10*256);
+            sheet.setColumnWidth(colNum, 20*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("subgroup.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            sheet.setColumnWidth(colNum, 10*256);
+            sheet.setColumnWidth(colNum, 25*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("store.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            sheet.setColumnWidth(colNum, 15*256);
+            sheet.setColumnWidth(colNum, 10*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.status",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            sheet.setColumnWidth(colNum, 20*256);
+            sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.created",null, locale));
             addTitle.setCellStyle(titleCellStyle);
@@ -174,38 +170,32 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("order.total.price",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.combined",null, locale));
             addTitle.setCellStyle(titleCellStyle);
-
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("rider.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("rider.phone",null, locale));
             addTitle.setCellStyle(titleCellStyle);
-
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.message",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.customer.phone",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-
-            sheet.setColumnWidth(colNum, 15*1024);
+            sheet.setColumnWidth(colNum, 60*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.customer.address",null, locale));
             addTitle.setCellStyle(titleCellStyle);
@@ -215,18 +205,15 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("order.customer.address.detail",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.distance",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             rowNum++;
-
         }
         // 내용 부분
         for(int i = 0, r = orderStatisticsByAdminList.size(); i<r; i++) {
-
 
             colNum = 0;
             logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@#!@#!@#!@#!@#"+orderStatisticsByAdminList);
@@ -304,11 +291,9 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getDeliveryPrice());
             cell.setCellStyle(dataCellStyle);
 
-
             cell = addListRow.createCell(colNum++);
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getMenuPrice());
             cell.setCellStyle(dataCellStyle);
-
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue((String) orderStatisticsByAdminList.get(i).getTotalPrice());
@@ -352,10 +337,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             rowNum ++;
         }
-
-
-
-
     }
 
     public Font setTotalCellFont(XSSFWorkbook wb) {
@@ -368,7 +349,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
     }
 
     public XSSFCellStyle setTotalCell(XSSFWorkbook wb){
-
         // 합계 셀 스타일
         XSSFCellStyle TotalRowStyle = wb.createCellStyle();
         TotalRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
@@ -389,7 +369,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
         TotalRowFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
         TotalRowFont.setFontName("맑은 고딕");
         TotalRowStyle.setFont(TotalRowFont);
-
 
         return TotalRowStyle;
     }
@@ -421,7 +400,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
         return dataCellStyle;
     }
 
-
     public XSSFCellStyle settTitleCell(XSSFWorkbook wb) {
 
         XSSFCellStyle titleCellStyle = wb.createCellStyle();
@@ -439,7 +417,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
         titleCellStyle.setTopBorderColor(IndexedColors.BLACK.index);
 
         return titleCellStyle;
-
     }
 
     public Font setTitleCellFont(XSSFWorkbook wb) {
@@ -451,7 +428,4 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
         return titleCellFont;
     }
-
-
-
 }
