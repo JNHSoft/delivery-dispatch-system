@@ -85,7 +85,7 @@
 
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
             <result property="id" column="id" />
-            <result property="name" column="name" />
+            <result property="name" column="rider_name" />
             <result property="phone" column="rider_phone" />
         </association>
 
@@ -577,7 +577,7 @@
         , TBO.picked_up_datetime
         , TBO.reservation_datetime
         , TBO.reg_order_id
-        , TBR.name
+        , TBR.name AS rider_name
 
         FROM TB_ORDER AS TBO
 
@@ -615,12 +615,8 @@
 
         TBO.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
         AND TBO.status in (3, 4)
-        <if test="startDate != null and startDate != ''">
-            AND start_date = #{startDate}
-        </if>
-        <if test="endDate != null and endDate != ''">
-            AND end_date = #{endDate}
-        </if>
+        AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > TBO.created_datetime
+        AND TBO.created_datetime > #{currentDatetime}
     </select>
 
 
@@ -644,7 +640,7 @@
         , TBO.total_price
         , TBP.type
         , TBO.combined_order_id
-        , TBR.name
+        , TBR.name AS rider_name
         , TBR.phone AS rider_phone
         , TBO.message
         , TBO.phone
@@ -695,15 +691,85 @@
 
         TBO.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
         AND TBO.status in (3, 4)
-        <if test="startDate != null and startDate != ''">
+       <!-- <if test="startDate != null and startDate != ''">
             AND start_date = #{startDate}
         </if>
         <if test="endDate != null and endDate != ''">
             AND end_date = #{endDate}
-        </if>
+        </if>-->
         AND TBO.reg_order_id = #{id}
     </select>
 
+    <!-- 통계 조회 List Excel -->
+    <select id="selectStoreStatisticsExcel" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
+        SELECT
+        TBO.admin_id
+        , TBO.store_id
+        , TBO.rider_id
+        , TBO.status
+        , TBO.id
+        , TBO.created_datetime
+        , TBO.reservation_datetime
+        , TBO.assigned_datetime
+		, TBO.picked_up_datetime
+        , TBO.completed_datetime
+        , TBO.menu_name
+        , TBO.cooking_time
+        , TBO.paid
+        , TBO.menu_price
+        , TBO.delivery_price
+        , TBO.total_price
+		, TBP.type
+		, TBO.combined_order_id
+        , TBR.name AS rider_name
+        , TBR.phone AS rider_phone
+        , TBO.reg_order_id
+        , TBO.message
+        , TBO.phone
+		, TBO.address
+        , TBO.detail_address
+        , TBO.latitude
+		, TBO.longitude
+
+        FROM TB_ORDER AS TBO
+
+        LEFT JOIN
+        TB_RIDER AS TBR
+        on TBR.id = TBO.rider_id
+        AND TBR.deleted is NULL
+
+        LEFT JOIN
+        TB_STORE AS TBS
+        on TBS.id = TBO.store_id
+        AND TBS.deleted is NULL
+
+        LEFT JOIN
+        TB_PAYMENT AS TBP
+        on TBP.order_id = TBO.id
+        AND TBP.deleted is NULL
+
+        LEFT JOIN
+        TB_SUBGROUP_STORE_REL AS SSR
+        on TBO.store_id = SSR.store_id
+        AND SSR.deleted is NULL
+
+        LEFT JOIN
+        TB_SUBGROUP AS TSG
+        on SSR.group_id = TSG.id
+        AND TSG.deleted is NULL
+
+        LEFT JOIN
+        TB_GROUP AS TG
+        on SSR.group_id = TG.id
+        AND TG.deleted is NULL
+
+        WHERE
+
+        TBO.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+        AND TBO.status in (3, 4)
+        AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > TBO.created_datetime
+        AND TBO.created_datetime > #{currentDatetime}
+    </select>
 
     <!-- updateStoreSession -->
     <update id="updateStoreSession" parameterType="String">

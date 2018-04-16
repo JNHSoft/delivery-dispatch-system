@@ -119,5 +119,22 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         }
         return S_Order;
     }
+    //통계 조회 엑셀
+    @Override
+    public List<Order> getStoreStatisticsExcel(Order order) {
+        List<Order> statisticsList = storeMapper.selectStoreStatisticsExcel(order);
+        Misc misc = new Misc();
+        for (Order statistics:statisticsList) {
+            if (statistics.getLatitude() != null && statistics.getLongitude() != null){
+                Store storeLocation = storeMapper.selectStoreLocation(statistics.getStoreId());
+                try {
+                    statistics.setDistance(Double.toString(misc.getHaversine(storeLocation.getLatitude(), storeLocation.getLongitude(), statistics.getLatitude(), statistics.getLongitude()) / (double) 1000));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return statisticsList;
+    }
 
 }

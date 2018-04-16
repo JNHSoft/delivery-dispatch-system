@@ -51,10 +51,10 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         if (A_Order.getLatitude() != null && A_Order.getLongitude() != null) {
 
-            Store storeInfo = storeMapper.selectStoreLocation(A_Order.getStoreId());
+            Store storeLocation = storeMapper.selectStoreLocation(A_Order.getStoreId());
 
             try {
-                A_Order.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), A_Order.getLatitude(), A_Order.getLongitude()) / (double) 1000));
+                A_Order.setDistance(Double.toString(misc.getHaversine(storeLocation.getLatitude(), storeLocation.getLongitude(), A_Order.getLatitude(), A_Order.getLongitude()) / (double) 1000));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -86,9 +86,9 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
         Misc misc = new Misc();
         for (Order statistics:statisticsList){
             if (statistics.getLatitude() != null && statistics.getLongitude() != null){
-                Store storeInfo = storeMapper.selectStoreLocation(statistics.getStoreId());
+                Store storeLocation = storeMapper.selectStoreLocation(statistics.getStoreId());
                 try {
-                    statistics.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), statistics.getLatitude(), statistics.getLongitude()) / (double) 1000));
+                    statistics.setDistance(Double.toString(misc.getHaversine(storeLocation.getLatitude(), storeLocation.getLongitude(), statistics.getLatitude(), statistics.getLongitude()) / (double) 1000));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

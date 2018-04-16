@@ -17,11 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -50,12 +56,25 @@ public class StatisticsController {
         return "/statistics/statement";
     }
 
-
     @ResponseBody
     @GetMapping("/getStoreStatistics")
     @CnttMethodDescription("통계 리스트 조회")
-    public List<Order> getStoreStatistics(Order order){
+    public List<Order> getStoreStatistics(@RequestParam(value = "startDate") String startDate
+            ,@RequestParam(value = "endDate") String endDate){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         order.setToken(storeInfo.getStoreAccessToken());
         List<Order> statisticsList = storeStatementService.getStoreStatistics(order);
         return statisticsList;
@@ -69,6 +88,34 @@ public class StatisticsController {
         order.setToken(storeInfo.getStoreAccessToken());
         Order statisticsInfo = storeStatementService.getStoreStatisticsInfo(order);
         return statisticsInfo;
+    }
+
+    // excel 다운로드
+    @ResponseBody
+    @GetMapping("/excelDownload")
+    public ModelAndView statisticsExcelDownload(ModelMap model, HttpServletRequest request, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        order.setCurrentDatetime(startDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        ModelAndView modelAndView = new ModelAndView("StatisticsStoreExcelBuilderServiceImpl");
+        List<Order> orderStatisticsByStoreList = storeStatementService.getStoreStatisticsExcel(order);
+        modelAndView.addObject("getStoreStatisticsExcel", orderStatisticsByStoreList);
+
+        return modelAndView;
     }
 
 }

@@ -29,4 +29,11 @@ public interface StoreStatementService {
      * @throws
      */
     public Order getStoreStatisticsInfo(Order order);
+
+    /**
+     * 통계 목록 Excel
+     * @param order
+     * @return
+     */
+    public List<Order> getStoreStatisticsExcel(Order order);
 }

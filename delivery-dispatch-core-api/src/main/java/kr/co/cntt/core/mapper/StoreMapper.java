@@ -171,6 +171,11 @@ public interface StoreMapper {
      */
     public Order selectStoreStatisticsInfo(Order order);
 
-
+    /**
+     * 통계 목록 Excel
+     * @param order
+     * @return
+     */
+    public List<Order> selectStoreStatisticsExcel(Order order);
 
 }

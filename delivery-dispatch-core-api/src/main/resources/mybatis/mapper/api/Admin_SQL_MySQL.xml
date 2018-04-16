@@ -970,7 +970,7 @@
 	, TBO.assigned_datetime
 	, TBO.picked_up_datetime
 	, TBO.reservation_datetime
-	, TBR.name
+	, TBR.name AS rider_name
 	, TBO.address
 	, TBO.paid
 	, TBO.reg_order_id
@@ -1140,7 +1140,7 @@
 		, TBO.total_price
 		, TBP.type
 		, TBO.combined_order_id
-		, TBR.name
+		, TBR.name AS rider_name
 		, TBR.phone AS rider_phone
 		, TBO.message
 		, TBO.phone
