@@ -1,14 +1,16 @@
 package kr.co.cntt.core.service.admin.impl;
 
-
 import kr.co.cntt.core.model.order.Order;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -21,6 +23,14 @@ import java.util.Map;
 
 @Component("StatisticsAdminExcelBuilderServiceImpl")
 public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
+    @Resource
+    private MessageSource messageSource;
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+    @Value("${spring.mvc.locale}")
+    private Locale locale;
 
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -63,7 +73,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
     }
     // 내용 셋팅 하는 부분
     public void setOrderStatisticsByAdminExcel(XSSFWorkbook wb, List<Order> orderStatisticsByAdminList) {
-
+        System.out.println(messageSource.getMessage("order.reg.order.id",null, locale)+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         int rowNum = 0;
         int colNum = 0;
         XSSFSheet sheet = wb.createSheet("OrderStatisticsByAdmin");
@@ -86,7 +96,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 15*256);
             XSSFCell addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("regOrderID");
+            addTitle.setCellValue(messageSource.getMessage("order.reg.order.id",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 20*256);
