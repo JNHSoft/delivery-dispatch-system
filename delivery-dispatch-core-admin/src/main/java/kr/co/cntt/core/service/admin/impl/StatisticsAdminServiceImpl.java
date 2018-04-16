@@ -1,7 +1,5 @@
 package kr.co.cntt.core.service.admin.impl;
 
-import kr.co.cntt.core.enums.ErrorCodeEnum;
-import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
@@ -31,24 +29,12 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
      */
     private StoreMapper storeMapper;
 
-    /**
-     * Rider DAO
-     */
-    private RiderMapper riderMapper;
-
-    /**
-     * Order DAO
-     */
-    private OrderMapper orderMapper;
-
 
 
     @Autowired
-    public StatisticsAdminServiceImpl(AdminMapper adminMapper , StoreMapper storeMapper, RiderMapper riderMapper, OrderMapper orderMapper) {
+    public StatisticsAdminServiceImpl(AdminMapper adminMapper , StoreMapper storeMapper) {
         this.adminMapper = adminMapper;
         this.storeMapper = storeMapper;
-        this.riderMapper = riderMapper;
-        this.orderMapper = orderMapper;
     }
 
     // 통계 리스트

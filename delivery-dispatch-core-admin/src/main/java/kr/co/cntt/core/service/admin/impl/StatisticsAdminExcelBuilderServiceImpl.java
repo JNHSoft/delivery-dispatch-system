@@ -101,47 +101,47 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 20*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Group");
+            addTitle.setCellValue(messageSource.getMessage("group.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 10*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("SubGroup");
+            addTitle.setCellValue(messageSource.getMessage("subgroup.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 10*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("StoreName");
+            addTitle.setCellValue(messageSource.getMessage("store.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Status");
+            addTitle.setCellValue(messageSource.getMessage("order.status",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 20*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("CreatedDateTime");
+            addTitle.setCellValue(messageSource.getMessage("order.created",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("ReservationDatetime");
+            addTitle.setCellValue(messageSource.getMessage("order.reserved",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("AssignedDatetime");
+            addTitle.setCellValue(messageSource.getMessage("order.assigned",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("PickedUpDatetime");
+            addTitle.setCellValue(messageSource.getMessage("order.pickedup",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("CompletedDatetime");
+            addTitle.setCellValue(messageSource.getMessage("order.completed",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
            /* sheet.setColumnWidth(colNum, 15*256);
@@ -151,75 +151,74 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("CookingTime");
+            addTitle.setCellValue(messageSource.getMessage("order.cooking",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Paid");
-            addTitle.setCellStyle(titleCellStyle);
-
-
-            sheet.setColumnWidth(colNum, 15*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("DeliveryPrice");
+            addTitle.setCellValue(messageSource.getMessage("order.payment",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("MenuPrice");
+            addTitle.setCellValue(messageSource.getMessage("order.delivery.price",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("TotalPrice");
+            addTitle.setCellValue(messageSource.getMessage("order.menu.price",null, locale));
             addTitle.setCellStyle(titleCellStyle);
-
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Combine");
+            addTitle.setCellValue(messageSource.getMessage("order.total.price",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("RiderName");
+            addTitle.setCellValue(messageSource.getMessage("order.combined",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("RiderPhone");
+            addTitle.setCellValue(messageSource.getMessage("rider.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Memo");
+            addTitle.setCellValue(messageSource.getMessage("rider.phone",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("CustomerPhone");
+            addTitle.setCellValue(messageSource.getMessage("order.message",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("CustomerAddress");
-            addTitle.setCellStyle(titleCellStyle);
-
-            sheet.setColumnWidth(colNum, 15*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("CustomerDetailAddress");
+            addTitle.setCellValue(messageSource.getMessage("order.customer.phone",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Distance");
+            addTitle.setCellValue(messageSource.getMessage("order.customer.address",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 15*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("order.customer.address.detail",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+
+            sheet.setColumnWidth(colNum, 15*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("order.distance",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             rowNum++;
@@ -251,9 +250,9 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             cell = addListRow.createCell(colNum++);
             if(orderStatisticsByAdminList.get(i).getStatus().equals("3")){
-                cell.setCellValue("已送達");
+                cell.setCellValue(messageSource.getMessage("status.completed",null, locale));
             }else if(orderStatisticsByAdminList.get(i).getStatus().equals("4")){
-                cell.setCellValue("取消");
+                cell.setCellValue(messageSource.getMessage("status.canceled",null, locale));
             }
             cell.setCellStyle(dataCellStyle);
 
@@ -291,13 +290,13 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             cell = addListRow.createCell(colNum++);
             if(orderStatisticsByAdminList.get(i).getPaid().equals("0")){
-                cell.setCellValue("現金");
+                cell.setCellValue(messageSource.getMessage("order.payment.cash",null, locale));
             }else if(orderStatisticsByAdminList.get(i).getPaid().equals("1")){
-                cell.setCellValue("銀行卡");
+                cell.setCellValue(messageSource.getMessage("order.payment.card",null, locale));
             }else if(orderStatisticsByAdminList.get(i).getPaid().equals("2")){
-                cell.setCellValue("預付");
+                cell.setCellValue(messageSource.getMessage("order.payment.prepayment",null, locale));
             }else if(orderStatisticsByAdminList.get(i).getPaid().equals("3")){
-                cell.setCellValue("服務或者免費");
+                cell.setCellValue(messageSource.getMessage("order.payment.service",null, locale));
             }
             cell.setCellStyle(dataCellStyle);
 
