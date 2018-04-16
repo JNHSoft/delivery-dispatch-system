@@ -82,7 +82,19 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     // 통계 리스트 Excel
     @Override
     public List<Order> selectAdminStatisticsExcel(Order order) {
-        return adminMapper.selectAdminStatisticsExcel(order);
+        List<Order> statisticsList =  adminMapper.selectAdminStatisticsExcel(order);
+        Misc misc = new Misc();
+        for (Order statistics:statisticsList){
+            if (statistics.getLatitude() != null && statistics.getLongitude() != null){
+                Store storeInfo = storeMapper.selectStoreLocation(statistics.getStoreId());
+                try {
+                    statistics.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), statistics.getLatitude(), statistics.getLongitude()) / (double) 1000));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return statisticsList;
     }
 
 }

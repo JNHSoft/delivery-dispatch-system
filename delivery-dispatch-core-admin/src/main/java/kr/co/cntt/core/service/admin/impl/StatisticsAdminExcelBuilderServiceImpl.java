@@ -29,6 +29,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
+
     @Value("${spring.mvc.locale}")
     private Locale locale;
 
@@ -73,7 +74,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
     }
     // 내용 셋팅 하는 부분
     public void setOrderStatisticsByAdminExcel(XSSFWorkbook wb, List<Order> orderStatisticsByAdminList) {
-        System.out.println(messageSource.getMessage("order.reg.order.id",null, locale)+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         int rowNum = 0;
         int colNum = 0;
         XSSFSheet sheet = wb.createSheet("OrderStatisticsByAdmin");
@@ -205,7 +205,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellStyle(titleCellStyle);
 
 
-            sheet.setColumnWidth(colNum, 15*256);
+            sheet.setColumnWidth(colNum, 15*1024);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.customer.address",null, locale));
             addTitle.setCellStyle(titleCellStyle);
