@@ -670,15 +670,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         String tmpRegOrderId = order.getId();
 
         int nRet = this.putOrder(order);
-
         String tmpOrderId = order.getId();
 
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
-
+        System.out.println(storeDTO.getAccessToken() + "!!!!!" + storeDTO.getToken());
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
+        order.setId(tmpRegOrderId);
         if(nRet == 1){
             Order curOrder = getOrderInfo(order);
             if(curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")){
