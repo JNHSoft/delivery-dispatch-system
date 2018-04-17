@@ -394,7 +394,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setDeliveryPrice("0");
         }
 
-        order.setTotalPrice(order.getMenuPrice() + order.getDeliveryPrice());
+        order.setTotalPrice(String.valueOf(Double.parseDouble(order.getMenuPrice()) + Double.parseDouble(order.getDeliveryPrice())));
 
         if (order.getCookingTime() == null || order.getCookingTime() == "") {
             order.setCookingTime("0");
@@ -638,7 +638,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setDeliveryPrice("0");
         }
 
-        order.setTotalPrice(order.getMenuPrice() + order.getDeliveryPrice());
+        order.setTotalPrice(String.valueOf(Double.parseDouble(order.getMenuPrice()) + Double.parseDouble(order.getDeliveryPrice())));
 
         order.setStatus(null);
         order.setRiderId(null);
@@ -647,7 +647,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         order.setCompletedDatetime(null);
 
         Order combinedOrder = new Order();
-        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             combinedOrder.setId(order.getCombinedOrderId());
             combinedOrder.setCombinedOrderId(order.getId());
             combinedOrder.setRiderId(order.getRiderId());

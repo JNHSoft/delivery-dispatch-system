@@ -156,6 +156,8 @@ $(document).ready(function() {
     });
 });
 
+
+
 function timeSet(time) {
     if(time){
         var d = new Date(time);
@@ -211,7 +213,6 @@ function getOrderDetail(orderId) {
         async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
-            console.log(data);
             selectedOriginOrder = data;
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
@@ -528,8 +529,8 @@ function putOrder() {
 
     var menuName = $('#menuName').val();
     var cookingTime = $('#cookingTime').val();
-    var menuPrice = $('#menuPrice').val();
-    var deliveryPrice = $('#deliveryPrice').val();
+    var menuPrice = $('#menuPrice').val()?$('#menuPrice').val():0;
+    var deliveryPrice = $('#deliveryPrice').val()?$('#deliveryPrice').val():0;
     var paid = $('#selectPaid').val();
     var combinedOrderId = '';
     if($('#combinedChk').prop("checked")){
