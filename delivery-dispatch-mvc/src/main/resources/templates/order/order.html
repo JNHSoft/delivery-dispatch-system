@@ -100,7 +100,7 @@
 									<li>
 										<span th:text="${#messages.msg('order.cooking')}" />
 										<div>
-											<input type="text" class="input h20" id="cookingTime" /><span th:text="${#messages.msg('order.minute')}"/>
+											<input type="text" class="input h20" id="cookingTime" onkeydown="return showKeyCode(event)" /><span th:text="${#messages.msg('order.minute')}"/>
 											<!--<select name="" class="select h20">-->
 												<!--<option value="10">10</option>-->
 											<!--</select>분-->
@@ -108,15 +108,15 @@
 									</li>
 									<li class="clear">
 										<span th:text="${#messages.msg('order.menu.price')}" />
-										<div><input type="text" class="input h20" id="menuPrice" /><span th:text="${#messages.msg('order.currency.unit')}"/></div>
+										<div><input type="text" class="input h20" id="menuPrice" onkeydown="return showKeyCode(event)" /><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 									</li>
 									<li>
 										<span th:text="${#messages.msg('order.delivery.price')}" />
-										<div><input type="text" class="input h20" id="deliveryPrice" /><span th:text="${#messages.msg('order.currency.unit')}"/></div>
+										<div><input type="text" class="input h20" id="deliveryPrice" onkeydown="return showKeyCode(event)" /><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 									</li>
 									<li class="clear">
 										<span th:text="${#messages.msg('order.total.price')}" />
-										<div><input type="text" class="input h20" id="totalPrice"/><span th:text="${#messages.msg('order.currency.unit')}"/></div>
+										<div><input type="text" class="input h20" id="totalPrice" th:readonly="readonly"/><span th:text="${#messages.msg('order.currency.unit')}"/></div>
 									</li>
 									<li>
 										<span th:text="${#messages.msg('order.payment')}" />

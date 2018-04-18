@@ -128,7 +128,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setSubGroupRiderRel(null);
         } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             rider.setCode(null);
-            rider.setSubGroupRiderRel(null);
+//            rider.setSubGroupRiderRel(null);
         } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             rider.setAccessToken(null);
             rider.setId(null);
@@ -136,6 +136,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setCode(null);
             rider.setSubGroupRiderRel(null);
         }
+
 
         int nRet = riderMapper.updateRiderInfo(rider);
 

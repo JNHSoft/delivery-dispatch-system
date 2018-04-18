@@ -387,7 +387,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             order.setDeliveryPrice("0");
         }
 
-        order.setTotalPrice(order.getMenuPrice() + order.getDeliveryPrice());
+        order.setTotalPrice(String.valueOf(Double.parseDouble(order.getMenuPrice()) + Double.parseDouble(order.getDeliveryPrice())));
 
         order.setStatus(null);
         order.setRiderId(null);

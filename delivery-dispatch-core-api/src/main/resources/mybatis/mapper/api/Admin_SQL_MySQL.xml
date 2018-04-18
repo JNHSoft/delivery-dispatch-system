@@ -501,7 +501,7 @@
 			, subGroup_id = #{subGroupRiderRel.subGroupId,jdbcType=VARCHAR}
 		</if>
 
-		<if test="subGroupRiderRel.storeId == null and subGroupRiderRel.storeId == ''">
+		<if test="subGroupRiderRel.storeId == null or subGroupRiderRel.storeId == ''">
 			, deleted = now()
 		</if>
 

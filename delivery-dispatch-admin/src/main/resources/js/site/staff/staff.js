@@ -429,7 +429,7 @@ function getRiderStoreList() {
         dataType : 'json',
         success : function(data) {
             if (data) {
-                 var postRiderStoreHtml = "<option value='none'>" + "請選擇" + "</option>";
+                 var postRiderStoreHtml = "<option value=''>" + "請選擇" + "</option>";
 
                 // var postRiderStoreHtml = "";
                 for (var i in data) {
