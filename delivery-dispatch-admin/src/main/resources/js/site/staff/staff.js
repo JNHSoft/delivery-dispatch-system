@@ -200,7 +200,7 @@ function getRiderDetail() {
     var subGroupId = $("#selectedSubGroupId").val();
     
     if(riderId == null || riderId == "") {
-        alert("직원을 선택해 주세요.");
+        alert(alert_riderSelect_check);
     } else {
         $.ajax({
             url : "/getRiderDetail",

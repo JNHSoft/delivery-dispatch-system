@@ -139,4 +139,13 @@ public interface OrderMapper {
      * @return
      */
     public List<Order> selectReservationOrders();
+
+    /**
+     * Reg 오더 중복 체크
+     * @param order
+     * @return
+     */
+    public int selectRegOrderIdCheck(Order order);
+
+
 }

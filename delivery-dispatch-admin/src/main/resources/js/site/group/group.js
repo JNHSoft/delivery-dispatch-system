@@ -54,7 +54,7 @@ $(function() {
         }
 
 
-        if(($(this).html() === group_del && !confirm("Delete?"))) return;
+        if(($(this).html() === group_del && !confirm(alert_confirm_del))) return;
         var $tr = $(this).closest('tr');
         var params = {
             groupId : $tr.data('group-id'),
@@ -134,7 +134,7 @@ $(function() {
     });
 
     $('#storeList').on("change", 'select', function() {
-        if(!confirm("你想編輯它嗎?")) return;
+        if(!confirm(alert_confirm_mod)) return;
         var $tr = $(this).closest('tr');
         var params = {
             groupId : $tr.data('group-id'),
@@ -155,7 +155,7 @@ $(function() {
         }
         // 서브그룹 select 박스 변경시 insert
         else if($(this).attr('name') === 'subGroupList') {
-            if(!confirm("你想编辑它吗?")) return;
+            if(!confirm(alert_confirm_mod)) return;
             var $tr = $(this).closest('tr');
             var params = {
                 groupId : $tr.find('select[name="groupList"]').val(),
@@ -196,14 +196,14 @@ function putGroupName($target, params) {
                 $target.removeClass('selected');
                 $target.find('button[name="save"]').html(group_mod);
                 $target.find('button[name="delete"]').html(group_del);
-                alert("수정 완료");
+                alert(alert_confirm_mod_success);
             } else {
-                alert("오류");
+                alert(alert_error_check);
             }
         },
         error : function(e) {
             console.log(e);
-            alert('오류');
+            alert(alert_error_check);
         }
     });
 }
@@ -223,14 +223,14 @@ function putSubGroupName($target, params) {
                 $target.removeClass('selected');
                 $target.find('button[name="save"]').html(group_mod);
                 $target.find('button[name="delete"]').html(group_del);
-                alert("수정 완료");
+                alert(alert_confirm_mod_success);
             } else {
-                alert("오류");
+                alert(alert_error_check);
             }
         },
         error : function(e) {
             console.log(e);
-            alert('오류');
+            alert(alert_error_check);
         }
     });
 
@@ -303,15 +303,15 @@ function putStoreSubGroup(params) {
         data : params,
         success : function(data){
             if (data === 'true') {
-                alert("수정 완료");
+                alert(alert_confirm_mod_success);
                 location.reload();
             } else {
-                alert("오류");
+                alert(alert_error_check);
             }
         },
         error : function(e) {
             console.log(e);
-            alert('오류');
+            alert(alert_error_check);
         }
     });
 }
@@ -321,7 +321,7 @@ function putStoreSubGroup(params) {
  */
 function postSubGroup() {
         if($('#groupList').find('tr.selected').data('group-id') == null){
-            alert("그룹을 선택해주세요");
+            alert(alert_groupSelect_check);
             return;
         }
     $.ajax({
@@ -334,7 +334,7 @@ function postSubGroup() {
         },
         success: function (data) {
             if (data === 'true') {
-                alert("추가완료");
+                alert(alert_addSuccess_check);
                 location.reload();
             }
 

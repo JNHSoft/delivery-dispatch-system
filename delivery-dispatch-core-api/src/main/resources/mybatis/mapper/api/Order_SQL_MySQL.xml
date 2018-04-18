@@ -466,6 +466,16 @@
 			AND (status = 3 OR status = 4)
 	</select>
 
+	<!-- RegOrderIDCheckt reg 오더 중복 체크  -->
+	<select id="selectRegOrderIdCheck" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM TB_ORDER
+		WHERE reg_order_id = #{regOrderId}
+	</select>
+
+
+
 
 	<!-- insertOrderConfirm -->
     <insert id="insertOrderConfirm" parameterType="kr.co.cntt.core.model.order.Order">

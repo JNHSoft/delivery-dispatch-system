@@ -428,27 +428,27 @@ function postStore() {
     var $detailAddress = $("#postStoreDetailAddress").val();
 
     if($loginId==""){
-        alert("請檢查您的ID");
+        alert(alert_loginId_check);
         return;
     }
 
     if($loginPw==""){
-        alert("請檢查您的密碼");
+        alert(alert_loginPW_check);
         return;
     }
 
     if($code==""){
-        alert("請輸入代碼");
+        alert(alert_code_check);
         return;
     }
 
     if($storeName==""){
-        alert("請輸入商店名稱");
+        alert(alert_storeName_check);
         return;
     }
 
     if($storePhone==""){
-        alert("請輸入您的商店編號");
+        alert(alert_storePhone_check);
         return;
     }
 
@@ -463,12 +463,12 @@ function postStore() {
     // }
 
     if($address==""){
-        alert("請輸入地址");
+        alert(alert_address_check);
         return;
     }
 
     if($detailAddress==""){
-        alert("請輸入您的街道地址");
+        alert(alert_detailAddress_check);
         return;
     }
 
@@ -517,7 +517,7 @@ function postStore() {
 function deleteStore() {
     var storeId =  $("#selectedStoreId").val();
 
-    if(!confirm("您確定要刪除此商店嗎?")) return;
+    if(!confirm(alert_delstore_check)) return;
     console.log(storeId);
     $.ajax({
         url: "/deleteStore",

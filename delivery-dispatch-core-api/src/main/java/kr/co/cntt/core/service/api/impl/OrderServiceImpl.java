@@ -408,6 +408,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setStatus("0");
 
+        // regOrder 중복 체크
+        int hasRegOrder = orderMapper.selectRegOrderIdCheck(order);
+
+        if (hasRegOrder > 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00039), ErrorCodeEnum.E00039.name());
+        }
+
         int postOrder = orderMapper.insertOrder(order);
 
         if (postOrder == 0) {
