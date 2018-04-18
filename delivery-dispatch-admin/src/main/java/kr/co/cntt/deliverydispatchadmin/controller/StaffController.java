@@ -195,26 +195,24 @@ public class StaffController {
 //        group.setId(groupId);
 //
 //        rider.setGroup(group);
+        // subgroup model 생성
+        SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
         if(!storeId.equals("")){
             Store store = new Store();
             store.setToken(adminInfo.getAdminAccessToken());
             store.setId(storeId);
             Store storeInfo = staffAdminService.selectStoreInfo(store);
-
-            // subgroup model 생성
-            SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
-
             if (storeInfo.getSubGroup() != null){
                 subGroupRiderRel.setSubGroupId(storeInfo.getSubGroup().getId());
                 subGroupRiderRel.setGroupId(storeInfo.getGroup().getId());
             }
-
-            subGroupRiderRel.setStoreId(storeId);
-
-            subGroupRiderRel.setRiderId(riderId);
-
-            rider.setSubGroupRiderRel(subGroupRiderRel);
         }
+
+        subGroupRiderRel.setStoreId(storeId);
+
+        subGroupRiderRel.setRiderId(riderId);
+
+        rider.setSubGroupRiderRel(subGroupRiderRel);
 
         int A_Store = 0;
         if(hasGroup.equals("T")){
@@ -222,9 +220,11 @@ public class StaffController {
             A_Store = staffAdminService.updateRiderStore(rider);
             log.info("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNupdate group.................................");
         }else{
-          if(rider.getSubGroupRiderRel() != null){
-              A_Store = staffAdminService.insertSubGroupRiderRel(rider);
-          }
+            if (!storeId.equals("")){
+                if(rider.getSubGroupRiderRel() != null){
+                    A_Store = staffAdminService.insertSubGroupRiderRel(rider);
+                }
+            }
         }
 
         int A_Rider = staffAdminService.updateRiderInfo(rider);
@@ -284,6 +284,8 @@ public class StaffController {
         rider.setVehicleNumber(vehicleNumber);
         // group model 생성
         rider.setType("2");
+        staffAdminService.insertChatUser(rider);
+        int A_Rider = staffAdminService.insertRider(rider);
         if(!storeId.equals("")){
             Store store = new Store();
             store.setToken(adminInfo.getAdminAccessToken());
@@ -308,11 +310,6 @@ public class StaffController {
             log.info("@@@@@@@@@@@@@@@@@groupinsert@@@@@@@@@@@@@@@@@@@@");
             int A_Group = staffAdminService.insertSubGroupRiderRel(rider);
         }
-
-
-        staffAdminService.insertChatUser(rider);
-
-        int A_Rider = staffAdminService.insertRider(rider);
 
         String riderSessionToken = tokenManager.getToken("3",loginId , loginPw);
         log.info("@@@@@@@@@@@@@@@@ " + riderSessionToken);
