@@ -52,7 +52,7 @@ function alarmSound(data) {
     var assignCancel_alarm = $.cookie("assignCancel_alarm");
     var complete_alarm = $.cookie("complete_alarm");
     var cancel_alarm = $.cookie("cancel_alarm");
-    if(my_store){
+    if(my_store.alarm){
         if(data.match('order_')=='order_'){
             if(data.match('new')=='new'){
                 if ((my_store.alarm).match('0')=='0'){
