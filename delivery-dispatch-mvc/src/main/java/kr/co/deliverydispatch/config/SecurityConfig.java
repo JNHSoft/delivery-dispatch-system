@@ -88,6 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/tracker").permitAll()    // 트래커 페이지
+                .antMatchers("/error/error-tracker").permitAll()    // 트래커 페이지
                 // 슈퍼, 개발자만 허용
                 .antMatchers("/admin/list/**").access("hasRole('SUPER') or hasRole('GOD')")
                 .antMatchers("/admin/delete/**").access("hasRole('SUPER') or hasRole('GOD')")
@@ -116,6 +117,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedPage("/error/403")	// 403(권한없음) URL
                 .and()
                 .addFilterAfter(createStorePerformanceHistoryFilter(), BasicAuthenticationFilter.class);
+
+        http.headers().frameOptions().disable();
     }
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)

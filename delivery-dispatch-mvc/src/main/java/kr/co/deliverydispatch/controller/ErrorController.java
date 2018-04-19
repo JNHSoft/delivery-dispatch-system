@@ -35,4 +35,9 @@ public class ErrorController extends AbstractErrorController {
 	public String error500() {
 		return ERROR_500;
 	}
+
+	@RequestMapping(value = "/error/error-tracker", method = RequestMethod.GET)
+	public String errorTracker() {
+		return "/error/error-tracker";
+	}
 }

@@ -37,26 +37,27 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
     @Override
     public Tracker getTracker(String encParam) throws AppTrException {
         Tracker tracker = new Tracker();
-
         try {
             AES256Util aesUtil = new AES256Util(tKey);
 
             String decParam = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(encParam));
-
+//            System.out.println(decParam);
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(decParam);
 
             String regOrderId = jsonObject.get("regOrderId").toString();
             String code = jsonObject.get("code").toString();
+            String requestDate = jsonObject.get("reqDate").toString();
 
             tracker.setRegOrderId(regOrderId);
             tracker.setCode(code);
-
+            tracker = trackerMapper.selectTracker(tracker);
+            tracker.setRequestDate(requestDate);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-
-        return trackerMapper.selectTracker(tracker);
+        return tracker;
     }
-
 }
+

@@ -38,6 +38,7 @@ public class Tracker implements Dto {
     private String riderPhone;
     private String riderLatitude;
     private String riderLongitude;
+    private String requestDate;
 
     private String distance;
 

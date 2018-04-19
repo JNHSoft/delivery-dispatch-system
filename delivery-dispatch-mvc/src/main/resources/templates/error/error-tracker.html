@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/mainLayout">
+
+<!-- container -->
+<div id="container" layout:fragment="content" class="full">
+    <!-- lnb -->
+    <aside id="lnb" class="hide">
+        <div>
+            <h1>error</h1>
+        </div>
+    </aside>
+    <!-- //lnb -->
+    <!-- contents -->
+    <section id="contents">
+        <ul id="location">
+            <li><strong>Error</strong></li>
+        </ul>
+        <div id="cont_tit">
+            <h1 th:text="${#messages.msg('error.page.guidance')}"/>
+        </div>
+        <div class="service_info bg1">
+            <p>
+                <strong class="t_blue" th:text="${#messages.msg('error.abnormal')}"/>
+            </p>
+        </div>
+    </section>
+    <!-- //contents -->
+</div>
+<!-- //container -->
+</html>

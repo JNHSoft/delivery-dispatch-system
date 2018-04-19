@@ -16,7 +16,7 @@
 			<div class="f_left t_yellow">美味的餐品在過去到您的路上</div>
 			<div class="f_right">
 				<span>預計到達時間</span>
-				<span class="time">20:10</span>
+				<span class="time"/>
 			</div>
 		</div>
 	</div>
@@ -25,11 +25,11 @@
 	</div>
 	<div class="tracker-bottom">
 		<div>
-			<p>訂購ID : <span id="regId">11022</span></p>
-			<p>下單時間 : <span id="createdDatetime">2018-1-30 19:40</span></p>
+			<p>訂購ID : <span id="regId"></span></p>
+			<p>下單時間 : <span id="createdDatetime"/></p>
 		</div>
 		<div>
-			<p><span class="t_red" id="riderName">洪吉同</span> 司機</p>
+			<p><span class="t_red" id="riderName"/> 司機</p>
 			<p>親愛的顧客我們馬上到您的位置</p>
 		</div>
 		<div class="btn">
@@ -56,9 +56,9 @@ var riderPhone = /*[[${tracker.riderPhone}]]*/ 'riderPhone';
 var riderLatitude = /*[[${tracker.riderLatitude}]]*/ 'riderLatitude';
 var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
 var distance = /*[[${tracker.distance}]]*/ 'distance';
-/*]]>*/
 
-console.log(regOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude);
+
+console.log(regOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude);
 
 var arriveTime = new Date(Date.parse(createdDatetime) + 1000 * 60 * cookingTime);
 
@@ -72,6 +72,11 @@ var contentString = '<div class="map_info">'+
     '<span class="t_red">' + parseInt(tmpDate.getTime() / (1000 * 60)) + '分鐘以後能到達</span>'+
     '</div>';
 
+$(document).ready(function(){
+    if(self == top){
+        location.href ="/error/error-tracker";
+	}
+});
 
 
 window.onload = function() {
@@ -120,12 +125,13 @@ function initMap() {
 
 //		var selectedMode = 'DRIVING';
 		var selectedMode = 'TRANSIT';
+//      var selectedMode = 'WALKING';
 
 		directionsService.route({
-//			origin: {lat: storeLatitude, lng: storeLongitude},  // Haight.
-//			destination: {lat: latitude, lng: longitude},  // Ocean Beach.
-			origin: {lat: 37.580976, lng: 126.905788},  // Haight.
-			destination: {lat: 37.577655, lng: 126.907628},  // Ocean Beach.
+			origin: {lat: parseFloat(storeLatitude), lng: parseFloat(storeLongitude)},  // Haight.
+			destination: {lat: parseFloat(latitude), lng: parseFloat(longitude)},  // Ocean Beach.
+//			origin: {lat: 37.580976, lng: 126.905788},  // Haight.
+//			destination: {lat: 37.577655, lng: 126.907628},  // Ocean Beach.
 			// Note that Javascript allows us to access the constant
 			// using square brackets and a string value as its
 			// "property."
@@ -150,11 +156,12 @@ function initMap() {
     var marker = new google.maps.Marker({
         position: myLatlng,
         map: map,
-        icon: markerImg
+        icon: markerImg,
     });
 
     infowindow.open(map, marker);
 }
+/*]]>*/
 </script>
 
 <script type="text/javascript" async="async" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}" layout:fragment="script2" />
