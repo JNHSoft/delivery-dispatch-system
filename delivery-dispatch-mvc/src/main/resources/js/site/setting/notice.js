@@ -1,8 +1,5 @@
 /*<![CDATA[*/
 
-$(function() {
-    getNoticeList();
-});
 function getNoticeList() {
     var mydata = [];
 
@@ -19,11 +16,11 @@ function getNoticeList() {
                     tmpdata.no = i;
                     tmpdata.id = data[key].id;
 
-                    if (data[key].toGroupId) {
+                    if (data[key].groupName) {
                         tmpdata.target = data[key].groupName;
-                        if (data[key].toSubGroupId) {
+                        if (data[key].subgroupName) {
                             tmpdata.target = tmpdata.target + '/' + data[key].subgroupName;
-                            if (data[key].toStoreId) {
+                            if (data[key].storeName) {
                                 tmpdata.target = tmpdata.target + '/' + data[key].storeName;
                             } else {
                                 tmpdata.target = tmpdata.target + '/' + notice_target_all;
