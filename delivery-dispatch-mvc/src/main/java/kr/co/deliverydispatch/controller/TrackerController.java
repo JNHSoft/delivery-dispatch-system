@@ -1,6 +1,8 @@
 package kr.co.deliverydispatch.controller;
 
 import kr.co.cntt.core.model.tracker.Tracker;
+import kr.co.cntt.core.util.AES256Util;
+import kr.co.cntt.core.util.CustomEncryptUtil;
 import kr.co.cntt.core.util.Misc;
 import kr.co.deliverydispatch.service.TrackerService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +13,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
@@ -33,7 +42,7 @@ public class TrackerController {
     public String tracker(Model model) {
         // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"016\",\"regOrderId\":\"15\",\"reqDate\":\"20180419121300\"}";
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"016\",\"regOrderId\":\"15\",\"reqDate\":\"20180420081700\"}";
 
         try {
             String encKey = tKey;
@@ -70,7 +79,7 @@ public class TrackerController {
     }*/
 
     @GetMapping("/tracker")
-    public String getTracker(@RequestParam(required=false) String encParam, Model model, HttpServletRequest request) throws Exception {
+    public String getTracker(@RequestParam(required=false) String encParam, Model model) throws Exception {
         if (encParam != null) {
             Tracker trackerResult = trackerService.getTracker(encParam);
             if(trackerResult == null){
@@ -83,9 +92,9 @@ public class TrackerController {
             long localNow = LocalDateTime.now(timeZone.toZoneId()).atZone(timeZone.toZoneId()).toInstant().toEpochMilli();
             long abs = Math.abs(rqDate-localNow)/60000;
 
-            /*System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
+            System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
             System.out.println("getRequestDate = "+trackerResult.getRequestDate());
-            System.out.println("abs = "+abs);*/
+            System.out.println("abs = "+abs);
 
             Misc misc = new Misc();
             trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getLatitude(), trackerResult.getLongitude(), trackerResult.getStoreLatitude(), trackerResult.getLongitude())/(double) 1000));
