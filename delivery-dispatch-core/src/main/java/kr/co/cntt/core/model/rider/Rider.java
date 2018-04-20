@@ -60,5 +60,5 @@ public class  Rider extends User implements Dto {
     private Store store;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String isAdmin;
-
+    private String changePhone;
 }

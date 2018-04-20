@@ -559,6 +559,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
     @Override
     public int putOrderAssignCanceled(Order order){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(order);
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
@@ -610,8 +611,6 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         int ret = this.putOrder(orderAssignCanceled);
 
         String tmpOrderId = orderAssignCanceled.getId();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         orderAssignCanceled.setId(order.getId());
 

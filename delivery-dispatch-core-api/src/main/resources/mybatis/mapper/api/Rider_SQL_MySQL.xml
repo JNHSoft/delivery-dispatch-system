@@ -332,6 +332,8 @@
 		UPDATE TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
+		LEFT JOIN TB_RIDER_SESSION AS C
+		ON A.id = C.rider_id
 		SET
 			A.modified_datetime = now()
 			<if test="loginPw != null and loginPw != ''">
@@ -382,6 +384,9 @@
 				, A.rest_hours = null
 			</if>
 
+			<if test="changePhone eq '1'.toString() ">
+				, B.push_token = null
+			</if>
 			<!--<choose>
 				<when test="subGroupRiderRel != null and subGroupRiderRel != ''" >
 					<if test="subGroupRiderRel.storeId == null or subGroupRiderRel.storeId == ''" >
@@ -430,6 +435,8 @@
 		UPDATE TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
+		LEFT JOIN TB_RIDER_SESSION AS C
+		ON A.id = C.rider_id
 		SET
 		A.modified_datetime = now()
 		<if test="loginPw != null and loginPw != ''">
@@ -484,6 +491,10 @@
 			, B.store_id = #{subGroupRiderRel.storeId}
 			, B.subgroup_id = #{subGroupRiderRel.subGroupId}
 			, B.group_id = #{subGroupRiderRel.groupId}
+		</if>
+
+		<if test="changePhone eq '1'.toString()">
+			, C.push_token = null
 		</if>
 
 		, A.id = LAST_INSERT_ID(A.id)
@@ -893,7 +904,7 @@
 		select TBRS.push_token
 		from dde.TB_RIDER_SESSION AS TBRS
         left join TB_ORDER AS TBO
-        on TBO.id = #{id}
+        on TBO.reg_order_id = #{id}
 		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null and TBRS.expiry_datetime is null
 	</select>
 

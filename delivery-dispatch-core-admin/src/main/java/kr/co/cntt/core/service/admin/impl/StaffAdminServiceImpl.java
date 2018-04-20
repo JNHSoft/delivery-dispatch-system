@@ -62,7 +62,13 @@ public class StaffAdminServiceImpl implements StaffAdminService {
 
     // 기사 정보 수정
     @Override
-    public int updateRiderInfo(Rider rider){return riderMapper.updateRiderInfo(rider);}
+    public int updateRiderInfo(Rider rider){
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+        if(!S_Rider.getPhone().equals(rider.getPhone())){
+            rider.setChangePhone("1");
+        }
+        return riderMapper.updateRiderInfo(rider);
+    }
 
     // 기사 상점만 수정
     @Override

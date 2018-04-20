@@ -308,11 +308,21 @@ function getMyRiderList() {
             for (var key in data) {
                 if (data.hasOwnProperty(key)){
                     if(data[key].working=="1"){
-                        shtml += '<option value="'+data[key].id+'">'+data[key].name+'</option>';
-                        var tmpId = data[key].id;
-                        shtml2 += '<span id="rider'+tmpId+'" class="riderPhone" style="display:none">'+data[key].phone+'</span>';
-                        $('#selectedRider').html(shtml);
-                        $('#riderPhone').html(shtml2);
+                        if($("input[name=myStoreChk]:checkbox").prop("checked")){
+                            if(data[key].subGroupRiderRel){
+                                if(data[key].subGroupRiderRel.storeId == $('#orderMyStoreChk').val()){
+                                    shtml += '<option value="'+data[key].id+'">'+data[key].name+'</option>';
+                                    var tmpId = data[key].id;
+                                    shtml2 += '<span id="rider'+tmpId+'" class="riderPhone" style="display:none">'+data[key].phone+'</span>';
+                                }
+                            }
+                        }else {
+                            shtml += '<option value="'+data[key].id+'">'+data[key].name+'</option>';
+                            var tmpId = data[key].id;
+                            shtml2 += '<span id="rider'+tmpId+'" class="riderPhone" style="display:none">'+data[key].phone+'</span>';
+                        }
+                    $('#selectedRider').html(shtml);
+                    $('#riderPhone').html(shtml2);
                     }
                 }
             }

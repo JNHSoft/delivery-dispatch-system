@@ -113,7 +113,6 @@ public class OrderController {
             storeOrderService.putOrderAssigned(order);
             return true;
         }
-
     }
 
     @ResponseBody

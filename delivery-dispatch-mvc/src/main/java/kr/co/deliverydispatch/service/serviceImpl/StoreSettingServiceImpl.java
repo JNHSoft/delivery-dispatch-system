@@ -188,9 +188,14 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
     @Override
     public int updateRiderInfo(Rider rider){
 
+        Rider S_Rider = riderMapper.getRiderInfo(rider);
+        if(!S_Rider.getPhone().equals(rider.getPhone())){
+            rider.setChangePhone("1");
+        }
+
         int nRet = riderMapper.updateRiderInfoStore(rider);
 
-        Rider S_Rider = riderMapper.getRiderInfo(rider);
+
 
         if (nRet != 0) {
             if (S_Rider.getSubGroupStoreRel() != null) {
