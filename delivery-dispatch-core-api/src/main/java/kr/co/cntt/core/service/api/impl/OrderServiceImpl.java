@@ -119,8 +119,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             }
 
                         }
-
-
 //                        log.info(">>> rider_id" + r.getId());
 //                        log.info(">>> rider_status   " + r.getStatus());
 //                        log.info(">>> rider_working   " + r.getWorking());
@@ -166,11 +164,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                             }
                                         }
 
-                                    } else {
-                                        flag = Boolean.FALSE;
-                                    }
-                                } else if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 1000) {
-                                    if (r1.getSubGroupRiderRel().getStoreId().equals(orderList.get(i).getStoreId()) && Integer.parseInt(r1.getAssignCount()) <= Integer.parseInt(order.getStore().getAssignmentLimit())) {
+                                    } else if (r1.getSubGroupRiderRel().getStoreId().equals(orderList.get(i).getStoreId()) && Integer.parseInt(r1.getAssignCount()) <= Integer.parseInt(order.getStore().getAssignmentLimit())) {
                                         log.info(">>> auto assign step2");
                                         if (r1.getReturnTime() == null) {
                                             map.put("rider", r1);
@@ -187,6 +181,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                             }
                                         }
                                     } else {
+                                        log.info(">>> 라이더 재배치: 첫번째 반경 안에 해당하는 라이더 없음");
                                         flag = Boolean.FALSE;
                                     }
                                 } else {
@@ -314,7 +309,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             return result;
-
         }
 
     }
@@ -337,7 +331,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
                     checkFcmResponse(pushNotification);
                 }
-
 
 //                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId()+", subgroup_id:"+ ( (order.getSubGroup() == null) ? "noSubgroup" : order.getSubGroup().getId()) );
             }
@@ -485,7 +478,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Rider S_Rider = riderMapper.getRiderInfo(rider);
 
             List<Order> R_Order = new ArrayList<>();
-
+            char[] allArray = {'0','1','2','3','4','5'};
+            if(order.getStatus().equals("")){
+                statusArray = allArray;
+            }
             if (statusArray != null) {
                 for (char s : statusArray) {
                     if (s != '0' && s != '5') {
@@ -884,7 +880,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderPickedUp.setId(order.getId());
         orderPickedUp.setStatus("2");
         orderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
-        orderPickedUp.setPickupXy(order.getPickupXy());
+        orderPickedUp.setPickupXy(order.getLatitude()+"|"+order.getLongitude());
 
         Order combinedOrderPickedUp = new Order();
 
@@ -893,7 +889,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderPickedUp.setStatus("2");
             combinedOrderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
             combinedOrderPickedUp.setToken(order.getToken());
-            combinedOrderPickedUp.setPickupXy(order.getPickupXy());
+//            combinedOrderPickedUp.setPickupXy(order.getPickupXy());
+            combinedOrderPickedUp.setPickupXy(order.getLatitude()+"|"+order.getLongitude());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
@@ -947,7 +944,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderCompleted.setId(order.getId());
         orderCompleted.setStatus("3");
         orderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
-        orderCompleted.setCompleteXy(order.getCompleteXy());
+        orderCompleted.setCompleteXy(order.getLatitude()+"|"+order.getLongitude());
 
         Order combinedOrderCompleted = new Order();
 
@@ -956,7 +953,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderCompleted.setStatus("3");
             combinedOrderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
             combinedOrderCompleted.setToken(order.getToken());
-            combinedOrderCompleted.setCompleteXy(order.getCompleteXy());
+//            combinedOrderCompleted.setCompleteXy(order.getCompleteXy());
+            combinedOrderCompleted.setCompleteXy(order.getLatitude()+"|"+order.getLongitude());
 
             this.putOrder(combinedOrderCompleted);
         }

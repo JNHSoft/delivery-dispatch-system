@@ -613,8 +613,8 @@
             AND B.assignment_status=1
             AND (A.status = 0 OR A.status =5)
             AND A.created_datetime > CURRENT_DATE()
-   			AND A.reservation_datetime IS NULL
-			OR (A.created_datetime > CURRENT_DATE() AND date_add(now(), interval 2 hour) > A.reservation_datetime)
+   			AND (A.reservation_datetime IS NULL
+			OR (date_add(now(), interval 2 hour) > A.reservation_datetime))
 --             AND C.subgroup_id IS NOT NULL
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC
 	</select>
