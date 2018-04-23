@@ -213,6 +213,7 @@ function getOrderDetail(orderId) {
         async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
+            console.log(data)
             selectedOriginOrder = data;
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
@@ -284,10 +285,12 @@ function getOrderDetail(orderId) {
             $('#memo').html(data.message);
             $('#userPhone').html(data.phone);
             if (data.detailAddress != null) {
-                $('#userAddress').html(data.address + ', ' + data.detailAddress);
-            } else {
-                $('#userAddress').html(data.address);
+                // $('#userAddress').html(data.address + ', ' + data.detailAddress);
+                $('#userAddress').html(data.detailAddress);
             }
+            /* else {
+                $('#userAddress').html(data.address);
+            }*/
             $('#distance').html(data.distance);
             map.setCenter({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
             marker.setPosition({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
