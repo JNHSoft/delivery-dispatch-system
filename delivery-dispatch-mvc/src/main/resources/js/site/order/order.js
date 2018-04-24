@@ -434,7 +434,18 @@ function getOrderList(statusArray, storeId) {
 
                 tmpdata.time2 = data[key].cookingTime;
                 tmpdata.pay = $toBePaid;
-                tmpdata.message = data[key].message;
+
+                if(!data[key].message){
+                    tmpdata.message = "-";
+                }else{
+                    tmpdata.message = data[key].message;
+                }
+
+                if(!data[key].phone){
+                    tmpdata.phone = "-";
+                }else{
+                    tmpdata.phone = data[key].phone;
+                }
 
                 if(!data[key].assignedDatetime){
                     tmpdata.time3 = "-";
@@ -501,6 +512,7 @@ function getOrderList(statusArray, storeId) {
                 {label:order_created, name:'time1', width:80, align:'center'},
                 {label:order_address, name:'address', width:200},
                 {label:order_message, name:'message', width:80, align:'center'},
+                {label:order_customer_phone, name:'phone', width:80, align:'center'},
                 {label:order_cooking, name:'time2', width:80, align:'center'},
                 {label:order_payment, name:'pay', width:80, align:'center'},
                 {label:order_assigned, name:'time3', width:80, align:'center'},
