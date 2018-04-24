@@ -86,7 +86,7 @@
 										<div id="pickedUpDatetime">-</div>
 									</li>
 									<li>
-										<span th:text="${#messages.msg('order.completed')}" />
+										<span th:text="${#messages.msg('order.arrived')}" />
 										<div id="completedDatetime">-</div>
 									</li>
 								</ul>
@@ -223,10 +223,14 @@
         var order_created = /*[[#{order.created}]]*/ 'order_created';
         var order_address = /*[[#{order.address}]]*/ 'order_address';
         var order_summary = /*[[#{order.summary}]]*/ 'order_summary';
+        var order_message = /*[[#{order.message}]]*/ 'order_message';
         var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
         var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
         var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
         var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
+        var order_completed = /*[[#{order.completed}]]*/ 'order_completed';
+        var order_arrived = /*[[#{order.arrived}]]*/ 'order_arrived';
+        var order_return = /*[[#{order.return}]]*/ 'order_return';
         var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
         var order_payment_cash = /*[[#{order.payment.cash}]]*/ 'order_payment_cash';
         var order_payment_card = /*[[#{order.payment.card}]]*/ 'order_payment_card';

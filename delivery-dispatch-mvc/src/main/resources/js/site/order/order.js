@@ -373,6 +373,7 @@ function getOrderList(statusArray, storeId) {
         },
         dataType: 'json',
         success: function (data) {
+        console.log(data);
         var i = 1;
         currentOrderList = data;
         for (var key in data) {
@@ -433,6 +434,7 @@ function getOrderList(statusArray, storeId) {
 
                 tmpdata.time2 = data[key].cookingTime;
                 tmpdata.pay = $toBePaid;
+                tmpdata.message = data[key].message;
 
                 if(!data[key].assignedDatetime){
                     tmpdata.time3 = "-";
@@ -446,10 +448,22 @@ function getOrderList(statusArray, storeId) {
                     tmpdata.time4 = timeSet2(data[key].pickedUpDatetime);
                 }
 
-                if(!data[key].reservationDatetime){
+                if(!data[key].completedDatetime){
                     tmpdata.time5 = "-";
                 }else{
-                    tmpdata.time5 = timeSet2(data[key].reservationDatetime);
+                    tmpdata.time5 = timeSet2(data[key].completedDatetime);
+                }
+
+                if(!data[key].returnDatetime){
+                    tmpdata.time6 = "-";
+                }else{
+                    tmpdata.time6 = timeSet2(data[key].returnDatetime);
+                }
+
+                if(!data[key].reservationDatetime){
+                    tmpdata.time7 = "-";
+                }else{
+                    tmpdata.time7 = timeSet2(data[key].reservationDatetime);
                 }
 
                 if(!data[key].rider){
@@ -486,11 +500,14 @@ function getOrderList(statusArray, storeId) {
                 {label:order_id, name:'id', width:80, align:'center', hidden:true},
                 {label:order_created, name:'time1', width:80, align:'center'},
                 {label:order_address, name:'address', width:200},
+                {label:order_message, name:'message', width:80, align:'center'},
                 {label:order_cooking, name:'time2', width:80, align:'center'},
                 {label:order_payment, name:'pay', width:80, align:'center'},
                 {label:order_assigned, name:'time3', width:80, align:'center'},
                 {label:order_pickedup, name:'time4', width:80, align:'center'},
-                {label:order_reserved, name:'time5', width:80, align:'center'},
+                {label:order_arrived, name:'time5', width:80, align:'center'},
+                {label:order_return, name:'time6', width:80, align:'center'},
+                {label:order_reserved, name:'time7', width:80, align:'center'},
                 {label:rider_name, name:'rider', width:80, align:'center'},
                 {label:order_assigned_advance, name:'button', width:80, align:'center'}
             ],

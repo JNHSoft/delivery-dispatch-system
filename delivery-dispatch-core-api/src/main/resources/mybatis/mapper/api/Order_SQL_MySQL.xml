@@ -21,11 +21,14 @@
         <result property="reservationDatetime" column="reservation_datetime" />
         <result property="assignedDatetime" column="assigned_datetime" />
         <result property="pickedUpDatetime" column="picked_up_datetime" />
+		<result property="completedDatetime" column="completed_datetime" />
         <result property="returnDatetime" column="return_datetime" />
 		<result property="combinedOrderId" column="combined_order_id" />
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
 		<result property="count" column="count" />
+		<result property="phone" column="phone" />
+		<result property="message" column="message" />
 
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
             <result property="id" column="rider_id" />
@@ -179,10 +182,13 @@
 			, A.reservation_datetime
 			, A.assigned_datetime
 			, A.picked_up_datetime
+			, A.completed_datetime
             , A.return_datetime
 			, A.menu_price
 			, A.assigned_first
 			, A.combined_order_id
+			, A.phone
+			, A.message
 			, B.id AS rider_id
             , B.name AS rider_name
   			, D.name AS store_name
