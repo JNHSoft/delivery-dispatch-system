@@ -25,8 +25,13 @@
 		</encoder>
 		<file>${LOG_FILE_PREFIX}.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_FILE_PREFIX}_%d{yyyyMMdd}.log
-			</fileNamePattern>
+			<fileNamePattern>${LOG_FILE_PREFIX}_%d{yyyyMMdd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 200MB -->
+				<maxFileSize>200MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
 		</rollingPolicy>
 	</appender>
 	
