@@ -412,7 +412,7 @@ function getOrderList(statusArray, storeId) {
 
                 if($('#assignmentStatus').val() == "0"){
                     if(data[key].assignedFirst == null && (data[key].status ==0||data[key].status ==5)){
-                        $button = '<button class="button h20" onclick="javascript:putAssignedAdvanceFirst('+ data[key].regOrderId +');">'+order_assigned_advance+'</button>';
+                        $button = '<button class="button h20" onclick="javascript:putAssignedAdvanceFirst('+'\''+ data[key].regOrderId +'\''+');">'+order_assigned_advance+'</button>';
                     }else{
                         $button = "";
                     }
