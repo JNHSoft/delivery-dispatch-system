@@ -138,7 +138,7 @@ function footerRiders() {
                         workCnt = data[i].orderCount;
                     }
                     if(data[i].working == "3"){
-                        restCnt = parseInt(data[i].workCount) + parseInt(data[i].orderCount);
+                        restCnt = parseInt(data[i].workCount);
                     }
                 }
                 $('#work').text(workCnt);
@@ -160,5 +160,18 @@ function showKeyCode(event) {
     else
     {
         return false;
+    }
+}
+
+function regOrderIdReduce(regOrderId) {
+    if(regOrderId.indexOf('-') != -1){
+        var reduceId = regOrderId.split('-');
+        if(reduceId.length > 1){
+            return reduceId[reduceId.length-2]+'-'+ reduceId[reduceId.length-1];
+        }else if(reduceId.length == 1){
+            return reduceId[reduceId.length-2]+'-'+ reduceId[reduceId.length-1];
+        }
+    }else {
+        return regOrderId;
     }
 }

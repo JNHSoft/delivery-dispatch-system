@@ -144,8 +144,8 @@ function getStatisticsInfo(regOrderId) {
             }else{
                 regOrderId = "-";
             }*/
-            $('.tit').html('<h2>' + order_detail + ' - ' + regOrderId + '</h2>' + $status);
-            $('.tit').attr("orderId", data.id);
+            $('.tit').html('<h2>' + order_detail + ' - ' + regOrderIdReduce(regOrderId) + '</h2>' + $status);
+            $('.tit').attr("orderId", data.regOrderId);
 
             $('#createdDatetime').html(timeSet(data.createdDatetime));
             $('#reservationDatetime').html(timeSet(data.reservationDatetime));
@@ -158,7 +158,6 @@ function getStatisticsInfo(regOrderId) {
             $('#menuPrice').html(data.menuPrice);
             $('#deliveryPrice').html(data.deliveryPrice);
             $('#totalPrice').html(data.totalPrice);
-
 
             /*if(data.payment) {
                 if (data.payment.type == "0") {
@@ -281,7 +280,8 @@ function getStoreStatistics() {
                     }
                     tmpdata.address = data[key].address;
 
-                    tmpdata.reg_order_id = data[key].regOrderId;
+                    tmpdata.reg_order_id = regOrderIdReduce(data[key].regOrderId);
+                    tmpdata.origin_reg_order_id = data[key].regOrderId;
                     if (data[key].cookingTime) {
                         tmpdata.time2 = data[key].cookingTime;
                     }
@@ -329,6 +329,7 @@ function getStoreStatistics() {
                     {label: 'No', name: 'No', width: 25, key: true, align: 'center'},
                     {label: order_status, name: 'state', width: 80, align: 'center'},
                     {label: order_reg_order_id, name: 'reg_order_id', width: 80, align: 'center'},
+                    {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden: true},
                     {label: order_id, name: 'id', width: 80, align: 'center', hidden: true},
                     {label: order_created, name: 'time1', width: 80, align: 'center'},
                     {label: order_address, name: 'address', width: 200},
@@ -346,7 +347,7 @@ function getStoreStatistics() {
                 pager: "#jqGridPager",
                 ondblClickRow: function (rowid, icol, cellcontent, e) {
                     var rowData = jQuery(this).getRowData(rowid);
-                    var regOrderId = rowData['reg_order_id'];
+                    var regOrderId = rowData['origin_reg_order_id'];
                     getStatisticsInfo(regOrderId);
                     $('.state_wrap').addClass('on'); //상세보기 열기
                     setTimeout(function () {

@@ -2,7 +2,7 @@ package kr.co.cntt.core.model.notification;
 
 public class Notification {
     private String type;
-    private int id;
+    private String id;
     private String addr;
     private String storeName;
     private String title;
@@ -27,11 +27,11 @@ public class Notification {
         this.type = type;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -90,6 +90,7 @@ public class Notification {
         public static String ORDER_CANCEL= "order_cancle";
         public static String ORDER_ASSIGN_CANCEL = "order_assignment_cancel";
         public static String ORDER_ASSIGN_OTHER = "order_assign_other";
+        public static String RIDER_WORKING_OFF= "rider_working_off";
     }
 }
 

@@ -7,4 +7,25 @@ $(document).ready(function() {
             }
         })
     })
+    $.ajax({
+        url : "/adminInfo",
+        async : false,
+        success : function (data) {
+            console.log(data);
+            $('#myAdminName').text(data.name);
+        }
+    });
 });
+
+function regOrderIdReduce(regOrderId) {
+    if(regOrderId.indexOf('-') != -1){
+        var reduceId = regOrderId.split('-');
+        if(reduceId.length > 1){
+            return reduceId[reduceId.length-2]+'-'+ reduceId[reduceId.length-1];
+        }else if(reduceId.length == 1){
+            return reduceId[reduceId.length-2]+'-'+ reduceId[reduceId.length-1];
+        }
+    }else {
+        return regOrderId;
+    }
+}

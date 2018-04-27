@@ -93,11 +93,13 @@ function getStoreList() {
         type: 'get',
         dataType: 'json',
         success: function (data) {
-
+            var storeCount = 0;
             for(var key in data) {
+                storeCount++;
                 var $tmpData = new Object();
                 console.log(data);
                 if (data.hasOwnProperty(key)) {
+                    $tmpData.count = storeCount;
                     $tmpData.th0 = data[key].id
                     if(data[key].group != null){
                         $tmpData.th12 = data[key].group.id
@@ -140,7 +142,8 @@ function getStoreList() {
                 datatype:"local",
                 data:$mydata,
                 colModel:[
-                    {label:'No', name:'th0', width:25, align:'center'},
+                    {label:'No', name:'count', width:25, align:'center'},
+                    {label:'No', name:'th0', width:25, align:'center', hidden:true},
                     {label:store_belong_group, name:'th1', width:60, align:'center'},
                     {label:store_belong_subgroup, name:'th2', width:60, align:'center'},
                     {label:store_name, name:'th3', width:80, align:'center'},

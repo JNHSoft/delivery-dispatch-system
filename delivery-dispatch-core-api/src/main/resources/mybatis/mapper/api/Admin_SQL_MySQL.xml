@@ -1000,7 +1000,7 @@
 
 	LEFT JOIN
 	TB_SUBGROUP AS TSG
-	on SSR.group_id = TSG.id
+	on SSR.subgroup_id = TSG.id
 	AND TSG.deleted is NULL
 
 	LEFT JOIN

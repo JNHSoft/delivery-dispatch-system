@@ -80,11 +80,14 @@ function getRiderList() {
         type: 'get',
         dataType: 'json',
         success: function (data) {
+            var riderCount = 0;
             for(var key in data) {
+                riderCount++;
                 var $tmpData = new Object();
                 console.log(data);
                 if (data.hasOwnProperty(key)) {
                     // 아이디 / 소속 매장 / 이름 / 코드 / 성별 / 연락처 / 긴급연락처 / 주소 / 번호판 / 청소년 / 아이디
+                    $tmpData.count = riderCount;
                     $tmpData.th0 = data[key].id
                     $("#selectedRiderId").val(data[key].id);
 
@@ -145,7 +148,8 @@ function getRiderList() {
                 datatype:"local",
                 data:$mydata,
                 colModel:[
-                    {label:'No', name:'th0', width:25, key:true, align:'center'},
+                    {label:'No', name:'count', width:25, align:'center'},
+                    {label:'No', name:'th0', width:25, key:true, align:'center', hidden:true},
                     {label:rider_belong_store, name:'th1', width:80, align:'center'},
                     {label:rider_name, name:'th2', width:80, align:'center'},
                     {label:rider_code, name:'th3', width:60, align:'center'},

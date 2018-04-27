@@ -236,7 +236,7 @@ function getOrderDetail(orderId) {
                 regOrderId = "-";
             }
             // $('.tit').html('<h2>'+order_detail + ' - '+ data.id + '('+ regOrderId +')</h2>'+$status);
-            $('.tit').html('<h2>'+order_detail + ' - '+ regOrderId + '</h2>'+$status);
+            $('.tit').html('<h2>'+order_detail + ' - '+ regOrderIdReduce(regOrderId) + '</h2>'+$status);
             $('.tit').attr("orderId", regOrderId);
 
             $('#createdDatetime').html(timeSet(data.createdDatetime));
@@ -427,9 +427,11 @@ function getOrderList(statusArray, storeId) {
                 tmpdata.time1 = timeSet2(data[key].createdDatetime);
                 tmpdata.address = data[key].address;
                 if (data[key].regOrderId){
-                    tmpdata.reg_order_id = data[key].regOrderId;
+                    tmpdata.reg_order_id = regOrderIdReduce(data[key].regOrderId);
+                    tmpdata.origin_reg_order_id = data[key].regOrderId;
                 }else{
                     tmpdata.reg_order_id = '-';
+                    tmpdata.origin_reg_order_id = '-';
                 }
 
                 tmpdata.time2 = data[key].cookingTime;
@@ -507,6 +509,7 @@ function getOrderList(statusArray, storeId) {
             colModel:[
                 {label:'No', name:'No', width:25, key:true, align:'center'},
                 {label:order_reg_order_id, name: 'reg_order_id', width:80, align:'center'},
+                {label:order_reg_order_id, name: 'origin_reg_order_id', width:80, align:'center',hidden:true},
                 {label:order_status, name:'state', width:80, align:'center'},
                 {label:order_id, name:'id', width:80, align:'center', hidden:true},
                 {label:order_created, name:'time1', width:80, align:'center'},
@@ -528,7 +531,7 @@ function getOrderList(statusArray, storeId) {
             pager:"#jqGridPager",
             ondblClickRow: function(rowid,icol,cellcontent,e){
                 var rowData = jQuery(this).getRowData(rowid);
-                var orderId = rowData['reg_order_id'];
+                var orderId = rowData['origin_reg_order_id'];
                 getOrderDetail(orderId);
                 $('.state_wrap').addClass('on'); //상세보기 열기
                 setTimeout(function(){

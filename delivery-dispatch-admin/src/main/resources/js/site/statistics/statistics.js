@@ -198,14 +198,8 @@ function getStatisticsSubGroupList(gId, subGroup) {
  * 상점 List 불러오기
  */
 function getStatisticsStoreList(subId, gId) {
-    var selectGroupId = null;
-
-
-        selectGroupId = gId;
-
-    var selecSubGroupId = null;
-
-        selecSubGroupId = subId;
+    var selectGroupId = gId;
+    var selecSubGroupId = subId;
     console.log(gId);
     console.log(subId);
     // debugger;
@@ -365,7 +359,8 @@ function getStatisticsList() {
                     } else if (data[key].status == "4") {
                         $tmpData.th4 = status_canceled
                     }
-                    $tmpData.th5 = data[key].regOrderId;
+                    $tmpData.th5 = regOrderIdReduce(data[key].regOrderId);
+                    $tmpData.origin_reg_order_id = data[key].regOrderId;
                     $tmpData.th6 = timeSet(data[key].createdDatetime);
                     $tmpData.th7 = data[key].address
                     // $tmpData.th8 = data[key].menuName
@@ -436,6 +431,7 @@ function getStatisticsList() {
                 colModel: [
                     {label: 'No', name: 'th0', width: 25, key: true, align: 'center'},
                     {label: order_reg_order_id, name: 'th5', width: 80, align: 'center'},
+                    {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden:true},
                     {label: group_name, name: 'th1', width: 80, align: 'center'},
                     {label: subGroup_name, name: 'th2', width: 80, align: 'center'},
                     {label: store_name, name: 'th3', width: 120, align: 'center'},
@@ -460,7 +456,7 @@ function getStatisticsList() {
                 pager: "#jqGridPager",
                 ondblClickRow: function(rowid,icol,cellcontent,e){
                     var rowData = jQuery(this).getRowData(rowid);
-                    var orderId = rowData['th5'];
+                    var orderId = rowData['origin_reg_order_id'];
                     console.log(orderId);
                     getStatisticsInfo(orderId);
                     $('.state_wrap').addClass('on'); //상세보기 열기
@@ -508,7 +504,7 @@ function getStatisticsInfo(orderId) {
             else {
                 $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
             }
-            $('.tit').html('<h2>' +order_detail + ' - '+ data.regOrderId + '</h2>'+$status);
+            $('.tit').html('<h2>' +order_detail + ' - '+ regOrderIdReduce(data.regOrderId) + '</h2>'+$status);
 
             $('.tit').attr("orderId", data.regOrderId);
 

@@ -298,7 +298,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN_AUTO);
-                    noti.setId(Integer.valueOf(notiOrder.getId()));
+                    noti.setId(notiOrder.getRegOrderId());
                     noti.setStoreName(notiOrder.getStore().getAdminId());
                     noti.setStoreName(notiOrder.getStore().getStoreName());
                     noti.setAddr(notiOrder.getAddress());
@@ -1200,6 +1200,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured({"ROLE_RIDER"})
     @Override
     public int postOrderConfirm(Order order) throws AppTrException {
+        order.setRole("ROLE_RIDER");
+
+        Order needOrderId = orderMapper.selectOrderInfo(order);
+        needOrderId.setToken(order.getToken());
 
         Rider currentRider = new Rider();
         currentRider.setAccessToken(order.getToken());
@@ -1211,13 +1215,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
-        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(order);
+        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
 
         if (S_OrderConfirm.size() != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00013), ErrorCodeEnum.E00013.name());
         }
 
-        int nRet = orderMapper.insertOrderConfirm(order);
+        int nRet = orderMapper.insertOrderConfirm(needOrderId);
         /*if (nRet != 0) {
             ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderToken(order);
             if(tokens.size() > 0){
@@ -1235,6 +1239,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured({"ROLE_RIDER"})
     @Override
     public int postOrderDeny(Order order) throws AppTrException {
+        order.setRole("ROLE_RIDER");
+
+        Order needOrderId = orderMapper.selectOrderInfo(order);
+        needOrderId.setToken(order.getToken());
+        needOrderId.setOrderCheckAssignment(order.getOrderCheckAssignment());
 
         Rider currentRider = new Rider();
         currentRider.setAccessToken(order.getToken());
@@ -1246,18 +1255,20 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
+/*
         int orderDenyCount = orderMapper.selectOrderDenyCount(currentRider);
         if (orderDenyCount > 1) {
             currentRider.setWorking("2");
             riderMapper.updateWorkingRider(currentRider);
         }
+*/
 
-        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(order);
+        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
         if (S_OrderConfirm.size() != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00014), ErrorCodeEnum.E00014.name());
         }
 
-        List<OrderCheckAssignment> S_OrderDeny = orderMapper.selectOrderDeny(order);
+        List<OrderCheckAssignment> S_OrderDeny = orderMapper.selectOrderDeny(needOrderId);
 
         if (S_OrderDeny.size() != 0 && S_Rider != null) {
             for (OrderCheckAssignment orderDeny : S_OrderDeny) {
@@ -1277,7 +1288,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         int ret = 0;
 
-        if (orderMapper.insertOrderDeny(order) != 0) {
+        if (orderMapper.insertOrderDeny(needOrderId) != 0) {
             Order orderAssignCanceled = new Order();
             orderAssignCanceled.setRole("ROLE_RIDER");
             orderAssignCanceled.setId(order.getId());
@@ -1304,6 +1315,36 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             ret = this.putOrder(orderAssignCanceled);
         }
+
+        int orderDenyCount = orderMapper.selectOrderDenyCount(currentRider);
+        if (orderDenyCount > 1) {
+            currentRider.setWorking("2");
+            riderMapper.updateWorkingRider(currentRider);
+
+            // 해당 라이더한테만 푸쉬
+            Order pushOrder = new Order();
+            pushOrder.setRiderId(S_Rider.getId());
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(pushOrder);
+            if(tokens.size() > 0){
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.RIDER_WORKING_OFF);
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                checkFcmResponse(pushNotification);
+            }
+        }
+
+        Store storeDTO = new Store();
+        storeDTO.setId(needOrderId.getStoreId());
+        storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
+        if (ret != 0) {
+            if (storeDTO.getSubGroup() != null){
+                redisService.setPublisher("order_denied", "id:"+needOrderId.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+            }else{
+                redisService.setPublisher("order_denied", "id:"+needOrderId.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+            }
+        }
+
         return ret;
     }
 

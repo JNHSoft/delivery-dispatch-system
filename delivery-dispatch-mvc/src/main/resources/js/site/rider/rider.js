@@ -131,6 +131,7 @@ function getRiderList() {
         },
         dataType: 'json',
         success: function (data) {
+        console.log(data);
         for (var j = 1; j < marker.length; j++) {
             marker[j].setMap(null);
         }
@@ -139,8 +140,10 @@ function getRiderList() {
             position : {lat: storeLatitude, lng: storeLongitude},
             map : map
         });
+        var riderCount = 0;
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
+                riderCount++;
                 var latitude = parseFloat(data[key].latitude);
                 var longitude = parseFloat(data[key].longitude)
                 var location = {lat: latitude, lng: longitude};
@@ -155,19 +158,19 @@ function getRiderList() {
                 }
                 if($('#srchChk1').prop('checked') && data[key].working==1 && typeof data[key].order != "undefined") {
                     i = addMarker(location, data[key], i, $status);
-                    shtml += gridRiderList(data[key], $status);
+                    shtml += gridRiderList(data[key], $status, riderCount);
                 }
                 if($('#srchChk2').prop('checked') && data[key].working==1 && typeof data[key].order == "undefined") {
                     i = addMarker(location, data[key], i, $status);
-                    shtml += gridRiderList(data[key], $status);
+                    shtml += gridRiderList(data[key], $status, riderCount);
                 }
                 if($('#srchChk3').prop('checked') && data[key].working==3) {
                     i = addMarker(location, data[key], i, $status);
-                    shtml += gridRiderList(data[key], $status);
+                    shtml += gridRiderList(data[key], $status, riderCount);
                 }
                 if($('#srchChk4').prop('checked') && data[key].working==0){
                     i = addMarker(location, data[key], i, $status);
-                    shtml += gridRiderList(data[key], $status);
+                    shtml += gridRiderList(data[key], $status, riderCount);
                 }
             } 
         }
@@ -175,7 +178,7 @@ function getRiderList() {
         }
     });
 }
-function gridRiderList(data, $status) {
+function gridRiderList(data, $status, riderCount) {
     if($('#myStoreChk').prop('checked') && data.riderStore) {
         if (data.riderStore.id != $('#storeId').val()){
             return '';
@@ -184,7 +187,7 @@ function gridRiderList(data, $status) {
         return '';
     }
     var shtml = "";
-    shtml += "<tr id='riderMapId"  + data.id + "'><td>" +data.id+"</td>";
+    shtml += "<tr id='riderMapId"  + data.id + "'><td>" +riderCount+"</td>";
     shtml += "<td>"+data.name+"</td>";
     shtml += "<td>"+$status+"</td>";
     if(data.riderStore){
