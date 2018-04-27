@@ -408,6 +408,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00039), ErrorCodeEnum.E00039.name());
         }
 
+        if (order.getWebOrderId() == null || order.getWebOrderId() == "") {
+            order.setWebOrderId(order.getRegOrderId());
+        }
+
         int postOrder = orderMapper.insertOrder(order);
 
         if (postOrder == 0) {
