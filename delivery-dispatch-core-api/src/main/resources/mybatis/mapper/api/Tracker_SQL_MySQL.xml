@@ -88,7 +88,7 @@
 		ON A.store_id = B.id
 		LEFT JOIN TB_RIDER AS C
 		ON A.rider_id = C.id
-		WHERE A.reg_order_id = #{regOrderId}
+		WHERE A.web_order_id = #{webOrderId}
 			AND B.code = #{code}
 	</select>
 

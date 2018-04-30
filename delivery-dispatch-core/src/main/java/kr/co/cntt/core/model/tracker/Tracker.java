@@ -23,6 +23,7 @@ public class Tracker implements Dto {
     private String id;
     private String createdDatetime;
     private String regOrderId;
+    private String webOrderId;
     private String status;
     private String latitude;
     private String longitude;
