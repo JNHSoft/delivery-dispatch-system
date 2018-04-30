@@ -371,8 +371,14 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         try {
             Map<String, String> geo = geocoder.getLatLng(order.getAddress());
-            order.setLatitude(geo.get("lat"));
-            order.setLongitude(geo.get("lng"));
+            if(geo.get("lat") !=null && geo.get("lng") !=null){
+                order.setLatitude(geo.get("lat"));
+                order.setLongitude(geo.get("lng"));
+            }else {
+                order.setLatitude("0");
+                order.setLongitude("0");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
