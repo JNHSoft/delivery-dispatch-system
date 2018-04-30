@@ -37,12 +37,12 @@ public class TrackerController {
     @Autowired
     public TrackerController(TrackerService trackerService) { this.trackerService = trackerService; }
 
-
-    /*@GetMapping("/tracker")
+    /*
+    @GetMapping("/tracker")
     public String tracker(Model model) {
         // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"016\",\"regOrderId\":\"15\",\"reqDate\":\"20180420081700\"}";
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"901\",\"webOrderId\":\"w9-00005\",\"reqDate\":\"20180430085000\"}";
 
         try {
             String encKey = tKey;
@@ -76,7 +76,8 @@ public class TrackerController {
         }
 
         return "/tracker";
-    }*/
+    }
+    */
 
     @GetMapping("/tracker")
     public String getTracker(@RequestParam(required=false) String encParam, Model model) throws Exception {
@@ -113,4 +114,5 @@ public class TrackerController {
             return "/error/error-tracker";
         }
     }
+
 }
