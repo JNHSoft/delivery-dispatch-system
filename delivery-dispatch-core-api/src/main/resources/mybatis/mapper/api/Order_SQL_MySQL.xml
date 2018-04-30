@@ -131,6 +131,7 @@
 			, device_os
 			, status
 			, reg_order_id
+			, web_order_id
 			, created_datetime
 		) VALUES(
 			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
@@ -156,6 +157,7 @@
 			, #{deviceOs}
 			, #{status}
 			, #{regOrderId}
+			, #{webOrderId}
 			, now()
 	  	)
 		<selectKey keyProperty="id" resultType="String">

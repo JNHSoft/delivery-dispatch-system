@@ -20,6 +20,7 @@ public class Order extends Common implements Dto {
     private static final long serialVersionUID = -3663510383729036464L;
 
     private String regOrderId;
+    private String webOrderId;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String adminId;
     private String storeId;
