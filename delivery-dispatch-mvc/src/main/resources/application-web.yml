@@ -34,7 +34,8 @@ server:
   jsp-servlet:
     init-parameters:
       development: true
-
+  session:
+      timeout: 10800
 # logging
 logging:
   config: classpath:logback-spring.xml
