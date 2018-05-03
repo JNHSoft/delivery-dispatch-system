@@ -323,8 +323,8 @@ function getMyRiderList() {
                             var tmpId = data[key].id;
                             shtml2 += '<span id="rider'+tmpId+'" class="riderPhone" style="display:none">'+data[key].phone+'</span>';
                         }
-                    $('#selectedRider').html(shtml);
-                    $('#riderPhone').html(shtml2);
+                        $('#selectedRider').html(shtml);
+                        $('#riderPhone').html(shtml2);
                     }
                 }
             }
