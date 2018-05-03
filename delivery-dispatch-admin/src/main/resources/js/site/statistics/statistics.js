@@ -25,7 +25,6 @@ $(function () {
 var selectId =$("#statisticsStoreList");
 var selectIdOption = $("#statisticsStoreList option:selected");
 function searchList(selectId, selectIdOption) {
-    console.log(selectId.attr('id'));
     if(selectId.attr('id')=="statisticsGroupList"){
         $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
         if(selectIdOption.val() == "rest"){
@@ -200,8 +199,6 @@ function getStatisticsSubGroupList(gId, subGroup) {
 function getStatisticsStoreList(subId, gId) {
     var selectGroupId = gId;
     var selecSubGroupId = subId;
-    console.log(gId);
-    console.log(subId);
     // debugger;
     $.ajax({
         url : "/getStatisticsStoreList",
@@ -324,7 +321,6 @@ function getStatisticsList() {
         },
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             var i = 1;
             for (var key in data) {
                 var $tmpData = new Object();
@@ -457,7 +453,6 @@ function getStatisticsList() {
                 ondblClickRow: function(rowid,icol,cellcontent,e){
                     var rowData = jQuery(this).getRowData(rowid);
                     var orderId = rowData['origin_reg_order_id'];
-                    console.log(orderId);
                     getStatisticsInfo(orderId);
                     $('.state_wrap').addClass('on'); //상세보기 열기
                     setTimeout(function(){
@@ -496,8 +491,6 @@ function getStatisticsInfo(orderId) {
         },
         dataType : 'json',
         success : function (data) {
-            console.log(data);
-
             if (data.status == "3") {
                 $status = '<i class="ic_txt">' + status_completed + '</i>';
             }
@@ -577,7 +570,6 @@ function excelDownload(){
     $('input[name=startDate]').val($('#startDate').val());
     $('input[name=endDate]').val($('#endDate').val());
 
-    console.log(document.searchForm);
     document.searchForm.action="/excelDownload";
     document.searchForm.method="GET";
     document.searchForm.submit();

@@ -62,9 +62,6 @@ $(function() {
             storeId : $tr.find('td[name="storeName"]').html()
         }
 
-        console.log("@@@@@@@");
-        console.log(params);
-
         // 그룹 소그룹 삭제 부분
         if($(this).closest('div').attr('id') === 'groupList') {
             deleteGroup(params);
@@ -162,7 +159,6 @@ $(function() {
                 subGroupId : $(this).val(),
                 storeId : $tr.find('td[name="storeId"]').html()
             }
-            console.log(params);
             postStoreGroupSubGroup(params);
         }
     });

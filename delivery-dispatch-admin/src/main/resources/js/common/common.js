@@ -11,7 +11,6 @@ $(document).ready(function() {
         url : "/adminInfo",
         async : false,
         success : function (data) {
-            console.log(data);
             $('#myAdminName').text(data.name);
         }
     });

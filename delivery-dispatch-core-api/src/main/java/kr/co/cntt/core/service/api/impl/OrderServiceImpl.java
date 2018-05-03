@@ -1398,6 +1398,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_RIDER")
     @Override
     public int putOrderReturn(Order order) throws AppTrException {
+        order.setRole("ROLE_RIDER");
+        Order needOrderId = orderMapper.selectOrderInfo(order);
+
         if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
             Order combinedOrder = new Order();
 
@@ -1410,7 +1413,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setReturnDatetime(LocalDateTime.now().toString());
 
-        return this.putOrder(order);
+        int ret = this.putOrder(order);
+
+        Store storeDTO = new Store();
+        storeDTO.setId(needOrderId.getStoreId());
+
+        storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
+        if (ret != 0) {
+            if (storeDTO.getSubGroup() != null){
+                redisService.setPublisher("order_denied", "id:"+needOrderId.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+            }else{
+                redisService.setPublisher("order_denied", "id:"+needOrderId.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+            }
+        }
+
+        return ret;
     }
 
 }

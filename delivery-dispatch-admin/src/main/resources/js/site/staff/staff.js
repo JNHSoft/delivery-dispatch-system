@@ -5,7 +5,6 @@ $(document).ready(function () {
     $("#searchButton").click(function () {
         // 입력받는 text 값 가져온다
         var searchText = $("#searchText").val();
-        console.log(searchText);
         // 필터 설정
         var filter = {
             groupOp: "OR",
@@ -13,7 +12,6 @@ $(document).ready(function () {
         };
         // 검색 select 박스 변경 시 값 전송
         var select = $("#searchSelect option:selected").val();
-        console.log(select);
 
         // html option 값의 value에 jq 그리드에 name 값을 넣어서 매칭시킨다.
         if(select == 'th0'){
@@ -84,7 +82,6 @@ function getRiderList() {
             for(var key in data) {
                 riderCount++;
                 var $tmpData = new Object();
-                console.log(data);
                 if (data.hasOwnProperty(key)) {
                     // 아이디 / 소속 매장 / 이름 / 코드 / 성별 / 연락처 / 긴급연락처 / 주소 / 번호판 / 청소년 / 아이디
                     $tmpData.count = riderCount;
@@ -217,8 +214,6 @@ function getRiderDetail() {
             },
             dataType : 'json',
             success : function(data){
-                console.log("상세보기");
-                console.log(data);
                 // 아이디
                 $("#riderDetailLoginId").val(data.A_Rider.loginId);
                 //password
@@ -260,7 +255,6 @@ function getRiderDetail() {
 
                     $("#riderDetailStoreName").on("change", function(){
                         getStoreInfo($("#riderDetailStoreName option:selected").val());
-                        console.log($("#riderDetailStoreName option:selected").val());
 
                     });
                     if(data.A_Rider.group == null){
@@ -443,7 +437,6 @@ function getRiderStoreList() {
 
                 $("#postRiderStoreList").on("change", function () {
                     getStoreInfo($("#postRiderStoreList option:selected").val());
-                    console.log($("#postRiderStoreList option:selected").val());
                 });
             }
         }
@@ -462,7 +455,6 @@ function getStoreInfo(storeId) {
             },
             dataType : 'json',
             success : function(data) {
-                console.log(data);
                 $("#selectedGroupId").val(data.group.id);
                 $("#selectedSubGroupId").val(data.subGroup.id);
                 $("#selectedStoreId").val(data.id);
@@ -478,8 +470,6 @@ function deleteRider() {
 
     if(!confirm("Delete?")) return;
 
-
-    console.log(riderId);
     $.ajax({
         url: "/deleteRider",
         type: 'put',
@@ -511,7 +501,6 @@ function riderLoginIdCheck() {
             loginId: loginId
         },
         success: function (data) {
-            console.log(data);
             if(data>0){
                 alertTip('#postRiderLoginId',loginid_uncheck);
             } else{
