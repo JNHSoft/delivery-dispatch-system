@@ -398,8 +398,26 @@
 
 		WHERE 1=1
             AND A.deleted IS NULL
-            AND B.deleted IS NULL
-            AND C.deleted IS NULL
+        AND
+        CASE WHEN
+          (SELECT * FROM
+            (SELECT deleted FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)
+          AS D) IS NULL
+        THEN B.deleted IS NULL
+        ELSE B.deleted =
+              (SELECT * FROM
+                (SELECT deleted FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)
+              AS D) END
+        AND
+        CASE WHEN
+          (SELECT * FROM
+            (SELECT deleted FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)
+          AS E) IS NULL
+        then C.deleted is null
+        ELSE C.deleted =
+          (SELECT * FROM
+            (SELECT deleted FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)
+          AS E) END
             <choose>
                 <when test="id != null and id != ''">
                     AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
@@ -778,5 +796,12 @@
         WHERE B.access_token = #{token}
     </update>
 
+    <!-- resetStorePassword -->
+    <update id="resetStorePassword" parameterType="kr.co.cntt.core.model.store.Store">
+        UPDATE TB_STORE
+          SET login_pw = #{loginPw}
+              , modified_datetime = now()
+        WHERE id = #{id} AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+    </update>
 </mapper>
  

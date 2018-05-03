@@ -220,4 +220,12 @@ public interface RiderMapper {
      */
     public String selectMobileVersion(String device);
 
+    /**
+     * Rider 비밀번호 초기화
+     *
+     * @param rider
+     * @return
+     */
+    public int resetRiderPassword(Rider rider);
+
 }

@@ -110,4 +110,11 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     // 기사 서브그룹 수정 by store_id
     @Override
     public int putSubGroupRiderRelByStoreId(Store store){ return adminMapper.updateSubGroupRiderRelByStoreId(store);}
+
+    // 상점 비밀번호 초기화
+    @Override
+    public int resetStorePassword(Store store) {
+        return storeMapper.resetStorePassword(store);
+    }
+
 }

@@ -201,12 +201,12 @@
 					</colgroup>
 					<tbody>
 					<tr>
-						<th th:text="${#messages.msg('login.id')}"></th>
+						<th th:text="${#messages.msg('login.id')}"/>
 						<td>
 							<input type="text" name="" id="storeDetailLoginId" class="input" value="" readonly="true"/>
 
 						</td>
-						<th th:text="${#messages.msg('store.belong.group')}"></th>
+						<th th:text="${#messages.msg('store.belong.group')}"/>
 						<td>
 							<select name="" class="select" id="storeDetailGroup">
 								<option value="empty">group_choise</option>
@@ -221,24 +221,24 @@
 						<!--<td><input type="password" name="" class="input" value="" id="storeDetailPassword" readonly="true"/></td>-->
 						<!--<th th:text="${#messages.msg('store.manager.name')}"></th>-->
 						<!--<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserName"/></td>-->
-						<th th:text="${#messages.msg('store.code')}"></th>
+						<th th:text="${#messages.msg('store.code')}"/>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStoreCode"/></td>
-						<th th:text="${#messages.msg('store.address')}"></th>
+						<th th:text="${#messages.msg('store.address')}"/>
 						<td><input type="text" name="" class="input w_100" value="" id="storeDetailStoreAddress"/></td>
 					</tr>
 					<tr>
 						<!--<th th:text="${#messages.msg('store.manager.phone')}"></th>-->
 						<!--<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserPhone" /></td>-->
-						<th th:text="${#messages.msg('store.name')}"></th>
+						<th th:text="${#messages.msg('store.name')}"/>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStoreName"/></td>
-						<th th:text="${#messages.msg('store.address.detail')}"></th>
+						<th th:text="${#messages.msg('store.address.detail')}"/>
 						<td><input type="text" name="" class="input w_100" value="" id="storeDetailStoreDetailAddress"/></td>
 					</tr>
 					<tr>
-						<th th:text="${#messages.msg('store.phone')}"></th>
+						<th th:text="${#messages.msg('store.phone')}"/>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStorePhone"/></td>
 						<!--0: 수동배정, 1: 자동배정, 2: 기사배정-->
-						<th th:text="${#messages.msg('order.assign.mode')}"></th>
+						<th th:text="${#messages.msg('order.assign.mode')}"/>
 						<td>
 							<select name="" class="select" id="storeDetailAssignStatusSelectBox">
 								<option value="0" th:text="${#messages.msg('order.assign.mode.store')}"></option>
@@ -251,8 +251,8 @@
 						<th>access_token</th>
 						<td><input id="storeAccessToken" style="position:absolute;top:-9999em;"/><a class="button btn_green" th:text="${#messages.msg('store.token.copy')}" onclick="javascript:copyAccessToken()"/></td>
 						<!-- input 박스 hidden 시키지말 것!(클립보드 복사시 크롬에서 사용가능하려면 hidden이나 display:none을 하면 안된다 -> 스타일로 안보이게 해놓음) -->
-						<th></th>
-						<td></td>
+						<th th:text="${#messages.msg('login.password')}"/>
+						<td><a class="button btn_blue2" th:text="${#messages.msg('reset.password')}" onclick="javascript:resetStorePw()"/></td>
 					</tr>
 					</tbody>
 				</table>

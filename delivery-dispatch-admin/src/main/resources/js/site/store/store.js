@@ -396,7 +396,7 @@ function putStoreDetail() {
             groupId		        : $("#storeDetailGroup").val(),
             subGroupId			: $("#storeDetailSubGroup").val(),
             // name	            : $("#storeDetailStoreUserName").val(),
-            // phone			    : $("#storeDetailStoreUserPhone").val(),
+            // phone			: $("#storeDetailStoreUserPhone").val(),
             address				: $("#storeDetailStoreAddress").val(),
             detailAddress		: $("#storeDetailStoreDetailAddress").val(),
             hasGroup		    : $("#hasGroup").val()
@@ -573,5 +573,30 @@ function copyAccessToken() {
     if (successful){
         alert("Copy completed");
     }
+}
+
+/**
+ * resetPassword 클릭 시 비밀번호 초기화
+ */
+function resetStorePw() {
+    $.ajax({
+        url : "/putStorePwReset",
+        type : 'put',
+        dataType : 'text',
+        data : {
+            id	: $("#selectedStoreId").val()
+        },
+        success : function(data){
+            if (data == 'geo_err') {
+                alert(alert_address_error);
+                return false;
+            } else {
+                alert(alert_confirm_mod_success);
+                // popClose('#popStoreDetail');
+                // 완료후 페이지 호출
+                // location.reload();
+            }
+        }
+    });
 }
 /*]]>*/

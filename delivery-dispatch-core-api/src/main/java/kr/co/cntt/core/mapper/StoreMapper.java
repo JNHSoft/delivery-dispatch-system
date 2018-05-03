@@ -178,4 +178,12 @@ public interface StoreMapper {
      */
     public List<Order> selectStoreStatisticsExcel(Order order);
 
+    /**
+     * Store 비밀번호 초기화
+     *
+     * @param store
+     * @return
+     */
+    public int resetStorePassword(Store store);
+
 }

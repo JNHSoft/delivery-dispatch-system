@@ -444,4 +444,27 @@ public class StaffController {
         return R_Id;
     }
 
+    /**
+     * 라이더 비밀번호 초기화
+     *
+     * @return
+     */
+    @ResponseBody
+    @PutMapping("putRiderPwReset")
+    @CnttMethodDescription("매장 비밀번호 초기화")
+    public String resetStorePw(Rider rider){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        rider.setToken(adminInfo.getAdminAccessToken());
+
+        ShaEncoder sha = new ShaEncoder(512);
+        rider.setLoginPw(sha.encode("1111"));
+
+        int A_Store = staffAdminService.resetRiderPassword(rider);
+
+        if (A_Store == 0) {
+            return "err";
+        } else {
+            return "ok";
+        }
+    }
 }
