@@ -27,7 +27,6 @@ function deleteAlarm(alarmId) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             location.reload();
         }
     });

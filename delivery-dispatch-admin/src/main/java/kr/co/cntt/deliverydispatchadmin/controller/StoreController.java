@@ -242,7 +242,7 @@ public class StoreController {
 //        store.setPhone(phone);
         store.setAddress(address);
         store.setDetailAddress(detailAddress);
-
+        System.out.println("!!!!"+groupId);
         // 위도 경도
         if (store.getAddress() != null && store.getAddress() != "") {
             log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+store.getAddress());
@@ -283,8 +283,10 @@ public class StoreController {
             log.info("update group.................................");
                A_Group = storeAdminService.updateSubGroupStoreRel(store);
         } else {
-            log.info("insert group..................................");
-            A_Group = storeAdminService.insertSubGroupStoreRel(store);
+            if(!groupId.equals("")){
+                log.info("insert group..................................");
+                A_Group = storeAdminService.insertSubGroupStoreRel(store);
+            }
         }
 
         int B_Group = storeAdminService.putSubGroupRiderRelByStoreId(store);
@@ -473,7 +475,29 @@ public class StoreController {
         return S_Id;
     }
 
+    /**
+     * 매장 비밀번호 초기화
+     *
+     * @return
+     */
+    @ResponseBody
+    @PutMapping("putStorePwReset")
+    @CnttMethodDescription("매장 비밀번호 초기화")
+    public String resetStorePw(Store store){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        store.setToken(adminInfo.getAdminAccessToken());
 
+        ShaEncoder sha = new ShaEncoder(512);
+        store.setLoginPw(sha.encode("1111"));
+
+        int A_Store = storeAdminService.resetStorePassword(store);
+
+        if (A_Store == 0) {
+            return "err";
+        } else {
+            return "ok";
+        }
+    }
 
 
 }

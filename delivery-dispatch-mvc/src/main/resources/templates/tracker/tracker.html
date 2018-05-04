@@ -58,7 +58,7 @@ var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
 var distance = /*[[${tracker.distance}]]*/ 'distance';
 
 
-console.log(regOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude);
+/*console.log(regOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude);*/
 
 var arriveTime = new Date(Date.parse(createdDatetime) + 1000 * 60 * cookingTime);
 
@@ -164,5 +164,5 @@ function initMap() {
 /*]]>*/
 </script>
 
-<script type="text/javascript" async="async" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}" layout:fragment="script2" />
+<script type="text/javascript" async="async" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}" layout:fragment="script2" />
 </html>

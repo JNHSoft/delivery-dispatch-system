@@ -116,4 +116,10 @@ public interface StaffAdminService {
 
 
 
+    /**
+     * 라이더 비밀번호 초기화
+     * @param rider
+     * @return
+     */
+    public int resetRiderPassword(Rider rider);
 }

@@ -244,7 +244,7 @@
 			AND (A.reservation_datetime IS NULL
 			OR (A.created_datetime > CURRENT_DATE() AND DATE_FORMAT(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > DATE_FORMAT(A.reservation_datetime, '%Y-%m-%d %H:%i') AND A.reservation_datetime > CURRENT_DATE()))
 -- 			OR (A.created_datetime > CURRENT_DATE() AND date_add(now(), interval 2 hour) > A.reservation_datetime AND A.reservation_datetime > CURRENT_DATE()))
-		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime DESC
+		ORDER BY CASE WHEN A.status in (0,5) THEN A.assigned_first END DESC, CASE WHEN A.status in (0,5) THEN A.reservation_datetime END DESC, A.status in (0,5) desc, A.status ASC,  A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime DESC
 	</select>
 
 

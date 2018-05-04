@@ -181,7 +181,7 @@ function minusTimeSet(time1 , time2) {
         var d1 = new Date(time1);
         var d2 = new Date(time2);
         var minusTime = new Date(d2.getTime()-d1.getTime());
-        return ('0' + minusTime.getHours()).slice(-2) + ':' + ('0' + minusTime.getMinutes()).slice(-2)
+        return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2)
     }else{
         return "-";
     }
@@ -213,7 +213,6 @@ function getOrderDetail(orderId) {
         async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
-            console.log(data)
             selectedOriginOrder = data;
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
@@ -324,8 +323,8 @@ function getMyRiderList() {
                             var tmpId = data[key].id;
                             shtml2 += '<span id="rider'+tmpId+'" class="riderPhone" style="display:none">'+data[key].phone+'</span>';
                         }
-                    $('#selectedRider').html(shtml);
-                    $('#riderPhone').html(shtml2);
+                        $('#selectedRider').html(shtml);
+                        $('#riderPhone').html(shtml2);
                     }
                 }
             }
@@ -373,7 +372,6 @@ function getOrderList(statusArray, storeId) {
         },
         dataType: 'json',
         success: function (data) {
-        console.log(data);
         var i = 1;
         currentOrderList = data;
         for (var key in data) {

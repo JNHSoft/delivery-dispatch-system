@@ -83,7 +83,7 @@ function minusTimeSet(time1, time2) {
         var d1 = new Date(time1);
         var d2 = new Date(time2);
         var minusTime = new Date(d2.getTime() - d1.getTime());
-        return ('0' + minusTime.getHours()).slice(-2) + ':' + ('0' + minusTime.getMinutes()).slice(-2)
+        return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2)
     } else {
         return "-";
     }

@@ -962,5 +962,12 @@
 		ORDER BY created_datetime DESC LIMIT 1
 	</select>
 
+	<!-- resetRiderPassword -->
+	<update id="resetRiderPassword" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE TB_RIDER
+		SET login_pw = #{loginPw}
+		, modified_datetime = now()
+		WHERE id = #{id} AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	</update>
 </mapper>
  

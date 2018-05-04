@@ -111,4 +111,10 @@ public class StaffAdminServiceImpl implements StaffAdminService {
         return adminMapper.selectRiderLoginIdCheck(rider);
     }
 
+    // 기사 비밀번호 초기화
+    @Override
+    public int resetRiderPassword(Rider rider) {
+        return riderMapper.resetRiderPassword(rider);
+    }
+
 }

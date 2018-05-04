@@ -52,7 +52,6 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
             var param = {
                 id : $tr.data('thirdpartyId')
             };
-            console.log(param);
             deleteThirdParty(param);
         }
         // 취소 버튼을 눌렀을때
@@ -103,7 +102,6 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
                 id : $tr.data('assignedadvanceId'),
                 reason : $tr.find('td[name="tdAssignedAdvanceName"] input').val()
             }
-            console.log(assignedAdvanceParams);
             if($(this).closest('div').attr('id')==='assignedAdvanceList'){
                 putAssignedAdvance($tr,assignedAdvanceParams);
             }
@@ -117,7 +115,6 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
             var param = {
                 id : $tr.data('assignedadvanceId')
             };
-            console.log(param);
             deleteAssignedAdvance(param);
         }
         // 취소 버튼을 눌렀을때
@@ -167,7 +164,6 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
                 id : $tr.data('assignedrejectId'),
                 reason : $tr.find('td[name="tdassignedRejectName"] input').val()
             }
-            console.log(assignedRejectParams);
             if($(this).closest('div').attr('id')==='assignedRejectList'){
                 putAssignedReject($tr,assignedRejectParams);
             }
@@ -181,7 +177,6 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
             var param = {
                 id : $tr.data('assignedrejectId')
             };
-            console.log(param);
             deleteAssignedReject(param);
         }
         // 취소 버튼을 눌렀을때
@@ -214,7 +209,6 @@ function postThirdParty() {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             $('#tblThirdParty > tbody:last').append('<tr><td class="t_left" name="tdThirdPartyName">' + data.name + '</td><td><button class="button h20">' + group_mod + '</button><button class="button h20">' + group_del + '</button></td></tr>');
             $('#inpThirdParty').val('');
             location.reload();
@@ -230,7 +224,6 @@ function putThirdParty($target,param) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             $target.find('td[name="tdThirdPartyName"]').html(param.name);
             $target.find('input[name="defaultThirdPartyName"]').val(param.name);
             $target.removeClass('selected');
@@ -269,7 +262,6 @@ function postAssignedAdvance() {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             $('#tblAssignedAdvance > tbody:last').append('<tr><td class="t_left" name="tdAssignedAdvanceName">' + data.reason + '</td><td><button class="button h20">' + group_mod + '</button><button class="button h20">' + group_del + '</button></td></tr>');
             $('#inpAssignedAdvance').val('');
         }
@@ -285,7 +277,6 @@ function putAssignedAdvance($target,param) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             $target.find('td[name="tdAssignedAdvanceName"]').html(param.reason);
             $target.find('input[name="defaultAssignedAdvanceName"]').val(param.reason);
             $target.removeClass('selected');
@@ -325,7 +316,6 @@ function postAssignedReject() {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             $('#tblAssignedReject > tbody:last').append('<tr><td class="t_left" name="tdassignedRejectName">' + data.reason + '</td><td><button class="button h20">' + group_mod + '</button><button class="button h20">' + group_del + '</button></td></tr>');
             $('#inpAssignedReject').val('');
         }
@@ -341,7 +331,6 @@ function putAssignedReject($target,param) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             $target.find('td[name="tdassignedRejectName"]').html(param.reason);
             $target.find('input[name="defaultassignedRejectName"]').val(param.reason);
             $target.removeClass('selected');
@@ -361,7 +350,6 @@ function deleteAssignedReject(param) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             location.reload();
         }
     });

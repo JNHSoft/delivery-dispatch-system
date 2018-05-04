@@ -5,7 +5,6 @@ $(document).ready(function () {
     $("#searchButton").click(function () {
         // 입력받는 text 값 가져온다 
         var searchText = $("#searchText").val();
-        console.log(searchText);
         // 필터 설정
         var filter = {
             groupOp: "OR",
@@ -13,7 +12,6 @@ $(document).ready(function () {
         };
         // 검색 select 박스 변경 시 값 전송
         var select = $("#searchSelect option:selected").val();
-        console.log(select);
 
          // html option 값의 value에 jq 그리드에 name 값을 넣어서 매칭시킨다.
         if(select == 'th0'){
@@ -97,7 +95,6 @@ function getStoreList() {
             for(var key in data) {
                 storeCount++;
                 var $tmpData = new Object();
-                console.log(data);
                 if (data.hasOwnProperty(key)) {
                     $tmpData.count = storeCount;
                     $tmpData.th0 = data[key].id
@@ -210,7 +207,6 @@ function getStoreDetail() {
             dataType : 'json',
 
             success : function(data){
-                console.log(data);
                 // loginid
                 $("#storeDetailLoginId").val(data.A_Store.loginId);
                 // password
@@ -229,9 +225,11 @@ function getStoreDetail() {
                 // var storeDetailGroupHtml = "<option value=''>" + "그룹선택" + "</option>";
                 var storeDetailGroupHtml = "<option value=''>" + "不明" + "</option>";
                 // 소속 그룹
-                if(data.groupList !=null) {
+                if(data.groupList) {
                     for (var i in data.groupList){
-                        storeDetailGroupHtml += "<option value='" + data.groupList[i].id  + "'>" + data.groupList[i].name + "</option>";
+                        if(data.groupList[i].subGroupCount != "0"){
+                            storeDetailGroupHtml += "<option value='" + data.groupList[i].id  + "'>" + data.groupList[i].name + "</option>";
+                        }
                     }
                     $("#storeDetailGroup").html(storeDetailGroupHtml);
 
@@ -239,17 +237,14 @@ function getStoreDetail() {
                         getSubGroupList($("#storeDetailGroup option:selected").val());
                     });
 
-                    if (data.A_Store.group == null){
+                    if (!data.A_Store.group){
                         $("#hasGroup").val("F");
                         $("#storeDetailGroup").val("");
-                    } else if (data.A_Store.group.id != null){
+                    } else if (data.A_Store.group.id){
                         $("#hasGroup").val("T");
                         $("#storeDetailGroup").val(data.A_Store.group.id).prop("selected", true);
                     }
                 }
-
-
-
 
                 // 소속 소그룹
                 if(data.subGroupList != null ) {
@@ -293,8 +288,6 @@ function getSubGroupList(gId, subGroup) {
         },
         dataType : 'json',
         success : function(data){
-            console.log("그룹 변경시 서브그룹 리스트 불러오기!");
-            console.log(data);
             if(data) {
                 var storeDetailSubGroupHtml = "";
                     // "<option value='none'>" + "-" + "</option>";
@@ -326,7 +319,9 @@ function getGroupList() {
                 var postStoreGroupHtml = "<option value=''>" + "不明" + "</option>";
                 // var postStoreGroupHtml = "";
                 for (var i in data) {
-                    postStoreGroupHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
+                    if (data[i].subGroupCount != "0") {
+                        postStoreGroupHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
+                    }
                 }
                 $("#postStoreGroup").html(postStoreGroupHtml);
 
@@ -396,7 +391,7 @@ function putStoreDetail() {
             groupId		        : $("#storeDetailGroup").val(),
             subGroupId			: $("#storeDetailSubGroup").val(),
             // name	            : $("#storeDetailStoreUserName").val(),
-            // phone			    : $("#storeDetailStoreUserPhone").val(),
+            // phone			: $("#storeDetailStoreUserPhone").val(),
             address				: $("#storeDetailStoreAddress").val(),
             detailAddress		: $("#storeDetailStoreDetailAddress").val(),
             hasGroup		    : $("#hasGroup").val()
@@ -521,7 +516,6 @@ function deleteStore() {
     var storeId =  $("#selectedStoreId").val();
 
     if(!confirm(alert_delstore_check)) return;
-    console.log(storeId);
     $.ajax({
         url: "/deleteStore",
         type: 'put',
@@ -551,7 +545,6 @@ function storeLoginIdCheck() {
             loginId: loginId
         },
         success: function (data) {
-            console.log(data);
             if(data>0){
                 alertTip('#postStoreLoginId',loginid_uncheck);
             } else{
@@ -573,5 +566,30 @@ function copyAccessToken() {
     if (successful){
         alert("Copy completed");
     }
+}
+
+/**
+ * resetPassword 클릭 시 비밀번호 초기화
+ */
+function resetStorePw() {
+    $.ajax({
+        url : "/putStorePwReset",
+        type : 'put',
+        dataType : 'text',
+        data : {
+            id	: $("#selectedStoreId").val()
+        },
+        success : function(data){
+            if (data == 'geo_err') {
+                alert(alert_address_error);
+                return false;
+            } else {
+                alert(alert_confirm_mod_success);
+                // popClose('#popStoreDetail');
+                // 완료후 페이지 호출
+                // location.reload();
+            }
+        }
+    });
 }
 /*]]>*/

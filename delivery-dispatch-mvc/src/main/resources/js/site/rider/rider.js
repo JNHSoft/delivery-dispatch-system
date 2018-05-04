@@ -131,7 +131,6 @@ function getRiderList() {
         },
         dataType: 'json',
         success: function (data) {
-        console.log(data);
         for (var j = 1; j < marker.length; j++) {
             marker[j].setMap(null);
         }

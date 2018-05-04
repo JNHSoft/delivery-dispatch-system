@@ -53,7 +53,6 @@ function getNoticeList() {
         type: 'get',
         dataType: 'json',
         success: function (data) {
-            console.log(data);
 
             var i = 1;
 
@@ -103,9 +102,6 @@ function getNoticeList() {
                     i++;
 
                     mydata.push(tmpdata);
-
-                    console.log('mydata');
-                    console.log(mydata);
 
                     if (mydata != null) {
                         jQuery('#jqGrid').jqGrid('clearGridData')
@@ -159,7 +155,6 @@ function getNoticeList() {
 }
 
 function getNoticeDetail(noticeId) {
-    console.log('noticeId: ' + noticeId);
 
     $('#noticeId').val(noticeId);
     $('#toGroupId').val(0);
@@ -175,7 +170,6 @@ function getNoticeDetail(noticeId) {
         dataType : 'json',
         async : false, //비동기 -> 동기
         success : function (data) {
-            console.log(data);
 
             $('#nTargetGroup').empty();
             $('#nTargetGroup').append('<option value="0">' + notice_target_all_group + '</option>');
@@ -248,7 +242,6 @@ function toGroup(toGroupId) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
 
             $('#nTargetSubGroup').empty();
             $('#nTargetSubGroup').append('<option value="0">' + notice_target_all_subgroup + '</option>');
@@ -271,7 +264,6 @@ function toSubGroup(toSubGroupId) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
 
             $('#nTargetStore').empty();
             $('#nTargetStore').append('<option value="0">' + notice_target_all_store + '</option>');
@@ -296,7 +288,6 @@ function putNotice() {
         dataType : 'json',
         async : false,
         success : function (data) {
-            console.log(data);
             popClose('#popNotice');
             getNoticeList();
         }
@@ -311,7 +302,6 @@ function deleteNotice() {
         dataType : 'json',
         async : false,
         success : function (data) {
-            console.log(data);
             popClose('#popNotice');
             getNoticeList();
         }
@@ -325,7 +315,6 @@ function getGroupList() {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
 
             $('#nNewTargetGroup').empty();
             $('#nNewTargetGroup').append('<option value="0">' + notice_target_all_group + '</option>');
@@ -353,7 +342,6 @@ function newToGroup(toGroupId) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
 
             $('#nNewTargetSubGroup').empty();
             $('#nNewTargetSubGroup').append('<option value="0">' + notice_target_all_subgroup + '</option>');
@@ -376,7 +364,6 @@ function newToSubGroup(toSubGroupId) {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
 
             $('#nNewTargetStore').empty();
             $('#nNewTargetStore').append('<option value="0">' + notice_target_all_store + '</option>');
@@ -423,14 +410,12 @@ function deleteNoticeFile () {
         dataType: 'json',
         async : false,
         success: function (data) {
-            console.log(data);
             location.reload();
         }
     });
 }
 
 function noticeFileDownload(fileName) {
-    console.log("fileName: " + fileName);
     var form = document.getElementById("fileForm");
     var fileField = form.elements["fileName"];
 

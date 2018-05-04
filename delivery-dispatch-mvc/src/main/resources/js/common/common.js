@@ -152,7 +152,6 @@ function footerRiders() {
 function showKeyCode(event) {
     event = event || window.event;
     var keyID = (event.which) ? event.which : event.keyCode;
-    console.log(keyID);
     if( ( keyID >=48 && keyID <= 57 ) || ( keyID >=96 && keyID <= 105 ) || ( keyID >=37 && keyID <= 40 ) || keyID === 8)
     {
         return;

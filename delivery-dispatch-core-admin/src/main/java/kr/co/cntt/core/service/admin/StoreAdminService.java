@@ -146,4 +146,12 @@ public interface StoreAdminService {
      * @return
      */
     public int putSubGroupRiderRelByStoreId(Store store);
+
+    /**
+     * 상점 비밀번호 초기화
+     * @param store
+     * @return
+     */
+    public int resetStorePassword(Store store);
+
 }
