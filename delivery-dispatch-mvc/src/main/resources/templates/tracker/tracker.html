@@ -164,5 +164,5 @@ function initMap() {
 /*]]>*/
 </script>
 
-<script type="text/javascript" async="async" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,callback=initMap)}" layout:fragment="script2" />
+<script type="text/javascript" async="async" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}" layout:fragment="script2" />
 </html>
