@@ -435,19 +435,20 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
             }
 
-            if(storeDTO.getAssignmentStatus().equals("2")){
-
-                ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(storeDTO.getSubGroup());
-                if(tokens.size() > 0){
-                    Notification noti = new Notification();
-                    noti.setType(Notification.NOTI.ORDER_NEW);
-                /*noti.setId(291);
-                noti.setStoreName(order.getMenuName());
-                noti.setAddr(order.getAreaAddress());*/
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
-                }
-            }
+//            신규 주문일 경우 rider app에 push 주석 처리
+//            if(storeDTO.getAssignmentStatus().equals("2")){
+//
+//                ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(storeDTO.getSubGroup());
+//                if(tokens.size() > 0){
+//                    Notification noti = new Notification();
+//                    noti.setType(Notification.NOTI.ORDER_NEW);
+//                /*noti.setId(291);
+//                noti.setStoreName(order.getMenuName());
+//                noti.setAddr(order.getAreaAddress());*/
+//                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+//                    checkFcmResponse(pushNotification);
+//                }
+//            }
         }
 
         return postOrder;
