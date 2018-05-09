@@ -1,3 +1,4 @@
+/*<![CDATA[*/
 $(function(){
 	headerUI();
 	layoutUI();
@@ -7,8 +8,6 @@ $(function(){
 	tapMotion();
 	//topBtn();
 	etcUI();
-
-	
 });
 
 //resizeEnd
@@ -62,18 +61,18 @@ function headerUI(){
 	}
 		
 	gnbActive($title);
-	
+
 	/*timer*/
 	var myDate = new Date()
 	var year = myDate.getYear()
 	var month = myDate.getMonth() +1
 	var day = myDate.getDate()
-	var dday=new Array('일','월','화','수','목','금','토');
+	var dday=new Array(gnb_sunday,gnb_monday,gnb_tuesday,gnb_wednesday,gnb_thursday,gnb_friday,gnb_saturday);
 	var weekend = myDate.getDay();
 	//var hours = myDate.getHours();
 	//var min = myDate.getMinutes();
 	year = (year < 1000) ? year + 1900 : year;
-    $('.head_timer .date').html( "<span><b>" + year + "</b>년</span><span><b>" + month + "</b>월</span><span><b>" + day +  "</b>일</span><span>"+ dday[weekend] + "요일</span>") 
+    $('.head_timer .date').html("<span><b>" + year + "</b>" + gnb_year + "</span><span><b>" + month + "</b>" + gnb_month + "</span><span><b>" + day +  "</b>" + gnb_day + "</span><span>" + dday[weekend] + "</span>")
 
 	//clock
 	var clock = $('.head_timer .clock').FlipClock({
@@ -107,12 +106,12 @@ function formStyle(){
 	if($('.datepicker').length > 0){
 		$( '.datepicker' ).datepicker({
 			closeText: '닫기',
-			prevText: '이전달',
-			nextText: '다음달',
+			prevText: datepicker_prev_month,
+			nextText: datepicker_next_month,
 			currentText: '오늘',
 			monthNamesShort: ['01','02','03','04','05','06','07','08','09','10','11','12'],
 			monthNames: ['01','02','03','04','05','06','07','08','09','10','11','12'],
-			dayNamesMin: ['일','월','화','수','목','금','토'],
+			dayNamesMin: [datepicker_sunday,datepicker_monday,datepicker_tuesday,datepicker_wednesday,datepicker_thursday,datepicker_friday,datepicker_saturday],
 			dateFormat: 'yy-mm-dd',
 			showMonthAfterYear: true,
 			showOn: 'both',
@@ -125,12 +124,12 @@ function formStyle(){
 	if($('.datepicker_month').length > 0){
 		$( '.datepicker_month' ).datepicker({
 			closeText: '닫기',
-			prevText: '이전달',
-			nextText: '다음달',
+			prevText: datepicker_prev_month,
+			nextText: datepicker_next_month,
 			currentText: '오늘',
 			monthNamesShort: ['01','02','03','04','05','06','07','08','09','10','11','12'],
 			monthNames: ['01','02','03','04','05','06','07','08','09','10','11','12'],
-			dayNamesMin: ['일','월','화','수','목','금','토'],
+			dayNamesMin: [datepicker_sunday,datepicker_monday,datepicker_tuesday,datepicker_wednesday,datepicker_thursday,datepicker_friday,datepicker_saturday],
 			dateFormat: 'yy-mm',
 			showMonthAfterYear: true,
 			showOn: 'both',
@@ -545,3 +544,4 @@ function resizeJqGrid(gridId){
     $(gridId).jqGrid('setGridWidth',gridParentWidth);
 	});	
 }
+/*]]>*/
