@@ -19,9 +19,7 @@ $(document).ready(function() {
 function regOrderIdReduce(regOrderId) {
     if(regOrderId.indexOf('-') != -1){
         var reduceId = regOrderId.split('-');
-        if(reduceId.length > 1){
-            return reduceId[reduceId.length-2]+'-'+ reduceId[reduceId.length-1];
-        }else if(reduceId.length == 1){
+        if(reduceId.length >= 1){
             return reduceId[reduceId.length-2]+'-'+ reduceId[reduceId.length-1];
         }
     }else {

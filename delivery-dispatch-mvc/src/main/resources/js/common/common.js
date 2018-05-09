@@ -152,12 +152,10 @@ function footerRiders() {
 function showKeyCode(event) {
     event = event || window.event;
     var keyID = (event.which) ? event.which : event.keyCode;
-    if( ( keyID >=48 && keyID <= 57 ) || ( keyID >=96 && keyID <= 105 ) || ( keyID >=37 && keyID <= 40 ) || keyID === 8)
-    {
+    if( ( keyID >=48 && keyID <= 57 ) || ( keyID >=96 && keyID <= 105 ) || ( keyID >=37 && keyID <= 40 ) || keyID === 8) {
         return;
     }
-    else
-    {
+    else {
         return false;
     }
 }
@@ -165,9 +163,7 @@ function showKeyCode(event) {
 function regOrderIdReduce(regOrderId) {
     if(regOrderId.indexOf('-') != -1){
         var reduceId = regOrderId.split('-');
-        if(reduceId.length > 1){
-            return reduceId[reduceId.length-2]+'-'+ reduceId[reduceId.length-1];
-        }else if(reduceId.length == 1){
+        if(reduceId.length >= 1){
             return reduceId[reduceId.length-2]+'-'+ reduceId[reduceId.length-1];
         }
     }else {
