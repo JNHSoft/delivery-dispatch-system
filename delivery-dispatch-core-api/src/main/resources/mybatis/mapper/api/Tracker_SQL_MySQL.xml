@@ -69,11 +69,14 @@
 	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
 		SELECT	A.created_datetime
 			, A.reg_order_id
+			, A.web_order_id
 			, A.id
 			, A.status
 			, A.latitude
 			, A.longitude
 			, A.cooking_time
+			, A.distance
+			, A.reservation_datetime
 			, B.code
 			, B.name AS store_name
 			, B.phone AS store_phone

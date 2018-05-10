@@ -37,12 +37,11 @@ public class TrackerController {
     @Autowired
     public TrackerController(TrackerService trackerService) { this.trackerService = trackerService; }
 
-    /*
-    @GetMapping("/tracker")
+    /*@GetMapping("/tracker")
     public String tracker(Model model) {
         // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"901\",\"webOrderId\":\"w9-00005\",\"reqDate\":\"20180430085000\"}";
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"103\",\"webOrderId\":\"s-20180509-cnt-aa97\",\"reqDate\":\"20180510145000\"}";
 
         try {
             String encKey = tKey;
@@ -76,8 +75,7 @@ public class TrackerController {
         }
 
         return "/tracker";
-    }
-    */
+    }*/
 
     @GetMapping("/tracker")
     public String getTracker(@RequestParam(required=false) String encParam, Model model) throws Exception {
@@ -93,15 +91,17 @@ public class TrackerController {
             long localNow = LocalDateTime.now(timeZone.toZoneId()).atZone(timeZone.toZoneId()).toInstant().toEpochMilli();
             long abs = Math.abs(rqDate-localNow)/60000;
 
-            System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
+            /*System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
             System.out.println("getRequestDate = "+trackerResult.getRequestDate());
-            System.out.println("abs = "+abs);
+            System.out.println("abs = "+abs);*/
 
-            Misc misc = new Misc();
-            trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getLatitude(), trackerResult.getLongitude(), trackerResult.getStoreLatitude(), trackerResult.getLongitude())/(double) 1000));
+            if(trackerResult.getRiderLatitude() != null){
+                Misc misc = new Misc();
+                trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getLatitude(), trackerResult.getLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
+            }
 
             if (trackerResult != null) {
-                if (abs < 1){
+                if (abs < 300){
                     model.addAttribute("tracker", trackerResult);
                     return "/tracker/tracker";
                 }else {

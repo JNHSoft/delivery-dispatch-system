@@ -22,6 +22,7 @@ public class Tracker implements Dto {
 
     private String id;
     private String createdDatetime;
+    private String reservationDatetime;
     private String regOrderId;
     private String webOrderId;
     private String status;

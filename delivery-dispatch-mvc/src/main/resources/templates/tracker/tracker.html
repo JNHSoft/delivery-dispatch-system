@@ -4,18 +4,18 @@
 <div class="tracker" layout:fragment="content">
 	<div class="tracker-top">
 		<div class="state">
-			<span id="tNew">商家接單</span>
+			<span id="tNew" th:text="${#messages.msg('tracker.new')}" />
 			<i class="fa fa-angle-right"></i>
-			<span id="tAssign">餐品準備中</span>
+			<span id="tAssign" th:text="${#messages.msg('tracker.assign')}"/>
 			<i class="fa fa-angle-right"></i>
-			<span id="tPickup">派送中</span>
+			<span id="tPickup" th:text="${#messages.msg('tracker.pickedup')}"/>
 			<i class="fa fa-angle-right"></i>
-			<span id="tComplete">派送完成</span>
+			<span id="tComplete" th:text="${#messages.msg('tracker.completed')}"/>
 		</div>
 		<div class="clear">
-			<div class="f_left t_yellow">美味的餐品在過去到您的路上</div>
+			<div class="f_left t_yellow" th:text="${#messages.msg('tracker.guide')}"/>
 			<div class="f_right">
-				<span>預計到達時間</span>
+				<span th:text="${#messages.msg('tracker.estimated.arrival.time')}"/>
 				<span class="time"/>
 			</div>
 		</div>
@@ -25,12 +25,12 @@
 	</div>
 	<div class="tracker-bottom">
 		<div>
-			<p>訂購ID : <span id="regId"></span></p>
-			<p>下單時間 : <span id="createdDatetime"/></p>
+			<p><span th:text="${#messages.msg('tracker.order.id')} + ' :'"/><span id="webId"></span></p>
+			<p><span th:text="${#messages.msg('tracker.order.time')} + ' :'"/><span id="createdDatetime"/></p>
 		</div>
 		<div>
-			<p><span class="t_red" id="riderName"/> 司機</p>
-			<p>親愛的顧客我們馬上到您的位置</p>
+			<p><span class="t_red" id="riderName"/> <span th:text="${#messages.msg('tracker.driver')}"/></p>
+			<p th:text="${#messages.msg('tracker.dirver.guide')}"></p>
 		</div>
 		<div class="btn">
 			<a href="#" id="riderSms"><img th:src="@{/resources/images/tracker/ICON_sms.png}" alt="" /></a>
@@ -42,7 +42,8 @@
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
 var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
-var regOrderId = /*[[${tracker.regOrderId}]]*/ 'regOrderId';
+var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
+var webOrderId = /*[[${tracker.webOrderId}]]*/ 'webOrderId';
 var status = /*[[${tracker.status}]]*/ 'status';
 var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
 var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
@@ -57,19 +58,25 @@ var riderLatitude = /*[[${tracker.riderLatitude}]]*/ 'riderLatitude';
 var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
 var distance = /*[[${tracker.distance}]]*/ 'distance';
 
+var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
+var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
 
-/*console.log(regOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude);*/
+console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
 
-var arriveTime = new Date(Date.parse(createdDatetime) + 1000 * 60 * cookingTime);
+var arriveTime = new Date(Date.parse(createdDatetime) + 1000 * 60 * cookingTime + 1000 * 60 * 30);
+
+if(reservationDatetime){
+    arriveTime = new Date(Date.parse(reservationDatetime));
+}
 
 var date = new Date();
 var tmpDate = new Date(arriveTime - date);
 
 var contentString = '<div class="map_info">'+
     '<img src="./img/ICON_helmet.png" alt="" /> '+
-    '<span class="t_blk" id="distance">剩下距離' + distance + 'km</span>'+
+    '<span class="t_blk" id="distance">' + remain_distance + distance + 'km</span>'+
     '<span class="t_blk">|</span> '+
-    '<span class="t_red">' + parseInt(tmpDate.getTime() / (1000 * 60)) + '分鐘以後能到達</span>'+
+    '<span class="t_red">' + parseInt(tmpDate.getTime() / (1000 * 60)) + rest_time + '</span>'+
     '</div>';
 
 $(document).ready(function(){
@@ -90,32 +97,37 @@ window.onload = function() {
 
     $('.state > span').removeClass('on');
 
-    if (status == 0) {
+    if (status == 0 || status == 5) {
         $('#tNew').addClass('on');
     } else if (status == 1) {
         $('#tAssign').addClass('on');
     } else if (status == 2) {
         $('#tPickup').addClass('on');
-    } else {
+    } else if(status ==3){
         $('#tComplete').addClass('on');
     }
 
-    $('#regId').text(regOrderId);
+    $('#webId').text(webOrderId);
 
     $('#createdDatetime').text(createdDatetime);
 
-    $('#riderName').text(riderName);
+    $('#riderName').text(riderName?riderName:"-");
 
-    $('#riderSms').attr('href', 'sms:' + riderPhone);
+    if(riderPhone){
+        $('#riderSms').attr('href', 'sms:' + riderPhone);
+        $('#riderTel').attr('href', 'tel:' + riderPhone);
+	}else{
+        $('#riderSms').css({ 'pointer-events': 'none' });
+        $('#riderTel').css({ 'pointer-events': 'none' });
+	}
 
-    $('#riderTel').attr('href', 'tel:' + riderPhone);
 }
 
 function initMap() {
     var directionsDisplay = new google.maps.DirectionsRenderer();
     var directionsService = new google.maps.DirectionsService;
 
-    var myLatlng = new google.maps.LatLng(riderLatitude, riderLongitude);
+    var myLatlng = new google.maps.LatLng(riderLatitude?riderLatitude:storeLatitude, riderLongitude?riderLongitude:storeLongitude);
 	var map = new google.maps.Map(document.getElementById('map'), {
     zoom: 17,
     center: myLatlng
@@ -123,8 +135,8 @@ function initMap() {
 
 	function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 
-		var selectedMode = 'DRIVING';
-//		var selectedMode = 'TRANSIT';
+//		var selectedMode = 'DRIVING';
+		var selectedMode = 'TRANSIT';
 //      var selectedMode = 'WALKING';
 
 		directionsService.route({
