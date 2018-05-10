@@ -596,7 +596,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         }
 
 
-        Misc misc = new Misc();
+        /*Misc misc = new Misc();
 
         if (A_Order.getLatitude() != null && A_Order.getLongitude() != null) {
 
@@ -608,7 +608,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         return A_Order;
     }
 

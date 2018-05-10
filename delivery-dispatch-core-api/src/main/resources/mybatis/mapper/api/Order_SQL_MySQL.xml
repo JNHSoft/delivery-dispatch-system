@@ -75,6 +75,7 @@
         <result property="returnDatetime" column="return_datetime" />
 		<result property="combinedOrderId" column="combined_order_id" />
 		<result property="device_os" column="device_os" />
+		<result property="distance" column="distance" />
 
 		<association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
 			<result property="id" column="rider_id" />
@@ -133,6 +134,7 @@
 			, reg_order_id
 			, web_order_id
 			, created_datetime
+			, distance
 		) VALUES(
 			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			, (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -159,6 +161,7 @@
 			, #{regOrderId}
 			, #{webOrderId}
 			, now()
+			, #{distance}
 	  	)
 		<selectKey keyProperty="id" resultType="String">
 			SELECT LAST_INSERT_ID()
@@ -276,6 +279,7 @@
             , A.return_datetime
             , A.combined_order_id
             , A.device_os
+			, A.distance
 			, B.id AS rider_id
 			, B.name AS rider_name
 			, D.name AS store_name

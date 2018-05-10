@@ -192,7 +192,7 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
             XSSFRow addListRow = sheet.createRow(rowNum);
 
             XSSFCell cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getRegOrderId());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getRegOrderId());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -204,35 +204,35 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
 //            cell = addListRow.createCell(colNum++);
-//            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getId());
+//            cell.setCellValue(orderStatisticsByStoreList.get(i).getId());
 //            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getCreatedDatetime());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getCreatedDatetime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getReservationDatetime());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getReservationDatetime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getAssignedDatetime());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getAssignedDatetime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getPickedUpDatetime());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getPickedUpDatetime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getCompletedDatetime());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getCompletedDatetime());
             cell.setCellStyle(dataCellStyle);
 
             /*cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getMenuName());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getMenuName());
             cell.setCellStyle(dataCellStyle);*/
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getCookingTime());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getCookingTime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -248,51 +248,51 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getDeliveryPrice());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getDeliveryPrice());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getMenuPrice());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getMenuPrice());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getTotalPrice());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getTotalPrice());
             cell.setCellStyle(dataCellStyle);
 
 //            cell = addListRow.createCell(colNum++);
-//            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getPayment().getType());
+//            cell.setCellValue(orderStatisticsByStoreList.get(i).getPayment().getType());
 //            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getCombinedOrderId());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getCombinedOrderId());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getRider().getName());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getRider().getName());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getRider().getPhone());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getRider().getPhone());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getMessage());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getMessage());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getPhone());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getPhone());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getAddress());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getAddress());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getDetailAddress());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getDetailAddress());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByStoreList.get(i).getDistance());
+            cell.setCellValue(orderStatisticsByStoreList.get(i).getDistance());
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;

@@ -154,7 +154,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             return null;
         }
 
-        Misc misc = new Misc();
+        /*Misc misc = new Misc();
         if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
             Store storeInfo = storeMapper.selectStoreLocation(S_Order.getStoreId());
 
@@ -163,7 +163,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
 
         return S_Order;
     }

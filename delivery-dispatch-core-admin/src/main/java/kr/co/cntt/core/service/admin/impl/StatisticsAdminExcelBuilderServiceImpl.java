@@ -220,19 +220,19 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             XSSFRow addListRow = sheet.createRow(rowNum);
 
             XSSFCell cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getRegOrderId());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getRegOrderId());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getGroup().getName());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getGroup().getName()!=null?orderStatisticsByAdminList.get(i).getGroup().getName():"");
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getSubGroup().getName());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getSubGroup().getName()!=null?orderStatisticsByAdminList.get(i).getSubGroup().getName():"");
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getStore().getStoreName());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getStore().getStoreName());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -244,27 +244,27 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
 //            cell = addListRow.createCell(colNum++);
-//            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getId());
+//            cell.setCellValue(orderStatisticsByAdminList.get(i).getId());
 //            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getCreatedDatetime());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getCreatedDatetime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getReservationDatetime());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getReservationDatetime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getAssignedDatetime());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getAssignedDatetime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getPickedUpDatetime());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getPickedUpDatetime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getCompletedDatetime());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getCompletedDatetime());
             cell.setCellStyle(dataCellStyle);
 
             /*cell = addListRow.createCell(colNum++);
@@ -272,7 +272,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);*/
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getCookingTime());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getCookingTime());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -288,15 +288,15 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getDeliveryPrice());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getDeliveryPrice());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getMenuPrice());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getMenuPrice());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getTotalPrice());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getTotalPrice());
             cell.setCellStyle(dataCellStyle);
 
 //            cell = addListRow.createCell(colNum++);
@@ -304,35 +304,35 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 //            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getCombinedOrderId());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getCombinedOrderId());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getRider().getName());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getRider().getName());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getRider().getPhone());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getRider().getPhone());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getMessage());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getMessage());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getPhone());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getPhone());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getAddress());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getAddress());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getDetailAddress());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getDetailAddress());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getDistance());
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getDistance());
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;

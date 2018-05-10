@@ -369,11 +369,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Geocoder geocoder = new Geocoder();
 
+        String orderLatitude = null;
+        String orderLongitude = null;
+
         try {
             Map<String, String> geo = geocoder.getLatLng(order.getAddress());
             if(geo.get("lat") !=null && geo.get("lng") !=null){
                 order.setLatitude(geo.get("lat"));
                 order.setLongitude(geo.get("lng"));
+                orderLatitude = geo.get("lat");
+                orderLongitude = geo.get("lng");
             }else {
                 order.setLatitude("0");
                 order.setLongitude("0");
@@ -418,17 +423,30 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setWebOrderId(order.getRegOrderId());
         }
 
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+
+        storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
+        Misc misc = new Misc();
+
+        if (orderLatitude !=null  && orderLongitude !=null) {
+            try {
+                order.setDistance(Double.toString(misc.getHaversine(storeDTO.getLatitude(), storeDTO.getLongitude(), orderLatitude, orderLongitude) / (double) 1000));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         int postOrder = orderMapper.insertOrder(order);
 
         if (postOrder == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00011), ErrorCodeEnum.E00011.name());
         }
 
-        Store storeDTO = new Store();
-        storeDTO.setAccessToken(order.getToken());
-        storeDTO.setToken(order.getToken());
 
-        storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
 
         if (postOrder != 0) {
             if(storeDTO.getSubGroup() != null){
@@ -554,7 +572,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00016), ErrorCodeEnum.E00016.name());
         }
 
-        Misc misc = new Misc();
+        /*Misc misc = new Misc();
         if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
             Store storeInfo = storeMapper.selectStoreLocation(S_Order.getStoreId());
 
@@ -563,7 +581,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
 
         return S_Order;
     }

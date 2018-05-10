@@ -46,8 +46,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     @Override
     public Order selectAdminStatisticsInfo(Order order) {
         Order A_Order = adminMapper.selectAdminStatisticsInfo(order);
-
-        Misc misc = new Misc();
+        /*Misc misc = new Misc();
 
         if (A_Order.getLatitude() != null && A_Order.getLongitude() != null) {
 
@@ -58,7 +57,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         return A_Order;
     }
     // 그룹 조회
@@ -83,7 +82,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     @Override
     public List<Order> selectAdminStatisticsExcel(Order order) {
         List<Order> statisticsList =  adminMapper.selectAdminStatisticsExcel(order);
-        Misc misc = new Misc();
+        /*Misc misc = new Misc();
         for (Order statistics:statisticsList){
             if (statistics.getLatitude() != null && statistics.getLongitude() != null){
                 Store storeLocation = storeMapper.selectStoreLocation(statistics.getStoreId());
@@ -93,7 +92,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
         return statisticsList;
     }
 

@@ -258,7 +258,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         }
 
 
-        Misc misc = new Misc();
+        /*Misc misc = new Misc();
 
         if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
 
@@ -270,7 +270,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         return S_Order;
     }
 

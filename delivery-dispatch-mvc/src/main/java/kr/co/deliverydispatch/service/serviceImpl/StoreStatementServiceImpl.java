@@ -108,7 +108,7 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         if (S_Order == null) {
             return null;
         }
-        Misc misc = new Misc();
+        /*Misc misc = new Misc();
         if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
             Store storeInfo = storeMapper.selectStoreLocation(S_Order.getStoreId());
             try {
@@ -116,14 +116,14 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         return S_Order;
     }
     //통계 조회 엑셀
     @Override
     public List<Order> getStoreStatisticsExcel(Order order) {
         List<Order> statisticsList = storeMapper.selectStoreStatisticsExcel(order);
-        Misc misc = new Misc();
+        /*Misc misc = new Misc();
         for (Order statistics:statisticsList) {
             if (statistics.getLatitude() != null && statistics.getLongitude() != null){
                 Store storeLocation = storeMapper.selectStoreLocation(statistics.getStoreId());
@@ -133,7 +133,7 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
         return statisticsList;
     }
 
