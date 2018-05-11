@@ -101,7 +101,7 @@ public class TrackerController {
             }
 
             if (trackerResult != null) {
-                if (abs < 300){
+                if (abs < 1){
                     model.addAttribute("tracker", trackerResult);
                     return "/tracker/tracker";
                 }else {
