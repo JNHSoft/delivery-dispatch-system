@@ -63,26 +63,13 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
 
     @Override
     public Store getStoreInfo(Store store) {
-        // 권한
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // store 가 조회
+
         if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
-            // token 값 선언
             store.setAccessToken(store.getToken());
-            store.setId("");
-            store.setIsAdmin("");
             store.setRole("ROLE_STORE");
         }
-        // 권한이 없는 다른 user 가 조회
-        else if (authentication.getAuthorities().toString().matches(".*ROLE_USER.*")) {
-            store.setAccessToken(null);
-            store.setId("");
-            store.setIsAdmin("");
-        }
-        // log 확인
-        log.info(">>> token: " + store.getAccessToken());
-        log.info(">>> token: " + store.getToken());
-        // 리스트
+
         Store S_Store = storeMapper.selectStoreInfo(store);
         if (S_Store == null) {
             return null;
