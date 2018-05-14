@@ -145,7 +145,7 @@
 							</div>
 							<div>
 								<ul>
-									<li>
+									<li class="rider_area">
 										<span th:text="${#messages.msg('rider.name')}" />
 										<div>
 											<select name="" class="select h20" id="selectedRider">
@@ -153,11 +153,11 @@
 											</select>
 										</div>
 									</li>
-									<li style="display: none">
+									<li style="display: none" >
 										<span th:text="${#messages.msg('rider.phone')}" />
 										<div id="riderPhone"></div>
 									</li>
-									<li>
+									<li class="rider_btn_area">
 										<div class="f_right"><a href="#" class="button btn_blue w80" id="orderUpdate" onclick="javascript:orderConfirm()"><i class="fa fa-check" aria-hidden="true"></i><span th:text="${#messages.msg('btn.confirm')}"/></a></div>
 									</li>
 									<li class="clear full">

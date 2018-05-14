@@ -453,23 +453,40 @@ function getOrderList(statusArray, storeId) {
                     tmpdata.time3 = timeSet2(data[key].assignedDatetime);
                 }
 
+
                 if(!data[key].pickedUpDatetime){
                     tmpdata.time4 = "-";
                 }else{
                     tmpdata.time4 = timeSet2(data[key].pickedUpDatetime);
                 }
 
-                if(!data[key].completedDatetime){
-                    tmpdata.time5 = "-";
-                }else{
-                    tmpdata.time5 = timeSet2(data[key].completedDatetime);
+                // 픽업 시간
+                // 픽업 , 도착 , 복귀
+                tmpdata.time5 = checkTime(data[key].pickedUpDatetime,data[key].completedDatetime);
+                //
+                // if(!data[key].completedDatetime){
+                //     tmpdata.time5 = "-";
+                // }else{
+                //     tmpdata.time5 = timeSet2(data[key].completedDatetime);
+                // }
+                if(data[key].pickedUpDatetime && data[key].completedDatetime && data[key].returnDatetime){
+                    if(diffTime(data[key].pickedUpDatetime ,data[key].returnDatetime) == 1){
+                        tmpdata.time6 = '<span style="color: red">' + timeSet2(data[key].returnDatetime) + '</span>';
+                    } else if(diffTime(data[key].completedDatetime ,data[key].returnDatetime) == 1){
+                        tmpdata.time6 = '<span style="color: red">' + timeSet2(data[key].returnDatetime) + '</span>';
+                    } else {
+                        tmpdata.time6 = timeSet2(data[key].returnDatetime);
+                    }
+
+                } else if (data[key].returnDatetime){
+                    tmpdata.time6 = '<span style="color: red">' + timeSet2(data[key].returnDatetime) + '</span>';
                 }
 
-                if(!data[key].returnDatetime){
-                    tmpdata.time6 = "-";
-                }else{
-                    tmpdata.time6 = timeSet2(data[key].returnDatetime);
-                }
+                // if(!data[key].returnDatetime){
+                //     tmpdata.time6 = "-";
+                // }else{
+                //     tmpdata.time6 = timeSet2(data[key].returnDatetime);
+                // }
 
                 if(!data[key].reservationDatetime){
                     tmpdata.time7 = "-";
@@ -550,6 +567,38 @@ function getOrderList(statusArray, storeId) {
     }
 });
 }
+
+// 시간 비교 함수  time1 픽업 time2 완료 time3 복귀
+function checkTime(time1,time2) {
+    var result = "-";
+    // 픽업 시간 + 완료 시간이 있다.
+   if(time1 && time2){
+       if(diffTime(time1 , time2) == 1){
+           result = '<span style="color: red">' + timeSet2(time2) + '</span>';
+       } else {
+            result = timeSet2(time2);
+       }
+   } else if (!time1 && time2){
+           result = '<span style="color: red">' + timeSet2(time2) + '</span>';
+   }
+   return result;
+}
+
+
+// 시간 비교 2분차이
+function diffTime(time1, time2) {
+    // 픽업시간 - 완료시간
+    if(time1 && time2){
+        var time1 = new Date(time1);
+        var time2 = new Date(time2);
+
+        if(time2.getTime() - time1.getTime() < 120000){
+            return 1;
+        }
+    }
+    return 0;
+}
+
 
 function putAssignedAdvanceFirst(id) {
     $.ajax({
