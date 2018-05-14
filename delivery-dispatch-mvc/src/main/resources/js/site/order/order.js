@@ -293,6 +293,12 @@ function getOrderDetail(orderId) {
             $('#distance').html(data.distance);
             map.setCenter({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
             marker.setPosition({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
+            $('.state_wrap').addClass('on');
+        },
+        error : function (request,status,error) {
+            // alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            alert("error: "+order_detail_error);
+            location.href = "/order";
         }
     });
 }
@@ -547,8 +553,7 @@ function getOrderList(statusArray, storeId) {
             ondblClickRow: function(rowid,icol,cellcontent,e){
                 var rowData = jQuery(this).getRowData(rowid);
                 var orderId = rowData['origin_reg_order_id'];
-                getOrderDetail(orderId);
-                $('.state_wrap').addClass('on'); //상세보기 열기
+                getOrderDetail(orderId);//상세보기 열기
                 setTimeout(function(){
                     $(window).trigger('resize');
                 },300)//그리드 리사이즈
