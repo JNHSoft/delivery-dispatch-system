@@ -475,6 +475,7 @@ function getOrderList(statusArray, storeId) {
                 // }else{
                 //     tmpdata.time5 = timeSet2(data[key].completedDatetime);
                 // }
+                tmpdata.time6 = "-";
                 if(data[key].pickedUpDatetime && data[key].completedDatetime && data[key].returnDatetime){
                     if(diffTime(data[key].pickedUpDatetime ,data[key].returnDatetime) == 1){
                         tmpdata.time6 = '<span style="color: red">' + timeSet2(data[key].returnDatetime) + '</span>';
