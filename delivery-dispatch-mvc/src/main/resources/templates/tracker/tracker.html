@@ -29,7 +29,8 @@
 			<p><span th:text="${#messages.msg('tracker.order.time')} + ' :'"/><span id="createdDatetime"/></p>
 		</div>
 		<div>
-			<p><span class="t_red" id="riderName"/> <span th:text="${#messages.msg('tracker.driver')}"/></p>
+			<!--<p><span class="t_red" id="riderName"/> <span th:text="${#messages.msg('tracker.driver')}"/></p>-->
+			<p><span th:text="${#messages.msg('tracker.destination')} + ' :'"/> <span id="detailAddress"/></p>
 			<p th:text="${#messages.msg('tracker.dirver.guide')}"></p>
 		</div>
 		<div class="btn">
@@ -57,9 +58,11 @@ var riderPhone = /*[[${tracker.riderPhone}]]*/ 'riderPhone';
 var riderLatitude = /*[[${tracker.riderLatitude}]]*/ 'riderLatitude';
 var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
 var distance = /*[[${tracker.distance}]]*/ 'distance';
+var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddress';
 
 var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
 var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
+var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination'
 
 console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
 
@@ -111,7 +114,8 @@ window.onload = function() {
 
     $('#createdDatetime').text(createdDatetime);
 
-    $('#riderName').text(riderName?riderName:"-");
+    $('#detailAddress').text(trackerDetailAddress);
+//    $('#riderName').text(riderName?riderName:"-");
 
     if(riderPhone){
         $('#riderSms').attr('href', 'sms:' + riderPhone);
@@ -124,14 +128,21 @@ window.onload = function() {
 }
 
 function initMap() {
-    var directionsDisplay = new google.maps.DirectionsRenderer();
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 17,
+        center: myLatlng
+    });
+
+    var rendererOptions = {
+        map: map,
+        suppressMarkers: true
+    };
+
+    var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
     var directionsService = new google.maps.DirectionsService;
 
     var myLatlng = new google.maps.LatLng(riderLatitude?riderLatitude:storeLatitude, riderLongitude?riderLongitude:storeLongitude);
-	var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 17,
-    center: myLatlng
-	});
+
 
 	function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 
@@ -150,6 +161,25 @@ function initMap() {
 			travelMode: google.maps.TravelMode[selectedMode]
 		}, function(response, status) {
 			if (status == 'OK') {
+                var route = response.routes[0].legs[0];
+
+                var originMarker = new google.maps.Marker({
+                    position: route.start_location,
+                    map: map,
+					label:{fontWeight: "bold",
+                        text:storeName},
+                    icon: '/resources/images/tracker/PIN_start.png',
+                });
+
+                var destinationMarker = new google.maps.Marker({
+                    position: route.end_location,
+                    map: map,
+					label:tracker_destination,
+                    label:{fontWeight: "bold",
+                        text:tracker_destination},
+                    icon: '/resources/images/tracker/PIN_destination.png',
+                });
+
 				directionsDisplay.setDirections(response);
 			} else {
 				window.alert('Directions request failed due to ' + status);

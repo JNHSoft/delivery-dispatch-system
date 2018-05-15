@@ -77,6 +77,7 @@
 			, A.cooking_time
 			, A.distance
 			, A.reservation_datetime
+			, A.detail_address
 			, B.code
 			, B.name AS store_name
 			, B.phone AS store_phone

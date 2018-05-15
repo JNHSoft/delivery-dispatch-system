@@ -29,6 +29,7 @@ public class Tracker implements Dto {
     private String latitude;
     private String longitude;
     private String cookingTime;
+    private String detailAddress;
 
     private String code;
     private String storeName;
