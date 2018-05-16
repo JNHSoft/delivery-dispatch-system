@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="/mainLayout">
+      layout:decorator="/trackerLayout2">
 
 <!-- container -->
 <div id="container" layout:fragment="content" class="full">
@@ -15,7 +15,7 @@
     <!-- contents -->
     <section id="contents">
         <ul id="location">
-            <li><strong>Error</strong></li>
+            <li><strong></strong></li>
         </ul>
         <div id="cont_tit">
             <h1 th:text="${#messages.msg('error.page.guidance')}"/>
