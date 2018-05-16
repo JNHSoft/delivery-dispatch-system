@@ -45,7 +45,7 @@
 var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
 var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
 var webOrderId = /*[[${tracker.webOrderId}]]*/ 'webOrderId';
-var status = /*[[${tracker.status}]]*/ 'status';
+var trackerStatus = /*[[${tracker.status}]]*/ 'status';
 var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
 var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
 var cookingTime = /*[[${tracker.cookingTime}]]*/ 'cookingTime';
@@ -62,7 +62,8 @@ var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddres
 
 var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
 var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
-var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination'
+var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination';
+var tracker_assign = /*[[#{tracker.assign}]]*/ 'tracker_assign';
 
 console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
 
@@ -90,13 +91,13 @@ window.onload = function() {
 
     $('.state > span').removeClass('on');
 
-    if (status == 0 || status == 5) {
+    if (trackerStatus == 0 || trackerStatus == 5) {
         $('#tNew').addClass('on');
-    } else if (status == 1) {
+    } else if (trackerStatus == 1) {
         $('#tAssign').addClass('on');
-    } else if (status == 2) {
+    } else if (trackerStatus == 2) {
         $('#tPickup').addClass('on');
-    } else if(status ==3){
+    } else if(trackerStatus ==3){
         $('#tComplete').addClass('on');
     }
 
@@ -118,14 +119,14 @@ window.onload = function() {
 }
 
 function initMap() {
-    var orderDistance = "";
-    var durationInTraffic = "";
-    var myLatlng = new google.maps.LatLng(riderLatitude?riderLatitude:storeLatitude, riderLongitude?riderLongitude:storeLongitude);
+    var myLatlng = new google.maps.LatLng((riderLatitude&&trackerStatus!=1)?riderLatitude:storeLatitude, (riderLongitude&&trackerStatus!=1)?riderLongitude:storeLongitude);
     var storeLatlng = new google.maps.LatLng(storeLatitude, storeLongitude);
+    var completedLatlng = new google.maps.LatLng(latitude, longitude);
+
 
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 17,
-        center: myLatlng
+        center: (trackerStatus!=3)?myLatlng:completedLatlng
     });
 
     var rendererOptions = {
@@ -146,7 +147,7 @@ function initMap() {
 
 		directionsService.route({
 			origin: myLatlng,  // Haight.
-			destination: {lat: parseFloat(latitude), lng: parseFloat(longitude)},  // Ocean Beach.
+			destination: completedLatlng,  // Ocean Beach.
 //			origin: {lat: 37.580976, lng: 126.905788},  // Haight.
 //			destination: {lat: 37.577655, lng: 126.907628},  // Ocean Beach.
 			// Note that Javascript allows us to access the constant
@@ -156,52 +157,67 @@ function initMap() {
             drivingOptions: {
                 departureTime: new Date(),
                 trafficModel: 'bestguess'
-            },
+            }/*,
 			waypoints: [{location : storeLatlng,
-			    stopover:false}]
+			    stopover:false}]*/
 		}, function(response, status) {
 			if (status == 'OK') {
                 var route = response.routes[0].legs[0];
                 console.log(response);
-                orderDistance = (route.distance).text;
-                durationInTraffic = ((route.duration_in_traffic).value)/60;
 
-                var contentString = '<div class="map_info">'+
-                    '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
-                    '<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
-                    '<span class="t_blk">|</span> '+
-                    '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
-                    '</div>';
+                var orderDistance = (route.distance).text;
+                var durationInTraffic = ((route.duration_in_traffic).value)/60;
 
-                var infowindow = new google.maps.InfoWindow({
-                    content: contentString
-                });
+                var contentString = tracker_assign;
 
-                var originMarker = new google.maps.Marker({
-                    position: route.start_location,
-                    map: map,
-                    icon: '/resources/images/tracker/PIN_delivery.png',
-                });
+                if(riderLatitude&&trackerStatus!=1){
+                    contentString = '<div class="map_info">'+
+                        '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
+                        '<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
+                        '<span class="t_blk">|</span> '+
+                        '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
+                        '</div>';
+				}
 
-                infowindow.open(map, originMarker);
+                if(riderLatitude&&trackerStatus!=1){
+                    var originMarker = new google.maps.Marker({
+                        position: route.start_location,
+                        map: map,
+                        icon: '/resources/images/tracker/PIN_delivery.png',
+                    });
+				}else{
+                    var originMarker = new google.maps.Marker({
+                        position: route.start_location,
+                        map: map,
+                        label:{fontWeight: "bold",
+                            text:storeName},
+                        icon: '/resources/images/tracker/PIN_start.png',
+                    });
+				}
+
+
+				var infowindow = new google.maps.InfoWindow({
+					content: contentString
+				});
+				infowindow.open(map, originMarker);
 
                 var destinationMarker = new google.maps.Marker({
                     position: route.end_location,
                     map: map,
-					label:tracker_destination,
                     label:{fontWeight: "bold",
                         text:tracker_destination},
                     icon: '/resources/images/tracker/PIN_destination.png',
                 });
 
-                var marker = new google.maps.Marker({
-                    position: storeLatlng,
-                    map: map,
-                    label:{fontWeight: "bold",
-                        text:storeName},
-                    icon: '/resources/images/tracker/PIN_start.png',
-                });
-
+				if(riderLatitude&&trackerStatus!=1){
+                    var marker = new google.maps.Marker({
+                        position: storeLatlng,
+                        map: map,
+                        label:{fontWeight: "bold",
+                            text:storeName},
+                        icon: '/resources/images/tracker/PIN_start.png',
+                    });
+				}
 				directionsDisplay.setDirections(response);
 			} else {
 				window.alert('Directions request failed due to ' + status);
@@ -210,7 +226,17 @@ function initMap() {
 	}
 
 	directionsDisplay.setMap(map);
-	calculateAndDisplayRoute(directionsService, directionsDisplay);
+	if(trackerStatus!=3){
+		calculateAndDisplayRoute(directionsService, directionsDisplay);
+    }else {
+        var compeltedMarker = new google.maps.Marker({
+            position: completedLatlng,
+            map: map,
+            label:{fontWeight: "bold",
+                text:tracker_destination},
+            icon: '/resources/images/tracker/PIN_destination.png',
+        });
+	}
 }
 /*]]>*/
 </script>
