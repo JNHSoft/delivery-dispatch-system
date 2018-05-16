@@ -72,16 +72,6 @@ if(reservationDatetime){
     arriveTime = new Date(Date.parse(reservationDatetime));
 }
 
-var date = new Date();
-var tmpDate = new Date(arriveTime - date);
-
-var contentString = '<div class="map_info">'+
-    '<img src="./img/ICON_helmet.png" alt="" /> '+
-    '<span class="t_blk" id="distance">' + remain_distance + distance + 'km</span>'+
-    '<span class="t_blk">|</span> '+
-    '<span class="t_red">' + parseInt(tmpDate.getTime() / (1000 * 60)) + rest_time + '</span>'+
-    '</div>';
-
 $(document).ready(function(){
     if(self == top){
         location.href ="/error/error-tracker";
@@ -128,6 +118,11 @@ window.onload = function() {
 }
 
 function initMap() {
+    var orderDistance = "";
+    var durationInTraffic = "";
+    var myLatlng = new google.maps.LatLng(riderLatitude?riderLatitude:storeLatitude, riderLongitude?riderLongitude:storeLongitude);
+    var storeLatlng = new google.maps.LatLng(storeLatitude, storeLongitude);
+
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 17,
         center: myLatlng
@@ -141,7 +136,6 @@ function initMap() {
     var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
     var directionsService = new google.maps.DirectionsService;
 
-    var myLatlng = new google.maps.LatLng(riderLatitude?riderLatitude:storeLatitude, riderLongitude?riderLongitude:storeLongitude);
 
 
 	function calculateAndDisplayRoute(directionsService, directionsDisplay) {
@@ -151,25 +145,45 @@ function initMap() {
 //      var selectedMode = 'WALKING';
 
 		directionsService.route({
-			origin: {lat: parseFloat(storeLatitude), lng: parseFloat(storeLongitude)},  // Haight.
+			origin: myLatlng,  // Haight.
 			destination: {lat: parseFloat(latitude), lng: parseFloat(longitude)},  // Ocean Beach.
 //			origin: {lat: 37.580976, lng: 126.905788},  // Haight.
 //			destination: {lat: 37.577655, lng: 126.907628},  // Ocean Beach.
 			// Note that Javascript allows us to access the constant
 			// using square brackets and a string value as its
 			// "property."
-			travelMode: google.maps.TravelMode[selectedMode]
+			travelMode: google.maps.TravelMode[selectedMode],
+            drivingOptions: {
+                departureTime: new Date(),
+                trafficModel: 'bestguess'
+            },
+			waypoints: [{location : storeLatlng,
+			    stopover:false}]
 		}, function(response, status) {
 			if (status == 'OK') {
                 var route = response.routes[0].legs[0];
+                console.log(response);
+                orderDistance = (route.distance).text;
+                durationInTraffic = ((route.duration_in_traffic).value)/60;
+
+                var contentString = '<div class="map_info">'+
+                    '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
+                    '<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
+                    '<span class="t_blk">|</span> '+
+                    '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
+                    '</div>';
+
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString
+                });
 
                 var originMarker = new google.maps.Marker({
                     position: route.start_location,
                     map: map,
-					label:{fontWeight: "bold",
-                        text:storeName},
-                    icon: '/resources/images/tracker/PIN_start.png',
+                    icon: '/resources/images/tracker/PIN_delivery.png',
                 });
+
+                infowindow.open(map, originMarker);
 
                 var destinationMarker = new google.maps.Marker({
                     position: route.end_location,
@@ -178,6 +192,14 @@ function initMap() {
                     label:{fontWeight: "bold",
                         text:tracker_destination},
                     icon: '/resources/images/tracker/PIN_destination.png',
+                });
+
+                var marker = new google.maps.Marker({
+                    position: storeLatlng,
+                    map: map,
+                    label:{fontWeight: "bold",
+                        text:storeName},
+                    icon: '/resources/images/tracker/PIN_start.png',
                 });
 
 				directionsDisplay.setDirections(response);
@@ -189,19 +211,6 @@ function initMap() {
 
 	directionsDisplay.setMap(map);
 	calculateAndDisplayRoute(directionsService, directionsDisplay);
-
-    var infowindow = new google.maps.InfoWindow({
-        content: contentString
-    });
-
-    var markerImg = '/resources/images/tracker/PIN_delivery.png';
-    var marker = new google.maps.Marker({
-        position: myLatlng,
-        map: map,
-        icon: markerImg,
-    });
-
-    infowindow.open(map, marker);
 }
 /*]]>*/
 </script>
