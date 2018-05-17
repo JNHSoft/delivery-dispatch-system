@@ -115,7 +115,14 @@
 				chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = #{chatUserId})
 			</if>
 			<if test="role != null and role == 'ROLE_RIDER'">
-				chatroom_id IN (select chatroom_id from TB_CHAT_USER_CHATROOM_REL where chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})))
+				<choose>
+					<when test="chatRoomId != null">
+						chatroom_id = #{chatRoomId}
+					</when>
+					<otherwise>
+						chatroom_id IN (select chatroom_id from TB_CHAT_USER_CHATROOM_REL where chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})))
+					</otherwise>
+				</choose>
 			</if>
 		ORDER BY created_datetime ASC
 	</select>
