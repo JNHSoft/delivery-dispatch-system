@@ -154,7 +154,7 @@
 		ON A.id = B.chatroom_id
 		<if test="role != null and role == 'ROLE_RIDER'">
 			LEFT JOIN TB_STORE AS C
-			ON B.chat_user_id = C.id
+			ON B.chat_user_id = C.chat_user_id
 		</if>
 		WHERE 1 = 1
 			<if test="role != null and role == 'ROLE_STORE'">
