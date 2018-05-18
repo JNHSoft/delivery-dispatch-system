@@ -4,39 +4,40 @@
 <div class="tracker" layout:fragment="content">
 	<div class="tracker-top">
 		<div class="state">
-			<span id="tNew" th:text="${#messages.msg('tracker.new')}" />
+			<span id="tNew" class="step1" th:text="${#messages.msg('tracker.new')}" />
 			<i class="fa fa-angle-right"></i>
-			<span id="tAssign" th:text="${#messages.msg('tracker.assign')}"/>
+			<span id="tAssign" class="step2" th:text="${#messages.msg('tracker.assign')}"/>
 			<i class="fa fa-angle-right"></i>
-			<span id="tPickup" th:text="${#messages.msg('tracker.pickedup')}"/>
+			<span id="tPickup" class="step3" th:text="${#messages.msg('tracker.pickedup')}"/>
 			<i class="fa fa-angle-right"></i>
-			<span id="tComplete" th:text="${#messages.msg('tracker.completed')}"/>
-		</div>
-		<div class="clear">
-			<div class="f_left t_yellow" th:text="${#messages.msg('tracker.guide')}"/>
-			<div class="f_right">
-				<span th:text="${#messages.msg('tracker.estimated.arrival.time')}"/>
-				<span class="time"/>
-			</div>
+			<span id="tComplete" class="step4" th:text="${#messages.msg('tracker.completed')}"/>
 		</div>
 	</div>
-	<div id="map">
+	<div class="visual_area">
 		<!-- 지도삽입 -->
 	</div>
+	<div id="map" class="mapCtrl" hidden="hidden"></div>
 	<div class="tracker-bottom">
-		<div>
-			<p><span th:text="${#messages.msg('tracker.order.id')} + ' :'"/><span id="webId"></span></p>
-			<p><span th:text="${#messages.msg('tracker.order.time')} + ' :'"/><span id="createdDatetime"/></p>
-		</div>
-		<div>
-			<!--<p><span class="t_red" id="riderName"/> <span th:text="${#messages.msg('tracker.driver')}"/></p>-->
-			<p><span th:text="${#messages.msg('tracker.destination')} + ' :'"/> <span id="detailAddress"/></p>
-			<p th:text="${#messages.msg('tracker.dirver.guide')}"></p>
-		</div>
-		<div class="btn">
-			<a href="#" id="riderSms"><img th:src="@{/resources/images/tracker/ICON_sms.png}" alt="" /></a>
-			<a href="#" id="riderTel"><img th:src="@{/resources/images/tracker/ICON_call.png}" alt="" /></a>
-		</div>
+		<table>
+			<colgroup>
+				<col style="width:12%"/>
+				<col />
+				<col style="width:12%"/>
+				<col style="width:15%"/>
+			</colgroup>
+			<tbody>
+			<tr>
+				<th scope="row">外送門市</th>
+				<td id="storeName">-</td>
+				<th scope="row" class="t_red">預計到達時間</th>
+				<td class="t_red bold" id="reservedTime">-</td>
+			</tr>
+			<tr>
+				<th scope="row">門市地址</th>
+				<td rowspan="3" id="storeAddress">-</td>
+			</tr>
+			</tbody>
+		</table>
 	</div>
 </div>
 
@@ -59,34 +60,38 @@ var riderLatitude = /*[[${tracker.riderLatitude}]]*/ 'riderLatitude';
 var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
 var distance = /*[[${tracker.distance}]]*/ 'distance';
 var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddress';
+var storeDetailAddress = /*[[${tracker.storeDetailAddress}]]*/ 'storeDetailAddress';
 
 var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
 var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
 var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination';
 var tracker_assign = /*[[#{tracker.assign}]]*/ 'tracker_assign';
 
-console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
-
-var arriveTime = new Date(Date.parse(createdDatetime) + 1000 * 60 * cookingTime + 1000 * 60 * 30);
-
-if(reservationDatetime){
-    arriveTime = new Date(Date.parse(reservationDatetime));
-}
+//console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
 
 $(document).ready(function(){
     if(self == top){
         location.href ="/error/error-tracker";
 	}
+	if(trackerStatus==2){
+        $(".mapCtrl").attr("id","");
+        $(".visual_area").attr("id","map");
+	}
 });
 
 
 window.onload = function() {
-    if (cookingTime == null || cookingTime == '') {
+    if (!cookingTime) {
         cookingTime = 0;
     }
 
-    if (createdDatetime != null) {
-        $('.time').text(arriveTime.getHours() + ':' + arriveTime.getMinutes());
+	if(storeName){
+        $('#storeName').text(storeName);
+	}
+
+    if (reservationDatetime && trackerStatus != 2) {
+        var arriveTime = new Date(Date.parse(reservationDatetime));
+        $('#reservedTime').text(arriveTime.getHours() + ':' + arriveTime.getMinutes());
     }
 
     $('.state > span').removeClass('on');
@@ -94,39 +99,39 @@ window.onload = function() {
     if (trackerStatus == 0 || trackerStatus == 5) {
         $('#tNew').addClass('on');
     } else if (trackerStatus == 1) {
+        $('#tNew').addClass('on');
         $('#tAssign').addClass('on');
     } else if (trackerStatus == 2) {
+        $('#tNew').addClass('on');
+        $('#tAssign').removeClass('step2 on');
+        $('#tAssign').addClass('step1 on');
         $('#tPickup').addClass('on');
     } else if(trackerStatus ==3){
+        $('#tNew').addClass('on');
+        $('#tAssign').removeClass('step2 on');
+        $('#tAssign').addClass('step1 on');
+        $('#tPickup').removeClass('step3 on');
+        $('#tPickup').addClass('step1 on');
         $('#tComplete').addClass('on');
+        $('#reservedTime').text('-');
     }
 
-    $('#webId').text(webOrderId);
-
-    $('#createdDatetime').text(createdDatetime);
-
-    $('#detailAddress').text(trackerDetailAddress);
-//    $('#riderName').text(riderName?riderName:"-");
-
-    if(riderPhone){
-        $('#riderSms').attr('href', 'sms:' + riderPhone);
-        $('#riderTel').attr('href', 'tel:' + riderPhone);
-	}else{
-        $('#riderSms').css({ 'pointer-events': 'none' });
-        $('#riderTel').css({ 'pointer-events': 'none' });
+	if(storeDetailAddress){
+        $('#storeAddress').text(storeDetailAddress);
 	}
+//    $('#riderName').text(riderName?riderName:"-");
 
 }
 
 function initMap() {
-    var myLatlng = new google.maps.LatLng((riderLatitude&&trackerStatus!=1)?riderLatitude:storeLatitude, (riderLongitude&&trackerStatus!=1)?riderLongitude:storeLongitude);
+    var myLatlng = new google.maps.LatLng(riderLatitude, riderLongitude);
     var storeLatlng = new google.maps.LatLng(storeLatitude, storeLongitude);
     var completedLatlng = new google.maps.LatLng(latitude, longitude);
 
 
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 17,
-        center: (trackerStatus!=3)?myLatlng:completedLatlng
+        center: myLatlng
     });
 
     var rendererOptions = {
@@ -168,32 +173,23 @@ function initMap() {
                 var orderDistance = (route.distance).text;
                 var durationInTraffic = ((route.duration_in_traffic).value)/60;
 
-                var contentString = tracker_assign;
+				var contentString = '<div class="map_info">'+
+					'<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
+					'<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
+					'<span class="t_blk">|</span> '+
+					'<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
+					'</div>';
 
-                if(riderLatitude&&trackerStatus!=1){
-                    contentString = '<div class="map_info">'+
-                        '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
-                        '<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
-                        '<span class="t_blk">|</span> '+
-                        '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
-                        '</div>';
-				}
+                var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
+                $('#reservedTime').text(arriveTrafficTime.getHours() + ':' + arriveTrafficTime.getMinutes());
 
-                if(riderLatitude&&trackerStatus!=1){
-                    var originMarker = new google.maps.Marker({
-                        position: route.start_location,
-                        map: map,
-                        icon: '/resources/images/tracker/PIN_delivery.png',
-                    });
-				}else{
-                    var originMarker = new google.maps.Marker({
-                        position: route.start_location,
-                        map: map,
-                        label:{fontWeight: "bold",
-                            text:storeName},
-                        icon: '/resources/images/tracker/PIN_start.png',
-                    });
-				}
+                var originMarker = new google.maps.Marker({
+					position: route.start_location,
+					map: map,
+					icon: {
+					    url:'/resources/images/tracker/PIN_scooter.png'
+						}
+				});
 
 
 				var infowindow = new google.maps.InfoWindow({
@@ -206,36 +202,26 @@ function initMap() {
                     map: map,
                     label:{fontWeight: "bold",
                         text:tracker_destination},
-                    icon: '/resources/images/tracker/PIN_destination.png',
+                    icon: {url:'/resources/images/tracker/PIN_destination.png'}
                 });
 
-				if(riderLatitude&&trackerStatus!=1){
-                    var marker = new google.maps.Marker({
-                        position: storeLatlng,
-                        map: map,
-                        label:{fontWeight: "bold",
-                            text:storeName},
-                        icon: '/resources/images/tracker/PIN_start.png',
-                    });
-				}
+				var marker = new google.maps.Marker({
+					position: storeLatlng,
+					map: map,
+					label:{fontWeight: "bold", text:storeName},
+					icon: {
+					    url:'/resources/images/tracker/PIN_start.png'
+					}
+				});
 				directionsDisplay.setDirections(response);
 			} else {
 				window.alert('Directions request failed due to ' + status);
 			}
 		});
 	}
-
-	directionsDisplay.setMap(map);
-	if(trackerStatus!=3){
-		calculateAndDisplayRoute(directionsService, directionsDisplay);
-    }else {
-        var compeltedMarker = new google.maps.Marker({
-            position: completedLatlng,
-            map: map,
-            label:{fontWeight: "bold",
-                text:tracker_destination},
-            icon: '/resources/images/tracker/PIN_destination.png',
-        });
+	if(trackerStatus == 2){
+        directionsDisplay.setMap(map);
+        calculateAndDisplayRoute(directionsService, directionsDisplay);
 	}
 }
 /*]]>*/

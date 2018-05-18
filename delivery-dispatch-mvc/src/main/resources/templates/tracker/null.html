@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/trackerLayout">
+
+<div class="tracker" layout:fragment="content">
+	<div class="tracker-top">
+		<div class="state">
+			<span class="step1">訂單已確認</span>
+			<i class="fa fa-angle-right"></i>
+			<span class="step2 ">餐點準備中</span>
+			<i class="fa fa-angle-right"></i>
+			<span class="step3">外送中</span>
+			<i class="fa fa-angle-right"></i>
+			<span class="step4">餐點已送達</span>
+		</div>
+	</div>
+	<div class="visual_area">
+		<div class="loading"></div>
+	</div>
+	<div class="tracker-bottom">
+		<table>
+			<colgroup>
+				<col style="width:12%"/>
+				<col />
+				<col style="width:12%"/>
+				<col style="width:18%"/>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">外送門市</th>
+					<td>-</td>
+					<th scope="row" class="t_red">預計到達時間</th>
+					<td class="t_red bold">-</td>
+				</tr>
+				<tr>
+					<th scope="row">門市地址</th>
+					<td rowspan="3">-</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</html>

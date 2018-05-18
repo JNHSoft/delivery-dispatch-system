@@ -83,6 +83,7 @@
 			, B.phone AS store_phone
 			, B.latitude AS store_latitude
 			, B.longitude AS store_longitude
+			, B.detail_address AS store_detail_address
 			, C.name AS rider_name
 			, C.phone AS rider_phone
 			, C.latitude AS rider_latitude
