@@ -40,7 +40,7 @@ public class TrackerController {
     public String tracker(Model model) {
         // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"103\",\"webOrderId\":\"s-20180518-cnt-aa1\",\"reqDate\":\"20180518130000\"}";
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"storeName\":\"Jennie\",\"webOrderId\":\"s-20180518-cnt-aa2\",\"reqDate\":\"20180518130000\"}";
 
         try {
             String encKey = tKey;
@@ -90,9 +90,9 @@ public class TrackerController {
             long localNow = LocalDateTime.now(timeZone.toZoneId()).atZone(timeZone.toZoneId()).toInstant().toEpochMilli();
             long abs = Math.abs(rqDate-localNow)/60000;
 
-            /*System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
-            System.out.println("getRequestDate = "+trackerResult.getRequestDate());
-            System.out.println("abs = "+abs);*/
+//            System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
+//            System.out.println("getRequestDate = "+trackerResult.getRequestDate());
+//            System.out.println("abs = "+abs);
 
             if(trackerResult.getRiderLatitude() != null){
                 Misc misc = new Misc();

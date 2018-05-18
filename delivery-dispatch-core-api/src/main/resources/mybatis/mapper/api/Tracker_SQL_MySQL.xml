@@ -79,7 +79,7 @@
 			, A.reservation_datetime
 			, A.detail_address
 			, B.code
-			, B.name AS store_name
+			, B.store_name AS store_name
 			, B.phone AS store_phone
 			, B.latitude AS store_latitude
 			, B.longitude AS store_longitude
@@ -94,7 +94,7 @@
 		LEFT JOIN TB_RIDER AS C
 		ON A.rider_id = C.id
 		WHERE A.web_order_id = #{webOrderId}
-			AND B.code = #{code}
+			AND B.store_name = #{storeName}
 	</select>
 
 </mapper>
