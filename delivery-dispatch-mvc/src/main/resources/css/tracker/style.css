@@ -29,7 +29,7 @@ th {font-weight:normal;}
 .tracker-bottom td {padding:12px 0;color:#2d2926;}
 .tracker-bottom tr:first-child td,
 .tracker-bottom tr:first-child th {border-bottom:1px solid #d8d8d8}
-.tracker-bottom td ,.tracker-bottom th{word-break:break-all;padding:12px 5px;}
+.tracker-bottom td ,.tracker-bottom th{/*word-break:break-all;*/padding:12px 5px;}
 .visual_area {position:relative;height:300px;background:url('../../images/tracker/visual_img.jpg') center center no-repeat;background-size:cover;}
 .map_info img{vertical-align:middle;margin-right:3px;}
 .map_info span{margin:0 3px;vertical-align: middle;}
