@@ -450,7 +450,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             map: map,
                             icon: {
                                 url:'/resources/images/tracker/pin_moto.png',
-                                scaledSize: new google.maps.Size(40, 27),
+                                scaledSize: new google.maps.Size(40, 27)
                             }
                         });
 
@@ -462,18 +462,21 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                         marker[1] = new google.maps.Marker({
                             position: route.end_location,
                             map: map,
-                            label:{fontWeight: "bold",
-                                text:tracker_destination},
-                            icon: {url:'/resources/images/tracker/pin_home.png'}
+                            /*label:{fontWeight: "bold",
+                                text:tracker_destination},*/
+                            icon: {
+                                url:'/resources/images/tracker/pin_home.png',
+                                scaledSize: new google.maps.Size(30, 40)
+							}
                         });
 
                         marker[2] = new google.maps.Marker({
                             position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
                             map: map,
-                            label:{fontWeight: "bold", text:data.storeName},
+                            /*label:{fontWeight: "bold", text:data.storeName},*/
                             icon: {
                                 url:'/resources/images/tracker/pin_store.png',
-                                scaledSize: new google.maps.Size(40, 28),
+                                scaledSize: new google.maps.Size(40, 28)
                             }
                         });
                         directionsDisplay.setDirections(response);
@@ -540,9 +543,11 @@ window.onload = function() {
 //    console.log(distance);
     if ((trackerStatus == 0 || trackerStatus == 5) && checkTime > 1800*1000) {
         $('#tNew').addClass('on');
+        $('.visual_area').html('<div class="loading"></div>');
     } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1)&& checkTime <= 1800*1000) {
         $('#tNew').addClass('on chk');
         $('#tAssign').addClass('on');
+        $('.visual_area').html('<div class="gps_loading"></div>');
     } else if (trackerStatus == 2) {
         $('#tNew').addClass('on chk');
         $('#tAssign').addClass('on chk');
