@@ -510,6 +510,7 @@ $(document).ready(function(){
 	if(trackerStatus==2){
         $(".mapCtrl").attr("id","");
         $(".visual_area").attr("id","map");
+        initMap();
         setInterval('calculateAndDisplayRoute(directionsService, directionsDisplay)', 30000);
 	}
 
