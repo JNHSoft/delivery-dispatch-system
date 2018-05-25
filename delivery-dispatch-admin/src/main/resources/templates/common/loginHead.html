@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<!--[if lt IE 8]> <html class="lt-ie10 lt-ie9 lt-ie8" lang="ko" /> <![endif]-->
+<!--[if IE 8]>    <html class="lt-ie10 lt-ie9" lang="ko" /> <![endif]-->
+<!--[if IE 9]>    <html class="lt-ie10" lang="ko" /> <![endif]-->
+<!--[if gt IE 9]><!--> <html lang="ko" /> <!--<![endif]-->
+
+<head th:fragment="head">
+
+	<meta charset="utf-8" />
+	<meta content="IE=edge" http-equiv="X-UA-Compatible" />
+	<meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width" />
+	<title>KFC</title>
+
+	<link rel="stylesheet" th:href="@{/resources/css/common.css}" />
+	<link rel="stylesheet" th:href="@{/resources/css/contents.css}" />
+
+	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-3.3.1.min.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-migrate-3.0.1.min.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-ui-1.12.1.min.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.cookie.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.number.js}"></script>
+	<script type="text/javascript" th:src="@{https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js}"></script>
+	<!--[if lt IE 9]>
+		<script src="/resources/js/lib/html5shiv-3.7.3.js"></script>
+	<![endif]-->
+	<script type="text/javascript" th:src="@{/resources/js/plugins.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/js/flipclock.min.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/js/ui.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/js/cntt.js}"></script>
+
+	<script type="text/javascript" th:src="@{/resources/js/grid/grid.locale-tw.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/js/grid/jquery.jqGrid.min.js}"></script>
+
+	<!-- 사용자 스크립트 영역 -->
+	<th:block layout:fragment="script"></th:block>
+	<th:block layout:fragment="script2"></th:block>
+	<th:block layout:fragment="script3"></th:block>
+	<th:block layout:fragment="UIScript">
+		<script layout:fragment="UIScript" th:inline="javascript">
+            /*<![CDATA[*/
+            var gnb_year = /*[[#{gnb.year}]]*/ 'gnb_year';
+            var gnb_month = /*[[#{gnb.month}]]*/ 'gnb_month';
+            var gnb_day = /*[[#{gnb.day}]]*/ 'gnb_day';
+            var gnb_sunday = /*[[#{gnb.sunday}]]*/ 'gnb_sunday';
+            var gnb_monday = /*[[#{gnb.monday}]]*/ 'gnb_monday';
+            var gnb_tuesday = /*[[#{gnb.tuesday}]]*/ 'gnb_tuesday';
+            var gnb_wednesday = /*[[#{gnb.wednesday}]]*/ 'gnb_wednesday';
+            var gnb_thursday = /*[[#{gnb.thursday}]]*/ 'gnb_thursday';
+            var gnb_friday = /*[[#{gnb.friday}]]*/ 'gnb_friday';
+            var gnb_saturday = /*[[#{gnb.saturday}]]*/ 'gnb_saturday';
+            var datepicker_sunday = /*[[#{datepicker.sunday}]]*/ 'datepicker_sunday';
+            var datepicker_monday = /*[[#{datepicker.monday}]]*/ 'datepicker_monday';
+            var datepicker_tuesday = /*[[#{datepicker.tuesday}]]*/ 'datepicker_tuesday';
+            var datepicker_wednesday = /*[[#{datepicker.wednesday}]]*/ 'datepicker_wednesday';
+            var datepicker_thursday = /*[[#{datepicker.thursday}]]*/ 'datepicker_thursday';
+            var datepicker_friday = /*[[#{datepicker.friday}]]*/ 'datepicker_friday';
+            var datepicker_saturday = /*[[#{datepicker.saturday}]]*/ 'datepicker_saturday';
+            var datepicker_prev_month = /*[[#{datepicker.prev.month}]]*/ 'datepicker_prev_month';
+            var datepicker_next_month = /*[[#{datepicker.next.month}]]*/ 'datepicker_next_month';
+            /*]]>*/
+		</script>
+	</th:block>
+</head>
+ 
+</html>
