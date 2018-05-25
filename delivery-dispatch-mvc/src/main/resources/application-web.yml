@@ -36,9 +36,9 @@ server:
       development: true
   session:
     timeout: 10800
-    cookie:
-      http-only: true
-      secure: true
+#    cookie:
+#      http-only: true
+#      secure: true
 
 # logging
 logging:
