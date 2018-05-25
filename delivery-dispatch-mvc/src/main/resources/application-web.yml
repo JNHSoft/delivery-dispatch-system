@@ -35,7 +35,11 @@ server:
     init-parameters:
       development: true
   session:
-      timeout: 10800
+    timeout: 10800
+    cookie:
+      http-only: true
+      secure: true
+
 # logging
 logging:
   config: classpath:logback-spring.xml

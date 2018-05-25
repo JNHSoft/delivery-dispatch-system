@@ -35,6 +35,9 @@ server:
       development: true
   session:
     timeout: 3600
+    cookie:
+      secure: true
+      http-only: true
 # logging
 logging:
   config: classpath:logback-spring.xml
