@@ -105,7 +105,7 @@ function addMarker(location, data, i, status) {
             map : map
         });
         marker[i].addListener('click', function () {
-            chatUserName = this.label
+            chatUserName = this.label;
             RiderChatUserId = this.riderChatUserId;
             $('tr').removeClass('selected');
             $('#riderMapId' + this.riderMapId).addClass('selected');

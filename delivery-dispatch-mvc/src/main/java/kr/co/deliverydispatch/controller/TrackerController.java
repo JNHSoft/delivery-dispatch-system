@@ -1,5 +1,6 @@
 package kr.co.deliverydispatch.controller;
 
+import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.util.AES256Util;
 import kr.co.cntt.core.util.CustomEncryptUtil;
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -23,6 +26,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.TimeZone;
 
 @Slf4j
@@ -40,7 +44,7 @@ public class TrackerController {
     public String tracker(Model model) {
         // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"storeName\":\"Jennie\",\"webOrderId\":\"s-20180518-cnt-aa2\",\"reqDate\":\"20180518130000\"}";
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"storeName\":\"Jennie\",\"webOrderId\":\"s-20180525-cnt-aa1\",\"reqDate\":\"20180525140000\"}";
 
         try {
             String encKey = tKey;
@@ -81,6 +85,7 @@ public class TrackerController {
         if (encParam != null) {
             Tracker trackerResult = trackerService.getTracker(encParam);
             if(trackerResult == null){
+                model.addAttribute("encParam", encParam);
                 return "/tracker/null";
             }
             TimeZone timeZone = TimeZone.getTimeZone("Asia/Taipei");
@@ -99,15 +104,28 @@ public class TrackerController {
                 trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getLatitude(), trackerResult.getLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
             }
 
-            if (abs < 1){
+            if (abs < 60){
+                model.addAttribute("encParam", encParam);
                 model.addAttribute("tracker", trackerResult);
                 return "/tracker/tracker";
             }else {
                 return "/tracker/null";
             }
         } else {
-            return "/tracker/null";
+            return "/error/error-tracker";
         }
+    }
+
+    @ResponseBody
+    @GetMapping("/trackerInfo")
+    @CnttMethodDescription("tracker 정보 조회")
+    public Tracker getTrackerInfo(@RequestParam(required=false) String encParam) throws Exception{
+        Tracker trackerResult = trackerService.getTracker(encParam);
+        if(trackerResult.getRiderLatitude() != null){
+            Misc misc = new Misc();
+            trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getLatitude(), trackerResult.getLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
+        }
+        return trackerResult;
     }
 
 }

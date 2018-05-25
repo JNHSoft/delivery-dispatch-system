@@ -88,6 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/tracker").permitAll()    // 트래커 페이지
+                .antMatchers("/trackerInfo").permitAll()    // 트래커 정보요청
                 .antMatchers("/error/error-tracker").permitAll()    // 트래커 페이지
                 // 슈퍼, 개발자만 허용
                 .antMatchers("/admin/list/**").access("hasRole('SUPER') or hasRole('GOD')")

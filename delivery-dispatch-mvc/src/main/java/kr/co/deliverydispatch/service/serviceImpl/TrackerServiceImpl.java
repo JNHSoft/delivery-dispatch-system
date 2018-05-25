@@ -53,7 +53,9 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             tracker.setWebOrderId(webOrderId);
             tracker.setStoreName(storeName);
             tracker = trackerMapper.selectTracker(tracker);
-            tracker.setRequestDate(requestDate);
+            if(tracker != null){
+                tracker.setRequestDate(requestDate);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return null;

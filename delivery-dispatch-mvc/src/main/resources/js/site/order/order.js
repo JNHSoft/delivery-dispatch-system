@@ -9,7 +9,8 @@ $(document).ready(function() {
     if (supportsWebSockets) {
         var socket = io(websocketHost, {
             path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
-            transports: ['websocket'] // websocket만을 사용하도록 설정
+            transports: ['websocket'], // websocket만을 사용하도록 설정
+            secure: true
         });
         socket.on('message', function(data){
             var subgroup_id = data.substring(data.indexOf("subgroup_id:")+12, data.lastIndexOf('}'));

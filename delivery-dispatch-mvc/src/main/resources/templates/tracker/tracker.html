@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/trackerLayout">
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/trackerLayout">
 
 <div class="tracker" layout:fragment="content">
 	<div class="tracker-top">
@@ -46,7 +46,7 @@
 var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
 var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
 var webOrderId = /*[[${tracker.webOrderId}]]*/ 'webOrderId';
-var trackerStatus = /*[[${tracker.status}]]*/ 'status';
+var trackerStatus = /*[[${tracker.status}]]*/ 'trackerStatus';
 var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
 var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
 var cookingTime = /*[[${tracker.cookingTime}]]*/ 'cookingTime';
@@ -61,6 +61,8 @@ var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
 var distance = /*[[${tracker.distance}]]*/ 'distance';
 var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddress';
 var storeDetailAddress = /*[[${tracker.storeDetailAddress}]]*/ 'storeDetailAddress';
+var encParam = /*[[${encParam}]]*/ 'encParam';
+
 
 var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
 var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
@@ -68,164 +70,498 @@ var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination';
 var tracker_assign = /*[[#{tracker.assign}]]*/ 'tracker_assign';
 
 //console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
+var map;
+var marker = [];
+var directionsDisplay;
+var directionsService;
+var infowindow = [];
+var checkTime;
+function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: new google.maps.LatLng((parseFloat(latitude)+parseFloat(storeLatitude))/2 + '', (parseFloat(longitude)+parseFloat(storeLongitude))/2 + ''),
+		styles: [
+            {
+                "featureType": "administrative",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#d6e2e6"
+                    }
+                ]
+            },
+            {
+                "featureType": "administrative",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#cddbe0"
+                    }
+                ]
+            },
+            {
+                "featureType": "administrative",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#7492a8"
+                    }
+                ]
+            },
+            {
+                "featureType": "administrative.neighborhood",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "lightness": 25
+                    }
+                ]
+            },
+            {
+                "featureType": "administrative.land_parcel",
+                "elementType": "labels",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "landscape.man_made",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#d6e2e6"
+                    }
+                ]
+            },
+            {
+                "featureType": "landscape.man_made",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#cddbe0"
+                    }
+                ]
+            },
+            {
+                "featureType": "landscape.natural",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#dae6eb"
+                    }
+                ]
+            },
+            {
+                "featureType": "landscape.natural",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#7492a8"
+                    }
+                ]
+            },
+            {
+                "featureType": "landscape.natural.terrain",
+                "elementType": "all",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#d6e2e6"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#588ca4"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "labels.icon",
+                "stylers": [
+                    {
+                        "saturation": -100
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.park",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#cae7a8"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.park",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#bae6a1"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.sports_complex",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#c6e8b3"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.sports_complex",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#bae6a1"
+                    }
+                ]
+            },
+            {
+                "featureType": "road",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#41626b"
+                    }
+                ]
+            },
+            {
+                "featureType": "road",
+                "elementType": "labels.icon",
+                "stylers": [
+                    {
+                        "saturation": -45
+                    },
+                    {
+                        "lightness": 10
+                    },
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#f7fdff"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#beced4"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.arterial",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#eef3f5"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.arterial",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#cddbe0"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.local",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#edf3f5"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.local",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#cddbe0"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.local",
+                "elementType": "labels",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "transit",
+                "elementType": "labels.icon",
+                "stylers": [
+                    {
+                        "saturation": -70
+                    }
+                ]
+            },
+            {
+                "featureType": "transit.line",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#588ca4"
+                    }
+                ]
+            },
+            {
+                "featureType": "transit.station",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#008cb5"
+                    }
+                ]
+            },
+            {
+                "featureType": "transit.station.airport",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "saturation": -100
+                    },
+                    {
+                        "lightness": -5
+                    }
+                ]
+            },
+            {
+                "featureType": "water",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#a6cbe3"
+                    }
+                ]
+            }
+        ]
+    });
+
+    var rendererOptions = {
+        map: map,
+        suppressMarkers: true,
+        preserveViewport : true
+    };
+
+    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+    directionsService = new google.maps.DirectionsService;
+
+    if(trackerStatus == 2){
+        directionsDisplay.setMap(map);
+        calculateAndDisplayRoute(directionsService, directionsDisplay);
+    }
+}
+
+function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+    $.ajax({
+        url:"/trackerInfo",
+        type:'get',
+        data : {
+            encParam : encParam
+        },
+        dataType : 'json',
+        success : function(data) {
+//            console.log(data);
+            trackerStatus = data.status;
+            if(data.status==3){
+                window.location.reload();
+			}
+            if(data.status==2){
+                for (var i = 0; i < marker.length; i++) {
+                    marker[i].setMap(null);
+                }
+                for (var i = 0; i < infowindow.length; i++) {
+                    infowindow[i].close();
+                }
+
+                var selectedMode = 'DRIVING';
+                //		var selectedMode = 'TRANSIT';
+                //      var selectedMode = 'WALKING';
+
+                directionsService.route({
+                    origin: new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
+                    destination: new google.maps.LatLng(data.latitude, data.longitude),
+                    // Note that Javascript allows us to access the constant
+                    // using square brackets and a string value as its
+                    // "property."
+                    travelMode: google.maps.TravelMode[selectedMode],
+                    drivingOptions: {
+                        departureTime: new Date(),
+                        trafficModel: 'bestguess'
+                    }/*,
+			waypoints: [{location : storeLatlng,
+			    stopover:false}]*/
+                }, function(response, status) {
+                    if (status == 'OK') {
+                        var route = response.routes[0].legs[0];
+//                        console.log(response);
+
+                        var orderDistance = (route.distance).text;
+                        var durationInTraffic = ((route.duration_in_traffic).value)/60;
+
+                        var contentString = '<div class="map_info">'+
+                            '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
+                            '<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
+                            '<span class="t_blk">|</span> '+
+                            '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
+                            '</div>';
+
+                        var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
+
+                        $('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
+
+                        marker[0] = new google.maps.Marker({
+                            position: route.start_location,
+                            map: map,
+                            icon: {
+                                url:'/resources/images/tracker/pin_moto.png',
+                                scaledSize: new google.maps.Size(40, 27),
+                            }
+                        });
+
+                        infowindow = new google.maps.InfoWindow({
+                            content: contentString
+                        });
+                        infowindow.open(map, marker[0]);
+
+                        marker[1] = new google.maps.Marker({
+                            position: route.end_location,
+                            map: map,
+                            label:{fontWeight: "bold",
+                                text:tracker_destination},
+                            icon: {url:'/resources/images/tracker/pin_home.png'}
+                        });
+
+                        marker[2] = new google.maps.Marker({
+                            position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
+                            map: map,
+                            label:{fontWeight: "bold", text:data.storeName},
+                            icon: {
+                                url:'/resources/images/tracker/pin_store.png',
+                                scaledSize: new google.maps.Size(40, 28),
+                            }
+                        });
+                        directionsDisplay.setDirections(response);
+                    } else {
+                        window.alert('Directions request failed due to ' + status);
+                    }
+                });
+			}
+        }/*,
+        error : function (request,status,error) {
+            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        }*/
+    })
+}
 
 $(document).ready(function(){
     if(self == top){
         location.href ="/error/error-tracker";
 	}
+    if (reservationDatetime && trackerStatus != 2) {
+        var arriveTime = new Date(Date.parse(reservationDatetime));
+        $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
+        var nowTime = new Date();
+        checkTime = arriveTime.getTime()-nowTime.getTime();
+    }
+
+    if(checkTime-1800*1000>0) {
+        setTimeout('window.location.reload()',checkTime-1800*1000);
+	}
+
 	if(trackerStatus==2){
         $(".mapCtrl").attr("id","");
         $(".visual_area").attr("id","map");
+        setInterval('calculateAndDisplayRoute(directionsService, directionsDisplay)', 30000);
 	}
+
+	if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1)){
+        setInterval('window.location.reload()', 30000);
+	}
+	/*if(trackerStatus == 3){
+        window.location.reload()
+	}*/
+//    setInterval('window.location.reload()', 3000);
+
 });
 
+function setHourMin(time1) {
+//    console.log(time1);
+    if(time1==0){
+        return "00";
+	}else{
+        return (time1+'').length>1?time1:'0'+time1;
+	}
+}
 
 window.onload = function() {
-    if (!cookingTime) {
-        cookingTime = 0;
-    }
-
 	if(storeName){
         $('#storeName').text(storeName);
 	}
 
-    if (reservationDatetime && trackerStatus != 2) {
-        var arriveTime = new Date(Date.parse(reservationDatetime));
-        $('#reservedTime').text(arriveTime.getHours() + ':' + arriveTime.getMinutes());
-    }
-
     $('.state > span').removeClass('on');
 
-    if (trackerStatus == 0 || trackerStatus == 5) {
+//	console.log(checkTime);
+//    console.log(distance);
+    if ((trackerStatus == 0 || trackerStatus == 5) && checkTime > 1800*1000) {
         $('#tNew').addClass('on');
-    } else if (trackerStatus == 1) {
-        $('#tNew').addClass('on');
+    } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1)&& checkTime <= 1800*1000) {
+        $('#tNew').addClass('on chk');
         $('#tAssign').addClass('on');
     } else if (trackerStatus == 2) {
-        $('#tNew').addClass('on');
-        $('#tAssign').removeClass('step2 on');
-        $('#tAssign').addClass('step1 on');
+        $('#tNew').addClass('on chk');
+        $('#tAssign').addClass('on chk');
         $('#tPickup').addClass('on');
-    } else if(trackerStatus ==3){
-        $('#tNew').addClass('on');
-        $('#tAssign').removeClass('step2 on');
-        $('#tAssign').addClass('step1 on');
-        $('#tPickup').removeClass('step3 on');
-        $('#tPickup').addClass('step1 on');
+    } else if(trackerStatus ==3) {
+        $('#tNew').addClass('on chk');
+        $('#tAssign').addClass('on chk');
+        $('#tPickup').addClass('on chk');
         $('#tComplete').addClass('on');
         $('#reservedTime').text('-');
+        $(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
     }
 
-	if(storeDetailAddress){
+	if(storeDetailAddress) {
         $('#storeAddress').text(storeDetailAddress);
 	}
 //    $('#riderName').text(riderName?riderName:"-");
-
 }
 
-function initMap() {
-    var myLatlng = new google.maps.LatLng(riderLatitude, riderLongitude);
-    var storeLatlng = new google.maps.LatLng(storeLatitude, storeLongitude);
-    var completedLatlng = new google.maps.LatLng(latitude, longitude);
-
-
-    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 17,
-        center: myLatlng
-    });
-
-    var rendererOptions = {
-        map: map,
-        suppressMarkers: true
-    };
-
-    var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-    var directionsService = new google.maps.DirectionsService;
-
-
-
-	function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-
-		var selectedMode = 'DRIVING';
-//		var selectedMode = 'TRANSIT';
-//      var selectedMode = 'WALKING';
-
-		directionsService.route({
-			origin: myLatlng,  // Haight.
-			destination: completedLatlng,  // Ocean Beach.
-//			origin: {lat: 37.580976, lng: 126.905788},  // Haight.
-//			destination: {lat: 37.577655, lng: 126.907628},  // Ocean Beach.
-			// Note that Javascript allows us to access the constant
-			// using square brackets and a string value as its
-			// "property."
-			travelMode: google.maps.TravelMode[selectedMode],
-            drivingOptions: {
-                departureTime: new Date(),
-                trafficModel: 'bestguess'
-            }/*,
-			waypoints: [{location : storeLatlng,
-			    stopover:false}]*/
-		}, function(response, status) {
-			if (status == 'OK') {
-                var route = response.routes[0].legs[0];
-                console.log(response);
-
-                var orderDistance = (route.distance).text;
-                var durationInTraffic = ((route.duration_in_traffic).value)/60;
-
-				var contentString = '<div class="map_info">'+
-					'<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
-					'<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
-					'<span class="t_blk">|</span> '+
-					'<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
-					'</div>';
-
-                var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
-                $('#reservedTime').text(arriveTrafficTime.getHours() + ':' + arriveTrafficTime.getMinutes());
-
-                var originMarker = new google.maps.Marker({
-					position: route.start_location,
-					map: map,
-					icon: {
-					    url:'/resources/images/tracker/PIN_scooter.png',
-                        scaledSize: new google.maps.Size(40, 27),
-						}
-				});
-
-
-				var infowindow = new google.maps.InfoWindow({
-					content: contentString
-				});
-				infowindow.open(map, originMarker);
-
-                var destinationMarker = new google.maps.Marker({
-                    position: route.end_location,
-                    map: map,
-                    label:{fontWeight: "bold",
-                        text:tracker_destination},
-                    icon: {url:'/resources/images/tracker/PIN_destination.png'}
-                });
-
-				var marker = new google.maps.Marker({
-					position: storeLatlng,
-					map: map,
-					label:{fontWeight: "bold", text:storeName},
-					icon: {
-					    url:'/resources/images/tracker/PIN_start.png',
-                        scaledSize: new google.maps.Size(40, 28),
-					}
-				});
-				directionsDisplay.setDirections(response);
-			} else {
-				window.alert('Directions request failed due to ' + status);
-			}
-		});
-	}
-	if(trackerStatus == 2){
-        directionsDisplay.setMap(map);
-        calculateAndDisplayRoute(directionsService, directionsDisplay);
-	}
-}
 /*]]>*/
 </script>
 

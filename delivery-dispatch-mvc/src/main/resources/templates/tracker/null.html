@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/trackerLayout">
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/trackerLayout">
 
 <div class="tracker" layout:fragment="content">
 	<div class="tracker-top">
@@ -13,7 +13,7 @@
 			<span class="step4">餐點已送達</span>
 		</div>
 	</div>
-	<div class="visual_area">
+	<div class="visual_area h390">
 		<div class="loading"></div>
 	</div>
 	<div class="tracker-bottom">
@@ -39,4 +39,17 @@
 		</table>
 	</div>
 </div>
+<script layout:fragment="script" th:inline="javascript">
+/*<![CDATA[*/
+var encParam = /*[[${encParam}]]*/ 'encParam';
+$(document).ready(function(){
+	if(encParam){
+        setInterval('returnPage()', 30000);
+	}
+})
+function returnPage() {
+    return location.href = "/tracker?encParam="+encParam;
+}
+/*]]>*/
+</script>
 </html>

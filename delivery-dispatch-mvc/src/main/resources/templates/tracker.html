@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
 
 	<!-- 컨텐츠 영역 -->
 	<section id="container" layout:fragment="content">
@@ -13,6 +13,6 @@
 		<br />
 		decAes : <p th:text="${decAes}" />
 		<hr />
-		<iframe th:src="@{http://localhost:8091/API/getTracker.do(encParam=${encBase})}" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
+		<iframe th:src="@{//localhost:8091/API/getTracker.do(encParam=${encBase})}" frameborder="0" style="border:0" allowfullscreen="true"></iframe>
 	</section>
 </html>
