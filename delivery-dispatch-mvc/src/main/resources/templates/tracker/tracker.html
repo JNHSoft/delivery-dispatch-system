@@ -63,7 +63,6 @@ var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddres
 var storeDetailAddress = /*[[${tracker.storeDetailAddress}]]*/ 'storeDetailAddress';
 var encParam = /*[[${encParam}]]*/ 'encParam';
 
-
 var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
 var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
 var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination';
@@ -417,7 +416,7 @@ function initMap() {
 
     if(trackerStatus == 2){
         directionsDisplay.setMap(map);
-        calculateAndDisplayRoute(directionsService, directionsDisplay);
+//        calculateAndDisplayRoute(directionsService, directionsDisplay);
     }
 }
 
@@ -439,9 +438,12 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                 for (var i = 0; i < marker.length; i++) {
                     marker[i].setMap(null);
                 }
+                marker=[];
+
                 for (var i = 0; i < infowindow.length; i++) {
                     infowindow[i].close();
                 }
+                infowindow=[];
 
                 var selectedMode = 'DRIVING';
                 //		var selectedMode = 'TRANSIT';
@@ -557,6 +559,7 @@ window.onload = function() {
         $('#tNew').addClass('on chk');
         $('#tAssign').addClass('on chk');
         $('#tPickup').addClass('on');
+        calculateAndDisplayRoute(directionsService, directionsDisplay);
     } else if(trackerStatus ==3) {
         $('#tNew').addClass('on chk');
         $('#tAssign').addClass('on chk');
