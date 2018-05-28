@@ -111,7 +111,7 @@ $(document).ready(function(){
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12,
+        zoom: 14,
         center: new google.maps.LatLng((parseFloat(latitude)+parseFloat(storeLatitude))/2 + '', (parseFloat(longitude)+parseFloat(storeLongitude))/2 + ''),
 		styles: [
             {
@@ -477,7 +477,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                         var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
 
                         $('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
-						console.log(parseFloat(data.longitude)+":"+parseFloat(data.riderLongitude));
+
                         marker[0] = new google.maps.Marker({
                             position: route.start_location,
                             map: map,
