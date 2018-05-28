@@ -407,8 +407,9 @@ function initMap() {
 
     var rendererOptions = {
         map: map,
-        suppressMarkers: true,
-        preserveViewport : true
+        suppressMarkers: true,//길찾기시 마커 재적용하려면 필요
+        preserveViewport : true,//길찾기시 맵 중심 수동지정하려면 필요
+        polylineOptions : {visible: false}//길찾기시 선 제거
     };
 
     directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
