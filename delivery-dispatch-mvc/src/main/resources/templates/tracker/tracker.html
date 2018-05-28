@@ -485,7 +485,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             position: route.start_location,
                             map: map,
                             icon: {
-                                url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png':'/resources/images/tracker/pin_moto_left.png',
+                                url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.1':'/resources/images/tracker/pin_moto_left.png?ver=0.1',
                                 scaledSize: new google.maps.Size(40, 27)
                             }
                         });
@@ -501,7 +501,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             /*label:{fontWeight: "bold",
                                 text:tracker_destination},*/
                             icon: {
-                                url:'/resources/images/tracker/pin_home.png',
+                                url:'/resources/images/tracker/pin_home.png?ver=0.1',
                                 scaledSize: new google.maps.Size(30, 40)
 							}
                         });
@@ -511,7 +511,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             map: map,
                             /*label:{fontWeight: "bold", text:data.storeName},*/
                             icon: {
-                                url:'/resources/images/tracker/pin_store.png',
+                                url:'/resources/images/tracker/pin_store.png?ver=0.1',
                                 scaledSize: new google.maps.Size(40, 28)
                             }
                         });
