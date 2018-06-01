@@ -128,15 +128,12 @@ public class StatisticsController {
             e.printStackTrace();
         }
 
-
-
-
         order.setToken(adminInfo.getAdminAccessToken());
 
         List<Order> statisticsList = statisticsAdminService.selectAdminStatistics(order);
 
 
-        log.info("@@@@@@@@@@@@@@@@@@@@@@"+statisticsList);
+//        log.info("@@@@@@@@@@@@@@@@@@@@@@"+statisticsList);
 
         return statisticsList;
     }

@@ -47,11 +47,11 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
 
 //            String regOrderId = jsonObject.get("regOrderId").toString();
             String webOrderId = jsonObject.get("webOrderId").toString();
-            String storeName = jsonObject.get("storeName").toString();
+            String code = jsonObject.get("code").toString();
             String requestDate = jsonObject.get("reqDate").toString();
 
             tracker.setWebOrderId(webOrderId);
-            tracker.setStoreName(storeName);
+            tracker.setCode(code);
             tracker = trackerMapper.selectTracker(tracker);
             if(tracker != null){
                 tracker.setRequestDate(requestDate);

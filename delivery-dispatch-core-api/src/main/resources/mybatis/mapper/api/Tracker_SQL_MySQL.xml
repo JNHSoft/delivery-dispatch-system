@@ -94,7 +94,7 @@
 		LEFT JOIN TB_RIDER AS C
 		ON A.rider_id = C.id
 		WHERE A.web_order_id = #{webOrderId}
-			AND B.store_name = #{storeName}
+			AND B.code = #{code}
 	</select>
 
 </mapper>

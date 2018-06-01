@@ -20,7 +20,7 @@ spring:
       enabled: true
 #  thymeleaf.cache : false
   thymeleaf:
-      cache : false
+      cache: false
       prefix: classpath:/templates
 
 management:
@@ -36,9 +36,9 @@ server:
       development: true
   session:
     timeout: 10800
-#    cookie:
-#      http-only: true
-#      secure: true
+    cookie:
+      http-only: true
+      secure: true
 
 # logging
 logging:
@@ -158,10 +158,10 @@ cntt.restPool:
       port: 8091
       maxPerRoute: 20
 
-      #scheme: http
-      #host: dev-api.cntt.co.kr
-      #port: 8091
-      #maxPerRoute: 20
+#      scheme: http
+#      host: dev-api.cntt.co.kr
+#      port: 8091
+#      maxPerRoute: 20
 
       #scheme: http
       #host: burgerking.cntt.kr
@@ -178,10 +178,10 @@ cntt.restPool:
       port: 443
       maxPerRoute: 20
 
-      #scheme: https
-      #host: dev-api.cntt.co.kr
-      #port: 443
-      #maxPerRoute: 20
+#      scheme: https
+#      host: dev-api.cntt.co.kr
+#      port: 443
+#      maxPerRoute: 20
 
       #scheme: https
       #host: burgerking.cntt.kr

@@ -140,6 +140,11 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("order.completed",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("order.return",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
            /* sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue("MenuName");
@@ -216,7 +221,7 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
         for(int i = 0, r = orderStatisticsByAdminList.size(); i<r; i++) {
 
             colNum = 0;
-            logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@#!@#!@#!@#!@#"+orderStatisticsByAdminList);
+//            logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@#!@#!@#!@#!@#"+orderStatisticsByAdminList);
             XSSFRow addListRow = sheet.createRow(rowNum);
 
             XSSFCell cell = addListRow.createCell(colNum++);
@@ -265,6 +270,10 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(orderStatisticsByAdminList.get(i).getCompletedDatetime());
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(orderStatisticsByAdminList.get(i).getReturnDatetime());
             cell.setCellStyle(dataCellStyle);
 
             /*cell = addListRow.createCell(colNum++);

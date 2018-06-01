@@ -91,6 +91,7 @@
 		<result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="reservationDatetime" column="reservation_datetime" />
 		<result property="completedDatetime" column="completed_datetime" />
+		<result property="returnDatetime" column="return_datetime"/>
 		<result property="paid" column="paid" />
 
 		<result property="cookingTime" column="cooking_time" />
@@ -1047,6 +1048,7 @@
         , TBO.assigned_datetime
 		, TBO.picked_up_datetime
         , TBO.completed_datetime
+		, TBO.return_datetime
 		, TBO.menu_name
 		, TBO.cooking_time
 		, TBO.menu_price

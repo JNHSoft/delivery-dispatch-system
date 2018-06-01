@@ -128,6 +128,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedPage("/error/403")	// 403(권한없음) URL
                 .and()
                 .addFilterAfter(createAdminPerformanceHistoryFilter(), BasicAuthenticationFilter.class);
+
+        http.headers().frameOptions().sameOrigin();
     }
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)

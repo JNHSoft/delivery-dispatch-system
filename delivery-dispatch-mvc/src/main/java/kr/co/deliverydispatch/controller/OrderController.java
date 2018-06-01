@@ -99,9 +99,9 @@ public class OrderController {
 
         int tmpAssignCount = 1;
         for (Order o : tmpOrders) {
-            log.info(o.getStatus());
-            log.info(o.getRiderId());
-            log.info(order.getRiderId());
+//            log.info(o.getStatus());
+//            log.info(o.getRiderId());
+//            log.info(order.getRiderId());
             if (o.getRiderId() != null && o.getRiderId().equals(order.getRiderId()) && (o.getStatus().equals("1") || o.getStatus().equals("2"))) {
                 ++tmpAssignCount;
             }

@@ -44,7 +44,7 @@ public class TrackerController {
     public String tracker(Model model) {
         // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"storeName\":\"Jennie\",\"webOrderId\":\"s-20180525-cnt-aa1\",\"reqDate\":\"20180525140000\"}";
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"103\",\"webOrderId\":\"s-20180601-cnt-aa1\",\"reqDate\":\"20180601140000\"}";
 
         try {
             String encKey = tKey;
@@ -101,7 +101,7 @@ public class TrackerController {
 
             if(trackerResult.getRiderLatitude() != null){
                 Misc misc = new Misc();
-                trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getLatitude(), trackerResult.getLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
+                trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
             }
 
             if (abs < 60){
@@ -123,9 +123,13 @@ public class TrackerController {
         Tracker trackerResult = trackerService.getTracker(encParam);
         if(trackerResult.getRiderLatitude() != null){
             Misc misc = new Misc();
-            trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getLatitude(), trackerResult.getLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
+            trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
         }
         return trackerResult;
     }
 
+    @GetMapping("/trackerTest")
+    public String getTestTracker(){
+        return "/tracker/tracker_test";
+    }
 }
