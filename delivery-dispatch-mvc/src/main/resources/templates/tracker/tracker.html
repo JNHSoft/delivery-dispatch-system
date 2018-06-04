@@ -156,12 +156,10 @@ $(document).ready(function(){
         location.href ="/error/error-tracker";
     }
     setUI();
-//    setTimeout('testUI()',3000);
 	setInterval('setUI()', 30000);
 });
 
 function initMap() {
-
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 1,
         center: new google.maps.LatLng((parseFloat(latitude)+parseFloat(storeLatitude))/2 + '', (parseFloat(longitude)+parseFloat(storeLongitude))/2 + ''),
@@ -620,7 +618,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                         var route = response.routes[0].legs[0];
 //                        console.log(response);
 
-                        var orderDistance = (route.distance).text;
+//                        var orderDistance = (route.distance).text;
                         var durationInTraffic = ((route.duration_in_traffic).value)/60;
 
                         /*var contentString = '<div class="map_info">'+
