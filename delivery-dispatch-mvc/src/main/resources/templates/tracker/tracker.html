@@ -137,7 +137,7 @@ function setUI() {
                 $('#tAssign').addClass('on chk');
                 $('#tPickup').addClass('on chk');
                 $('#tComplete').addClass('on');
-                $('#reservedTime').text('-');
+                $('.t_red').text('');
                 $(".visual_area").attr("id","");
                 $(".mapCtrl").attr("id","map");
                 $(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
@@ -528,7 +528,7 @@ function startEndPoint() {
                 /*label:{fontWeight: "bold", text:data.storeName},*/
                 icon: {
                     url:'/resources/images/tracker/pin_store.png?ver=0.2',
-                    scaledSize: new google.maps.Size(40, 28)
+                    scaledSize: new google.maps.Size(35, 35)
                 }
             });
 
@@ -586,10 +586,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
             if(trackerStatus!=2){
                 setUI();
 			}else{
-                for (var i = 0; i < marker.length; i++) {
+                for (var i = 0; i < marker.length-1; i++) {
                     marker[i].setMap(null);
                 }
-                marker=[];
 
                 /*for (var i = 0; i < infowindow.length; i++) {
                     infowindow[i].close();
@@ -654,11 +653,27 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             /*label:{fontWeight: "bold", text:data.storeName},*/
                             icon: {
                                 url:'/resources/images/tracker/pin_store.png?ver=0.2',
-                                scaledSize: new google.maps.Size(40, 28)
+                                scaledSize: new google.maps.Size(35, 35)
                             }
                         });
-
                         if(data.distance > 0.1){
+                            if(!marker[2]){
+                                marker[2] = new  SlidingMarker({
+                                    position: route.start_location,
+                                    map: map,
+                                    icon: {
+                                        url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.2',
+                                        scaledSize: new google.maps.Size(40, 49)
+                                    },
+                                    duration: 30000,
+                                    easing: "easeOutExpo"
+                                });
+                            }else {
+                                marker[2].setPosition(route.start_location);
+                            }
+						}
+
+                        /*if(data.distance > 0.1){
                             marker[2] = new google.maps.Marker({
                                 position: route.start_location,
                                 map: map,
@@ -667,7 +682,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                                     scaledSize: new google.maps.Size(40, 49)
                                 }
                             });
-                        }
+                        }*/
                         myOverlay.prototype.onAdd = function () {
                             var div = document.createElement('div');
                             div.style.borderStyle = 'none';
@@ -723,4 +738,7 @@ function setHourMin(time1) {
 </script>
 
 <script type="text/javascript" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}" layout:fragment="script2" />
+<script type="text/javascript" defer="defer" th:src="@{/resources/js/lib/jquery.easing.1.3.js}" layout:fragment="script3" />
+<script type="text/javascript" defer="defer" th:src="@{/resources/js/lib/markerAnimate.js}" layout:fragment="script4" />
+<script type="text/javascript" defer="defer" th:src="@{/resources/js/lib/SlidingMarker.min.js}" layout:fragment="script5" />
 </html>
