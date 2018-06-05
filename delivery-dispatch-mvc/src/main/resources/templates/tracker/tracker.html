@@ -44,23 +44,23 @@
 
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
-var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
+//var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
 var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
-var webOrderId = /*[[${tracker.webOrderId}]]*/ 'webOrderId';
+//var webOrderId = /*[[${tracker.webOrderId}]]*/ 'webOrderId';
 var trackerStatus = /*[[${tracker.status}]]*/ 'trackerStatus';
 var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
 var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
-var cookingTime = /*[[${tracker.cookingTime}]]*/ 'cookingTime';
+//var cookingTime = /*[[${tracker.cookingTime}]]*/ 'cookingTime';
 var storeName = /*[[${tracker.storeName}]]*/ 'storeName';
-var storePhone = /*[[${tracker.storePhone}]]*/ 'storePhone';
+//var storePhone = /*[[${tracker.storePhone}]]*/ 'storePhone';
 var storeLatitude = /*[[${tracker.storeLatitude}]]*/ 'storeLatitude';
 var storeLongitude = /*[[${tracker.storeLongitude}]]*/ 'storeLongitude';
-var riderName = /*[[${tracker.riderName}]]*/ 'riderName';
-var riderPhone = /*[[${tracker.riderPhone}]]*/ 'riderPhone';
+//var riderName = /*[[${tracker.riderName}]]*/ 'riderName';
+//var riderPhone = /*[[${tracker.riderPhone}]]*/ 'riderPhone';
 var riderLatitude = /*[[${tracker.riderLatitude}]]*/ 'riderLatitude';
 var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
 var distance = /*[[${tracker.distance}]]*/ 'distance';
-var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddress';
+//var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddress';
 var storeDetailAddress = /*[[${tracker.storeDetailAddress}]]*/ 'storeDetailAddress';
 var encParam = /*[[${encParam}]]*/ 'encParam';
 
@@ -509,7 +509,6 @@ function startEndPoint() {
             for (var i = 0; i < marker.length; i++) {
                 marker[i].setMap(null);
             }
-            marker=[];
 
             marker[0] = new google.maps.Marker({
                 position: new google.maps.LatLng(data.latitude, data.longitude),

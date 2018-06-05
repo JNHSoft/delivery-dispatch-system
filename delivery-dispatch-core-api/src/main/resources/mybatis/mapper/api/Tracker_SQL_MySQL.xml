@@ -67,25 +67,26 @@
 
 	<!-- selectTracker -->
 	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
-		SELECT	A.created_datetime
-			, A.reg_order_id
-			, A.web_order_id
-			, A.id
-			, A.status
+		SELECT
+		<!--A.created_datetime-->
+			<!--, A.reg_order_id-->
+			<!--, A.web_order_id-->
+			<!--, A.id-->
+			A.status
 			, A.latitude
 			, A.longitude
-			, A.cooking_time
+			<!--, A.cooking_time-->
 			, A.distance
 			, A.reservation_datetime
-			, A.detail_address
-			, B.code
+			<!--, A.detail_address-->
+			<!--, B.code-->
 			, B.store_name AS store_name
-			, B.phone AS store_phone
+			<!--, B.phone AS store_phone-->
 			, B.latitude AS store_latitude
 			, B.longitude AS store_longitude
 			, B.detail_address AS store_detail_address
-			, C.name AS rider_name
-			, C.phone AS rider_phone
+			<!--, C.name AS rider_name-->
+			<!--, C.phone AS rider_phone-->
 			, C.latitude AS rider_latitude
 			, C.longitude AS rider_longitude
 		FROM TB_ORDER AS A

@@ -44,7 +44,7 @@ public class TrackerController {
     public String tracker(Model model) {
         // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"103\",\"webOrderId\":\"s-20180604-cnt-aa2\",\"reqDate\":\"20180604140000\"}";
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"103\",\"webOrderId\":\"s-20180604-cnt-aa3\",\"reqDate\":\"20180604160000\"}";
 
         try {
             String encKey = tKey;
@@ -103,7 +103,7 @@ public class TrackerController {
                 Misc misc = new Misc();
                 trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
             }
-
+            trackerResult.setRequestDate(null);
             if (abs < 60){
                 model.addAttribute("encParam", encParam);
                 model.addAttribute("tracker", trackerResult);
@@ -125,11 +125,12 @@ public class TrackerController {
             Misc misc = new Misc();
             trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
         }
+        trackerResult.setRequestDate(null);
         return trackerResult;
     }
 
-    @GetMapping("/trackerTest")
+   /* @GetMapping("/trackerTest")
     public String getTestTracker(){
         return "/tracker/tracker_test";
-    }
+    }*/
 }
