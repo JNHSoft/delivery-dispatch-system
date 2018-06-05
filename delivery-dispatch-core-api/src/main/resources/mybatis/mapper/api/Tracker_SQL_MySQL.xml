@@ -75,7 +75,7 @@
 			A.status
 			, A.latitude
 			, A.longitude
-			<!--, A.cooking_time-->
+			, A.cooking_time
 			, A.distance
 			, A.reservation_datetime
 			<!--, A.detail_address-->

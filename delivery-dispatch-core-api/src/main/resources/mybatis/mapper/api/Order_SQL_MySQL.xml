@@ -39,6 +39,7 @@
 			<result property="id" column="store_id" />
 			<result property="adminId" column="admin_id" />
 			<result property="storeName" column="store_name" />
+			<result property="storeRealName" column="store_real_name" />
 			<result property="latitude" column="store_latitude" />
 			<result property="longitude" column="store_longitude" />
 			<result property="radius" column="radius" />
@@ -197,6 +198,7 @@
 			, B.id AS rider_id
             , B.name AS rider_name
   			, D.name AS store_name
+			, D.store_name AS store_real_name
 			, D.latitude AS store_latitude
 			, D.longitude AS store_longitude
 -- 			, @RNUM := @RNUM + 1 AS RNUM
