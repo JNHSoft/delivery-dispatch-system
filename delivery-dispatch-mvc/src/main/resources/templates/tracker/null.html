@@ -4,17 +4,17 @@
 <div class="tracker" layout:fragment="content">
 	<div class="tracker-top">
 		<div class="state">
-			<span class="step1 on">訂單已確認</span>
+			<span id="tNew" class="step1 on" th:text="${#messages.msg('tracker.new')}" />
 			<i></i>
-			<span class="step2 ">餐點準備中</span>
+			<span id="tAssign" class="step2" th:text="${#messages.msg('tracker.assign')}"/>
 			<i></i>
-			<span class="step3">外送中</span>
+			<span id="tPickup" class="step3" th:text="${#messages.msg('tracker.pickedup')}"/>
 			<i></i>
-			<span class="step4">餐點已送達</span>
+			<span id="tComplete" class="step4" th:text="${#messages.msg('tracker.completed')}"/>
 		</div>
 	</div>
 	<div class="visual_area h390">
-		<div class="loading"></div>
+		<!--<div class="loading"></div>-->
 	</div>
 	<!--<div class="tracker-bottom">
 		<table>
@@ -43,6 +43,9 @@
 /*<![CDATA[*/
 var encParam = /*[[${encParam}]]*/ 'encParam';
 $(document).ready(function(){
+    if(self == top){
+        location.href ="/error/error-tracker";
+    }
 	if(encParam){
         setInterval('returnPage()', 30000);
 	}

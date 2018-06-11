@@ -13,9 +13,10 @@
 			<span id="tComplete" class="step4" th:text="${#messages.msg('tracker.completed')}"/>
 		</div>
 	</div>
+	<div class="progress-background" style="display: none;"><span>餐點準備中</span><br/><div id="progressbar"><div class="progress-label"></div></div></div>
 	<div class="visual_area">
-		<!-- 지도삽입 -->
-		<div id="messageBox" style="display: none;"></div>
+		<!--<div id="messageBox" style="display: none;"></div>
+		<div id="progressbar" style="display: none;"></div>-->
 	</div>
 	<div id="map" class="mapCtrl" hidden="hidden"></div>
 	<div class="tracker-bottom">
@@ -44,7 +45,7 @@
 
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
-//var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
+var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
 var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
 //var webOrderId = /*[[${tracker.webOrderId}]]*/ 'webOrderId';
 var trackerStatus = /*[[${tracker.status}]]*/ 'trackerStatus';
@@ -76,6 +77,10 @@ var marker = [];
 var directionsDisplay;
 var directionsService;
 var checkEnter = 0;
+var checkTime;
+var checkReserveTime;
+var checkProgressValue = 0;
+
 function setUI() {
     $.ajax({
         url:"/trackerInfo",
@@ -89,13 +94,24 @@ function setUI() {
             trackerStatus = data.status;
             if (data.reservationDatetime && trackerStatus != 2) {
                 var arriveTime = new Date(Date.parse(data.reservationDatetime));
-                $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
-                /*var nowTime = new Date();
-                checkTime = arriveTime.getTime()-nowTime.getTime();*/
+                var createTime = new Date(Date.parse(data.createdDatetime));
+				$('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
+                var nowTime = new Date();
+                checkTime = arriveTime.getTime()-nowTime.getTime();
+				checkReserveTime = arriveTime.getTime()-createTime.getTime();
+                checkProgressValue = 100-Math.round((checkTime/checkReserveTime)*100);
+                if(checkProgressValue == 0){
+                    checkProgressValue = 1;
+				}
             }
+
             /*if(checkTime-1800*1000>0) {
                 setTimeout('setUI()',checkTime-1800*1000);
             }*/
+//            console.log(checkReserveTime-3600*1000);
+            if(checkReserveTime-3600*1000<=0){//예약시간과 등록시간이 1시간이내인지 체크
+                $.cookie('checkStep','true',{expires:1});
+            }
             if(data.storeName){
                 $('#storeName').text(data.storeName);
             }
@@ -103,14 +119,22 @@ function setUI() {
             $('.state > span').removeClass('on');
 
             if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && !$.cookie('checkStep')) {
+                $('.progress-background').hide();
                 $('#tNew').addClass('on');
-                $('.visual_area').html('<div class="loading"></div>');
+//                $('.visual_area').html('<div class="loading"></div>');
 //                $('.visual_area').html('<div class="gps_loading"></div>');
-                $.cookie('checkStep','true',{expires:1});
+//				console.log(checkTime-1800*1000);
+				if($(".visual_area").has('#map').prevObject.length){
+                    $(".mapCtrl").attr("id","map");
+                    $(".visual_area").attr("id","");
+				}
+				if(checkTime-1800*1000<=0){//예약시간과 현재시간이 30분 이내인지 체크
+					$.cookie('checkStep','true',{expires:1});
+                    setUI();
+				}
 //                setTimeout('setUI()',30000);
-                setTimeout('setUI()',3000);
             } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1)&& $.cookie('checkStep')) {
-                $('#tNew').addClass('on chk');
+                $('#tNew').addClass('on line');
                 $('#tAssign').addClass('on');
                 if(checkEnter==0){
                     $(".mapCtrl").attr("id","");
@@ -119,10 +143,12 @@ function setUI() {
 				}
 				checkEnter = 1;
                 startEndPoint();
-                setTimeout('startEndPoint()',3000);
+                $('.progress-background').show();
+//                setTimeout('startEndPoint()',30000);
             } else if (trackerStatus == 2) {
-                $('#tNew').addClass('on chk');
-                $('#tAssign').addClass('on chk');
+                $('.progress-background').hide();
+                $('#tNew').addClass('on line');
+                $('#tAssign').addClass('on line');
                 $('#tPickup').addClass('on');
                 if(checkEnter==0||checkEnter==1){
                     $(".mapCtrl").attr("id","");
@@ -131,11 +157,13 @@ function setUI() {
 				}
                 checkEnter =2;
                 calculateAndDisplayRoute(directionsService, directionsDisplay);
+                $.removeCookie('checkStep');
 //                setInterval('calculateAndDisplayRoute(directionsService, directionsDisplay)', 30000);
             } else if(trackerStatus ==3) {
-                $('#tNew').addClass('on chk');
-                $('#tAssign').addClass('on chk');
-                $('#tPickup').addClass('on chk');
+                $('.progress-background').hide();
+                $('#tNew').addClass('on line');
+                $('#tAssign').addClass('on line');
+                $('#tPickup').addClass('on line');
                 $('#tComplete').addClass('on');
                 $('.t_red').text('');
                 $(".visual_area").attr("id","");
@@ -151,10 +179,22 @@ function setUI() {
         }
     });
 }
+
 $(document).ready(function(){
     if(self == top){
         location.href ="/error/error-tracker";
     }
+
+    $("#progressbar").progressbar({
+        value: checkProgressValue,
+        change: function() {
+            $(".progress-label").html('');
+        },
+        complete: function() {
+            $(".progress-label").text('');
+        }
+    });
+
     setUI();
 	setInterval('setUI()', 30000);
 });
@@ -178,7 +218,7 @@ function initMap() {
                 "elementType": "geometry.stroke",
                 "stylers": [
                     {
-                        "color": "#cddbe0"
+                        "color": "#cfd4d5"
                     }
                 ]
             },
@@ -201,20 +241,11 @@ function initMap() {
                 ]
             },
             {
-                "featureType": "administrative.land_parcel",
-                "elementType": "labels",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
                 "featureType": "landscape.man_made",
                 "elementType": "geometry.fill",
                 "stylers": [
                     {
-                        "color": "#d6e2e6"
+                        "color": "#dde2e3"
                     }
                 ]
             },
@@ -223,7 +254,7 @@ function initMap() {
                 "elementType": "geometry.stroke",
                 "stylers": [
                     {
-                        "color": "#cddbe0"
+                        "color": "#cfd4d5"
                     }
                 ]
             },
@@ -232,7 +263,7 @@ function initMap() {
                 "elementType": "geometry.fill",
                 "stylers": [
                     {
-                        "color": "#dae6eb"
+                        "color": "#dde2e3"
                     }
                 ]
             },
@@ -259,7 +290,7 @@ function initMap() {
                 "elementType": "geometry.fill",
                 "stylers": [
                     {
-                        "color": "#d6e2e6"
+                        "color": "#dde2e3"
                     }
                 ]
             },
@@ -286,7 +317,7 @@ function initMap() {
                 "elementType": "geometry.fill",
                 "stylers": [
                     {
-                        "color": "#cae7a8"
+                        "color": "#a9de83"
                     }
                 ]
             },
@@ -337,7 +368,7 @@ function initMap() {
                         "lightness": 10
                     },
                     {
-                        "visibility": "off"
+                        "visibility": "on"
                     }
                 ]
             },
@@ -346,7 +377,7 @@ function initMap() {
                 "elementType": "geometry.fill",
                 "stylers": [
                     {
-                        "color": "#f7fdff"
+                        "color": "#c1d1d6"
                     }
                 ]
             },
@@ -355,7 +386,25 @@ function initMap() {
                 "elementType": "geometry.stroke",
                 "stylers": [
                     {
-                        "color": "#beced4"
+                        "color": "#a6b5bb"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "labels.icon",
+                "stylers": [
+                    {
+                        "visibility": "on"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway.controlled_access",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#9fb6bd"
                     }
                 ]
             },
@@ -364,16 +413,7 @@ function initMap() {
                 "elementType": "geometry.fill",
                 "stylers": [
                     {
-                        "color": "#eef3f5"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.arterial",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#cddbe0"
+                        "color": "#ffffff"
                     }
                 ]
             },
@@ -382,25 +422,7 @@ function initMap() {
                 "elementType": "geometry.fill",
                 "stylers": [
                     {
-                        "color": "#edf3f5"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.local",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#cddbe0"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.local",
-                "elementType": "labels",
-                "stylers": [
-                    {
-                        "visibility": "off"
+                        "color": "#ffffff"
                     }
                 ]
             },
@@ -415,6 +437,15 @@ function initMap() {
             },
             {
                 "featureType": "transit.line",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#b4cbd4"
+                    }
+                ]
+            },
+            {
+                "featureType": "transit.line",
                 "elementType": "labels.text.fill",
                 "stylers": [
                     {
@@ -424,10 +455,22 @@ function initMap() {
             },
             {
                 "featureType": "transit.station",
+                "elementType": "all",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "transit.station",
                 "elementType": "labels.text.fill",
                 "stylers": [
                     {
                         "color": "#008cb5"
+                    },
+                    {
+                        "visibility": "on"
                     }
                 ]
             },
@@ -499,12 +542,12 @@ function startEndPoint() {
         success : function(data) {
             myOverlay.prototype.onRemove = function () {
                 this.div_.parentNode.removeChild(this.div_);
-                this.div_=null;
-                this.content_.parentNode.removeChild(this.content_);
-                this.content_=null;
+                //this.div_ = null;
             }
-            overlay = null;
-            $(".messageBox").remove();
+            if(overlay){
+                overlay.onRemove();
+            }
+//            $(".messageBox").remove();
 
             for (var i = 0; i < marker.length; i++) {
                 marker[i].setMap(null);
@@ -530,14 +573,17 @@ function startEndPoint() {
                     scaledSize: new google.maps.Size(35, 35)
                 }
             });
+//            console.log(checkProgressValue);
+			console.log(checkProgressValue);
+            $("#progressbar").progressbar( "value", checkProgressValue>100?100:checkProgressValue);
 
-            var contentString = '<div class="messageBox op100"><span class="sidePadding">餐點準備中</span></div>';
+            /*var contentString = '<div class="messageBox"><span class="sidePadding">餐點準備中</span></div>';
 
             myOverlay.prototype.onAdd = function () {
                 var div = document.createElement('div');
                 div.style.borderStyle = 'none';
                 div.style.position = 'absolute';
-                div.style.width = '170px';
+                div.style.width = '140px';
 
                 div.innerHTML = this.content_;
 
@@ -552,12 +598,36 @@ function startEndPoint() {
                 var ne = overlayProjection.fromLatLngToDivPixel(this.marker_.getPosition());
 
                 var div = this.div_;
-                div.style.left = data.longitude<data.storeLongitude?ne.x - 168 + 'px':ne.x + 10 + 'px';
+                div.style.left = data.longitude<data.storeLongitude?ne.x - 155 + 'px':ne.x + 10 + 'px';
                 div.style.top = data.latitude<data.storeLatitude?ne.y - 10 +'px':ne.y - 63 + 'px';
             }
+            overlay = new myOverlay(marker[1],contentString,map);*/
 
-            overlay = new myOverlay(marker[1],contentString,map);
+            /*var contentString = '<div id="progressbar"><div class="progress-label">aaaa</div></div>';
 
+            myOverlay.prototype.onAdd = function () {
+                var div = document.createElement('div');
+                div.style.width = '150px';
+                div.style.width = '50px';
+                div.innerHTML = this.content_;
+
+                this.div_ = div;
+                var panes = this.getPanes();
+                panes.floatPane.appendChild(div);
+            }
+
+            myOverlay.prototype.draw = function () {
+                var overlayProjection = this.getProjection();
+
+                var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
+                console.log(this.map_)
+				console.log(overlayProjection);
+
+                var div = this.div_;
+                div.style.left = ne.x;
+                div.style.top = ne.y;
+            }
+            overlay = new myOverlay(marker[1],contentString,map);*/
         }
 	});
 }
@@ -574,13 +644,12 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 //            console.log(data);
             myOverlay.prototype.onRemove = function () {
                 this.div_.parentNode.removeChild(this.div_);
-                this.div_ = null;
-                this.content_.parentNode.removeChild(this.content_);
-                this.content_ = null;
+                //this.div_ = null;
             }
-            overlay = null;
-            $(".messageBox").remove();
-
+//            $(".messageBox").remove();
+			if(overlay){
+                overlay.onRemove();
+			}
             trackerStatus = data.status;
             if(trackerStatus!=2){
                 setUI();
@@ -627,9 +696,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             '</div>';*/
 
 						var contentString = '<div class="messageBox">'+
-								'<span class="bigText t_red">'+ Math.round(durationInTraffic) + '</span>' +
-								'<span>分鐘</span><br />'+
-								'<span class="grayText">預計到達時間</span></div>';
+								'<span class="bigText">'+ (Math.round(durationInTraffic)<10?'&nbsp;'+Math.round(durationInTraffic):Math.round(durationInTraffic)) + '</span>' +
+								'<div><p class="grayText">分鐘</p>'+
+								'<p class="grayText">預計抵達時間</p></div></div>';
 
                         var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
 
@@ -692,7 +761,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 
                             this.div_ = div;
                             var panes = this.getPanes();
-                            panes.overlayLayer.appendChild(div);
+                            panes.floatPane.appendChild(div);
                         }
                         myOverlay.prototype.draw = function () {
                             var overlayProjection = this.getProjection();
@@ -702,7 +771,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             var div = this.div_;
 
                             div.style.left = data.longitude>data.storeLongitude?ne.x - 151 + 'px':ne.x + 11+ 'px';
-                            div.style.top = data.latitude>data.storeLatitude?ne.y - 25 + 'px':ne.y - 100 + 'px';
+                            div.style.top = data.latitude>data.storeLatitude?ne.y - 25 + 'px':ne.y - 80 + 'px';
                         }
                         overlay = new myOverlay(marker[0],contentString,map);
 

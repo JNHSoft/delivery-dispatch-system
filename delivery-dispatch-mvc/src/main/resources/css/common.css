@@ -12,7 +12,7 @@
  * ============================== */
 @import url(lib/normalize.min.css);
 @import url(lib/animated.css);
-@import url(lib/jquery-ui-1.10.4.custom.min.css);
+/*@import url(lib/jquery-ui-1.10.4.custom.min.css);*/
 @import url(lib/swiper.css);
 @import url(flipclock.min.css);
 @import url(ui.jqgrid.css);
