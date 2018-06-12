@@ -161,7 +161,7 @@ function setUI() {
                 calculateAndDisplayRoute(directionsService, directionsDisplay);
                 $.removeCookie('checkStep');
 //                setInterval('calculateAndDisplayRoute(directionsService, directionsDisplay)', 30000);
-            } else if(trackerStatus ==3) {
+            } else if(trackerStatus == 3) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on line');
                 $('#tAssign').addClass('on line');
@@ -172,7 +172,9 @@ function setUI() {
                 $(".mapCtrl").attr("id","map");
                 $(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
                 $.removeCookie('checkStep');
-            }
+            } else if(trackerStatus == 4){
+                location.href ="/error/error-tracker";
+			}
 
             if(data.storeDetailAddress) {
                 $('#storeAddress').text(data.storeDetailAddress);
