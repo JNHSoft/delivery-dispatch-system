@@ -109,7 +109,7 @@ function setUI() {
                 setTimeout('setUI()',checkTime-1800*1000);
             }*/
 //            console.log(checkReserveTime-3600*1000);
-            if(checkReserveTime-3600*1000<=0){//예약시간과 등록시간이 1시간이내인지 체크
+            if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime-3600*1000<=0){//예약시간과 등록시간이 1시간이내인지 체크
                 $.cookie('checkStep','true',{expires:1});
             }
             if(data.storeName){
@@ -128,6 +128,7 @@ function setUI() {
                     $(".mapCtrl").attr("id","map");
                     $(".visual_area").attr("id","");
 				}
+//                console.log(checkTime-1800*1000);
 				if(checkTime-1800*1000<=0){//예약시간과 현재시간이 30분 이내인지 체크
 					$.cookie('checkStep','true',{expires:1});
                     setUI();
