@@ -388,12 +388,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             e.printStackTrace();
         }
 
-        if (order.getReservationDatetime() != null && order.getReservationDatetime() != "") {
-            order.setReservationDatetime(order.getReservationDatetime().substring(0, 12) +"00");
-        } else {
-            order.setReservationDatetime(null);
-        }
-
         if (order.getDeliveryPrice() == null || order.getDeliveryPrice() == "") {
             order.setDeliveryPrice("0");
         }
@@ -401,7 +395,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         order.setTotalPrice(String.valueOf(Double.parseDouble(order.getMenuPrice()) + Double.parseDouble(order.getDeliveryPrice())));
 
         if (order.getCookingTime() == null || order.getCookingTime() == "") {
-            order.setCookingTime("0");
+            order.setCookingTime("30");
         }
 
         if (order.getPaid() == null || order.getPaid() == "") {
@@ -411,6 +405,24 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         order.setStatus("0");
+
+        if (order.getReservationDatetime() != null && order.getReservationDatetime() != "") {
+            order.setReservationDatetime(order.getReservationDatetime().substring(0, 12) +"00");
+        } else {
+            LocalDateTime ldt = LocalDateTime.now();
+            int chkMinutes = 0;
+            if(ldt.getMinute()%5!=0){
+                chkMinutes = 5-ldt.getMinute()%5;
+            }
+            LocalDateTime reserveLDT = LocalDateTime.now().plusMinutes(Integer.parseInt(order.getCookingTime())+5+chkMinutes);
+            String nowDate = String.format("%02d", reserveLDT.getYear())
+                    + String.format("%02d", reserveLDT.getMonthValue())
+                    + String.format("%02d", reserveLDT.getDayOfMonth())
+                    + String.format("%02d", reserveLDT.getHour())
+                    + String.format("%02d", reserveLDT.getMinute())
+                    + "00";
+            order.setReservationDatetime(nowDate);
+        }
 
         // regOrder 중복 체크
         int hasRegOrder = orderMapper.selectRegOrderIdCheck(order);
@@ -445,18 +457,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00011), ErrorCodeEnum.E00011.name());
         }
 
-
-
-
         if (postOrder != 0) {
             if(storeDTO.getSubGroup() != null){
-                if (order.getReservationDatetime() == null || order.getReservationDatetime().equals("")){
-                    redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
-                }
+                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
             }else{
-                if (order.getReservationDatetime() == null || order.getReservationDatetime().equals("")){
-                    redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId());
-                }
+                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId());
             }
 
 //            신규 주문일 경우 rider app에 push 주석 처리
