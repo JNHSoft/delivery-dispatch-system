@@ -13,7 +13,7 @@
 			<span id="tComplete" class="step4" th:text="${#messages.msg('tracker.completed')}"/>
 		</div>
 	</div>
-	<div class="progress-background" style="display: none;"><span>餐點準備中</span><br/><div id="progressbar"><div class="progress-label"></div></div></div>
+	<div class="progress-background" style="display: none;"><span>餐點準備中</span><div id="progressbar"><div class="progress-label"></div></div><br/></div>
 	<div class="visual_area">
 		<!--<div id="messageBox" style="display: none;"></div>
 		<div id="progressbar" style="display: none;"></div>-->
@@ -92,7 +92,7 @@ function setUI() {
         success : function(data) {
 //            console.log(data);
             trackerStatus = data.status;
-            if (data.reservationDatetime && trackerStatus != 2) {
+            if (data.reservationDatetime) {
                 var arriveTime = new Date(Date.parse(data.reservationDatetime));
                 var createTime = new Date(Date.parse(data.createdDatetime));
 				$('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
@@ -109,7 +109,6 @@ function setUI() {
                 setTimeout('setUI()',checkTime-1800*1000);
             }*/
 //            console.log(checkReserveTime-3600*1000);
-            $.removeCookie('checkStep');
             if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime-3600*1000<=0){//예약시간과 등록시간이 1시간이내인지 체크
                 $.cookie('checkStep','true',{expires:1});
             }
@@ -141,13 +140,35 @@ function setUI() {
                 if(checkEnter==0){
                     $(".mapCtrl").attr("id","");
                     $(".visual_area").attr("id","map");
+                    $("#map").addClass('blur');
                     initMap();
 				}
 				checkEnter = 1;
                 startEndPoint();
                 $('.progress-background').show();
 //                setTimeout('startEndPoint()',30000);
-            } else if (trackerStatus == 2) {
+            } else if (trackerStatus == 2 && !$.cookie('chkProgress')) {
+                $('.progress-background').hide();
+                $('#tNew').addClass('on line');
+                $('#tAssign').addClass('on');
+                if(checkEnter==0||checkEnter==1){
+                    $(".mapCtrl").attr("id","");
+                    $(".visual_area").attr("id","map");
+                    $("#map").addClass('blur');
+                    initMap();
+                }
+                checkEnter =1;
+                startEndPoint();
+                $('.progress-background').show();
+				var plusProgress = setInterval(function(){
+				    checkProgressValue++;
+//                    console.log(checkProgressValue);
+				    $("#progressbar").progressbar("value", checkProgressValue);
+                    if(checkProgressValue==100){
+                        clearInterval(plusProgress);
+                    }
+				    }, 100);
+ 			} else if (trackerStatus == 2 && $.cookie('chkProgress')) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on line');
                 $('#tAssign').addClass('on line');
@@ -155,6 +176,7 @@ function setUI() {
                 if(checkEnter==0||checkEnter==1){
                     $(".mapCtrl").attr("id","");
                     $(".visual_area").attr("id","map");
+                    $("#map").removeClass('blur');
                     initMap();
 				}
                 checkEnter =2;
@@ -172,6 +194,7 @@ function setUI() {
                 $(".mapCtrl").attr("id","map");
                 $(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
                 $.removeCookie('checkStep');
+                $.removeCookie('chkProgress');
             } else if(trackerStatus == 4){
                 location.href ="/error/error-tracker";
 			}
@@ -196,6 +219,11 @@ $(document).ready(function(){
         },
         complete: function() {
             $(".progress-label").text('');
+            if(!$.cookie('chkProgress')){
+                $.cookie('chkProgress','true',{expires:1});
+//                console.log($.cookie('chkProgress'));
+				setUI();
+			}
         }
     });
 
@@ -207,6 +235,7 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 1,
         center: new google.maps.LatLng((parseFloat(latitude)+parseFloat(storeLatitude))/2 + '', (parseFloat(longitude)+parseFloat(storeLongitude))/2 + ''),
+        mapTypeControl: false,
 		styles: [
             {
                 "featureType": "administrative",
@@ -519,7 +548,7 @@ function initMap() {
     }
 
     var bounds  = new google.maps.LatLngBounds();
-    bounds.extend(new google.maps.LatLng(parseFloat(latitude),parseFloat(longitude)));
+    bounds.extend(new google.maps.LatLng(latitude>storeLatitude?parseFloat(latitude)+0.003:parseFloat(latitude)-0.003,parseFloat(longitude)));
     bounds.extend(new google.maps.LatLng(parseFloat(storeLatitude), parseFloat(storeLongitude)));
 
 	map.fitBounds(bounds);
@@ -557,11 +586,11 @@ function startEndPoint() {
                 marker[i].setMap(null);
             }
 
-            marker[0] = new google.maps.Marker({
+            /*marker[0] = new google.maps.Marker({
                 position: new google.maps.LatLng(data.latitude, data.longitude),
                 map: map,
-                /*label:{fontWeight: "bold",
-                    text:tracker_destination},*/
+                /!*label:{fontWeight: "bold",
+                    text:tracker_destination},*!/
                 icon: {
                     url:'/resources/images/tracker/pin_home.png?ver=0.2',
                     scaledSize: new google.maps.Size(30, 40)
@@ -571,12 +600,12 @@ function startEndPoint() {
             marker[1] = new google.maps.Marker({
                 position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
                 map: map,
-                /*label:{fontWeight: "bold", text:data.storeName},*/
+                /!*label:{fontWeight: "bold", text:data.storeName},*!/
                 icon: {
                     url:'/resources/images/tracker/pin_store.png?ver=0.2',
                     scaledSize: new google.maps.Size(35, 35)
                 }
-            });
+            });*/
 //            console.log(checkProgressValue);
             $("#progressbar").progressbar( "value", checkProgressValue>100?100:checkProgressValue);
 
@@ -701,7 +730,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 						var contentString = '<div class="messageBox">'+
 								'<span class="bigText">'+ (Math.round(durationInTraffic)<10?'&nbsp;'+Math.round(durationInTraffic):Math.round(durationInTraffic)) + '</span>' +
 								'<div><p class="grayText">分鐘</p>'+
-								'<p class="grayText">預計抵達時間</p></div></div>';
+								'<p class="grayText">預計到達時間</p></div></div>';
 
                         var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
 
@@ -727,23 +756,20 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                                 scaledSize: new google.maps.Size(35, 35)
                             }
                         });
-                        if(data.distance > 0.1){
-                            if(!marker[2]){
-                                marker[2] = new  SlidingMarker({
-                                    position: route.start_location,
-                                    map: map,
-                                    icon: {
-                                        url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.2',
-                                        scaledSize: new google.maps.Size(40, 49)
-                                    },
-                                    duration: 30000,
-                                    easing: "easeOutExpo"
+                        if(!marker[2]){
+                            marker[2] = new  SlidingMarker({
+                                position: data.distance>0.05?route.start_location:new google.maps.LatLng(route.start_location.lat(), route.start_location.lng()+0.002),
+                                map: map,
+								icon: {
+                                    url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.2',
+									scaledSize: new google.maps.Size(40, 49)
+								},
+								duration: 30000,
+								easing: "easeOutExpo"
                                 });
-                            }else {
-                                marker[2].setPosition(route.start_location);
-                            }
-						}
-
+                        	}else {
+                            marker[2].setPosition(route.start_location);
+                        }
                         /*if(data.distance > 0.1){
                             marker[2] = new google.maps.Marker({
                                 position: route.start_location,
@@ -764,7 +790,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 
                             this.div_ = div;
                             var panes = this.getPanes();
-                            panes.floatPane.appendChild(div);
+                            panes.overlayLayer.appendChild(div);
                         }
                         myOverlay.prototype.draw = function () {
                             var overlayProjection = this.getProjection();
@@ -773,8 +799,8 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 
                             var div = this.div_;
 
-                            div.style.left = data.longitude>data.storeLongitude?ne.x - 151 + 'px':ne.x + 11+ 'px';
-                            div.style.top = data.latitude>data.storeLatitude?ne.y - 25 + 'px':ne.y - 80 + 'px';
+                            div.style.left = data.longitude>data.storeLongitude?ne.x - 160 + 'px':ne.x + 16+ 'px';
+                            div.style.top = data.latitude<data.storeLatitude?ne.y - 25 + 'px':ne.y - 80 + 'px';
                         }
                         overlay = new myOverlay(marker[0],contentString,map);
 
