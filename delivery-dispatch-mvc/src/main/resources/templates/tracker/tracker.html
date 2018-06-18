@@ -208,6 +208,11 @@ function setUI() {
 }
 
 $(document).ready(function(){
+    /*if(navigator.cookieEnabled){
+        alert("쿠키허용됨");
+    }else{
+        alert("쿠키차단됨");
+    }*/
     if(self == top){
         location.href ="/error/error-tracker";
     }
@@ -802,7 +807,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 
                             var div = this.div_;
 
-                            div.style.left = data.longitude>data.storeLongitude?ne.x - 200 + 'px':ne.x + 54+ 'px';
+                            div.style.left = data.longitude>data.storeLongitude?ne.x - 160 + 'px':ne.x + 18+ 'px';
                             if(data.longitude>data.storeLongitude){
                                 div.style.top = data.latitude<data.storeLatitude?ne.y + 92 + 'px':ne.y - 150 + 'px';
 							}else{
