@@ -105,7 +105,6 @@ $(document).ready(function() {
     $('#selectedRider').on('change', function () {
         $('.riderPhone').css('display', 'none');
         $('#rider'+$(this).val()).css('display', 'block');
-
     });
 
     $("#searchButton").click(function () {
