@@ -268,7 +268,7 @@ function getOrderDetail(orderId) {
                 $('#selectCombined').attr("disabled", false);
             }else{
                 getNewOrderList(statusNewArray);
-                $('input[name=combinedChk]:checkbox').attr("checked", false);
+                $('input[name=combinedChk]:checkbox').removeAttr("checked");
                 $('#selectCombined').attr("disabled", true);
             }
 
