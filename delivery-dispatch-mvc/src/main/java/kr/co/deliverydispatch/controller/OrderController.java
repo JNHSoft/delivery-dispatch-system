@@ -56,7 +56,7 @@ public class OrderController {
     @GetMapping("/getOrderList")
     @CnttMethodDescription("오더 리스트 조회")
     public List<Order> getOrderList(Order order){
-        System.out.println(Arrays.toString(order.getStatusArray()));
+//        System.out.println(Arrays.toString(order.getStatusArray()));
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
         List<Order> orderList = storeOrderService.getOrders(order);

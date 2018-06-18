@@ -90,11 +90,11 @@ function setUI() {
         },
         dataType : 'json',
         success : function(data) {
-//            console.log(data);
+            console.log(data);
             trackerStatus = data.status;
             if (data.reservationDatetime) {
-                var arriveTime = new Date(Date.parse(data.reservationDatetime));
-                var createTime = new Date(Date.parse(data.createdDatetime));
+                var arriveTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
+                var createTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
 				$('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
                 var nowTime = new Date();
                 checkTime = arriveTime.getTime()-nowTime.getTime();
@@ -140,7 +140,7 @@ function setUI() {
                 if(checkEnter==0){
                     $(".mapCtrl").attr("id","");
                     $(".visual_area").attr("id","map");
-                    $("#map").addClass('blur');
+                    $("#map").addClass('blurMap');
                     initMap();
 				}
 				checkEnter = 1;
@@ -154,7 +154,7 @@ function setUI() {
                 if(checkEnter==0||checkEnter==1){
                     $(".mapCtrl").attr("id","");
                     $(".visual_area").attr("id","map");
-                    $("#map").addClass('blur');
+                    $("#map").addClass('blurMap');
                     initMap();
                 }
                 checkEnter =1;
@@ -176,7 +176,7 @@ function setUI() {
                 if(checkEnter==0||checkEnter==1){
                     $(".mapCtrl").attr("id","");
                     $(".visual_area").attr("id","map");
-                    $("#map").removeClass('blur');
+                    $("#map").removeClass('blurMap');
                     initMap();
 				}
                 checkEnter =2;
@@ -235,7 +235,8 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 1,
         center: new google.maps.LatLng((parseFloat(latitude)+parseFloat(storeLatitude))/2 + '', (parseFloat(longitude)+parseFloat(storeLongitude))/2 + ''),
-        mapTypeControl: false,
+//        mapTypeControl: false,
+        disableDefaultUI: true,
 		styles: [
             {
                 "featureType": "administrative",
@@ -548,7 +549,8 @@ function initMap() {
     }
 
     var bounds  = new google.maps.LatLngBounds();
-    bounds.extend(new google.maps.LatLng(latitude>storeLatitude?parseFloat(latitude)+0.003:parseFloat(latitude)-0.003,parseFloat(longitude)));
+//    bounds.extend(new google.maps.LatLng(latitude>storeLatitude?parseFloat(latitude)+0.003:parseFloat(latitude)-0.003,parseFloat(longitude)));
+    bounds.extend(new google.maps.LatLng(parseFloat(latitude),parseFloat(longitude)));
     bounds.extend(new google.maps.LatLng(parseFloat(storeLatitude), parseFloat(storeLongitude)));
 
 	map.fitBounds(bounds);
@@ -758,7 +760,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                         });
                         if(!marker[2]){
                             marker[2] = new  SlidingMarker({
-                                position: data.distance>0.05?route.start_location:new google.maps.LatLng(route.start_location.lat(), route.start_location.lng()+0.002),
+                                position: data.distance>0.1?route.start_location:new google.maps.LatLng(route.start_location.lat(), route.start_location.lng()+0.002),
                                 map: map,
 								icon: {
                                     url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.2',
@@ -790,17 +792,22 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 
                             this.div_ = div;
                             var panes = this.getPanes();
+//                            panes.overlayLayer.appendChild(div);
                             panes.overlayLayer.appendChild(div);
                         }
                         myOverlay.prototype.draw = function () {
                             var overlayProjection = this.getProjection();
 
-                            var ne = overlayProjection.fromLatLngToDivPixel(this.marker_.getPosition());
+                            var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
 
                             var div = this.div_;
 
-                            div.style.left = data.longitude>data.storeLongitude?ne.x - 160 + 'px':ne.x + 16+ 'px';
-                            div.style.top = data.latitude<data.storeLatitude?ne.y - 25 + 'px':ne.y - 80 + 'px';
+                            div.style.left = data.longitude>data.storeLongitude?ne.x - 200 + 'px':ne.x + 54+ 'px';
+                            if(data.longitude>data.storeLongitude){
+                                div.style.top = data.latitude<data.storeLatitude?ne.y + 92 + 'px':ne.y - 150 + 'px';
+							}else{
+                                div.style.top = data.latitude<data.storeLatitude?ne.y + 79 + 'px':ne.y - 150 + 'px';
+							}
                         }
                         overlay = new myOverlay(marker[0],contentString,map);
 
@@ -829,6 +836,10 @@ function setHourMin(time1) {
 	}else{
         return (time1+'').length>1?time1:'0'+time1;
 	}
+}
+
+function safariSetDate(time) {
+	return (time.replace(/-/gi,'/')).substring(0,time.indexOf("."));
 }
 
 /*]]>*/
