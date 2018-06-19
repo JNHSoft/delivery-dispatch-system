@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -221,7 +222,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
                 if (flag == Boolean.TRUE) {
                     if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
-                        if (orderList.get(i).getReservationDatetime().equals(nowDate)) {
+                        LocalDateTime reserveTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
+                        if (ldt.until(reserveTime, ChronoUnit.MINUTES)<=0) {
                             // 예약 배정
                             log.info(">>> 예약 배정 " + orderList.get(i).getRegOrderId());
                             int proc = this.autoAssignOrderProc(map);
