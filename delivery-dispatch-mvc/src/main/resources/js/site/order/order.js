@@ -47,23 +47,23 @@ $(document).ready(function() {
     $("#orderAllChk").click(function () {
         if(this.checked){
             $("input[name=srchChk]:checkbox").each(function() {
-                $(this).attr("checked", true);
+                $(this).prop("checked", "checked");
                 $(this).attr("disabled", true);
             });
-            for(a in statusArray){
+            for(var a in statusArray){
                 statusArray[a] = a;
             }
-            $('#statusArray').val(statusArray);
-            getOrderList(statusArray, storeId);
         }else{
             $("input[name=srchChk]:checkbox").each(function() {
-                $(this).attr("checked", false);
+                $(this).prop("checked", false);
                 $(this).attr("disabled", false);
             });
-            for(a in statusArray){
+            for(var a in statusArray){
                 statusArray[a] = null;
             }
         }
+        $('#statusArray').val(statusArray);
+        getOrderList(statusArray, storeId);
     });
 
     $("input[name=srchChk]:checkbox").click(function () {
@@ -105,6 +105,7 @@ $(document).ready(function() {
     $('#selectedRider').on('change', function () {
         $('.riderPhone').css('display', 'none');
         $('#rider'+$(this).val()).css('display', 'block');
+
     });
 
     $("#searchButton").click(function () {
@@ -262,7 +263,7 @@ function getOrderDetail(orderId) {
                         }
                     }
                 }
-                $('input[name=combinedChk]:checkbox').attr("checked", true);
+                $('input[name=combinedChk]:checkbox').prop("checked", true);
                 $('#selectCombined').val(data.combinedOrderId).prop("selected", true);
                 $('#selectCombined').attr("disabled", false);
             }else{

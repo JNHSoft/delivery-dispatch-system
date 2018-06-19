@@ -302,7 +302,7 @@ function getRiderDetail() {
                     var tmpHours = data.A_Rider.restHours.split('|');
                     for(var i = 0; i < tmpHours.length; i++){
                         var checkId = "#riderRestTime" + tmpHours[i];
-                        $(checkId).attr("checked", "checked");
+                        $(checkId).prop("checked", "checked");
                     }
                 }
                 // 번호판

@@ -65,12 +65,12 @@ $(function() {
     $("#orderAllChk").click(function () {
         if(this.checked){
             $("input[name=srchChk]:checkbox").each(function() {
-                $(this).attr("checked", true);
+                $(this).prop("checked", "checked");
                 $(this).attr("disabled", true);
             });
         }else{
             $("input[name=srchChk]:checkbox").each(function() {
-                $(this).attr("checked", false);
+                $(this).removeAttr("checked");
                 $(this).attr("disabled", false);
             });
         }
