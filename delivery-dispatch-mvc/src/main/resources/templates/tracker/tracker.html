@@ -693,10 +693,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
             if(trackerStatus!=2){
                 setUI();
 			}else{
-                for (var i = 0; i < marker.length-1; i++) {
+                /*for (var i = 0; i < marker.length-1; i++) {
                     marker[i].setMap(null);
-                }
-
+                }*/
                 /*for (var i = 0; i < infowindow.length; i++) {
                     infowindow[i].close();
                 }
@@ -742,30 +741,33 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                         var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
 
                         $('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
-
-
-                        marker[0] = new google.maps.Marker({
-                            position: route.end_location,
-                            map: map,
-                            /*label:{fontWeight: "bold",
-                                text:tracker_destination},*/
-                            icon: {
-                                url:'/resources/images/tracker/pin_home.png?ver=0.4',
-                                scaledSize: new google.maps.Size(30, 40)
-							}
-                        });
-                        marker[1] = new google.maps.Marker({
-                            position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
-                            map: map,
-                            /*label:{fontWeight: "bold", text:data.storeName},*/
-                            icon: {
-                                url:'/resources/images/tracker/pin_store.png?ver=0.4',
-                                scaledSize: new google.maps.Size(35, 35)
-                            }
-                        });
+						if(!marker[0]){
+                            marker[0] = new google.maps.Marker({
+                                position: route.end_location,
+                                map: map,
+                                /*label:{fontWeight: "bold",
+                                    text:tracker_destination},*/
+                                icon: {
+                                    url:'/resources/images/tracker/pin_home.png?ver=0.4',
+                                    scaledSize: new google.maps.Size(30, 40)
+                                }
+                            });
+						}
+                        if(!marker[1]){
+                            marker[1] = new google.maps.Marker({
+                                position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
+                                map: map,
+                                /*label:{fontWeight: "bold", text:data.storeName},*/
+                                icon: {
+                                    url:'/resources/images/tracker/pin_store.png?ver=0.4',
+                                    scaledSize: new google.maps.Size(35, 35)
+                                }
+                            });
+						}
+//                        console.log(data.distance);
                         if(!marker[2]){
-                            marker[2] = new  SlidingMarker({
-                                position: data.distance>0.1?route.start_location:new google.maps.LatLng(route.start_location.lat(), route.start_location.lng()+0.002),
+                            marker[2] = new SlidingMarker({
+                                position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)),
                                 map: map,
 								icon: {
                                     url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
@@ -774,9 +776,10 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 								duration: 30000,
 								easing: "easeOutExpo"
                                 });
-                        	}else {
-                            marker[2].setPosition(route.start_location);
+						}else {
+                            marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)));
                         }
+
                         /*if(data.distance > 0.1){
                             marker[2] = new google.maps.Marker({
                                 position: route.start_location,
@@ -797,8 +800,8 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 
                             this.div_ = div;
                             var panes = this.getPanes();
-//                            panes.overlayLayer.appendChild(div);
                             panes.overlayLayer.appendChild(div);
+//                            panes.floatPane.appendChild(div);
                         }
                         myOverlay.prototype.draw = function () {
                             var overlayProjection = this.getProjection();
