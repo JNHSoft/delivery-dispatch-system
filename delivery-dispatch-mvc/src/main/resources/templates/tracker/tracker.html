@@ -110,7 +110,8 @@ function setUI() {
             }*/
 //            console.log(checkReserveTime-3600*1000);
             if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime-3600*1000<=0){//예약시간과 등록시간이 1시간이내인지 체크
-                $.cookie('checkStep','true',{expires:1});
+//                $.cookie('checkStep','true',{expires:1});
+                localStorage.setItem('checkStep','true');
             }
             if(data.storeName){
                 $('#storeName').text(data.storeName);
@@ -118,7 +119,7 @@ function setUI() {
 
             $('.state > span').removeClass('on');
 
-            if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && !$.cookie('checkStep')) {
+            if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && !localStorage.getItem('checkStep')/*!$.cookie('checkStep')*/) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on');
 //                $('.visual_area').html('<div class="loading"></div>');
@@ -130,11 +131,12 @@ function setUI() {
 				}
 //                console.log(checkTime-1800*1000);
 				if(checkTime-1800*1000<=0){//예약시간과 현재시간이 30분 이내인지 체크
-					$.cookie('checkStep','true',{expires:1});
+//					$.cookie('checkStep','true',{expires:1});
+                    localStorage.setItem('checkStep','true');
                     setUI();
 				}
 //                setTimeout('setUI()',30000);
-            } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1)&& $.cookie('checkStep')) {
+            } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1)&& localStorage.getItem('checkStep')/*$.cookie('checkStep')*/) {
                 $('#tNew').addClass('on line');
                 $('#tAssign').addClass('on');
                 if(checkEnter==0){
@@ -147,7 +149,7 @@ function setUI() {
                 startEndPoint();
                 $('.progress-background').show();
 //                setTimeout('startEndPoint()',30000);
-            } else if (trackerStatus == 2 && !$.cookie('chkProgress')) {
+            } else if (trackerStatus == 2 && !localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on line');
                 $('#tAssign').addClass('on');
@@ -168,7 +170,7 @@ function setUI() {
                         clearInterval(plusProgress);
                     }
 				    }, 100);
- 			} else if (trackerStatus == 2 && $.cookie('chkProgress')) {
+ 			} else if (trackerStatus == 2 && localStorage.getItem('chkProgress')/*$.cookie('chkProgress')*/) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on line');
                 $('#tAssign').addClass('on line');
@@ -181,7 +183,8 @@ function setUI() {
 				}
                 checkEnter =2;
                 calculateAndDisplayRoute(directionsService, directionsDisplay);
-                $.removeCookie('checkStep');
+//                $.removeCookie('checkStep');
+                localStorage.removeItem('checkStep');
 //                setInterval('calculateAndDisplayRoute(directionsService, directionsDisplay)', 30000);
             } else if(trackerStatus == 3) {
                 $('.progress-background').hide();
@@ -193,8 +196,9 @@ function setUI() {
                 $(".visual_area").attr("id","");
                 $(".mapCtrl").attr("id","map");
                 $(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
-                $.removeCookie('checkStep');
-                $.removeCookie('chkProgress');
+/*                $.removeCookie('checkStep');
+                $.removeCookie('chkProgress');*/
+                localStorage.clear();
             } else if(trackerStatus == 4){
                 location.href ="/error/error-tracker";
 			}
@@ -224,9 +228,9 @@ $(document).ready(function(){
         },
         complete: function() {
             $(".progress-label").text('');
-            if(!$.cookie('chkProgress')){
-                $.cookie('chkProgress','true',{expires:1});
-//                console.log($.cookie('chkProgress'));
+            if(!localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/){
+                localStorage.setItem('chkProgress','true');
+//                $.cookie('chkProgress','true',{expires:1});
 				setUI();
 			}
         }
@@ -581,7 +585,9 @@ function startEndPoint() {
         dataType : 'json',
         success : function(data) {
             myOverlay.prototype.onRemove = function () {
-                this.div_.parentNode.removeChild(this.div_);
+                if(this.div_.parentNode){
+                    this.div_.parentNode.removeChild(this.div_);
+                }
                 //this.div_ = null;
             }
             if(overlay){
@@ -682,7 +688,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
         success : function(data) {
 //            console.log(data);
             myOverlay.prototype.onRemove = function () {
-                if(this.div_.parentNode.removeChild){
+                if(this.div_.parentNode){
                     this.div_.parentNode.removeChild(this.div_);
                 }
                 //this.div_ = null;
@@ -766,7 +772,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                                 }
                             });
 						}
-//                        console.log(data.distance);
+
                         if(!marker[2]){
                             marker[2] = new SlidingMarker({
                                 position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)),
@@ -775,11 +781,14 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                                     url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
 									scaledSize: new google.maps.Size(40, 49)
 								},
-								duration: 30000,
-								easing: "easeOutExpo"
+								duration: (route.duration_in_traffic).value * 1000,
+								easing: "linear"
                                 });
+                            marker[2].setPosition(route.end_location);
 						}else {
-                            marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)));
+//                            marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)));
+							marker[2].setDuration((route.duration_in_traffic).value * 1000);
+							marker[2].setPosition(route.end_location);
                         }
 
                         /*if(data.distance > 0.1){
@@ -819,6 +828,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                                 div.style.top = data.latitude<data.storeLatitude?ne.y + 79 + 'px':ne.y - 150 + 'px';
 							}
                         }
+
                         overlay = new myOverlay(marker[0],contentString,map);
 
                         /*infowindow = new google.maps.InfoWindow({
