@@ -44,7 +44,7 @@ public class TrackerController {
     public String tracker(Model model) {
         // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"103\",\"webOrderId\":\"s-20180618-cnt-aa3\",\"reqDate\":\"20180618164000\"}";
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"103\",\"webOrderId\":\"s-20180620-cnt-aa1\",\"reqDate\":\"20180620124000\"}";
 
         try {
             String encKey = tKey;
