@@ -4,6 +4,8 @@ spring:
   application.name: delivery-dispatch-api
   mvc:
     locale: zh_TW
+#    locale: zh_HK
+#    locale: ko_KR
     favicon.enabled: false
   messages:
     cache-seconds: -1
@@ -26,11 +28,6 @@ logging:
 datasource:
   deliveryDispatch:
     initialize: true
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://dde-db.cs4wechlbmlc.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
-#    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
-    username: nanum
-    password: snaskzhf
     initial-size: 10
     max-active: 10
     max-idle: 10
@@ -38,6 +35,22 @@ datasource:
     max-wait: 3000
     test-on-borrow: true
     #validation-query: select 1
+    driver-class-name: com.mysql.jdbc.Driver
+
+#    [DDE-TW-MAIN]
+    url: jdbc:mysql://dde-db.cs4wechlbmlc.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
+    username: nanum
+    password: snaskzhf
+
+#    [DDE-TW-TEST]
+#    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
+#    username: nanum
+#    password: snaskzhf
+
+#    [DDE-HK-MAIN]
+#    url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8
+#    username: hkuser
+#    password: hkuserpw!
 
 # concurrent 설정
 cntt.concurrent.enable: true
@@ -98,34 +111,52 @@ cntt.restPool:
   defaultMaxPerRoute: 20
   hosts:
     -
+#      [DDE-TW-MAIN]
       scheme: http
       host: ddetw-api.cntt.co.kr
       port: 8091
       maxPerRoute: 20
 
-      #scheme: http
-      #host: dev-api.cntt.co.kr
-      #port: 8091
-      #maxPerRoute: 20
+#      [DDE-TW-TEST]
+#      scheme: http
+#      host: dev-api.cntt.co.kr
+#      port: 8091
+#      maxPerRoute: 20
 
-      #scheme: http
-      #host: oper.co.kr
-      #port: 8081
-      #maxPerRoute: 20
+#      [DDE-HK-MAIN]
+#      scheme: http
+#      host: ddehk-api.cntt.co.kr
+#      port: 8091
+#      maxPerRoute: 20
+
     -
+#      [DDE-TW-MAIN]
       scheme: https
       host: ddetw-api.cntt.co.kr
       port: 443
       maxPerRoute: 20
 
-      #scheme: https
-      #host: dev-api.cntt.co.kr
-      #port: 443
-      #maxPerRoute: 20
+#      [DDE-TW-TEST]
+#      scheme: https
+#      host: dev-api.cntt.co.kr
+#      port: 443
+#      maxPerRoute: 20
 
+#      [DDE-HK-MAIN]
+#      scheme: https
+#      host: ddehk-api.cntt.co.kr
+#      port: 443
+#      maxPerRoute: 20
+
+
+#[DDE-TW-MAIN]
 api.server : https://ddetw-api.cntt.co.kr
+
+#[DDE-TW-TEST]
 #api.server : https://dev-api.cntt.co.kr
-#api.server : https://oper.kr:9443
+
+#[DDE-HK-MAIN]
+#api.server : https://ddehk-api.cntt.co.kr
 
 # Logger 설정
 cntt.monitor.enable: true
@@ -148,14 +179,30 @@ api.token.expiration : 6000
 ---
 spring:
   redis:
+#    [DDE-TW-MAIN]
     host: dde-tw-redis.dgc5ym.0001.apn2.cache.amazonaws.com
-#    host: nanum-taiwan-redis.e6yhbk.0001.apn2.cache.amazonaws.com
-#    host: 127.0.0.1
     port: 6379
+
+#    [DDE-TW-TEST]
+#    host: nanum-taiwan-redis.e6yhbk.0001.apn2.cache.amazonaws.com
+#    port: 6379
+
+#    [DDE-HK-MAIN]
+#    host: 192.168.100.81
+#    port: 6379
+
+#    [DDE-KR-LOCAL]
+#    host: 127.0.0.1
+#    port: 6379
 
 ---
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
+#[DDE-TW-MAIN]
 api.upload.path.notice: /home/nanum/dde-upload/notice
 api.upload.path.alarm: /home/nanum/dde-upload/alarm
+
+#[DDE-HK-MAIN]
+#api.upload.path.notice: /root/dde-upload/notice
+#api.upload.path.alarm: /root/dde-upload/alarm
