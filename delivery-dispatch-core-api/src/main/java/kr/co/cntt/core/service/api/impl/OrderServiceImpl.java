@@ -77,14 +77,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     @Override
     public void autoAssignOrder() throws AppTrException {
-        LocalDateTime ldt = LocalDateTime.now().plusMinutes(50);
-        String nowDate = String.format("%02d", ldt.getYear())
-                + "-" + String.format("%02d", ldt.getMonthValue())
-                + "-" + String.format("%02d", ldt.getDayOfMonth())
-                + " " + String.format("%02d", ldt.getHour())
-                + ":" + String.format("%02d", ldt.getMinute())
-                + ":00.0";
-
         Map map = new HashMap();
 
         List<Order> orderList = orderMapper.selectForAssignOrders();
@@ -223,6 +215,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 if (flag == Boolean.TRUE) {
                     if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
                         LocalDateTime reserveTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
+                        LocalDateTime ldt = LocalDateTime.now().plusMinutes(50);
                         if (ldt.until(reserveTime, ChronoUnit.MINUTES)<=0) {
                             // 예약 배정
                             log.info(">>> 예약 배정 " + orderList.get(i).getRegOrderId());
