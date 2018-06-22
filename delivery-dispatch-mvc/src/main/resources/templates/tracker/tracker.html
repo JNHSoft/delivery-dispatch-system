@@ -80,6 +80,8 @@ var checkEnter = 0;
 var checkTime;
 var checkReserveTime;
 var checkProgressValue = 0;
+var durationTime;
+var beforeDurationTime = 60;
 
 function setUI() {
     $.ajax({
@@ -740,12 +742,15 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             '<span class="t_blk">|</span> '+
                             '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
                             '</div>';*/
-
+						durationTime = Math.round(durationInTraffic);
+						if(beforeDurationTime - durationTime < -2){
+						    durationTime = beforeDurationTime;
+						}
 						var contentString = '<div class="messageBox">'+
-								'<span class="bigText">'+ (Math.round(durationInTraffic)<10?'&nbsp;'+Math.round(durationInTraffic):Math.round(durationInTraffic)) + '</span>' +
+								'<span class="bigText">'+ (durationTime<10?'&nbsp;'+durationTime:durationTime) + '</span>' +
 								'<div><p class="grayText">分鐘</p>'+
 								'<p class="grayText">預計到達時間</p></div></div>';
-
+						beforeDurationTime = Math.round(durationInTraffic);
                         var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
 
                         $('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
