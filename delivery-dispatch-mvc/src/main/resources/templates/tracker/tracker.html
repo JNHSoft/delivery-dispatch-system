@@ -586,14 +586,15 @@ function startEndPoint() {
         },
         dataType : 'json',
         success : function(data) {
-            myOverlay.prototype.onRemove = function () {
-                if(this.div_.parentNode){
-                    this.div_.parentNode.removeChild(this.div_);
-                }
-                //this.div_ = null;
-            }
             if(overlay){
+                myOverlay.prototype.onRemove = function () {
+                    if(this.div_ && this.div_.parentNode){
+                        this.div_.parentNode.removeChild(this.div_);
+                    }
+                    //this.div_ = null;
+                }
                 overlay.onRemove();
+                overlay == null;
             }
 //            $(".messageBox").remove();
 
@@ -689,12 +690,6 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
         dataType : 'json',
         success : function(data) {
 //            console.log(data);
-            myOverlay.prototype.onRemove = function () {
-                if(this.div_.parentNode){
-                    this.div_.parentNode.removeChild(this.div_);
-                }
-                //this.div_ = null;
-            }
 //            $(".messageBox").remove();
 			if(overlay){
                 overlay.onRemove();
@@ -832,6 +827,13 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 							}else{
                                 div.style.top = data.latitude<data.storeLatitude?ne.y + 79 + 'px':ne.y - 150 + 'px';
 							}
+                        }
+
+                        myOverlay.prototype.onRemove = function () {
+                            if(this.div_ && this.div_.parentNode){
+								this.div_.parentNode.removeChild(this.div_);
+                            }
+//                            this.div_ = null;
                         }
 
                         overlay = new myOverlay(marker[0],contentString,map);
