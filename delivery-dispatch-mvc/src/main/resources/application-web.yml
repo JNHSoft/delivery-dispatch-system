@@ -44,7 +44,11 @@ server:
 
 # logging
 logging:
-  config: classpath:logback-spring.xml
+# [DDE-TW-MAIN]
+  config: classpath:logback-spring-tw.xml
+
+# [DDE-HK-MAIN]
+#  config: classpath:logback-spring-hk.xml
 
 # datasource
 datasource:
@@ -114,16 +118,9 @@ cntt.restPool:
     -
       scheme: http
       host: localhost
-      port: 8090
-      maxPerRoute: 20
-    -
-      scheme: http
-      host: localhost
       port: 8091
       maxPerRoute: 20
 
-api.pos.server : http://localhost:8090
-api.app.server : http://localhost:8091
 # Logger
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.deliverydispatch
@@ -141,16 +138,9 @@ cntt.restPool:
     -
       scheme: http
       host: localhost
-      port: 8084
-      maxPerRoute: 20
-    -
-      scheme: http
-      host: localhost
       port: 8085
       maxPerRoute: 20
 
-api.pos.server : http://localhost:8085
-api.app.server : http://localhost:8084
 # Logger
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.deliverydispatch
@@ -202,18 +192,6 @@ cntt.restPool:
 #      host: ddehk-api.cntt.co.kr
 #      port: 443
 #      maxPerRoute: 20
-
-#[DDE-TW-MAIN]
-api.pos.server : http://ddetw-api.cntt.co.kr:8091
-api.app.server : https://ddetw-api.cntt.co.kr
-
-#[DDE-TW-TEST]
-#api.pos.server : http://dev-api.cntt.co.kr:8091
-#api.app.server : https://dev-api.cntt.co.kr
-
-#[DDE-HK-MAIN]
-#api.pos.server : http://ddehk-api.cntt.co.kr:8091
-#api.app.server : https://ddehk-api.cntt.co.kr
 
 # Logger
 cntt.monitor.enable: true
