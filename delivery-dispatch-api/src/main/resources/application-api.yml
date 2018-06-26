@@ -22,7 +22,11 @@ spring:
 
 # logging
 logging:
-  config: classpath:logback-spring.xml
+# [DDE-TW-MAIN]
+  config: classpath:logback-spring-tw.xml
+
+# [DDE-HK-MAIN]
+#  config: classpath:logback-spring-hk.xml
 
 # datasource
 datasource:
@@ -75,7 +79,6 @@ cntt.restPool:
     port: 8091
     maxPerRoute: 20
 
-api.server : http://localhost:8091
 # Logger 설정
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.cntt.api
@@ -95,7 +98,6 @@ cntt.restPool:
     port: 8085
     maxPerRoute: 20
 
-api.server : http://localhost:8084
 # Logger 설정
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.cntt.api
@@ -147,16 +149,6 @@ cntt.restPool:
 #      host: ddehk-api.cntt.co.kr
 #      port: 443
 #      maxPerRoute: 20
-
-
-#[DDE-TW-MAIN]
-api.server : https://ddetw-api.cntt.co.kr
-
-#[DDE-TW-TEST]
-#api.server : https://dev-api.cntt.co.kr
-
-#[DDE-HK-MAIN]
-#api.server : https://ddehk-api.cntt.co.kr
 
 # Logger 설정
 cntt.monitor.enable: true
