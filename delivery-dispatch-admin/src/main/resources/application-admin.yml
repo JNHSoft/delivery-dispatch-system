@@ -251,18 +251,3 @@ api.upload.path.alarm: /home/nanum/dde-upload/alarm
 #[DDE-HK-MAIN]
 #api.upload.path.notice: /root/dde-upload/notice
 #api.upload.path.alarm: /root/dde-upload/alarm
-
----
-#[DDE-TW-MAIN]
-websocket.localhost: https://ddetw-admin.cntt.co.kr
-##websocket.localhost: 52.78.71.21:3000
-
-#[DDE-TW-TEST]
-#websocket.localhost: https://dev-admin.cntt.co.kr
-##websocket.localhost: 13.125.18.185:3000
-
-#[DDE-HK-MAIN]
-#websocket.localhost: https://ddehk-admin.cntt.co.kr
-
-#[DDE-KR-LOCAL]
-#websocket.localhost: 127.0.0.1:3000

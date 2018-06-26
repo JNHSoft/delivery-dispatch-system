@@ -260,7 +260,7 @@ websocket.localhost: https://ddetw-store.cntt.co.kr
 ##websocket.localhost: 13.125.18.185:3000
 
 #[DDE-HK-MAIN]
-#websocket.localhost: https://ddehk-admin.cntt.co.kr
+#websocket.localhost: https://ddehk-store.cntt.co.kr
 
 #[DDE-KR-LOCAL]
 #websocket.localhost: 127.0.0.1:3000
