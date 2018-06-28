@@ -726,8 +726,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 //                marker[2]?marker[2].getPostion:
                 directionsService.route({
 //                    origin: marker[2]?new google.maps.LatLng(marker[2].gm_accessors_.animationPosition.gd.position.lat(), marker[2].gm_accessors_.animationPosition.gd.position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
-//                    origin: marker[2]?new google.maps.LatLng(marker[2].position.lat(), marker[2].position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
-                    origin: new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
+                    origin: marker[2]?new google.maps.LatLng(marker[2].position.lat(), marker[2].position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
                     destination: new google.maps.LatLng(data.latitude, data.longitude),
 //                    destination: new google.maps.LatLng(data.riderLatitude, data.riderLongitude),
                     // Note that Javascript allows us to access the constant
@@ -737,33 +736,33 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                     drivingOptions: {
                         departureTime: new Date(),
                         trafficModel: 'bestguess'
-                    }/*,
+                    },
                     optimizeWaypoints : true,
 					waypoints: [{location : new google.maps.LatLng(data.riderLatitude, data.riderLongitude)
-						,stopover:true}]*/
+						,stopover:true}]
                 }, function(response, status) {
                     if (status == 'OK') {
 //                        console.log(routeArray[a]);
-                        /*for(var a =0; a <routeArray.length;a++){
+                        for(var a =0; a <routeArray.length;a++){
                             clearTimeout(routeArray[a]);
 						}
                         routeArray = [];
                         AllDurationTime = [];
                         durationCheckTime =[];
-                        pointLocation = [];*/
+                        pointLocation = [];
                         var route = response.routes[0].legs[0];
-//                        var route2 = response.routes[0].legs[1];
+                        var route2 = response.routes[0].legs[1];
 //                        console.log(response);
 						/*for(var a = 0; a<(route.steps).length;a++){
 							console.log(route.steps[a].start_location + ':' +route.steps[a].end_location);
 						}*/
 //                        var orderDistance = (route.distance).text;
-//                        var durationInTraffic = 0;
-						/*for(var a = 0; a<response.routes[0].legs.length;a++){
+                        var durationInTraffic = 0;
+						for(var a = 0; a<response.routes[0].legs.length;a++){
                             durationInTraffic+= response.routes[0].legs[a].duration.value;
 						}
-                        durationInTraffic = durationInTraffic/60;*/
-                        var durationInTraffic = ((route.duration_in_traffic).value)/60;
+                        durationInTraffic = durationInTraffic/60;
+//                        var durationInTraffic = ((route.duration_in_traffic).value)/60;
 
                         /*var contentString = '<div class="map_info">'+
                             '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
@@ -775,9 +774,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 						if(beforeDurationTime - durationTime < -2){
 						    durationTime = beforeDurationTime;
 						}
-						/*if(localStorage.getItem('restCheckTime')){
+						if(localStorage.getItem('restCheckTime')){
                             durationTime = 0;
-						}*/
+						}
 						var contentString = '<div class="messageBox">'+
 								'<span class="bigText">'+ (durationTime<10?'&nbsp;'+durationTime:durationTime) + '</span>' +
 								'<div><p class="grayText">分鐘</p>'+
@@ -822,8 +821,8 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 								duration: durationInTraffic*60*1000,
 //								duration: (route.duration_in_traffic).value * 1000,
 //								easing: "linear"
-								easing: "easeOutCirc"
-//								easing: "easeOutExpo"
+//								easing: "easeOutCirc"
+								easing: "easeOutExpo"
                                 });
                             /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i){
                                 routeArray[i] = setTimeout(function () {
@@ -854,61 +853,11 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                                 console.log(route.steps[a].end_location);
                                 console.log(route.end_location);*!/
                             }*/
-                            /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i,direction,restStepTime){
-                                routeArray[i] = setTimeout(function () {
-                                    marker[2].setDuration(durationCheckTime);
-                                    marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-                                    marker[2].setPosition(pointLocation);
-                                    if(restStepTime==0){
-                                        localStorage.setItem('restCheckTime','true');
-                                    }
-                                    $('.bigText').html(restStepTime<10?'&nbsp;'+restStepTime:restStepTime);
-//                                    console.log(direction);
-                                },AllDurationTime);
-                            }
-                            var tempDurationTime = 0;
-                            if(data.distance>0.1  && !localStorage.getItem('restCheckTime')) {
-                                for (var a = 0; a < (route.steps).length; a++) {
-//								    var turnTime = 50 * 1000/(route.steps).length;
-                                    durationCheckTime[a] = route.steps[a].duration.value * 1000;
-                                    durationCheckTime[a] = turnTime;
-                                    pointLocation[a] = route.steps[a].end_location;
-                                    direction[a] = route.steps[a].end_location.lng() > route.steps[a].start_location.lng() ? 'right' : 'left';
-//									console.log(route.steps[a].end_location.lng() + ':' + route.steps[a].start_location.lng());
-                                    var restStepTime = route.steps[a].duration.value;
-                                    /!*for(var b = 0; b<(route2.steps).length;b++){
-                                        restStepTime += route2.steps[b].duration.value;
-									}*!/
-                                    for (var b = a; b < (route.steps).length; b++) {
-                                        restStepTime += route.steps[b].duration.value;
-                                    }
-                                    restStepTime = Math.round(restStepTime / 60);
-                                    if (a == 0) {
-                                        marker[2].setDuration(durationCheckTime[a] / 2);
-                                        marker[2].setIcon({
-                                            url: (direction[a] == 'right') ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
-                                            scaledSize: new google.maps.Size(40, 49)
-                                        });
-                                        marker[2].setPosition(pointLocation[a]);
-                                    }
-                                    if (a > 0) {
-                                        routeTimeout(durationCheckTime[a] / 2, pointLocation[a], AllDurationTime[a - 1], a - 1, direction[a], restStepTime);
-                                    }
-//									tempDurationTime += route.steps[a].duration.value * 1000;
-                                    tempDurationTime += durationCheckTime[a];
-                                    AllDurationTime[a] = tempDurationTime;
-                                    /!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
-                                    console.log(route.steps[a].end_location);
-                                    console.log(route.end_location);*!/
-                                }
-                            }*/
 						}else {
-                            marker[2].setDuration(50000);
-                            marker[2].setIcon({url:(route.start_location.lng()>marker[2].getPosition().lng())?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-                            marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)));
+//                            marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)));
 //							marker[2].setDuration((route.duration_in_traffic).value * 1000);
 //							marker[2].setPosition(route.end_location);
-							/*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i,direction,restStepTime){
+							var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i,direction,restStepTime){
                                 routeArray[i] = setTimeout(function () {
                                     marker[2].setDuration(durationCheckTime);
                                     marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
@@ -923,36 +872,37 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
                             var tempDurationTime = 0;
                             if(data.distance>0.1  && !localStorage.getItem('restCheckTime')){
 								for(var a = 0; a<(route.steps).length;a++){
-//								    var turnTime = 50 * 1000/(route.steps).length;
-									durationCheckTime[a] = route.steps[a].duration.value * 1000;
+								    var turnTime = 50 * 1000/(route.steps).length;
+//									durationCheckTime[a] = route.steps[a].duration.value * 1000;
                                     durationCheckTime[a] = turnTime;
 									pointLocation[a] = route.steps[a].end_location;
                                     direction[a] = route.steps[a].end_location.lng()>route.steps[a].start_location.lng()?'right':'left';
 //									console.log(route.steps[a].end_location.lng() + ':' + route.steps[a].start_location.lng());
                                     var restStepTime = route.steps[a].duration.value;
-                                    /!*for(var b = 0; b<(route2.steps).length;b++){
+                                    for(var b = 0; b<(route2.steps).length;b++){
                                         restStepTime += route2.steps[b].duration.value;
-									}*!/
-									for(var b = a; b<(route.steps).length;b++){
-                                        restStepTime += route.steps[b].duration.value;
 									}
 									restStepTime = Math.round(restStepTime/60);
 									if(a==0){
-										marker[2].setDuration(durationCheckTime[a]/2);
+										marker[2].setDuration(durationCheckTime[a]);
                                         marker[2].setIcon({url:(direction[a]== 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
 										marker[2].setPosition(pointLocation[a]);
 									}
 									if(a>0){
-                                        routeTimeout(durationCheckTime[a]/2,pointLocation[a],AllDurationTime[a-1],a-1,direction[a],restStepTime);
+                                        routeTimeout(durationCheckTime[a],pointLocation[a],AllDurationTime[a-1],a-1,direction[a],restStepTime);
+										/*routeArray[a] = setTimeout(function () {
+											marker[2].setDuration(durationCheckTime[a]);
+											marker[2].setPosition(pointLocation[a]);
+										},AllDurationTime[a-1]);*/
 									}
 //									tempDurationTime += route.steps[a].duration.value * 1000;
 									tempDurationTime += durationCheckTime[a];
                                     AllDurationTime[a] = tempDurationTime;
-                                    /!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
+                                    /*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
                                     console.log(route.steps[a].end_location);
-                                    console.log(route.end_location);*!/
+                                    console.log(route.end_location);*/
 								}
-                            }*/
+                            }
                         }
 						/*console.log(marker[2].gm_accessors_.animationPosition.gd);
 						console.log(marker[2]);*/
