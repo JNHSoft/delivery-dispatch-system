@@ -1,10 +1,8 @@
 package kr.co.deliverydispatch.View;
 
 import kr.co.cntt.core.model.order.Order;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -30,6 +28,10 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
         this.messageSource = messageSource;
     }
 
+    private String nullCheck(String str){
+        return str!=null?str:"";
+    }
+
     @Value("${spring.mvc.locale}")
     private Locale locale;
 
@@ -39,7 +41,7 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
         Date currentTime = new Date ( );
         String dTime = formatter.format ( currentTime );
         String fileName = "[" + dTime + "]";
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
         if(request.getRequestURI().matches("/excelDownload")) {
             List<Order> orderStatisticsByStoreList = (List<Order>) model.get("getStoreStatisticsExcel");
@@ -56,29 +58,30 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
         OutputStream fs = response.getOutputStream();
         workbook.write(fs);
         if(fs != null) fs.close();
+        workbook.dispose();
     }
     // 내용 셋팅 하는 부분
-    public void setOrderStatisticsByStoreExcel(XSSFWorkbook wb, List<Order> orderStatisticsByStoreList) {
+    public void setOrderStatisticsByStoreExcel(SXSSFWorkbook wb, List<Order> orderStatisticsByStoreList) {
         int rowNum = 0;
         int colNum = 0;
-        XSSFSheet sheet = wb.createSheet("OrderStatisticsByStore");
+        Sheet sheet = wb.createSheet("OrderStatisticsByStore");
 
         // Title Area Cell Style
-        XSSFCellStyle titleCellStyle = settTitleCell(wb);
+        CellStyle titleCellStyle = settTitleCell(wb);
         Font titleCellFont = setTitleCellFont(wb);
         titleCellStyle.setFont(titleCellFont);
 
         // Data Area Cell Style
-        XSSFCellStyle dataCellStyle = setDataCell(wb);
+        CellStyle dataCellStyle = setDataCell(wb);
         Font dataCellFont = setDataCellFont(wb);
         dataCellStyle.setFont(dataCellFont);
 
         {
             // 제목 부분
-            XSSFRow titleRow = sheet.createRow(rowNum);
+            Row titleRow = sheet.createRow(rowNum);
 
             sheet.setColumnWidth(colNum, 15*256);
-            XSSFCell addTitle = titleRow.createCell(colNum++);
+            Cell addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.reg.order.id",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
@@ -194,9 +197,9 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
 
             colNum = 0;
 //            logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@#!@#!@#!@#!@#"+orderStatisticsByStoreList);
-            XSSFRow addListRow = sheet.createRow(rowNum);
+            Row addListRow = sheet.createRow(rowNum);
 
-            XSSFCell cell = addListRow.createCell(colNum++);
+            Cell cell = addListRow.createCell(colNum++);
             cell.setCellValue(orderStatisticsByStoreList.get(i).getRegOrderId());
             cell.setCellStyle(dataCellStyle);
 
@@ -213,27 +216,27 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
 //            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getCreatedDatetime());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getCreatedDatetime()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getReservationDatetime());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getReservationDatetime()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getAssignedDatetime());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getAssignedDatetime()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getPickedUpDatetime());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getPickedUpDatetime()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getCompletedDatetime());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getCompletedDatetime()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getReturnDatetime());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getReturnDatetime()));
             cell.setCellStyle(dataCellStyle);
 
             /*cell = addListRow.createCell(colNum++);
@@ -241,7 +244,7 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);*/
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getCookingTime());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getCookingTime()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -257,15 +260,15 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getDeliveryPrice());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getDeliveryPrice()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getMenuPrice());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getMenuPrice()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getTotalPrice());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getTotalPrice()));
             cell.setCellStyle(dataCellStyle);
 
 //            cell = addListRow.createCell(colNum++);
@@ -273,42 +276,42 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
 //            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getCombinedOrderId());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getCombinedOrderId()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getRider().getName());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getRider().getName()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getRider().getPhone());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getRider().getPhone()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getMessage());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getMessage()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getPhone());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getPhone()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getAddress());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getAddress()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getDetailAddress());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getDetailAddress()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderStatisticsByStoreList.get(i).getDistance());
+            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getDistance()));
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
         }
     }
 
-    public Font setTotalCellFont(XSSFWorkbook wb) {
+    public Font setTotalCellFont(SXSSFWorkbook wb) {
         Font dataCellFont = wb.createFont();
         dataCellFont.setFontHeightInPoints((short) 10);
         dataCellFont.setBoldweight(Font.BOLDWEIGHT_NORMAL);
@@ -317,9 +320,9 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
         return dataCellFont;
     }
 
-    public XSSFCellStyle setTotalCell(XSSFWorkbook wb){
+    public CellStyle setTotalCell(SXSSFWorkbook wb){
         // 합계 셀 스타일
-        XSSFCellStyle TotalRowStyle = wb.createCellStyle();
+        CellStyle TotalRowStyle = wb.createCellStyle();
         TotalRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
         TotalRowStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
         TotalRowStyle.setFillForegroundColor(IndexedColors.YELLOW.index);
@@ -343,7 +346,7 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
     }
 
 
-    public Font setDataCellFont(XSSFWorkbook wb) {
+    public Font setDataCellFont(SXSSFWorkbook wb) {
         Font dataCellFont = wb.createFont();
         dataCellFont.setFontHeightInPoints((short) 10);
         dataCellFont.setBoldweight(Font.BOLDWEIGHT_NORMAL);
@@ -352,9 +355,9 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
         return dataCellFont;
     }
 
-    public XSSFCellStyle setDataCell(XSSFWorkbook wb) {
+    public CellStyle setDataCell(SXSSFWorkbook wb) {
 
-        XSSFCellStyle dataCellStyle = wb.createCellStyle();
+        CellStyle dataCellStyle = wb.createCellStyle();
         dataCellStyle.setAlignment(CellStyle.ALIGN_LEFT);
         dataCellStyle.setVerticalAlignment(CellStyle.ALIGN_CENTER);
         dataCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
@@ -369,9 +372,9 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
         return dataCellStyle;
     }
 
-    public XSSFCellStyle settTitleCell(XSSFWorkbook wb) {
+    public CellStyle settTitleCell(SXSSFWorkbook wb) {
 
-        XSSFCellStyle titleCellStyle = wb.createCellStyle();
+        CellStyle titleCellStyle = wb.createCellStyle();
         titleCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
         titleCellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
         titleCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
@@ -388,7 +391,7 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
         return titleCellStyle;
     }
 
-    public Font setTitleCellFont(XSSFWorkbook wb) {
+    public Font setTitleCellFont(SXSSFWorkbook wb) {
 
         Font titleCellFont = wb.createFont();
         titleCellFont.setFontHeightInPoints((short) 10);
