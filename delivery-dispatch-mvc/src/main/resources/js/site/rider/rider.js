@@ -43,10 +43,14 @@ $(function() {
             }
             if(data.match('rider_')=='rider_'){
                 getRiderList();
-                footerRiders();
+                if(map_language){
+                    if(map_language=="hk"){
+                        footerRiders();
+                    }
+                }
             }
             if(data.match('order_')=='order_'){
-                footerOrders()
+                footerOrders();
             }
             if(data.match('notice_')=='notice_'){
                 noticeAlarm();

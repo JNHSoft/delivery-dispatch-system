@@ -28,7 +28,11 @@ $(document).ready(function() {
                 footerOrders();
             }
             if(data.match('rider_')=='rider_'){
-                footerRiders();
+                if(map_language){
+                    if(map_language=="hk"){
+                        footerRiders();
+                    }
+                }
             }
             if(data.match('notice_')=='notice_'){
                 noticeAlarm();

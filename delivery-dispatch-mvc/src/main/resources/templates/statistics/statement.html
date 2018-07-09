@@ -226,7 +226,11 @@
                     }
                 }
                 if (data.match('rider_') == 'rider_') {
-                    footerRiders();
+                    if(map_language){
+                        if(map_language=="hk"){
+                            footerRiders();
+                        }
+                    }
                 }
 
                 if (data.match('order_') == 'order_') {

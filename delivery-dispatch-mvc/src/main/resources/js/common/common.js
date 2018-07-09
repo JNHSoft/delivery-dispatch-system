@@ -29,7 +29,11 @@ $(document).ready(function() {
         });
     })
     footerOrders();
-    footerRiders();
+    if(map_language){
+        if(map_language=="hk"){
+            footerRiders();
+        }
+    }
 });
 
 function noticeAlarm() {
