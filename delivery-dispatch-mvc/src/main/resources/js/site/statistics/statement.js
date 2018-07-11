@@ -287,7 +287,6 @@ function getStoreStatistics() {
                         tmpdata.time2 = data[key].cookingTime;
                     }
 
-
                     if (!data[key].assignedDatetime) {
                         tmpdata.time3 = "-";
                     } else {
@@ -298,10 +297,20 @@ function getStoreStatistics() {
                     } else {
                         tmpdata.time4 = timeSet(data[key].pickedUpDatetime);
                     }
-                    if (!data[key].reservationDatetime) {
+                    if(!data[key].reservationDatetime){
                         tmpdata.time5 = "-";
-                    } else {
+                    }else if(data[key].reservationStatus==1){
                         tmpdata.time5 = timeSet(data[key].reservationDatetime);
+                    }else if(data[key].reservationStatus==0){
+                        if(map_region){
+                            if(map_region=="tw"){
+                                tmpdata.time5 = '<span style="color: red">' + timeSet(data[key].reservationDatetime) + '</span>';
+                            }else{
+                                tmpdata.time5 = "-";
+                            }
+                        }else{
+                            tmpdata.time5 = "-";
+                        }
                     }
                     if (!data[key].rider) {
                         tmpdata.rider = "-";
@@ -368,13 +377,13 @@ function getStoreStatistics() {
     });
 }
 function excelDownload(){
-    $('input[name=startDate]').val($('#day1').val());
+    /*$('input[name=startDate]').val($('#day1').val());
     $('input[name=endDate]').val($('#day2').val());
 
     document.searchForm.action="/excelDownload";
     document.searchForm.method="GET";
     document.searchForm.submit();
-
+*/
     /*$.ajax({
         url : "/excelDownload",
         type : 'get',
@@ -387,5 +396,13 @@ function excelDownload(){
             console.log(data);
         }
     });*/
+
+    let startDate = $('#day1').val();
+    let endDate = $('#day2').val();
+
+    jQuery('<form action="'+ "/excelDownload" +'" method="'+ 'get' +'">'
+        + '<input type="hidden" name="'+ 'startDate' +'" value="'+ startDate +'" />'
+        + '<input type="hidden" name="'+ 'endDate' +'" value="'+ endDate +'" />'
+        + '</form>').appendTo('body').submit().remove();
 
 }

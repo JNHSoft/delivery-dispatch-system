@@ -43,8 +43,8 @@ $(function() {
             }
             if(data.match('rider_')=='rider_'){
                 getRiderList();
-                if(map_language){
-                    if(map_language=="hk"){
+                if(map_region){
+                    if(map_region=="hk"){
                         footerRiders();
                     }
                 }

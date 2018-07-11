@@ -28,8 +28,8 @@ $(document).ready(function() {
                 footerOrders();
             }
             if(data.match('rider_')=='rider_'){
-                if(map_language){
-                    if(map_language=="hk"){
+                if(map_region){
+                    if(map_region=="hk"){
                         footerRiders();
                     }
                 }
@@ -502,8 +502,18 @@ function getOrderList(statusArray, storeId) {
 
                 if(!data[key].reservationDatetime){
                     tmpdata.time7 = "-";
-                }else{
+                }else if(data[key].reservationStatus==1){
                     tmpdata.time7 = timeSet2(data[key].reservationDatetime);
+                }else if(data[key].reservationStatus==0){
+                    if(map_region){
+                        if(map_region=="tw"){
+                            tmpdata.time7 = '<span style="color: red">' + timeSet2(data[key].reservationDatetime) + '</span>';
+                        }else{
+                            tmpdata.time7 = "-";
+                        }
+                    }else{
+                        tmpdata.time7 = "-";
+                    }
                 }
 
                 if(!data[key].rider){
@@ -747,7 +757,7 @@ function orderConfirm() {
         }
     }
 }
-function putOrderCancle() {
+function putOrderCancel() {
     if(selectedOriginOrder.status == "3" ){
         alert(order_confirm_completed);
         return;
@@ -759,7 +769,7 @@ function putOrderCancle() {
     }
     var id = $('.tit').attr("orderId");
     $.ajax({
-        url: '/putOrderCancle',
+        url: '/putOrderCancel',
         type: 'put',
         data: {
             id : id,
@@ -770,6 +780,9 @@ function putOrderCancle() {
             var storeId = $('#orderMyStoreChk').val();
             getOrderList(statusArray, storeId);
             $('.state_wrap').removeClass('on');
+            setTimeout(function(){
+                $(window).trigger('resize');
+            },300)
         }
     });
 }

@@ -220,7 +220,15 @@ public class StatisticsStoreExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getReservationDatetime()));
+            if(orderStatisticsByStoreList.get(i).getReservationStatus().equals("0")){
+                if((locale.toString()).equals("zh_TW")){
+                    cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getReservationDatetime()));
+                }else {
+                    cell.setCellValue("");
+                }
+            }else{
+                cell.setCellValue(nullCheck(orderStatisticsByStoreList.get(i).getReservationDatetime()));
+            }
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);

@@ -60,6 +60,7 @@ public class Order extends Common implements Dto {
     private String assignXy;
     private String pickupXy;
     private String completeXy;
+    private String reservationStatus;
 
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

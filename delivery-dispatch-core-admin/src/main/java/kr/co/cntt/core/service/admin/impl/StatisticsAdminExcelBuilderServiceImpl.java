@@ -259,7 +259,15 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getReservationDatetime()));
+            if(orderStatisticsByAdminList.get(i).getReservationStatus().equals("0")){
+                if((locale.toString()).equals("zh_TW")){
+                    cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getReservationDatetime()));
+                }else{
+                    cell.setCellValue("");
+                }
+            }else{
+                cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getReservationDatetime()));
+            }
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);

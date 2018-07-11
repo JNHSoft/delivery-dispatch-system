@@ -44,7 +44,7 @@
 					<button type="button" class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true"
                                                                 th:text="'&nbsp;' + ${#messages.msg('list.search')}"/></button>
 				</span>
-                <button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownload();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownload();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>
     </form>
@@ -175,8 +175,7 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statement.js}"
-            layout:fragment="script2"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statement.js}" layout:fragment="script2"></script>
     <script layout:fragment="script3" type="text/javascript"
             th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}"></script>
 </section>
@@ -226,8 +225,8 @@
                     }
                 }
                 if (data.match('rider_') == 'rider_') {
-                    if(map_language){
-                        if(map_language=="hk"){
+                    if(map_region){
+                        if(map_region=="hk"){
                             footerRiders();
                         }
                     }

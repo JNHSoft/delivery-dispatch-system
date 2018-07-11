@@ -8,6 +8,16 @@ $(function () {
     // 오늘 날짜로 초기화
     $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd',new Date));
 
+    /*$(window)
+        .ajaxStart(function(){
+            console.log("ajaxStart")
+            // loading.show();
+        })
+        .ajaxStop(function(){
+            console.log("ajaxStop")
+            // loading.hide();
+        });*/
+
     getStatisticsList();
     getGroupList();
 
@@ -385,10 +395,20 @@ function getStatisticsList() {
                         $tmpData.th12 = timeSet(data[key].pickedUpDatetime);
                     }
 
-                    if (!data[key].reservationDatetime) {
+                    if(!data[key].reservationDatetime){
                         $tmpData.th13 = "-";
-                    } else {
+                    }else if(data[key].reservationStatus==1){
                         $tmpData.th13 = timeSet(data[key].reservationDatetime);
+                    }else if(data[key].reservationStatus==0){
+                        if(map_region){
+                            if(map_region=="tw"){
+                                $tmpData.th13 = '<span style="color: red">' + timeSet(data[key].reservationDatetime) + '</span>';
+                            }else{
+                                $tmpData.th13 = "-";
+                            }
+                        }else{
+                            $tmpData.th13 = "-";
+                        }
                     }
 
                     $tmpData.th14 = data[key].rider.name
@@ -567,29 +587,62 @@ function getStatisticsInfo(orderId) {
 
 function excelDownload(){
     // console.log("@@@@");
-    $('input[name=startDate]').val($('#startDate').val());
-    $('input[name=endDate]').val($('#endDate').val());
+    /*$('input[name=startDate]').val($('#startDate').val());
+    $('input[name=endDate]').val($('#endDate').val());*/
 
-    document.searchForm.action="/excelDownload";
-    document.searchForm.method="GET";
-    document.searchForm.submit();
+    // document.searchForm.action="/excelDownload";
+    // document.searchForm.method="GET";
+    // document.searchForm.submit();
 
-    // $.ajax({
-    //     url : "/excelDownload",
-    //     type : 'get',
-    //     data : {
-    //         startDate : startDate,
-    //         endDate : endDate
-    //     },
-    //     async : false,
-    //     dataType : 'json',
-    //     success : function(data){
-    //         console.log(data);
-    //     }
-    // });
+    let startDate = $('#startDate').val();
+    let endDate = $('#endDate').val();
 
+    jQuery('<form action="'+ "/excelDownload" +'" method="'+ 'get' +'">'
+        + '<input type="hidden" name="'+ 'startDate' +'" value="'+ startDate +'" />'
+        + '<input type="hidden" name="'+ 'endDate' +'" value="'+ endDate +'" />'
+        + '</form>').appendTo('body').submit().remove();
+
+    /*$.ajax({
+        url : "/excelDownload",
+        type : 'get',
+        data : {
+            startDate : startDate,
+            endDate : endDate
+        },
+        dataType : 'html',
+        success : function(data){
+            console.log(data);
+        },
+        error : function (request,status,error) {
+            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            console.log(request);
+        }
+    });*/
+
+    /*jQuery.download = function(url, data, method){
+        // url과 data를 입력받음
+        if( url && data ){
+            // data 는  string 또는 array/object 를 파라미터로 받는다.
+            data = typeof data == 'string' ? data : jQuery.param(data);
+            // 파라미터를 form의  input으로 만든다.
+            var inputs = '';
+            jQuery.each(data.split('&'), function(){
+                var pair = this.split('=');
+                inputs+='<input type="hidden" name="'+ pair[0] +'" value="'+ pair[1] +'" />';
+            });
+            // request를 보낸다.
+            jQuery('<form action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>')
+                .appendTo('body').submit().remove();
+        };
+    };
+
+    let url = '/excelDownload';
+    let params = {startDate: startDate, endDate: endDate};
+
+    $.download(url, params, 'get');*/
 
 }
+
 /*]]>*/
 
 

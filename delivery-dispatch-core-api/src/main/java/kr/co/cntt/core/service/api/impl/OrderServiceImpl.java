@@ -22,6 +22,7 @@ import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,15 +31,15 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service("orderService")
 public class OrderServiceImpl extends ServiceSupport implements OrderService {
+    @Value("${spring.mvc.locale}")
+    private Locale locale;
+
     @Autowired
     AndroidPushNotificationsService androidPushNotificationsService;
 
@@ -82,8 +83,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         List<Order> orderList = orderMapper.selectForAssignOrders();
         if (orderList != null) {
             Loop1 : for (int i = 0; i < orderList.size(); i++) {
-                Order order = new Order();
-                order = orderList.get(i);
+                Order order = orderList.get(i);
+//                Order order = orderList.get(i);
                 map.put("order", order);
 
 //                log.info(">>> 배정 대기 오더 getCreatedDatetime(): " + orderList.get(i).getCreatedDatetime());
@@ -206,9 +207,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             } else {
                                 flag = Boolean.FALSE;
                             }
-
                         }
-
                     }
                 }
 
@@ -243,9 +242,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
                 }
             }
-
         }
-
     }
 
     public int autoAssignOrderProc(Map map) throws AppTrException {
@@ -319,13 +316,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId());
                 }
 
-                ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(order.getSubGroup());
+                /*ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(order.getSubGroup());
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_NEW);
                     CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
                     checkFcmResponse(pushNotification);
-                }
+                }*/
 
 //                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId()+", subgroup_id:"+ ( (order.getSubGroup() == null) ? "noSubgroup" : order.getSubGroup().getId()) );
             }
@@ -338,7 +335,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     public int postOrder(Order order) throws AppTrException {
         // orderList = null;
 
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+
+        storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
         String address = "";
+
+        /*if((locale.toString()).equals("zh_TW")){
+            address += storeDTO.getDetailAddress();
+        }*/
 
         if (order.getAreaAddress() != null && order.getAreaAddress() != "") {
             address += order.getAreaAddress();
@@ -403,13 +410,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (order.getReservationDatetime() != null && order.getReservationDatetime() != "") {
             order.setReservationDatetime(order.getReservationDatetime().substring(0, 12) +"00");
+            order.setReservationStatus("1");
         } else {
+            order.setReservationStatus("0");
             LocalDateTime ldt = LocalDateTime.now();
             int chkMinutes = 0;
             if(ldt.getMinute()%5!=0){
                 chkMinutes = 5-ldt.getMinute()%5;
             }
-            LocalDateTime reserveLDT = LocalDateTime.now().plusMinutes(Integer.parseInt(order.getCookingTime())+5+chkMinutes);
+            LocalDateTime reserveLDT = LocalDateTime.now().plusMinutes(Integer.parseInt(order.getCookingTime())+chkMinutes);
             String nowDate = String.format("%02d", reserveLDT.getYear())
                     + String.format("%02d", reserveLDT.getMonthValue())
                     + String.format("%02d", reserveLDT.getDayOfMonth())
@@ -429,12 +438,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         if (order.getWebOrderId() == null || order.getWebOrderId() == "") {
             order.setWebOrderId(order.getRegOrderId());
         }
-
-        Store storeDTO = new Store();
-        storeDTO.setAccessToken(order.getToken());
-        storeDTO.setToken(order.getToken());
-
-        storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         Misc misc = new Misc();
 
@@ -625,7 +628,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00022), ErrorCodeEnum.E00022.name());
         }
 
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+
+        storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
         String address = "";
+
+        if((locale.toString()).equals("zh_TW")){
+            address += storeDTO.getDetailAddress();
+        }
 
         if (order.getAreaAddress() != null && order.getAreaAddress() != "") {
             address += order.getAreaAddress();
@@ -704,12 +717,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         int nRet = this.putOrder(order);
         String tmpOrderId = order.getId();
 
-        Store storeDTO = new Store();
-        storeDTO.setAccessToken(order.getToken());
-        storeDTO.setToken(order.getToken());
-        System.out.println(storeDTO.getAccessToken() + "!!!!!" + storeDTO.getToken());
-        storeDTO = storeMapper.selectStoreInfo(storeDTO);
-
         order.setId(tmpRegOrderId);
         if(nRet == 1){
             Order curOrder = getOrderInfo(order);
@@ -745,7 +752,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }else {
                 redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
             }
-
         }
 
         return nRet;

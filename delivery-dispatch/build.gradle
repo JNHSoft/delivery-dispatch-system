@@ -92,7 +92,7 @@ subprojects {
         compile 'org.springframework.boot:spring-boot-starter-aop'
         compile 'org.springframework.boot:spring-boot-starter-cache'
         compile 'org.springframework.boot:spring-boot-starter-jdbc'
-        compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
+//        compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
         compile 'org.springframework:spring-jdbc:+'
         compile 'commons-dbcp:commons-dbcp:1.4'
         compile 'mysql:mysql-connector-java:5.0.8'

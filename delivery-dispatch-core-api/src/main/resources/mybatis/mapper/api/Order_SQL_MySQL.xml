@@ -19,6 +19,7 @@
         <result property="cookingTime" column="cooking_time" />
         <result property="paid" column="paid" />
         <result property="reservationDatetime" column="reservation_datetime" />
+        <result property="reservationStatus" column="reservation_status" />
         <result property="assignedDatetime" column="assigned_datetime" />
         <result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="completedDatetime" column="completed_datetime" />
@@ -70,6 +71,7 @@
 		<result property="message" column="message" />
 		<result property="phone" column="phone" />
 		<result property="reservationDatetime" column="reservation_datetime" />
+		<result property="reservationStatus" column="reservation_status" />
 		<result property="assignedDatetime" column="assigned_datetime" />
 		<result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="completedDatetime" column="completed_datetime" />
@@ -136,6 +138,7 @@
 			, web_order_id
 			, created_datetime
 			, distance
+			, reservation_status
 		) VALUES(
 			(SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 			, (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -163,6 +166,7 @@
 			, #{webOrderId}
 			, now()
 			, #{distance}
+			, #{reservationStatus}
 	  	)
 		<selectKey keyProperty="id" resultType="String">
 			SELECT LAST_INSERT_ID()
@@ -186,6 +190,7 @@
 			, A.cooking_time
 			, A.paid
 			, A.reservation_datetime
+			, A.reservation_status
 			, A.assigned_datetime
 			, A.picked_up_datetime
 			, A.completed_datetime
@@ -275,6 +280,7 @@
             , A.message
             , A.phone
             , A.reservation_datetime
+            , A.reservation_status
             , A.assigned_datetime
             , A.picked_up_datetime
             , A.completed_datetime

@@ -75,11 +75,12 @@ public class StatisticsController {
      */
     @GetMapping("/statistics")
     public String statistics(Order order,@RequestParam(required=false) String frag, Model model) {
+    log.info("statistics");
 
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
         order.setToken(adminInfo.getAdminAccessToken());
 
@@ -107,12 +108,14 @@ public class StatisticsController {
             ,@RequestParam(value = "endDate", required=false) String endDate
 
     ) {
+        log.info("getStatisticsList");
+
         Order order = new Order();
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
-        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
 
         order.setCurrentDatetime(startDate);
@@ -150,12 +153,14 @@ public class StatisticsController {
     public Order getStatisticsInfo(@RequestParam(required=false) String frag,@RequestParam("regOrderId") String regOrderId
 
     ) {
+        log.info("getStatisticsInfo");
+
         Order order = new Order();
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
-        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
         order.setToken(adminInfo.getAdminAccessToken());
 
@@ -174,6 +179,8 @@ public class StatisticsController {
     @GetMapping("/getStatisticsGroupList")
     @CnttMethodDescription("그룹 리스트 불러오기")
     public List<Group> getStatisticsGroupList(@RequestParam(required=false) String frag) {
+        log.info("getStatisticsGroupList");
+
         Order order = new Order();
 
         // ADMIN 정보
@@ -181,19 +188,19 @@ public class StatisticsController {
         // token 부여
         order.setToken(adminInfo.getAdminAccessToken());
 
-        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
         // Group list
         List<Group> groupList = statisticsAdminService.getGroupList(order);
 
         // 리스트 확인
-        if (groupList.size() == 0) {
+        /*if (groupList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (Group s : groupList) {
                 log.info("@@" + s.getName());
             }
-        }
+        }*/
         return groupList;
 
     }
@@ -203,6 +210,7 @@ public class StatisticsController {
     @GetMapping("/getStatisticsSubGroupList")
     @CnttMethodDescription("서브 그룹 리스트 불러오기")
     public List<SubGroup> getStatisticsSubGroupList(@RequestParam(value ="groupId", required=false) String groupId) {
+        log.info("getStatisticsSubGroupList");
 
         Order order = new Order();
 
@@ -211,7 +219,7 @@ public class StatisticsController {
         // token 부여
         order.setToken(adminInfo.getAdminAccessToken());
 
-        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
         // param storeId
         order.setId(groupId);
 
@@ -219,13 +227,13 @@ public class StatisticsController {
         List<SubGroup> subGroupList = statisticsAdminService.getSubGroupList(order);
 
         // 리스트 확인
-        if (subGroupList.size() == 0) {
+        /*if (subGroupList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (SubGroup s : subGroupList) {
                 log.info("@@" + s.getName());
             }
-        }
+        }*/
         return subGroupList;
     }
 
@@ -238,8 +246,10 @@ public class StatisticsController {
             @RequestParam(value ="groupId", required = false) String groupId,
             @RequestParam(value ="subGroupId", required = false) String subGroupId
     ) {
-        log.info("=>>>>>>>>>>>>>>>="+groupId);
-        log.info("=>>>>>>>>>>>>="+subGroupId);
+        log.info("getStatisticsStoreList");
+
+//        log.info("=>>>>>>>>>>>>>>>="+groupId);
+//        log.info("=>>>>>>>>>>>>="+subGroupId);
         SubGroupStoreRel subGroupStoreRel = new SubGroupStoreRel();
         Admin admin = new Admin();
 
@@ -248,7 +258,7 @@ public class StatisticsController {
         // token 부여
         subGroupStoreRel.setToken(adminInfo.getAdminAccessToken());
 
-        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
         // param storeId
         subGroupStoreRel.setGroupId(groupId);
@@ -256,11 +266,11 @@ public class StatisticsController {
         subGroupStoreRel.setToken(adminInfo.getAdminAccessToken());
 
         admin.setToken(adminInfo.getAdminAccessToken());
-        log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!"+subGroupStoreRel);
+//        log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!"+subGroupStoreRel);
 
         // store list
         List<SubGroupStoreRel> storeList = statisticsAdminService.selectSubgroupStoreRels(subGroupStoreRel);
-        log.info("@@@@@@@@@@@!@#!@#!@#!@#!@#!@#"+storeList);
+//        log.info("@@@@@@@@@@@!@#!@#!@#!@#!@#!@#"+storeList);
 
 
 //        // subGroup list
@@ -283,6 +293,10 @@ public class StatisticsController {
                                                 @RequestParam(value = "endDate", required = false, defaultValue = "") String endDate
 
     ) {
+        log.info("statisticsExcelDownload");
+        log.info(startDate);
+        log.info(endDate);
+
 //        if (StringUtils.isBlank(startDate)) startDate = StringHelper.getDate("yyyyMMdd", -1);
 //        if (StringUtils.isBlank(endDate)) endDate = StringHelper.getDate("yyyyMMdd", -1);
         // ADMIN 정보

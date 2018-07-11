@@ -126,9 +126,9 @@ public class OrderController {
     }
 
     @ResponseBody
-    @PutMapping("/putOrderCancle")
+    @PutMapping("/putOrderCancel")
     @CnttMethodDescription("주문취소")
-    public boolean putOrderCancle(Order order){
+    public boolean putOrderCancel(Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
         storeOrderService.putOrderCanceled(order);

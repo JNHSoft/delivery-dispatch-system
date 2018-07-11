@@ -83,7 +83,7 @@
 					<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}" />
 					<button type="button" class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" /></button>
 				</span>
-				<button class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownload();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}" /></button>
+				<button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownload();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}" /></button>
 			</div>
 		</div>
 

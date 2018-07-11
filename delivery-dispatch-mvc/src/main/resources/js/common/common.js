@@ -29,9 +29,13 @@ $(document).ready(function() {
         });
     })
     footerOrders();
-    if(map_language){
-        if(map_language=="hk"){
-            footerRiders();
+    if($(".f_left")){
+        if(map_region){
+            if(map_region=="hk"){
+                footerRiders();
+            }else{
+                $("#footer_left").hide();
+            }
         }
     }
 });
