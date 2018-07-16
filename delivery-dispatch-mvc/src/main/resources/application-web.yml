@@ -55,10 +55,10 @@ datasource:
   deliveryDispatch:
     initialize: true
     initial-size: 20
-    max-active: 100
+    max-total: 100
     max-idle: 100
     min-idle: 20
-    max-wait: 3000
+    max-wait-millis: 3000
     test-on-borrow: true
     validation-query: select 1
     test-while-idle: true
