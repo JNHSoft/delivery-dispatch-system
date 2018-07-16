@@ -636,9 +636,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         String address = "";
 
-        if((locale.toString()).equals("zh_TW")){
+        /*if((locale.toString()).equals("zh_TW")){
             address += storeDTO.getDetailAddress();
-        }
+        }*/
 
         if (order.getAreaAddress() != null && order.getAreaAddress() != "") {
             address += order.getAreaAddress();
