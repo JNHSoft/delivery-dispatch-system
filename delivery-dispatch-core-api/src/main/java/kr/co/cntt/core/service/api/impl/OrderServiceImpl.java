@@ -212,7 +212,20 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
 
                 if (flag == Boolean.TRUE) {
-                    if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
+                    LocalDateTime reserveTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
+                    LocalDateTime ldt = LocalDateTime.now().plusMinutes(50);
+                    if (ldt.until(reserveTime, ChronoUnit.MINUTES)<=0) {
+                        int proc = this.autoAssignOrderProc(map);
+                        if (proc == 1) {
+                            orderList.remove(i);
+                            i -= 1;
+                            log.info("============================================================================");
+                        }
+                    } else {
+                        log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getRegOrderId());
+                        log.info("============================================================================");
+                    }
+                    /*if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
                         LocalDateTime reserveTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
                         LocalDateTime ldt = LocalDateTime.now().plusMinutes(50);
                         if (ldt.until(reserveTime, ChronoUnit.MINUTES)<=0) {
@@ -239,7 +252,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             i -= 1;
                             log.info("============================================================================");
                         }
-                    }
+                    }*/
                 }
             }
         }
