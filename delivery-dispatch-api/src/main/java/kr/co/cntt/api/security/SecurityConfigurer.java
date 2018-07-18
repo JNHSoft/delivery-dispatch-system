@@ -66,8 +66,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 				"/",
 				"/**/*.html",
 				"/**/*.css",
-				"/**/*.js",
-				"/**/*.favicon.ico"
+				"/**/*.js"
+//				"/**/*.favicon.ico"
 			).permitAll()
 			//.antMatchers("/BkrApp/setservicekey.do").permitAll()
 			.antMatchers("/API/getToken.do").permitAll()
