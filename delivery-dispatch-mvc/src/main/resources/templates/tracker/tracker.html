@@ -954,10 +954,10 @@
                             }*/
                         } else if(trackerStatus==3){
                             marker[2].setDuration(5000);
-                            marker[2].setIcon({
+                            /*marker[2].setIcon({
                                 url: (route.start_location.lng() > marker[2].getPosition().lng()) ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
                                 scaledSize: new google.maps.Size(40, 49)
-                            });
+                            });*/
                             marker[2].setPosition(new google.maps.LatLng(route.end_location.lat(), route.end_location.lng()));
                         } else {
                             marker[2].setDuration(50000);
