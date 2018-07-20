@@ -37,7 +37,7 @@
                 <th scope="row">外送門市</th>
                 <td id="storeName">-</td>
                 <th scope="row" class="t_red">預計到達時間</th>
-                <td class="t_red bold f22" id="reservedTime">-</td>
+                <td class="t_red bold f22" id="reservedTime" style="white-space:nowrap;">-</td>
             </tr>
             <tr>
                 <th scope="row">門市地址</th>
@@ -107,6 +107,14 @@
                 if (data.reservationDatetime) {
                     var arriveTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
                     var createTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
+                    var arrivePlusTime = new Date(arriveTime.getTime()+600000);//10분 추가
+                    /*if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1 || trackerStatus == 2)){
+                        $('#reservedTime').removeClass('f22');
+                    }else{
+                        if($('td[class!="f22"]')){
+                            $('#reservedTime').addClass('f22');
+                        }
+                    }*/
                     $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
                     var nowTime = new Date();
                     checkTime = arriveTime.getTime() - nowTime.getTime();
@@ -153,6 +161,9 @@
                     localStorage.removeItem('chkComplete');
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on');
+                    $('#reservedTime').removeClass('f22');
+                    $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes())+ ' ~ '
+                        + setHourMin(arrivePlusTime.getHours()) + ':' + setHourMin(arrivePlusTime.getMinutes()));
                     if (checkEnter == 0) {
                         $(".mapCtrl").attr("id", "");
                         $(".visual_area").attr("id", "map");
@@ -168,6 +179,9 @@
                     $('.progress-background').hide();
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on');
+                    $('#reservedTime').removeClass('f22');
+                    $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes())+ ' ~ '
+                        + setHourMin(arrivePlusTime.getHours()) + ':' + setHourMin(arrivePlusTime.getMinutes()));
                     if (checkEnter == 0 || checkEnter == 1) {
                         $(".mapCtrl").attr("id", "");
                         $(".visual_area").attr("id", "map");
@@ -190,6 +204,9 @@
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on line');
                     $('#tPickup').addClass('on');
+                    if($('td[class!="f22"]')){
+                        $('#reservedTime').addClass('f22');
+                    }
                     if (checkEnter == 0 || checkEnter == 1) {
                         $(".mapCtrl").attr("id", "");
                         $(".visual_area").attr("id", "map");
@@ -208,6 +225,9 @@
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on line');
                     $('#tPickup').addClass('on');
+                    if($('td[class!="f22"]')){
+                        $('#reservedTime').addClass('f22');
+                    }
                     if (checkEnter == 0 || checkEnter == 1) {
                         $(".mapCtrl").attr("id", "");
                         $(".visual_area").attr("id", "map");
