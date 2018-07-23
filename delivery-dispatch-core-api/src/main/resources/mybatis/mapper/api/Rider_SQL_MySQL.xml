@@ -247,7 +247,7 @@
 		FROM TB_RIDER TR
 
 		left join
-		dde.TB_SUBGROUP_RIDER_REL AS SRR
+		TB_SUBGROUP_RIDER_REL AS SRR
 		on TR.id = SRR.rider_id
 		AND SRR.deleted is NULL
 
@@ -880,7 +880,7 @@
 			SET working = if(timediff(date_format(now(), '%T'), subtime(concat(substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'00:20:00')) > 0
 				AND timediff(date_format(now(),'%T'), addtime(concat(substring_index(substring_index(R.rest_hours, '|', num),'|',-1),':00:00'),'01:00:00')) < 0, '3', '1')
 			WHERE (working = 1 or working = 3) and id = id_num;
-        	select working from dde.TB_RIDER where id = id_num;
+        	select working from TB_RIDER where id = id_num;
 			END $$
 			DELIMITER ; -->
 	</select>
@@ -888,21 +888,21 @@
 
     <select id="selectRiderTokenByChatUserId" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="String">
         select TBRS.push_token
-		from dde.TB_RIDER_SESSION AS TBRS
-        LEFT JOIN dde.TB_RIDER AS B
+		from TB_RIDER_SESSION AS TBRS
+        LEFT JOIN TB_RIDER AS B
         ON B.chat_user_id = #{chatUserId}
 		where TBRS.rider_id = B.id and TBRS.push_token is not null and TBRS.expiry_datetime is null
     </select>
 
 	<select id="selectRiderToken" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
 		select TBRS.push_token
-		from dde.TB_RIDER_SESSION AS TBRS
+		from TB_RIDER_SESSION AS TBRS
 		where TBRS.rider_id = #{riderId} and TBRS.push_token is not null and TBRS.expiry_datetime is null
 	</select>
 
 	<select id="selectRiderTokenByOrderId" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
 		select TBRS.push_token
-		from dde.TB_RIDER_SESSION AS TBRS
+		from TB_RIDER_SESSION AS TBRS
         left join TB_ORDER AS TBO
         on TBO.reg_order_id = #{id}
 		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null and TBRS.expiry_datetime is null

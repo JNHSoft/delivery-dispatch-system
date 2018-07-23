@@ -1341,7 +1341,7 @@
 
 	<!-- updateSubGroupRiderRelByStoreId -->
 	<update id="updateSubGroupRiderRelByStoreId" parameterType="kr.co.cntt.core.model.store.Store">
-		UPDATE dde.TB_SUBGROUP_RIDER_REL
+		UPDATE TB_SUBGROUP_RIDER_REL
 		SET
 		<if test="subGroupStoreRel.groupId != null and subGroupStoreRel.subGroupId != ''">
 			group_id = #{subGroupStoreRel.groupId,jdbcType=VARCHAR}

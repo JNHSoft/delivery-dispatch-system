@@ -371,7 +371,7 @@
 
     <select id="selectAllToken" resultType="String">
         select TBRS.push_token
-        from dde.TB_RIDER_SESSION AS TBRS
+        from TB_RIDER_SESSION AS TBRS
         where TBRS.push_token is not null and TBRS.expiry_datetime is null
     </select>
 
