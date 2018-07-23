@@ -108,13 +108,7 @@
                     var arriveTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
                     var createTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
                     var arrivePlusTime = new Date(arriveTime.getTime()+600000);//10분 추가
-                    /*if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1 || trackerStatus == 2)){
-                        $('#reservedTime').removeClass('f22');
-                    }else{
-                        if($('td[class!="f22"]')){
-                            $('#reservedTime').addClass('f22');
-                        }
-                    }*/
+
                     $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
                     var nowTime = new Date();
                     checkTime = arriveTime.getTime() - nowTime.getTime();
@@ -125,10 +119,6 @@
                     }
                 }
 
-                /*if(checkTime-1800*1000>0) {
-                    setTimeout('setUI()',checkTime-1800*1000);
-                }*/
-//            console.log(checkReserveTime-3600*1000);
                 if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime - 3600 * 1000 <= 0) {//예약시간과 등록시간이 1시간이내인지 체크
 //                $.cookie('checkStep','true',{expires:1});
                     localStorage.setItem('checkStep', 'true');
@@ -143,20 +133,17 @@
                     localStorage.removeItem('chkComplete');
                     $('.progress-background').hide();
                     $('#tNew').addClass('on');
-//                $('.visual_area').html('<div class="loading"></div>');
-//                $('.visual_area').html('<div class="gps_loading"></div>');
-//				console.log(checkTime-1800*1000);
                     if ($(".visual_area").has('#map').prevObject.length) {
                         $(".mapCtrl").attr("id", "map");
                         $(".visual_area").attr("id", "");
                     }
-//                console.log(checkTime-1800*1000);
+
                     if (checkTime - 1800 * 1000 <= 0) {//예약시간과 현재시간이 30분 이내인지 체크
 //					$.cookie('checkStep','true',{expires:1});
                         localStorage.setItem('checkStep', 'true');
                         setUI();
                     }
-//                setTimeout('setUI()',30000);
+
                 } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && localStorage.getItem('checkStep')/*$.cookie('checkStep')*/) {
                     localStorage.removeItem('chkComplete');
                     $('#tNew').addClass('on line');
@@ -173,7 +160,7 @@
                     checkEnter = 1;
                     startEndPoint();
                     $('.progress-background').show();
-//                setTimeout('startEndPoint()',30000);
+
                 } else if (trackerStatus == 2 && !localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/) {
                     localStorage.removeItem('chkComplete');
                     $('.progress-background').hide();
@@ -193,7 +180,6 @@
                     $('.progress-background').show();
                     var plusProgress = setInterval(function () {
                         checkProgressValue++;
-//                    console.log(checkProgressValue);
                         $("#progressbar").progressbar("value", checkProgressValue);
                         if (checkProgressValue == 100) {
                             clearInterval(plusProgress);
@@ -219,7 +205,6 @@
                     localStorage.removeItem('chkComplete');
                     calculateAndDisplayRoute(directionsService, directionsDisplay);
 
-//                setInterval('calculateAndDisplayRoute(directionsService, directionsDisplay)', 30000);
                 } else if (trackerStatus == 3 && !localStorage.getItem('chkComplete')) {
                     $('.progress-background').hide();
                     $('#tNew').addClass('on line');
@@ -262,7 +247,6 @@
                 if (data.storeDetailAddress) {
                     $('#storeAddress').text(data.storeDetailAddress);
                 }
-//    $('#riderName').text(riderName?riderName:"-");
             }
         });
     }
@@ -718,14 +702,6 @@
 						,stopover:true}]*/
                 }, function (response, status) {
                     if (status == 'OK') {
-//                        console.log(routeArray[a]);
-                        /*for(var a =0; a <routeArray.length;a++){
-                            clearTimeout(routeArray[a]);
-						}
-                        routeArray = [];
-                        AllDurationTime = [];
-                        durationCheckTime =[];
-                        pointLocation = [];*/
                         var route = response.routes[0].legs[0];
 
                         var durationInTraffic = ((route.duration_in_traffic).value) / 60;
@@ -734,13 +710,12 @@
                         if (beforeDurationTime - durationTime < -2) {
                             durationTime = beforeDurationTime;
                         }
+
                         if(trackerStatus==3){
                             durationTime = 0;
                             durationInTraffic = 0;
                         }
-                        /*if(localStorage.getItem('restCheckTime')){
-                            durationTime = 0;
-                        }*/
+
                         var contentString = '<div class="messageBox">' +
                             '<span class="bigText">' + (durationTime < 10 ? '&nbsp;' + durationTime : durationTime) + '</span>' +
                             '<div><p class="grayText">分鐘</p>' +
@@ -844,7 +819,6 @@
     }
 
     function setHourMin(time1) {
-//    console.log(time1);
         if (time1 == 0) {
             return "00";
         } else {
