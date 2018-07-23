@@ -1,0 +1,1116 @@
+<!DOCTYPE HTML>
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/trackerLayout">
+
+<div class="tracker" layout:fragment="content">
+    <div class="tracker-top">
+        <div class="state">
+            <span id="tNew" class="step1" th:text="${#messages.msg('tracker.new')}"/>
+            <i></i>
+            <span id="tAssign" class="step2" th:text="${#messages.msg('tracker.assign')}"/>
+            <i></i>
+            <span id="tPickup" class="step3" th:text="${#messages.msg('tracker.pickedup')}"/>
+            <i></i>
+            <span id="tComplete" class="step4" th:text="${#messages.msg('tracker.completed')}"/>
+        </div>
+    </div>
+    <div class="progress-background" style="display: none;"><span>餐點準備中</span>
+        <div id="progressbar">
+            <div class="progress-label"></div>
+        </div>
+        <br/></div>
+    <div class="visual_area">
+        <!--<div id="messageBox" style="display: none;"></div>
+        <div id="progressbar" style="display: none;"></div>-->
+    </div>
+    <div id="map" class="mapCtrl" hidden="hidden"></div>
+    <div class="tracker-bottom">
+        <table>
+            <colgroup>
+                <col style="width:20%"/>
+                <col/>
+                <col style="width:27%"/>
+                <col style="width:10%"/>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th scope="row">外送門市</th>
+                <td id="storeName">-</td>
+                <th scope="row" class="t_red">預計到達時間</th>
+                <td class="t_red bold f22" id="reservedTime" style="white-space:nowrap;">-</td>
+            </tr>
+            <tr>
+                <th scope="row">門市地址</th>
+                <td colspan="3" id="storeAddress">-</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
+    var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
+    //var webOrderId = /*[[${tracker.webOrderId}]]*/ 'webOrderId';
+    var trackerStatus = /*[[${tracker.status}]]*/ 'trackerStatus';
+    var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
+    var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
+    //var cookingTime = /*[[${tracker.cookingTime}]]*/ 'cookingTime';
+    var storeName = /*[[${tracker.storeName}]]*/ 'storeName';
+    //var storePhone = /*[[${tracker.storePhone}]]*/ 'storePhone';
+    var storeLatitude = /*[[${tracker.storeLatitude}]]*/ 'storeLatitude';
+    var storeLongitude = /*[[${tracker.storeLongitude}]]*/ 'storeLongitude';
+    //var riderName = /*[[${tracker.riderName}]]*/ 'riderName';
+    //var riderPhone = /*[[${tracker.riderPhone}]]*/ 'riderPhone';
+    var riderLatitude = /*[[${tracker.riderLatitude}]]*/ 'riderLatitude';
+    var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
+    var distance = /*[[${tracker.distance}]]*/ 'distance';
+    //var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddress';
+    var storeDetailAddress = /*[[${tracker.storeDetailAddress}]]*/ 'storeDetailAddress';
+    var encParam = /*[[${encParam}]]*/ 'encParam';
+
+    var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
+    var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
+    var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination';
+    var tracker_assign = /*[[#{tracker.assign}]]*/ 'tracker_assign';
+
+    //console.log(distance);
+    //console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
+    var map;
+    var marker = [];
+    var directionsDisplay;
+    var directionsService;
+    var checkEnter = 0;
+    var checkTime;
+    var checkReserveTime;
+    var checkProgressValue = 0;
+    var durationTime;
+    var beforeDurationTime = 60;
+    var routeArray = [];
+    var durationCheckTime = [];
+    var pointLocation = [];
+    var AllDurationTime = [];
+    var direction = [];
+
+    function setUI() {
+        $.ajax({
+            url: "/trackerInfo",
+            type: 'get',
+            data: {
+                encParam: encParam
+            },
+            dataType: 'json',
+            success: function (data) {
+//            console.log(data);
+                trackerStatus = data.status;
+                if (data.reservationDatetime) {
+                    var arriveTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
+                    var createTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
+                    var arrivePlusTime = new Date(arriveTime.getTime()+600000);//10분 추가
+                    /*if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1 || trackerStatus == 2)){
+                        $('#reservedTime').removeClass('f22');
+                    }else{
+                        if($('td[class!="f22"]')){
+                            $('#reservedTime').addClass('f22');
+                        }
+                    }*/
+                    $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
+                    var nowTime = new Date();
+                    checkTime = arriveTime.getTime() - nowTime.getTime();
+                    checkReserveTime = arriveTime.getTime() - createTime.getTime();
+                    checkProgressValue = 100 - Math.round((checkTime / checkReserveTime) * 100);
+                    if (checkProgressValue == 0) {
+                        checkProgressValue = 1;
+                    }
+                }
+
+                /*if(checkTime-1800*1000>0) {
+                    setTimeout('setUI()',checkTime-1800*1000);
+                }*/
+//            console.log(checkReserveTime-3600*1000);
+                if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime - 3600 * 1000 <= 0) {//예약시간과 등록시간이 1시간이내인지 체크
+//                $.cookie('checkStep','true',{expires:1});
+                    localStorage.setItem('checkStep', 'true');
+                }
+                if (data.storeName) {
+                    $('#storeName').text(data.storeName);
+                }
+
+                $('.state > span').removeClass('on');
+
+                if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && !localStorage.getItem('checkStep')/*!$.cookie('checkStep')*/) {
+                    localStorage.removeItem('chkComplete');
+                    $('.progress-background').hide();
+                    $('#tNew').addClass('on');
+//                $('.visual_area').html('<div class="loading"></div>');
+//                $('.visual_area').html('<div class="gps_loading"></div>');
+//				console.log(checkTime-1800*1000);
+                    if ($(".visual_area").has('#map').prevObject.length) {
+                        $(".mapCtrl").attr("id", "map");
+                        $(".visual_area").attr("id", "");
+                    }
+//                console.log(checkTime-1800*1000);
+                    if (checkTime - 1800 * 1000 <= 0) {//예약시간과 현재시간이 30분 이내인지 체크
+//					$.cookie('checkStep','true',{expires:1});
+                        localStorage.setItem('checkStep', 'true');
+                        setUI();
+                    }
+//                setTimeout('setUI()',30000);
+                } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && localStorage.getItem('checkStep')/*$.cookie('checkStep')*/) {
+                    localStorage.removeItem('chkComplete');
+                    $('#tNew').addClass('on line');
+                    $('#tAssign').addClass('on');
+                    $('#reservedTime').removeClass('f22');
+                    $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes())+ ' ~ '
+                        + setHourMin(arrivePlusTime.getHours()) + ':' + setHourMin(arrivePlusTime.getMinutes()));
+                    if (checkEnter == 0) {
+                        $(".mapCtrl").attr("id", "");
+                        $(".visual_area").attr("id", "map");
+                        $("#map").addClass('blurMap');
+                        initMap();
+                    }
+                    checkEnter = 1;
+                    startEndPoint();
+                    $('.progress-background').show();
+//                setTimeout('startEndPoint()',30000);
+                } else if (trackerStatus == 2 && !localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/) {
+                    localStorage.removeItem('chkComplete');
+                    $('.progress-background').hide();
+                    $('#tNew').addClass('on line');
+                    $('#tAssign').addClass('on');
+                    $('#reservedTime').removeClass('f22');
+                    $('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes())+ ' ~ '
+                        + setHourMin(arrivePlusTime.getHours()) + ':' + setHourMin(arrivePlusTime.getMinutes()));
+                    if (checkEnter == 0 || checkEnter == 1) {
+                        $(".mapCtrl").attr("id", "");
+                        $(".visual_area").attr("id", "map");
+                        $("#map").addClass('blurMap');
+                        initMap();
+                    }
+                    checkEnter = 1;
+                    startEndPoint();
+                    $('.progress-background').show();
+                    var plusProgress = setInterval(function () {
+                        checkProgressValue++;
+//                    console.log(checkProgressValue);
+                        $("#progressbar").progressbar("value", checkProgressValue);
+                        if (checkProgressValue == 100) {
+                            clearInterval(plusProgress);
+                        }
+                    }, 100);
+                } else if (trackerStatus == 2 && localStorage.getItem('chkProgress')/*$.cookie('chkProgress')*/) {
+                    $('.progress-background').hide();
+                    $('#tNew').addClass('on line');
+                    $('#tAssign').addClass('on line');
+                    $('#tPickup').addClass('on');
+                    if($('td[class!="f22"]')){
+                        $('#reservedTime').addClass('f22');
+                    }
+                    if (checkEnter == 0 || checkEnter == 1) {
+                        $(".mapCtrl").attr("id", "");
+                        $(".visual_area").attr("id", "map");
+                        $("#map").removeClass('blurMap');
+                        initMap();
+                    }
+                    checkEnter = 2;
+                    //                $.removeCookie('checkStep');
+                    localStorage.removeItem('checkStep');
+                    localStorage.removeItem('chkComplete');
+                    calculateAndDisplayRoute(directionsService, directionsDisplay);
+
+//                setInterval('calculateAndDisplayRoute(directionsService, directionsDisplay)', 30000);
+                } else if (trackerStatus == 3 && !localStorage.getItem('chkComplete')) {
+                    $('.progress-background').hide();
+                    $('#tNew').addClass('on line');
+                    $('#tAssign').addClass('on line');
+                    $('#tPickup').addClass('on');
+                    if($('td[class!="f22"]')){
+                        $('#reservedTime').addClass('f22');
+                    }
+                    if (checkEnter == 0 || checkEnter == 1) {
+                        $(".mapCtrl").attr("id", "");
+                        $(".visual_area").attr("id", "map");
+                        $("#map").removeClass('blurMap');
+                        initMap();
+                    }
+                    checkEnter = 2;
+                    //                $.removeCookie('checkStep');
+                    localStorage.removeItem('checkStep');
+                    localStorage.setItem('chkComplete', 'true');
+                    calculateAndDisplayRoute(directionsService, directionsDisplay);
+                    setTimeout('setUI()', 10000);
+                } else if (trackerStatus == 3 && localStorage.getItem('chkComplete')) {
+                    $('.progress-background').hide();
+                    $('#tNew').addClass('on line');
+                    $('#tAssign').addClass('on line');
+                    $('#tPickup').addClass('on line');
+                    $('#tComplete').addClass('on');
+                    $('.t_red').text('');
+                    $(".visual_area").attr("id", "");
+                    $(".mapCtrl").attr("id", "map");
+                    $(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
+                    /*                $.removeCookie('checkStep');
+                                    $.removeCookie('chkProgress');*/
+                    localStorage.removeItem('checkStep');
+                    localStorage.removeItem('chkProgress');
+                } else if (trackerStatus == 4) {
+                    localStorage.clear();
+                    location.href = "/error/error-tracker";
+                }
+
+                if (data.storeDetailAddress) {
+                    $('#storeAddress').text(data.storeDetailAddress);
+                }
+//    $('#riderName').text(riderName?riderName:"-");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        /*if(navigator.cookieEnabled){
+            alert("쿠키허용됨");
+        }else{
+            alert("쿠키차단됨");
+        }*/
+        if (self == top) {
+            location.href = "/error/error-tracker";
+        }
+
+        $("#progressbar").progressbar({
+            value: checkProgressValue,
+            change: function () {
+                $(".progress-label").html('');
+            },
+            complete: function () {
+                $(".progress-label").text('');
+                if (!localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/) {
+                    localStorage.setItem('chkProgress', 'true');
+//                $.cookie('chkProgress','true',{expires:1});
+                    setUI();
+                }
+            }
+        });
+
+        setUI();
+        setInterval('setUI()', 60000);
+    });
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 1,
+            center: new google.maps.LatLng((parseFloat(latitude) + parseFloat(storeLatitude)) / 2 + '', (parseFloat(longitude) + parseFloat(storeLongitude)) / 2 + ''),
+//        mapTypeControl: false,
+            disableDefaultUI: true,
+            styles: [
+                {
+                    "featureType": "administrative",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#d6e2e6"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#cfd4d5"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#7492a8"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "administrative.neighborhood",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "lightness": 25
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape.man_made",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#dde2e3"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape.man_made",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#cfd4d5"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape.natural",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#dde2e3"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape.natural",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#7492a8"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape.natural.terrain",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#dde2e3"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#588ca4"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "labels.icon",
+                    "stylers": [
+                        {
+                            "saturation": -100
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi.park",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#a9de83"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi.park",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#bae6a1"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi.sports_complex",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#c6e8b3"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi.sports_complex",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#bae6a1"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#41626b"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "labels.icon",
+                    "stylers": [
+                        {
+                            "saturation": -45
+                        },
+                        {
+                            "lightness": 10
+                        },
+                        {
+                            "visibility": "on"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#c1d1d6"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                            "color": "#a6b5bb"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "labels.icon",
+                    "stylers": [
+                        {
+                            "visibility": "on"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway.controlled_access",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#9fb6bd"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.arterial",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#ffffff"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.local",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#ffffff"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit",
+                    "elementType": "labels.icon",
+                    "stylers": [
+                        {
+                            "saturation": -70
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.line",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#b4cbd4"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.line",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#588ca4"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.station",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.station",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#008cb5"
+                        },
+                        {
+                            "visibility": "on"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit.station.airport",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "saturation": -100
+                        },
+                        {
+                            "lightness": -5
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                            "color": "#a6cbe3"
+                        }
+                    ]
+                }
+            ]
+        });
+        myOverlay.prototype = new google.maps.OverlayView();
+
+        var rendererOptions = {
+            map: map,
+            suppressMarkers: true,//길찾기시 마커 재적용하려면 필요
+            preserveViewport: true,//길찾기시 맵 중심 수동지정하려면 필요
+            polylineOptions: {visible: false}//길찾기시 선 제거
+        };
+
+        directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+        directionsService = new google.maps.DirectionsService;
+
+        if (trackerStatus == 2) {
+            directionsDisplay.setMap(map);
+//        calculateAndDisplayRoute(directionsService, directionsDisplay);
+        }
+
+        var bounds = new google.maps.LatLngBounds();
+//    bounds.extend(new google.maps.LatLng(latitude>storeLatitude?parseFloat(latitude)+0.003:parseFloat(latitude)-0.003,parseFloat(longitude)));
+        bounds.extend(new google.maps.LatLng(parseFloat(latitude), parseFloat(longitude)));
+        bounds.extend(new google.maps.LatLng(parseFloat(storeLatitude), parseFloat(storeLongitude)));
+
+        map.fitBounds(bounds);
+        map.panToBounds(bounds);
+    }
+
+    var overlay;
+
+    function myOverlay(marker, content, map) {
+        this.marker_ = marker;
+        this.content_ = content;
+        this.map_ = map;
+
+        this.div_ = null;
+
+        this.setMap(this.map_);
+    }
+
+    function startEndPoint() {
+        $.ajax({
+            url: "/trackerInfo",
+            type: 'get',
+            data: {
+                encParam: encParam
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (overlay) {
+                    myOverlay.prototype.onRemove = function () {
+                        if (this.div_ && this.div_.parentNode) {
+                            this.div_.parentNode.removeChild(this.div_);
+                        }
+                        //this.div_ = null;
+                    }
+                    overlay.onRemove();
+                    overlay == null;
+                }
+//            $(".messageBox").remove();
+
+                for (var i = 0; i < marker.length; i++) {
+                    marker[i].setMap(null);
+                }
+
+                /*marker[0] = new google.maps.Marker({
+                    position: new google.maps.LatLng(data.latitude, data.longitude),
+                    map: map,
+                    /!*label:{fontWeight: "bold",
+                        text:tracker_destination},*!/
+                    icon: {
+                        url:'/resources/images/tracker/pin_home.png?ver=0.2',
+                        scaledSize: new google.maps.Size(30, 40)
+                    }
+                });
+
+                marker[1] = new google.maps.Marker({
+                    position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
+                    map: map,
+                    /!*label:{fontWeight: "bold", text:data.storeName},*!/
+                    icon: {
+                        url:'/resources/images/tracker/pin_store.png?ver=0.2',
+                        scaledSize: new google.maps.Size(35, 35)
+                    }
+                });*/
+//            console.log(checkProgressValue);
+                $("#progressbar").progressbar("value", checkProgressValue > 100 ? 100 : checkProgressValue);
+
+                /*var contentString = '<div class="messageBox"><span class="sidePadding">餐點準備中</span></div>';
+
+                myOverlay.prototype.onAdd = function () {
+                    var div = document.createElement('div');
+                    div.style.borderStyle = 'none';
+                    div.style.position = 'absolute';
+                    div.style.width = '140px';
+
+                    div.innerHTML = this.content_;
+
+                    this.div_ = div;
+                    var panes = this.getPanes();
+                    panes.overlayLayer.appendChild(div);
+                }
+
+                myOverlay.prototype.draw = function () {
+                    var overlayProjection = this.getProjection();
+
+                    var ne = overlayProjection.fromLatLngToDivPixel(this.marker_.getPosition());
+
+                    var div = this.div_;
+                    div.style.left = data.longitude<data.storeLongitude?ne.x - 155 + 'px':ne.x + 10 + 'px';
+                    div.style.top = data.latitude<data.storeLatitude?ne.y - 10 +'px':ne.y - 63 + 'px';
+                }
+                overlay = new myOverlay(marker[1],contentString,map);*/
+
+                /*var contentString = '<div id="progressbar"><div class="progress-label">aaaa</div></div>';
+
+                myOverlay.prototype.onAdd = function () {
+                    var div = document.createElement('div');
+                    div.style.width = '150px';
+                    div.style.width = '50px';
+                    div.innerHTML = this.content_;
+
+                    this.div_ = div;
+                    var panes = this.getPanes();
+                    panes.floatPane.appendChild(div);
+                }
+
+                myOverlay.prototype.draw = function () {
+                    var overlayProjection = this.getProjection();
+
+                    var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
+                    console.log(this.map_)
+                    console.log(overlayProjection);
+
+                    var div = this.div_;
+                    div.style.left = ne.x;
+                    div.style.top = ne.y;
+                }
+                overlay = new myOverlay(marker[1],contentString,map);*/
+            }
+        });
+    }
+
+    function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+        $.ajax({
+            url: "/trackerInfo",
+            type: 'get',
+            data: {
+                encParam: encParam
+            },
+            dataType: 'json',
+            success: function (data) {
+//            console.log(data);
+//            $(".messageBox").remove();
+
+                myOverlay.prototype.onRemove = function () {
+                    if (this.div_ && this.div_.parentNode) {
+                        this.div_.parentNode.removeChild(this.div_);
+                    }
+//                            this.div_ = null;
+                }
+                if (overlay) {
+                    if ($('.bigText')) {
+                        $('.bigText').remove();
+                    }
+                    overlay.onRemove();
+                }
+                trackerStatus = data.status;
+                /*for (var i = 0; i < marker.length-1; i++) {
+                    marker[i].setMap(null);
+                }*/
+                /*for (var i = 0; i < infowindow.length; i++) {
+                    infowindow[i].close();
+                }
+                infowindow=[];*/
+                var selectedMode = 'DRIVING';
+                //		var selectedMode = 'TRANSIT';
+                //      var selectedMode = 'WALKING';
+//                marker[2]?marker[2].getPostion:
+                directionsService.route({
+//                    origin: marker[2]?new google.maps.LatLng(marker[2].gm_accessors_.animationPosition.gd.position.lat(), marker[2].gm_accessors_.animationPosition.gd.position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
+//                    origin: marker[2]?new google.maps.LatLng(marker[2].position.lat(), marker[2].position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
+                    origin: new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
+                    destination: new google.maps.LatLng(data.latitude, data.longitude),
+//                    destination: new google.maps.LatLng(data.riderLatitude, data.riderLongitude),
+                    // Note that Javascript allows us to access the constant
+                    // using square brackets and a string value as its
+                    // "property."
+                    travelMode: google.maps.TravelMode[selectedMode],
+                    drivingOptions: {
+                        departureTime: new Date(),
+                        trafficModel: 'bestguess'
+                    }/*,
+                    optimizeWaypoints : true,
+					waypoints: [{location : new google.maps.LatLng(data.riderLatitude, data.riderLongitude)
+						,stopover:true}]*/
+                }, function (response, status) {
+                    if (status == 'OK') {
+//                        console.log(routeArray[a]);
+                        /*for(var a =0; a <routeArray.length;a++){
+                            clearTimeout(routeArray[a]);
+						}
+                        routeArray = [];
+                        AllDurationTime = [];
+                        durationCheckTime =[];
+                        pointLocation = [];*/
+                        var route = response.routes[0].legs[0];
+//                        var route2 = response.routes[0].legs[1];
+//                        console.log(response);
+                        /*for(var a = 0; a<(route.steps).length;a++){
+                            console.log(route.steps[a].start_location + ':' +route.steps[a].end_location);
+                        }*/
+//                        var orderDistance = (route.distance).text;
+//                        var durationInTraffic = 0;
+                        /*for(var a = 0; a<response.routes[0].legs.length;a++){
+                            durationInTraffic+= response.routes[0].legs[a].duration.value;
+                        }
+                        durationInTraffic = durationInTraffic/60;*/
+                        var durationInTraffic = ((route.duration_in_traffic).value) / 60;
+
+                        /*var contentString = '<div class="map_info">'+
+                            '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
+                            '<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
+                            '<span class="t_blk">|</span> '+
+                            '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
+                            '</div>';*/
+                        durationTime = Math.round(durationInTraffic);
+                        if (beforeDurationTime - durationTime < -2) {
+                            durationTime = beforeDurationTime;
+                        }
+                        if(trackerStatus==3){
+                            durationTime = 0;
+                            durationInTraffic = 0;
+                        }
+                        /*if(localStorage.getItem('restCheckTime')){
+                            durationTime = 0;
+                        }*/
+                        var contentString = '<div class="messageBox">' +
+                            '<span class="bigText">' + (durationTime < 10 ? '&nbsp;' + durationTime : durationTime) + '</span>' +
+                            '<div><p class="grayText">分鐘</p>' +
+                            '<p class="grayText">預計到達時間</p></div></div>';
+                        beforeDurationTime = Math.round(durationInTraffic);
+//                        var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
+                        var arriveTrafficTime = new Date((new Date).getTime() + durationInTraffic * 60 * 1000);
+
+                        $('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
+                        if (!marker[0]) {
+                            marker[0] = new google.maps.Marker({
+                                position: response.routes[0].legs[response.routes[0].legs.length - 1].end_location,
+                                map: map,
+                                /*label:{fontWeight: "bold",
+                                    text:tracker_destination},*/
+                                icon: {
+                                    url: '/resources/images/tracker/pin_home.png?ver=0.4',
+                                    scaledSize: new google.maps.Size(30, 40)
+                                }
+                            });
+                        }
+                        if (!marker[1]) {
+                            marker[1] = new google.maps.Marker({
+                                position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
+                                map: map,
+                                /*label:{fontWeight: "bold", text:data.storeName},*/
+                                icon: {
+                                    url: '/resources/images/tracker/pin_store.png?ver=0.4',
+                                    scaledSize: new google.maps.Size(35, 35)
+                                }
+                            });
+                        }
+
+                        if (!marker[2]) {
+                            if(trackerStatus!=3){
+                                marker[2] = new SlidingMarker({
+                                    position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance > 0.1 ? 0.00000 : 0.00100)),
+                                    map: map,
+                                    icon: {
+                                        url: data.longitude > data.riderLongitude ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
+                                        scaledSize: new google.maps.Size(40, 49)
+                                    },
+                                    duration: durationInTraffic * 60 * 1000,
+//								duration: (route.duration_in_traffic).value * 1000,
+//								easing: "linear"
+                                    easing: "easeOutCirc"
+//								easing: "easeOutExpo"
+                                });
+                            }else{
+                                marker[2] = new SlidingMarker({
+                                    position: new google.maps.LatLng(route.end_location.lat(), route.end_location.lng()),
+                                    map: map,
+                                    icon: {
+                                        url: data.longitude > data.riderLongitude ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
+                                        scaledSize: new google.maps.Size(40, 49)
+                                    },
+                                    duration: durationInTraffic * 60 * 1000,
+//								duration: (route.duration_in_traffic).value * 1000,
+//								easing: "linear"
+                                    easing: "easeOutCirc"
+//								easing: "easeOutExpo"
+                                });
+                            }
+
+                            /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i){
+                                routeArray[i] = setTimeout(function () {
+                                    marker[2].setDuration(durationCheckTime);
+                                    marker[2].setPosition(pointLocation);
+                                },AllDurationTime);
+                            }
+                            var tempDurationTime = 0;
+							for(var a = 0; a<(route.steps).length;a++){
+                                var turnTime = 60 * 1000/(route.steps).length;
+//									durationCheckTime[a] = route.steps[a].duration.value * 1000;
+                                durationCheckTime[a] = turnTime;
+								pointLocation[a] = route.steps[a].end_location;
+								if(a==0){
+									marker[2].setDuration(durationCheckTime[a]);
+									marker[2].setPosition(pointLocation[a]);
+								}
+								if(a>0){
+									routeTimeout(durationCheckTime[a],pointLocation[a],AllDurationTime[a-1]);
+									/!*routeArray[a] = setTimeout(function () {
+                                      		marker[2].setDuration(durationCheckTime[a]);
+                                            marker[2].setPosition(pointLocation[a]);
+                                        },AllDurationTime[a-1]);*!/
+								}
+								tempDurationTime += route.steps[a].duration.value * 1000;
+								AllDurationTime[a] = tempDurationTime;
+								/!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
+                                console.log(route.steps[a].end_location);
+                                console.log(route.end_location);*!/
+                            }*/
+                            /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i,direction,restStepTime){
+                                routeArray[i] = setTimeout(function () {
+                                    marker[2].setDuration(durationCheckTime);
+                                    marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
+                                    marker[2].setPosition(pointLocation);
+                                    if(restStepTime==0){
+                                        localStorage.setItem('restCheckTime','true');
+                                    }
+                                    $('.bigText').html(restStepTime<10?'&nbsp;'+restStepTime:restStepTime);
+//                                    console.log(direction);
+                                },AllDurationTime);
+                            }
+                            var tempDurationTime = 0;
+                            if(data.distance>0.1  && !localStorage.getItem('restCheckTime')) {
+                                for (var a = 0; a < (route.steps).length; a++) {
+//								    var turnTime = 50 * 1000/(route.steps).length;
+                                    durationCheckTime[a] = route.steps[a].duration.value * 1000;
+                                    durationCheckTime[a] = turnTime;
+                                    pointLocation[a] = route.steps[a].end_location;
+                                    direction[a] = route.steps[a].end_location.lng() > route.steps[a].start_location.lng() ? 'right' : 'left';
+//									console.log(route.steps[a].end_location.lng() + ':' + route.steps[a].start_location.lng());
+                                    var restStepTime = route.steps[a].duration.value;
+                                    /!*for(var b = 0; b<(route2.steps).length;b++){
+                                        restStepTime += route2.steps[b].duration.value;
+									}*!/
+                                    for (var b = a; b < (route.steps).length; b++) {
+                                        restStepTime += route.steps[b].duration.value;
+                                    }
+                                    restStepTime = Math.round(restStepTime / 60);
+                                    if (a == 0) {
+                                        marker[2].setDuration(durationCheckTime[a] / 2);
+                                        marker[2].setIcon({
+                                            url: (direction[a] == 'right') ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
+                                            scaledSize: new google.maps.Size(40, 49)
+                                        });
+                                        marker[2].setPosition(pointLocation[a]);
+                                    }
+                                    if (a > 0) {
+                                        routeTimeout(durationCheckTime[a] / 2, pointLocation[a], AllDurationTime[a - 1], a - 1, direction[a], restStepTime);
+                                    }
+//									tempDurationTime += route.steps[a].duration.value * 1000;
+                                    tempDurationTime += durationCheckTime[a];
+                                    AllDurationTime[a] = tempDurationTime;
+                                    /!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
+                                    console.log(route.steps[a].end_location);
+                                    console.log(route.end_location);*!/
+                                }
+                            }*/
+                        } else if(trackerStatus==3){
+                            marker[2].setDuration(5000);
+                            /*marker[2].setIcon({
+                                url: (route.start_location.lng() > marker[2].getPosition().lng()) ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
+                                scaledSize: new google.maps.Size(40, 49)
+                            });*/
+                            marker[2].setPosition(new google.maps.LatLng(route.end_location.lat(), route.end_location.lng()));
+                        } else {
+                            marker[2].setDuration(50000);
+                            marker[2].setIcon({
+                                url: (route.start_location.lng() > marker[2].getPosition().lng()) ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
+                                scaledSize: new google.maps.Size(40, 49)
+                            });
+                            marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance > 0.1 ? 0.00000 : 0.00100)));
+//							marker[2].setDuration((route.duration_in_traffic).value * 1000);
+//							marker[2].setPosition(route.end_location);
+                            /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i,direction,restStepTime){
+                                routeArray[i] = setTimeout(function () {
+                                    marker[2].setDuration(durationCheckTime);
+                                    marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
+                                    marker[2].setPosition(pointLocation);
+                                    if(restStepTime==0){
+                                        localStorage.setItem('restCheckTime','true');
+                                    }
+                                    $('.bigText').html(restStepTime<10?'&nbsp;'+restStepTime:restStepTime);
+//                                    console.log(direction);
+                                },AllDurationTime);
+                            }
+                            var tempDurationTime = 0;
+                            if(data.distance>0.1  && !localStorage.getItem('restCheckTime')){
+                                for(var a = 0; a<(route.steps).length;a++){
+//								    var turnTime = 50 * 1000/(route.steps).length;
+                                    durationCheckTime[a] = route.steps[a].duration.value * 1000;
+                                    durationCheckTime[a] = turnTime;
+                                    pointLocation[a] = route.steps[a].end_location;
+                                    direction[a] = route.steps[a].end_location.lng()>route.steps[a].start_location.lng()?'right':'left';
+//									console.log(route.steps[a].end_location.lng() + ':' + route.steps[a].start_location.lng());
+                                    var restStepTime = route.steps[a].duration.value;
+                                    /!*for(var b = 0; b<(route2.steps).length;b++){
+                                        restStepTime += route2.steps[b].duration.value;
+                                    }*!/
+                                    for(var b = a; b<(route.steps).length;b++){
+                                        restStepTime += route.steps[b].duration.value;
+                                    }
+                                    restStepTime = Math.round(restStepTime/60);
+                                    if(a==0){
+                                        marker[2].setDuration(durationCheckTime[a]/2);
+                                        marker[2].setIcon({url:(direction[a]== 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
+                                        marker[2].setPosition(pointLocation[a]);
+                                    }
+                                    if(a>0){
+                                        routeTimeout(durationCheckTime[a]/2,pointLocation[a],AllDurationTime[a-1],a-1,direction[a],restStepTime);
+                                    }
+//									tempDurationTime += route.steps[a].duration.value * 1000;
+                                    tempDurationTime += durationCheckTime[a];
+                                    AllDurationTime[a] = tempDurationTime;
+                                    /!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
+                                    console.log(route.steps[a].end_location);
+                                    console.log(route.end_location);*!/
+                                }
+                            }*/
+                        }
+                        /*console.log(marker[2].gm_accessors_.animationPosition.gd);
+                        console.log(marker[2]);*/
+                        /*if(data.distance > 0.1){
+                            marker[2] = new google.maps.Marker({
+                                position: route.start_location,
+                                map: map,
+                                icon: {
+                                    url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
+                                    scaledSize: new google.maps.Size(40, 49)
+                                }
+                            });
+                        }*/
+                        myOverlay.prototype.onAdd = function () {
+                            var div = document.createElement('div');
+                            div.style.borderStyle = 'none';
+                            div.style.position = 'absolute';
+                            div.style.width = '140px';
+                            div.innerHTML = this.content_;
+
+                            this.div_ = div;
+                            var panes = this.getPanes();
+                            panes.overlayLayer.appendChild(div);
+//                            panes.floatPane.appendChild(div);
+                        }
+                        myOverlay.prototype.draw = function () {
+                            var overlayProjection = this.getProjection();
+                            var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
+                            var div = this.div_;
+
+                            div.style.left = data.longitude > data.storeLongitude ? ne.x - 160 + 'px' : ne.x + 18 + 'px';
+                            if (data.longitude > data.storeLongitude) {
+                                div.style.top = data.latitude < data.storeLatitude ? ne.y + 92 + 'px' : ne.y - 150 + 'px';
+                            } else {
+                                div.style.top = data.latitude < data.storeLatitude ? ne.y + 79 + 'px' : ne.y - 150 + 'px';
+                            }
+                        }
+
+                        overlay = new myOverlay(marker[0], contentString, map);
+
+                        /*infowindow = new google.maps.InfoWindow({
+                            content: contentString
+                        });
+                        infowindow.open(map, marker[1]);*/
+
+                        directionsDisplay.setDirections(response);
+                    } else {
+                        window.alert('Directions request failed due to ' + status);
+                    }
+                });
+            }/*,
+        error : function (request,status,error) {
+            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        }*/
+        })
+    }
+
+    function setHourMin(time1) {
+//    console.log(time1);
+        if (time1 == 0) {
+            return "00";
+        } else {
+            return (time1 + '').length > 1 ? time1 : '0' + time1;
+        }
+    }
+
+    function safariSetDate(time) {
+        return (time.replace(/-/gi, '/')).substring(0, time.indexOf("."));
+    }
+    /*]]>*/
+</script>
+
+<script type="text/javascript" defer="defer"
+        th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}"
+        layout:fragment="script2"/>
+<script type="text/javascript" defer="defer" th:src="@{/resources/js/lib/jquery.easing.1.3.js}"
+        layout:fragment="script3"/>
+<script type="text/javascript" defer="defer" th:src="@{/resources/js/lib/markerAnimate.js}" layout:fragment="script4"/>
+<script type="text/javascript" defer="defer" th:src="@{/resources/js/lib/SlidingMarker.min.js}"
+        layout:fragment="script5"/>
+</html>
