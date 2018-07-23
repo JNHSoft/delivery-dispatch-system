@@ -293,7 +293,7 @@
         });
 
         setUI();
-        setInterval('setUI()', 60000);
+        setInterval('setUI()', 30000);
     });
 
     function initMap() {
@@ -658,81 +658,7 @@
                 for (var i = 0; i < marker.length; i++) {
                     marker[i].setMap(null);
                 }
-
-                /*marker[0] = new google.maps.Marker({
-                    position: new google.maps.LatLng(data.latitude, data.longitude),
-                    map: map,
-                    /!*label:{fontWeight: "bold",
-                        text:tracker_destination},*!/
-                    icon: {
-                        url:'/resources/images/tracker/pin_home.png?ver=0.2',
-                        scaledSize: new google.maps.Size(30, 40)
-                    }
-                });
-
-                marker[1] = new google.maps.Marker({
-                    position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
-                    map: map,
-                    /!*label:{fontWeight: "bold", text:data.storeName},*!/
-                    icon: {
-                        url:'/resources/images/tracker/pin_store.png?ver=0.2',
-                        scaledSize: new google.maps.Size(35, 35)
-                    }
-                });*/
-//            console.log(checkProgressValue);
                 $("#progressbar").progressbar("value", checkProgressValue > 100 ? 100 : checkProgressValue);
-
-                /*var contentString = '<div class="messageBox"><span class="sidePadding">餐點準備中</span></div>';
-
-                myOverlay.prototype.onAdd = function () {
-                    var div = document.createElement('div');
-                    div.style.borderStyle = 'none';
-                    div.style.position = 'absolute';
-                    div.style.width = '140px';
-
-                    div.innerHTML = this.content_;
-
-                    this.div_ = div;
-                    var panes = this.getPanes();
-                    panes.overlayLayer.appendChild(div);
-                }
-
-                myOverlay.prototype.draw = function () {
-                    var overlayProjection = this.getProjection();
-
-                    var ne = overlayProjection.fromLatLngToDivPixel(this.marker_.getPosition());
-
-                    var div = this.div_;
-                    div.style.left = data.longitude<data.storeLongitude?ne.x - 155 + 'px':ne.x + 10 + 'px';
-                    div.style.top = data.latitude<data.storeLatitude?ne.y - 10 +'px':ne.y - 63 + 'px';
-                }
-                overlay = new myOverlay(marker[1],contentString,map);*/
-
-                /*var contentString = '<div id="progressbar"><div class="progress-label">aaaa</div></div>';
-
-                myOverlay.prototype.onAdd = function () {
-                    var div = document.createElement('div');
-                    div.style.width = '150px';
-                    div.style.width = '50px';
-                    div.innerHTML = this.content_;
-
-                    this.div_ = div;
-                    var panes = this.getPanes();
-                    panes.floatPane.appendChild(div);
-                }
-
-                myOverlay.prototype.draw = function () {
-                    var overlayProjection = this.getProjection();
-
-                    var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
-                    console.log(this.map_)
-                    console.log(overlayProjection);
-
-                    var div = this.div_;
-                    div.style.left = ne.x;
-                    div.style.top = ne.y;
-                }
-                overlay = new myOverlay(marker[1],contentString,map);*/
             }
         });
     }
@@ -801,25 +727,9 @@
                         durationCheckTime =[];
                         pointLocation = [];*/
                         var route = response.routes[0].legs[0];
-//                        var route2 = response.routes[0].legs[1];
-//                        console.log(response);
-                        /*for(var a = 0; a<(route.steps).length;a++){
-                            console.log(route.steps[a].start_location + ':' +route.steps[a].end_location);
-                        }*/
-//                        var orderDistance = (route.distance).text;
-//                        var durationInTraffic = 0;
-                        /*for(var a = 0; a<response.routes[0].legs.length;a++){
-                            durationInTraffic+= response.routes[0].legs[a].duration.value;
-                        }
-                        durationInTraffic = durationInTraffic/60;*/
+
                         var durationInTraffic = ((route.duration_in_traffic).value) / 60;
 
-                        /*var contentString = '<div class="map_info">'+
-                            '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
-                            '<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
-                            '<span class="t_blk">|</span> '+
-                            '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
-                            '</div>';*/
                         durationTime = Math.round(durationInTraffic);
                         if (beforeDurationTime - durationTime < -2) {
                             durationTime = beforeDurationTime;
@@ -866,186 +776,34 @@
 
                         if (!marker[2]) {
                             if(trackerStatus!=3){
-                                marker[2] = new SlidingMarker({
+                                marker[2] = new google.maps.Marker({
                                     position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance > 0.1 ? 0.00000 : 0.00100)),
                                     map: map,
                                     icon: {
                                         url: data.longitude > data.riderLongitude ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
                                         scaledSize: new google.maps.Size(40, 49)
-                                    },
-                                    duration: durationInTraffic * 60 * 1000,
-//								duration: (route.duration_in_traffic).value * 1000,
-//								easing: "linear"
-                                    easing: "easeOutCirc"
-//								easing: "easeOutExpo"
+                                    }
                                 });
                             }else{
-                                marker[2] = new SlidingMarker({
+                                marker[2] = new google.maps.Marker({
                                     position: new google.maps.LatLng(route.end_location.lat(), route.end_location.lng()),
                                     map: map,
                                     icon: {
                                         url: data.longitude > data.riderLongitude ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
                                         scaledSize: new google.maps.Size(40, 49)
-                                    },
-                                    duration: durationInTraffic * 60 * 1000,
-//								duration: (route.duration_in_traffic).value * 1000,
-//								easing: "linear"
-                                    easing: "easeOutCirc"
-//								easing: "easeOutExpo"
+                                    }
                                 });
                             }
-
-                            /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i){
-                                routeArray[i] = setTimeout(function () {
-                                    marker[2].setDuration(durationCheckTime);
-                                    marker[2].setPosition(pointLocation);
-                                },AllDurationTime);
-                            }
-                            var tempDurationTime = 0;
-							for(var a = 0; a<(route.steps).length;a++){
-                                var turnTime = 60 * 1000/(route.steps).length;
-//									durationCheckTime[a] = route.steps[a].duration.value * 1000;
-                                durationCheckTime[a] = turnTime;
-								pointLocation[a] = route.steps[a].end_location;
-								if(a==0){
-									marker[2].setDuration(durationCheckTime[a]);
-									marker[2].setPosition(pointLocation[a]);
-								}
-								if(a>0){
-									routeTimeout(durationCheckTime[a],pointLocation[a],AllDurationTime[a-1]);
-									/!*routeArray[a] = setTimeout(function () {
-                                      		marker[2].setDuration(durationCheckTime[a]);
-                                            marker[2].setPosition(pointLocation[a]);
-                                        },AllDurationTime[a-1]);*!/
-								}
-								tempDurationTime += route.steps[a].duration.value * 1000;
-								AllDurationTime[a] = tempDurationTime;
-								/!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
-                                console.log(route.steps[a].end_location);
-                                console.log(route.end_location);*!/
-                            }*/
-                            /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i,direction,restStepTime){
-                                routeArray[i] = setTimeout(function () {
-                                    marker[2].setDuration(durationCheckTime);
-                                    marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-                                    marker[2].setPosition(pointLocation);
-                                    if(restStepTime==0){
-                                        localStorage.setItem('restCheckTime','true');
-                                    }
-                                    $('.bigText').html(restStepTime<10?'&nbsp;'+restStepTime:restStepTime);
-//                                    console.log(direction);
-                                },AllDurationTime);
-                            }
-                            var tempDurationTime = 0;
-                            if(data.distance>0.1  && !localStorage.getItem('restCheckTime')) {
-                                for (var a = 0; a < (route.steps).length; a++) {
-//								    var turnTime = 50 * 1000/(route.steps).length;
-                                    durationCheckTime[a] = route.steps[a].duration.value * 1000;
-                                    durationCheckTime[a] = turnTime;
-                                    pointLocation[a] = route.steps[a].end_location;
-                                    direction[a] = route.steps[a].end_location.lng() > route.steps[a].start_location.lng() ? 'right' : 'left';
-//									console.log(route.steps[a].end_location.lng() + ':' + route.steps[a].start_location.lng());
-                                    var restStepTime = route.steps[a].duration.value;
-                                    /!*for(var b = 0; b<(route2.steps).length;b++){
-                                        restStepTime += route2.steps[b].duration.value;
-									}*!/
-                                    for (var b = a; b < (route.steps).length; b++) {
-                                        restStepTime += route.steps[b].duration.value;
-                                    }
-                                    restStepTime = Math.round(restStepTime / 60);
-                                    if (a == 0) {
-                                        marker[2].setDuration(durationCheckTime[a] / 2);
-                                        marker[2].setIcon({
-                                            url: (direction[a] == 'right') ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
-                                            scaledSize: new google.maps.Size(40, 49)
-                                        });
-                                        marker[2].setPosition(pointLocation[a]);
-                                    }
-                                    if (a > 0) {
-                                        routeTimeout(durationCheckTime[a] / 2, pointLocation[a], AllDurationTime[a - 1], a - 1, direction[a], restStepTime);
-                                    }
-//									tempDurationTime += route.steps[a].duration.value * 1000;
-                                    tempDurationTime += durationCheckTime[a];
-                                    AllDurationTime[a] = tempDurationTime;
-                                    /!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
-                                    console.log(route.steps[a].end_location);
-                                    console.log(route.end_location);*!/
-                                }
-                            }*/
                         } else if(trackerStatus==3){
-                            marker[2].setDuration(5000);
-                            /*marker[2].setIcon({
-                                url: (route.start_location.lng() > marker[2].getPosition().lng()) ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
-                                scaledSize: new google.maps.Size(40, 49)
-                            });*/
                             marker[2].setPosition(new google.maps.LatLng(route.end_location.lat(), route.end_location.lng()));
                         } else {
-                            marker[2].setDuration(50000);
                             marker[2].setIcon({
-                                url: (route.start_location.lng() > marker[2].getPosition().lng()) ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
+                                url: data.longitude > data.riderLongitude ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
                                 scaledSize: new google.maps.Size(40, 49)
                             });
                             marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance > 0.1 ? 0.00000 : 0.00100)));
-//							marker[2].setDuration((route.duration_in_traffic).value * 1000);
-//							marker[2].setPosition(route.end_location);
-                            /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i,direction,restStepTime){
-                                routeArray[i] = setTimeout(function () {
-                                    marker[2].setDuration(durationCheckTime);
-                                    marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-                                    marker[2].setPosition(pointLocation);
-                                    if(restStepTime==0){
-                                        localStorage.setItem('restCheckTime','true');
-                                    }
-                                    $('.bigText').html(restStepTime<10?'&nbsp;'+restStepTime:restStepTime);
-//                                    console.log(direction);
-                                },AllDurationTime);
-                            }
-                            var tempDurationTime = 0;
-                            if(data.distance>0.1  && !localStorage.getItem('restCheckTime')){
-                                for(var a = 0; a<(route.steps).length;a++){
-//								    var turnTime = 50 * 1000/(route.steps).length;
-                                    durationCheckTime[a] = route.steps[a].duration.value * 1000;
-                                    durationCheckTime[a] = turnTime;
-                                    pointLocation[a] = route.steps[a].end_location;
-                                    direction[a] = route.steps[a].end_location.lng()>route.steps[a].start_location.lng()?'right':'left';
-//									console.log(route.steps[a].end_location.lng() + ':' + route.steps[a].start_location.lng());
-                                    var restStepTime = route.steps[a].duration.value;
-                                    /!*for(var b = 0; b<(route2.steps).length;b++){
-                                        restStepTime += route2.steps[b].duration.value;
-                                    }*!/
-                                    for(var b = a; b<(route.steps).length;b++){
-                                        restStepTime += route.steps[b].duration.value;
-                                    }
-                                    restStepTime = Math.round(restStepTime/60);
-                                    if(a==0){
-                                        marker[2].setDuration(durationCheckTime[a]/2);
-                                        marker[2].setIcon({url:(direction[a]== 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-                                        marker[2].setPosition(pointLocation[a]);
-                                    }
-                                    if(a>0){
-                                        routeTimeout(durationCheckTime[a]/2,pointLocation[a],AllDurationTime[a-1],a-1,direction[a],restStepTime);
-                                    }
-//									tempDurationTime += route.steps[a].duration.value * 1000;
-                                    tempDurationTime += durationCheckTime[a];
-                                    AllDurationTime[a] = tempDurationTime;
-                                    /!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
-                                    console.log(route.steps[a].end_location);
-                                    console.log(route.end_location);*!/
-                                }
-                            }*/
                         }
-                        /*console.log(marker[2].gm_accessors_.animationPosition.gd);
-                        console.log(marker[2]);*/
-                        /*if(data.distance > 0.1){
-                            marker[2] = new google.maps.Marker({
-                                position: route.start_location,
-                                map: map,
-                                icon: {
-                                    url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
-                                    scaledSize: new google.maps.Size(40, 49)
-                                }
-                            });
-                        }*/
+
                         myOverlay.prototype.onAdd = function () {
                             var div = document.createElement('div');
                             div.style.borderStyle = 'none';
@@ -1072,11 +830,6 @@
                         }
 
                         overlay = new myOverlay(marker[0], contentString, map);
-
-                        /*infowindow = new google.maps.InfoWindow({
-                            content: contentString
-                        });
-                        infowindow.open(map, marker[1]);*/
 
                         directionsDisplay.setDirections(response);
                     } else {
