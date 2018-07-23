@@ -32,10 +32,10 @@ logging:
 datasource:
   deliveryDispatch:
     initialize: true
-    initial-size: 20
-    max-total: 100
-    max-idle: 100
-    min-idle: 20
+    initial-size: 10
+    max-total: 50
+    max-idle: 50
+    min-idle: 10
     max-wait-millis: 3000
     test-on-borrow: true
     validation-query: select 1
@@ -45,7 +45,7 @@ datasource:
     driver-class-name: com.mysql.jdbc.Driver
 
 #    [DDE-TW-MAIN]
-    url: jdbc:mysql://110.234.0.156:3306/dde?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8
     username: twuser
     password: twuserpw!
 
