@@ -195,8 +195,8 @@ api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
 #[DDE-TW-MAIN]
-api.upload.path.notice: /root/dde-upload/notice
-api.upload.path.alarm: /root/dde-upload/alarm
+api.upload.path.notice: /home/ddehk/dde-upload/notice
+api.upload.path.alarm: /home/ddehk/dde-upload/alarm
 
 #[DDE-HK-MAIN]
 #api.upload.path.notice: /root/dde-upload/notice
