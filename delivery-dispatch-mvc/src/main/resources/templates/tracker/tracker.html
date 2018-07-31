@@ -14,14 +14,12 @@
             <span id="tComplete" class="step4" th:text="${#messages.msg('tracker.completed')}"/>
         </div>
     </div>
-    <div class="progress-background" style="display: none;"><span>餐點準備中</span>
+    <div class="progress-background" style="display: none;"><span th:text="${#messages.msg('tracker.assign')}"/>
         <div id="progressbar">
             <div class="progress-label"></div>
         </div>
         <br/></div>
     <div class="visual_area">
-        <!--<div id="messageBox" style="display: none;"></div>
-        <div id="progressbar" style="display: none;"></div>-->
     </div>
     <div id="map" class="mapCtrl" hidden="hidden"></div>
     <div class="tracker-bottom">
@@ -34,13 +32,13 @@
             </colgroup>
             <tbody>
             <tr>
-                <th scope="row">外送門市</th>
+                <th scope="row" th:text="${#messages.msg('tracker.destination')}"/>
                 <td id="storeName">-</td>
-                <th scope="row" class="t_red">預計到達時間</th>
+                <th scope="row" class="t_red" th:text="${#messages.msg('tracker.estimated.arrival.time')}"/>
                 <td class="t_red bold f22" id="reservedTime" style="white-space:nowrap;">-</td>
             </tr>
             <tr>
-                <th scope="row">門市地址</th>
+                <th scope="row" th:text="${#messages.msg('store.address')}"/>
                 <td colspan="3" id="storeAddress">-</td>
             </tr>
             </tbody>
@@ -72,10 +70,13 @@
 
     var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
     var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
+    var tracker_minute = /*[[#{tracker.minute}]]*/ 'tracker_minute';
     var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination';
     var tracker_assign = /*[[#{tracker.assign}]]*/ 'tracker_assign';
+    var tracker_estimated_arrival_time = /*[[#{tracker.estimated.arrival.time}]]*/ 'tracker_estimated_arrival_time';
+    var tracker_greetings1 = /*[[#{tracker.greetings1}]]*/ 'tracker_greetings1';
+    var tracker_greetings2 = /*[[#{tracker.greetings2}]]*/ 'tracker_greetings2';
 
-    //console.log(distance);
     //console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
     var map;
     var marker = [];
@@ -87,11 +88,6 @@
     var checkProgressValue = 0;
     var durationTime;
     var beforeDurationTime = 60;
-    var routeArray = [];
-    var durationCheckTime = [];
-    var pointLocation = [];
-    var AllDurationTime = [];
-    var direction = [];
 
     function setUI() {
         $.ajax({
@@ -102,7 +98,6 @@
             },
             dataType: 'json',
             success: function (data) {
-//            console.log(data);
                 trackerStatus = data.status;
                 if (data.reservationDatetime) {
                     var arriveTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
@@ -120,7 +115,6 @@
                 }
 
                 if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime - 3600 * 1000 <= 0) {//예약시간과 등록시간이 1시간이내인지 체크
-//                $.cookie('checkStep','true',{expires:1});
                     localStorage.setItem('checkStep', 'true');
                 }
                 if (data.storeName) {
@@ -129,8 +123,10 @@
 
                 $('.state > span').removeClass('on');
 
-                if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && !localStorage.getItem('checkStep')/*!$.cookie('checkStep')*/) {
+                if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && !localStorage.getItem('checkStep')) {
                     localStorage.removeItem('chkComplete');
+                    localStorage.removeItem('riderStoreDistance');
+                    localStorage.removeItem('beforeDurationTime');
                     $('.progress-background').hide();
                     $('#tNew').addClass('on');
                     if ($(".visual_area").has('#map').prevObject.length) {
@@ -139,13 +135,14 @@
                     }
 
                     if (checkTime - 1800 * 1000 <= 0) {//예약시간과 현재시간이 30분 이내인지 체크
-//					$.cookie('checkStep','true',{expires:1});
                         localStorage.setItem('checkStep', 'true');
                         setUI();
                     }
 
-                } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && localStorage.getItem('checkStep')/*$.cookie('checkStep')*/) {
+                } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && localStorage.getItem('checkStep')) {
                     localStorage.removeItem('chkComplete');
+                    localStorage.removeItem('riderStoreDistance');
+                    localStorage.removeItem('beforeDurationTime');
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on');
                     $('#reservedTime').removeClass('f22');
@@ -161,7 +158,7 @@
                     startEndPoint();
                     $('.progress-background').show();
 
-                } else if (trackerStatus == 2 && !localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/) {
+                } else if (trackerStatus == 2 && !localStorage.getItem('chkProgress')) {
                     localStorage.removeItem('chkComplete');
                     $('.progress-background').hide();
                     $('#tNew').addClass('on line');
@@ -185,7 +182,7 @@
                             clearInterval(plusProgress);
                         }
                     }, 100);
-                } else if (trackerStatus == 2 && localStorage.getItem('chkProgress')/*$.cookie('chkProgress')*/) {
+                } else if (trackerStatus == 2 && localStorage.getItem('chkProgress')) {
                     $('.progress-background').hide();
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on line');
@@ -200,7 +197,6 @@
                         initMap();
                     }
                     checkEnter = 2;
-                    //                $.removeCookie('checkStep');
                     localStorage.removeItem('checkStep');
                     localStorage.removeItem('chkComplete');
                     calculateAndDisplayRoute(directionsService, directionsDisplay);
@@ -220,7 +216,6 @@
                         initMap();
                     }
                     checkEnter = 2;
-                    //                $.removeCookie('checkStep');
                     localStorage.removeItem('checkStep');
                     localStorage.setItem('chkComplete', 'true');
                     calculateAndDisplayRoute(directionsService, directionsDisplay);
@@ -234,11 +229,11 @@
                     $('.t_red').text('');
                     $(".visual_area").attr("id", "");
                     $(".mapCtrl").attr("id", "map");
-                    $(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
-                    /*                $.removeCookie('checkStep');
-                                    $.removeCookie('chkProgress');*/
+                    $(".visual_area").html('<p class="tit_wh">'+tracker_greetings1+'<br/>'+tracker_greetings2+'</p>');
                     localStorage.removeItem('checkStep');
                     localStorage.removeItem('chkProgress');
+                    localStorage.removeItem('riderStoreDistance');
+                    localStorage.removeItem('beforeDurationTime');
                 } else if (trackerStatus == 4) {
                     localStorage.clear();
                     location.href = "/error/error-tracker";
@@ -268,9 +263,8 @@
             },
             complete: function () {
                 $(".progress-label").text('');
-                if (!localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/) {
+                if (!localStorage.getItem('chkProgress')) {
                     localStorage.setItem('chkProgress', 'true');
-//                $.cookie('chkProgress','true',{expires:1});
                     setUI();
                 }
             }
@@ -656,7 +650,6 @@
             },
             dataType: 'json',
             success: function (data) {
-//            console.log(data);
 //            $(".messageBox").remove();
 
                 myOverlay.prototype.onRemove = function () {
@@ -672,17 +665,11 @@
                     overlay.onRemove();
                 }
                 trackerStatus = data.status;
-                /*for (var i = 0; i < marker.length-1; i++) {
-                    marker[i].setMap(null);
-                }*/
-                /*for (var i = 0; i < infowindow.length; i++) {
-                    infowindow[i].close();
-                }
-                infowindow=[];*/
+
                 var selectedMode = 'DRIVING';
                 //		var selectedMode = 'TRANSIT';
                 //      var selectedMode = 'WALKING';
-//                marker[2]?marker[2].getPostion:
+
                 directionsService.route({
 //                    origin: marker[2]?new google.maps.LatLng(marker[2].gm_accessors_.animationPosition.gd.position.lat(), marker[2].gm_accessors_.animationPosition.gd.position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
 //                    origin: marker[2]?new google.maps.LatLng(marker[2].position.lat(), marker[2].position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
@@ -703,12 +690,15 @@
                 }, function (response, status) {
                     if (status == 'OK') {
                         var route = response.routes[0].legs[0];
-
                         var durationInTraffic = ((route.duration_in_traffic).value) / 60;
 
                         durationTime = Math.round(durationInTraffic);
+
                         if (beforeDurationTime - durationTime < -2) {
                             durationTime = beforeDurationTime;
+                        }
+                        if (data.distance <0.3 && localStorage.getItem('riderStoreDistance')&& localStorage.getItem('beforeDurationTime')){
+                            durationTime = localStorage.getItem('beforeDurationTime');
                         }
 
                         if(trackerStatus==3){
@@ -718,11 +708,14 @@
 
                         var contentString = '<div class="messageBox">' +
                             '<span class="bigText">' + (durationTime < 10 ? '&nbsp;' + durationTime : durationTime) + '</span>' +
-                            '<div><p class="grayText">分鐘</p>' +
-                            '<p class="grayText">預計到達時間</p></div></div>';
-                        beforeDurationTime = Math.round(durationInTraffic);
+                            '<div><p class="grayText">' + tracker_minute + '</p>' +
+                            '<p class="grayText">' + tracker_estimated_arrival_time + '</p></div></div>';
+                        beforeDurationTime = durationTime;
+                        if(data.distance>0.3){
+                            localStorage.setItem('beforeDurationTime', beforeDurationTime);
+                        }
 //                        var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
-                        var arriveTrafficTime = new Date((new Date).getTime() + durationInTraffic * 60 * 1000);
+                        var arriveTrafficTime = new Date((new Date).getTime() + (data.distance<0.3?durationTime:durationInTraffic) * 60 * 1000);
 
                         $('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
                         if (!marker[0]) {
@@ -759,7 +752,12 @@
                                         scaledSize: new google.maps.Size(40, 49)
                                     }
                                 });
-                            }else{
+                                if(data.distance > 0.3){
+                                    localStorage.setItem('riderStoreDistance', JSON.stringify(marker[2].getPosition()));
+                                } else if (localStorage.getItem('riderStoreDistance')){
+                                    marker[2].setPosition(JSON.parse(localStorage.getItem('riderStoreDistance')));
+                                }
+                            } else {
                                 marker[2] = new google.maps.Marker({
                                     position: new google.maps.LatLng(route.end_location.lat(), route.end_location.lng()),
                                     map: map,
@@ -771,12 +769,19 @@
                             }
                         } else if(trackerStatus==3){
                             marker[2].setPosition(new google.maps.LatLng(route.end_location.lat(), route.end_location.lng()));
+                        } else if(data.distance < 0.3 && localStorage.getItem('riderStoreDistance')){
+                            marker[2].setIcon({
+                                url: data.longitude > data.riderLongitude ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
+                                scaledSize: new google.maps.Size(40, 49)
+                            });
+                            marker[2].setPosition(JSON.parse(localStorage.getItem('riderStoreDistance')));
                         } else {
                             marker[2].setIcon({
                                 url: data.longitude > data.riderLongitude ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
                                 scaledSize: new google.maps.Size(40, 49)
                             });
                             marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance > 0.1 ? 0.00000 : 0.00100)));
+                            localStorage.setItem('riderStoreDistance', JSON.stringify(marker[2].getPosition()));
                         }
 
                         myOverlay.prototype.onAdd = function () {
