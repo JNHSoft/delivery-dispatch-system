@@ -162,9 +162,9 @@ public class StaffController {
     ) {
         Rider rider = new Rider();
 
-        System.out.print(riderId);
+        /*System.out.print(riderId);
         System.out.print("@@@@@@@@@@@@@@@@@@");
-        System.out.print(storeId);
+        System.out.print(storeId);*/
         /*System.out.print("##################");
         System.out.print(groupId);
         System.out.print("##################");

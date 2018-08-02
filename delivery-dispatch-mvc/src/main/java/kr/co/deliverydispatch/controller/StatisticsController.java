@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -91,9 +92,10 @@ public class StatisticsController {
     }
 
     // excel 다운로드
-    @ResponseBody
+//    @ResponseBody
     @GetMapping("/excelDownload")
-    public ModelAndView statisticsExcelDownload(ModelMap model, HttpServletRequest request, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+    public ModelAndView statisticsExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setToken(storeInfo.getStoreAccessToken());

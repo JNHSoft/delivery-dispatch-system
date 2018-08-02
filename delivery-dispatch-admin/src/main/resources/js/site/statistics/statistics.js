@@ -1,4 +1,5 @@
 /*<![CDATA[*/
+var loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
     // 날짜 변경될때마다
     $('input[name="datepicker"]').change(function () {
@@ -7,16 +8,6 @@ $(function () {
 
     // 오늘 날짜로 초기화
     $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd',new Date));
-
-    /*$(window)
-        .ajaxStart(function(){
-            console.log("ajaxStart")
-            // loading.show();
-        })
-        .ajaxStop(function(){
-            console.log("ajaxStop")
-            // loading.hide();
-        });*/
 
     getStatisticsList();
     getGroupList();
@@ -31,7 +22,9 @@ $(function () {
         getStatisticsList();
         searchList(selectId, selectIdOption);
     });
+
 });
+
 var selectId =$("#statisticsStoreList");
 var selectIdOption = $("#statisticsStoreList option:selected");
 function searchList(selectId, selectIdOption) {
@@ -322,6 +315,7 @@ function initMap() {
  */
 function getStatisticsList() {
     var $mydata = [];
+    loading.show();
     $.ajax({
         url: "/getStatisticsList",
         type: 'get',
@@ -346,94 +340,94 @@ function getStatisticsList() {
                 tmpEnd.setDate(tmpEnd.getDate()+1);
 
                 if (timepickerConfirm(tmpStart, tmpEnd, data[key].createdDatetime)) {
-                if (data.hasOwnProperty(key)) {
+                    if (data.hasOwnProperty(key)) {
 
-                    $tmpData.th0 = i++;
-                    if(data[key].group){
-                        $tmpData.th1 = data[key].group.name
-                    }else {
-                        $tmpData.th1 = group_none;
-                    }
-                    if(data[key].subGroup){
-                        $tmpData.th2 = data[key].subGroup.name
-                    }else{
-                        $tmpData.th2 = group_none;
-                    }
-                    $tmpData.th3 = data[key].store.storeName
-                    if (data[key].status == "3") {
-                        $tmpData.th4 = status_completed
-                    } else if (data[key].status == "4") {
-                        $tmpData.th4 = status_canceled
-                    }
-                    $tmpData.th5 = regOrderIdReduce(data[key].regOrderId);
-                    $tmpData.origin_reg_order_id = data[key].regOrderId;
-                    $tmpData.th6 = timeSet(data[key].createdDatetime);
-                    $tmpData.th7 = data[key].address
-                    // $tmpData.th8 = data[key].menuName
-                    $tmpData.th9 = data[key].cookingTime
-
-                    if (data[key].paid != null) {
-                        if (data[key].paid == "0") {
-                            $tmpData.th10 = order_payment_cash;
-                        } else if (data[key].paid == "1") {
-                            $tmpData.th10 = order_payment_card;
-                        } else if (data[key].paid == "2") {
-                            $tmpData.th10 = order_payment_prepayment;
-                        } else if (data[key].paid == "3"){
-                            $tmpData.th10 = order_payment_service;
+                        $tmpData.th0 = i++;
+                        if(data[key].group){
+                            $tmpData.th1 = data[key].group.name
+                        }else {
+                            $tmpData.th1 = group_none;
                         }
-                    }
-                    if (!data[key].assignedDatetime) {
-                        $tmpData.th11 = "-";
-                    } else {
-                        $tmpData.th11 = timeSet(data[key].assignedDatetime);
-                    }
+                        if(data[key].subGroup){
+                            $tmpData.th2 = data[key].subGroup.name
+                        }else{
+                            $tmpData.th2 = group_none;
+                        }
+                        $tmpData.th3 = data[key].store.storeName
+                        if (data[key].status == "3") {
+                            $tmpData.th4 = status_completed
+                        } else if (data[key].status == "4") {
+                            $tmpData.th4 = status_canceled
+                        }
+                        $tmpData.th5 = regOrderIdReduce(data[key].regOrderId);
+                        $tmpData.origin_reg_order_id = data[key].regOrderId;
+                        $tmpData.th6 = timeSet(data[key].createdDatetime);
+                        $tmpData.th7 = data[key].address
+                        // $tmpData.th8 = data[key].menuName
+                        $tmpData.th9 = data[key].cookingTime
 
-                    if (!data[key].pickedUpDatetime) {
-                        $tmpData.th12 = "-";
-                    } else {
-                        $tmpData.th12 = timeSet(data[key].pickedUpDatetime);
-                    }
+                        if (data[key].paid != null) {
+                            if (data[key].paid == "0") {
+                                $tmpData.th10 = order_payment_cash;
+                            } else if (data[key].paid == "1") {
+                                $tmpData.th10 = order_payment_card;
+                            } else if (data[key].paid == "2") {
+                                $tmpData.th10 = order_payment_prepayment;
+                            } else if (data[key].paid == "3"){
+                                $tmpData.th10 = order_payment_service;
+                            }
+                        }
+                        if (!data[key].assignedDatetime) {
+                            $tmpData.th11 = "-";
+                        } else {
+                            $tmpData.th11 = timeSet(data[key].assignedDatetime);
+                        }
 
-                    if(!data[key].reservationDatetime){
-                        $tmpData.th13 = "-";
-                    }else if(data[key].reservationStatus==1){
-                        $tmpData.th13 = timeSet(data[key].reservationDatetime);
-                    }else if(data[key].reservationStatus==0){
-                        if(map_region){
-                            if(map_region=="tw"){
-                                $tmpData.th13 = '<span style="color: red">' + timeSet(data[key].reservationDatetime) + '</span>';
+                        if (!data[key].pickedUpDatetime) {
+                            $tmpData.th12 = "-";
+                        } else {
+                            $tmpData.th12 = timeSet(data[key].pickedUpDatetime);
+                        }
+
+                        if(!data[key].reservationDatetime){
+                            $tmpData.th13 = "-";
+                        }else if(data[key].reservationStatus==1){
+                            $tmpData.th13 = timeSet(data[key].reservationDatetime);
+                        }else if(data[key].reservationStatus==0){
+                            if(map_region){
+                                if(map_region=="tw"){
+                                    $tmpData.th13 = '<span style="color: red">' + timeSet(data[key].reservationDatetime) + '</span>';
+                                }else{
+                                    $tmpData.th13 = "-";
+                                }
                             }else{
                                 $tmpData.th13 = "-";
                             }
-                        }else{
-                            $tmpData.th13 = "-";
                         }
-                    }
 
-                    $tmpData.th14 = data[key].rider.name
+                        $tmpData.th14 = data[key].rider.name
 
-                    /*if(data[key].group != null){
-                        $tmpData.th15 = data[key].group.id
+                        /*if(data[key].group != null){
+                            $tmpData.th15 = data[key].group.id
 
-                    }
-                    if(data[key].subGroup != null) {
-                        $tmpData.th16 = data[key].subGroup.id
-                    }
+                        }
+                        if(data[key].subGroup != null) {
+                            $tmpData.th16 = data[key].subGroup.id
+                        }
 
-                    if(data[key].storeId != null) {
-                        $tmpData.th17 = data[key].storeId
-                    }*/
-                    if($('#selectStatus option:selected').val()=="all"){
-                        $mydata.push($tmpData);
-                    }else if ($('#selectStatus option:selected').val()=="complete" && data[key].status =="3"){
-                        $mydata.push($tmpData);
-                    }else if ($('#selectStatus option:selected').val()=="cancel" && data[key].status =="4"){
-                        $mydata.push($tmpData);
+                        if(data[key].storeId != null) {
+                            $tmpData.th17 = data[key].storeId
+                        }*/
+                        if($('#selectStatus option:selected').val()=="all"){
+                            $mydata.push($tmpData);
+                        }else if ($('#selectStatus option:selected').val()=="complete" && data[key].status =="3"){
+                            $mydata.push($tmpData);
+                        }else if ($('#selectStatus option:selected').val()=="cancel" && data[key].status =="4"){
+                            $mydata.push($tmpData);
+                        }
                     }
                 }
             }
-        }
             if ($mydata != null) {
                 jQuery('#jqGrid').jqGrid('clearGridData')
                 jQuery('#jqGrid').jqGrid('setGridParam', {data: $mydata, page: 1})
@@ -482,6 +476,7 @@ function getStatisticsList() {
             });
 
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
+            loading.hide();
 
             $('.state_wrap .btn_close').click(function (e) {
                 e.preventDefault();
@@ -492,7 +487,7 @@ function getStatisticsList() {
             })
         }
     }
-    )};
+)};
 
 
 /**
@@ -587,8 +582,8 @@ function getStatisticsInfo(orderId) {
 
 function excelDownload(){
     // console.log("@@@@");
-    /*$('input[name=startDate]').val($('#startDate').val());
-    $('input[name=endDate]').val($('#endDate').val());*/
+    // $('input[name=startDate]').val($('#startDate').val());
+    // $('input[name=endDate]').val($('#endDate').val());
 
     // document.searchForm.action="/excelDownload";
     // document.searchForm.method="GET";
@@ -597,27 +592,35 @@ function excelDownload(){
     let startDate = $('#startDate').val();
     let endDate = $('#endDate').val();
 
-    jQuery('<form action="'+ "/excelDownload" +'" method="'+ 'get' +'">'
+    loading.show();
+
+    /*jQuery('<form action="'+ "/excelDownload" +'" method="'+ 'get' +'">'
         + '<input type="hidden" name="'+ 'startDate' +'" value="'+ startDate +'" />'
         + '<input type="hidden" name="'+ 'endDate' +'" value="'+ endDate +'" />'
         + '</form>').appendTo('body').submit().remove();
 
-    /*$.ajax({
-        url : "/excelDownload",
-        type : 'get',
+    FILEDOWNLOAD_INTERVAL = setInterval(function() {
+            if ($.cookie("fileDownloadToken")) {
+                $.removeCookie('fileDownloadToken');
+                clearInterval(FILEDOWNLOAD_INTERVAL);
+                loading.hide();
+                console.log('hide');
+            }
+        }, 500);*/
+
+    $.fileDownload("/excelDownload",{
+        httpMethod:"GET",
         data : {
             startDate : startDate,
             endDate : endDate
         },
-        dataType : 'html',
-        success : function(data){
-            console.log(data);
+        successCallback: function(url){
+            loading.hide();
         },
-        error : function (request,status,error) {
-            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-            console.log(request);
+        failCallback: function(responseHtml,url){
+            loading.hide();
         }
-    });*/
+    })
 
     /*jQuery.download = function(url, data, method){
         // url과 data를 입력받음

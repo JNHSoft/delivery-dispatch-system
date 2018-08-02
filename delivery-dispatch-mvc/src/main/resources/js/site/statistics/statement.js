@@ -1,3 +1,4 @@
+var loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
     $('input[type="checkbox"]').on('click', function () {
         getStoreStatistics();
@@ -215,7 +216,7 @@ function getStatisticsInfo(regOrderId) {
 
 function getStoreStatistics() {
     var mydata = [];
-
+    loading.show();
     $.ajax({
         url: "/getStoreStatistics",
         type: 'get',
@@ -366,6 +367,7 @@ function getStoreStatistics() {
                 }
             });
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
+            loading.hide();
             $('.state_wrap .btn_close').click(function (e) {
                 e.preventDefault();
                 $('.state_wrap').removeClass('on'); //상세보기 닫기
@@ -376,33 +378,22 @@ function getStoreStatistics() {
         }
     });
 }
+
 function excelDownload(){
-    /*$('input[name=startDate]').val($('#day1').val());
-    $('input[name=endDate]').val($('#day2').val());
-
-    document.searchForm.action="/excelDownload";
-    document.searchForm.method="GET";
-    document.searchForm.submit();
-*/
-    /*$.ajax({
-        url : "/excelDownload",
-        type : 'get',
-        data : {
-            startDate : $('#day1').val(),
-            endDate : $('#day2').val()
-        },
-        dataType : 'json',
-        success : function(data){
-            console.log(data);
-        }
-    });*/
-
     let startDate = $('#day1').val();
     let endDate = $('#day2').val();
-
-    jQuery('<form action="'+ "/excelDownload" +'" method="'+ 'get' +'">'
-        + '<input type="hidden" name="'+ 'startDate' +'" value="'+ startDate +'" />'
-        + '<input type="hidden" name="'+ 'endDate' +'" value="'+ endDate +'" />'
-        + '</form>').appendTo('body').submit().remove();
-
+    loading.show();
+    $.fileDownload("/excelDownload",{
+        httpMethod:"GET",
+        data : {
+            startDate : startDate,
+            endDate : endDate
+        },
+        successCallback: function(url){
+            loading.hide();
+        },
+        failCallback: function(responseHtml,url){
+            loading.hide();
+        }
+    })
 }
