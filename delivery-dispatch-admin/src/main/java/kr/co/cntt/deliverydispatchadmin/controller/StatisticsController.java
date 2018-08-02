@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.terracotta.statistics.Statistic;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -285,20 +287,14 @@ public class StatisticsController {
 
 
     // excel 다운로드
-    @ResponseBody
+//    @ResponseBody
     @GetMapping("/excelDownload")
-    public ModelAndView statisticsExcelDownload(ModelMap model,
-                                                HttpServletRequest request,
+    public ModelAndView statisticsExcelDownload(HttpServletResponse response,
                                                 @RequestParam(value = "startDate", required = false, defaultValue = "") String startDate,
                                                 @RequestParam(value = "endDate", required = false, defaultValue = "") String endDate
 
     ) {
-        log.info("statisticsExcelDownload");
-        log.info(startDate);
-        log.info(endDate);
-
-//        if (StringUtils.isBlank(startDate)) startDate = StringHelper.getDate("yyyyMMdd", -1);
-//        if (StringUtils.isBlank(endDate)) endDate = StringHelper.getDate("yyyyMMdd", -1);
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
@@ -327,7 +323,6 @@ public class StatisticsController {
         List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(order);
 
         modelAndView.addObject("selectAdminStatisticsExcel", orderStatisticsByAdminList);
-
 
         return modelAndView;
     }
