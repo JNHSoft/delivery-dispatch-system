@@ -165,13 +165,13 @@ public class StoreController {
         List<SubGroup> subGroupList = storeAdminService.selectSubGroupsList(store);
 
         // 리스트 확인
-        if (subGroupList.size() == 0) {
+        /*if (subGroupList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (SubGroup s : subGroupList) {
                 log.info("@@" + s.getName());
             }
-        }
+        }*/
         return subGroupList;
     }
 
@@ -193,13 +193,13 @@ public class StoreController {
         List<Group> groupList = storeAdminService.selectGroupsList(store);
 
         // 리스트 확인
-        if (groupList.size() == 0) {
+        /*if (groupList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (Group s : groupList) {
                 log.info("@@" + s.getName());
             }
-        }
+        }*/
         return groupList;
 
     }

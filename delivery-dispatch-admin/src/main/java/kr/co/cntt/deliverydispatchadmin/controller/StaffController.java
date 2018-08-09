@@ -161,14 +161,6 @@ public class StaffController {
             @RequestParam("hasGroup") String hasGroup
     ) {
         Rider rider = new Rider();
-
-        /*System.out.print(riderId);
-        System.out.print("@@@@@@@@@@@@@@@@@@");
-        System.out.print(storeId);*/
-        /*System.out.print("##################");
-        System.out.print(groupId);
-        System.out.print("##################");
-        System.out.print(subGroupId);*/
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         // token 부여
@@ -176,7 +168,6 @@ public class StaffController {
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
-        // param storeId
         rider.setId(riderId);
 //        rider.setIsAdmin("1");
         rider.setCode(code);
@@ -351,13 +342,13 @@ public class StaffController {
 
 
         // 리스트 확인
-        if (storeList.size() == 0) {
+        /*if (storeList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (Store s : storeList) {
                 log.info("@@" + s.getName());
             }
-        }
+        }*/
         return storeList;
 
     }

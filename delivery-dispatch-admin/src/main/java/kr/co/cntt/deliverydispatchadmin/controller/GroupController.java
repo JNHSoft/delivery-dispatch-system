@@ -68,7 +68,7 @@ public class GroupController {
         model.addAttribute("jsonList", new Gson().toJson(groupList));
 
         // 리스트 확인
-        if (noneGroupList.size() == 0) {
+        /*if (noneGroupList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (SubGroupStoreRel s : noneGroupList) {
@@ -76,7 +76,7 @@ public class GroupController {
                 log.info("@@" + s.getId());
 
             }
-        }
+        }*/
         log.info("json : {}", new Gson().toJson(groupList));
 
         return "/group/group";
@@ -104,13 +104,13 @@ public class GroupController {
         List<SubGroup> subGroupList = groupAdminService.selectSubGroupsList(admin);
 
         // 리스트 확인
-        if (subGroupList.size() == 0) {
+        /*if (subGroupList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (SubGroup s : subGroupList) {
                 log.info("@@" + s.getName());
             }
-        }
+        }*/
         return subGroupList;
     }
 
@@ -282,13 +282,13 @@ public class GroupController {
         model.addAttribute("subGroupList",subGroupList);
 
         // 리스트 확인
-        if (subGroupList.size() == 0) {
+        /*if (subGroupList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (SubGroup s : subGroupList) {
                 log.info("@@" + s.getName());
             }
-        }
+        }*/
         return "/group/group ::" + frag;
     }
 
@@ -326,13 +326,13 @@ public class GroupController {
         model.addAttribute("storeList",storeList);
 
         // 리스트 확인
-        if (storeList.size() == 0) {
+        /*if (storeList.size() == 0) {
             log.info("0000000000000000000000");
         } else {
             for (SubGroup s : subGroupList) {
                 log.info("@stosetstostoser@" + s.getName());
             }
-        }
+        }*/
         return "/group/group ::" + frag;
     }
 
