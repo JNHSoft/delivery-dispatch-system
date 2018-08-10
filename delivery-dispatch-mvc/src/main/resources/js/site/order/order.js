@@ -1,5 +1,4 @@
 /*<![CDATA[*/
-
 $(document).ready(function() {
     var storeId = $('#orderMyStoreChk').val();
     var statusArray = ["0","1","2","3","4","5"];
@@ -13,9 +12,9 @@ $(document).ready(function() {
             secure: true
         });
         socket.on('message', function(data){
-            var subgroup_id = data.substring(data.indexOf("subgroup_id:")+12, data.lastIndexOf('}'));
-            var store_id = data.substring(data.indexOf("store_id:")+9,
-                (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
+            var objData = JSON.parse(data);
+            var subgroup_id = objData.subGroupId;
+            var store_id = objData;
             if(!my_store.subGroup && my_store.id == store_id){
                 alarmSound(data);
             }else if(my_store.subGroup){

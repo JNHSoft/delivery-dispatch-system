@@ -168,6 +168,7 @@ function putNoticeConfirm() {
         }
     });
 }
+
 function noticeFileDownload(fileName) {
     var form = document.getElementById("fileForm");
     var fileField = form.elements["fileName"];
