@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -282,9 +283,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (ret != 0) {
             if (S_Store.getSubGroup() != null){
-                redisService.setPublisher("order_assigned", "id:"+tmpOrderId+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId()+", subgroup_id:"+S_Store.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_assigned").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).subGroupId(S_Store.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher("order_assigned", "id:"+tmpOrderId+", store_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
+                redisService.setPublisher(Content.builder().type("order_assigned").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).build());
             }
 
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
@@ -444,9 +445,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (nRet != 0) {
             if (storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+//                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_updated").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+//                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+                redisService.setPublisher(Content.builder().type("order_updated").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
 
@@ -533,9 +536,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (nRet != 0) {
             if (storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+//                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+//                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+                redisService.setPublisher(Content.builder().id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
 
@@ -609,9 +614,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (ret != 0) {
             if (S_Order.getSubGroup() != null){
-                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
+//                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(S_Order.getId()).subGroupId(S_Order.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId());
+//                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(S_Order.getId()).build());
             }
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 if(tokens.size() > 0){

@@ -13,6 +13,7 @@ import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.order.OrderCheckAssignment;
 import kr.co.cntt.core.model.reason.Reason;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -296,9 +297,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             if (result != 0) {
                 if (storeDTO.getSubGroup() != null){
-                    redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+storeDTO.getAdminId() + ", store_id:"+notiOrder.getStoreId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                    redisService.setPublisher(Content.builder().type("order_assigned").id(notiOrder.getId()).adminId(storeDTO.getAdminId()).storeId(notiOrder.getStoreId()).subGroupId(storeDTO.getSubGroup().getId()).build());
                 }else {
-                    redisService.setPublisher("order_assigned", "id:"+notiOrder.getId() + ", admin_id:"+storeDTO.getAdminId() + ", store_id:"+notiOrder.getStoreId());
+                    redisService.setPublisher(Content.builder().type("order_assigned").id(notiOrder.getId()).adminId(storeDTO.getAdminId()).storeId(notiOrder.getStoreId()).build());
                 }
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
@@ -324,20 +325,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         if (reservationOrders.size() > 0) {
             for (Order order : reservationOrders) {
                 if(order.getSubGroup() != null){
-                    redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId()+", subgroup_id:"+order.getSubGroup().getId());
+                    redisService.setPublisher(Content.builder().type("order_new").id(order.getId()).adminId(order.getAdminId()).storeId(order.getStoreId()).subGroupId(order.getSubGroup().getId()).build());
                 }else{
-                    redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId());
+                    redisService.setPublisher(Content.builder().type("order_new").id(order.getId()).adminId(order.getAdminId()).storeId(order.getStoreId()).build());
                 }
-
-                /*ArrayList<String> tokens = (ArrayList)orderMapper.selectPushToken(order.getSubGroup());
-                if(tokens.size() > 0){
-                    Notification noti = new Notification();
-                    noti.setType(Notification.NOTI.ORDER_NEW);
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
-                }*/
-
-//                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + order.getAdminId() + ", store_id:"+order.getId()+", subgroup_id:"+ ( (order.getSubGroup() == null) ? "noSubgroup" : order.getSubGroup().getId()) );
             }
         }
 
@@ -470,9 +461,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (postOrder != 0) {
             if(storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_new").orderId(order.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else{
-                redisService.setPublisher("order_new", "id:"+order.getId() + ", admin_id:" + storeDTO.getAdminId() + ", store_id:"+storeDTO.getId());
+                redisService.setPublisher(Content.builder().type("order_new").orderId(order.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
 
 //            신규 주문일 경우 rider app에 push 주석 처리
@@ -761,9 +752,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (nRet != 0) {
             if(storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_updated").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+                redisService.setPublisher(Content.builder().type("order_updated").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
 
@@ -880,9 +871,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (ret != 0) {
             if(S_Store.getSubGroup() != null){
-                redisService.setPublisher("order_assigned", "id:"+tmpOrderId+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId()+", subgroup_id:"+S_Store.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_assigned").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).subGroupId(S_Store.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher("order_assigned", "id:"+tmpOrderId+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Store.getId());
+                redisService.setPublisher(Content.builder().type("order_assigned").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).build());
             }
 
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
@@ -974,9 +965,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (result != 0) {
             if (S_Store.getSubGroup() != null){
-                redisService.setPublisher("order_picked_up", "id:"+tmpOrderId+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Order.getStoreId()+", subgroup_id:"+S_Store.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_picked_up").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
             }else{
-                redisService.setPublisher("order_picked_up", "id:"+tmpOrderId+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Order.getStoreId());
+                redisService.setPublisher(Content.builder().type("order_picked_up").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
             }
         }
 
@@ -1038,9 +1029,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (result != 0) {
             if (S_Store.getSubGroup() != null){
-                redisService.setPublisher("order_completed", "id:"+tmpOrderId+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Order.getStoreId()+", subgroup_id:"+S_Store.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_completed").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher("order_completed", "id:"+tmpOrderId+", admin_id:"+S_Store.getAdminId()+", store_id:"+S_Order.getStoreId());
+                redisService.setPublisher(Content.builder().type("order_completed").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
             }
 
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
@@ -1139,9 +1130,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (nRet != 0) {
             if (storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else{
-                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+                redisService.setPublisher(Content.builder().type("order_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
 
@@ -1227,9 +1218,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (ret != 0) {
             if(S_Order.getSubGroup() != null){
-                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(S_Order.getId()).subGroupId(S_Order.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(S_Order.getId()).build());
             }
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
@@ -1387,9 +1378,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (ret != 0) {
             if (storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_denied", "id:"+needOrderId.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else{
-                redisService.setPublisher("order_denied", "id:"+needOrderId.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+                redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
 
@@ -1460,9 +1451,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (ret != 0) {
             if (storeDTO.getSubGroup() != null){
-                redisService.setPublisher("order_denied", "id:"+needOrderId.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
+                redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else{
-                redisService.setPublisher("order_denied", "id:"+needOrderId.getId()+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
+                redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
 

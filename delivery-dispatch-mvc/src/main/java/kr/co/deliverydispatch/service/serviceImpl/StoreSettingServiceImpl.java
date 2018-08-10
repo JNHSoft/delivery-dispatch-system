@@ -5,6 +5,7 @@ import kr.co.cntt.core.mapper.*;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notice.Notice;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -117,7 +118,6 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
         int result = storeMapper.updateStoreInfo(store);
 
         if (result != 0) {
-//            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
         }
 
         return result;
@@ -186,9 +186,9 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
 
         if (nRet != 0) {
             if (S_Rider.getSubGroupStoreRel() != null) {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId());
+                redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).storeId(S_Rider.getSubGroupStoreRel().getStoreId()).build());
             } else {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
+                redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).build());
             }
         }
 
@@ -208,7 +208,7 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
         Store C_Store = storeMapper.selectStoreInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+            redisService.setPublisher(Content.builder().type("store_info_updated").id(store.getId()).adminId(C_Store.getAdminId()).build());
         }
 
         return result;

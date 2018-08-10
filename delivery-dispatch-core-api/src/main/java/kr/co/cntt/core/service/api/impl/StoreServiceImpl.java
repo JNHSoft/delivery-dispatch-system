@@ -7,6 +7,7 @@ import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -131,17 +132,17 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         List<Store> S_Store = storeMapper.selectSubGroupStores(store);
 
 //        for (Store cs : C_Store) {
-            for (Store s : S_Store) {
-                if (C_Store.getId().equals(s.getId())) {
-                    continue;
-                }
-
-                try {
-                    storeHaversineMap.put(s.getId(), misc.getHaversine(C_Store.getLatitude(), C_Store.getLongitude(), s.getLatitude(), s.getLongitude()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        for (Store s : S_Store) {
+            if (C_Store.getId().equals(s.getId())) {
+                continue;
             }
+
+            try {
+                storeHaversineMap.put(s.getId(), misc.getHaversine(C_Store.getLatitude(), C_Store.getLongitude(), s.getLatitude(), s.getLongitude()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 //        }
 
         if (storeHaversineMap.isEmpty()) {
@@ -161,7 +162,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         int result = storeMapper.updateStoreInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+            redisService.setPublisher(Content.builder().type("store_info_updated").id(store.getId()).adminId(C_Store.getAdminId()).build());
         }
 
         return result;
@@ -176,7 +177,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         Store C_Store = storeMapper.selectStoreInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+            redisService.setPublisher(Content.builder().type("store_info_updated").id(store.getId()).adminId(C_Store.getAdminId()).build());
         }
 
         return result;
@@ -194,7 +195,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         Store C_Store = storeMapper.selectStoreInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+            redisService.setPublisher(Content.builder().type("store_info_updated").build());
         }
 
         return result;
@@ -219,7 +220,7 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         Store C_Store = storeMapper.selectStoreInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("store_info_updated", "id:"+store.getId()+", admin_id:"+C_Store.getAdminId());
+            redisService.setPublisher(Content.builder().id(store.getId()).adminId(C_Store.getAdminId()).build());
         }
 
         return result;

@@ -5,6 +5,7 @@ import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.PaymentMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.payment.Payment;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.PaymentService;
@@ -71,7 +72,7 @@ public class PaymentServiceImpl  extends ServiceSupport implements PaymentServic
         List<Payment> S_Payment = paymentMapper.selectPaymentInfo(payment);
 
         if (postPayment != 0) {
-            redisService.setPublisher("order_updated", "order_id:"+S_Payment.get(0).getOrderId()+", admin_id:"+S_Payment.get(0).getAdminId()+", store_id:"+S_Payment.get(0).getStoreId());
+            redisService.setPublisher(Content.builder().type("order_updated").orderId(S_Payment.get(0).getOrderId()).adminId(S_Payment.get(0).getAdminId()).storeId(S_Payment.get(0).getStoreId()).build());
         }
 
         return postPayment;
@@ -86,7 +87,7 @@ public class PaymentServiceImpl  extends ServiceSupport implements PaymentServic
         List<Payment> S_Payment = paymentMapper.selectPaymentInfo(payment);
 
         if (updatePayment != 0) {
-            redisService.setPublisher("order_updated", "order_id:"+S_Payment.get(0).getOrderId()+", admin_id:"+S_Payment.get(0).getAdminId()+", store_id:"+S_Payment.get(0).getStoreId());
+            redisService.setPublisher(Content.builder().type("order_updated").orderId(S_Payment.get(0).getOrderId()).adminId(S_Payment.get(0).getAdminId()).storeId(S_Payment.get(0).getStoreId()).build());
         }
 
         return updatePayment;

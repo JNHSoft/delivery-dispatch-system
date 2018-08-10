@@ -9,6 +9,7 @@ import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.notification.Notification;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -115,9 +116,9 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00030), ErrorCodeEnum.E00030.name());
         } else {
             if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-                redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
+                redisService.setPublisher(Content.builder().type("chat_send").adminId(resultStore.getAdminId()).recvChatUserId(chat.getChatUserId()).build());
             } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
-                redisService.setPublisher("chat_send", "admin_id:" + resultRider.getAdminId() + ", recv_chat_user_id:" + resultRider.getChatUserId());
+                redisService.setPublisher(Content.builder().type("chat_send").adminId(resultRider.getAdminId()).recvChatUserId(resultRider.getChatUserId()).build());
             }
         }
 

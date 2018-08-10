@@ -14,6 +14,7 @@ import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -121,7 +122,9 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(admin);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            ;
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -148,7 +151,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(group);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -162,7 +166,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(group);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -176,7 +181,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(group);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -203,7 +209,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(subGroup);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -217,7 +224,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(subGroup);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -231,7 +239,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(subGroup);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -271,7 +280,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -285,7 +295,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -300,7 +311,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(store);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -317,7 +329,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(rider);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -332,7 +345,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(subGroupStoreRel);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -369,7 +383,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
                 result = adminMapper.insertRider(rider);
 
                 if (result != 0) {
-                    redisService.setPublisher("rider_info_updated", "admin_id:"+resultAdmin.get(0).getId());
+//                    redisService.setPublisher("rider_info_updated", "admin_id:"+resultAdmin.get(0).getId());
+                    redisService.setPublisher(Content.builder().type("rider_info_updated").adminId(resultAdmin.get(0).getId()).build());
                 }
 
                 return adminMapper.insertSubGroupRiderRel(rider);
@@ -377,7 +392,9 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
                 result = adminMapper.insertRider(rider);
 
                 if (result != 0) {
-                    redisService.setPublisher("rider_info_updated", "admin_id:"+resultAdmin.get(0).getId());
+//                    redisService.setPublisher("rider_info_updated", "admin_id:"+resultAdmin.get(0).getId());
+                    redisService.setPublisher(Content.builder().type("rider_info_updated").adminId(resultAdmin.get(0).getId()).build());
+
                 }
 
                 return result;
@@ -396,7 +413,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(common);
 
         if (result != 0) {
-            redisService.setPublisher("rider_info_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("rider_info_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("rider_info_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -484,7 +502,9 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(admin);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
+
         }
 
         return result;
@@ -499,7 +519,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(thirdParty);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -514,7 +535,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(thirdParty);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -529,7 +551,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(thirdParty);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -548,7 +571,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(alarm);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -563,7 +587,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(alarm);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -620,7 +645,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -634,7 +660,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -648,7 +675,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -662,7 +690,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -676,7 +705,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;
@@ -690,7 +720,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
         List<Admin> resultAdmin = adminMapper.selectAdminInfo(reason);
 
         if (result != 0) {
-            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+//            redisService.setPublisher("config_updated", "admin_id:"+resultAdmin.get(0).getId());
+            redisService.setPublisher(Content.builder().type("config_updated").adminId(resultAdmin.get(0).getId()).build());
         }
 
         return result;

@@ -7,6 +7,7 @@ import kr.co.cntt.core.fcm.FirebaseResponse;
 import kr.co.cntt.core.mapper.NoticeMapper;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.notification.Notification;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.NoticeService;
@@ -79,7 +80,8 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         int result = noticeMapper.insertNotice(notice);
 
         if (result != 0) {
-            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
+            redisService.setPublisher(Content.builder().type("notice_updated").adminId(notice.getAdminId()).build());
+
 
             ArrayList<String> tokens = (ArrayList)noticeMapper.selectAllToken();
 
@@ -117,7 +119,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         }
 
         if (res != 0) {
-            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
+            redisService.setPublisher(Content.builder().type("notice_updated").adminId(notice.getAdminId()).build());
         }
 
         return res;
@@ -145,7 +147,7 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
         }
 
         if (res != 0) {
-            redisService.setPublisher("notice_updated", "admin_id:" + notice.getAdminId());
+            redisService.setPublisher(Content.builder().type("notice_updated").adminId(notice.getAdminId()).build());
         }
 
         return res;

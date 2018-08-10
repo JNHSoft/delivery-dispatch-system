@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -129,9 +130,9 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
 
         if (nRet != 0) {
             if (S_Rider.getSubGroupStoreRel() != null) {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId() + ", store_id:" + S_Rider.getSubGroupStoreRel().getStoreId()+", subgroup_id:"+S_Rider.getSubGroupStoreRel().getSubGroupId());
+                redisService.setPublisher(Content.builder().id(S_Rider.getId()).adminId(S_Rider.getAdminId()).storeId(S_Rider.getSubGroupStoreRel().getStoreId()).subGroupId(S_Rider.getSubGroupStoreRel().getSubGroupId()).build());
             } else {
-                redisService.setPublisher("rider_updated", "id:" + S_Rider.getId() + ", admin_id:" + S_Rider.getAdminId());
+                redisService.setPublisher(Content.builder().id(S_Rider.getId()).adminId(S_Rider.getAdminId()).build());
             }
         }
         return nRet;
@@ -202,7 +203,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
             return  0;
         } else {
             if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
-                redisService.setPublisher("chat_send", "admin_id:" + resultStore.getAdminId() + ", recv_chat_user_id:" + chat.getChatUserId());
+                redisService.setPublisher(Content.builder().type("chat_send").adminId(resultStore.getAdminId()).recvChatUserId(chat.getChatUserId()).build());
             }
         }
 
