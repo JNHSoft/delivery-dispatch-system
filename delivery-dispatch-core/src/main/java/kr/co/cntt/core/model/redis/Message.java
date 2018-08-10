@@ -6,7 +6,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Message {
-    private String content;
+
+    private Content content;
     private String type;
 
 }

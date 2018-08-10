@@ -23,9 +23,9 @@ $(function() {
             transports: ['websocket'] // websocket만을 사용하도록 설정
         });
         socket.on('message', function(data){
-            var subgroup_id = data.substring(data.indexOf("subgroup_id:")+12, data.lastIndexOf('}'));
-            var store_id = data.substring(data.indexOf("store_id:")+9,
-                (data.substring(data.indexOf("store_id:")+9, data.length)).indexOf(',') + data.indexOf("store_id:")+9);
+            var objData = JSON.parse(data);
+            var subgroup_id = objData.subGroupId;
+            var store_id = objData.storeId;
             if(!my_store.subGroup && my_store.id == store_id){
                 alarmSound(data);
             }else if(my_store.subGroup){
@@ -34,9 +34,7 @@ $(function() {
                 }
             }
             if(data.match('chat_')=='chat_'){
-                var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18, data.lastIndexOf('}'));
-                /*var chatUserId = data.substring(data.indexOf("recv_chat_user_id:")+18,
-                    (data.substring(data.indexOf("recv_chat_user_id:")+18, data.length)).indexOf(',') + data.indexOf("recv_chat_user_id:")+18);*/
+                var chatUserId = objData.recvChatUserId;
                 if(RiderChatUserId == chatUserId){
                     getChatList(chatUserId, chatUserName);
                 }

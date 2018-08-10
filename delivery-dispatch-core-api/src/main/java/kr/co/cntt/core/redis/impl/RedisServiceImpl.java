@@ -1,5 +1,6 @@
 package kr.co.cntt.core.redis.impl;
 
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.redis.Message;
 import kr.co.cntt.core.redis.service.Publisher;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -16,15 +17,17 @@ public class RedisServiceImpl implements RedisService{
     private Publisher publisher;
 
     @Override
-    public void setPublisher(String type, String msg) {
+    public void setPublisher(Content content) {
         Message message = new Message();
         message.setType("pubsub:web-notification");
-        if (msg != "") {
+        if (content != null) {
+            message.setContent(content);
+        }
+        /*if (msg != "") {
             message.setContent("push_data:{type:"+type+", "+msg+"}");
         } else {
             message.setContent("push_data:{type:"+type+"}");
-        }
-
+        }*/
 
         publisher.publish(message);
     }
