@@ -1,25 +1,6 @@
-var my_notice_list = [];
-var websocketHost = "";
 $(document).ready(function() {
     $.ajaxSetup({ cache: false });
-    $.ajax({
-        url : "/commonNotice",
-        async : false,
-        cache : false,
-        success : function(data) {
-        	if(typeof data == 'object') {
-                my_notice_list = data;
-                noticeAlarm();
-			}
-        }
-    });
-    $.ajax({
-        url : "/websocketHost",
-        async : false,
-        success : function (data) {
-            websocketHost = data;
-        }
-    });
+    noticeAlarm();
     $('#logout').click(function () {
         $.ajax({
             url : "/logoutProcess",
@@ -41,17 +22,23 @@ $(document).ready(function() {
 });
 
 function noticeAlarm() {
-    if(my_notice_list && my_store){
-    	$('#myStoreName').text(my_store.storeName);
-    }
-    $("#notice_alarm").removeClass('new');
-    $("#notice_alarm_mobile").removeClass('new');
-    for (var i = 0; i < my_notice_list.length; i++) {
-        if (!my_notice_list[i].confirmedDatetime) {
-            $("#notice_alarm").addClass('new');
-            $("#notice_alarm_mobile").addClass('new');
+    $.ajax({
+        url : "/commonNotice",
+        cache : false,
+        success : function(data) {
+            if(data && my_store){
+                $('#myStoreName').text(my_store.storeName);
+            }
+            $("#notice_alarm").removeClass('new');
+            $("#notice_alarm_mobile").removeClass('new');
+            for (var i = 0; i < data.length; i++) {
+                if (!data[i].confirmedDatetime) {
+                    $("#notice_alarm").addClass('new');
+                    $("#notice_alarm_mobile").addClass('new');
+                }
+            }
         }
-    }
+    });
 }
 
 function alarmSound(data) {

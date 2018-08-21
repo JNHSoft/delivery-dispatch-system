@@ -5,46 +5,51 @@ $(document).ready(function() {
     $('#statusArray').val(statusArray);
     getOrderList(statusArray, storeId);
     var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
-    if (supportsWebSockets) {
-        var socket = io(websocketHost, {
-            path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
-            transports: ['websocket'], // websocket만을 사용하도록 설정
-            secure: true
-        });
-        socket.on('message', function(data){
-            var objData = JSON.parse(data);
-            var subgroup_id = objData.subGroupId;
-            var store_id = objData;
-            if(!my_store.subGroup && my_store.id == store_id){
-                alarmSound(data);
-            }else if(my_store.subGroup){
-                if(subgroup_id == my_store.subGroup.id){
-                    alarmSound(data);
-                }
-            }
-            if(data.match('order_')=='order_'){
-                getOrderList(statusArray, storeId);
-                footerOrders();
-            }
-            if(data.match('rider_')=='rider_'){
-                if(map_region){
-                    if(map_region=="hk"){
-                        footerRiders();
+    $.ajax({
+        url : "/websocketHost",
+        success : function (websocketHost) {
+            if (supportsWebSockets) {
+                var socket = io(websocketHost, {
+                    path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
+                    transports: ['websocket'], // websocket만을 사용하도록 설정
+                    secure: true
+                });
+                socket.on('message', function(data){
+                    var objData = JSON.parse(data);
+                    var subgroup_id = objData.subGroupId;
+                    var store_id = objData;
+                    if(!my_store.subGroup && my_store.id == store_id){
+                        alarmSound(data);
+                    }else if(my_store.subGroup){
+                        if(subgroup_id == my_store.subGroup.id){
+                            alarmSound(data);
+                        }
                     }
-                }
+                    if(data.match('order_')=='order_'){
+                        getOrderList(statusArray, storeId);
+                        footerOrders();
+                    }
+                    if(data.match('rider_')=='rider_'){
+                        if(map_region){
+                            if(map_region=="hk"){
+                                footerRiders();
+                            }
+                        }
+                    }
+                    if(data.match('notice_')=='notice_'){
+                        noticeAlarm();
+                    }
+                });
+                $(function() {
+                    /*$('#orderUpdate').click(function(){
+                        socket.emit('message', "push_data:{type:order_updated, storeId:"+storeId+"}");
+                    });*/
+                })
+            } else {
+                alert('websocket을 지원하지 않는 브라우저입니다.');
             }
-            if(data.match('notice_')=='notice_'){
-                noticeAlarm();
-            }
-        });
-        $(function() {
-            /*$('#orderUpdate').click(function(){
-                socket.emit('message', "push_data:{type:order_updated, storeId:"+storeId+"}");
-            });*/
-        })
-    } else {
-        alert('websocket을 지원하지 않는 브라우저입니다.');
-    }
+        }
+    });
 
 
     $("#orderAllChk").click(function () {
