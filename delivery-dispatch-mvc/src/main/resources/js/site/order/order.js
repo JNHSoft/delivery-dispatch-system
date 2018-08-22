@@ -219,7 +219,6 @@ function getOrderDetail(orderId) {
         data : {
             id : orderId
         },
-        async : false, //비동기 -> 동기
         dataType : 'json',
         success : function (data) {
             selectedOriginOrder = data;
@@ -280,29 +279,8 @@ function getOrderDetail(orderId) {
                 $('#selectCombined').attr("disabled", true);
             }
 
-            getMyRiderList();
-            var riderPhone = '#rider'+data.riderId;
-            if(data.riderId != null){
-                $('#selectedRider').val(data.riderId).prop("selected", true);
-                // $(riderPhone).css('display', 'block');
-                $(riderPhone).css('display', 'none');
-            }else {
-                $('#selectedRider').val("0").prop("selected", true);
-                $(riderPhone).css('display', 'none');
-            }
-            $('#memo').html(data.message);
-            $('#userPhone').html(data.phone);
-            if (data.detailAddress != null) {
-                // $('#userAddress').html(data.address + ', ' + data.detailAddress);
-                $('#userAddress').html(data.detailAddress);
-            }
-            /* else {
-                $('#userAddress').html(data.address);
-            }*/
-            $('#distance').html(data.distance);
-            map.setCenter({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
-            marker.setPosition({lat: parseFloat(data.latitude), lng: parseFloat(data.longitude)});
-            $('.state_wrap').addClass('on');
+            getMyRiderList(data);
+
         },
         error : function (request,status,error) {
             // alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
@@ -312,7 +290,7 @@ function getOrderDetail(orderId) {
     });
 }
 
-function getMyRiderList() {
+function getMyRiderList(orderDetailData) {
     var shtml = '<option value="0">-</option>';
     var shtml2 = '';
     $.ajax({
@@ -320,7 +298,6 @@ function getMyRiderList() {
         type: 'get',
         data: {
         },
-        async : false,
         success: function (data) {
             for (var key in data) {
                 if (data.hasOwnProperty(key)){
@@ -343,6 +320,28 @@ function getMyRiderList() {
                     }
                 }
             }
+            var riderPhone = '#rider'+orderDetailData.riderId;
+            if(orderDetailData.riderId != null){
+                $('#selectedRider').val(orderDetailData.riderId).prop("selected", true);
+                // $(riderPhone).css('display', 'block');
+                $(riderPhone).css('display', 'none');
+            }else {
+                $('#selectedRider').val("0").prop("selected", true);
+                $(riderPhone).css('display', 'none');
+            }
+            $('#memo').html(orderDetailData.message);
+            $('#userPhone').html(orderDetailData.phone);
+            if (orderDetailData.detailAddress != null) {
+                // $('#userAddress').html(data.address + ', ' + data.detailAddress);
+                $('#userAddress').html(orderDetailData.detailAddress);
+            }
+            /* else {
+                $('#userAddress').html(data.address);
+            }*/
+            $('#distance').html(orderDetailData.distance);
+            map.setCenter({lat: parseFloat(orderDetailData.latitude), lng: parseFloat(orderDetailData.longitude)});
+            marker.setPosition({lat: parseFloat(orderDetailData.latitude), lng: parseFloat(orderDetailData.longitude)});
+            $('.state_wrap').addClass('on');
         }
     });
 }
@@ -593,7 +592,7 @@ function getOrderList(statusArray, storeId) {
 });
 }
 
-// 시간 비교 함수  time1 픽업 time2 완료 time3 복귀
+// 시간 비교 함수
 function checkTime(time1,time2) {
     var result = "-";
     // 픽업 시간 + 완료 시간이 있다.
@@ -666,7 +665,6 @@ function putOrder() {
             combinedOrderId : combinedOrderId,
         },
         dataType : 'json',
-        async : false,
         success : function (data) {
             getOrderDetail(selectedOriginOrder.regOrderId);
             var statusArray = $('#statusArray').val().split(",");
@@ -690,7 +688,6 @@ function putOrderAssignCancle() {
             id : id,
             combinedOrderId : combinedOrderId,
         },
-        async : false,
         dataType : 'json',
         success : function (data) {
         }
@@ -713,7 +710,6 @@ function putAssignedAdvance() {
             riderId : riderId,
             combinedOrderId : combinedOrderId
         },
-        async : false,
         dataType : 'json',
         success : function (data) {
             if (data == false) {

@@ -43,7 +43,7 @@
 							<strong th:text="${#messages.msg('store.belong.group')}" />
 							<div>
 								<select name="" class="select readonly" disabled="disabled">
-									<option th:value="${#lists.isEmpty(store.group)  ? '미지정' : store.group.name}" th:text="${#lists.isEmpty(store.group) ? '미지정' : store.group.name}"></option>
+									<option th:value="${#lists.isEmpty(store.group) ? '미지정' : store.group.name}" th:text="${#lists.isEmpty(store.group) ? '미지정' : store.group.name}"></option>
 								</select>
 								<select name="" class="select readonly" disabled="disabled">
 									<option th:value="${#lists.isEmpty(store.subGroup) ? '미지정' : store.subGroup.name}" th:text="${#lists.isEmpty(store.subGroup) ? '미지정' : store.subGroup.name}"></option>
@@ -114,7 +114,7 @@
                             }
                         }
                         if(data.match('order_')=='order_'){
-                            footerOrders()
+                            footerOrders();
                         }
                         if (data.match('config_') == 'config_') {
                             location.href = "/setting-account";
