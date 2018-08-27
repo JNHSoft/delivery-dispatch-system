@@ -51,6 +51,11 @@ $(document).ready(function() {
         }
     });
 
+    if(map_region){
+        if(map_region=="tw"){
+            $('#combinedChk').attr("disabled", true);
+        }
+    }
 
     $("#orderAllChk").click(function () {
         if(this.checked){
