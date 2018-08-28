@@ -31,9 +31,10 @@ public class Schedule {
     }
 
     // 주문 자동 배정 스케줄링
-    @Scheduled(cron = "0 */5 * * * *")
+//    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(fixedDelayString = "60000")
     public void autoAssignOrder() throws InterruptedException, AppTrException {
-        log.info("주문 자동 배정 스케줄링 - 5분마다다");
+        log.info("주문 자동 배정 스케줄링 - 1분마다다");
         orderService.autoAssignOrder();
         orderService.reservationOrders();
     }
