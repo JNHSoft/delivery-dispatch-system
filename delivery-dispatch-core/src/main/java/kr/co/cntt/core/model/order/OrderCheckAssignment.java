@@ -6,9 +6,11 @@ import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.common.Common;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Setter
 @Getter
+@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderCheckAssignment extends Common implements Dto {
 

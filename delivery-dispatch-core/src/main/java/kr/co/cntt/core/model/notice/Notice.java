@@ -8,9 +8,11 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class Notice extends User implements Dto {
 
     private static final long serialVersionUID = -4336674568434203200L;

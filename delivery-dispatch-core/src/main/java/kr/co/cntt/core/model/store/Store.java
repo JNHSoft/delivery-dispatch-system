@@ -11,10 +11,12 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.payment.Payment;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.ibatis.type.Alias;
 
 @Getter
 @Setter
+@ToString
 @Alias("store")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Store extends User implements Dto {

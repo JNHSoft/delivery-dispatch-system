@@ -6,9 +6,11 @@ import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.common.Common;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class Payment extends Common implements Dto {
 
     private static final long serialVersionUID = 8384493233610556562L;

@@ -4,9 +4,11 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.Dto;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Setter
 @Getter
+@ToString
 public class RiderSession extends Common implements Dto {
 
     private static final long serialVersionUID = 8414160608713552339L;

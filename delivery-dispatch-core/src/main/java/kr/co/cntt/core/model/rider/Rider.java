@@ -12,14 +12,16 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.store.Store;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class  Rider extends User implements Dto {
-    private static final long serialVersionUID = 6384739497543017734L;
+@ToString
+public class Rider extends User implements Dto {
+    private static final long serialVersionUID = 2593751310056353317L;
 
     private String adminId;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -47,6 +49,8 @@ public class  Rider extends User implements Dto {
     private String assignCount;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String minAssignedDatetime;
+    private String minPickedUpDatetime;
+    private String minOrderStatus;
 
     private List<RiderSession> riderSession;
 
@@ -61,4 +65,7 @@ public class  Rider extends User implements Dto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String isAdmin;
     private String changePhone;
+    private String orderStandbyDatetime;
+    private String orderStandbyStatus;
+    private int distance;
 }
