@@ -228,4 +228,20 @@ public interface RiderMapper {
      */
     public int resetRiderPassword(Rider rider);
 
+    /**
+     * Rider 주문대기푸시시간설정
+     *
+     * @param common
+     * @return
+     */
+    public int updateRiderOrderStandbyDateTime(Common common);
+
+    /**
+     * Rider 주문대기상태변경
+     *
+     * @param common
+     * @return
+     */
+    public int updateRiderOrderStandbyStatus(Common common);
+
 }
