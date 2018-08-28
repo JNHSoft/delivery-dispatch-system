@@ -8,6 +8,7 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
 import lombok.extern.slf4j.Slf4j;
@@ -179,8 +180,11 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
         if (authentication.getAuthorities().toString().matches(".*ROLE_ADMIN.*")) {
             notice.setRole("ROLE_ADMIN");
         }
-
-        return noticeMapper.insertNotice(notice);
+        int result = noticeMapper.insertNotice(notice);
+        if(result !=0){
+            redisService.setPublisher(Content.builder().type("notice_updated").adminId(notice.getAdminId()).build());
+        }
+        return result;
     }
 
 }
