@@ -28,12 +28,12 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("orderService")
@@ -76,8 +76,74 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         this.storeMapper = storeMapper;
         this.riderMapper = riderMapper;
     }
-
     @Override
+    public void autoAssignOrder() throws AppTrException {
+        List<Order> orderList = orderMapper.selectForAssignOrders();
+        for (Order order : orderList) {
+            Map map = new HashMap();
+            map.put("order", order);
+            List<Rider> riderList = riderMapper.selectForAssignRiders(order.getStore().getId());
+            Misc misc = new Misc();
+
+            for (Iterator<Rider> rider = riderList.iterator();rider.hasNext();) { //iterator를 써야 for문 안에서 리스트 제거가능
+                Rider r = rider.next();
+                if (r.getLatitude() != null) {
+                    try {
+                        r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
+                        r.setDistance(r.getDistance()-r.getDistance()%100);//거리 100미터 단위
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    riderList.remove(r);//위치정보가 없는 라이더 제거
+                }
+//                log.info(r+"!!!!!!!!!!원본!!!!!!!!!!!"+r.getId());//test
+            }
+
+//            Rider assginRider = riderList.stream() //첫번째 라이더로 바로 받을지 고려
+            riderList = riderList.stream()
+                    .filter(a->Integer.parseInt(a.getAssignCount()) < Integer.parseInt(order.getStore().getAssignmentLimit()))//해당 주문의 상점 기준 최대 오더 개수 안넘는 라이더만 ***** 해당 라이더 상점의 최대 주문개수가 아님(바꿔야하나)
+                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius())*1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
+                    .filter(a->{
+                        if(a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
+                            return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
+                        }else if(order.getSubGroupStoreRel() !=null && a.getReturnTime() == null){//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때
+                            return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
+                        }else{
+                            return false;
+                        }
+                    })
+                    .filter(a->{
+                        if(a.getOrderStandbyDatetime() == null || a.getOrderStandbyStatus().equals("0")){
+                            return true;
+                        }else {
+                            LocalDateTime orderStandbyDatetime = LocalDateTime.parse((a.getOrderStandbyDatetime()).replace(" ", "T"));
+                            LocalDateTime ldt = LocalDateTime.now();
+//                            LocalDateTime ldt = LocalDateTime.now().minusHours(1); //testServer (timezone이 다름)
+                            return orderStandbyDatetime.until(ldt, ChronoUnit.SECONDS)>=60;
+                        }
+                    })//현재 앱에서 배정 수락 거절 중인지 확인(앱 통신 상태가 안좋을 수도 있을 경우 대비 하여 1분) *****
+                    .sorted(Comparator.comparing(Rider::getDistance)//1순위 거리순(100미터 단위)
+                            .thenComparing(Rider::getAssignCount)// 2순위 라이더의 오더 개수....
+                            .thenComparing(Rider::getMinOrderStatus , Comparator.nullsFirst(Comparator.naturalOrder()))//3순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
+                            .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())))//4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
+                    .collect(Collectors.toList());
+//                    .findFirst().get();//첫번째 라이더로 바로 받을지 고려
+
+            /*for(Rider r : riderList){
+                log.info(r+"!!!!!!!!!!필터링 및 정렬 후!!!!!!!!!!!"+r.getId());//test
+            }*/
+
+            if(!riderList.isEmpty()){//riderList.size()!=0
+                map.put("rider", riderList.get(0));
+                this.autoAssignOrderProc(map);
+            }else{
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00029, locale), ErrorCodeEnum.E00029.name());//해당 주문을 배정받을 기사가 없습니다.
+            }
+        }
+    }
+
+    /*@Override
     public void autoAssignOrder() throws AppTrException {
         Map map = new HashMap();
 
@@ -87,7 +153,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 Order order = orderList.get(i);
 //                Order order = orderList.get(i);
                 map.put("order", order);
-
+                System.out.println(order);
 //                log.info(">>> 배정 대기 오더 getCreatedDatetime(): " + orderList.get(i).getCreatedDatetime());
 //                log.info(">>> 배정 대기 오더 getReservationDatetime(): " + orderList.get(i).getReservationDatetime());
 //                log.info(">>> 배정 대기 오더 getId(): " + orderList.get(i).getId());
@@ -102,24 +168,56 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 List<Rider> riderList = riderMapper.selectForAssignRiders(orderList.get(i).getStore().getId());
 
                 Misc misc = new Misc();
+                *//*ForkJoinPool forkJoinPool = new ForkJoinPool(3);
+                riderList = riderList.parallelStream()
+                    .filter(a->a.getLatitude()!=null)
+                    .peek(a -> {
+                        try {
+                            a.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), a.getLatitude(), a.getLongitude()));
+                            a.setDistance(a.getDistance()-a.getDistance()%100);//거리 100미터 단위
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }).collect(Collectors.toList());
                 Map<String, Integer> riderHaversineMap = new HashMap<>();
-
                 if (riderList != null) {
-                    for (Rider r : riderList) {
+                    for (Iterator<Rider> rider = riderList.iterator();rider.hasNext();) { //iterator를 써야 for문 안에서 리스트 제거가능
+                        Rider r = rider.next();
                         if (r.getLatitude() != null) {
                             try {
                                 riderHaversineMap.put(r.getId(), misc.getHaversine(orderList.get(i).getStore().getLatitude(), orderList.get(i).getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
+
+                                r.setDistance(misc.getHaversine(orderList.get(i).getStore().getLatitude(), orderList.get(i).getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
+                                r.setDistance(r.getId().equals("3")?826:r.getDistance());//test
+                                r.setDistance(r.getDistance()-r.getDistance()%100);//거리 100미터 단위
+                                r.setOrderStandbyStatus("0");//test
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
 
+                        }else{
+                            riderList.remove(r);
                         }
-//                        log.info(">>> rider_id" + r.getId());
-//                        log.info(">>> rider_status   " + r.getStatus());
-//                        log.info(">>> rider_working   " + r.getWorking());
-//                        log.info(">>> rider_workingHours   " + r.getWorkingHours());
-//                        log.info(">>> rider_restHours   " + r.getRestHours());
-//                        log.info("-----------------------------------------------------");
+                        System.out.println(r+"!!!!!!!!!!원본!!!!!!!!!!!"+r.getId());
+                    }
+
+                    riderList = riderList.stream()
+                            .filter(a->Integer.parseInt(a.getAssignCount()) < Integer.parseInt(order.getStore().getAssignmentLimit()))//해당 주문의 상점 기준 최대 오더 개수 안넘는 라이더만 ***** 해당 라이더 상점의 최대 주문개수가 아님(바꿔야하나)
+                            .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius())*1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
+                            .filter(a->a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId())//해당 주문의 스토어에 해당하는 라이더
+                                    || a.getSubGroupRiderRel() == null? a.getReturnTime() == null//해당 라이더의 서브그룹이 존재x -> 라이더 재배치 상태가 아닐 때
+                                    :a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId()))//해당 라이더의 서브그룹이 존재 -> 해당 주문의 상점 서브그룹과 같을 때
+                            .filter(a->a.getOrderStandbyStatus().equals("0"))//현재 앱에서 배정 수락 거절 중인지 확인 ***** 앱에서 여러개 팝업창으로 받을 수 있으면 필터->정렬로 변경
+                            .sorted(Comparator.comparing(Rider::getDistance).thenComparing(Rider::getAssignCount))//1순위 거리순(100미터 단위), 2순위 라이더의 오더 개수....
+                            .collect(Collectors.toList());
+                    if(riderList.size()!=0){//!riderList.isEmpty()
+                        map.put("rider", riderList.get(0));
+//                        this.autoAssignOrderProc(map);
+                    }else{
+                        throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());//해당 주문을 배정받을 기사가 없습니다.
+                    }
+                    for(Rider r : riderList){
+                        System.out.println(r+"!!!!!!!!!!필터링 및 정렬 후!!!!!!!!!!!"+r.getId());
                     }
                 }
 
@@ -133,6 +231,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     riderSortArray = riderSort.split("\\|");
                 }
 
+
+
                 Boolean flag = Boolean.FALSE;
 
                 if (riderSortArray != null) {
@@ -142,6 +242,29 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         for (Rider r1 : riderList) {
                             if (r1.getId().equals(riderSortArray[j])) {
                                 if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 1000) {
+                                    if (r1.getSubGroupRiderRel().getStoreId().equals(orderList.get(i).getStoreId()) && r1.getAssignCount().equals("0")) {
+                                        if (Integer.parseInt(r1.getAssignCount())< Integer.parseInt(order.getStore().getAssignmentLimit())){
+                                            if (r1.getReturnTime() == null && r1.getOrderStandbyStatus().equals("0")) {
+                                                map.put("rider", r1);
+                                                flag = Boolean.TRUE;
+                                                break Loop2;
+                                            } else {
+                                                if (r1.getSubGroupRiderRel().getStoreId().equals(order.getStoreId()) && r1.getOrderStandbyStatus().equals("0")) {
+                                                    map.put("rider", r1);
+                                                    flag = Boolean.TRUE;
+                                                    break Loop2;
+                                                } else {
+                                                    log.info(">>> 라이더 재배치: 해당 스토어 주문 아님");
+                                                    flag = Boolean.FALSE;
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    log.info(">>> 라이더 재배치: 첫번째 반경 안에 해당하는 라이더 없음");
+                                    flag = Boolean.FALSE;
+                                }
+                                *//*if (riderHaversineMap.get(riderSortArray[j]) <= Integer.parseInt(order.getStore().getRadius()) * 1000) {
                                     if (r1.getSubGroupRiderRel().getStoreId().equals(orderList.get(i).getStoreId()) && r1.getAssignCount().equals("0")) {
                                         log.info(">>> auto assign step1");
                                         if (r1.getReturnTime() == null) {
@@ -203,7 +326,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                     } else {
                                         flag = Boolean.FALSE;
                                     }
-                                }
+                                }*//*
 
                             } else {
                                 flag = Boolean.FALSE;
@@ -211,8 +334,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
                     }
                 }
-
                 if (flag == Boolean.TRUE) {
+                    this.autoAssignOrderProc(map);
+//                    int proc = this.autoAssignOrderProc(map);
+                    *//*if (proc == 1) {
+                        orderList.remove(i);
+                        i -= 1;
+                        log.info("============================================================================");
+                    }*//*
+                }
+
+
+                *//*if (flag == Boolean.TRUE) {
                     LocalDateTime reserveTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
                     LocalDateTime ldt = LocalDateTime.now().plusMinutes(50);
                     if (ldt.until(reserveTime, ChronoUnit.MINUTES)<=0) {
@@ -226,7 +359,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         log.info(">>> 예약 시간 안됨 pass " + orderList.get(i).getRegOrderId());
                         log.info("============================================================================");
                     }
-                    /*if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
+                    *//**//*if (orderList.get(i).getReservationDatetime() != null && orderList.get(i).getReservationDatetime() != "") {
                         LocalDateTime reserveTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
                         LocalDateTime ldt = LocalDateTime.now().plusMinutes(50);
                         if (ldt.until(reserveTime, ChronoUnit.MINUTES)<=0) {
@@ -253,61 +386,55 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             i -= 1;
                             log.info("============================================================================");
                         }
-                    }*/
-                }
+                    }*//**//*
+                }*//*
             }
         }
-    }
+    }*/
 
     public int autoAssignOrderProc(Map map) throws AppTrException {
-        log.info(">>> proc!!!");
-        log.info(">>> order.getRegOrderId() " + ((Order) map.get("order")).getRegOrderId());
-        log.info(">>> order.getStore().getId() " + ((Order) map.get("order")).getStore().getId());
-        log.info(">>> order.getStore().getAdminId() " + ((Order) map.get("order")).getStore().getAdminId());
-
         if (map.get("rider") == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
         } else {
-            log.info(">>> rider.getId() " + ((Rider) map.get("rider")).getId());
-            Order order = new Order();
+            Rider rider = (Rider)map.get("rider");
+            log.info(">>> rider.getId() " + rider.getId());
+            Order order = (Order) map.get("order");
+
             order.setRole("ROLE_SYSTEM");
-            order.setId(((Order) map.get("order")).getRegOrderId());
-            order.setStoreId(((Order) map.get("order")).getStoreId());
-            order.setRiderId(((Rider) map.get("rider")).getId());
+            order.setId(order.getRegOrderId());
+            order.setRiderId(rider.getId());
             order.setStatus("1");
             order.setAssignedDatetime(LocalDateTime.now().toString());
-            if (((Rider) map.get("rider")).getLatitude() != null && ((Rider) map.get("rider")).getLatitude() != "") {
-                order.setAssignXy(((Rider) map.get("rider")).getLatitude()+"|"+((Rider) map.get("rider")).getLongitude());
+            if (rider.getLatitude() != null && rider.getLatitude() != "") {
+                order.setAssignXy(rider.getLatitude() + "|" + rider.getLongitude());
             } else {
                 order.setAssignXy("none");
             }
 
             ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(order);
-            Order notiOrder = (Order) map.get("order");
-
             int result = orderMapper.updateOrder(order);
 
             Store storeDTO = new Store();
-//            storeDTO.setAccessToken(order.getToken());
-//            storeDTO.setToken(order.getToken());
             storeDTO.setRole("ROLE_SYSTEM");
-            storeDTO.setId(((Order) map.get("order")).getStoreId());
+            storeDTO.setId(order.getStoreId());
 
             storeDTO = storeMapper.selectStoreInfo(storeDTO);
-
             if (result != 0) {
+                riderMapper.updateRiderOrderStandbyDateTime(rider);
+                riderMapper.updateRiderOrderStandbyStatus(rider);
                 if (storeDTO.getSubGroup() != null){
-                    redisService.setPublisher(Content.builder().type("order_assigned").id(notiOrder.getId()).adminId(storeDTO.getAdminId()).storeId(notiOrder.getStoreId()).subGroupId(storeDTO.getSubGroup().getId()).build());
+                    redisService.setPublisher(Content.builder().type("order_assigned").id(order.getRegOrderId()).adminId(storeDTO.getAdminId()).storeId(order.getStoreId()).subGroupId(storeDTO.getSubGroup().getId()).build());
                 }else {
-                    redisService.setPublisher(Content.builder().type("order_assigned").id(notiOrder.getId()).adminId(storeDTO.getAdminId()).storeId(notiOrder.getStoreId()).build());
+                    redisService.setPublisher(Content.builder().type("order_assigned").id(order.getRegOrderId()).adminId(storeDTO.getAdminId()).storeId(order.getStoreId()).build());
                 }
                 if(tokens.size() > 0){
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN_AUTO);
-                    noti.setId(notiOrder.getRegOrderId());
-                    noti.setStoreName(notiOrder.getStore().getAdminId());
-                    noti.setStoreName(notiOrder.getStore().getStoreName());
-                    noti.setAddr(notiOrder.getAddress());
+                    noti.setId(order.getRegOrderId());
+                    noti.setStoreName(order.getStore().getAdminId());
+                    noti.setStoreName(order.getStore().getStoreName());
+                    noti.setAddr(order.getAddress());
+
                     CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
 
                     checkFcmResponse(pushNotification);
@@ -460,6 +587,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         if (postOrder != 0) {
+            if(storeDTO.getAssignmentStatus().equals("1")){
+                this.autoAssignOrder();
+            }
             if(storeDTO.getSubGroup() != null){
                 redisService.setPublisher(Content.builder().type("order_new").orderId(order.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else{
@@ -1261,6 +1391,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         int nRet = orderMapper.insertOrderConfirm(needOrderId);
+        if (nRet !=0){
+            riderMapper.updateRiderOrderStandbyStatus(order);
+        }
         /*if (nRet != 0) {
             ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderToken(order);
             if(tokens.size() > 0){
@@ -1269,8 +1402,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
                 checkFcmResponse(pushNotification);
             }
-
-
         }*/
         return nRet;
     }
@@ -1377,6 +1508,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         if (ret != 0) {
+            riderMapper.updateRiderOrderStandbyStatus(order);
             if (storeDTO.getSubGroup() != null){
                 redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else{

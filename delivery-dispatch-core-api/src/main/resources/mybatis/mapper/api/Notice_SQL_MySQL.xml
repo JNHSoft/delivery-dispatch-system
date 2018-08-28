@@ -367,6 +367,7 @@
         WHERE A.deleted IS NULL
             AND A.admin_id = (select admin_id from TB_ADMIN_SESSION where access_token=#{token})
         GROUP BY A.id
+        ORDER BY A.id DESC
     </select>
 
     <select id="selectAllToken" resultType="String">
