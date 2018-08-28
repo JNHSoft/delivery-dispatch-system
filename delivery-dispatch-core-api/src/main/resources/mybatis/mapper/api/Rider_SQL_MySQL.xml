@@ -29,6 +29,10 @@
 		<result property="returnTime" column="return_time" />
 		<result property="assignCount" column="assign_count" />
 		<result property="minAssignedDatetime" column="min_assigned_datetime" />
+		<result property="minPickedUpDatetime" column="min_picked_up_datetime" />
+		<result property="minOrderStatus" column="min_order_status" />
+		<result property="orderStandbyDatetime" column="order_standby_datetime" />
+		<result property="orderStandbyStatus" column="order_standby_status" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -758,7 +762,7 @@
 			AND C.deleted IS NULL
 			AND D.deleted IS NULL
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-			AND B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
+			AND (B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) OR B.subgroup_id is null)
 			AND A.deleted IS NULL;
 	</select>
 
@@ -843,10 +847,14 @@
 			, A.latitude
 			, A.longitude
 			, A.return_time
+			, A.order_standby_datetime
+			, A.order_standby_status
 			, B.subgroup_id AS subGroupRiderRel_subgroup_id
 			, B.store_id AS subGroupRiderRel_store_id
 			, (SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND (status = 1 OR status = 2) AND created_datetime > CURRENT_DATE()) AS assign_count
    			, (SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
+			, (SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
+			, (SELECT status FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
@@ -968,6 +976,43 @@
 		SET login_pw = #{loginPw}
 		, modified_datetime = now()
 		WHERE id = #{id} AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+	</update>
+
+	<!-- updateRiderOrderStandbyDateTime -->
+	<update id="updateRiderOrderStandbyDateTime" parameterType="kr.co.cntt.core.model.common.Common">
+		UPDATE TB_RIDER
+		SET
+		order_standby_datetime = now()
+		where
+		<choose>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+			</when>
+			<otherwise>
+				id = #{id}
+			</otherwise>
+		</choose>
+	</update>
+
+	<!-- updateRiderOrderStandbyStatus -->
+	<update id="updateRiderOrderStandbyStatus" parameterType="kr.co.cntt.core.model.common.Common">
+		UPDATE TB_RIDER
+		SET
+		<if test="token != null and token !=''">
+			order_standby_status = 0
+		</if>
+		<if test="token == null or token ==''">
+			order_standby_status = 1
+		</if>
+		where
+		<choose>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+			</when>
+			<otherwise>
+				id = #{id}
+			</otherwise>
+		</choose>
 	</update>
 </mapper>
  
