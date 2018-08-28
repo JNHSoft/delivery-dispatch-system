@@ -17,27 +17,12 @@ $(document).ready(function() {
                 socket.on('message', function(data){
                     var objData = JSON.parse(data);
                     var subgroup_id = objData.subGroupId;
-                    var store_id = objData;
-                    if(!my_store.subGroup && my_store.id == store_id){
-                        alarmSound(data);
+                    if(!my_store.subGroup && my_store.id == objData.storeId){
+                        orderAlarmMessage(data, statusArray, storeId);
                     }else if(my_store.subGroup){
                         if(subgroup_id == my_store.subGroup.id){
-                            alarmSound(data);
+                            orderAlarmMessage(data, statusArray, storeId);
                         }
-                    }
-                    if(data.match('order_')=='order_'){
-                        getOrderList(statusArray, storeId);
-                        footerOrders();
-                    }
-                    if(data.match('rider_')=='rider_'){
-                        if(map_region){
-                            if(map_region=="hk"){
-                                footerRiders();
-                            }
-                        }
-                    }
-                    if(data.match('notice_')=='notice_'){
-                        noticeAlarm();
                     }
                 });
                 $(function() {
@@ -170,6 +155,23 @@ $(document).ready(function() {
     });
 });
 
+function orderAlarmMessage(data, statusArray, storeId) {
+    if(data.match('order_')=='order_'){
+        getOrderList(statusArray, storeId);
+        footerOrders();
+    }
+    if(data.match('rider_')=='rider_'){
+        if(map_region){
+            if(map_region=="hk"){
+                footerRiders();
+            }
+        }
+    }
+    if(data.match('notice_')=='notice_'){
+        noticeAlarm();
+    }
+    alarmSound(data);
+}
 
 
 function timeSet(time) {

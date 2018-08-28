@@ -29,33 +29,20 @@ $(function() {
                     var objData = JSON.parse(data);
                     var subgroup_id = objData.subGroupId;
                     var store_id = objData.storeId;
+                    var chatUserId = objData.recvChatUserId;
                     if(!my_store.subGroup && my_store.id == store_id){
-                        alarmSound(data);
+                        riderAlarmMessage(data);
                     }else if(my_store.subGroup){
                         if(subgroup_id == my_store.subGroup.id){
-                            alarmSound(data);
+                            riderAlarmMessage(data);
                         }
                     }
                     if(data.match('chat_')=='chat_'){
-                        var chatUserId = objData.recvChatUserId;
                         if(RiderChatUserId == chatUserId){
                             getChatList(chatUserId, chatUserName);
                         }
                     }
-                    if(data.match('rider_')=='rider_'){
-                        getRiderList();
-                        if(map_region){
-                            if(map_region=="hk"){
-                                footerRiders();
-                            }
-                        }
-                    }
-                    if(data.match('order_')=='order_'){
-                        footerOrders();
-                    }
-                    if(data.match('notice_')=='notice_'){
-                        noticeAlarm();
-                    }
+
                 });
                 $(function() {
                     /*$('#sendChat').click(function(){
@@ -96,6 +83,25 @@ $(function() {
     });
 
 });
+
+function riderAlarmMessage(data) {
+    if(data.match('rider_')=='rider_'){
+        getRiderList();
+        if(map_region){
+            if(map_region=="hk"){
+                footerRiders();
+            }
+        }
+    }
+    if(data.match('order_')=='order_'){
+        footerOrders();
+    }
+    if(data.match('notice_')=='notice_'){
+        noticeAlarm();
+    }
+    alarmSound(data);
+}
+
 function addMarker(location, data, i, status) {
     if($('#myStoreChk').prop('checked') && data.riderStore) {
         if (data.riderStore.id != $('#storeId').val()){

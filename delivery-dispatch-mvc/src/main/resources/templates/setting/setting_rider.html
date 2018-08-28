@@ -164,20 +164,11 @@
                         var subgroup_id = objData.subGroupId;
                         var store_id = objData.storeId;
                         if(!my_store.subGroup && my_store.id == store_id){
-                            alarmSound(data);
+                            riderSettingAlarmMessage(data);
                         }else if(my_store.subGroup){
                             if(subgroup_id == my_store.subGroup.id){
-                                alarmSound(data);
+                                riderSettingAlarmMessage(data);
                             }
-                        }
-                        if(data.match('rider_info_updated')=='rider_info_updated'){
-                            location.href = "/setting-rider";
-                        }
-                        if(data.match('order_')=='order_'){
-                            footerOrders()
-                        }
-                        if(data.match('notice_')=='rider_'){
-                            noticeAlarm();
                         }
                     });
                     $(function() {
@@ -233,6 +224,25 @@
             $(this).closest('div').slideUp();
         });
     });
+    function riderSettingAlarmMessage(data) {
+        if(data.match('rider_')=='rider_'){
+            if(map_region){
+                if(map_region=="hk"){
+                    footerRiders();
+                }
+            }
+        }
+        if(data.match('rider_info_updated')=='rider_info_updated'){
+            location.href = "/setting-rider";
+        }
+        if(data.match('order_')=='order_'){
+            footerOrders()
+        }
+        if(data.match('notice_')=='rider_'){
+            noticeAlarm();
+        }
+        alarmSound(data);
+    }
     /*]]>*/
 </script>
 </html>
