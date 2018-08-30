@@ -100,7 +100,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                log.info(r+"!!!!!!!!!!원본!!!!!!!!!!!"+r.getId());//test
             }
 
-//            Rider assginRider = riderList.stream() //첫번째 라이더로 바로 받을지 고려
+//            Rider assginRider = riderList.stream() //첫번째 라이더로 바로 받을지 고려, optional 고려
             riderList = riderList.stream()
                     .filter(a->Integer.parseInt(a.getAssignCount()) < Integer.parseInt(order.getStore().getAssignmentLimit()))//해당 주문의 상점 기준 최대 오더 개수 안넘는 라이더만 ***** 해당 라이더 상점의 최대 주문개수가 아님(바꿔야하나)
                     .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius())*1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
@@ -128,7 +128,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             .thenComparing(Rider::getMinOrderStatus , Comparator.nullsFirst(Comparator.naturalOrder()))//3순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
                             .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())))//4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
                     .collect(Collectors.toList());
-//                    .findFirst().get();//첫번째 라이더로 바로 받을지 고려
+//                    .findFirst().get();//첫번째 라이더로 바로 받을지 고려, 병렬스트림으로 변경시 findAny()적용
 
             /*for(Rider r : riderList){
                 log.info(r+"!!!!!!!!!!필터링 및 정렬 후!!!!!!!!!!!"+r.getId());//test
@@ -1348,9 +1348,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (ret != 0) {
             if(S_Order.getSubGroup() != null){
-                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(S_Order.getId()).subGroupId(S_Order.getSubGroup().getId()).build());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(S_Order.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(S_Order.getId()).build());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
                 ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);

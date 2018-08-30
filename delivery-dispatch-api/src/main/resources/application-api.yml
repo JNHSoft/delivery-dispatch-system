@@ -55,7 +55,7 @@ datasource:
 #    password: snaskzhf
 
 #    [DDE-HK-MAIN]
-#    url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8
+#    url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8&noAccessToProcedureBodies=true
 #    username: hkuser
 #    password: hkuserpw!
 
