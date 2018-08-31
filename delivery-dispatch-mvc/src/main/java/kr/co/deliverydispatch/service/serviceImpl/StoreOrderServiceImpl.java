@@ -103,6 +103,16 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
     }
 
     @Override
+    public int getCountOderAdmit(Order order) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            order.setRole("ROLE_STORE");
+        }
+        return orderMapper.selectCountOderAdmit(order);
+    }
+
+    @Override
     public List<Order> getOrders(Order order){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -494,8 +504,6 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             this.putOrder(combinedOrderCanceled);
         }
 
-        String tmpRegOrderId = order.getId();
-
         int nRet = this.putOrder(orderCanceled);
 
         String tmpOrderId = orderCanceled.getId();
@@ -590,8 +598,6 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
             this.putOrder(combinedOrderAssignCanceled);
         }
-
-        String tmpRegOrderId = order.getId();
 
         int ret = this.putOrder(orderAssignCanceled);
 

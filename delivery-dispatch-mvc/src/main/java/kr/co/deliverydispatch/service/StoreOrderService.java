@@ -64,7 +64,6 @@ public interface StoreOrderService {
      *
      * @param order
      * @return int
-     * @throws
      */
     public int putOrderInfo(Order order);
 
@@ -73,7 +72,6 @@ public interface StoreOrderService {
      *
      * @param order
      * @return int
-     * @throws
      */
     public int putOrderCanceled(Order order);
 
@@ -82,9 +80,22 @@ public interface StoreOrderService {
      *
      * @param order
      * @return int
-     * @throws
      */
     public int putOrderAssignCanceled(Order order);
 
+    /**
+     * <p> getFooterOrders
+     *
+     * @param order
+     * @return List<Order>
+     */
     public List<Order> getFooterOrders(Order order);
+
+    /**
+     * <p> getCountOderAdmit
+     *
+     * @param order
+     * @return int
+     */
+    public int getCountOderAdmit(Order order);
 }

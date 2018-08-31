@@ -90,28 +90,12 @@ public class OrderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
 
-        Store store = new Store();
-        store.setToken(storeInfo.getStoreAccessToken());
-        store.setAccessToken(storeInfo.getStoreAccessToken());
-        Store tmpStore = storeOrderService.getStoreInfo(store);
-
-        List<Order> tmpOrders = storeOrderService.getOrders(order);
-
-        int tmpAssignCount = 1;
-        for (Order o : tmpOrders) {
-//            log.info(o.getStatus());
-//            log.info(o.getRiderId());
-//            log.info(order.getRiderId());
-            if (o.getRiderId() != null && o.getRiderId().equals(order.getRiderId()) && (o.getStatus().equals("1") || o.getStatus().equals("2"))) {
-                ++tmpAssignCount;
-            }
-        }
-
-        if (tmpAssignCount > Integer.parseInt(tmpStore.getAssignmentLimit())) {
-            return false;
-        } else {
+        int oderAdmitCount = storeOrderService.getCountOderAdmit(order);
+        if(oderAdmitCount>0){
             storeOrderService.putOrderAssigned(order);
             return true;
+        }else{
+            return false;
         }
     }
 

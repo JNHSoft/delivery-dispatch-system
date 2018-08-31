@@ -147,5 +147,12 @@ public interface OrderMapper {
      */
     public int selectRegOrderIdCheck(Order order);
 
+    /**
+     * 라이더가 받을 수 있는 주문 개수
+     * @param order
+     * @return
+     */
+    public int selectCountOderAdmit(Order order);
+
 
 }

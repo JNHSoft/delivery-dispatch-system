@@ -711,5 +711,11 @@
 -- 			AND date_add(now(), interval 2 hour) = A.reservation_datetime
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC
 	</select>
+
+	<select id="selectCountOderAdmit" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">
+		SELECT (select assignment_limit FROM TB_STORE WHERE (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})=id)
+		-
+		(SELECT COUNT(rider_id) FROM TB_ORDER WHERE rider_id = #{riderId} AND status in(1,2) AND created_datetime > CURRENT_DATE()) as oderAdmitCount;
+	</select>
 </mapper>
  
