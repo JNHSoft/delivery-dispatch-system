@@ -140,7 +140,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
             final ActorDetails actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
 
             String token = null;
-            if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+            if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                 token = tokenManager.generateCustomToken(actorDetails, device);
             } else {
                 token = userSelectLoginMap.get("accessToken");
@@ -179,12 +179,12 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
             // Token을 Insert
             if (level.equals("3")) {
-                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                     riderInfo.setAccessToken(token);
                     riderService.insertRiderSession(riderInfo);
                 }
             } else if (level.equals("2")) {
-                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                     storeInfo.setAccessToken(token);
                     int getTokenResult = storeService.insertStoreSession(storeInfo);
                 }
@@ -204,12 +204,12 @@ public class ApiExporter extends ExporterSupportor implements Api {
 //                    orderService.assignOrder(order);
 //                }
             } else if (level.equals("1")) {
-                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                     adminInfo.setAccessToken(token);
                     adminService.insertAdminSession(adminInfo);
                 }
             } else if (level.equals("4")) {
-                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken") == "") {
+                if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                     trackerInfo.setAccessToken(token);
                     trackerService.insertTrackerSession(trackerInfo);
                 }

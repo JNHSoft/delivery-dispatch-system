@@ -457,8 +457,14 @@
 		) VALUES (
 			now()
 			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		<!--<if test="subGroupStoreRel.groupId != null and subGroupStoreRel.subGroupId != ''">-->
 			, #{subGroupStoreRel.groupId}
 			, #{subGroupStoreRel.subGroupId}
+		<!--</if>
+		<if test="subGroupStoreRel.groupId == null or subGroupStoreRel.subGroupId == ''">
+			, null
+			, null
+		</if>-->
 			, #{id}
 		)
 	</insert>

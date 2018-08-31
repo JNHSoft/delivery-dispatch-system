@@ -365,7 +365,7 @@ public class StoreController {
 
 
     // 위도 경도
-    if ((store.getLatitude() == null || store.getLatitude() == "") || (store.getLongitude() == null || store.getLongitude() == "")) {
+    if ((store.getLatitude() == null || store.getLatitude().equals("")) || (store.getLongitude() == null || store.getLongitude().equals(""))) {
         Geocoder geocoder = new Geocoder();
         try {
             Map<String, String> geo = geocoder.getLatLng(store.getAddress());
@@ -397,8 +397,6 @@ public class StoreController {
     storeSession.setId(store.getId());
     storeSession.setLoginId(loginId);
 
-
-
     storeAdminService.insertAdminStoreSession(storeSession);
     log.info("@@@@@@@insertStoreSession@@@@@@@@@@@"+storeSession);
 
@@ -406,11 +404,6 @@ public class StoreController {
         A_Group = storeAdminService.insertSubGroupStoreRel(store);
         log.info("@@@@@@@insertSubGroupRel@@@@@@@@@@@"+store);
     }
-
-
-
-
-
 
     if (assignmentStatus != null) {
         log.info("@@@@@@@@@@@@@@@@@배정상태 insert@@@@@@@@@@@@@@@@@@@@");
@@ -498,6 +491,4 @@ public class StoreController {
             return "ok";
         }
     }
-
-
 }

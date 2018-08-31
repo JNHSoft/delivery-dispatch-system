@@ -521,7 +521,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             e.printStackTrace();
         }
 
-        if (order.getDeliveryPrice() == null || order.getDeliveryPrice() == "") {
+        if (order.getDeliveryPrice() == null || order.getDeliveryPrice().equals("")) {
             order.setDeliveryPrice("0");
         }
 
@@ -531,7 +531,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setCookingTime("30");
         }
 
-        if (order.getPaid() == null || order.getPaid() == "") {
+        if (order.getPaid() == null || order.getPaid().equals("")) {
             order.setPaid("0");
         } else if (!order.getPaid().equals("0") && !order.getPaid().equals("1") && !order.getPaid().equals("2") && !order.getPaid().equals("3")) {
             throw new AppTrException(getMessage(ErrorCodeEnum.S0002), ErrorCodeEnum.S0002.name());
@@ -809,7 +809,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         }
 
-        if (order.getMenuPrice() == null || order.getMenuPrice() == "") {
+        if (order.getMenuPrice() == null || order.getMenuPrice().equals("")) {
             order.setMenuPrice("0");
         }
 
@@ -1450,7 +1450,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         if (order.getOrderCheckAssignment() != null) {
-            if (order.getOrderCheckAssignment().getStatus() == null || order.getOrderCheckAssignment().getStatus() == "") {
+            if (order.getOrderCheckAssignment().getStatus() == null || order.getOrderCheckAssignment().getStatus().equals("")) {
                 order.getOrderCheckAssignment().setStatus("0");
             }
 

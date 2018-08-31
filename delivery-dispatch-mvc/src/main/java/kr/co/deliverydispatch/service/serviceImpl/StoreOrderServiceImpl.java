@@ -364,11 +364,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             }
         }*/
 
-        if (order.getMenuPrice() == null || order.getMenuPrice() == "") {
+        if (order.getMenuPrice() == null || order.getMenuPrice().equals("")) {
             order.setMenuPrice("0");
         }
 
-        if (order.getDeliveryPrice() == null || order.getDeliveryPrice() == "") {
+        if (order.getDeliveryPrice() == null || order.getDeliveryPrice().equals("")) {
             order.setDeliveryPrice("0");
         }
 
@@ -444,10 +444,8 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (nRet != 0) {
             if (storeDTO.getSubGroup() != null){
-//                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
                 redisService.setPublisher(Content.builder().type("order_updated").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else {
-//                redisService.setPublisher("order_updated", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
                 redisService.setPublisher(Content.builder().type("order_updated").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
@@ -535,10 +533,8 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (nRet != 0) {
             if (storeDTO.getSubGroup() != null){
-//                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId()+", subgroup_id:"+storeDTO.getSubGroup().getId());
                 redisService.setPublisher(Content.builder().id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else {
-//                redisService.setPublisher("order_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+storeDTO.getId());
                 redisService.setPublisher(Content.builder().id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
