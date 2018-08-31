@@ -1,5 +1,13 @@
 $(document).ready(function() {
-    $.ajaxSetup({ cache: false });
+    $.ajaxSetup({
+        cache : false,
+        timeout : 30000,
+        error : function (request,status,error) {
+            // alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            alert("error: "+order_detail_error+"\n"+request?"code: "+request.status:"errMessage : "+error);
+            location.href = "/order";
+        }
+    });
     noticeAlarm();
     $('#logout').click(function () {
         $.ajax({

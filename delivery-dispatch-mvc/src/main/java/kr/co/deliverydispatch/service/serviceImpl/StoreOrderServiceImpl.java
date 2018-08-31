@@ -352,7 +352,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 //
 //        order.setAddress(address);
 
-        Geocoder geocoder = new Geocoder();
+        /*Geocoder geocoder = new Geocoder();
 
         if (order.getAddress() != null && order.getAddress() != "") {
             try {
@@ -362,8 +362,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-        }
+        }*/
 
         if (order.getMenuPrice() == null || order.getMenuPrice() == "") {
             order.setMenuPrice("0");
@@ -614,11 +613,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (ret != 0) {
             if (S_Order.getSubGroup() != null){
-//                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId()+", subgroup_id:"+S_Order.getSubGroup().getId());
-                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(S_Order.getId()).subGroupId(S_Order.getSubGroup().getId()).build());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(S_Order.getSubGroup().getId()).build());
             }else {
-//                redisService.setPublisher("order_assign_canceled", "id:"+tmpOrderId+", admin_id:"+storeDTO.getAdminId()+", store_id:"+S_Order.getId());
-                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(S_Order.getId()).build());
+               redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 if(tokens.size() > 0){
