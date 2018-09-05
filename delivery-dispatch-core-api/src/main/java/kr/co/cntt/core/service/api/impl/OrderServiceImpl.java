@@ -405,7 +405,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setRiderId(rider.getId());
             order.setStatus("1");
             order.setAssignedDatetime(LocalDateTime.now().toString());
-            if (rider.getLatitude() != null && rider.getLatitude() != "") {
+            if (rider.getLatitude() != null && !rider.getLatitude().equals("")) {
                 order.setAssignXy(rider.getLatitude() + "|" + rider.getLongitude());
             } else {
                 order.setAssignXy("none");
@@ -478,23 +478,23 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             address += storeDTO.getDetailAddress();
         }*/
 
-        if (order.getAreaAddress() != null && order.getAreaAddress() != "") {
+        if (order.getAreaAddress() != null && !order.getAreaAddress().equals("")) {
             address += order.getAreaAddress();
         }
 
-        if (order.getDistrictAddress() != null && order.getDistrictAddress() != "") {
+        if (order.getDistrictAddress() != null && !order.getDistrictAddress().equals("")) {
             address += " " + order.getDistrictAddress();
         }
 
-        if (order.getStreetAddress() != null && order.getStreetAddress() != "") {
+        if (order.getStreetAddress() != null && !order.getStreetAddress().equals("")) {
             address += " " + order.getStreetAddress();
         }
 
-        if (order.getEstateAddress() != null && order.getEstateAddress() != "") {
+        if (order.getEstateAddress() != null && !order.getEstateAddress().equals("")) {
             address += " " + order.getEstateAddress();
         }
 
-        if (order.getBuildingAddress() != null && order.getBuildingAddress() != "") {
+        if (order.getBuildingAddress() != null && !order.getBuildingAddress().equals("")) {
             address += " " + order.getBuildingAddress();
         }
 
@@ -527,7 +527,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setTotalPrice(String.valueOf(Double.parseDouble(order.getMenuPrice()) + Double.parseDouble(order.getDeliveryPrice())));
 
-        if (order.getCookingTime() == null || order.getCookingTime() == "") {
+        if (order.getCookingTime() == null || order.getCookingTime().equals("")) {
             order.setCookingTime("30");
         }
 
@@ -539,7 +539,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setStatus("0");
 
-        if (order.getReservationDatetime() != null && order.getReservationDatetime() != "") {
+        if (order.getReservationDatetime() != null && !order.getReservationDatetime().equals("")) {
             order.setReservationDatetime(order.getReservationDatetime().substring(0, 12) +"00");
             order.setReservationStatus("1");
         } else {
@@ -566,7 +566,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00039), ErrorCodeEnum.E00039.name());
         }
 
-        if (order.getWebOrderId() == null || order.getWebOrderId() == "") {
+        if (order.getWebOrderId() == null || order.getWebOrderId().equals("")) {
             order.setWebOrderId(order.getRegOrderId());
         }
 
@@ -774,29 +774,29 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             address += storeDTO.getDetailAddress();
         }*/
 
-        if (order.getAreaAddress() != null && order.getAreaAddress() != "") {
+        if (order.getAreaAddress() != null && !order.getAreaAddress().equals("")) {
             address += order.getAreaAddress();
         }
 
-        if (order.getDistrictAddress() != null && order.getDistrictAddress() != "") {
+        if (order.getDistrictAddress() != null && !order.getDistrictAddress().equals("")) {
             address += " " + order.getDistrictAddress();
         }
 
-        if (order.getStreetAddress() != null && order.getStreetAddress() != "") {
+        if (order.getStreetAddress() != null && !order.getStreetAddress().equals("")) {
             address += " " + order.getStreetAddress();
         }
 
-        if (order.getEstateAddress() != null && order.getEstateAddress() != "") {
+        if (order.getEstateAddress() != null && !order.getEstateAddress().equals("")) {
             address += " " + order.getEstateAddress();
         }
 
-        if (order.getBuildingAddress() != null && order.getBuildingAddress() != "") {
+        if (order.getBuildingAddress() != null && !order.getBuildingAddress().equals("")) {
             address += " " + order.getBuildingAddress();
         }
 
         order.setAddress(address);
 
-        Geocoder geocoder = new Geocoder();
+        /*Geocoder geocoder = new Geocoder();
 
         if (order.getAddress() != null && order.getAddress() != "") {
             try {
@@ -807,13 +807,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 e.printStackTrace();
             }
 
-        }
+        }*/
 
         if (order.getMenuPrice() == null || order.getMenuPrice().equals("")) {
             order.setMenuPrice("0");
         }
 
-        if (order.getDeliveryPrice() == null || order.getDeliveryPrice() == "") {
+        if (order.getDeliveryPrice() == null || order.getDeliveryPrice().equals("")) {
             order.setDeliveryPrice("0");
         }
 
@@ -958,7 +958,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssigned.setStatus("1");
         orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
 //        orderAssigned.setCombinedOrderId(order.getCombinedOrderId());
-        if (S_Rider.getLatitude() != null && S_Rider.getLatitude() != "") {
+        if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
             orderAssigned.setAssignXy(S_Rider.getLatitude()+"|"+S_Rider.getLongitude());
         } else {
             orderAssigned.setAssignXy("none");
@@ -966,14 +966,14 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Order combinedOrderAssigned = new Order();
 
-        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             combinedOrderAssigned.setId(order.getCombinedOrderId());
             combinedOrderAssigned.setRiderId(order.getRiderId());
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
 //            combinedOrderAssigned.setCombinedOrderId(order.getId());
-            if (S_Rider.getLatitude() != null && S_Rider.getLatitude() != "") {
+            if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
                 combinedOrderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
             } else {
                 combinedOrderAssigned.setAssignXy("none");
@@ -992,8 +992,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             this.putOrder(combinedOrderAssigned);
         }
-
-        String tmpRegOrderId = order.getId();
 
         int ret = this.putOrder(orderAssigned);
 
@@ -1053,7 +1051,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Order combinedOrderPickedUp = new Order();
 
-        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             combinedOrderPickedUp.setId(order.getCombinedOrderId());
             combinedOrderPickedUp.setStatus("2");
             combinedOrderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
@@ -1074,8 +1072,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             this.putOrder(combinedOrderPickedUp);
         }
-
-        String tmpRegOrderId = order.getId();
 
         int result = this.putOrder(orderPickedUp);
 
@@ -1117,7 +1113,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Order combinedOrderCompleted = new Order();
 
-        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             combinedOrderCompleted.setId(order.getCombinedOrderId());
             combinedOrderCompleted.setStatus("3");
             combinedOrderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
@@ -1127,8 +1123,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             this.putOrder(combinedOrderCompleted);
         }
-
-        String tmpRegOrderId = order.getId();
 
         int result = this.putOrder(orderCompleted);
 
@@ -1201,7 +1195,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Order combinedOrderCanceled = new Order();
 
-        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             combinedOrderCanceled.setId(order.getCombinedOrderId());
             combinedOrderCanceled.setStatus("4");
             combinedOrderCanceled.setModifiedDatetime(LocalDateTime.now().toString());
@@ -1220,8 +1214,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             this.putOrder(combinedOrderCanceled);
         }
-
-        String tmpRegOrderId = order.getId();
 
         int nRet = this.putOrder(orderCanceled);
 
@@ -1294,7 +1286,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Order combinedOrderAssignCanceled = new Order();
 
-        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             combinedOrderAssignCanceled.setId(order.getCombinedOrderId());
             combinedOrderAssignCanceled.setStatus("5");
             combinedOrderAssignCanceled.setRiderId("-1");
@@ -1469,7 +1461,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             orderAssignCanceled.setPickedUpDatetime("-1");
             orderAssignCanceled.setToken(order.getToken());
 
-            if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+            if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
                 Order combinedOrderAssignCanceled = new Order();
                 orderAssignCanceled.setRole("ROLE_RIDER");
                 combinedOrderAssignCanceled.setId(order.getCombinedOrderId());
@@ -1562,7 +1554,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         order.setRole("ROLE_RIDER");
         Order needOrderId = orderMapper.selectOrderInfo(order);
 
-        if (order.getCombinedOrderId() != null && order.getCombinedOrderId() != "") {
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             Order combinedOrder = new Order();
 
             combinedOrder.setReturnDatetime(LocalDateTime.now().toString());

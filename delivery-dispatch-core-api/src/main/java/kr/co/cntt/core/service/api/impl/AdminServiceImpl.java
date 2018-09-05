@@ -421,7 +421,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     @Override
     public int postStore(Store store) {
 
-        if ((store.getLatitude() == null || store.getLatitude() == "") || (store.getLongitude() == null || store.getLongitude() == "")) {
+        if ((store.getLatitude() == null || store.getLatitude().equals("")) || (store.getLongitude() == null || store.getLongitude().equals(""))) {
             Geocoder geocoder = new Geocoder();
             try {
                 Map<String, String> geo = geocoder.getLatLng(store.getAddress());

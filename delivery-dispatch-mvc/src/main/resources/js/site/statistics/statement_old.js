@@ -1,9 +1,73 @@
 var loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
+    $('input[type="checkbox"]').on('click', function () {
+        getStoreStatistics();
+    });
     $('input[name="datepicker"]').change(function () {
         getStoreStatistics();
     })
+    $("#allChk").click(function () {
+        if (this.checked) {
+            $("input[name=srchChk]:checkbox").each(function () {
+                $(this).prop("checked", "checked");
+                $(this).attr("disabled", true);
+            });
+        } else {
+            $("input[name=srchChk]:checkbox").each(function () {
+                // $(this).attr("checked", false);
+                $(this).removeAttr("checked");
+                $(this).attr("disabled", false);
+            });
+        }
+    });
     $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd', new Date));
+    $("#searchButton").click(function () {
+        var searchText = $("#searchText").val();
+        var filter = {
+            groupOp: "OR",
+            rules: []
+        };
+        var select = $("#searchSelect option:selected").val();
+
+        if (select == 'reg_order_id') {
+            filter.rules.push({
+                field: select,
+                op: "eq",
+                data: searchText
+            });
+        } else if (select == 'all') {
+            /*filter.rules.push({
+                field : 'id',
+                op : "eq",
+                data : searchText
+            });*/
+            filter.rules.push({
+                field: 'reg_order_id',
+                op: "cn",
+                data: searchText
+            });
+            filter.rules.push({
+                field: 'pay',
+                op: "cn",
+                data: searchText
+            });
+            filter.rules.push({
+                field: 'rider',
+                op: "cn",
+                data: searchText
+            });
+        } else {
+            filter.rules.push({
+                field: select,
+                op: "cn",
+                data: searchText
+            });
+        }
+        var grid = jQuery('#jqGrid');
+        grid[0].p.search = filter.rules.length > 0;
+        $.extend(grid[0].p.postData, {filters: JSON.stringify(filter)});
+        grid.trigger("reloadGrid", [{page: 1}]);
+    });
     getStoreStatistics();
 });
 
@@ -162,21 +226,37 @@ function getStoreStatistics() {
         },
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             var i = 1;
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     // if (timepickerConfirm($('#day1').val(), $('#day2').val(), data[key].createdDatetime)) {
                     var tmpdata = new Object();
-                    var $status;
-                    var $toBePaid;
                     if (data[key].status == 3) {
+                        if (!$('#completeChk').prop('checked')) {
+                            continue;
+                        }
                         $status = '<i class="ic_txt">' + status_completed + '</i>';
                     }
                     else {
+                        if (!$('#canceledChk').prop('checked')) {
+                            canceledChk
+                            continue;
+                        }
                         $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
+
                     }
 
+                    /*if (data[key].payment) {
+                        if (data[key].payment.type == "0") {
+                            $toBePaid = order_payment_card;
+                        } else if (data[key].payment.type == "1") {
+                            $toBePaid = order_payment_cash;
+                        } else {
+                            $toBePaid =  "-";
+                        }
+                    } else{
+                        $toBePaid =  "-";
+                    }*/
                     if (data[key].paid == 0) {
                         $toBePaid = order_payment_cash;
                     }
@@ -257,11 +337,11 @@ function getStoreStatistics() {
                 datatype: "local",
                 data: mydata,
                 colModel: [
-                    {label: 'No', name: 'No', width: 25, key: true, align: 'center', hidden: true},
-                    {label: 'Order 號碼', name: 'reg_order_id', width: 80, align: 'center'},
-                    {label: order_id, name: 'id', width: 80, align: 'center', hidden: true},
+                    {label: 'No', name: 'No', width: 25, key: true, align: 'center'},
                     {label: order_status, name: 'state', width: 80, align: 'center'},
+                    {label: order_reg_order_id, name: 'reg_order_id', width: 80, align: 'center'},
                     {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden: true},
+                    {label: order_id, name: 'id', width: 80, align: 'center', hidden: true},
                     {label: order_created, name: 'time1', width: 80, align: 'center'},
                     {label: order_address, name: 'address', width: 200},
                     {label: order_cooking, name: 'time2', width: 80, align: 'center'},

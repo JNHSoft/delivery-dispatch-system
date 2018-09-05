@@ -106,6 +106,11 @@ $(document).ready(function() {
 
     });
 
+    $('.changeChkInputMessage').find('.input, #combinedChk, #selectCombined').change(function(){
+        changeChkInputMessage = true;
+    });
+
+
     $("#searchButton").click(function () {
         var searchText = $("#searchText").val();
         var filter = {
@@ -206,6 +211,7 @@ function minusTimeSet(time1 , time2) {
 var selectedOriginOrder;
 var map;
 var marker;
+var changeChkInputMessage = false;
 function initMap() {
     var uluru = {lat: 37.5806376, lng: 126.9058433};
     map = new google.maps.Map(document.getElementById('map'), {
@@ -354,7 +360,8 @@ function getMyRiderList(orderDetailData) {
 }
 
 function getNewOrderList(statusNewArray) {
-    var shtml = "";
+    // var shtml = "<option value=0>-</option>";
+    var shtml ="";
     jQuery.ajaxSettings.traditional = true;// ajax 배열 던지려면 필요함
     $.ajax({
         url:"/getOrderList",
@@ -370,10 +377,10 @@ function getNewOrderList(statusNewArray) {
                 if (data.hasOwnProperty(key)){
                     if(data[key].regOrderId != selectedOriginOrder.regOrderId && !data[key].combinedOrderId){
                         shtml += '<option value="'+data[key].regOrderId+'">'+order_id+':'+ data[key].regOrderId + '|'+ order_created+':'+ timeSet(data[key].createdDatetime) + '</option>';
-                        $('#selectCombined').html(shtml);
                     }
                 }
             }
+            $('#selectCombined').html(shtml);
         }
     });
 }
@@ -579,6 +586,7 @@ function getOrderList(statusArray, storeId) {
             ondblClickRow: function(rowid,icol,cellcontent,e){
                 var rowData = jQuery(this).getRowData(rowid);
                 var orderId = rowData['origin_reg_order_id'];
+                changeChkInputMessage = false;
                 getOrderDetail(orderId);//상세보기 열기
                 setTimeout(function(){
                     $(window).trigger('resize');
@@ -648,8 +656,12 @@ function putAssignedAdvanceFirst(id) {
 }
 
 function putOrder() {
+    if (changeChkInputMessage == false){
+        // console.log('안바뀜!!!');
+        return;
+    }
+    // console.log('바뀜!!!');
     var id = $('.tit').attr("orderId");
-
     var menuName = $('#menuName').val();
     var cookingTime = $('#cookingTime').val();
     var menuPrice = $('#menuPrice').val()?$('#menuPrice').val():0;
@@ -677,6 +689,7 @@ function putOrder() {
             var statusArray = $('#statusArray').val().split(",");
             var storeId = $('#orderMyStoreChk').val();
             getOrderList(statusArray, storeId);
+            changeChkInputMessage = false;
         }
     });
 }
@@ -697,6 +710,10 @@ function putOrderAssignCancle() {
         },
         dataType : 'json',
         success : function (data) {
+            getOrderDetail(selectedOriginOrder.regOrderId);
+            var statusArray = $('#statusArray').val().split(",");
+            var storeId = $('#orderMyStoreChk').val();
+            getOrderList(statusArray, storeId);
         }
     });
 }
@@ -721,6 +738,11 @@ function putAssignedAdvance() {
         success : function (data) {
             if (data == false) {
                 alert(alert_order_assign_max);
+            }else{
+                getOrderDetail(selectedOriginOrder.regOrderId);
+                var statusArray = $('#statusArray').val().split(",");
+                var storeId = $('#orderMyStoreChk').val();
+                getOrderList(statusArray, storeId);
             }
         }
     });
@@ -775,11 +797,16 @@ function putOrderCancel() {
         return;
     }
     var id = $('.tit').attr("orderId");
+    var combinedOrderId ="";
+    if($('#combinedChk').prop("checked")){
+        combinedOrderId = $('#selectCombined').val();
+    }
     $.ajax({
         url: '/putOrderCancel',
         type: 'put',
         data: {
             id : id,
+            combinedOrderId : combinedOrderId
         },
         dataType : 'json',
         success : function (data) {

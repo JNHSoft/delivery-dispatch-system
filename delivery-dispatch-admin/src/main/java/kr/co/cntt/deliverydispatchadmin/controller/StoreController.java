@@ -244,7 +244,7 @@ public class StoreController {
         store.setDetailAddress(detailAddress);
         System.out.println("!!!!"+groupId);
         // 위도 경도
-        if (store.getAddress() != null && store.getAddress() != "") {
+        if (store.getAddress() != null && !store.getAddress().equals("")) {
             log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+store.getAddress());
             Geocoder geocoder = new Geocoder();
             try {
@@ -291,7 +291,7 @@ public class StoreController {
 
         int B_Group = storeAdminService.putSubGroupRiderRelByStoreId(store);
 
-        if (assignmentStatus != null && assignmentStatus != "") {
+        if (assignmentStatus != null && !assignmentStatus.equals("")) {
             A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
         }
 
