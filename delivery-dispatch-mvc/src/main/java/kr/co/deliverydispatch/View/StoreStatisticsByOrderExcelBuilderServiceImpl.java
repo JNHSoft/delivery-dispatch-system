@@ -18,10 +18,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Component("StoreStatisticsByOrderExcelBuilderServiceImpl")
 public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView {
@@ -145,14 +142,18 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             LocalDateTime orderTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
             LocalDateTime completeTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getCompletedDatetime()).replace(" ", "T"));
-            LocalDateTime returnTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getReturnDatetime()).replace(" ", "T"));
+            LocalDateTime returnTime = LocalDateTime.MIN;
+            if(storeStatisticsByOrderList.get(i).getReturnDatetime()!=null){
+                returnTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getReturnDatetime()).replace(" ", "T"));
+            }
+
 
             Long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
             Long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
             Long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
-            Long completeReturn =completeTime.until(returnTime, ChronoUnit.MILLIS);
-            Long pickupReturn =pickupTime.until(returnTime, ChronoUnit.MILLIS);
-            Long orderReturn = orderTime.until(returnTime, ChronoUnit.MILLIS);
+            Long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            Long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            Long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
             orderPickupTime += orderPickup;
             pickupCompleteTime += pickupComplete;
