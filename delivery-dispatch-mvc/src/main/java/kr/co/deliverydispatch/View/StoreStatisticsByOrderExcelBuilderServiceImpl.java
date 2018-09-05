@@ -155,7 +155,6 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             Long orderReturn = orderTime.until(returnTime, ChronoUnit.MILLIS);
 
             orderPickupTime += orderPickup;
-            System.out.println("orderPickup : " + orderPickup+"orderPickupTime : "+orderPickupTime);
             pickupCompleteTime += pickupComplete;
             orderCompleteTime += orderComplete;
             completeReturnTime += completeReturn;

@@ -109,15 +109,6 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         if (S_Order == null) {
             return null;
         }
-        /*Misc misc = new Misc();
-        if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
-            Store storeInfo = storeMapper.selectStoreLocation(S_Order.getStoreId());
-            try {
-                S_Order.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), S_Order.getLatitude(), S_Order.getLongitude()) / (double) 1000));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
         return S_Order;
     }
     //통계 조회 엑셀

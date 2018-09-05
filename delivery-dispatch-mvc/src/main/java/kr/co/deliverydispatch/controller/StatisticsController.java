@@ -119,7 +119,7 @@ public class StatisticsController {
             }else{
                 return false;
             }
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
     }
 
     @ResponseBody
@@ -134,7 +134,7 @@ public class StatisticsController {
 
     // excel 다운로드
 //    @ResponseBody
-    @GetMapping("/excelDownload")
+    /*@GetMapping("/excelDownload")
     public ModelAndView statisticsExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -159,7 +159,7 @@ public class StatisticsController {
         modelAndView.addObject("getStoreStatisticsExcel", orderStatisticsByStoreList);
 
         return modelAndView;
-    }
+    }*/
 
     @GetMapping("/excelDownloadByOrder")
     public ModelAndView statisticsByOrderExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
