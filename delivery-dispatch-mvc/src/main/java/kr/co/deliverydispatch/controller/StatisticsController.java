@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import sun.invoke.empty.Empty;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,13 +53,31 @@ public class StatisticsController {
      *
      * @return
      */
-    @GetMapping("/statistics")
-    public String statistics(Store store, @RequestParam(required = false) String frag, Model model) {
+    @GetMapping("/statisticsByOrder")
+    public String statisticsByOrder(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-        return "/statistics/statement";
+        return "/statistics/order";
+    }
+
+    @GetMapping("/statisticsByDate")
+    public String statisticsByDate(Store store, @RequestParam(required = false) String frag, Model model) {
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        store.setToken(storeInfo.getStoreAccessToken());
+        Store myStore = storeStatementService.getStoreInfo(store);
+        model.addAttribute("store", myStore);
+        return "/statistics/date";
+    }
+
+    @GetMapping("/statisticsByInterval")
+    public String statisticsByInterval(Store store, @RequestParam(required = false) String frag, Model model) {
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        store.setToken(storeInfo.getStoreAccessToken());
+        Store myStore = storeStatementService.getStoreInfo(store);
+        model.addAttribute("store", myStore);
+        return "/statistics/interval";
     }
 
     /*@ResponseBody
@@ -187,5 +207,49 @@ public class StatisticsController {
 
         return modelAndView;
     }
+
+    // 2번째 페이지
+    @ResponseBody
+    @GetMapping("/getStoreStatisticsByDate")
+    @CnttMethodDescription("통계 리스트 Date 조회")
+    public List<Order> getStoreStatisticsByDate(@RequestParam(value = "startDate") String startDate
+            ,@RequestParam(value = "endDate") String endDate){
+        // 날짜
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        order.setToken(storeInfo.getStoreAccessToken());
+/*
+        List<Order> statisticsList = storeStatementService.getStoreStatisticsByDate(order);
+        return statisticsList.stream().filter(a->{
+            if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
+                LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+                LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+                LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+                if(assignTime.until(pickupTime, ChronoUnit.SECONDS)>=120 && pickupTime.until(completeTime, ChronoUnit.SECONDS)>=120 && completeTime.until(returnTime, ChronoUnit.SECONDS)>=120){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)*/
+    return Collections.emptyList();
+    }
+
+
 
 }
