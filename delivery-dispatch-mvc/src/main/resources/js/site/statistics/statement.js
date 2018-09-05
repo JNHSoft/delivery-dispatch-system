@@ -16,15 +16,41 @@ function timeSet(time) {
     }
 }
 
+function timeSetDate(time) {
+    if (time != null) {
+        var d = new Date(time);
+        return $.datepicker.formatDate('yy.mm.dd ', d);
+    } else {
+        return "-";
+    }
+}
+
+function totalTimeSet(time) {
+    if (time != null) {
+        var d = new Date(time);
+        return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+    } else {
+        return "-";
+    }
+}
+
+
 function minusTimeSet(time1, time2) {
     if (time2 != null) {
         var d1 = new Date(time1);
         var d2 = new Date(time2);
         var minusTime = new Date(d2.getTime() - d1.getTime());
-        return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2)
+        return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2);
     } else {
         return "-";
     }
+}
+
+function minusTimeSet2(time1, time2) {
+    var d1 = new Date(time1);
+    var d2 = new Date(time2);
+    var minusTime = new Date(d2.getTime() - d1.getTime());
+    return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
 }
 
 var map;
@@ -154,7 +180,7 @@ function getStoreStatistics() {
     var mydata = [];
     loading.show();
     $.ajax({
-        url: "/getStoreStatistics",
+        url: "/getStoreStatisticsByOrder",
         type: 'get',
         data: {
             startDate: $('#day1').val(),
@@ -164,95 +190,58 @@ function getStoreStatistics() {
         success: function (data) {
             console.log(data);
             var i = 1;
+            var orderPickupSum = 0;
+            var pickupCompleteSum = 0;
+            var orderCompleteSum = 0;
+            var completeReturnSum = 0;
+            var pickupReturnSum = 0;
+            var orderReturnSum = 0;
+            var distanceSum = 0;
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     // if (timepickerConfirm($('#day1').val(), $('#day2').val(), data[key].createdDatetime)) {
                     var tmpdata = new Object();
-                    var $status;
-                    var $toBePaid;
-                    if (data[key].status == 3) {
-                        $status = '<i class="ic_txt">' + status_completed + '</i>';
-                    }
-                    else {
-                        $status = '<i class="ic_txt ic_red">' + status_canceled + '</i>';
-                    }
-
-                    if (data[key].paid == 0) {
-                        $toBePaid = order_payment_cash;
-                    }
-                    else if (data[key].paid == 1) {
-                        $toBePaid = order_payment_card;
-                    }
-                    else if (data[key].paid == 2) {
-                        $toBePaid = order_payment_prepayment;
-                    }
-                    else if (data[key].paid == 3) {
-                        $toBePaid = order_payment_service;
-                    } else {
-                        $toBePaid = "-";
-                    }
-
-                    tmpdata.pay = $toBePaid;
-
                     tmpdata.No = i++;
-                    tmpdata.state = $status;
-                    tmpdata.id = data[key].id;
-                    if (data[key].createdDatetime) {
-                        tmpdata.time1 = timeSet(data[key].createdDatetime);
-                    }
-                    tmpdata.address = data[key].address;
-
                     tmpdata.reg_order_id = regOrderIdReduce(data[key].regOrderId);
+                    tmpdata.id = data[key].id;
                     tmpdata.origin_reg_order_id = data[key].regOrderId;
-                    if (data[key].cookingTime) {
-                        tmpdata.time2 = data[key].cookingTime;
-                    }
-
-                    if (!data[key].assignedDatetime) {
-                        tmpdata.time3 = "-";
-                    } else {
-                        tmpdata.time3 = timeSet(data[key].assignedDatetime);
-                    }
-                    if (!data[key].pickedUpDatetime) {
-                        tmpdata.time4 = "-";
-                    } else {
-                        tmpdata.time4 = timeSet(data[key].pickedUpDatetime);
-                    }
-                    if(!data[key].reservationDatetime){
-                        tmpdata.time5 = "-";
-                    }else if(data[key].reservationStatus==1){
-                        tmpdata.time5 = timeSet(data[key].reservationDatetime);
-                    }else if(data[key].reservationStatus==0){
-                        if(map_region){
-                            if(map_region=="tw"){
-                                tmpdata.time5 = '<span style="color: red">' + timeSet(data[key].reservationDatetime) + '</span>';
-                            }else{
-                                tmpdata.time5 = "-";
-                            }
-                        }else{
-                            tmpdata.time5 = "-";
-                        }
-                    }
-                    if (!data[key].rider) {
-                        tmpdata.rider = "-";
-                    } else {
-                        tmpdata.rider = data[key].rider.name;
-                    }
-                    if ($("input[name=myStoreChk]:checkbox").prop("checked")) {
-                        if (data[key].storeId == storeId) {
-                            mydata.push(tmpdata);
-                        }
-                    } else {
-                        mydata.push(tmpdata);
-                    }
+                    tmpdata.orderDate = timeSetDate(data[key].createdDatetime);
+                    tmpdata.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
+                    tmpdata.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
+                    tmpdata.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].completedDatetime);
+                    tmpdata.completeReturn1 = minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime);
+                    tmpdata.pickupReturn1 = minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime);
+                    tmpdata.orderReturn1 = minusTimeSet2(data[key].createdDatetime, data[key].returnDatetime);
+                    tmpdata.distance = data[key].distance + 'km';
+                    orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
+                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].completedDatetime);
+                    orderCompleteSum += minusTime(data[key].createdDatetime, data[key].completedDatetime);
+                    completeReturnSum += minusTime(data[key].completedDatetime, data[key].returnDatetime);
+                    pickupReturnSum += minusTime(data[key].pickedUpDatetime, data[key].returnDatetime);
+                    orderReturnSum += minusTime(data[key].createdDatetime, data[key].returnDatetime);
+                    distanceSum += parseFloat(data[key].distance);
+                    mydata.push(tmpdata);
                 }
             }
+            var tmpdata = new Object();
+            tmpdata.No = 10000000;
+            tmpdata.reg_order_id = "TOTAL";
+            tmpdata.id = "";
+            tmpdata.origin_reg_order_id = "";
+            tmpdata.orderDate = "";
+            tmpdata.orderPickup1 = totalTimeSet(orderPickupSum);
+            tmpdata.pickupComplete1 = totalTimeSet(pickupCompleteSum);
+            tmpdata.orderComplete1 = totalTimeSet(orderCompleteSum);
+            tmpdata.completeReturn1 = totalTimeSet(completeReturnSum);
+            tmpdata.pickupReturn1 = totalTimeSet(pickupReturnSum);
+            tmpdata.orderReturn1 = totalTimeSet(orderReturnSum);
+            tmpdata.distance = distanceSum + 'km';
+            mydata.push(tmpdata);
             if (mydata != null) {
                 jQuery('#jqGrid').jqGrid('clearGridData')
                 jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1})
                 jQuery('#jqGrid').trigger('reloadGrid');
             }
-
             $("#jqGrid").jqGrid({
                 datatype: "local",
                 data: mydata,
@@ -260,32 +249,47 @@ function getStoreStatistics() {
                     {label: 'No', name: 'No', width: 25, key: true, align: 'center', hidden: true},
                     {label: 'Order 號碼', name: 'reg_order_id', width: 80, align: 'center'},
                     {label: order_id, name: 'id', width: 80, align: 'center', hidden: true},
-                    {label: order_status, name: 'state', width: 80, align: 'center'},
                     {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden: true},
-                    {label: order_created, name: 'time1', width: 80, align: 'center'},
-                    {label: order_address, name: 'address', width: 200},
-                    {label: order_cooking, name: 'time2', width: 80, align: 'center'},
-                    {label: order_payment, name: 'pay', width: 80, align: 'center'},
-                    {label: order_assigned, name: 'time3', width: 80, align: 'center'},
-                    {label: order_pickedup, name: 'time4', width: 80, align: 'center'},
-                    {label: order_reserved, name: 'time5', width: 80, align: 'center'},
-                    {label: rider_name, name: 'rider', width: 80, align: 'center'}
+                    {label: '訂單日期', name: 'orderDate', width: 80, align: 'center'},
+                    {label: '留店時間', name: 'orderPickup1', index: 'orderPickup1', width: 80, align: 'center'},
+                    {label: '外送時間', name: 'pickupComplete1', index: 'pickupComplete1', width: 80, align: 'center'},
+                    {label: '外送達成時間', name: 'orderComplete1', index: 'orderComplete1', width: 80, align: 'center'},
+                    {label: '回店所需時間', name: 'completeReturn1', index: 'completeReturn1', width: 80, align: 'center'},
+                    {label: '外出時間', name: 'pickupReturn1', index: 'pickupReturn1', width: 80, align: 'center'},
+                    {label: '完成整張外送時間', name: 'orderReturn1', index: 'orderReturn1', width: 80, align: 'center'},
+                    {label: '距離', name: 'distance', width: 80, align: 'center'},
                 ],
                 width: 'auto',
                 height: 700,
                 autowidth: true,
                 rowNum: 20,
+                footerrow: true,
                 pager: "#jqGridPager",
                 ondblClickRow: function (rowid, icol, cellcontent, e) {
                     var rowData = jQuery(this).getRowData(rowid);
+                    var No = rowData['No'];
                     var regOrderId = rowData['origin_reg_order_id'];
-                    getStatisticsInfo(regOrderId);
-                    $('.state_wrap').addClass('on'); //상세보기 열기
-                    setTimeout(function () {
-                        $(window).trigger('resize');
-                    }, 300)//그리드 리사이즈
+                    if(No != 10000000){
+                        getStatisticsInfo(regOrderId);
+                        $('.state_wrap').addClass('on'); //상세보기 열기
+                        setTimeout(function () {
+                            $(window).trigger('resize');
+                        }, 300)//그리드 리사이즈
+                    }
                 }
             });
+
+            /*jQuery("#grid").jqGrid('setGroupHeaders', {
+                useColSpanStyle: true,
+                groupHeaders:[
+                    {startColumnName: 'orderPickup1', numberOfColumns: 1, titleText: '留店時間'},
+                    {startColumnName: 'pickupComplete1', numberOfColumns: 1, titleText: '外送時間'},
+                    {startColumnName: 'orderComplete1', numberOfColumns: 1, titleText: '外送達成時間'},
+                    {startColumnName: 'completeReturn1', numberOfColumns: 1, titleText: '回店所需時間'},
+                    {startColumnName: 'pickupReturn1', numberOfColumns: 1, titleText: '外出時間'},
+                    {startColumnName: 'orderReturn1', numberOfColumns: 1, titleText: '完成整張外送時間'}
+                ]
+            });*/
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
             loading.hide();
             $('.state_wrap .btn_close').click(function (e) {
@@ -299,11 +303,11 @@ function getStoreStatistics() {
     });
 }
 
-function excelDownload(){
+function excelDownloadByOrder(){
     let startDate = $('#day1').val();
     let endDate = $('#day2').val();
     loading.show();
-    $.fileDownload("/excelDownload",{
+    $.fileDownload("/excelDownloadByOrder",{
         httpMethod:"GET",
         data : {
             startDate : startDate,

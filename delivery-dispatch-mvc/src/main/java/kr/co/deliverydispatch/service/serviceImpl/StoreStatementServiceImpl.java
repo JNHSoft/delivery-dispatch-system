@@ -17,8 +17,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("storeStatementService")
@@ -89,6 +92,16 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         }
         return S_Statistics;
     }
+
+    @Override
+    public List<Order> getStoreStatisticsByOrder(Order order) {
+        List<Order> S_Statistics = storeMapper.selectStoreStatisticsByOrder(order);
+        if (S_Statistics.size() == 0) {
+            return Collections.<Order>emptyList();
+        }
+        return S_Statistics;
+    }
+
     // 통계 조회
     @Override
     public Order getStoreStatisticsInfo(Order order){
@@ -111,17 +124,6 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
     @Override
     public List<Order> getStoreStatisticsExcel(Order order) {
         List<Order> statisticsList = storeMapper.selectStoreStatisticsExcel(order);
-        /*Misc misc = new Misc();
-        for (Order statistics:statisticsList) {
-            if (statistics.getLatitude() != null && statistics.getLongitude() != null){
-                Store storeLocation = storeMapper.selectStoreLocation(statistics.getStoreId());
-                try {
-                    statistics.setDistance(Double.toString(misc.getHaversine(storeLocation.getLatitude(), storeLocation.getLongitude(), statistics.getLatitude(), statistics.getLongitude()) / (double) 1000));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
         return statisticsList;
     }
 

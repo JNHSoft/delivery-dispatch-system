@@ -638,6 +638,33 @@
         AND TBO.created_datetime > #{currentDatetime}
     </select>
 
+    <!-- 통계 조회 List1 -->
+    <select id="selectStoreStatisticsByOrder" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
+        SELECT
+        admin_id
+        , store_id
+        , rider_id
+        , status
+        , id
+        , created_datetime
+        , cooking_time
+        , assigned_datetime
+        , picked_up_datetime
+        , completed_datetime
+        , return_datetime
+        , reservation_datetime
+        , reservation_status
+        , reg_order_id
+        , distance
+
+        FROM TB_ORDER
+        WHERE
+        store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+        AND status in (3)
+        AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > created_datetime
+        AND created_datetime > #{currentDatetime}
+    </select>
+
 
     <!-- 통계 조회 info -->
     <select id="selectStoreStatisticsInfo" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">

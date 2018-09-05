@@ -165,6 +165,13 @@ public interface StoreMapper {
     public List<Order> selectStoreStatistics(Order order);
 
     /**
+     * Store 통계 목록
+     * @param order
+     * @return
+     */
+    public List<Order> selectStoreStatisticsByOrder(Order order);
+
+    /**
      * 통계 조회
      * @param order
      * @return

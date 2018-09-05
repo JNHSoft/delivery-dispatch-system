@@ -27,9 +27,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -57,7 +60,7 @@ public class StatisticsController {
         return "/statistics/statement";
     }
 
-    @ResponseBody
+    /*@ResponseBody
     @GetMapping("/getStoreStatistics")
     @CnttMethodDescription("통계 리스트 조회")
     public List<Order> getStoreStatistics(@RequestParam(value = "startDate") String startDate
@@ -79,6 +82,44 @@ public class StatisticsController {
         order.setToken(storeInfo.getStoreAccessToken());
         List<Order> statisticsList = storeStatementService.getStoreStatistics(order);
         return statisticsList;
+    }*/
+
+    @ResponseBody
+    @GetMapping("/getStoreStatisticsByOrder")
+    @CnttMethodDescription("통계 리스트 조회")
+    public List<Order> getStoreStatisticsByOrder(@RequestParam(value = "startDate") String startDate
+            ,@RequestParam(value = "endDate") String endDate){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        order.setToken(storeInfo.getStoreAccessToken());
+        List<Order> statisticsList = storeStatementService.getStoreStatisticsByOrder(order);
+        return statisticsList.stream().filter(a->{
+            if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
+                LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+                LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+                LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+                if(assignTime.until(pickupTime, ChronoUnit.SECONDS)>=120 && pickupTime.until(completeTime, ChronoUnit.SECONDS)>=120 && completeTime.until(returnTime, ChronoUnit.SECONDS)>=120){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }).collect(Collectors.toList());
     }
 
     @ResponseBody
@@ -116,6 +157,33 @@ public class StatisticsController {
         ModelAndView modelAndView = new ModelAndView("StatisticsStoreExcelBuilderServiceImpl");
         List<Order> orderStatisticsByStoreList = storeStatementService.getStoreStatisticsExcel(order);
         modelAndView.addObject("getStoreStatisticsExcel", orderStatisticsByStoreList);
+
+        return modelAndView;
+    }
+
+    @GetMapping("/excelDownloadByOrder")
+    public ModelAndView statisticsByOrderExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        order.setCurrentDatetime(startDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        ModelAndView modelAndView = new ModelAndView("StoreStatisticsByOrderExcelBuilderServiceImpl");
+        List<Order> storeStatisticsByOrderList = storeStatementService.getStoreStatisticsByOrder(order);
+        modelAndView.addObject("getStoreStatisticsByOrderExcel", storeStatisticsByOrderList);
 
         return modelAndView;
     }

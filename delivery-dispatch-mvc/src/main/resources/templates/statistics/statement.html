@@ -8,7 +8,7 @@
         <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
         <div class="search_box">
             <div class="left">
-                <span class="lbl">時間分析頁面</span>
+                <span class="lbl" style="font-size: 15px; font-weight: bold; color:black">時間分析頁面</span>
             </div>
             <div class="right">
                 <input type="hidden" name="startDate"/>
@@ -16,7 +16,7 @@
                 <input type="text" name="datepicker" id="day1" class="input datepicker"/>
                 ~
                 <input type="text" name="datepicker" id="day2" class="input datepicker"/>
-                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownload();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByOrder();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>
     </form>
