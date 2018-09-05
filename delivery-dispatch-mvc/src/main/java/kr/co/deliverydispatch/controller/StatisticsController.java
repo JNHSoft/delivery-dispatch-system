@@ -208,7 +208,7 @@ public class StatisticsController {
         return modelAndView;
     }
 
-    // 2번째 페이지
+    /*// 2번째 페이지
     @ResponseBody
     @GetMapping("/getStoreStatisticsByDate")
     @CnttMethodDescription("통계 리스트 Date 조회")
@@ -230,7 +230,7 @@ public class StatisticsController {
             e.printStackTrace();
         }
         order.setToken(storeInfo.getStoreAccessToken());
-/*
+
         List<Order> statisticsList = storeStatementService.getStoreStatisticsByDate(order);
         return statisticsList.stream().filter(a->{
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
@@ -246,9 +246,9 @@ public class StatisticsController {
             }else{
                 return false;
             }
-        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)*/
-    return Collections.emptyList();
-    }
+        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
+        return Collections.emptyList();
+    }*/
 
 
 
