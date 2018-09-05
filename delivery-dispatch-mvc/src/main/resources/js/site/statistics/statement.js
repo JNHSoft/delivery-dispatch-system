@@ -188,7 +188,6 @@ function getStoreStatistics() {
         },
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             var i = 1;
             var orderPickupSum = 0;
             var pickupCompleteSum = 0;
