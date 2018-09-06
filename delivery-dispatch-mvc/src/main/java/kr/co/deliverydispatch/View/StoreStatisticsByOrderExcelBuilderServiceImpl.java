@@ -17,11 +17,10 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component("StoreStatisticsByOrderExcelBuilderServiceImpl")
 public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView {
@@ -68,6 +67,13 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
     public void setStoreStatisticsByOrderExcel(SXSSFWorkbook wb, List<Order> storeStatisticsByOrderList) {
         int rowNum = 0;
         int colNum = 0;
+        storeStatisticsByOrderList.stream().map(a->{
+            if(a.getReservationStatus().equals("1")){
+                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd hh:mm:ss.S")));
+            }
+            return true;
+        }).collect(Collectors.toList());
         Sheet sheet = wb.createSheet("StoreStatisticsByOrder");
 
         // Title Area Cell Style
@@ -145,14 +151,18 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             LocalDateTime orderTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
             LocalDateTime completeTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getCompletedDatetime()).replace(" ", "T"));
-            LocalDateTime returnTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getReturnDatetime()).replace(" ", "T"));
+            LocalDateTime returnTime = LocalDateTime.MIN;
+            if(storeStatisticsByOrderList.get(i).getReturnDatetime()!=null){
+                returnTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getReturnDatetime()).replace(" ", "T"));
+            }
+
 
             Long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
             Long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
             Long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
-            Long completeReturn =completeTime.until(returnTime, ChronoUnit.MILLIS);
-            Long pickupReturn =pickupTime.until(returnTime, ChronoUnit.MILLIS);
-            Long orderReturn = orderTime.until(returnTime, ChronoUnit.MILLIS);
+            Long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            Long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            Long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
             orderPickupTime += orderPickup;
             pickupCompleteTime += pickupComplete;
@@ -175,27 +185,27 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(DurationFormatUtils.formatDuration(orderPickup,"HH:mm:ss"));
+            cell.setCellValue(minusChkFilter(orderPickup));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(DurationFormatUtils.formatDuration(pickupComplete,"HH:mm:ss"));
+            cell.setCellValue(minusChkFilter(pickupComplete));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(DurationFormatUtils.formatDuration(orderComplete,"HH:mm:ss"));
+            cell.setCellValue(minusChkFilter(orderComplete));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(DurationFormatUtils.formatDuration(completeReturn,"HH:mm:ss"));
+            cell.setCellValue(minusChkFilter(completeReturn));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(DurationFormatUtils.formatDuration(pickupReturn,"HH:mm:ss"));
+            cell.setCellValue(minusChkFilter(pickupReturn));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(DurationFormatUtils.formatDuration(orderReturn,"HH:mm:ss"));
+            cell.setCellValue(minusChkFilter(orderReturn));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -217,27 +227,27 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(DurationFormatUtils.formatDuration(orderPickupTime,"HH:mm:ss"));
+                cell2.setCellValue(minusChkFilter(orderPickupTime));
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(DurationFormatUtils.formatDuration(pickupCompleteTime,"HH:mm:ss"));
+                cell2.setCellValue(minusChkFilter(pickupCompleteTime));
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(DurationFormatUtils.formatDuration(orderCompleteTime,"HH:mm:ss"));
+                cell2.setCellValue(minusChkFilter(orderCompleteTime));
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(DurationFormatUtils.formatDuration(completeReturnTime,"HH:mm:ss"));
+                cell2.setCellValue(minusChkFilter(completeReturnTime));
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(DurationFormatUtils.formatDuration(pickupReturnTime,"HH:mm:ss"));
+                cell2.setCellValue(minusChkFilter(pickupReturnTime));
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(DurationFormatUtils.formatDuration(orderReturnTime,"HH:mm:ss"));
+                cell2.setCellValue(minusChkFilter(orderReturnTime));
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
@@ -250,9 +260,9 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
 
     }
 
-
-
-
+    public String minusChkFilter(long mills){
+        return mills>=0?DurationFormatUtils.formatDuration(mills,"HH:mm:ss"):"-"+DurationFormatUtils.formatDuration(Math.abs(mills),"HH:mm:ss");
+    }
 
     public Font setTotalCellFont(SXSSFWorkbook wb) {
         Font dataCellFont = wb.createFont();

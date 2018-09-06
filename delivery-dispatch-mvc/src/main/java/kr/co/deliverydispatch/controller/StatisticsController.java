@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,10 +49,10 @@ public class StatisticsController {
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-        return "/statistics/order";
+        return "/statistics/orderStatement";
     }
 
-    @GetMapping("/statisticsByDate")
+    /*@GetMapping("/statisticsByDate")
     public String statisticsByDate(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
@@ -68,7 +68,7 @@ public class StatisticsController {
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
         return "/statistics/interval";
-    }
+    }*/
 
     /*@ResponseBody
     @GetMapping("/getStoreStatistics")
@@ -117,6 +117,10 @@ public class StatisticsController {
         List<Order> statisticsList = storeStatementService.getStoreStatisticsByOrder(order);
         return statisticsList.stream().filter(a->{
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
+                if (a.getReservationStatus().equals("1")) {
+                    LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                    a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd hh:mm:ss.S")));
+                }
                 LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
                 LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
                 LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
@@ -198,7 +202,7 @@ public class StatisticsController {
         return modelAndView;
     }
 
-    // 2번째 페이지
+    /*// 2번째 페이지
     @ResponseBody
     @GetMapping("/getStoreStatisticsByDate")
     @CnttMethodDescription("통계 리스트 Date 조회")
@@ -220,7 +224,7 @@ public class StatisticsController {
             e.printStackTrace();
         }
         order.setToken(storeInfo.getStoreAccessToken());
-/*
+
         List<Order> statisticsList = storeStatementService.getStoreStatisticsByDate(order);
         return statisticsList.stream().filter(a->{
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
@@ -236,9 +240,9 @@ public class StatisticsController {
             }else{
                 return false;
             }
-        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)*/
-    return Collections.emptyList();
-    }
+        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
+        return Collections.emptyList();
+    }*/
 
     @ResponseBody
     @GetMapping("/getStoreStatisticsByInterval")
