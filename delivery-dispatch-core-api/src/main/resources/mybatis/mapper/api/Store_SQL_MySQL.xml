@@ -841,7 +841,7 @@
     </update>
 
     <select id="selectStoreStatisticsByInterval" parameterType="kr.co.cntt.core.model.order.Order" resultType="Integer">
-        SELECT TIMESTAMPDIFF(MINUTE, created_datetime, completed_datetime) AS interval_minute
+        SELECT TIMESTAMPDIFF(MINUTE, (CASE WHEN reservation_status THEN DATE_ADD(reservation_datetime, INTERVAL -30 MINUTE) ELSE created_datetime END), completed_datetime) AS interval_minute
         FROM TB_ORDER
         WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
             AND status in (3)

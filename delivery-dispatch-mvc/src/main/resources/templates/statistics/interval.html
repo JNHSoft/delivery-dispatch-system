@@ -42,6 +42,8 @@
 <!-- //컨텐츠 영역 -->
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
+    var befoore_function = /*[[#{alert.befoore.function}]]*/ 'befoore_function';
+
     var status_new = /*[[#{status.new}]]*/ 'status_new';
     var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
     var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';

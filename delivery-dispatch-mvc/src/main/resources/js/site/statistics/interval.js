@@ -156,7 +156,8 @@ function chart(chartData) {
 }
 
 function excelDownloadByInterval(){
-    let startDate = $('#day1').val();
+    alert(befoore_function);
+    /*let startDate = $('#day1').val();
     let endDate = $('#day2').val();
     loading.show();
     $.fileDownload("/excelDownloadByInterval",{
@@ -171,5 +172,5 @@ function excelDownloadByInterval(){
         failCallback: function(responseHtml,url){
             loading.hide();
         }
-    })
+    })*/
 }
