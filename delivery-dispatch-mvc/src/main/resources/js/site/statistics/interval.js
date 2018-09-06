@@ -85,7 +85,7 @@ function getStoreStatisticsByInterval() {
                 } else if (interval_key == 60) {
                     interval_key = "1:00:00";
                 } else if (interval_key > 60) {
-                    interval_key = "1:00:00~";
+                    interval_key = "1:01:00~";
                 } else {
                     interval_key = interval_key + ":00"
                 }
