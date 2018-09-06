@@ -254,8 +254,7 @@ public class StatisticsController {
         order.setCurrentDatetime(startDate);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
-//            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfStartDate = formatter.parse("yyyy-MM-dd");
+            Date sdfStartDate = formatter.parse(startDate);
             Date sdfEndDate = formatter.parse(endDate);
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
