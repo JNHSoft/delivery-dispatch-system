@@ -16,12 +16,12 @@
                 <input type="text" name="datepicker" id="day1" class="input datepicker"/>
                 ~
                 <input type="text" name="datepicker" id="day2" class="input datepicker"/>
-                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByOrder();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByInterval();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>
     </form>
     <div id="contents">
-        <div class="state_wrap">
+        <div class="state_wrap on">
             <div class="left">
                 <div class="jq_grid">
                     <div>
@@ -29,7 +29,8 @@
                     </div>
                 </div>
                 <div id="jqGridPager"></div>
-
+            </div>
+            <div class="right" style="margin-top: 25%">
                 <canvas id="intervalChart"></canvas>
             </div>
         </div>
@@ -38,8 +39,14 @@
     <script type="text/javascript" th:src="@{/resources/js/lib/chart/Chart.min.js}" layout:fragment="script3"></script>
 </section>
 <!-- //컨텐츠 영역 -->
+<!-- //컨텐츠 영역 -->
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
+    var status_new = /*[[#{status.new}]]*/ 'status_new';
+    var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+    var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+    var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
+    var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
     var my_store = /*[[${store}]]*/ 'my_store';
     $(document).ready(function () {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;

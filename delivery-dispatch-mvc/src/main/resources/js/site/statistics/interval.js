@@ -155,11 +155,11 @@ function chart(chartData) {
     });
 }
 
-function excelDownloadByOrder(){
+function excelDownloadByInterval(){
     let startDate = $('#day1').val();
     let endDate = $('#day2').val();
     loading.show();
-    $.fileDownload("/excelDownloadByOrder",{
+    $.fileDownload("/excelDownloadByInterval",{
         httpMethod:"GET",
         data : {
             startDate : startDate,

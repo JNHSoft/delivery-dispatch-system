@@ -59,7 +59,7 @@ public class StatisticsController {
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
         return "/statistics/date";
-    }
+    }*/
 
     @GetMapping("/statisticsByInterval")
     public String statisticsByInterval(Store store, @RequestParam(required = false) String frag, Model model) {
@@ -68,7 +68,7 @@ public class StatisticsController {
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
         return "/statistics/interval";
-    }*/
+    }
 
     /*@ResponseBody
     @GetMapping("/getStoreStatistics")
