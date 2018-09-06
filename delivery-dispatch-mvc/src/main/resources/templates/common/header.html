@@ -27,7 +27,16 @@
 						<ul>
 							<li><a href="/order"><img src="../resources/images/common/gnb_order.png" alt="" /><strong th:text="${#messages.msg('gnb.order')}" /></a></li>
 							<li><a href="/rider"><img src="../resources/images/common/gnb_rider.png" alt="" /><strong th:text="${#messages.msg('gnb.rider')}" /></a></li>
-							<li><a href="/statisticsByOrder"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong th:text="${#messages.msg('gnb.statistics')}" /></a></li>
+							<li>
+								<a href="/statisticsByOrder" class="1depth"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong th:text="${#messages.msg('gnb.statistics')}" /></a>
+								<dl>
+									<dt>하위메뉴</dt>
+									<dd><a href="/statisticsByOrder">時間分析頁面</a></dd>
+									<!--<dd><a href="/statisticsByDate">統計頁面</a></dd>-->
+									<dd><a href="#">統計頁面</a></dd>
+									<dd><a href="/statisticsByInterval">累積達成率頁面</a></dd>
+								</dl>
+							</li>
 							<li><a href="/setting-account"><img src="../resources/images/common/gnb_setting.png" alt="" /><strong th:text="${#messages.msg('gnb.setting')}" /></a></li>
 						</ul>
 					</nav>

@@ -91,6 +91,11 @@ function gnbActive(txt){
 			$(this).parents('li').addClass('on');
 		}
 	});
+	$('.1depth').on('click',function(e){
+		e.preventDefault();
+		$(this).next('dl').toggleClass('on');
+
+	})
 }
 
 /*폼요소*/
