@@ -1,37 +1,25 @@
 package kr.co.deliverydispatch.controller;
 
-import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
-import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
-import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
-import kr.co.deliverydispatch.service.StoreNoticeService;
-import kr.co.deliverydispatch.service.StoreOrderService;
-import kr.co.deliverydispatch.service.StoreRiderService;
 import kr.co.deliverydispatch.service.StoreStatementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import sun.invoke.empty.Empty;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,10 +47,10 @@ public class StatisticsController {
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-        return "/statistics/order";
+        return "/statistics/orderStatement";
     }
 
-    @GetMapping("/statisticsByDate")
+    /*@GetMapping("/statisticsByDate")
     public String statisticsByDate(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
@@ -78,7 +66,7 @@ public class StatisticsController {
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
         return "/statistics/interval";
-    }
+    }*/
 
     /*@ResponseBody
     @GetMapping("/getStoreStatistics")
