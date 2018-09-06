@@ -304,7 +304,11 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         }
 
         sumIntervalCount = sumIntervalCount + Double.parseDouble(String.format("%.2f", intervalCount / (double) intervalSize * 100));
-        array[2] = Double.parseDouble(String.format("%.2f", sumIntervalCount));
+        if (sumIntervalCount > 0) {
+            array[2] = Double.parseDouble(String.format("%.2f", sumIntervalCount));
+        } else {
+            array[2] = 0;
+        }
 
         list.add(array);
 
