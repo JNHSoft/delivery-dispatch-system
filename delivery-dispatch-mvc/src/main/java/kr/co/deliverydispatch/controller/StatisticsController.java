@@ -255,7 +255,7 @@ public class StatisticsController {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
 //            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfStartDate = formatter.parse("2018-09-05");
+            Date sdfStartDate = formatter.parse("yyyy-MM-dd");
             Date sdfEndDate = formatter.parse(endDate);
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
