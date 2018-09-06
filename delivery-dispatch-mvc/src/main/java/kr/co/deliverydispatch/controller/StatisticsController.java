@@ -270,4 +270,31 @@ public class StatisticsController {
         return statisticsInterval;
     }
 
+    @GetMapping("/excelDownloadByInterval")
+    public ModelAndView statisticsByIntervalExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        order.setCurrentDatetime(startDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        ModelAndView modelAndView = new ModelAndView("StoreStatisticsByIntervalExcelBuilderServiceImpl");
+        Interval storeStatisticsByInterval = storeStatementService.getStoreStatisticsByInterval(order);
+        modelAndView.addObject("getStoreStatisticsByIntervalExcel", storeStatisticsByInterval);
+
+        return modelAndView;
+    }
+
 }
