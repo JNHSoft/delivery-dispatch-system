@@ -133,10 +133,7 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
 
         intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 10 && i < 11)).count();
         sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
-
-        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 10 && i < 11)).count();
-        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
-
+        
         intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 11 && i < 12)).count();
         sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
 
