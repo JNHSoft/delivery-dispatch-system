@@ -142,13 +142,13 @@ function getStoreStatisticsByInterval() {
                     borderWidth: 1
                 }]
             };
-            chart(chartData);
+            intervalChart(chartData);
         }
     });
 }
 
-function chart(chartData) {
-    var ctx = $('#intervalChart');
+function intervalChart(chartData) {
+    var ctx = $('#intervalCanvas');
     var stackedBar = new Chart(ctx, {
         type: 'bar',
         data: chartData
