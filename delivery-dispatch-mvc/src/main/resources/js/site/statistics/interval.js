@@ -148,7 +148,12 @@ function getStoreStatisticsByInterval() {
 }
 
 function intervalChart(chartData) {
-    var ctx = $('#intervalCanvas');
+    var cnvs = document.getElementById('intervalCanvas');
+    var ctx = cnvs.getContext('2d');
+
+    ctx.clearRect(0, 0, cnvs.width, cnvs.height);
+    ctx.beginPath();
+
     var stackedBar = new Chart(ctx, {
         type: 'bar',
         data: chartData
