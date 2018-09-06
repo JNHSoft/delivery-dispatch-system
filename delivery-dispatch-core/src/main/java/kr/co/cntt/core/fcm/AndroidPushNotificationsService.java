@@ -53,7 +53,7 @@ public class AndroidPushNotificationsService {
             body.put("notification", notification);
             body.put("data", data);
 
-            System.out.println("body" + body.toString());
+//            System.out.println("body" + body.toString());
 
             request = new HttpEntity<>(body.toString());
 
@@ -106,7 +106,7 @@ public class AndroidPushNotificationsService {
 //            body.put("notification", notification);
             body.put("data", data);
 
-            System.out.println("body" + body.toString());
+//            System.out.println("body" + body.toString());
 
 
 

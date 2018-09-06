@@ -70,7 +70,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
         storeStatisticsByOrderList.stream().map(a->{
             if(a.getReservationStatus().equals("1")){
                 LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd hh:mm:ss.S")));
+                a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
             }
             return true;
         }).collect(Collectors.toList());
