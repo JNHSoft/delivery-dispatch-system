@@ -1,36 +1,26 @@
 package kr.co.deliverydispatch.controller;
 
-import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
-import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
-import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
-import kr.co.deliverydispatch.service.StoreNoticeService;
-import kr.co.deliverydispatch.service.StoreOrderService;
-import kr.co.deliverydispatch.service.StoreRiderService;
 import kr.co.deliverydispatch.service.StoreStatementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import sun.invoke.empty.Empty;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -250,6 +240,31 @@ public class StatisticsController {
     return Collections.emptyList();
     }
 
+    @ResponseBody
+    @GetMapping("/getStoreStatisticsByInterval")
+    @CnttMethodDescription("구간별 통계 리스트 조회")
+    public Interval getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate
+            , @RequestParam(value = "endDate") String endDate){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+//            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfStartDate = formatter.parse("2018-09-05");
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
 
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        order.setToken(storeInfo.getStoreAccessToken());
+
+        Interval statisticsInterval = storeStatementService.getStoreStatisticsByInterval(order);
+
+        return statisticsInterval;
+    }
 
 }

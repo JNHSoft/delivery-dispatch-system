@@ -2,14 +2,13 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.alarm.Alarm;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
 import java.util.Map;
-
-import kr.co.cntt.core.model.login.User;
 
 /**
  * <p> kr.co.cntt.core.mapper </p>
@@ -192,5 +191,12 @@ public interface StoreMapper {
      * @return
      */
     public int resetStorePassword(Store store);
+
+    /**
+     * Store 구간별 통계 목록
+     * @param order
+     * @return
+     */
+    public List<Integer> selectStoreStatisticsByInterval(Order order);
 
 }

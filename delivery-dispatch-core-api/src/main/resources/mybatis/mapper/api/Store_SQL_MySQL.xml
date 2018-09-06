@@ -839,5 +839,15 @@
               , modified_datetime = now()
         WHERE id = #{id} AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
     </update>
+
+    <select id="selectStoreStatisticsByInterval" parameterType="kr.co.cntt.core.model.order.Order" resultType="Integer">
+        SELECT TIMESTAMPDIFF(MINUTE, created_datetime, completed_datetime) AS interval_minute
+        FROM TB_ORDER
+        WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+            AND status in (3)
+            AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > created_datetime
+            AND created_datetime > #{currentDatetime}
+    </select>
+
 </mapper>
  
