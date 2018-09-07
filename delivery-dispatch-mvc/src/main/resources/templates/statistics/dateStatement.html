@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/layout">
+
+<!-- 컨텐츠 영역 -->
+<section id="container" layout:fragment="content">
+    <form name="searchForm" id="filter-form" class="form-horizontal" role="form" action="">
+        <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
+        <div class="search_box">
+            <div class="left">
+                <span class="lbl" style="font-size: 15px; font-weight: bold; color:black">統計頁面</span>
+            </div>
+            <div class="right">
+                <input type="hidden" name="startDate"/>
+                <input type="hidden" name="endDate"/>
+                <input type="text" name="datepicker" id="day1" class="input datepicker"/>
+                ~
+                <input type="text" name="datepicker" id="day2" class="input datepicker"/>
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByDate();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+            </div>
+        </div>
+    </form>
+    <div id="contents">
+        <div class="state_wrap">
+            <div class="left">
+                <div class="jq_grid">
+                    <div>
+                        <table id="jqGrid"></table>
+                    </div>
+                </div>
+                <div id="jqGridPager"></div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/date.js}" layout:fragment="script2"></script>
+</section>
+<!-- //컨텐츠 영역 -->
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var status_new = /*[[#{status.new}]]*/ 'status_new';
+    var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+    var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+    var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
+    var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
+    var order_confirm = /*[[#{btn.confirm}]]*/ 'order_confirm';
+    var order_status = /*[[#{order.status}]]*/ 'order_status';
+    var order_id = /*[[#{order.id}]]*/ 'order_id';
+    var order_created = /*[[#{order.created}]]*/ 'order_created';
+    var order_address = /*[[#{order.address}]]*/ 'order_address';
+    var order_summary = /*[[#{order.summary}]]*/ 'order_summary';
+    var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
+    var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
+    var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
+    var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
+    var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
+    var order_payment_cash = /*[[#{order.payment.cash}]]*/ 'order_payment_cash';
+    var order_payment_card = /*[[#{order.payment.card}]]*/ 'order_payment_card';
+    var order_payment_prepayment = /*[[#{order.payment.prepayment}]]*/ 'order_payment_prepayment';
+    var order_payment_service = /*[[#{order.payment.service}]]*/ 'order_payment_service';
+    var order_reg_order_id = /*[[#{order.reg.order.id}]]*/ 'order_reg_order_id';
+    var order_detail = /*[[#{order.detail}]]*/ 'order_detail';
+    var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
+    var my_store = /*[[${store}]]*/ 'my_store';
+    $(document).ready(function () {
+        var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
+        $.ajax({
+            url : "/websocketHost",
+            success : function (websocketHost) {
+                if (supportsWebSockets) {
+                    var socket = io(websocketHost, {
+                        path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
+                        transports: ['websocket'] // websocket만을 사용하도록 설정
+                    });
+                    socket.on('message', function (data) {
+                        var objData = JSON.parse(data);
+                        var subgroup_id = objData.subGroupId;
+                        var store_id = objData.storeId;
+                        if (!my_store.subGroup && my_store.id == store_id) {
+                            statementAlarmMessage(data);
+                        } else if (my_store.subGroup) {
+                            if (subgroup_id == my_store.subGroup.id) {
+                                statementAlarmMessage(data);
+                            }
+                        }
+                    });
+                } else {
+                    alert('websocket을 지원하지 않는 브라우저입니다.');
+                }
+            }
+        });
+    });
+    function statementAlarmMessage(data) {
+        if (data.match('rider_') == 'rider_') {
+            if(map_region){
+                if(map_region=="hk"){
+                    footerRiders();
+                }
+            }
+        }
+        if (data.match('order_') == 'order_') {
+            footerOrders();
+        }
+        if (data.match('notice_') == 'notice_') {
+            noticeAlarm();
+        }
+        alarmSound(data);
+    }
+    /*]]>*/
+</script>
+</html>
