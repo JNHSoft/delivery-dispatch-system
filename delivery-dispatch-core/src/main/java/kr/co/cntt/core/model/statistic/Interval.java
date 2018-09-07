@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -17,6 +16,6 @@ public class Interval implements Dto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Integer> intervalMinute;
 
-    private List<Object> intervalMinuteCounts;
+    private List<Object[]> intervalMinuteCounts;
 
 }

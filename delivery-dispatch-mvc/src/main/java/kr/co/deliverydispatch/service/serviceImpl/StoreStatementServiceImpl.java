@@ -122,7 +122,7 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         Interval interval = new Interval();
         interval.setIntervalMinute(storeMapper.selectStoreStatisticsByInterval(order));
 
-        List<Object> list = new ArrayList<>();
+        List<Object[]> list = new ArrayList<>();
 
         int intervalSize = interval.getIntervalMinute().size();
         long intervalCount = 0;
