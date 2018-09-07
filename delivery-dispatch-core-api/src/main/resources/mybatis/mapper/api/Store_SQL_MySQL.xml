@@ -665,6 +665,63 @@
         AND created_datetime > #{currentDatetime}
     </select>
 
+    <!-- 통계 조회 List2 -->
+    <select id="selectStoreStatisticsByDate" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.ByDate">
+        SELECT
+        DATE_FORMAT(A.created_datetime,'%Y-%m-%d') AS day_to_day
+
+        , avg(time_to_sec(timediff(A.picked_up_datetime, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE))))) AS order_pickup
+
+        , avg(time_to_sec(timediff(A.completed_datetime, A.picked_up_datetime))) AS pickup_complete
+
+        , avg(time_to_sec(timediff(A.completed_datetime, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE))))) AS order_complete
+
+        , avg(time_to_sec(timediff(A.return_datetime, A.completed_datetime))) AS complete_return
+
+        , avg(time_to_sec(timediff(A.return_datetime, A.picked_up_datetime))) AS pickup_return
+
+        , avg(timediff(A.return_datetime,IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)))) AS order_return
+        <![CDATA[
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime)<=30 THEN 1 END)
+        / count(A.id) *100 AS min_30below
+
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) <= 40
+        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) > 30 THEN 1 END)
+        / count(A.id) *100 AS min_30to40
+
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) <= 50
+        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) > 40 THEN 1 END)
+        / count(A.id) *100 AS min_40to50
+
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) <= 60
+        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) > 50 THEN 1 END)
+        / count(A.id) *100 AS min_50to60
+
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) <= 90
+        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) > 60 THEN 1 END)
+        / count(A.id) *100 AS min_60to90
+
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) < 90 THEN 1 END)
+        / count(A.id) *100 AS min_90under
+		]]>
+        , count(A.id) AS tc
+        , sum(A.total_price) AS total_sales
+        , count(A.id) / (TRUNCATE((sum(timestampdiff(MINUTE,A.picked_up_datetime, A.return_datetime)) / 30 ),0) /2) AS tplh
+        , sum(A.total_price) / (TRUNCATE((sum(timestampdiff(MINUTE,A.picked_up_datetime, A.return_datetime)) / 30 ),0) /2) AS spmh
+        , sum(time_to_sec(timediff(A.return_datetime, A.picked_up_datetime))) AS total_pickup_return
+        , avg(A.distance) AS avg_distance
+
+        FROM
+        TB_ORDER AS A
+
+        WHERE
+        A.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+        AND A.status in (3)
+        AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > A.created_datetime
+        AND A.created_datetime > #{currentDatetime}
+        group by day_to_day;
+    </select>
+
 
     <!-- 통계 조회 info -->
     <select id="selectStoreStatisticsInfo" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">

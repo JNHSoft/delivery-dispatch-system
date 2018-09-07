@@ -6,6 +6,7 @@ import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -96,6 +97,15 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         List<Order> S_Statistics = storeMapper.selectStoreStatisticsByOrder(order);
         if (S_Statistics.size() == 0) {
             return Collections.<Order>emptyList();
+        }
+        return S_Statistics;
+    }
+
+    @Override
+    public List<ByDate> getStoreStatisticsByDate(Order order) {
+        List<ByDate> S_Statistics = storeMapper.selectStoreStatisticsByDate(order);
+        if (S_Statistics.size() == 0) {
+            return Collections.<ByDate>emptyList();
         }
         return S_Statistics;
     }

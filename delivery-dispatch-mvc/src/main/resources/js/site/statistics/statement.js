@@ -1,4 +1,4 @@
-var loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
+let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
     $('input[name="datepicker"]').change(function () {
         getStoreStatistics();
@@ -8,8 +8,8 @@ $(function () {
 });
 
 function timeSet(time) {
-    if (time != null) {
-        var d = new Date(time);
+    if (time) {
+        let d = new Date(time);
         return $.datepicker.formatDate('mm-dd ', d) + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
     } else {
         return "-";
@@ -17,8 +17,8 @@ function timeSet(time) {
 }
 
 function timeSetDate(time) {
-    if (time != null) {
-        var d = new Date(time);
+    if (time) {
+        let d = new Date(time);
         return $.datepicker.formatDate('yy.mm.dd ', d);
     } else {
         return "-";
@@ -26,8 +26,8 @@ function timeSetDate(time) {
 }
 
 function totalTimeSet(time) {
-    if (time != null) {
-        var d = new Date(time);
+    if (time) {
+        let d = new Date(time);
         return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
     } else {
         return "-";
@@ -36,10 +36,10 @@ function totalTimeSet(time) {
 
 
 function minusTimeSet(time1, time2) {
-    if (time2 != null) {
-        var d1 = new Date(time1);
-        var d2 = new Date(time2);
-        var minusTime = new Date(d2.getTime() - d1.getTime());
+    if (time2) {
+        let d1 = new Date(time1);
+        let d2 = new Date(time2);
+        let minusTime = new Date(d2.getTime() - d1.getTime());
         return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2);
     } else {
         return "-";
@@ -47,23 +47,23 @@ function minusTimeSet(time1, time2) {
 }
 
 function minusTimeSet2(time1, time2) {
-    var d1 = new Date(time1);
-    var d2 = new Date(time2);
+    let d1 = new Date(time1);
+    let d2 = new Date(time2);
     if(d2.getTime() - d1.getTime() >=0){
-        var minusTime = new Date(d2.getTime() - d1.getTime());
+        let minusTime = new Date(d2.getTime() - d1.getTime());
         return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
     }else{
-        var minusTime = new Date(Math.abs(d2.getTime() - d1.getTime()));
+        let minusTime = new Date(Math.abs(d2.getTime() - d1.getTime()));
         return "-"+('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
     }
 
 }
 
-var map;
-var marker;
+let map;
+let marker;
 
 function initMap() {
-    var uluru = {lat: 37.5806376, lng: 126.9058433};
+    let uluru = {lat: 37.5806376, lng: 126.9058433};
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 15,
         center: uluru
@@ -75,19 +75,19 @@ function initMap() {
 }
 
 function minusTime(time1, time2) {
-    var d1 = new Date(time1);
-    var d2 = new Date(time2);
-    var minusTime = d2.getTime() - d1.getTime();
+    let d1 = new Date(time1);
+    let d2 = new Date(time2);
+    let minusTime = d2.getTime() - d1.getTime();
     return minusTime;
 }
 
 /*function timepickerConfirm(time1 , time2, createdTime) {
-    var d1 = new Date(time1);
-    var d2 = new Date(time2);
+    let d1 = new Date(time1);
+    let d2 = new Date(time2);
     d1.setHours(0,0,0);
     d2.setHours(0,0,0);
     d2.setDate(d2.getDate()+1);
-    var cT = new Date(createdTime);
+    let cT = new Date(createdTime);
     if(minusTime(cT,d2)>=0 && minusTime(d1,cT)>=0){
         return true;
     }else{
@@ -183,7 +183,7 @@ function getStatisticsInfo(regOrderId) {
 }
 
 function getStoreStatistics() {
-    var mydata = [];
+    let mydata = [];
     loading.show();
     $.ajax({
         url: "/getStoreStatisticsByOrder",
@@ -194,18 +194,18 @@ function getStoreStatistics() {
         },
         dataType: 'json',
         success: function (data) {
-            var i = 1;
-            var orderPickupSum = 0;
-            var pickupCompleteSum = 0;
-            var orderCompleteSum = 0;
-            var completeReturnSum = 0;
-            var pickupReturnSum = 0;
-            var orderReturnSum = 0;
-            var distanceSum = 0;
-            for (var key in data) {
+            let i = 1;
+            let orderPickupSum = 0;
+            let pickupCompleteSum = 0;
+            let orderCompleteSum = 0;
+            let completeReturnSum = 0;
+            let pickupReturnSum = 0;
+            let orderReturnSum = 0;
+            let distanceSum = 0;
+            for (let key in data) {
                 if (data.hasOwnProperty(key)) {
                     // if (timepickerConfirm($('#day1').val(), $('#day2').val(), data[key].createdDatetime)) {
-                    var tmpdata = new Object();
+                    let tmpdata = new Object();
                     tmpdata.No = i++;
                     tmpdata.reg_order_id = regOrderIdReduce(data[key].regOrderId);
                     tmpdata.id = data[key].id;
@@ -228,7 +228,7 @@ function getStoreStatistics() {
                     mydata.push(tmpdata);
                 }
             }
-            var tmpdata = new Object();
+            let tmpdata = new Object();
             tmpdata.No = 10000000;
             tmpdata.reg_order_id = "TOTAL";
             tmpdata.id = "";
@@ -271,9 +271,9 @@ function getStoreStatistics() {
                 footerrow: true,
                 pager: "#jqGridPager",
                 ondblClickRow: function (rowid, icol, cellcontent, e) {
-                    var rowData = jQuery(this).getRowData(rowid);
-                    var No = rowData['No'];
-                    var regOrderId = rowData['origin_reg_order_id'];
+                    let rowData = jQuery(this).getRowData(rowid);
+                    let No = rowData['No'];
+                    let regOrderId = rowData['origin_reg_order_id'];
                     if(No != 10000000){
                         getStatisticsInfo(regOrderId);
                         $('.state_wrap').addClass('on'); //상세보기 열기

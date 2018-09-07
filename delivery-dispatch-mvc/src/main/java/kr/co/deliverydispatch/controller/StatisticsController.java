@@ -2,6 +2,7 @@ package kr.co.deliverydispatch.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
@@ -52,14 +53,14 @@ public class StatisticsController {
         return "/statistics/orderStatement";
     }
 
-    /*@GetMapping("/statisticsByDate")
+    @GetMapping("/statisticsByDate")
     public String statisticsByDate(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
-        return "/statistics/date";
-    }*/
+        return "/statistics/dateStatement";
+    }
 
     @GetMapping("/statisticsByInterval")
     public String statisticsByInterval(Store store, @RequestParam(required = false) String frag, Model model) {
@@ -96,7 +97,7 @@ public class StatisticsController {
 
     @ResponseBody
     @GetMapping("/getStoreStatisticsByOrder")
-    @CnttMethodDescription("통계 리스트 조회")
+    @CnttMethodDescription("주문별 통계 리스트 조회")
     public List<Order> getStoreStatisticsByOrder(@RequestParam(value = "startDate") String startDate
             ,@RequestParam(value = "endDate") String endDate){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -202,11 +203,12 @@ public class StatisticsController {
         return modelAndView;
     }
 
-    /*// 2번째 페이지
+
+    // 2번째 페이지
     @ResponseBody
     @GetMapping("/getStoreStatisticsByDate")
-    @CnttMethodDescription("통계 리스트 Date 조회")
-    public List<Order> getStoreStatisticsByDate(@RequestParam(value = "startDate") String startDate
+    @CnttMethodDescription("날짜별 통계 리스트 조회")
+    public List<ByDate> getStoreStatisticsByDate(@RequestParam(value = "startDate") String startDate
             ,@RequestParam(value = "endDate") String endDate){
         // 날짜
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -225,24 +227,10 @@ public class StatisticsController {
         }
         order.setToken(storeInfo.getStoreAccessToken());
 
-        List<Order> statisticsList = storeStatementService.getStoreStatisticsByDate(order);
-        return statisticsList.stream().filter(a->{
-            if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
-                LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
-                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
-                LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
-                LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
-                if(assignTime.until(pickupTime, ChronoUnit.SECONDS)>=120 && pickupTime.until(completeTime, ChronoUnit.SECONDS)>=120 && completeTime.until(returnTime, ChronoUnit.SECONDS)>=120){
-                    return true;
-                }else{
-                    return false;
-                }
-            }else{
-                return false;
-            }
-        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
-        return Collections.emptyList();
-    }*/
+        List<ByDate> statisticsList = storeStatementService.getStoreStatisticsByDate(order);
+        System.out.println(statisticsList);
+        return statisticsList;
+    }
 
     @ResponseBody
     @GetMapping("/getStoreStatisticsByInterval")

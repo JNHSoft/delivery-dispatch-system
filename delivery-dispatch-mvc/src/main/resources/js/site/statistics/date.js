@@ -1,72 +1,30 @@
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
     $('input[name="datepicker"]').change(function () {
-        getStoreStatistics();
+        getStoreStatisticsByDate();
     })
     $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd', new Date));
-    getStoreStatistics();
+    getStoreStatisticsByDate();
 });
 
-function timeSet(time) {
-    if (time != null) {
-        let d = new Date(time);
-        return $.datepicker.formatDate('mm-dd ', d) + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
-    } else {
-        return "-";
-    }
-}
-
-function timeSetDate(time) {
-    if (time != null) {
-        let d = new Date(time);
-        return $.datepicker.formatDate('yy.mm.dd ', d);
-    } else {
-        return "-";
-    }
-}
 
 function totalTimeSet(time) {
-    if (time != null) {
-        let d = new Date(time);
-        return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+    if (time) {
+        if(time>=0){
+            let d = new Date(time);
+            return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+        }else{
+            time = Math.abs(time);
+            let d = new Date(time);
+            return "-"+('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+        }
+
     } else {
         return "-";
     }
 }
 
-
-function minusTimeSet(time1, time2) {
-    if (time2 != null) {
-        let d1 = new Date(time1);
-        let d2 = new Date(time2);
-        let minusTime = new Date(d2.getTime() - d1.getTime());
-        return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2);
-    } else {
-        return "-";
-    }
-}
-
-function minusTimeSet2(time1, time2) {
-    let d1 = new Date(time1);
-    let d2 = new Date(time2);
-    if(d2.getTime() - d1.getTime() >=0){
-        let minusTime = new Date(d2.getTime() - d1.getTime());
-        return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
-    }else{
-        let minusTime = new Date(Math.abs(d2.getTime() - d1.getTime()));
-        return "-"+('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
-    }
-
-}
-
-function minusTime(time1, time2) {
-    let d1 = new Date(time1);
-    let d2 = new Date(time2);
-    let minusTime = d2.getTime() - d1.getTime();
-    return minusTime;
-}
-
-function getStoreStatistics() {
+function getStoreStatisticsByDate() {
     let mydata = [];
     loading.show();
     $.ajax({
@@ -83,22 +41,23 @@ function getStoreStatistics() {
                     let tmpdata = new Object();
                     tmpdata.store = my_store.storeName;
                     tmpdata.day = data[key].dayToDay;
-                    tmpdata.orderPickup = data[key].orderPickup;
-                    tmpdata.pickupComplete = data[key].pickupComplete;
-                    tmpdata.orderComplete = data[key].orderComplete;
-                    tmpdata.completeReturn = data[key].completeReturn;
-                    tmpdata.pickupReturn = data[key].pickupReturn;
-                    tmpdata.orderReturn = data[key].orderReturn;
-                    tmpdata.min30Below = totalTimeSet(data[key].min30Below);
-                    tmpdata.min30To40 = totalTimeSet(data[key].min30To40);
-                    tmpdata.min40To50 = totalTimeSet(data[key].min40To50);
-                    tmpdata.min50To60 = totalTimeSet(data[key].min50To60);
-                    tmpdata.min90Under = totalTimeSet(data[key].min90Under);
-                    tmpdata.min90Over = totalTimeSet(data[key].min90Over);
+                    tmpdata.orderPickup = totalTimeSet(data[key].orderPickup*1000);
+                    tmpdata.pickupComplete = totalTimeSet(data[key].pickupComplete*1000);
+                    tmpdata.orderComplete = totalTimeSet(data[key].orderComplete*1000);
+                    tmpdata.completeReturn = totalTimeSet(data[key].completeReturn*1000);
+                    tmpdata.pickupReturn = totalTimeSet(data[key].pickupReturn*1000);
+                    tmpdata.orderReturn = totalTimeSet(data[key].orderReturn*1000);
+                    tmpdata.min30Below = parseInt(data[key].min30Below) + "%";
+                    tmpdata.min30To40 = parseInt(data[key].min30To40) + "%";
+                    tmpdata.min40To50 = parseInt(data[key].min40To50) + "%";
+                    tmpdata.min50To60 = parseInt(data[key].min50To60) + "%";
+                    tmpdata.min60To90 = parseInt(data[key].min60To90) + "%";
+                    tmpdata.min90Under = parseInt(data[key].min90Under) + "%";
                     tmpdata.totalSales = data[key].totalSales;
+                    tmpdata.tc = data[key].tc;
                     tmpdata.tplh = data[key].tplh;
                     tmpdata.spmh = data[key].spmh;
-                    tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn);
+                    tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn*1000);
                     tmpdata.avgDistance = data[key].avgDistance +'km';
                     mydata.push(tmpdata);
                 }
@@ -125,8 +84,8 @@ function getStoreStatistics() {
                     {label: '<=40 MINS %', name: 'min30To40', index: 'min30To40', width: 80, align: 'center'},
                     {label: '<=50 MINS %', name: 'min40To50', index: 'min40To50', width: 80, align: 'center'},
                     {label: '<=60 MINS %', name: 'min50To60', index: 'min50To60', width: 80, align: 'center'},
-                    {label: '<=90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center'},
-                    {label: '>90 MINS %', name: 'min90Over', index: 'min90Over', width: 80, align: 'center'},
+                    {label: '<=90 MINS %', name: 'min60To90', index: 'min60To90', width: 80, align: 'center'},
+                    {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center'},
                     {label: 'SALES', name: 'totalSales', index: 'totalSales', width: 80, align: 'center'},
                     {label: 'TC', name: 'tc', index: 'tc', width: 80, align: 'center'},
                     {label: 'TPLH', name: 'tplh', index: 'tplh', width: 80, align: 'center'},

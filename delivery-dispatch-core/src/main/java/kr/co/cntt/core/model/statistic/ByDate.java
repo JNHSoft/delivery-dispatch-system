@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class ByDate implements Dto {
 
-    private static final long serialVersionUID = 9075478450315159999L;
+    private static final long serialVersionUID = -1934384042972192641L;
 
     private String dayToDay;
     private String orderPickup;
@@ -23,8 +23,8 @@ public class ByDate implements Dto {
     private String min30To40;
     private String min40To50;
     private String min50To60;
+    private String min60To90;
     private String min90Under;
-    private String min90Over;
     private String tc;
     private String totalSales;
     private String tplh;

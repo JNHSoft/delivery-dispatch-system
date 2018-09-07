@@ -4,6 +4,7 @@ import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
@@ -198,5 +199,12 @@ public interface StoreMapper {
      * @return
      */
     public List<Integer> selectStoreStatisticsByInterval(Order order);
+
+    /**
+     * Store 일별 통계 목록
+     * @param order
+     * @return
+     */
+    public List<ByDate> selectStoreStatisticsByDate(Order order);
 
 }

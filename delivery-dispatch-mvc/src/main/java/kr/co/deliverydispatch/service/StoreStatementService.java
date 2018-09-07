@@ -1,6 +1,7 @@
 package kr.co.deliverydispatch.service;
 
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 
@@ -24,12 +25,20 @@ public interface StoreStatementService {
     public List<Order> getStoreStatistics(Order order);
 
     /**
-     * Store 통계 목록
+     * Store 주문별 통계 목록
      * @param order
      * @return
      * @throws
      */
     public List<Order> getStoreStatisticsByOrder(Order order);
+
+    /**
+     * Store 일자별 통계 목록
+     * @param order
+     * @return
+     * @throws
+     */
+    public List<ByDate> getStoreStatisticsByDate(Order order);
 
     /**
      * Store 통계 조회
