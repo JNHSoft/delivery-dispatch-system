@@ -142,11 +142,14 @@ function getStoreStatisticsByInterval() {
                     borderWidth: 1
                 }]
             };
+            if(stackedBar){
+                stackedBar.clear();
+            }
             intervalChart(chartData);
         }
     });
 }
-
+var stackedBar;
 function intervalChart(chartData) {
     var cnvs = document.getElementById('intervalCanvas');
     var ctx = cnvs.getContext('2d');
@@ -154,7 +157,7 @@ function intervalChart(chartData) {
     ctx.clearRect(0, 0, cnvs.width, cnvs.height);
     ctx.beginPath();
 
-    var stackedBar = new Chart(ctx, {
+    stackedBar = new Chart(ctx, {
         type: 'bar',
         data: chartData
     });
