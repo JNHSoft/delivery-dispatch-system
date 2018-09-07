@@ -3,7 +3,21 @@ package kr.co.deliverydispatch.View;
 import kr.co.cntt.core.model.statistic.Interval;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtils;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.TickUnit;
+import org.jfree.chart.axis.TickUnits;
+import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.StackedBarRenderer;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -12,6 +26,10 @@ import org.springframework.web.servlet.view.AbstractView;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -103,8 +121,20 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
 
             rowNum++;
         }
+
+        Drawing drawing = sheet.createDrawingPatriarch();
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
         // 내용 부분
         for(int i = 0, r = storeStatisticsByInterval.getIntervalMinuteCounts().size(); i<r; i++) {
+
+            if (i + 9 == 9) {
+                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", "~" + String.valueOf(i+9));
+            } else if (i + 9 > 60) {
+                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+9) + "~");
+            } else {
+                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+9));
+            }
 
             String time = null;
             if (i + 9 == 9) {
@@ -137,6 +167,60 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
+        }
+
+        JFreeChart barChart = ChartFactory.createStackedBarChart("TC Chart", "Minute", "Count", dataset, PlotOrientation.VERTICAL, true, true, false);
+        barChart.setBorderVisible(true);
+        barChart.setBorderPaint(Color.GRAY);
+        barChart.getLegend().setFrame(BlockBorder.NONE);
+        barChart.getLegend().setMargin(0, 0, 10, 0);
+        barChart.getLegend().setPosition(RectangleEdge.BOTTOM);
+
+        CategoryPlot plot = (CategoryPlot) barChart.getPlot();
+        plot.setBackgroundPaint(java.awt.Color.WHITE);
+        plot.setOutlineVisible(false);
+        plot.setDomainGridlinePaint(Color.GRAY);
+        plot.setRangeGridlinePaint(Color.GRAY);
+
+        barChart.getTitle().setFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 20));
+        plot.getDomainAxis().setLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 14));
+        plot.getDomainAxis().setTickLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 11));
+        plot.getRangeAxis().setLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 14));
+        plot.getRangeAxis().setTickLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 11));
+
+        plot.getRangeAxis().setAutoRange(true);
+        TickUnits tickUnits = new TickUnits();
+        TickUnit unit = new NumberTickUnit(1);
+        tickUnits.add(unit);
+        plot.getRangeAxis().setStandardTickUnits(tickUnits);
+
+        StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
+        renderer.setSeriesOutlineStroke(0, new BasicStroke(0.5f));
+        renderer.setDefaultItemLabelPaint(Color.LIGHT_GRAY);
+        renderer.setDefaultItemLabelsVisible(true);
+
+        for (int i = 0, r = storeStatisticsByInterval.getIntervalMinuteCounts().size(); i<r; i++) {
+            renderer.setSeriesPaint(i, Color.BLUE);
+        }
+
+        int width = 16*100;
+        int height = 9*100;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ChartUtils.writeChartAsPNG(bos, barChart, width, height);
+            int barImgId = wb.addPicture(bos.toByteArray(), Workbook.PICTURE_TYPE_PNG);
+            bos.close();
+
+            ClientAnchor anchor = new XSSFClientAnchor();
+            anchor.setCol1(5);
+            anchor.setCol2(20);
+            anchor.setRow1(1);
+            anchor.setRow2(20);
+
+            Picture picture = drawing.createPicture(anchor, barImgId);
+            picture.resize(1);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
