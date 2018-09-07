@@ -64,16 +64,16 @@ function getStoreStatisticsByDate() {
             }
 
             if (mydata != null) {
-                jQuery('#jqGrid').jqGrid('clearGridData')
-                jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1})
+                jQuery('#jqGrid').jqGrid('clearGridData');
+                jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1});
                 jQuery('#jqGrid').trigger('reloadGrid');
             }
             $("#jqGrid").jqGrid({
                 datatype: "local",
                 data: mydata,
                 colModel: [
-                    {label: 'STORE', name: 'store', width: 25, key: true, align: 'center', hidden: true},
-                    {label: '日期', name: 'day', width: 80, align: 'center'},
+                    {label: 'STORE', name: 'store', width: 80, align: 'center'},
+                    {label: '日期', name: 'day', width: 50, align: 'center'},
                     {label: '留店時間', name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
                     {label: '外送時間', name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},
                     {label: '外送達成時間', name: 'orderComplete', index: 'orderComplete', width: 80, align: 'center'},
@@ -101,17 +101,15 @@ function getStoreStatisticsByDate() {
                 pager: "#jqGridPager",
             });
 
-            /*jQuery("#grid").jqGrid('setGroupHeaders', {
+            $("#jqGrid").jqGrid('destroyGroupHeader');
+            $("#jqGrid").jqGrid('setGroupHeaders', {
                 useColSpanStyle: true,
                 groupHeaders:[
-                    {startColumnName: 'orderPickup1', numberOfColumns: 1, titleText: '留店時間'},
-                    {startColumnName: 'pickupComplete1', numberOfColumns: 1, titleText: '外送時間'},
-                    {startColumnName: 'orderComplete1', numberOfColumns: 1, titleText: '外送達成時間'},
-                    {startColumnName: 'completeReturn1', numberOfColumns: 1, titleText: '回店所需時間'},
-                    {startColumnName: 'pickupReturn1', numberOfColumns: 1, titleText: '外出時間'},
-                    {startColumnName: 'orderReturn1', numberOfColumns: 1, titleText: '完成整張外送時間'}
+                    {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: '平均時間'},
+                    {startColumnName: 'min30Below', numberOfColumns: 6, titleText: 'DELIVERY 達成率'},
+                    {startColumnName: 'totalSales', numberOfColumns: 6, titleText: '業績及生產力'}
                 ]
-            });*/
+            });
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
             loading.hide();
             $('.state_wrap .btn_close').click(function (e) {
