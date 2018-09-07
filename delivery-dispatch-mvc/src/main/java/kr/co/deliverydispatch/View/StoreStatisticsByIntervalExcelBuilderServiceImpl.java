@@ -124,15 +124,9 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
 
         Drawing drawing = sheet.createDrawingPatriarch();
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        double maxValue = 0d;
 
         // 내용 부분
         for(int i = 0, r = storeStatisticsByInterval.getIntervalMinuteCounts().size(); i<r; i++) {
-
-            if(Double.parseDouble(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()) > maxValue) {
-                maxValue = Double.parseDouble(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString());
-            }
-
 
             if (i + 9 == 9) {
                 dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", "~" + String.valueOf(i+9));
@@ -185,6 +179,8 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
         CategoryPlot plot = (CategoryPlot) barChart.getPlot();
         plot.setBackgroundPaint(java.awt.Color.WHITE);
         plot.setOutlineVisible(false);
+        plot.setDomainGridlinePaint(Color.GRAY);
+        plot.setRangeGridlinePaint(Color.GRAY);
 
         barChart.getTitle().setFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 20));
         plot.getDomainAxis().setLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 14));
@@ -192,13 +188,11 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
         plot.getRangeAxis().setLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 14));
         plot.getRangeAxis().setTickLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 11));
 
-        if (maxValue < 10) {
-            plot.getRangeAxis().setAutoRange(true);
-            TickUnits tickUnits = new TickUnits();
-            TickUnit unit = new NumberTickUnit(1);
-            tickUnits.add(unit);
-            plot.getRangeAxis().setStandardTickUnits(tickUnits);
-        }
+        plot.getRangeAxis().setAutoRange(true);
+        TickUnits tickUnits = new TickUnits();
+        TickUnit unit = new NumberTickUnit(1);
+        tickUnits.add(unit);
+        plot.getRangeAxis().setStandardTickUnits(tickUnits);
 
         StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
         renderer.setSeriesOutlineStroke(0, new BasicStroke(0.5f));
