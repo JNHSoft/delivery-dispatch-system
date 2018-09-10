@@ -204,7 +204,6 @@ function getStoreStatistics() {
             let distanceSum = 0;
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
-                    // if (timepickerConfirm($('#day1').val(), $('#day2').val(), data[key].createdDatetime)) {
                     let tmpdata = new Object();
                     tmpdata.No = i++;
                     tmpdata.reg_order_id = regOrderIdReduce(data[key].regOrderId);

@@ -55,10 +55,19 @@ function getStoreStatisticsByDate() {
                     tmpdata.min90Under = parseInt(data[key].min90Under) + "%";
                     tmpdata.totalSales = data[key].totalSales;
                     tmpdata.tc = data[key].tc;
-                    tmpdata.tplh = data[key].tplh;
-                    tmpdata.spmh = data[key].spmh;
+                    if(data[key].tplh){
+                        tmpdata.tplh = data[key].tplh;
+                    }else{
+                        tmpdata.tplh = "-";
+                    }
+                    if(data[key].spmh){
+                        tmpdata.spmh = data[key].spmh;
+                    }else{
+                        tmpdata.spmh = "-";
+                    }
+
                     tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn*1000);
-                    tmpdata.avgDistance = data[key].avgDistance +'km';
+                    tmpdata.avgDistance = (data[key].avgDistance?data[key].avgDistance:0) +'km';
                     mydata.push(tmpdata);
                 }
             }
@@ -73,7 +82,7 @@ function getStoreStatisticsByDate() {
                 data: mydata,
                 colModel: [
                     {label: 'STORE', name: 'store', width: 80, align: 'center'},
-                    {label: '日期', name: 'day', width: 50, align: 'center'},
+                    {label: '日期', name: 'day', width: 80, align: 'center'},
                     {label: '留店時間', name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
                     {label: '外送時間', name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},
                     {label: '外送達成時間', name: 'orderComplete', index: 'orderComplete', width: 80, align: 'center'},
@@ -87,7 +96,7 @@ function getStoreStatisticsByDate() {
                     {label: '<=90 MINS %', name: 'min60To90', index: 'min60To90', width: 80, align: 'center'},
                     {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center'},
                     {label: 'SALES', name: 'totalSales', index: 'totalSales', width: 80, align: 'center'},
-                    {label: 'TC', name: 'tc', index: 'tc', width: 80, align: 'center'},
+                    {label: 'TC', name: 'tc', index: 'tc', width: 50, align: 'center'},
                     {label: 'TPLH', name: 'tplh', index: 'tplh', width: 80, align: 'center'},
                     {label: 'SPMH', name: 'spmh', index: 'spmh', width: 80, align: 'center'},
                     {label: '外出總時間', name: 'totalPickupReturn', index: 'totalPickupReturn', width: 80, align: 'center'},
@@ -124,7 +133,7 @@ function getStoreStatisticsByDate() {
 }
 
 function excelDownloadByDate(){
-    let startDate = $('#day1').val();
+    /*let startDate = $('#day1').val();
     let endDate = $('#day2').val();
     loading.show();
     $.fileDownload("/excelDownloadByDate",{
@@ -139,5 +148,5 @@ function excelDownloadByDate(){
         failCallback: function(responseHtml,url){
             loading.hide();
         }
-    })
+    })*/
 }
