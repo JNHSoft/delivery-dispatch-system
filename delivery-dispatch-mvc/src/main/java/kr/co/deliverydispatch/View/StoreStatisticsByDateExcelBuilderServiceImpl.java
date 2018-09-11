@@ -275,16 +275,14 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-//            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+storeStatisticsByDateList.get(i).getOrderPickup());
             cell.setCellValue(minusChkFilter(Long.parseLong(Math.round(Double.parseDouble(storeStatisticsByDateList.get(i).getOrderPickup())*1000)+"")));
             cell.setCellStyle(dataCellStyle);
-
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(Long.parseLong(Math.round(Double.parseDouble(storeStatisticsByDateList.get(i).getPickupComplete())*1000)+"")));
             cell.setCellStyle(dataCellStyle);
-            cell =
-                    addListRow.createCell(colNum++);
+
+            cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(Long.parseLong(Math.round(Double.parseDouble(storeStatisticsByDateList.get(i).getOrderComplete())*1000)+"")));
             cell.setCellStyle(dataCellStyle);
 
@@ -300,11 +298,9 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             cell.setCellValue(minusChkFilter(Long.parseLong(Math.round(Double.parseDouble(storeStatisticsByDateList.get(i).getOrderReturn())*1000)+"")));
             cell.setCellStyle(dataCellStyle);
 
-
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(nullCheck(storeStatisticsByDateList.get(i).getMin30Below())+"%");
             cell.setCellStyle(dataCellStyle);
-
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(nullCheck(storeStatisticsByDateList.get(i).getMin30To40())+"%");
