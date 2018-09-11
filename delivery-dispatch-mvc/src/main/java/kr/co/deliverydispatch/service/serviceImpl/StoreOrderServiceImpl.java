@@ -205,13 +205,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
     @Override
     public int putOrderAssigned(Order order) {
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
+        /*int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         if (selectOrderIsApprovalCompleted != 0) {
-            return 0;
-        }
-
+            return throw new AppTrException(getMessage(ErrorCodeEnum.E00023), ErrorCodeEnum.E00023.name());
+        }*/
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
         if (selectOrderIsCompletedIsCanceled != 0) {
             return 0;
         }
@@ -219,22 +217,10 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
-
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getAuthorities().toString().matches(".*ROLE_RIDER.*")) {
-            Rider rider = new Rider();
-            rider.setToken(order.getToken());
-            String assignmentStatus = riderMapper.selectRiderAssignmentStatus(rider);
-            if (!assignmentStatus.equals("2")) {
-                return 0;
-            }
-        } else if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
-            if (!S_Store.getAssignmentStatus().equals("0")) {
-                return 0;
-            }
+        if (!S_Store.getAssignmentStatus().equals("0")) {
+            return 0;
         }
 
         Rider tmpRider = new Rider();
@@ -244,9 +230,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         tmpRider.setId(order.getRiderId());
         Rider S_Rider = riderMapper.getRiderInfo(tmpRider);
 
-        Order orderAssigned = new Order();
+//        Order orderAssigned = new Order();
 
-        orderAssigned.setToken(order.getToken());
+        /*orderAssigned.setToken(order.getToken());
         orderAssigned.setId(order.getId());
         orderAssigned.setRiderId(order.getRiderId());
         orderAssigned.setStatus("1");
@@ -255,13 +241,21 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             orderAssigned.setAssignXy(S_Rider.getLatitude()+"|"+S_Rider.getLongitude());
         } else {
             orderAssigned.setAssignXy("none");
+        }*/
+        order.setStatus("1");
+        order.setAssignedDatetime(LocalDateTime.now().toString());
+        if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
+            order.setAssignXy(S_Rider.getLatitude()+"|"+S_Rider.getLongitude());
+        } else {
+            order.setAssignXy("none");
         }
-
-        Order combinedOrderAssigned = new Order();
+        String tmpOrderId = order.getId();
+        int ret = this.putOrder(order);
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            combinedOrderAssigned.setId(order.getCombinedOrderId());
-            combinedOrderAssigned.setRiderId(order.getRiderId());
+//            Order combinedOrderAssigned = new Order();
+            order.setId(order.getCombinedOrderId());
+            /*combinedOrderAssigned.setRiderId(order.getRiderId());
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
@@ -269,41 +263,36 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                 combinedOrderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
             } else {
                 combinedOrderAssigned.setAssignXy("none");
-            }
+            }*/
 
-            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
+            /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             if (selectCombinedOrderIsApprovalCompleted != 0) {
                 return 0;
-            }
-
+            }*/
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
             if (selectCombinedOrderIsCompletedIsCanceled != 0) {
                 return 0;
             }
 
-            this.putOrder(combinedOrderAssigned);
+            this.putOrder(order);
         }
+        order.setId(tmpOrderId);
 
-        int ret = this.putOrder(orderAssigned);
-
-        String tmpOrderId = orderAssigned.getId();
+//        int ret = this.putOrder(orderAssigned);
 
         if (ret != 0) {
             if (S_Store.getSubGroup() != null){
-                redisService.setPublisher(Content.builder().type("order_assigned").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).subGroupId(S_Store.getSubGroup().getId()).build());
+                redisService.setPublisher(Content.builder().type("order_assigned").id(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).subGroupId(S_Store.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher(Content.builder().type("order_assigned").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).build());
+                redisService.setPublisher(Content.builder().type("order_assigned").id(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).build());
             }
-
-            if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
-                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
-                if(tokens.size() > 0){
-                    Notification noti = new Notification();
-                    noti.setType(Notification.NOTI.ORDER_ASSIGN);
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
-                }
+//            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(orderAssigned);
+            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(order);
+            if(tokens.size() > 0){
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.ORDER_ASSIGN);
+                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                checkFcmResponse(pushNotification);
             }
         }
         return ret;
@@ -552,12 +541,12 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
     public int putOrderAssignCanceled(Order order){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByOrderId(order);
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
+        /*int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         if (selectOrderIsApprovalCompleted != 0) {
             return 0;
-        }
+        }*/
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
 
         if (selectOrderIsCompletedIsCanceled != 0) {
             return 0;
@@ -615,7 +604,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             if (S_Order.getSubGroup() != null){
                 redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(S_Order.getSubGroup().getId()).build());
             }else {
-               redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
             if(authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
                 if(tokens.size() > 0){

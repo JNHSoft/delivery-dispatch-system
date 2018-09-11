@@ -486,8 +486,8 @@
 		SELECT
 			COUNT(*)
 		FROM TB_ORDER
-		WHERE id = (SELECT id FROM TB_ORDER WHERE reg_order_id=#{id})
-			AND (status = 3 OR status = 4)
+		WHERE reg_order_id=#{id}
+			AND status in (3,4)
 	</select>
 
 	<!-- RegOrderIDCheckt reg 오더 중복 체크  -->
