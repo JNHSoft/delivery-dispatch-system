@@ -8,7 +8,7 @@
 		<div class="tabmenu">
 			<ul>
 				<li><a href="/setting-account" th:text="${#messages.msg('gnb.setting.account')}" /></li>
-				<li><a href="/setting_assign" th:text="${#messages.msg('gnb.setting.assign')}" /></li>
+				<li><a href="/setting-assign" th:text="${#messages.msg('gnb.setting.assign')}" /></li>
 				<li><a href="/setting-rider" th:text="${#messages.msg('gnb.setting.rider')}" /></li>
 				<li class="on"><a href="/setting-alarm" th:text="${#messages.msg('gnb.setting.alarm')}" /></li>
 				<li><a href="/setting-notice" th:text="${#messages.msg('gnb.notice')}" /></li>
@@ -92,13 +92,12 @@
 
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
-    var store = /*[[${store}]]*/ 'store';
+    var my_store = /*[[${store}]]*/ 'my_store';
     var newAlarm = /*[[${newAlarm}]]*/ 'newAlarm';
     var assignAlarm = /*[[${assignAlarm}]]*/ 'assignAlarm';
     var assignCancelAlarm = /*[[${assignCancelAlarm}]]*/ 'assignCancelAlarm';
     var completeAlarm = /*[[${completeAlarm}]]*/ 'completeAlarm';
     var cancelAlarm = /*[[${cancelAlarm}]]*/ 'cancelAlarm';
-    var my_store = /*[[${store}]]*/ 'my_store';
     var alert_confirm_mod_success = /*[[#{alert.confirm.mod.success}]]*/ 'alert_confirm_mod_success';
     $(document).ready(function () {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
@@ -133,7 +132,7 @@
             }
         });
 
-        $('#storeId').val(store.id);
+        $('#storeId').val(my_store.id);
         if(newAlarm == null){
             $('input[name="newAlarm"]').attr('disabled', true);
             $('input[name="newAlarm"]').attr('checked', false);

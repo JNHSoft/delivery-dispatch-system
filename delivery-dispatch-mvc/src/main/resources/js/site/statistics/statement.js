@@ -242,8 +242,8 @@ function getStoreStatistics() {
             tmpdata.distance = distanceSum + 'km';
             mydata.push(tmpdata);
             if (mydata != null) {
-                jQuery('#jqGrid').jqGrid('clearGridData')
-                jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1})
+                jQuery('#jqGrid').jqGrid('clearGridData');
+                jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1});
                 jQuery('#jqGrid').trigger('reloadGrid');
             }
             $("#jqGrid").jqGrid({
