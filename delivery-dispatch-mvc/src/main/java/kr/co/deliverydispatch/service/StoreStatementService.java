@@ -55,6 +55,16 @@ public interface StoreStatementService {
      */
     public List<Order> getStoreStatisticsExcel(Order order);
 
+
+    /**
+     * 통계 Date Excel
+     * @param order
+     * @return
+     */
+    public List<ByDate> getStoreStatisticsExcelByDate(Order order);
+
+
+
     /**
      * Store 구간별 통계 목록
      * @param order

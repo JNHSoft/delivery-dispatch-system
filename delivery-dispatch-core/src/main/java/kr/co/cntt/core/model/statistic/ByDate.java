@@ -12,6 +12,7 @@ public class ByDate implements Dto {
 
     private static final long serialVersionUID = -1934384042972192641L;
 
+    private String storeName;
     private String dayToDay;
     private String orderPickup;
     private String pickupComplete;

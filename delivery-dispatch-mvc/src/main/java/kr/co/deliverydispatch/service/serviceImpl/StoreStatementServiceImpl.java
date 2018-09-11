@@ -101,6 +101,7 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         return S_Statistics;
     }
 
+    // date
     @Override
     public List<ByDate> getStoreStatisticsByDate(Order order) {
         List<ByDate> S_Statistics = storeMapper.selectStoreStatisticsByDate(order);
@@ -109,6 +110,15 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         }
         return S_Statistics;
     }
+
+    //통계 조회 엑셀
+    @Override
+    public List<ByDate> getStoreStatisticsExcelByDate(Order order) {
+        List<ByDate> statisticsDate = storeMapper.selectStoreStatisticsByDate(order);
+        return statisticsDate;
+    }
+
+
 
     // 통계 조회
     @Override
@@ -119,6 +129,7 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         }
         return S_Order;
     }
+
     //통계 조회 엑셀
     @Override
     public List<Order> getStoreStatisticsExcel(Order order) {

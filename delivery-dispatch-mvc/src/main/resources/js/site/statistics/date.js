@@ -133,8 +133,15 @@ function getStoreStatisticsByDate() {
 }
 
 function excelDownloadByDate(){
-    /*let startDate = $('#day1').val();
+    let startDate = $('#day1').val();
     let endDate = $('#day2').val();
+
+    // let storeName = $('#myStoreName').text();
+    //
+    //
+    // console.log("!!!!!!!!!!!!");
+    // console.log(storeName);
+
     loading.show();
     $.fileDownload("/excelDownloadByDate",{
         httpMethod:"GET",
@@ -143,10 +150,13 @@ function excelDownloadByDate(){
             endDate : endDate
         },
         successCallback: function(url){
+            console.log('good');
             loading.hide();
         },
         failCallback: function(responseHtml,url){
+            console.log(responseHtml);
+            console.log('err');
             loading.hide();
         }
-    })*/
+    })
 }

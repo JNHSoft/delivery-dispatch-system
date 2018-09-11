@@ -227,8 +227,39 @@ public class StatisticsController {
         }
         order.setToken(storeInfo.getStoreAccessToken());
 
-        List<ByDate> statisticsList = storeStatementService.getStoreStatisticsByDate(order);
-        return statisticsList;
+        List<ByDate> statisticsDate = storeStatementService.getStoreStatisticsByDate(order);
+        return statisticsDate;
+    }
+
+    // 날짜별 통계 리스트 엑셀 다운
+    @GetMapping("/excelDownloadByDate")
+    public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        order.setCurrentDatetime(startDate);
+
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+//        order.getStore().setStoreName(myStore.getStoreName());
+
+        ModelAndView modelAndView = new ModelAndView("StoreStatisticsByDateExcelBuilderServiceImpl");
+        List<ByDate> storeStatisticsByDate = storeStatementService.getStoreStatisticsByDate(order);
+        modelAndView.addObject("getStoreStatisticsByDateExcel", storeStatisticsByDate);
+
+        return modelAndView;
     }
 
     @ResponseBody
