@@ -8,7 +8,6 @@ $(document).ready(function() {
             location.href = "/order";
         }
     });
-    noticeAlarm();
     $('#logout').click(function () {
         $.ajax({
             url : "/logoutProcess",
@@ -18,6 +17,7 @@ $(document).ready(function() {
         });
     })
     footerOrders();
+    noticeAlarm();
     if($(".f_left")){
         if(map_region){
             if(map_region=="hk"){
@@ -32,7 +32,6 @@ $(document).ready(function() {
 function noticeAlarm() {
     $.ajax({
         url : "/commonNotice",
-        cache : false,
         success : function(data) {
             if(data && my_store){
                 $('#myStoreName').text(my_store.storeName);
@@ -95,7 +94,6 @@ function footerOrders() {
     $.ajax({
         url : "/footerOrderList",
         type : "get",
-        cache : false,
         dataType : 'json',
         success : function(data) {
             if(typeof data == 'object') {
@@ -129,7 +127,6 @@ function footerOrders() {
 function footerRiders() {
     $.ajax({
         url : "/footerRiderList",
-        cache : false,
         success : function(data) {
             if(typeof data == 'object') {
                 var restCnt = 0;
