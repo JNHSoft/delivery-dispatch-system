@@ -166,12 +166,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
     @Override
     public int putOrderAssignedFirst(Order order) {
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
+        /*int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         if (selectOrderIsApprovalCompleted != 0) {
             return 0;
-        }
+        }*/
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
         if (selectOrderIsCompletedIsCanceled != 0) {
             return 0;
         }
@@ -314,13 +313,11 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
     @Override
     public int putOrderInfo(Order order){
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
+        /*int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         if (selectOrderIsApprovalCompleted != 0) {
             return 0;
-        }
-
+        }*/
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
         if (selectOrderIsCompletedIsCanceled != 0) {
             return 0;
         }
@@ -377,32 +374,25 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         order.setPickedUpDatetime(null);
         order.setCompletedDatetime(null);
 
-        Order combinedOrder = new Order();
-        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            combinedOrder.setId(order.getCombinedOrderId());
-            combinedOrder.setCombinedOrderId(order.getId());
-            combinedOrder.setRiderId(order.getRiderId());
-            combinedOrder.setToken(order.getToken());
-
-            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
-            if (selectCombinedOrderIsApprovalCompleted != 0) {
-                return 0;
-            }
-
-            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
-                return 0;
-            }
-
-            this.putOrder(combinedOrder);
-        }
-
         String tmpRegOrderId = order.getId();
 
         int nRet = this.putOrder(order);
 
-        String tmpOrderId = order.getId();
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
+            order.setId(order.getCombinedOrderId());
+            order.setCombinedOrderId(order.getId());
+
+            /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+            if (selectCombinedOrderIsApprovalCompleted != 0) {
+                return 0;
+            }*/
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
+                return 0;
+            }
+
+            this.putOrder(order);
+        }
 
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
@@ -441,9 +431,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
         if (nRet != 0) {
             if (storeDTO.getSubGroup() != null){
-                redisService.setPublisher(Content.builder().type("order_updated").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
+                redisService.setPublisher(Content.builder().type("order_updated").id(tmpRegOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher(Content.builder().type("order_updated").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
+                redisService.setPublisher(Content.builder().type("order_updated").id(tmpRegOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
         }
 
@@ -452,48 +442,33 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
 
     @Override
     public int putOrderCanceled(Order order) {
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
+        /*int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         if (selectOrderIsApprovalCompleted != 0) {
             return 0;
-        }
+        }*/
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
 
         if (selectOrderIsCompletedIsCanceled != 0) {
             return 0;
         }
 
-        Order orderCanceled = new Order();
-        orderCanceled.setToken(order.getToken());
-        orderCanceled.setId(order.getId());
-        orderCanceled.setStatus("4");
-        orderCanceled.setModifiedDatetime(LocalDateTime.now().toString());
-
-        Order combinedOrderCanceled = new Order();
+        order.setStatus("4");
+        order.setModifiedDatetime(LocalDateTime.now().toString());
+        String tmpOrderId = order.getId();
+        int nRet = this.putOrder(order);
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            combinedOrderCanceled.setId(order.getCombinedOrderId());
-            combinedOrderCanceled.setStatus("4");
-            combinedOrderCanceled.setModifiedDatetime(LocalDateTime.now().toString());
-            combinedOrderCanceled.setToken(order.getToken());
-
-            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderCanceled);
-            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(combinedOrderCanceled);
-
+            order.setId(order.getCombinedOrderId());
+            /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderCanceled);
             if (selectCombinedOrderIsApprovalCompleted != 0) {
                 return 0;
-            }
-
+            }*/
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
             if (selectCombinedOrderIsCompletedIsCanceled != 0) {
                 return 0;
             }
-
-            this.putOrder(combinedOrderCanceled);
+            this.putOrder(order);
         }
-
-        int nRet = this.putOrder(orderCanceled);
-
-        String tmpOrderId = orderCanceled.getId();
 
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
@@ -502,6 +477,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         if(nRet == 1){
+            order.setId(tmpOrderId);
             Order curOrder = getOrderInfo(order);
             if(curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")){
                 // 해당 라이더한테만 푸쉬
@@ -546,53 +522,47 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             return 0;
         }*/
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
-
         if (selectOrderIsCompletedIsCanceled != 0) {
             return 0;
         }
 
-        Order orderAssignCanceled = new Order();
+        /*Order orderAssignCanceled = new Order();
         orderAssignCanceled.setId(order.getId());
         orderAssignCanceled.setStatus("5");
         orderAssignCanceled.setRiderId("-1");
         orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
         orderAssignCanceled.setAssignedDatetime("-1");
         orderAssignCanceled.setPickedUpDatetime("-1");
-        orderAssignCanceled.setToken(order.getToken());
+        orderAssignCanceled.setToken(order.getToken());*/
+//        Order orderAssignCanceled = new Order();
+        order.setStatus("5");
+        order.setRiderId("-1");
+        order.setModifiedDatetime(LocalDateTime.now().toString());
+        order.setAssignedDatetime("-1");
+        order.setPickedUpDatetime("-1");
 
-        Order combinedOrderAssignCanceled = new Order();
+        String tmpOrderId = order.getId();
 
+        int ret = this.putOrder(order);
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            combinedOrderAssignCanceled.setId(order.getCombinedOrderId());
-            combinedOrderAssignCanceled.setStatus("5");
-            combinedOrderAssignCanceled.setRiderId("-1");
-            combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
-            combinedOrderAssignCanceled.setAssignedDatetime("-1");
-            combinedOrderAssignCanceled.setPickedUpDatetime("-1");
-            combinedOrderAssignCanceled.setToken(order.getToken());
+//            Order combinedOrderAssignCanceled = new Order();
+            order.setId(order.getCombinedOrderId());
 
-            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderAssignCanceled);
-            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(combinedOrderAssignCanceled);
-
+            /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderAssignCanceled);
             if (selectCombinedOrderIsApprovalCompleted != 0) {
                 return 0;
-            }
+            }*/
 
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
             if (selectCombinedOrderIsCompletedIsCanceled != 0) {
                 return 0;
             }
 
-            this.putOrder(combinedOrderAssignCanceled);
+            this.putOrder(order);
         }
 
-        int ret = this.putOrder(orderAssignCanceled);
-
-        String tmpOrderId = orderAssignCanceled.getId();
-
-        orderAssignCanceled.setId(order.getId());
-
-        Order S_Order = orderMapper.selectOrderInfo(orderAssignCanceled);
+        order.setId(tmpOrderId);
+        Order S_Order = orderMapper.selectOrderInfo(order);
 
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
