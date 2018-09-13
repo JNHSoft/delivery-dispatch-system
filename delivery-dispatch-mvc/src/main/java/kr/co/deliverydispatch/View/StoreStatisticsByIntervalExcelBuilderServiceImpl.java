@@ -101,22 +101,22 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
 
             sheet.setColumnWidth(colNum, 15*256);
             Cell addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.interval",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("TC數");
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.count",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("百分比");
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.percentage",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("累積達成率");
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.cumulative",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             rowNum++;
@@ -169,7 +169,12 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
             rowNum ++;
         }
 
-        JFreeChart barChart = ChartFactory.createStackedBarChart("TC Chart", "Minute", "Count", dataset, PlotOrientation.VERTICAL, true, true, false);
+        JFreeChart barChart = ChartFactory.createStackedBarChart(
+                messageSource.getMessage("statistics.3rd.chart",null, locale)
+                , messageSource.getMessage("statistics.minute",null, locale)
+                , messageSource.getMessage("statistics.count",null, locale)
+                , dataset, PlotOrientation.VERTICAL, true, true, false);
+
         barChart.setBorderVisible(true);
         barChart.setBorderPaint(Color.GRAY);
         barChart.getLegend().setFrame(BlockBorder.NONE);

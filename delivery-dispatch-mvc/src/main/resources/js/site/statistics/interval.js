@@ -109,10 +109,10 @@ function getStoreStatisticsByInterval() {
                 datatype: "local",
                 data: mydata,
                 colModel: [
-                    {label: '時間', name: 'intervalMinute', width: 25, align: 'center'},
-                    {label: 'TC數', name: 'intervalCount', width: 25, align: 'center'},
-                    {label: '百分比', name: 'intervalCount1', width: 25, align: 'center'},
-                    {label: '累積達成率', name: 'intervalCount2', width: 25, align: 'center'}
+                    {label: label_interval, name: 'intervalMinute', width: 25, align: 'center'},
+                    {label: label_count, name: 'intervalCount', width: 25, align: 'center'},
+                    {label: label_percentage, name: 'intervalCount1', width: 25, align: 'center'},
+                    {label: label_cumulative, name: 'intervalCount2', width: 25, align: 'center'}
                 ],
                 width: 'auto',
                 height: 700,
@@ -135,7 +135,7 @@ function getStoreStatisticsByInterval() {
             var chartData = {
                 labels: tmpChartLabels,
                 datasets: [{
-                    label: 'TC數',
+                    label: label_count,
                     data: tmpChartData,
                     backgroundColor: 'rgba(0, 0, 255, 0.6)',
                     borderColor: 'rgba(0, 0, 255, 1)',

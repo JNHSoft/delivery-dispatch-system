@@ -8,7 +8,7 @@
         <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
         <div class="search_box">
             <div class="left">
-                <span class="lbl" style="font-size: 15px; font-weight: bold; color:black">累積達成率頁面 </span>
+                <span class="lbl" th:text="${#messages.msg('statistics.3rd.title')}" style="font-size: 15px; font-weight: bold; color:black" />
             </div>
             <div class="right">
                 <input type="hidden" name="startDate"/>
@@ -44,12 +44,19 @@
     /*<![CDATA[*/
     var befoore_function = /*[[#{alert.befoore.function}]]*/ 'befoore_function';
 
+    var label_interval = /*[[#{statistics.3rd.label.interval}]]*/ 'label_interval';
+    var label_count = /*[[#{statistics.3rd.label.count}]]*/ 'label_count';
+    var label_percentage = /*[[#{statistics.3rd.label.percentage}]]*/ 'label_percentage';
+    var label_cumulative = /*[[#{statistics.3rd.label.cumulative}]]*/ 'label_cumulative';
+
     var status_new = /*[[#{status.new}]]*/ 'status_new';
     var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
     var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
     var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
     var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
+
     var my_store = /*[[${store}]]*/ 'my_store';
+
     $(document).ready(function () {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
         $.ajax({
