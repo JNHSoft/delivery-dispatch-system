@@ -150,12 +150,10 @@ function excelDownloadByDate(){
             endDate : endDate
         },
         successCallback: function(url){
-            console.log('good');
             loading.hide();
         },
         failCallback: function(responseHtml,url){
             console.log(responseHtml);
-            console.log('err');
             loading.hide();
         }
     })

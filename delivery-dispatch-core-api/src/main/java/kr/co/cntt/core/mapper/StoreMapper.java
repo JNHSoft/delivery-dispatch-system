@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.alarm.Alarm;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.ByDate;
@@ -80,10 +81,10 @@ public interface StoreMapper {
     /**
      * store 정보 조회
      *
-     * @param store
+     * @param common
      * @return
      */
-    public Store selectStoreInfo(Store store);
+    public Store selectStoreInfo(Common common);
 
     /**
      * Store 정보 수정

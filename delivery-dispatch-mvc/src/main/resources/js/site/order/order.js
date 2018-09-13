@@ -1,4 +1,5 @@
 /*<![CDATA[*/
+let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(document).ready(function() {
     var storeId = $('#orderMyStoreChk').val();
     var statusArray = ["0","1","2","3","4","5"];
@@ -158,6 +159,10 @@ $(document).ready(function() {
         $.extend(grid[0].p.postData, { filters: JSON.stringify(filter) });
         grid.trigger("reloadGrid", [{ page: 1 }]);
     });
+}).ajaxStart(function () {
+    loading.show();
+}).ajaxStop(function () {
+    loading.hide();
 });
 
 function orderAlarmMessage(data, statusArray, storeId) {
@@ -725,7 +730,7 @@ function putAssignedAdvance() {
     if($('#combinedChk').prop("checked")){
         combinedOrderId = $('#selectCombined').val();
     }
-
+    var firstTime = new Date().getTime();
     $.ajax({
         url: '/putAssignedAdvance',
         type: 'put',
@@ -744,6 +749,7 @@ function putAssignedAdvance() {
                 var storeId = $('#orderMyStoreChk').val();
                 getOrderList(statusArray, storeId);
             }
+            console.log(new Date().getTime() - firstTime);
         }
     });
 }

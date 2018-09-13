@@ -84,5 +84,8 @@ public class Order extends Common implements Dto {
     private String startDate;
     private String endDate;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String isAdmin;
+
 
 }

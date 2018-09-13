@@ -212,22 +212,25 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         if (selectOrderIsCompletedIsCanceled != 0) {
             return 0;
         }
-
-        Store storeDTO = new Store();
+        String tmpOrderId = order.getId();
+        order.setId(null);
+        /*Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
-        Store S_Store = storeMapper.selectStoreInfo(storeDTO);
+        Store S_Store = storeMapper.selectStoreInfo(storeDTO);*/
+        Store S_Store = storeMapper.selectStoreInfo(order);
 
         if (!S_Store.getAssignmentStatus().equals("0")) {
             return 0;
         }
 
-        Rider tmpRider = new Rider();
+        /*Rider tmpRider = new Rider();
         tmpRider.setIsAdmin("0");
         tmpRider.setToken(order.getToken());
         tmpRider.setAccessToken(order.getToken());
-        tmpRider.setId(order.getRiderId());
-        Rider S_Rider = riderMapper.getRiderInfo(tmpRider);
+        tmpRider.setId(order.getRiderId());*/
+        order.setId(order.getRiderId());
+        Rider S_Rider = riderMapper.getRiderInfo(order);
 
 //        Order orderAssigned = new Order();
 
@@ -248,7 +251,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         } else {
             order.setAssignXy("none");
         }
-        String tmpOrderId = order.getId();
+        order.setId(tmpOrderId);
         int ret = this.putOrder(order);
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
@@ -569,10 +572,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         storeDTO.setToken(order.getToken());
 
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
-
         if (ret != 0) {
             if (S_Order.getSubGroup() != null){
-                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(S_Order.getSubGroup().getId()).build());
+                redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
             }else {
                 redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }

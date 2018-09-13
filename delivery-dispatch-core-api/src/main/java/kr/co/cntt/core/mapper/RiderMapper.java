@@ -77,7 +77,7 @@ public interface RiderMapper {
      *
      * @return Rider Info 조회 결과값
      */
-    public Rider getRiderInfo(Rider rider);
+    public Rider getRiderInfo(Common common);
 
     /**
      * <p> 해당 스토어 Rider 목록

@@ -211,7 +211,7 @@
 
 
 	<!--rider 정보 조회 -->
-	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultMap="selectSubgroupRiderRelsResult">
+	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
 	  SELECT
 		TR.created_datetime
 		, TR.modified_datetime
@@ -286,7 +286,7 @@
 				AND TR.id = (
 				SELECT rider_id
 				FROM TB_RIDER_SESSION
-				WHERE access_token=#{accessToken}
+				WHERE access_token=#{token}
 				)
 			</otherwise>
 		</choose>

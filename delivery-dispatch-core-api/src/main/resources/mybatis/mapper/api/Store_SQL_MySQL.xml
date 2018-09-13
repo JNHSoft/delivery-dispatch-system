@@ -205,7 +205,7 @@
 
 
 	<!--store 정보 조회-->
-    <select id="selectStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultMap="selectStoreResult">
+    <select id="selectStoreInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectStoreResult">
         SELECT
             TS.created_datetime
             , TS.modified_datetime
@@ -287,7 +287,7 @@
                     </when>
                     <otherwise>
                         AND TS.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-                        AND TS.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{accessToken}
+                        AND TS.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}
                         )
                     </otherwise>
                 </choose>
