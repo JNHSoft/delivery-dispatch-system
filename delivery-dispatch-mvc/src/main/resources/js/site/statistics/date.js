@@ -81,26 +81,26 @@ function getStoreStatisticsByDate() {
                 datatype: "local",
                 data: mydata,
                 colModel: [
-                    {label: 'STORE', name: 'store', width: 80, align: 'center'},
-                    {label: '日期', name: 'day', width: 80, align: 'center'},
-                    {label: '留店時間', name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
-                    {label: '外送時間', name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},
-                    {label: '外送達成時間', name: 'orderComplete', index: 'orderComplete', width: 80, align: 'center'},
-                    {label: '回店所需時間', name: 'completeReturn', index: 'completeReturn', width: 80, align: 'center'},
-                    {label: '外出時間', name: 'pickupReturn', index: 'pickupReturn', width: 80, align: 'center'},
-                    {label: '完成整張外送時間', name: 'orderReturn', index: 'orderReturn', width: 80, align: 'center'},
+                    {label: label_store, name: 'store', width: 80, align: 'center'},
+                    {label: label_date, name: 'day', width: 80, align: 'center'},
+                    {label: label_in_store_time, name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
+                    {label: label_delivery_time, name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},
+                    {label: label_completed_time, name: 'orderComplete', index: 'orderComplete', width: 80, align: 'center'},
+                    {label: label_return_time, name: 'completeReturn', index: 'completeReturn', width: 80, align: 'center'},
+                    {label: label_out_time, name: 'pickupReturn', index: 'pickupReturn', width: 80, align: 'center'},
+                    {label: label_total_delivery_time, name: 'orderReturn', index: 'orderReturn', width: 80, align: 'center'},
                     {label: '<=30 MINS %', name: 'min30Below', index: 'min30Below', width: 80, align: 'center'},
                     {label: '<=40 MINS %', name: 'min30To40', index: 'min30To40', width: 80, align: 'center'},
                     {label: '<=50 MINS %', name: 'min40To50', index: 'min40To50', width: 80, align: 'center'},
                     {label: '<=60 MINS %', name: 'min50To60', index: 'min50To60', width: 80, align: 'center'},
                     {label: '<=90 MINS %', name: 'min60To90', index: 'min60To90', width: 80, align: 'center'},
                     {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center'},
-                    {label: 'SALES', name: 'totalSales', index: 'totalSales', width: 80, align: 'center'},
-                    {label: 'TC', name: 'tc', index: 'tc', width: 50, align: 'center'},
-                    {label: 'TPLH', name: 'tplh', index: 'tplh', width: 80, align: 'center'},
-                    {label: 'SPMH', name: 'spmh', index: 'spmh', width: 80, align: 'center'},
-                    {label: '外出總時間', name: 'totalPickupReturn', index: 'totalPickupReturn', width: 80, align: 'center'},
-                    {label: '平均外送距離', name: 'avgDistance', width: 80, align: 'center'},
+                    {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center'},
+                    {label: label_tc, name: 'tc', index: 'tc', width: 50, align: 'center'},
+                    {label: label_tplh, name: 'tplh', index: 'tplh', width: 80, align: 'center'},
+                    {label: label_spmh, name: 'spmh', index: 'spmh', width: 80, align: 'center'},
+                    {label: label_total_time, name: 'totalPickupReturn', index: 'totalPickupReturn', width: 80, align: 'center'},
+                    {label: label_average_distance, name: 'avgDistance', width: 80, align: 'center'},
                 ],
                 width: 'auto',
                 height: 700,
@@ -114,9 +114,9 @@ function getStoreStatisticsByDate() {
             $("#jqGrid").jqGrid('setGroupHeaders', {
                 useColSpanStyle: true,
                 groupHeaders:[
-                    {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: '平均時間'},
-                    {startColumnName: 'min30Below', numberOfColumns: 6, titleText: 'DELIVERY 達成率'},
-                    {startColumnName: 'totalSales', numberOfColumns: 6, titleText: '業績及生產力'}
+                    {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: label_average_time},
+                    {startColumnName: 'min30Below', numberOfColumns: 6, titleText: label_percent_completed},
+                    {startColumnName: 'totalSales', numberOfColumns: 6, titleText: label_productivity}
                 ]
             });
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
