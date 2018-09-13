@@ -8,7 +8,7 @@
         <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
         <div class="search_box">
             <div class="left">
-                <span class="lbl" style="font-size: 15px; font-weight: bold; color:black">時間分析頁面</span>
+                <span class="lbl" th:text="${#messages.msg('statistics.1st.title')}" style="font-size: 15px; font-weight: bold; color:black" />
             </div>
             <div class="right">
                 <input type="hidden" name="startDate"/>
@@ -154,6 +154,16 @@
 <!-- //컨텐츠 영역 -->
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
+    var label_order_number = /*[[#{statistics.1st.label.order.number}]]*/ 'label_order_number';
+    var label_order_date = /*[[#{statistics.1st.label.order.date}]]*/ 'label_order_date';
+    var label_order_in_store_time = /*[[#{statistics.1st.label.order.in.store.time}]]*/ 'label_order_in_store_time';
+    var label_order_delivery_time = /*[[#{statistics.1st.label.order.delivery.time}]]*/ 'label_order_delivery_time';
+    var label_order_completed_time = /*[[#{statistics.1st.label.order.completed.time}]]*/ 'label_order_completed_time';
+    var label_order_return_time = /*[[#{statistics.1st.label.order.return.time}]]*/ 'label_order_return_time';
+    var label_order_out_time = /*[[#{statistics.1st.label.order.out.time}]]*/ 'label_order_out_time';
+    var label_order_total_time = /*[[#{statistics.1st.label.order.total.time}]]*/ 'label_order_total_time';
+    var label_order_distance = /*[[#{statistics.1st.label.order.distance}]]*/ 'label_order_distance';
+
     var status_new = /*[[#{status.new}]]*/ 'status_new';
     var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
     var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';

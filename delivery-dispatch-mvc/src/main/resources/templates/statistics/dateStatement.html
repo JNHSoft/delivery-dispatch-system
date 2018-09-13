@@ -8,7 +8,7 @@
         <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
         <div class="search_box">
             <div class="left">
-                <span class="lbl" style="font-size: 15px; font-weight: bold; color:black">統計頁面</span>
+                <span class="lbl" th:text="${#messages.msg('statistics.2nd.title')}" style="font-size: 15px; font-weight: bold; color:black" />
             </div>
             <div class="right">
                 <input type="hidden" name="startDate"/>
