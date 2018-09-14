@@ -35,9 +35,10 @@
 						<li>
 							<strong th:text="${#messages.msg('order.assign.max')}" />
 							<div>
-								<select name="assignmentLimit" class="select">
+								<select class="select" id="assignmentLimit">
 									<option th:each="n:${#numbers.sequence(1, 10)}" th:value="${n}" th:text="${n}" th:selected="${n} == ${adminInfo.assignmentLimit}" />
 								</select>
+								<input style="width: 20px !important;" id="spinner" name="value" th:value="${adminInfo.assignmentLimit}"/>
 								<span th:text="${#messages.msg('order.assign.count.label')}" />
 							</div>
 						</li>

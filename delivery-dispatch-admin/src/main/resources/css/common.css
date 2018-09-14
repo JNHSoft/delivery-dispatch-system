@@ -282,6 +282,7 @@ span.inp_file + span.inp_file{margin-top:0;margin-left:20px;}
 .inp_spinner .btn:hover, .inp_spinner .btn:focus{background:#eb1c23;}
 .inp_spinner .btn .fa{vertical-align:middle;height:20px;}
 
+.ui-button-icon-only .ui-icon{margin-left: 0px;}
  /* 버튼 */
 .button_box{padding:14px 10px;border:1px solid #d9d9d9;text-align:center;background:#fafbfd;}
 .button_box:after{content:'';display:block;clear:both;}

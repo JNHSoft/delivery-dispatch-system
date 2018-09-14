@@ -187,12 +187,29 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
             $(this).closest('tr').find('button[name="assignedRejectSave"]').html(group_mod);
         }
     });
-    
-    
-    
-    
-    
-    
+    if(map_region){
+        if(map_region=="tw"){
+            $('#spinner').remove();
+            $('#assignmentLimit').attr('name', 'assignmentLimit');
+        }else{
+            $('#assignmentLimit').remove();
+            $('#spinner').attr('name', 'assignmentLimit');
+        }
+    }
+
+
+    $("#spinner").spinner({
+        spin: function(event, ui) {
+            if (ui.value > 50) {
+                $(this).spinner( "value", 1 );
+                return false;
+            } else if ( ui.value < 1 ) {
+                $(this).spinner( "value", 50 );
+                return false;
+            }
+        }
+    });
+
 });
 
 // 서드 파티 추가
