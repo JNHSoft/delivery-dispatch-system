@@ -51,6 +51,12 @@
 			<result property="assignmentLimit" column="assignment_limit" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
 		</association>
+
+		<association property="thirdParty" column="thirdParty" javaType="kr.co.cntt.core.model.thirdParty.ThirdParty">
+			<result property="id" column="third_party_id" />
+			<result property="name" column="third_party_name" />
+		</association>
+
     </resultMap>
 
 
@@ -99,6 +105,12 @@
 			<result property="address" column="store_address" />
 			<result property="detailAddress" column="store_detail_address" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
+		</association>
+
+
+		<association property="thirdParty" column="thirdParty" javaType="kr.co.cntt.core.model.thirdParty.ThirdParty">
+			<result property="id" column="third_party_id" />
+			<result property="name" column="third_party_name" />
 		</association>
 	</resultMap>
 
@@ -210,6 +222,10 @@
 			, D.store_name AS store_real_name
 			, D.latitude AS store_latitude
 			, D.longitude AS store_longitude
+
+			, E.id AS third_party_id
+			, E.name AS third_party_name
+
 -- 			, @RNUM := @RNUM + 1 AS RNUM
 		FROM TB_ORDER AS A
         LEFT JOIN TB_RIDER AS B
@@ -218,7 +234,14 @@
         ON A.store_id = C.store_id
 		LEFT JOIN TB_STORE AS D
 		ON A.store_id = D.id
+
+		LEFT JOIN TB_THIRD_PARTY AS E
+		ON A.third_party_id = E.id
+
+
 -- 		, (SELECT @RNUM := 0) E
+
+
 		WHERE
 			<choose>
 				<when test="currentDatetime != null and currentDatetime != ''">
@@ -300,6 +323,10 @@
 			, D.longitude AS store_longitude
 			, D.address AS store_address
 			, D.detail_address AS store_detail_address
+
+			, E.id AS third_party_id
+			, E.name AS third_party_name
+
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_RIDER AS B
 		ON A.rider_id = B.id
@@ -307,6 +334,10 @@
 		ON A.store_id = C.store_id
 		LEFT JOIN TB_STORE AS D
 		ON A.store_id = D.id
+
+		LEFT JOIN TB_THIRD_PARTY AS E
+		ON A.third_party_id = E.id
+
 		WHERE A.reg_order_id = #{id}
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
@@ -438,9 +469,16 @@
 			<if test="completeXy != null and completeXy != ''">
 				, A.complete_xy = #{completeXy}
 			</if>
+
 			<if test="returnDatetime != null and returnDatetime != ''">
 				, A.return_datetime = now()
 			</if>
+
+			<if test="thirdPartyId != null and thirdPartyId != ''">
+				, A.third_party_id = #{thirdPartyId}
+			</if>
+
+
 			, A.id = LAST_INSERT_ID(A.id)
 		WHERE A.reg_order_id = #{id}
 			<choose>

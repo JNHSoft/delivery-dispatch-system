@@ -503,7 +503,7 @@
 
 
     <!-- selectThirdParty -->
-    <select id="selectThirdParty" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty" resultType="kr.co.cntt.core.model.thirdParty.ThirdParty">
+    <select id="selectThirdParty" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.thirdParty.ThirdParty">
         SELECT
         A.created_datetime
         , A.modified_datetime
@@ -663,6 +663,8 @@
         AND status in (3)
         AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > created_datetime
         AND created_datetime > #{currentDatetime}
+
+        AND third_party_id IS NULL
     </select>
 
     <!-- 통계 조회 List2 -->
@@ -721,6 +723,7 @@
         AND A.status in (3)
         AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > A.created_datetime
         AND A.created_datetime > #{currentDatetime}
+        AND third_party_id IS NULL
         group by day_to_day;
     </select>
 
@@ -906,6 +909,7 @@
             AND status in (3)
             AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > created_datetime
             AND created_datetime > #{currentDatetime}
+            AND third_party_id IS NULL
     </select>
 
 </mapper>

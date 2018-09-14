@@ -2,6 +2,7 @@ package kr.co.deliverydispatch.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.alarm.Alarm;
+import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
@@ -120,6 +121,21 @@ public class SettingController {
         model.addAttribute("thirdParty", allThirdParty);
         return "/setting/setting_assign";
     }
+
+    // 서드파티 추가
+    @ResponseBody
+    @GetMapping("/getThirdPartyList")
+    public List<ThirdParty> getThirdPartyList(Common common){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        ThirdParty thirdParty = new ThirdParty();
+        thirdParty.setToken(storeInfo.getStoreAccessToken());
+        List<ThirdParty> allThirdParty = storeSettingService.getThirdParty(thirdParty);
+
+        return allThirdParty;
+    }
+
+
+
 
     @ResponseBody
     @PutMapping("/putAssign")

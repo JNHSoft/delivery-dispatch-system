@@ -129,10 +129,10 @@ public interface StoreMapper {
     /**
      * <p> 배정 서드파티 목록
      *
-     * @param thirdParty
+     * @param common
      * @return
      */
-    public List<ThirdParty> selectThirdParty(ThirdParty thirdParty);
+    public List<ThirdParty> selectThirdParty(Common common);
 
     /**
      * <p> 상점 위치 정보 조회

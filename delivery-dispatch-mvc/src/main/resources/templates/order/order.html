@@ -153,6 +153,7 @@
 											</select>
 										</div>
 									</li>
+
 									<li style="display: none" >
 										<span th:text="${#messages.msg('rider.phone')}" />
 										<div id="riderPhone"></div>
@@ -164,6 +165,19 @@
 										<span th:text="${#messages.msg('order.message')}" />
 										<div id="memo">-</div>
 									</li>
+
+									<li class="rider_area" id="thirdArea">
+										<span th:text="${#messages.msg('order.assign.third')}" />
+										<div>
+											<select name="" class="select h20" id="selectedThirdParty">
+												<!--<option value="">정보없음</option>-->
+											</select>
+										</div>
+									</li>
+									<li class="rider_btn_area" id="thirdAreaBtn">
+										<div class="f_right"><a href="#" class="button btn_gray w80" id="thirdPartyUpdate" onclick="javascript:thirdPartyUpdate()"><i class="fa fa-check" aria-hidden="true"></i><span th:text="${#messages.msg('btn.confirm')}"/></a></div>
+									</li>
+
 								</ul>
 							</div>
 							<div>

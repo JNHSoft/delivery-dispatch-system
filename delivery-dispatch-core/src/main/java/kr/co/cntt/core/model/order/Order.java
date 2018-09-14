@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.payment.Payment;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -87,5 +88,7 @@ public class Order extends Common implements Dto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String isAdmin;
 
+    // 서드파티 추가
+    private ThirdParty thirdParty;
 
 }
