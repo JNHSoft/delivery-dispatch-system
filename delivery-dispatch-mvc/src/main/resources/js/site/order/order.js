@@ -442,8 +442,6 @@ function getOrderList(statusArray, storeId) {
         },
         dataType: 'json',
         success: function (data) {
-            console.log("lllliiiiiiiiiiiiissssssssssssttttttttttttttttttt");
-            console.log(data);
             var i = 1;
             currentOrderList = data;
             for (var key in data) {
@@ -607,7 +605,7 @@ function getOrderList(statusArray, storeId) {
                 width: 'auto',
                 autowidth: true,
                 colModel: [
-                    {label: 'No', name: 'No', width: 25, key: true, align: 'center'},
+                    {label:order_number, name:'No', width:25, key:true, align:'center'},
                     {label: order_reg_order_id, name: 'reg_order_id', width: 80, align: 'center'},
                     {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden: true},
                     {label: order_status, name: 'state', width: 80, align: 'center'},
