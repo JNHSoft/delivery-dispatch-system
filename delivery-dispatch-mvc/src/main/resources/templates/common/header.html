@@ -31,8 +31,8 @@
 								<a href="/statisticsByOrder" class="1depth"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong th:text="${#messages.msg('gnb.statistics')}" /></a>
 								<dl>
 									<dt>하위메뉴</dt>
-									<dd><a href="/statisticsByOrder">時間分析頁面</a></dd>
-									<dd><a href="/statisticsByDate">統計頁面</a></dd>
+									<dd><a href="/statisticsByOrder" th:text="${#messages.msg('statistics.1st.title')}" /></dd>
+									<dd><a href="/statisticsByDate" th:text="${#messages.msg('statistics.2nd.title')}" /></dd>
 									<dd><a href="/statisticsByInterval" th:text="${#messages.msg('statistics.3rd.title')}" /></dd>
 								</dl>
 							</li>

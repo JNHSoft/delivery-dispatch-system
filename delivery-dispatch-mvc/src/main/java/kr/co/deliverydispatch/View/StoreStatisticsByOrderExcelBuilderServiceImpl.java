@@ -1,7 +1,6 @@
 package kr.co.deliverydispatch.View;
 
 import kr.co.cntt.core.model.order.Order;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -19,7 +18,10 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component("StoreStatisticsByOrderExcelBuilderServiceImpl")
@@ -92,47 +94,47 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
 
             sheet.setColumnWidth(colNum, 15*256);
             Cell addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Order 號碼");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.number",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("訂單日期");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.date",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("留店時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.in.store.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("外送時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.delivery.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("外送達成時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.completed.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("回店所需時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.return.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("外出時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.out.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("完成整張外送時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.total.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("距離");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.distance",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             rowNum++;

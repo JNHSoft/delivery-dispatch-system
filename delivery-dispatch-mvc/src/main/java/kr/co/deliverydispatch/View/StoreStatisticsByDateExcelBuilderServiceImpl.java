@@ -1,10 +1,8 @@
 package kr.co.deliverydispatch.View;
 
 import kr.co.cntt.core.model.statistic.ByDate;
-import net.sf.jsqlparser.expression.LongValue;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Component("StoreStatisticsByDateExcelBuilderServiceImpl")
 public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
@@ -92,18 +92,18 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 15*256);
             Cell addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("STORE");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.store",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("日期");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.date",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 6개
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("平均時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.average.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
             //
             addTitle = titleRow.createCell(colNum++);
@@ -123,7 +123,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("DELIVERY 達成率");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.percent.completed",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             //
@@ -144,7 +144,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("業績及生產力");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.productivity",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             //
@@ -170,32 +170,32 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("留店\n時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.in.store.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("外送\n時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.delivery.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("外送\n達成時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.completed.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("回店\n所需時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.return.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("外出\n時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.out.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("完成\n整張外送時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.total.delivery.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
@@ -230,32 +230,32 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("SALES");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.sales",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("TC");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.tc",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("TPLH");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.tplh",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("SPMH");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.spmh",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("外出\n總時間");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.total.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("平均\n外送距離");
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.average.distance",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
         }
