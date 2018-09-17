@@ -468,8 +468,8 @@
 		<if test="returnDatetime != null and returnDatetime != ''">
 			, return_datetime = now()
 		</if>
-		<if test="thirdPartyId != null and thirdPartyId != ''">
-			, third_party_id = #{thirdPartyId}
+		<if test="thirdParty != null and thirdParty != ''">
+			, third_party_id = #{thirdParty.id}
 		</if>
 		, id = LAST_INSERT_ID(id)
 		<choose>

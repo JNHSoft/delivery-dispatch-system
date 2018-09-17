@@ -362,7 +362,7 @@ function getMyRiderList(orderDetailData) {
             marker.setPosition({lat: parseFloat(orderDetailData.latitude), lng: parseFloat(orderDetailData.longitude)});
             $('.state_wrap').addClass('on');
 
-            getThirdPartyList(orderDetailData);
+            // getThirdPartyList(orderDetailData);
 
         }
 
@@ -378,24 +378,24 @@ function getThirdPartyList(orderDetailData) {
         data: {},
         success: function (data) {
             var thirdPartyList = my_store.thirdParty.split('|');
-            if(my_store.thirdParty){
+            if(!my_store.thirdParty){
                 $('#thirdArea').css('display', 'none');
                 $('#thirdAreaBtn').css('display', 'none');
-            } else{
-            for (var key in data) {
-                if (data.hasOwnProperty(key)) {
-                    for (var thirdParty in thirdPartyList) {
-                        if (thirdPartyList[thirdParty] == data[key].id) {
-                            html += '<option value="' + data[key].id + '">' + data[key].name + '</option>';
+            }else{
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        for (var thirdParty in thirdPartyList) {
+                            if (thirdPartyList[thirdParty] == data[key].id) {
+                                html += '<option value="' + data[key].id + '">' + data[key].name + '</option>';
+                            }
                         }
                     }
                 }
             }
-            }
             $('#selectedThirdParty').html(html);
-                if(orderDetailData.thirdParty){
-                    $('#selectedThirdParty').val(orderDetailData.thirdParty.id).prop("selected", true);
-                }
+            if(orderDetailData.thirdParty){
+                $('#selectedThirdParty').val(orderDetailData.thirdParty.id).prop("selected", true);
+            }
         }
     });
 }
@@ -769,7 +769,7 @@ function putAssignedAdvance() {
     if ($('#combinedChk').prop("checked")) {
         combinedOrderId = $('#selectCombined').val();
     }
-    var firstTime = new Date().getTime();
+    // var firstTime = new Date().getTime();
     $.ajax({
         url: '/putAssignedAdvance',
         type: 'put',
@@ -788,7 +788,7 @@ function putAssignedAdvance() {
                 var storeId = $('#orderMyStoreChk').val();
                 getOrderList(statusArray, storeId);
             }
-            console.log(new Date().getTime() - firstTime);
+            // console.log(new Date().getTime() - firstTime);
         }
     });
 }
