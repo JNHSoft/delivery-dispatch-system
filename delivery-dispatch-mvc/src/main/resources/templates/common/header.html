@@ -16,6 +16,14 @@
 						<div class="clock"></div>
 					</div>
 					<div class="head_info">
+						<select id="selectLang" class="select" style="height: 20px; font-size: 11px" onchange="window.open(value,'_self')">
+							<option th:text="${#messages.msg('gnb.select.language')}" />
+							<option id="langHK" th:text="${#messages.msg('gnb.language.hk')}" value="?lang=zh_HK"/>
+							<option id="langTW" th:text="${#messages.msg('gnb.language.tw')}" value="?lang=zh_TW"/>
+							<option id="langUS_HK" th:text="${#messages.msg('gnb.language.us')}" value="?lang=en_US"/>
+							<option id="langUS_TW" th:text="${#messages.msg('gnb.language.us')}" value="?lang=en_US"/>
+							<option id="langKR" th:text="${#messages.msg('gnb.language.kr')}" value="?lang=ko_KR"/>
+						</select>
 						<a href="/setting-notice" class="head_notice" id="notice_alarm" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
 						<a href="/setting-account" class="user_id"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span id="myStoreName"/></a>
 						<a href="#" id="logout" class="button btn_gray h20" th:text="${#messages.msg('gnb.logout')}" />

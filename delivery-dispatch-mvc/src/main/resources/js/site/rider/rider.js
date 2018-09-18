@@ -88,7 +88,7 @@ function riderAlarmMessage(data) {
     if(data.match('rider_')=='rider_'){
         getRiderList();
         if(map_region){
-            if(map_region=="hk"){
+            if(map_region!="tw"){
                 footerRiders();
             }
         }
