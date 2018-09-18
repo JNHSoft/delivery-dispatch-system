@@ -9,6 +9,7 @@ import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreStatementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +41,9 @@ public class StatisticsController {
     @Autowired
     public StatisticsController(StoreStatementService storeStatementService) { this.storeStatementService = storeStatementService; }
 
+    @Value("${spring.mvc.locale}")
+    private Locale regionLocale;
+
     /**
      * 통계 페이지
      *
@@ -50,6 +55,7 @@ public class StatisticsController {
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
+        model.addAttribute("regionLocale", regionLocale);
         return "/statistics/orderStatement";
     }
 
@@ -59,6 +65,7 @@ public class StatisticsController {
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
+        model.addAttribute("regionLocale", regionLocale);
         return "/statistics/dateStatement";
     }
 
@@ -68,6 +75,7 @@ public class StatisticsController {
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
+        model.addAttribute("regionLocale", regionLocale);
         return "/statistics/interval";
     }
 

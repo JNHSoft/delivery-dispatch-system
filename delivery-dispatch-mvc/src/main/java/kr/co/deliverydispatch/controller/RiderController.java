@@ -14,12 +14,14 @@ import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Controller
@@ -29,6 +31,9 @@ public class RiderController {
      * 객체 주입
      */
     private StoreRiderService storeRiderService;
+
+    @Value("${spring.mvc.locale}")
+    private Locale regionLocale;
 
     @Autowired
     public RiderController(StoreRiderService storeRiderService) { this.storeRiderService = storeRiderService; }
@@ -44,6 +49,7 @@ public class RiderController {
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeRiderService.getStoreInfo(store);
         model.addAttribute("store", myStore);
+        model.addAttribute("regionLocale", regionLocale);
         return "/rider/rider";
     }
 
