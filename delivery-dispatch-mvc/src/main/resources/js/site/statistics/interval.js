@@ -114,11 +114,10 @@ function getStoreStatisticsByInterval() {
                     {label: label_percentage, name: 'intervalCount1', width: 25, align: 'center'},
                     {label: label_cumulative, name: 'intervalCount2', width: 25, align: 'center'}
                 ],
-                width: 'auto',
-                height: 700,
+                height: 680,
                 autowidth: true,
                 rowNum: 20,
-                footerrow: true,
+                // footerrow: true,
                 pager: "#jqGridPager"
             });
 

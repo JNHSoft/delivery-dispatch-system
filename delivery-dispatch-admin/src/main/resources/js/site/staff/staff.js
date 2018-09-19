@@ -161,8 +161,7 @@ function getRiderList() {
                     {label:'서브그룹ID', name:'th12', width:60, hidden:'hidden'},
                     {label:'매장ID', name:'th13', width:60, hidden:'hidden'}
                 ],
-                width:'auto',
-                height:700,
+                height:680,
                 async : false,
                 autowidth:true,
                 rowNum:20,

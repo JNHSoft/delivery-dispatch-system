@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class Common implements Dto {
 
     private static final long serialVersionUID = -9062580392729458975L;

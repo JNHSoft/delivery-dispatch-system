@@ -263,11 +263,11 @@ function getStoreStatistics() {
                     {label: label_order_total_time, name: 'orderReturn1', index: 'orderReturn1', width: 80, align: 'center'},
                     {label: label_order_distance, name: 'distance', width: 80, align: 'center'},
                 ],
-                width: 'auto',
-                height: 700,
+                // minHeight: 400,
+                height: 680,
                 autowidth: true,
                 rowNum: 20,
-                footerrow: true,
+                // footerrow: true,
                 pager: "#jqGridPager",
                 ondblClickRow: function (rowid, icol, cellcontent, e) {
                     let rowData = jQuery(this).getRowData(rowid);

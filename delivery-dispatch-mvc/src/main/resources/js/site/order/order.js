@@ -602,8 +602,6 @@ function getOrderList(statusArray, storeId) {
             $("#jqGrid").jqGrid({
                 datatype: "local",
                 data: mydata,
-                width: 'auto',
-                autowidth: true,
                 colModel: [
                     {label:order_number, name:'No', width:25, key:true, align:'center'},
                     {label: order_reg_order_id, name: 'reg_order_id', width: 80, align: 'center'},
@@ -624,7 +622,8 @@ function getOrderList(statusArray, storeId) {
                     {label: rider_name, name: 'rider', width: 80, align: 'center'},
                     {label: order_assigned_advance, name: 'button', width: 80, align: 'center'}
                 ],
-                height: 700,
+                height: 680,
+                autowidth: true,
                 rowNum: 20,
                 pager: "#jqGridPager",
                 ondblClickRow: function (rowid, icol, cellcontent, e) {

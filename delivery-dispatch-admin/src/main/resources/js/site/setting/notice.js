@@ -124,7 +124,6 @@ function getNoticeList() {
                             {label: notice_created, name: 'date', width: 100, align: 'center'},
                             {label: notice_confirmed_check, name: 'check', width: 100, align: 'center'}
                         ],
-                        width: 'auto',
                         height: 520,
                         autowidth: true,
                         rowNum: 20,

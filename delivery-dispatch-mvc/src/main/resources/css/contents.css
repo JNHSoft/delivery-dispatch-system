@@ -167,8 +167,8 @@
 .state_detail .btn{overflow:hidden;padding:3px;background:#f6f6f6;border-top:1px solid #ddd;}
 .state_wrap .btn_close{display:none;position:absolute;top:6px;left:-38px;width:37px;line-height:37px;border:1px solid #ddd;font-size:16px;text-align:center;background:#fff;z-index:1;}
 .state_wrap.on .btn_close{display:block;}
-.state_wrap .grid_area {float:left; width:39%}
-.state_wrap .chart_area {float:right; width:59%;background:#fff;}
+.state_wrap .grid_area {float:left; width:40%}
+.state_wrap .chart_area {float:right; width:58%;background:#fff;}
 
 .ic_txt{font-size:10px;display:inline-block;border:1px solid #525252;background:#fff;border-radius:5px;color:#525252;padding:1px 3px;font-style:normal;}
 .ic_txt.ic_red{color:#f94817;border-color:#f94817;}
