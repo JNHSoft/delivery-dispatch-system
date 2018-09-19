@@ -166,7 +166,7 @@
 										<div id="memo">-</div>
 									</li>
 
-									<!--<li class="rider_area" id="thirdArea">
+									<li class="rider_area" id="thirdArea">
 										<span th:text="${#messages.msg('order.assign.third')}" />
 										<div>
 											<select name="" class="select h20" id="selectedThirdParty">
@@ -176,7 +176,7 @@
 									</li>
 									<li class="rider_btn_area" id="thirdAreaBtn">
 										<div class="f_right"><a href="#" class="button btn_gray w80" id="thirdPartyUpdate" onclick="javascript:thirdPartyUpdate()"><i class="fa fa-check" aria-hidden="true"></i><span th:text="${#messages.msg('btn.confirm')}"/></a></div>
-									</li>-->
+									</li>
 
 								</ul>
 							</div>
@@ -261,6 +261,7 @@
         var order_confirm_canceled = /*[[#{order.confirm.canceled}]]*/ 'order_confirm_canceled';
         var order_confirm_assigned = /*[[#{order.confirm.assigned}]]*/ 'order_confirm_assigned';
         var alert_order_assign_max = /*[[#{alert.order.assign.max}]]*/ 'alert_order_assign_max';
+        var order_confirm_thirdparty_status = /*[[#{order.confirm.thirdparty.status}]]*/ 'order_confirm_thirdparty_status';
         /*]]>*/
 	</script>
 </html>

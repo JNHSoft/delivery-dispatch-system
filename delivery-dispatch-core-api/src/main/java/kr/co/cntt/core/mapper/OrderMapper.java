@@ -155,4 +155,21 @@ public interface OrderMapper {
     public int selectCountOderAdmit(Order order);
 
 
+    /**
+     * <p> 배정 서드파티 업데이트
+     *
+     * @param order
+     * @return
+     */
+    public int updateOrderThirdParty(Order order);
+
+
+    /**
+     * <p> 서드파티  오더 상태확인
+     *
+     * @param order
+     * @return
+     */
+    public int selectOrderIsThirdPartyStatus(Order order);
+
 }

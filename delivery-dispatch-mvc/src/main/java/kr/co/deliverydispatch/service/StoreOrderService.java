@@ -67,6 +67,16 @@ public interface StoreOrderService {
      */
     public int putOrderInfo(Order order);
 
+
+    /**
+     * <p> updateThirdParty 추가
+     *
+     * @param order
+     * @return int
+     */
+    public int putOrderThirdParty(Order order);
+
+
     /**
      * <p> putOrderCanceled
      *

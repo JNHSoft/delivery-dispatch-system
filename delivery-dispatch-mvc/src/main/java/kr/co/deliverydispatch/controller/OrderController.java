@@ -7,11 +7,13 @@ import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
 import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -72,6 +74,29 @@ public class OrderController {
         Order order = storeOrderService.getOrderInfo(common);
         return order;
     }
+
+    @ResponseBody
+    @PutMapping("/putOrderThirdParty")
+    @CnttMethodDescription("서드파티 업데이트")
+    public boolean putOrderThirdParty(@RequestBody Order order){
+
+        log.info("서드파티 업데이트!!!!!!!!!!!!!!!");
+        log.info("order@@@@@@@@@@@@@@"+order);
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        order.setToken(storeInfo.getStoreAccessToken());
+
+
+
+
+        if(order.getStatus().equals("0") || order.getStatus().equals("") || order.getStatus().equals("5")){
+            storeOrderService.putOrderThirdParty(order);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 
     @ResponseBody
     @PutMapping("/putAssignedAdvanceFirst")

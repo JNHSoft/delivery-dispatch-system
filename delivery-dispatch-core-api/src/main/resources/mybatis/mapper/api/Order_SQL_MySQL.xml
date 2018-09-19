@@ -360,6 +360,42 @@
 			</choose>
 	</select>
 
+	<!-- updateOrderThirdParty -->
+	<update id="updateOrderThirdParty" parameterType="kr.co.cntt.core.model.order.Order">
+		UPDATE TB_ORDER
+		SET
+		modified_datetime = now()
+
+		<if test="thirdParty != null ">
+			, third_party_id = #{thirdParty.id}
+			, status = 3
+		</if>
+
+
+		<choose>
+			<when test="role != null and role == 'ROLE_SYSTEM'">
+				WHERE reg_order_id = #{id}
+			</when>
+			<when test="role != null and role == 'ROLE_STORE'">
+				WHERE reg_order_id = #{id}
+				AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+			</when>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				WHERE reg_order_id = #{id}
+				<if test="status eq 1 or status eq 2">
+					AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
+				</if>
+			</when>
+			<otherwise>
+				WHERE id IS NULL
+			</otherwise>
+		</choose>
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</update>
+
+
 
 	<!-- updateOrder -->
 	<update id="updateOrder" parameterType="kr.co.cntt.core.model.order.Order">
@@ -515,6 +551,17 @@
 		WHERE reg_order_id=#{id}
 			AND status in (3,4)
 	</select>
+
+	<!-- selectOrderIsThirdPartyStatus -->
+	<select id="selectOrderIsThirdPartyStatus" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM TB_ORDER
+		WHERE reg_order_id=#{id}
+		AND status in (1,2,4)
+	</select>
+
+
 
 	<!-- RegOrderIDCheckt reg 오더 중복 체크  -->
 	<select id="selectRegOrderIdCheck" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">

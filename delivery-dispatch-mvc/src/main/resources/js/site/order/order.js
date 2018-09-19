@@ -240,6 +240,8 @@ function getOrderDetail(orderId) {
         },
         dataType: 'json',
         success: function (data) {
+            console.log("deeeeeeeeeeettttttttaaaaaaaaaaaaiiiiiiiilllllllllll");
+            console.log(data);
             selectedOriginOrder = data;
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
@@ -297,8 +299,8 @@ function getOrderDetail(orderId) {
                 $('input[name=combinedChk]:checkbox').removeAttr("checked");
                 $('#selectCombined').attr("disabled", true);
             }
-
             getMyRiderList(data);
+
 
 
         }/*,
@@ -362,8 +364,7 @@ function getMyRiderList(orderDetailData) {
             marker.setPosition({lat: parseFloat(orderDetailData.latitude), lng: parseFloat(orderDetailData.longitude)});
             $('.state_wrap').addClass('on');
 
-            // getThirdPartyList(orderDetailData);
-
+            getThirdPartyList(orderDetailData);
         }
 
     });
@@ -377,6 +378,8 @@ function getThirdPartyList(orderDetailData) {
         type: 'get',
         data: {},
         success: function (data) {
+            console.log("tttttttttttttttttttttttttttttttttttttttt");
+            console.log(orderDetailData);
             var thirdPartyList = my_store.thirdParty.split('|');
             if(!my_store.thirdParty){
                 $('#thirdArea').css('display', 'none');
@@ -400,6 +403,47 @@ function getThirdPartyList(orderDetailData) {
     });
 }
 
+
+// 서드파티 업데이트
+function thirdPartyUpdate() {
+    if(selectedOriginOrder.status == 1 || selectedOriginOrder.status == 2 || selectedOriginOrder.status == 4){
+        alert(order_confirm_thirdparty_status);
+        return;
+    }
+
+    var combinedOrderId = "";
+    if ($('#combinedChk').prop("checked")) {
+        combinedOrderId = $('#selectCombined').val();
+    }
+
+    var regOrderId = selectedOriginOrder.regOrderId;
+    var thirdPartyId = $('#selectedThirdParty').val();
+    var orderStatus = selectedOriginOrder.status;
+
+    $.ajax({
+        url: "/putOrderThirdParty",
+        type: 'put',
+        data:JSON.stringify({
+            id: regOrderId,
+            status: orderStatus,
+            combinedOrderId : combinedOrderId,
+            thirdParty: {id:thirdPartyId}
+        }),
+        contentType:'application/json',
+        dataType: 'json',
+        success: function (data) {
+            console.log("sssssssssssssssssssssssssssssssss");
+            getOrderDetail(selectedOriginOrder.regOrderId);
+            var statusArray = $('#statusArray').val().split(",");
+            var storeId = $('#orderMyStoreChk').val();
+            getOrderList(statusArray, storeId);
+
+        }
+    });
+    
+    
+    
+}
 
 function getNewOrderList(statusNewArray) {
     // var shtml = "<option value=0>-</option>";
