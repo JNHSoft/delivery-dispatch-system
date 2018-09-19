@@ -357,6 +357,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             if(tokens.size() > 0){
                 Notification noti = new Notification();
                 noti.setType(Notification.NOTI.ORDER_ASSIGN);
+                noti.setRider_id(Integer.valueOf(order.getRiderId()));
                 CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
                 checkFcmResponse(pushNotification);
             }
