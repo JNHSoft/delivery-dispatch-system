@@ -34,11 +34,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Slf4j
 @Controller
 public class SettingController {
+
+    @Value("${spring.mvc.locale}")
+    private Locale regionLocale;
 
     @Value("${api.upload.path.notice}")
     private String noticeFileUploadPath;
@@ -64,6 +68,7 @@ public class SettingController {
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeSettingService.getStoreInfo(store);
         model.addAttribute("store", myStore);
+        model.addAttribute("regionLocale", regionLocale);
         return "/setting/setting_account";
     }
 
@@ -119,6 +124,7 @@ public class SettingController {
         List<ThirdParty> allThirdParty= storeSettingService.getThirdParty(thirdParty);
         model.addAttribute("store", myStore);
         model.addAttribute("thirdParty", allThirdParty);
+        model.addAttribute("regionLocale", regionLocale);
         return "/setting/setting_assign";
     }
 
@@ -160,6 +166,7 @@ public class SettingController {
         List<Rider> myRiderList = storeSettingService.getMyStoreRiderRels(store);
         model.addAttribute("riderList", myRiderList);
         model.addAttribute("store", myStore);
+        model.addAttribute("regionLocale", regionLocale);
         return "/setting/setting_rider";
     }
 
@@ -221,6 +228,7 @@ public class SettingController {
         model.addAttribute("assignCancelAlarm", assignCancelAlarm);
         model.addAttribute("completeAlarm", completeAlarm);
         model.addAttribute("cancelAlarm", cancelAlarm);
+        model.addAttribute("regionLocale", regionLocale);
         return "/setting/setting_alarm";
     }
     @ResponseBody
@@ -244,6 +252,7 @@ public class SettingController {
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeNoticeService.getStoreInfo(store);
         model.addAttribute("store", myStore);
+        model.addAttribute("regionLocale", regionLocale);
         return "/setting/setting_notice";
     }
 

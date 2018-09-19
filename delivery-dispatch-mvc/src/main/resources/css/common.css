@@ -68,8 +68,9 @@ body.hidden{overflow:hidden;}
 	.head_info{float:right;}
 	.head_info .user_id{display:inline-block;margin-right:10px;color:#000;}
 	.head_info .user_id .fa{margin-right:3px;font-size:16px;vertical-align:middle;}
+	.head_info .head_notice,
 	.head_info .head_notice + .user_id{margin-left:10px;padding-left:10px;border-left:1px solid #ddd;}
-	.head_notice{position:relative;}
+	.head_notice{position:relative;display:inline-block}
 	.head_notice.new:after{content:'';display:inline-block;position:absolute;right:-4px;top:2px;width:4px;height:4px;border-radius:50%;background:#f94817;vertical-align:top;}
 	#logo{width:180px;height:69px;float:left;text-align:center;}
 	#logo:before{content:'';display:inline-block;height:100%;vertical-align:middle;}
@@ -90,10 +91,10 @@ body.hidden{overflow:hidden;}
 	#gnb ul li > a:before{content:'';position:absolute;left:50%;bottom:0;width:0;height:3px;background:#2d8fe3;transition:all 0.5s ease;}
 	#gnb ul li.on > a{opacity:1;}
 	#gnb ul li.on > a:before{left:0;width:100%;}
-	#gnb ul li dl {display:none;position:absolute;top:65px;left:0;font-size:12px; width:320px; border:2px solid #67AEEB;padding:5px;z-index:10; background:#fff;text-align:center;}
+	#gnb ul li dl {display:none;position:absolute;top:70px;left:0;width:224px; box-sizing:border-box;font-size:12px; border:2px solid #67AEEB;padding:5px;z-index:10; background:#fff;text-align:center;}
 	#gnb ul li dl.on {display:block}
 	#gnb ul li dl dt {display:none;}
-	#gnb ul li dl dd {display:inline-block;}
+	#gnb ul li dl dd {margin:3px 0}
 	#gnb ul li dl dd a {padding: 0 10px;}
 	#gnb ul li dl dd a:hover {color:#67AEEB}
 

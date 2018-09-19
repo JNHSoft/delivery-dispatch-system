@@ -15,6 +15,7 @@ import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Controller
@@ -31,6 +33,9 @@ public class OrderController {
      * 객체 주입
      */
     private StoreOrderService storeOrderService;
+
+    @Value("${spring.mvc.locale}")
+    private Locale regionLocale;
 
     @Autowired
     public OrderController(StoreOrderService storeOrderService) { this.storeOrderService = storeOrderService; }
@@ -51,6 +56,7 @@ public class OrderController {
         List<Order> orderList = storeOrderService.getOrders(order);
         model.addAttribute("store", myStore);
         model.addAttribute("orderList", orderList);
+        model.addAttribute("regionLocale", regionLocale);
         return "/order/order";
     }
 

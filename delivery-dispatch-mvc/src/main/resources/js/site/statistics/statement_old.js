@@ -351,8 +351,7 @@ function getStoreStatistics() {
                     {label: order_reserved, name: 'time5', width: 80, align: 'center'},
                     {label: rider_name, name: 'rider', width: 80, align: 'center'}
                 ],
-                width: 'auto',
-                height: 700,
+                height: 680,
                 autowidth: true,
                 rowNum: 20,
                 pager: "#jqGridPager",

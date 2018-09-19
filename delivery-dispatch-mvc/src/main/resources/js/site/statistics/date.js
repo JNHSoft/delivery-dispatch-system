@@ -102,11 +102,11 @@ function getStoreStatisticsByDate() {
                     {label: label_total_time, name: 'totalPickupReturn', index: 'totalPickupReturn', width: 80, align: 'center'},
                     {label: label_average_distance, name: 'avgDistance', width: 80, align: 'center'},
                 ],
-                width: 'auto',
-                height: 700,
+                width: '100%',
+                height: 660,
                 autowidth: true,
                 rowNum: 20,
-                footerrow: true,
+                // footerrow: true,
                 pager: "#jqGridPager",
             });
 
@@ -153,7 +153,7 @@ function excelDownloadByDate(){
             loading.hide();
         },
         failCallback: function(responseHtml,url){
-            console.log(responseHtml);
+            // console.log(responseHtml);
             loading.hide();
         }
     })

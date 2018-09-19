@@ -3,6 +3,7 @@
 <meta charset="UTF-8" />
 	<!-- 헤더영역 -->
 	<header id="header" th:fragment="commonHeader">
+        <input id="tempLocale" hidden="hidden"/>
 		<div class="mobile_head">
 			<h2 class="head_tit"><img src="../resources/images/common/logo.png" alt="KFC" /></h2>
 			<a href="/setting-notice" id="notice_alarm_mobile" class="head_notice" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
@@ -16,13 +17,12 @@
 						<div class="clock"></div>
 					</div>
 					<div class="head_info">
-						<select id="selectLang" class="select" style="height: 20px; font-size: 11px" onchange="window.open(value,'_self')">
+						<select th:if="*{regionLocale} != null and *{regionLocale.toString()} neq zh_TW" id="selectLang" class="select" style="height: 20px; font-size: 11px" onchange="window.open(value,'_self')">
 							<option th:text="${#messages.msg('gnb.select.language')}" />
-							<option id="langHK" th:text="${#messages.msg('gnb.language.hk')}" value="?lang=zh_HK"/>
-							<option id="langTW" th:text="${#messages.msg('gnb.language.tw')}" value="?lang=zh_TW"/>
-							<option id="langUS_HK" th:text="${#messages.msg('gnb.language.us')}" value="?lang=en_US"/>
-							<option id="langUS_TW" th:text="${#messages.msg('gnb.language.us')}" value="?lang=en_US"/>
-							<option id="langKR" th:text="${#messages.msg('gnb.language.kr')}" value="?lang=ko_KR"/>
+							<option th:if="*{regionLocale.toString()} eq zh_HK or *{regionLocale.toString()} eq ko_KR" id="langHK" th:text="${#messages.msg('gnb.language.hk')}" value="?lang=zh_HK"/>
+							<option th:if="*{regionLocale.toString()} eq zh_TW or *{regionLocale.toString()} eq ko_KR" id="langTW" th:text="${#messages.msg('gnb.language.tw')}" value="?lang=zh_TW"/>
+							<option id="langUS" th:text="${#messages.msg('gnb.language.us')}" value="?lang=en_US"/>
+							<option th:if="*{regionLocale.toString()} eq ko_KR" id="langKR" th:text="${#messages.msg('gnb.language.kr')}" value="?lang=ko_KR"/>
 						</select>
 						<a href="/setting-notice" class="head_notice" id="notice_alarm" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
 						<a href="/setting-account" class="user_id"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span id="myStoreName"/></a>

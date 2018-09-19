@@ -71,8 +71,7 @@ function getNoticeList() {
                     {label: notice_created, name: 'date', width: 100, align: 'center'},
                     {label: notice_confirmed, name: 'check', width: 100, align: 'center'}
                 ],
-                width: 'auto',
-                height: 700,
+                height: 680,
                 autowidth: true,
                 rowNum: 20,
                 pager: '#jqGridPager',

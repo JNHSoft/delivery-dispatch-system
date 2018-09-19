@@ -24,10 +24,10 @@ $(document).ready(function() {
                 footerRiders();
             }else{
                 $("#footer_left").hide();
-                $("#selectLang").hide();
             }
         }
     }
+
 });
 
 function noticeAlarm() {

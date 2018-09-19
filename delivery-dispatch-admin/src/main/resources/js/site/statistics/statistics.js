@@ -459,8 +459,7 @@ function getStatisticsList() {
                     {label:'서브그룹ID', name:'th16', width:60, hidden:'hidden'},
                     {label:'매장ID', name:'th17', width:60, hidden:'hidden'}*/
                 ],
-                width: 'auto',
-                height: 700,
+                height: 680,
                 autowidth: true,
                 rowNum: 20,
                 pager: "#jqGridPager",
