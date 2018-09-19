@@ -86,12 +86,8 @@ public class OrderController {
     @CnttMethodDescription("서드파티 업데이트")
     public boolean putOrderThirdParty(@RequestBody Order order){
 
-        log.info("서드파티 업데이트!!!!!!!!!!!!!!!");
-        log.info("order@@@@@@@@@@@@@@"+order);
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
-
-
 
 
         if(order.getStatus().equals("0") || order.getStatus().equals("") || order.getStatus().equals("5")){

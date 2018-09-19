@@ -240,8 +240,6 @@ function getOrderDetail(orderId) {
         },
         dataType: 'json',
         success: function (data) {
-            console.log("deeeeeeeeeeettttttttaaaaaaaaaaaaiiiiiiiilllllllllll");
-            console.log(data);
             selectedOriginOrder = data;
             if (data.status == 0 || data.status == 5) {
                 $status = '<i class="ic_txt ic_green">' + status_new + '</i>';
@@ -378,8 +376,6 @@ function getThirdPartyList(orderDetailData) {
         type: 'get',
         data: {},
         success: function (data) {
-            console.log("tttttttttttttttttttttttttttttttttttttttt");
-            console.log(orderDetailData);
             var thirdPartyList = my_store.thirdParty.split('|');
             if(!my_store.thirdParty){
                 $('#thirdArea').css('display', 'none');
@@ -432,7 +428,6 @@ function thirdPartyUpdate() {
         contentType:'application/json',
         dataType: 'json',
         success: function (data) {
-            console.log("sssssssssssssssssssssssssssssssss");
             getOrderDetail(selectedOriginOrder.regOrderId);
             var statusArray = $('#statusArray').val().split(",");
             var storeId = $('#orderMyStoreChk').val();
