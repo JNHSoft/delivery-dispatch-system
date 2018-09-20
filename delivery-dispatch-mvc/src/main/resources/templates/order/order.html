@@ -121,7 +121,7 @@
 									<li>
 										<span th:text="${#messages.msg('order.payment')}" />
 										<div>
-											<select name="" class="select h20" id="selectPaid" disabled="true">
+											<select name="" class="select h20" id="selectPaid" th:disabled="${regionLocale.toString().equals('zh_TW')?'true':'false'}">
 												<option value="0" th:text="${#messages.msg('order.payment.cash')}"/>
 												<option value="1" th:text="${#messages.msg('order.payment.card')}"/>
 												<option value="2" th:text="${#messages.msg('order.payment.prepayment')}"/>
