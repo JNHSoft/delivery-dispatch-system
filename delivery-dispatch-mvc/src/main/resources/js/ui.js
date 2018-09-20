@@ -21,7 +21,7 @@ $(window).resize(function() {
 });
 function layoutUI(){
 	if($('#contents').length > 0){
-		$(window).on('load resize',function(){
+		// $(window).on('load resize',function(){
 			var $winH = $(this).height(),
 				$con = $('#contents'),								
 				$headH = $con.offset().top,
@@ -30,11 +30,11 @@ function layoutUI(){
 			
 			$con.removeAttr('style');
 			var $conH = $con.outerHeight();
-				
+
 			if($height > $conH){
 				$con.css({'height':$height})
 			}
-		})		
+		// })
 	}
 
 	if($('.same-height').length > 0){
