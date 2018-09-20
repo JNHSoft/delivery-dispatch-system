@@ -405,6 +405,13 @@ function thirdPartyUpdate() {
     if(selectedOriginOrder.status == 1 || selectedOriginOrder.status == 2 || selectedOriginOrder.status == 4){
         alert(order_confirm_thirdparty_status);
         return;
+    }else if(selectedOriginOrder.status == 5){
+        alert(order_confirm_completed);
+        return;
+    }
+    var result = confirm(order_confirm_thirdparty);
+    if(!result){
+        return;
     }
 
     var combinedOrderId = "";
@@ -435,9 +442,6 @@ function thirdPartyUpdate() {
 
         }
     });
-    
-    
-    
 }
 
 function getNewOrderList(statusNewArray) {
