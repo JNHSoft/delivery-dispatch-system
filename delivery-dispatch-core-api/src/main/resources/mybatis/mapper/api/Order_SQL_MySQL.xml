@@ -683,7 +683,7 @@
 	</select>
 
 	<!-- selectForAssignOrders -->
-	<select id="selectForAssignOrders" resultMap="selectOrdersResult">
+	<select id="selectForAssignOrders" parameterType="java.util.HashMap" resultMap="selectOrdersResult">
 
 		SELECT A.id
 			, A.reg_order_id
@@ -712,9 +712,18 @@
             AND B.assignment_status=1
             AND (A.status = 0 OR A.status =5)
             AND A.created_datetime > CURRENT_DATE()
-			<![CDATA[
-			AND timestampdiff(minute, now(), A.reservation_datetime) <= 50
-			]]>
+			<choose>
+				<when test="locale eq 'zh_TW'">
+					<![CDATA[
+						AND timestampdiff(minute, now(), A.reservation_datetime) <= 30
+					]]>
+				</when>
+				<otherwise>
+					<![CDATA[
+						AND timestampdiff(minute, now(), A.reservation_datetime) <= 50
+					]]>
+				</otherwise>
+			</choose>
    			<!--AND (A.reservation_datetime IS NULL
 			OR (date_add(now(), interval 2 hour) > A.reservation_datetime))
             AND C.subgroup_id IS NOT NULL-->

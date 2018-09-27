@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p> kr.co.cntt.core.mapper </p>
@@ -113,7 +114,7 @@ public interface OrderMapper {
      * <p> 자동 배정 관련 주문 목록
      * @return
      */
-    public List<Order> selectForAssignOrders();
+    public List<Order> selectForAssignOrders(Map locale);
 
     /**
      * 주문 위치 정보 조회

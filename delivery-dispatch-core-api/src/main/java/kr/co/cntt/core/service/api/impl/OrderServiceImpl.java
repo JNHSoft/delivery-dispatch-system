@@ -76,9 +76,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         this.storeMapper = storeMapper;
         this.riderMapper = riderMapper;
     }
+    
     @Override
     public void autoAssignOrder() throws AppTrException {
-        List<Order> orderList = orderMapper.selectForAssignOrders();
+        Map<String, String> localeMap = new HashMap<>();
+        localeMap.put("locale", locale.toString());
+        List<Order> orderList = orderMapper.selectForAssignOrders(localeMap);
         for (Order order : orderList) {
             Map map = new HashMap();
             map.put("order", order);
@@ -1476,20 +1479,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             ret = this.putOrder(orderAssignCanceled);
         }
 
-        int orderDenyCount = orderMapper.selectOrderDenyCount(currentRider);
-        if (orderDenyCount > 1) {
-            currentRider.setWorking("2");
-            riderMapper.updateWorkingRider(currentRider);
+        if (!locale.toString().equals("zh_TW")) {
+            int orderDenyCount = orderMapper.selectOrderDenyCount(currentRider);
+            if (orderDenyCount > 1) {
+                currentRider.setWorking("2");
+                riderMapper.updateWorkingRider(currentRider);
 
-            // 해당 라이더한테만 푸쉬
-            Order pushOrder = new Order();
-            pushOrder.setRiderId(S_Rider.getId());
-            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(pushOrder);
-            if(tokens.size() > 0){
-                Notification noti = new Notification();
-                noti.setType(Notification.NOTI.RIDER_WORKING_OFF);
-                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                checkFcmResponse(pushNotification);
+                // 해당 라이더한테만 푸쉬
+                Order pushOrder = new Order();
+                pushOrder.setRiderId(S_Rider.getId());
+                ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderToken(pushOrder);
+                if(tokens.size() > 0){
+                    Notification noti = new Notification();
+                    noti.setType(Notification.NOTI.RIDER_WORKING_OFF);
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    checkFcmResponse(pushNotification);
+                }
             }
         }
 
