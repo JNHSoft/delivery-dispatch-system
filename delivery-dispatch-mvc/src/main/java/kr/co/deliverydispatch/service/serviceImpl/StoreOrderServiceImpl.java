@@ -174,19 +174,14 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
      */
     public int putOrderThirdParty(Order order){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
             order.setRole("ROLE_STORE");
         } else if (authentication.getAuthorities().toString().matches(".*ROLE_RIDER.*")) {
             order.setRole("ROLE_RIDER");
         }
         String tmpRegOrderId = order.getId();
-
         order.setId(null);
         Store S_Store = storeMapper.selectStoreInfo(order);
-
-        log.info("pppppppppppppppppppppppppppppppaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
         order.setId(tmpRegOrderId);
 
         // 오더상태값 가져오는 쿼리
@@ -200,29 +195,23 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             return 0;
         }
 
-
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             order.setId(order.getCombinedOrderId());
-
             int selectCombinedThirdPartyStatus = orderMapper.selectOrderIsThirdPartyStatus(order);
-
             if (selectCombinedThirdPartyStatus != 0){
                 return 0;
             }
             int combinedOrderStatusThirdParty = orderMapper.updateOrderThirdParty(order);
-
             if (combinedOrderStatusThirdParty == 0){
                 return 0;
             }
         }
         order.setId(tmpRegOrderId);
-
         if (S_Store.getSubGroup() != null){
-            redisService.setPublisher(Content.builder().type("order_assigned").id(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).subGroupId(S_Store.getSubGroup().getId()).build());
+            redisService.setPublisher(Content.builder().type("order_thirdparty").id(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).subGroupId(S_Store.getSubGroup().getId()).build());
         }else {
-            redisService.setPublisher(Content.builder().type("order_assigned").id(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).build());
+            redisService.setPublisher(Content.builder().type("order_thirdparty").id(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Store.getId()).build());
         }
-
         return orderStatusThirdParty;
     }
 

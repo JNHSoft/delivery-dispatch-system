@@ -371,7 +371,6 @@
 			, status = 3
 		</if>
 
-
 		<choose>
 			<when test="role != null and role == 'ROLE_SYSTEM'">
 				WHERE reg_order_id = #{id}
@@ -379,12 +378,6 @@
 			<when test="role != null and role == 'ROLE_STORE'">
 				WHERE reg_order_id = #{id}
 				AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-			</when>
-			<when test="role != null and role == 'ROLE_RIDER'">
-				WHERE reg_order_id = #{id}
-				<if test="status eq 1 or status eq 2">
-					AND rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})
-				</if>
 			</when>
 			<otherwise>
 				WHERE id IS NULL
@@ -558,7 +551,7 @@
 		COUNT(*)
 		FROM TB_ORDER
 		WHERE reg_order_id=#{id}
-		AND status in (1,2,4)
+		AND status in (1,2,3,4)
 	</select>
 
 

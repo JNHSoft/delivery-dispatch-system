@@ -83,22 +83,18 @@ public class OrderController {
 
     @ResponseBody
     @PutMapping("/putOrderThirdParty")
-    @CnttMethodDescription("서드파티 업데이트")
+    @CnttMethodDescription("서드파티 배정 및 주문완료")
     public boolean putOrderThirdParty(@RequestBody Order order){
-
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
 
-
-        if(order.getStatus().equals("0") || order.getStatus().equals("") || order.getStatus().equals("5")){
+        if(order.getStatus().equals("0") || order.getStatus().equals("5")){
             storeOrderService.putOrderThirdParty(order);
             return true;
         } else {
             return false;
         }
     }
-
-
 
     @ResponseBody
     @PutMapping("/putAssignedAdvanceFirst")
