@@ -1,29 +1,21 @@
 package kr.co.cntt.deliverydispatchadmin.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kr.co.cntt.core.mapper.AdminMapper;
-
+import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.util.MD5Encoder;
+import kr.co.cntt.core.util.ShaEncoder;
+import kr.co.cntt.deliverydispatchadmin.enums.SecurityEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import kr.co.cntt.deliverydispatchadmin.enums.SecurityEnum;
-
-import kr.co.cntt.core.model.admin.Admin;
-import kr.co.cntt.core.util.MD5Encoder;
-import kr.co.cntt.core.util.ShaEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>kr.co.cntt.deliverydispatchadmin.security;
@@ -85,7 +77,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             String adminAssignmentStatus = returnAdmin.getAssignmentStatus();
             String adminAccessToken = returnAdmin.getAccessToken();
 
-            String authLevel = "2"; // ADMIN
+            String authLevel = "1"; // ADMIN
             List<GrantedAuthority> roles = null;
             try {
                 roles = this.getAuthorization(authLevel);

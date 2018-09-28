@@ -14,17 +14,22 @@ public enum SecurityEnum {
      * <p>시스템(최고 관리자)
      * @author JIN
      */
-    SUPER("1", "ROLE_SUPER", "/store"),
+    SUPER("0", "ROLE_SUPER", "/order"),
     /**
      * <p>일반 관리자
      * @author JIN
      */
-    ADMIN("2", "ROLE_ADMIN", "/store"),
+    ADMIN("1", "ROLE_ADMIN", "/store"),
     /**
-     * <p>가맹점
+     * <p>상점
      * @author JIN
      */
-    FRANCHISE("3", "ROLE_FRANCHISE", "/store")
+    STORE("2", "ROLE_STORE", "/order"),
+    /**
+     * <p>라이더
+     * @author JIN
+     */
+    RIDER("3", "ROLE_RIDER", "/order")
     ;
     /**
      * <p>권한 레벨

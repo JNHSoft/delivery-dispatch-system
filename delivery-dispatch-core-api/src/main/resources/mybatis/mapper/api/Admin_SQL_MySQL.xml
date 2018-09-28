@@ -763,7 +763,6 @@
 		INSERT INTO TB_STORE (
 		created_datetime
 		, chat_user_id
-		, chatroom_id
 		, admin_id
 		, login_id
 		, login_pw
@@ -785,7 +784,6 @@
 		) VALUES (
 		now()
 		, #{chatUserId}
-		, #{chatRoomId}
 		, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		, #{loginId}
 		, #{loginPw}

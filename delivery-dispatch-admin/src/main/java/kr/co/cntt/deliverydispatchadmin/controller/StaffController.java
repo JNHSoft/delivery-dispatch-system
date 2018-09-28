@@ -274,7 +274,46 @@ public class StaffController {
         // group model 생성
         rider.setType("3");
         staffAdminService.insertChatUser(rider);
-        staffAdminService.insertChatRoom(rider);
+
+        int A_Rider = staffAdminService.insertRider(rider);
+        if(!storeId.equals("")){
+            Store store = new Store();
+            store.setToken(adminInfo.getAdminAccessToken());
+            store.setId(storeId);
+            Store storeInfo = staffAdminService.selectStoreInfo(store);
+            if (storeInfo.getGroup() != null){
+                Group group = new Group();
+                group.setId(storeInfo.getGroup().getId());
+                rider.setGroup(group);
+            }
+
+            // subgroup model 생성
+            SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
+            if (storeInfo.getSubGroup() != null){
+                subGroupRiderRel.setSubGroupId(storeInfo.getSubGroup().getId());
+                subGroupRiderRel.setGroupId(storeInfo.getGroup().getId());
+            }
+            subGroupRiderRel.setStoreId(storeId);
+
+            rider.setSubGroupRiderRel(subGroupRiderRel);
+
+            int A_Group = staffAdminService.insertSubGroupRiderRel(rider);
+        }
+
+        String riderSessionToken = tokenManager.getToken("3",loginId , loginPw);
+        riderSession.setAccessToken(riderSessionToken);
+        riderSession.setId(rider.getId());
+        riderSession.setLoginId(loginId);
+
+        staffAdminService.insertAdminRiderSession(riderSession);
+
+        if (A_Rider == 0) {
+            return "err";
+        } else {
+            return "ok";
+        }
+
+        /*staffAdminService.insertChatRoom(rider);
         if (rider.getChatUserId() != null && rider.getChatRoomId() != null) {
             staffAdminService.insertChatUserChatRoomRel(rider);
 
@@ -317,7 +356,7 @@ public class StaffController {
             }
         } else {
             return "err";
-        }
+        }*/
     }
 
     // 기사 등록시 매장 리스트 불러오기

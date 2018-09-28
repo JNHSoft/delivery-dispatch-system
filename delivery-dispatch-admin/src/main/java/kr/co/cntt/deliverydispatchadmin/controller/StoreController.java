@@ -310,70 +310,68 @@ public class StoreController {
     )
     {
 
-    // store Model 생성
-    Store store = new Store();
-    // ADMIN 정보
-    SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-    // token 부여
-    store.setToken(adminInfo.getAdminAccessToken());
+        // store Model 생성
+        Store store = new Store();
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        // token 부여
+        store.setToken(adminInfo.getAdminAccessToken());
 
-    log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-
-
-    Store storeSession = new Store();
+        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
 
-    MD5Encoder md5 = new MD5Encoder();
-    ShaEncoder sha = new ShaEncoder(512);
-
-    // param storeId
-    store.setLoginId(loginId);
-    store.setLoginPw(sha.encode(loginPw));
-    store.setCode(code);
-    store.setStoreName(storeName);
-    store.setStorePhone(storePhone);
-//    store.setName(name);
-//    store.setPhone(phone);
-    store.setAddress(address);
-    store.setDetailAddress(detailAddress);
-    store.setAssignmentStatus(assignmentStatus);
-
-    // group model 생성
-    Group group = new Group();
-    group.setId(groupId);
-
-    store.setGroup(group);
-
-    // subgroup model 생성
-    SubGroupStoreRel subGroupRel = new SubGroupStoreRel();
-    subGroupRel.setSubGroupId(subGroupId);
-    subGroupRel.setGroupId(groupId);
-    store.setSubGroupStoreRel(subGroupRel);
+        Store storeSession = new Store();
 
 
-    // 위도 경도
-    if ((store.getLatitude() == null || store.getLatitude().equals("")) || (store.getLongitude() == null || store.getLongitude().equals(""))) {
-        Geocoder geocoder = new Geocoder();
-        try {
-            Map<String, String> geo = geocoder.getLatLng(store.getAddress());
-            store.setLatitude(geo.get("lat"));
-            store.setLongitude(geo.get("lng"));
-        } catch (Exception e) {
-            e.printStackTrace();
+        MD5Encoder md5 = new MD5Encoder();
+        ShaEncoder sha = new ShaEncoder(512);
+
+        // param storeId
+        store.setLoginId(loginId);
+        store.setLoginPw(sha.encode(loginPw));
+        store.setCode(code);
+        store.setStoreName(storeName);
+        store.setStorePhone(storePhone);
+    //    store.setName(name);
+    //    store.setPhone(phone);
+        store.setAddress(address);
+        store.setDetailAddress(detailAddress);
+        store.setAssignmentStatus(assignmentStatus);
+
+        // group model 생성
+        Group group = new Group();
+        group.setId(groupId);
+
+        store.setGroup(group);
+
+        // subgroup model 생성
+        SubGroupStoreRel subGroupRel = new SubGroupStoreRel();
+        subGroupRel.setSubGroupId(subGroupId);
+        subGroupRel.setGroupId(groupId);
+        store.setSubGroupStoreRel(subGroupRel);
+
+
+        // 위도 경도
+        if ((store.getLatitude() == null || store.getLatitude().equals("")) || (store.getLongitude() == null || store.getLongitude().equals(""))) {
+            Geocoder geocoder = new Geocoder();
+            try {
+                Map<String, String> geo = geocoder.getLatLng(store.getAddress());
+                store.setLatitude(geo.get("lat"));
+                store.setLongitude(geo.get("lng"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-    }
 
-    if (store.getLatitude() == null || store.getLongitude() == null) {
-        return "geo_err";
-    }
+        if (store.getLatitude() == null || store.getLongitude() == null) {
+            return "geo_err";
+        }
 
-    // chatuser , room 등록
-    store.setType("2");
-    store.setIsAdmin("1");
-    storeAdminService.insertChatUser(store);
-    storeAdminService.insertChatRoom(store);
-    if (store.getChatUserId() != null && store.getChatRoomId() != null) {
-        storeAdminService.insertChatUserChatRoomRel(store);
+        // chatuser , room 등록
+        store.setType("2");
+        store.setIsAdmin("1");
+        storeAdminService.insertChatUser(store);
+
         int A_Store = storeAdminService.insertStore(store);
 
         int A_Group = 0;
@@ -398,11 +396,39 @@ public class StoreController {
         } else {
             return "ok";
         }
-    } else {
-        return "err";
-    }
 
-}
+        /*storeAdminService.insertChatRoom(store);
+        if (store.getChatUserId() != null && store.getChatRoomId() != null) {
+            storeAdminService.insertChatUserChatRoomRel(store);
+            int A_Store = storeAdminService.insertStore(store);
+
+            int A_Group = 0;
+            int A_Assign_Status = 0;
+
+            String storeSessionToken = tokenManager.getToken("2",loginId , loginPw);
+            storeSession.setAccessToken(storeSessionToken);
+            storeSession.setId(store.getId());
+            storeSession.setLoginId(loginId);
+
+            storeAdminService.insertAdminStoreSession(storeSession);
+
+            if(subGroupId !=""){
+                A_Group = storeAdminService.insertSubGroupStoreRel(store);
+            }
+
+            if (assignmentStatus != null) {
+                A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
+            }
+            if (A_Store == 0 && A_Group == 0 && A_Assign_Status == 0) {
+                return "err";
+            } else {
+                return "ok";
+            }
+        } else {
+            return "err";
+        }*/
+
+    }
 
     @ResponseBody
     @PutMapping("/deleteStore")
