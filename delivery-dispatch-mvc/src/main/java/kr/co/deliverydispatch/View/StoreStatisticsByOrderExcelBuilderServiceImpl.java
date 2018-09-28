@@ -222,7 +222,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(nullCheck(storeStatisticsByOrderList.get(i).getDistance()));
+            cell.setCellValue(String.format("%.2f",Float.parseFloat(nullCheck(storeStatisticsByOrderList.get(i).getDistance()))));
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
@@ -304,7 +304,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);
-                cell3.setCellValue(totalDistance/(totalCnt-distanceNullCnt));
+                cell3.setCellValue(String.format("%.2f",(totalDistance/(totalCnt-distanceNullCnt))));
                 cell3.setCellStyle(dataCellStyle);
             }
         }
