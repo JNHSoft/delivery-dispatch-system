@@ -39,6 +39,8 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
     }
 
     @Value("${spring.mvc.locale}")
+    private Locale defaultLocale;
+
     private Locale locale;
 
     @Override
