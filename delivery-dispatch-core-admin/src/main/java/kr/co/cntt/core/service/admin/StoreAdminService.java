@@ -1,12 +1,8 @@
 package kr.co.cntt.core.service.admin;
 
 
-
-
-import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
-import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.store.Store;
 
@@ -112,6 +108,14 @@ public interface StoreAdminService {
      * @return
      */
     public int insertChatRoom(Store store);
+
+    /**
+     * <p> chatUserChatRoomRel 등록
+     *
+     * @param store
+     * @return
+     */
+    public int insertChatUserChatRoomRel(Store store);
 
 
     /**

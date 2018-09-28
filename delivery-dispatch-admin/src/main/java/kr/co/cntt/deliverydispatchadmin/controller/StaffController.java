@@ -320,10 +320,6 @@ public class StaffController {
         }
     }
 
-
-
-
-
     // 기사 등록시 매장 리스트 불러오기
     @ResponseBody
     @GetMapping("/getRiderStoreList")

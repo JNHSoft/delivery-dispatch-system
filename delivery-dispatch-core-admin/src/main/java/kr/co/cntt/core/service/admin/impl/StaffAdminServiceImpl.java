@@ -96,7 +96,7 @@ public class StaffAdminServiceImpl implements StaffAdminService {
     @Override
     public int insertChatRoom(Rider rider){return adminMapper.insertChatRoom(rider);}
 
-    // ChatUserChatRoomRel 등록
+    // chatUserChatRoomRel 등록
     @Override
     public int insertChatUserChatRoomRel(Rider rider){return adminMapper.insertChatUserChatRoomRel(rider);}
 

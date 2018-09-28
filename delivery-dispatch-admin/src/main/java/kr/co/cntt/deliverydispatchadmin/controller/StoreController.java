@@ -1,36 +1,23 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
-import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
-import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
-import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StoreAdminService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.MD5Encoder;
 import kr.co.cntt.core.util.ShaEncoder;
-import kr.co.cntt.deliverydispatchadmin.enums.SessionEnum;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -385,35 +372,36 @@ public class StoreController {
     store.setIsAdmin("1");
     storeAdminService.insertChatUser(store);
     storeAdminService.insertChatRoom(store);
-    int A_Store = storeAdminService.insertStore(store);
-    log.info("@@@@@@@insertStore@@@@@@@@@@@"+store);
+    if (store.getChatUserId() != null && store.getChatRoomId() != null) {
+        storeAdminService.insertChatUserChatRoomRel(store);
+        int A_Store = storeAdminService.insertStore(store);
 
+        int A_Group = 0;
+        int A_Assign_Status = 0;
 
-    int A_Group = 0;
-    int A_Assign_Status = 0;
+        String storeSessionToken = tokenManager.getToken("2",loginId , loginPw);
+        storeSession.setAccessToken(storeSessionToken);
+        storeSession.setId(store.getId());
+        storeSession.setLoginId(loginId);
 
-    String storeSessionToken = tokenManager.getToken("2",loginId , loginPw);
-    storeSession.setAccessToken(storeSessionToken);
-    storeSession.setId(store.getId());
-    storeSession.setLoginId(loginId);
+        storeAdminService.insertAdminStoreSession(storeSession);
 
-    storeAdminService.insertAdminStoreSession(storeSession);
-    log.info("@@@@@@@insertStoreSession@@@@@@@@@@@"+storeSession);
+        if(subGroupId !=""){
+            A_Group = storeAdminService.insertSubGroupStoreRel(store);
+        }
 
-    if(subGroupId !=""){
-        A_Group = storeAdminService.insertSubGroupStoreRel(store);
-        log.info("@@@@@@@insertSubGroupRel@@@@@@@@@@@"+store);
-    }
-
-    if (assignmentStatus != null) {
-        log.info("@@@@@@@@@@@@@@@@@배정상태 insert@@@@@@@@@@@@@@@@@@@@");
-        A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
-    }
-    if (A_Store == 0 && A_Group == 0 && A_Assign_Status == 0) {
-        return "err";
+        if (assignmentStatus != null) {
+            A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
+        }
+        if (A_Store == 0 && A_Group == 0 && A_Assign_Status == 0) {
+            return "err";
+        } else {
+            return "ok";
+        }
     } else {
-        return "ok";
+        return "err";
     }
+
 }
 
     @ResponseBody
@@ -461,9 +449,6 @@ public class StoreController {
         store.setLoginId(loginId);
 
         int S_Id = storeAdminService.selectStoreLoginIdCheck(store);
-
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+S_Id);
-
 
         return S_Id;
     }
