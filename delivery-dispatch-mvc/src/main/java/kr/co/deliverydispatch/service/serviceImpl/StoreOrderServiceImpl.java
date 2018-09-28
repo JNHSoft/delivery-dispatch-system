@@ -14,25 +14,24 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
-import kr.co.cntt.core.util.Geocoder;
-import kr.co.cntt.core.util.Misc;
 import kr.co.deliverydispatch.service.StoreOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service("storeOrderService")
 public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderService{
+    @Value("${spring.mvc.locale}")
+    private Locale regionLocale;
+
     @Autowired
     AndroidPushNotificationsService androidPushNotificationsService;
 
@@ -273,7 +272,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);*/
         Store S_Store = storeMapper.selectStoreInfo(order);
 
-        if (!S_Store.getAssignmentStatus().equals("0")) {
+        if (!S_Store.getAssignmentStatus().equals("0")&&!regionLocale.toString().equals("zh_TW")) {
             return 0;
         }
 
