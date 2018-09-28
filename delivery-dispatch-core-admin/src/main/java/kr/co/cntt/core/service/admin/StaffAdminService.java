@@ -1,9 +1,5 @@
 package kr.co.cntt.core.service.admin;
 
-import kr.co.cntt.core.exception.AppTrException;
-import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.group.Group;
-import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 
@@ -87,6 +83,22 @@ public interface StaffAdminService {
      * @return
      */
     public int insertChatUser(Rider rider);
+
+    /**
+     * <p> chatRoom 등록
+     *
+     * @param rider
+     * @return
+     */
+    public int insertChatRoom(Rider rider);
+
+    /**
+     * <p> ChatUserChatRoomRel 등록
+     *
+     * @param rider
+     * @return
+     */
+    public int insertChatUserChatRoomRel(Rider rider);
 
     /**
      * <p> 기사 삭제

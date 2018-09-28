@@ -207,9 +207,7 @@ public class StaffController {
 
         int A_Store = 0;
         if(hasGroup.equals("T")){
-            log.info("update group.................................");
             A_Store = staffAdminService.updateRiderStore(rider);
-            log.info("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNupdate group.................................");
         }else{
             if (!storeId.equals("")){
                 if(rider.getSubGroupRiderRel() != null){
@@ -274,48 +272,51 @@ public class StaffController {
         rider.setRestHours(restHours);
         rider.setVehicleNumber(vehicleNumber);
         // group model 생성
-        rider.setType("2");
+        rider.setType("3");
         staffAdminService.insertChatUser(rider);
-        int A_Rider = staffAdminService.insertRider(rider);
-        if(!storeId.equals("")){
-            Store store = new Store();
-            store.setToken(adminInfo.getAdminAccessToken());
-            store.setId(storeId);
-            Store storeInfo = staffAdminService.selectStoreInfo(store);
-            if (storeInfo.getGroup() != null){
-                Group group = new Group();
-                group.setId(storeInfo.getGroup().getId());
-                rider.setGroup(group);
+        staffAdminService.insertChatRoom(rider);
+        if (rider.getChatUserId() != null && rider.getChatRoomId() != null) {
+            staffAdminService.insertChatUserChatRoomRel(rider);
+
+            int A_Rider = staffAdminService.insertRider(rider);
+            if(!storeId.equals("")){
+                Store store = new Store();
+                store.setToken(adminInfo.getAdminAccessToken());
+                store.setId(storeId);
+                Store storeInfo = staffAdminService.selectStoreInfo(store);
+                if (storeInfo.getGroup() != null){
+                    Group group = new Group();
+                    group.setId(storeInfo.getGroup().getId());
+                    rider.setGroup(group);
+                }
+
+                // subgroup model 생성
+                SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
+                if (storeInfo.getSubGroup() != null){
+                    subGroupRiderRel.setSubGroupId(storeInfo.getSubGroup().getId());
+                    subGroupRiderRel.setGroupId(storeInfo.getGroup().getId());
+                }
+                subGroupRiderRel.setStoreId(storeId);
+
+                rider.setSubGroupRiderRel(subGroupRiderRel);
+
+                int A_Group = staffAdminService.insertSubGroupRiderRel(rider);
             }
 
-            // subgroup model 생성
-            SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
-            if (storeInfo.getSubGroup() != null){
-                subGroupRiderRel.setSubGroupId(storeInfo.getSubGroup().getId());
-                subGroupRiderRel.setGroupId(storeInfo.getGroup().getId());
+            String riderSessionToken = tokenManager.getToken("3",loginId , loginPw);
+            riderSession.setAccessToken(riderSessionToken);
+            riderSession.setId(rider.getId());
+            riderSession.setLoginId(loginId);
+
+            staffAdminService.insertAdminRiderSession(riderSession);
+
+            if (A_Rider == 0) {
+                return "err";
+            } else {
+                return "ok";
             }
-            subGroupRiderRel.setStoreId(storeId);
-
-            rider.setSubGroupRiderRel(subGroupRiderRel);
-
-            log.info("@@@@@@@@@@@@@@@@@groupinsert@@@@@@@@@@@@@@@@@@@@");
-            int A_Group = staffAdminService.insertSubGroupRiderRel(rider);
-        }
-
-        String riderSessionToken = tokenManager.getToken("3",loginId , loginPw);
-        log.info("@@@@@@@@@@@@@@@@ " + riderSessionToken);
-        riderSession.setAccessToken(riderSessionToken);
-        riderSession.setId(rider.getId());
-        riderSession.setLoginId(loginId);
-
-        staffAdminService.insertAdminRiderSession(riderSession);
-        log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%insertSSSSSSSSEEEEEEEEEEEEEESSION");
-
-
-        if (A_Rider == 0) {
-            return "err";
         } else {
-            return "ok";
+            return "err";
         }
     }
 
@@ -428,9 +429,6 @@ public class StaffController {
         rider.setLoginId(loginId);
 
         int R_Id = staffAdminService.selectRiderLoginIdCheck(rider);
-
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+R_Id);
-
 
         return R_Id;
     }

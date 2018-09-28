@@ -1,10 +1,8 @@
 package kr.co.cntt.core.service.api.impl;
 
-import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.AdminMapper;
-import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
@@ -12,6 +10,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.redis.Content;
@@ -360,11 +359,11 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
 
         rider.setType("3");
         adminMapper.insertChatUser(rider);
-//        adminMapper.insertChatRoom(rider);
+        adminMapper.insertChatRoom(rider);
 
         int result = 0;
-        if (rider.getChatUserId() != null/* && rider.getChatRoomId() != null*/) {
-//            adminMapper.insertChatUserChatRoomRel(rider);
+        if (rider.getChatUserId() != null && rider.getChatRoomId() != null) {
+            adminMapper.insertChatUserChatRoomRel(rider);
 
             if (rider.getSubGroupStoreRel() != null) {
                 result = adminMapper.insertRider(rider);
