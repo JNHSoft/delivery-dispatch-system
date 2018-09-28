@@ -3,10 +3,6 @@ package kr.co.cntt.core.service.admin.impl;
 import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
-import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.group.Group;
-import kr.co.cntt.core.model.group.SubGroup;
-import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StaffAdminService;
@@ -95,6 +91,14 @@ public class StaffAdminServiceImpl implements StaffAdminService {
     // chatUserId 등록
     @Override
     public int insertChatUser(Rider rider){return adminMapper.insertChatUser(rider);}
+
+    // chatRoom 등록
+    @Override
+    public int insertChatRoom(Rider rider){return adminMapper.insertChatRoom(rider);}
+
+    // chatUserChatRoomRel 등록
+    @Override
+    public int insertChatUserChatRoomRel(Rider rider){return adminMapper.insertChatUserChatRoomRel(rider);}
 
     // 기사 삭제
     @Override

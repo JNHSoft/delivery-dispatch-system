@@ -4,13 +4,13 @@ import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
-import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StoreAdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Slf4j
@@ -92,6 +92,10 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     // chatRoom 등록
     @Override
     public int insertChatRoom(Store store){return adminMapper.insertChatRoom(store);}
+
+    // chatUserChatRoomRel 등록
+    @Override
+    public int insertChatUserChatRoomRel(Store store){return adminMapper.insertChatUserChatRoomRel(store);}
 
     // 기사 삭제
     @Override
