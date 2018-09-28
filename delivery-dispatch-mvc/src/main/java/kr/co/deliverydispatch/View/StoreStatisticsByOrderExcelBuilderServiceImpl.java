@@ -142,14 +142,17 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             rowNum++;
         }
         // 내용 부분
-        Long orderPickupTime = 0l;
-        Long pickupCompleteTime = 0l;
-        Long orderCompleteTime = 0l;
-        Long completeReturnTime = 0l;
-        Long pickupReturnTime = 0l;
-        Long orderReturnTime = 0l;
+        long orderPickupTime = 0L;
+        long pickupCompleteTime = 0L;
+        long orderCompleteTime = 0L;
+        long completeReturnTime = 0L;
+        long pickupReturnTime = 0L;
+        long orderReturnTime = 0L;
 
-        Double totalDistance = 0d;
+        double totalDistance = 0d;
+
+        int returnNullCnt = 0;
+        int distanceNullCnt = 0;
 
         for(int i = 0, r = storeStatisticsByOrderList.size(); i<r; i++) {
             LocalDateTime orderTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getCreatedDatetime()).replace(" ", "T"));
@@ -158,15 +161,16 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             LocalDateTime returnTime = LocalDateTime.MIN;
             if(storeStatisticsByOrderList.get(i).getReturnDatetime()!=null){
                 returnTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getReturnDatetime()).replace(" ", "T"));
+            }else{
+                returnNullCnt++;
             }
 
-
-            Long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
-            Long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
-            Long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
-            Long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            Long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            Long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
+            long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
+            long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
+            long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
             orderPickupTime += orderPickup;
             pickupCompleteTime += pickupComplete;
@@ -175,7 +179,12 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             pickupReturnTime += pickupReturn;
             orderReturnTime += orderReturn;
 
-            totalDistance += Double.parseDouble(storeStatisticsByOrderList.get(i).getDistance());
+            if(storeStatisticsByOrderList.get(i).getDistance() != null){
+                totalDistance += Double.parseDouble(storeStatisticsByOrderList.get(i).getDistance());
+            }else{
+                distanceNullCnt++;
+            }
+
 
             colNum = 0;
             Row addListRow = sheet.createRow(rowNum);
@@ -220,7 +229,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
 
             if(i==storeStatisticsByOrderList.size()-1){
                 colNum = 0;
-                addListRow = sheet.createRow(rowNum);
+                addListRow = sheet.createRow(rowNum++);
 
                 Cell cell2 = addListRow.createCell(colNum++);
                 cell2.setCellValue("TOTAL");
@@ -258,7 +267,45 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 cell2.setCellValue(totalDistance);
                 cell2.setCellStyle(dataCellStyle);
 
-                rowNum ++;
+                int totalCnt = storeStatisticsByOrderList.size();
+
+                colNum = 0;
+                addListRow = sheet.createRow(rowNum);
+                Cell cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue("AVERAGE");
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue("");
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(orderPickupTime/totalCnt));
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(pickupCompleteTime/totalCnt));
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(orderCompleteTime/totalCnt));
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(completeReturnTime/(totalCnt-returnNullCnt)));
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(pickupReturnTime/(totalCnt-returnNullCnt)));
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(orderReturnTime/(totalCnt-returnNullCnt)));
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(totalDistance/(totalCnt-distanceNullCnt));
+                cell3.setCellStyle(dataCellStyle);
             }
         }
 
