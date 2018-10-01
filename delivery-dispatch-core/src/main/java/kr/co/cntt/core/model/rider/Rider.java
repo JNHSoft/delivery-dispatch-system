@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.order.OrderCheckAssignment;
 import kr.co.cntt.core.model.store.Store;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,4 +69,6 @@ public class Rider extends User implements Dto {
     private String orderStandbyDatetime;
     private String orderStandbyStatus;
     private int distance;
+
+    private OrderCheckAssignment orderCheckAssignment;
 }

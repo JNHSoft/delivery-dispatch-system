@@ -121,6 +121,7 @@ public class SettingController {
         Store myStore = storeSettingService.getStoreInfo(store);
         ThirdParty thirdParty = new ThirdParty();
         thirdParty.setToken(storeInfo.getStoreAccessToken());
+        thirdParty.setLevel(storeInfo.getAuthLevel());
         List<ThirdParty> allThirdParty= storeSettingService.getThirdParty(thirdParty);
         model.addAttribute("store", myStore);
         model.addAttribute("thirdParty", allThirdParty);
@@ -198,6 +199,7 @@ public class SettingController {
     public String settingAlarm(Store store, @RequestParam(required = false) String frag, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
+        store.setLevel(storeInfo.getAuthLevel());
 
         Store myStore = storeSettingService.getStoreInfo(store);
         ArrayList<Alarm> alarmList = (ArrayList)storeSettingService.getAlarm(store);
