@@ -36,9 +36,46 @@ function getStoreStatisticsByDate() {
         },
         dataType: 'json',
         success: function (data) {
+            // 평균 값
+            let orderPickupSum = 0;
+            let pickupCompleteSum = 0;
+            let orderCompleteSum = 0;
+            let completeReturnSum = 0;
+            let pickupReturnSum = 0;
+            let orderReturnSum = 0;
+            let min30BelowSum = 0;
+            let min30To40Sum = 0;
+            let min40To50Sum = 0;
+            let min50To60Sum = 0;
+            let min60To90Sum = 0;
+            let min90UnderSum = 0;
+            let totalSalesSum = 0;
+            let tcSum = 0;
+            let tplhSum = 0;
+            let spmhSum = 0;
+            let totalPickupReturnSum = 0;
+            let avgDistanceSum = 0;
+            // row 갯수
+            let rowCnt = 0;
+            // 빈값이 들어간 row 갯수
+            let rowReduceCnt = 0;
+            // 거리값 제외 count
+            let distanceCnt = 0;
+            // tpsp 제외 count
+            let tpSpCnt = 0;
+
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
+                    // 빈값 여부를 위해 chkcount
+                    let chkCnt = 0;
+                    let chkDistanceCnt = 0;
+                    let chkTpSpCnt = 0;
+
                     let tmpdata = new Object();
+                    rowCnt++;
+                    rowReduceCnt++;
+                    distanceCnt++;
+                    tpSpCnt++;
                     tmpdata.store = my_store.storeName;
                     tmpdata.day = data[key].dayToDay;
                     tmpdata.orderPickup = totalTimeSet(data[key].orderPickup*1000);
@@ -55,21 +92,106 @@ function getStoreStatisticsByDate() {
                     tmpdata.min90Under = parseInt(data[key].min90Under) + "%";
                     tmpdata.totalSales = data[key].totalSales;
                     tmpdata.tc = data[key].tc;
+
                     if(data[key].tplh){
-                        tmpdata.tplh = data[key].tplh;
-                    }else{
+                        tmpdata.tplh = parseFloat(data[key].tplh).toFixed(2);
+                        tplhSum += parseFloat(data[key].tplh);
+                    } else{
                         tmpdata.tplh = "-";
-                    }
-                    if(data[key].spmh){
-                        tmpdata.spmh = data[key].spmh;
-                    }else{
-                        tmpdata.spmh = "-";
+                        chkTpSpCnt++;
                     }
 
+                    if(data[key].spmh){
+                        tmpdata.spmh = parseFloat(data[key].spmh).toFixed(2);
+                        spmhSum += parseFloat(data[key].spmh);
+                    } else{
+                        tmpdata.spmh = "-";
+                        chkTpSpCnt++;
+                    }
                     tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn*1000);
-                    tmpdata.avgDistance = (data[key].avgDistance?data[key].avgDistance:0) +'km';
+                    tmpdata.avgDistance = (data[key].avgDistance?parseFloat(data[key].avgDistance).toFixed(2):0) +'km';
+
+                    // 평균 값
+                    orderPickupSum += parseFloat(data[key].orderPickup);
+                    pickupCompleteSum += parseFloat(data[key].pickupComplete);
+                    orderCompleteSum += parseFloat(data[key].orderComplete);
+
+                    if(tmpdata.completeReturn != "-"){
+                        completeReturnSum += parseFloat(data[key].completeReturn);
+                    } else{
+                        chkCnt++;
+                    }
+
+                    if(tmpdata.pickupReturn != "-"){
+                        pickupReturnSum += parseFloat(data[key].pickupReturn);
+                    } else{
+                        chkCnt++;
+                    }
+
+                    if(tmpdata.orderReturn != "-"){
+                        orderReturnSum += parseFloat(data[key].orderReturn);
+                    } else{
+                        chkCnt++;
+                    }
+
+                    if(tmpdata.totalPickupReturn != "-"){
+                        totalPickupReturnSum += parseFloat(data[key].totalPickupReturn);
+                    } else{
+                        chkCnt++;
+                    }
+
+                    if(tmpdata.avgDistance != "-"){
+                        avgDistanceSum += parseFloat(data[key].avgDistance?data[key].avgDistance:0);
+                    } else{
+                        chkDistanceCnt++;
+                    }
+                    min30BelowSum += parseInt(data[key].min30Below);
+                    min30To40Sum += parseInt(data[key].min30To40);
+                    min40To50Sum += parseInt(data[key].min40To50);
+                    min50To60Sum += parseInt(data[key].min50To60);
+                    min60To90Sum += parseInt(data[key].min60To90);
+                    min90UnderSum += parseInt(data[key].min90Under);
+                    totalSalesSum += parseInt(data[key].totalSales);
+                    tcSum += parseInt(data[key].tc);
                     mydata.push(tmpdata);
+                    if(chkCnt !=0){
+                        rowReduceCnt--;
+                    }
+                    if(chkDistanceCnt !=0){
+                        distanceCnt--;
+                    }
+                    if(chkTpSpCnt !=0){
+                        tpSpCnt--;
+                    }
+
                 }
+            }
+            // 평균 값
+            let avgData = new Object();
+            avgData.store = "Average" ;
+            avgData.day = "";
+            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/rowCnt);
+            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/rowCnt);
+            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/rowCnt);
+            avgData.completeReturn = totalTimeSet((completeReturnSum*1000)/rowReduceCnt);
+            avgData.pickupReturn =  totalTimeSet((pickupReturnSum*1000)/rowReduceCnt);
+            avgData.orderReturn =   totalTimeSet((orderReturnSum*1000)/rowReduceCnt);
+            avgData.min30Below = (min30BelowSum/rowCnt).toFixed(2) +"%";
+            avgData.min30To40 = (min30To40Sum/rowCnt).toFixed(2) +"%";
+            avgData.min40To50 = (min40To50Sum/rowCnt).toFixed(2) +"%";
+            avgData.min50To60 = (min50To60Sum/rowCnt).toFixed(2) +"%";
+            avgData.min60To90 = (min60To90Sum/rowCnt).toFixed(2) +"%";
+            avgData.min90Under = (min90UnderSum/rowCnt).toFixed(2) +"%";
+            avgData.totalSales = (totalSalesSum/rowCnt).toFixed(2);
+            avgData.tc = (tcSum/rowCnt).toFixed(2);
+            avgData.tplh = (tplhSum/tpSpCnt).toFixed(2);
+            avgData.spmh = (spmhSum/tpSpCnt).toFixed(2);
+            avgData.totalPickupReturn = totalTimeSet((totalPickupReturnSum*1000)/rowReduceCnt);
+            avgData.avgDistance = (avgDistanceSum/distanceCnt).toFixed(2) +'km';
+
+            // 날짜 조회시 avg 노출
+            if(rowCnt!=0){
+                mydata.push(avgData);
             }
 
             if (mydata != null) {
@@ -90,15 +212,15 @@ function getStoreStatisticsByDate() {
                     {label: label_out_time, name: 'pickupReturn', index: 'pickupReturn', width: 80, align: 'center'},
                     {label: label_total_delivery_time, name: 'orderReturn', index: 'orderReturn', width: 80, align: 'center'},
                     {label: '<=30 MINS %', name: 'min30Below', index: 'min30Below', width: 80, align: 'center'},
-                    {label: '<=40 MINS %', name: 'min30To40', index: 'min30To40', width: 80, align: 'center'},
-                    {label: '<=50 MINS %', name: 'min40To50', index: 'min40To50', width: 80, align: 'center'},
-                    {label: '<=60 MINS %', name: 'min50To60', index: 'min50To60', width: 80, align: 'center'},
-                    {label: '<=90 MINS %', name: 'min60To90', index: 'min60To90', width: 80, align: 'center'},
-                    {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center'},
-                    {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center'},
+                    {label: '<=40 MINS %', name: 'min30To40', index: 'min30To40', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
+                    {label: '<=50 MINS %', name: 'min40To50', index: 'min40To50', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
+                    {label: '<=60 MINS %', name: 'min50To60', index: 'min50To60', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
+                    {label: '<=90 MINS %', name: 'min60To90', index: 'min60To90', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
+                    {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
+                    {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_tc, name: 'tc', index: 'tc', width: 50, align: 'center'},
                     {label: label_tplh, name: 'tplh', index: 'tplh', width: 80, align: 'center'},
-                    {label: label_spmh, name: 'spmh', index: 'spmh', width: 80, align: 'center'},
+                    {label: label_spmh, name: 'spmh', index: 'spmh', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_total_time, name: 'totalPickupReturn', index: 'totalPickupReturn', width: 80, align: 'center'},
                     {label: label_average_distance, name: 'avgDistance', width: 80, align: 'center'},
                 ],
