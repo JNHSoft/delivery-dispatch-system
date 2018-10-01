@@ -376,11 +376,11 @@ function getThirdPartyList(orderDetailData) {
         type: 'get',
         data: {},
         success: function (data) {
-            var thirdPartyList = my_store.thirdParty.split('|');
             if(!my_store.thirdParty){
                 $('#thirdArea').css('display', 'none');
                 $('#thirdAreaBtn').css('display', 'none');
             }else{
+                var thirdPartyList = my_store.thirdParty.split('|');
                 for (var key in data) {
                     if (data.hasOwnProperty(key)) {
                         for (var thirdParty in thirdPartyList) {

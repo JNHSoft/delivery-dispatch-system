@@ -515,10 +515,10 @@
         A.deleted IS NULL
         <choose>
             <when test="level != null and level != ''">
-                <if test="level eq '1'.toString()">
-                  AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                <if test="level eq 1">
+                    AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                 </if>
-                <if test="level eq '2'.toString()">
+                <if test="level eq 2">
                     AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
                 </if>
             </when>
@@ -563,10 +563,10 @@
         deleted IS NULL
         <choose>
             <when test="level != null and level != ''">
-                <if test="level eq '1'.toString()">
+                <if test="level eq 1">
                     AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                 </if>
-                <if test="level eq '2'.toString()">
+                <if test="level eq 2">
                     AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
                 </if>
             </when>
