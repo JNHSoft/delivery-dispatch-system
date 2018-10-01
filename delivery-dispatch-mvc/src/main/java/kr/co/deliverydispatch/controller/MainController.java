@@ -1,12 +1,15 @@
 package kr.co.deliverydispatch.controller;
 
+import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
 import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
+import kr.co.deliverydispatch.service.StoreSettingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -31,11 +35,14 @@ public class MainController {
     private StoreOrderService storeOrderService;
     private StoreNoticeService storeNoticeService;
     private StoreRiderService storeRiderService;
+    private StoreSettingService storeSettingService;
+
     @Autowired
-    public MainController(StoreOrderService storeOrderService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService) {
+    public MainController(StoreOrderService storeOrderService, StoreNoticeService storeNoticeService, StoreRiderService storeRiderService, StoreSettingService storeSettingService) {
         this.storeOrderService = storeOrderService;
         this.storeNoticeService = storeNoticeService;
         this.storeRiderService = storeRiderService;
+        this.storeSettingService = storeSettingService;
     }
 
     /**
@@ -97,5 +104,18 @@ public class MainController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
         return storeOrderService.getFooterOrders(order);
+    }
+
+    @RequestMapping("/loginSuccessSetAlarm")
+    @ResponseBody
+    public List<Alarm> getLoginAlarmList(Store store){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        store.setToken(storeInfo.getStoreAccessToken());
+        store.setLevel(storeInfo.getAuthLevel());
+        List<Alarm> alarmList = storeSettingService.getAlarm(store);
+        Store myStore = storeOrderService.getStoreInfo(store);
+        alarmList = alarmList.stream().filter(a-> myStore.getAlarm().contains(a.getAlarmType())).collect(Collectors.toList());
+
+        return alarmList;
     }
 }
