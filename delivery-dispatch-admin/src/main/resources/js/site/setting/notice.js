@@ -102,53 +102,53 @@ function getNoticeList() {
                     i++;
 
                     mydata.push(tmpdata);
-
-                    if (mydata != null) {
-                        jQuery('#jqGrid').jqGrid('clearGridData')
-                        jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1})
-                        jQuery('#jqGrid').trigger('reloadGrid');
-                    }
-
-                    $('#jqGrid').jqGrid({
-                        datatype: 'local',
-                        data: mydata,
-                        colModel: [
-                            {label: 'id', name: 'id', width: 25, key: true, align: 'center', hidden:true},
-                            {label: 'toGroupId', name: 'toGroupId', width: 25, key: true, align: 'center', hidden:true},
-                            {label: 'toSubGroupId', name: 'toSubGroupId', width: 25, key: true, align: 'center', hidden:true},
-                            {label: 'toStoreId', name: 'toStoreId', width: 25, key: true, align: 'center', hidden:true},
-                            {label: 'No', name: 'no', width: 25, key: true, align: 'center'},
-                            {label: notice_target, name: 'target', width: 60, align: 'center'},
-                            {label: notice_subject, name: 'title', width: 300},
-                            {label: notice_attach, name: 'file', width: 100, align: 'center'},
-                            {label: notice_created, name: 'date', width: 100, align: 'center'},
-                            {label: notice_confirmed_check, name: 'check', width: 100, align: 'center'}
-                        ],
-                        height: 520,
-                        autowidth: true,
-                        rowNum: 20,
-                        pager: '#jqGridPager',
-                        onCellSelect: function (rowid, icol, cellcontent, e) {
-                            var rowData = jQuery(this).getRowData(rowid);
-                            var noticeId = rowData['id'];
-                            getNoticeDetail(noticeId);
-                            popOpen('#popNotice') //상세보기 열기
-                        }
-                    });
-
-                    resizeJqGrid('#jqGrid'); //그리드 리사이즈
-
-                    $('.store_chk .open').click(function (e) {
-                        e.preventDefault();
-                        $(this).next().slideDown();
-                    });
-
-                    $('.store_chk .close').click(function (e) {
-                        e.preventDefault();
-                        $(this).closest('div').slideUp();
-                    });
                 }
             }
+
+            if (mydata) {
+                jQuery('#jqGrid').jqGrid('clearGridData')
+                jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1})
+                jQuery('#jqGrid').trigger('reloadGrid');
+            }
+
+            $('#jqGrid').jqGrid({
+                datatype: 'local',
+                data: mydata,
+                colModel: [
+                    {label: 'id', name: 'id', width: 25, key: true, align: 'center', hidden:true},
+                    {label: 'toGroupId', name: 'toGroupId', width: 25, key: true, align: 'center', hidden:true},
+                    {label: 'toSubGroupId', name: 'toSubGroupId', width: 25, key: true, align: 'center', hidden:true},
+                    {label: 'toStoreId', name: 'toStoreId', width: 25, key: true, align: 'center', hidden:true},
+                    {label: 'No', name: 'no', width: 25, key: true, align: 'center'},
+                    {label: notice_target, name: 'target', width: 60, align: 'center'},
+                    {label: notice_subject, name: 'title', width: 300},
+                    {label: notice_attach, name: 'file', width: 100, align: 'center'},
+                    {label: notice_created, name: 'date', width: 100, align: 'center'},
+                    {label: notice_confirmed_check, name: 'check', width: 100, align: 'center'}
+                ],
+                height: 520,
+                autowidth: true,
+                rowNum: 20,
+                pager: '#jqGridPager',
+                onCellSelect: function (rowid, icol, cellcontent, e) {
+                    var rowData = jQuery(this).getRowData(rowid);
+                    var noticeId = rowData['id'];
+                    getNoticeDetail(noticeId);
+                    popOpen('#popNotice') //상세보기 열기
+                }
+            });
+
+            resizeJqGrid('#jqGrid'); //그리드 리사이즈
+
+            $('.store_chk .open').click(function (e) {
+                e.preventDefault();
+                $(this).next().slideDown();
+            });
+
+            $('.store_chk .close').click(function (e) {
+                e.preventDefault();
+                $(this).closest('div').slideUp();
+            });
         }
     });
 }
