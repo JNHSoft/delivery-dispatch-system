@@ -171,10 +171,10 @@ public interface RiderMapper {
     /**
      * <p> 자동 배정 관련 기사 목록
      *
-     * @param storeId
+     * @param map(storeId, orderId)
      * @return
      */
-    public List<Rider> selectForAssignRiders(String storeId);
+    public List<Rider> selectForAssignRiders(Map map);
 
     /**
      *  <p> 자동 휴식 관련 기사 목록
