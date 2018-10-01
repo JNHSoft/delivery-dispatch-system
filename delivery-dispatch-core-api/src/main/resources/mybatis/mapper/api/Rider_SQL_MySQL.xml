@@ -54,7 +54,11 @@
 			<result property="subGroupId" column="subGroupRiderRel_subgroup_id" />
 			<result property="storeId" column="subGroupRiderRel_store_id" />
 			<result property="riderId" column="subGroupRiderRel_rider_id" />
+		</association>
 
+		<association property="orderCheckAssignment" column="orderCheckAssignment" javaType="kr.co.cntt.core.model.order.OrderCheckAssignment">
+			<result property="orderId" column="deny_order_id" />
+			<result property="deniedDatetime" column="denied_datetime" />
 		</association>
 	</resultMap>
 
@@ -838,7 +842,7 @@
 
 
 	<!-- selectForAssignRiders -->
-	<select id="selectForAssignRiders" parameterType="String" resultMap="selectSubgroupRiderRelsResult">
+	<select id="selectForAssignRiders" parameterType="Map" resultMap="selectSubgroupRiderRelsResult">
 		SELECT A.id
 			, A.status
 			, A.working
@@ -855,9 +859,17 @@
    			, (SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
 			, (SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
 			, (SELECT status FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status
+			, max(C.denied_datetime) as denied_datetime
+			, C.order_id as deny_order_id
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
+		LEFT JOIN TB_ORDER_DENY_ASSIGNMENT AS C
+		ON A.id = C.rider_id
+		<![CDATA[
+		AND timestampdiff(minute, C.denied_datetime, now()) <= 5
+		]]>
+		AND C.order_id = #{orderId}
 		WHERE A.deleted IS NULL
 			AND B.deleted IS NULL
 			AND (
@@ -867,6 +879,7 @@
 				OR (select max(B.created_datetime) where B.deleted is not null group by B.rider_id)
 			)
 			AND A.working = 1
+		group by A.id
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
 
@@ -1015,4 +1028,3 @@
 		</choose>
 	</update>
 </mapper>
- 

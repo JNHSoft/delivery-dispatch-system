@@ -85,7 +85,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         for (Order order : orderList) {
             Map map = new HashMap();
             map.put("order", order);
-            List<Rider> riderList = riderMapper.selectForAssignRiders(order.getStore().getId());
+            Map denyOrderIdChkMap = new HashMap();
+            denyOrderIdChkMap.put("orderId",order.getId());
+            denyOrderIdChkMap.put("storeId",order.getStore().getId());
+            List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
             Misc misc = new Misc();
 
             for (Iterator<Rider> rider = riderList.iterator();rider.hasNext();) { //iterator를 써야 for문 안에서 리스트 제거가능
@@ -126,6 +129,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             return orderStandbyDatetime.until(ldt, ChronoUnit.SECONDS)>=60;
                         }
                     })//현재 앱에서 배정 수락 거절 중인지 확인(앱 통신 상태가 안좋을 수도 있을 경우 대비 하여 1분) *****
+                    .filter(a->!order.getId().equals((a.getOrderCheckAssignment()==null)?"":a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
                     .sorted(Comparator.comparing(Rider::getDistance)//1순위 거리순(100미터 단위)
                             .thenComparing(Rider::getAssignCount)// 2순위 라이더의 오더 개수....
                             .thenComparing(Rider::getMinOrderStatus , Comparator.nullsFirst(Comparator.naturalOrder()))//3순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
