@@ -29,31 +29,31 @@
 						<li class="full defaultSound">
 							<strong th:text="${#messages.msg('alarm.new')}" />
 							<div>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('newAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${#strings.arraySplit(defaultAlarms,',')[0]}', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 						</li>
 						<li class="full defaultSound">
 							<strong th:text="${#messages.msg('alarm.assigned')}" />
 							<div>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('assignAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${#strings.arraySplit(defaultAlarms,',')[1]}', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 						</li>
 						<li class="full defaultSound">
 							<strong th:text="${#messages.msg('alarm.assigned.canceled')}" />
 							<div>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('assignedCancelAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${#strings.arraySplit(defaultAlarms,',')[2]}', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 						</li>
 						<li class="full defaultSound">
 							<strong th:text="${#messages.msg('alarm.completed')}" />
 							<div>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('completeAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${#strings.arraySplit(defaultAlarms,',')[3]}', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 						</li>
 						<li class="full defaultSound">
 							<strong th:text="${#messages.msg('alarm.canceled')}" />
 							<div>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('cancelAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${#strings.arraySplit(defaultAlarms,',')[4]}', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 						</li>
 						<li class="full adminSound">
@@ -165,6 +165,9 @@ var result_none = /*[[#{result.none}]]*/ 'result_none';
 
 var regionLocale = /*[[${regionLocale.toString()}]]*/ 'regionLocale';
 var selectedLang = /*[[${selectedLang}]]*/ 'selectedLang';
+var defaultAlarms = /*[[${defaultAlarms}]]*/ 'defaultAlarms';
+var testA = defaultAlarms.split(',')[0];
+console.log(testA);
 /*]]>*/
 </script>
 </html>

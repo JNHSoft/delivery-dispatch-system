@@ -52,6 +52,9 @@ public class SettingController {
     @Value("${spring.mvc.locale}")
     private Locale regionLocale;
 
+    @Value("${api.default.alarms}")
+    private String defaultAlarms;
+
     private AccountAdminService accountAdminService;
     private AssignAdminService assignAdminService;
     private FileUploadAdminService fileUploadAdminService;
@@ -331,6 +334,7 @@ public class SettingController {
         model.addAttribute("cancelAlarm", cancelAlarm);
         model.addAttribute("regionLocale", regionLocale);
         model.addAttribute("selectedLang", alarm.getLang());
+        model.addAttribute("defaultAlarms", defaultAlarms);
 
         return "/setting/setting_alarm";
     }

@@ -22,11 +22,15 @@ $(document).ready(function() {
     if ($('#defaultSoundStatus').val() == 'true') {
         $('#defaultSoundChk').prop('checked', true);
         $('.adminSound').hide();
+        $('.adminSound').attr('display','none');
         $('.defaultSound').show();
+        $('.defaultSound').attr('display','block');
     } else {
         $('#defaultSoundChk').prop('checked', false);
         $('.defaultSound').hide();
+        $('.defaultSound').attr('display','none');
         $('.adminSound').show();
+        $('.adminSound').attr('display','block');
     }
 
     $('#defaultSoundChk').click(function() {
@@ -37,10 +41,14 @@ $(document).ready(function() {
 function defaultSoundChk(defaultSound) {
     if(defaultSound.checked) {
         $('.adminSound').hide();
+        $('.adminSound').attr('display','none');
         $('.defaultSound').show();
+        $('.defaultSound').attr('display','block');
     } else {
         $('.defaultSound').hide();
+        $('.defaultSound').attr('display','none');
         $('.adminSound').show();
+        $('.adminSound').attr('display','block');
     }
 }
 
