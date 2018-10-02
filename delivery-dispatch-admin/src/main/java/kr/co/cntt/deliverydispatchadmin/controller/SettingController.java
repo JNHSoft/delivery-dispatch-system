@@ -19,12 +19,7 @@ import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Slf4j
@@ -52,6 +48,9 @@ public class SettingController {
 
     @Value("${api.upload.path.notice}")
     private String noticeFileUploadPath;
+
+    @Value("${spring.mvc.locale}")
+    private Locale regionLocale;
 
     private AccountAdminService accountAdminService;
     private AssignAdminService assignAdminService;
@@ -325,13 +324,13 @@ public class SettingController {
 
         }
 
-        log.info(newAlarm.getOriFileName());
-        log.info(newAlarm.getAlarmType());
         model.addAttribute("newAlarm", newAlarm);
         model.addAttribute("assignAlarm", assignAlarm);
         model.addAttribute("assignedCancelAlarm", assignedCancelAlarm);
         model.addAttribute("completeAlarm", completeAlarm);
         model.addAttribute("cancelAlarm", cancelAlarm);
+        model.addAttribute("regionLocale", regionLocale);
+        model.addAttribute("selectedLang", alarm.getLang());
 
         return "/setting/setting_alarm";
     }
@@ -341,30 +340,38 @@ public class SettingController {
     public String alarmFileUpload(HttpServletRequest request, HttpServletResponse response) {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
-        MultipartHttpServletRequest multipartRequest =  (MultipartHttpServletRequest) request;
+        Admin admin = new Admin();
+        admin.setToken(adminInfo.getAdminAccessToken());
 
-        List<MultipartFile> reqFiles = multipartRequest.getFiles("alarmFile");
-        List<MultipartFile> files = new ArrayList<>();
+        if (request.getParameter("defaultSoundChk") == null) {
+            admin.setDefaultSoundStatus(Boolean.FALSE);
+            fileUploadAdminService.putDefaultSoundStatus(admin);
 
-        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-        Alarm alarm = new Alarm();
-        alarm.setToken(adminInfo.getAdminAccessToken());
+            MultipartHttpServletRequest multipartRequest =  (MultipartHttpServletRequest) request;
 
-        for (int j = 0; j < reqFiles.size(); j++) {
-            if (reqFiles.get(j).getSize() > 0) {
-                files.add(reqFiles.get(j));
+            List<MultipartFile> reqFiles = multipartRequest.getFiles("alarmFile");
+            List<MultipartFile> files = new ArrayList<>();
 
-                alarm.setAlarmType(Integer.toString(j));
-                alarm.setOriFileName(reqFiles.get(j).getOriginalFilename());
+            DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+            Alarm alarm = new Alarm();
+            alarm.setToken(adminInfo.getAdminAccessToken());
+
+            for (int j = 0; j < reqFiles.size(); j++) {
+                if (reqFiles.get(j).getSize() > 0) {
+                    files.add(reqFiles.get(j));
+
+                    alarm.setAlarmType(Integer.toString(j));
+                    alarm.setOriFileName(reqFiles.get(j).getOriginalFilename());
 //                String[] tmp = reqFiles.get(j).getOriginalFilename().split("\\.");
 //                alarm.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
-                alarm.setFileName(LocalDateTime.now().format(dateformatter) + "_" + reqFiles.get(j).getOriginalFilename());
-                alarm.setFileSize(Long.toString(reqFiles.get(j).getSize()));
+                    alarm.setFileName(LocalDateTime.now().format(dateformatter) + "_" + reqFiles.get(j).getOriginalFilename());
+                    alarm.setFileSize(Long.toString(reqFiles.get(j).getSize()));
 
-                fileUploadAdminService.alarmFileUpload(alarm);
+                    fileUploadAdminService.alarmFileUpload(alarm);
+                }
             }
-        }
 
 //        for (MultipartFile f : reqFiles) {
 //            if (f.getSize() > 0) {
@@ -372,16 +379,24 @@ public class SettingController {
 //            }
 //        }
 
-        MultipartFile[] fileArray = new MultipartFile[files.size()];
-        for (int i = 0; i < files.size(); i++) {
-            if (files.get(i).getSize() > 0) {
-                fileArray[i] = files.get(i);
-            }
-        }
+            if (!files.isEmpty()) {
+                MultipartFile[] fileArray = new MultipartFile[files.size()];
+                for (int i = 0; i < files.size(); i++) {
+                    if (files.get(i).getSize() > 0) {
+                        fileArray[i] = files.get(i);
+                    }
+                }
 
-        FileUtil fileUtil = new FileUtil();
-        fileUtil.fileUpload(fileArray, alarmFileUploadPath+"/");
-//        fileUtil.fileUpload(fileArray, "c:\\");
+                if (fileArray.length > 0) {
+                    FileUtil fileUtil = new FileUtil();
+                    fileUtil.fileUpload(fileArray, alarmFileUploadPath+"/");
+//                fileUtil.fileUpload(fileArray, "c:\\");
+                }
+            }
+        } else {
+            admin.setDefaultSoundStatus(Boolean.TRUE);
+            fileUploadAdminService.putDefaultSoundStatus(admin);
+        }
 
         return "redirect:/setting-alarm";
     }

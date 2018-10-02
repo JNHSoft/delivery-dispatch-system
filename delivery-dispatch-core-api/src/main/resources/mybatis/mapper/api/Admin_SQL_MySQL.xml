@@ -238,6 +238,7 @@
 			, state
 			, assignment_status
 			, assignment_limit
+			, default_sound_status
 		FROM TB_ADMIN
 		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>
@@ -258,6 +259,9 @@
 		</if>
 		<if test="assignmentLimit != null and assignmentLimit != ''">
 			, assignment_limit = #{assignmentLimit}
+		</if>
+		<if test="defaultSoundStatus != null">
+			, default_sound_status = #{defaultSoundStatus}
 		</if>
 		WHERE deleted IS NULL
 			AND id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})

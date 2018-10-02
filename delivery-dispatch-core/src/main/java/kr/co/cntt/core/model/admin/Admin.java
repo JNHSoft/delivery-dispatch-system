@@ -13,5 +13,6 @@ public class Admin extends User implements Dto {
     private String state;
     private String assignmentStatus;
     private String assignmentLimit;
+    private Boolean defaultSoundStatus;
 
 }

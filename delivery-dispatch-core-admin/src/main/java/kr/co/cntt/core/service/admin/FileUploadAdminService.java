@@ -1,6 +1,7 @@
 package kr.co.cntt.core.service.admin;
 
 
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 
 import java.util.List;
@@ -30,5 +31,13 @@ public interface FileUploadAdminService {
      * @return int
      */
     public int deleteAlarm(Alarm alarm);
+
+    /**
+     * <p> putDefaultSoundStatus
+     *
+     * @param admin
+     * @return int
+     */
+    public int putDefaultSoundStatus(Admin admin);
 
 }

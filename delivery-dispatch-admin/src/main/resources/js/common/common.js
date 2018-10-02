@@ -12,6 +12,7 @@ $(document).ready(function() {
         async : false,
         success : function (data) {
             $('#myAdminName').text(data.name);
+            $('#defaultSoundStatus').val(data.defaultSoundStatus);
         }
     });
 });

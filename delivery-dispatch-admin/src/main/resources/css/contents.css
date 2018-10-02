@@ -173,7 +173,7 @@
 .form_list li{float:left;width:50%;padding:10px 5px;overflow:hidden;box-sizing:border-box;}
 .form_list li.full{width:100%;}
 .form_list li>strong{float:left;line-height:25px;}
-.form_list li>div{margin-left:80px;}
+.form_list li>div{margin-left:120px;}
 
 
 .store_chk{position:relative;}

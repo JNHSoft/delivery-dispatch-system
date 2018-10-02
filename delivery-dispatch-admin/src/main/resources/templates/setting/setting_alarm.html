@@ -19,12 +19,50 @@
 				<div class="cont">
 					<ul class="form_list">
 						<li class="full">
+							<strong th:text="${#messages.msg('alarm.default')}"/>
+							<div>
+								<span>
+									<label class="checkbox"><input name="defaultSoundChk" id="defaultSoundChk" type="checkbox"/><i></i></label>
+								</span>
+							</div>
+						</li>
+						<li class="full defaultSound">
+							<strong th:text="${#messages.msg('alarm.new')}" />
+							<div>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('newAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+							</div>
+						</li>
+						<li class="full defaultSound">
+							<strong th:text="${#messages.msg('alarm.assigned')}" />
+							<div>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('assignAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+							</div>
+						</li>
+						<li class="full defaultSound">
+							<strong th:text="${#messages.msg('alarm.assigned.canceled')}" />
+							<div>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('assignedCancelAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+							</div>
+						</li>
+						<li class="full defaultSound">
+							<strong th:text="${#messages.msg('alarm.completed')}" />
+							<div>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('completeAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+							</div>
+						</li>
+						<li class="full defaultSound">
+							<strong th:text="${#messages.msg('alarm.canceled')}" />
+							<div>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('cancelAlarm.wav', true)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+							</div>
+						</li>
+						<li class="full adminSound">
 							<strong th:text="${#messages.msg('alarm.new')}" />
 							<div th:if="*{newAlarm.fileName} != null">
 								<input type="file" hidden="hidden" name="alarmFile" />
 								<span class="t_blue" th:text="${newAlarm.oriFileName} + '(' + ${newAlarm.fileSize} + ')'">sound.wav(30.11KB)</span>
 								<a href="#" class="button btn_red" th:onclick="|javascript:deleteAlarm('${newAlarm.id}')|"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${newAlarm.fileName}')|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${newAlarm.fileName}', false)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 							<div th:unless="*{newAlarm.fileName} != null">
 								<span class="inp_file">
@@ -36,13 +74,13 @@
 								</span>
 							</div>
 						</li>
-						<li class="full">
+						<li class="full adminSound">
 							<strong th:text="${#messages.msg('alarm.assigned')}" />
 							<div th:if="*{assignAlarm.fileName} != null">
 								<input type="file" hidden="hidden" name="alarmFile" />
 								<span class="t_blue" th:text="${assignAlarm.oriFileName} + '(' + ${assignAlarm.fileSize} + ')'">sound.wav(30.11KB)</span>
 								<a href="#" class="button btn_red" th:onclick="|javascript:deleteAlarm('${assignAlarm.id}')|"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${assignAlarm.fileName}')|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${assignAlarm.fileName}', false)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 							<div th:unless="*{assignAlarm.fileName} != null">
 								<span class="inp_file">
@@ -54,13 +92,13 @@
 								</span>
 							</div>
 						</li>
-						<li class="full">
+						<li class="full adminSound">
 							<strong th:text="${#messages.msg('alarm.assigned.canceled')}" />
 							<div th:if="*{assignedCancelAlarm.fileName} != null">
 								<input type="file" hidden="hidden" name="alarmFile" />
 								<span class="t_blue" th:text="${assignedCancelAlarm.oriFileName} + '(' + ${assignedCancelAlarm.fileSize} + ')'">sound.wav(30.11KB)</span>
 								<a href="#" class="button btn_red" th:onclick="|javascript:deleteAlarm('${assignedCancelAlarm.id}')|"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${assignedCancelAlarm.fileName}')|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${assignedCancelAlarm.fileName}', false)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 							<div th:unless="*{assignedCancelAlarm.fileName} != null">
 								<span class="inp_file">
@@ -72,13 +110,13 @@
 								</span>
 							</div>
 						</li>
-						<li class="full">
+						<li class="full adminSound">
 							<strong th:text="${#messages.msg('alarm.completed')}" />
 							<div th:if="*{completeAlarm.fileName} != null">
 								<input type="file" hidden="hidden" name="alarmFile" />
 								<span class="t_blue" th:text="${completeAlarm.oriFileName} + '(' + ${completeAlarm.fileSize} + ')'">sound.wav(30.11KB)</span>
 								<a href="#" class="button btn_red" th:onclick="|javascript:deleteAlarm('${completeAlarm.id}')|"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${completeAlarm.fileName}')|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${completeAlarm.fileName}', false)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 							<div th:unless="*{completeAlarm.fileName} != null">
 								<span class="inp_file">
@@ -90,13 +128,13 @@
 								</span>
 							</div>
 						</li>
-						<li class="full">
+						<li class="full adminSound">
 							<strong th:text="${#messages.msg('alarm.canceled')}" />
 							<div th:if="*{cancelAlarm.fileName} != null">
 								<input type="file" hidden="hidden" name="alarmFile" />
 								<span class="t_blue" th:text="${cancelAlarm.oriFileName} + '(' + ${cancelAlarm.fileSize} + ')'">sound.wav(30.11KB)</span>
 								<a href="#" class="button btn_red" th:onclick="|javascript:deleteAlarm('${cancelAlarm.id}')|"><i class="fa fa-trash-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('btn.delete')}" /></a>
-								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${cancelAlarm.fileName}')|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
+								<a href="#" class="button btn_gray" th:onclick="|javascript:preview('${cancelAlarm.fileName}', false)|"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}" /></a>
 							</div>
 							<div th:unless="*{cancelAlarm.fileName} != null">
 								<span class="inp_file">
@@ -124,6 +162,9 @@
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
 var result_none = /*[[#{result.none}]]*/ 'result_none';
+
+var regionLocale = /*[[${regionLocale.toString()}]]*/ 'regionLocale';
+var selectedLang = /*[[${selectedLang}]]*/ 'selectedLang';
 /*]]>*/
 </script>
 </html>

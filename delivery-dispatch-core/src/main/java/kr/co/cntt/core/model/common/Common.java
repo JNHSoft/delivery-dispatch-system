@@ -25,5 +25,7 @@ public class Common implements Dto {
     private String currentDatetime;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String days;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String lang;
 
 }

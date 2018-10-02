@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.admin.impl;
 import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
 import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -83,6 +84,11 @@ public class FileUploadAdminServiceImpl implements FileUploadAdminService {
         }
 
         return adminMapper.deleteAlarm(alarm);
+    }
+
+    @Override
+    public int putDefaultSoundStatus(Admin admin) {
+        return adminMapper.updateAdminInfo(admin);
     }
 
 }
