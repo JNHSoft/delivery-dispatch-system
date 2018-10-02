@@ -517,13 +517,13 @@ public class SettingController {
 
         FileUtil fileUtil = new FileUtil();
         fileUtil.fileUpload(file, noticeFileUploadPath+"/");
-
-        DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-        notice.setOriFileName(file.getOriginalFilename());
-        notice.setFileName(LocalDateTime.now().format(dateformatter) + "_" + file.getOriginalFilename());
-        notice.setFileSize(Long.toString(file.getSize()));
-
+        // 파일 업로드 및 공지사항 등록 오류 수정                                   2018. 10. 01    Nick
+        if (!file.getOriginalFilename().isEmpty()) {
+            DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            notice.setOriFileName(file.getOriginalFilename());
+            notice.setFileName(LocalDateTime.now().format(dateformatter) + "_" + file.getOriginalFilename());
+            notice.setFileSize(Long.toString(file.getSize()));
+        }
         noticeAdminService.postNotice(notice);
 
         return "redirect:/setting-notice";
