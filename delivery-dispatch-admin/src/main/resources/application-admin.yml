@@ -230,3 +230,7 @@ api.upload.path.alarm: /root/dde-upload/alarm
 #[DDE-HK-MAIN]
 #api.upload.path.notice: /home/ddehk/dde-upload/notice
 #api.upload.path.alarm: /home/ddehk/dde-upload/alarm
+
+---
+#[DDE-DEFAULT-ALARMS]
+api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav

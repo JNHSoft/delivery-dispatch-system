@@ -245,3 +245,7 @@ websocket.localhost: https://ddetw-store.cntt.co.kr
 
 #[DDE-KR-LOCAL]
 #websocket.localhost: 127.0.0.1:3000
+
+---
+#[DDE-DEFAULT-ALARMS]
+api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav
