@@ -656,7 +656,7 @@ function getOrderList(statusArray, storeId) {
                     {label: order_message, name: 'message', width: 80, align: 'center'},
                     {label: order_customer_phone, name: 'phone', width: 80, align: 'center'},
                     {label: order_cooking, name: 'time2', width: 80, align: 'center'},
-                    {label: order_payment, name: 'pay', width: 80, align: 'center'},
+                    {label: order_payment, name: 'pay', width: 80, align: 'center', hidden:regionLocale == "zh_HK"?true:false},
                     {label: order_assigned, name: 'time3', width: 80, align: 'center'},
                     {label: order_pickedup, name: 'time4', width: 80, align: 'center'},
                     {label: order_arrived, name: 'time5', width: 80, align: 'center'},

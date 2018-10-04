@@ -134,7 +134,7 @@ public class MainController {
             for (int i=0;i<defaultAlarmArray.length;i++){
                 Alarm tmpAlarm = new Alarm();
                 tmpAlarm.setAlarmType(i+"");
-                tmpAlarm.setFileName(locale+"/"+defaultAlarmArray[i]);
+                tmpAlarm.setFileName("default/"+locale+"/"+defaultAlarmArray[i]);
                 alarmList.add(tmpAlarm);
             }
         }else if(myStore.getAlarm() != null){
