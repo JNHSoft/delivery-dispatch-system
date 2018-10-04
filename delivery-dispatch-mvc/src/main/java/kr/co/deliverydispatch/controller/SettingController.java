@@ -1,6 +1,7 @@
 package kr.co.deliverydispatch.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notice.Notice;
@@ -19,6 +20,7 @@ import kr.co.deliverydispatch.service.StoreSettingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -46,6 +48,9 @@ public class SettingController {
 
     @Value("${api.upload.path.notice}")
     private String noticeFileUploadPath;
+
+    @Value("${api.default.alarms}")
+    private String defaultAlarms;
 
     private StoreSettingService storeSettingService;
     private StoreNoticeService storeNoticeService;
@@ -203,12 +208,24 @@ public class SettingController {
 
         Store myStore = storeSettingService.getStoreInfo(store);
         ArrayList<Alarm> alarmList = (ArrayList)storeSettingService.getAlarm(store);
+        Admin myAdmin = storeSettingService.getAdminInfo(store);
+        Locale locale = LocaleContextHolder.getLocale();
 
         Alarm newAlarm = null;
         Alarm assignAlarm = null;
         Alarm assignCancelAlarm = null;
         Alarm completeAlarm = null;
         Alarm cancelAlarm = null;
+        if(myAdmin.getDefaultSoundStatus()==true) {
+            alarmList.clear();
+            String[] defaultAlarmArray = defaultAlarms.split(",");
+            for (int i = 0; i < defaultAlarmArray.length; i++) {
+                Alarm tmpAlarm = new Alarm();
+                tmpAlarm.setAlarmType(i + "");
+                tmpAlarm.setFileName(locale.toString() + "/" + defaultAlarmArray[i]);
+                alarmList.add(tmpAlarm);
+            }
+        }
 
         for(Alarm alarm : alarmList){
             if(alarm.getAlarmType().equals("0")){

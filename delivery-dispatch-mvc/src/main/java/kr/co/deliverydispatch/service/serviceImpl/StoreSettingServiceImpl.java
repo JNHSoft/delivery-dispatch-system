@@ -2,6 +2,7 @@ package kr.co.deliverydispatch.service.serviceImpl;
 
 import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
 import kr.co.cntt.core.mapper.*;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notice.Notice;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,7 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
      * Notice DAO
      */
     private NoticeMapper noticeMapper;
+
     /**
      * @param storeMapper STORE D A O
      * @param riderMapper Rider D A O
@@ -230,5 +233,18 @@ public class StoreSettingServiceImpl extends ServiceSupport implements StoreSett
         }
 
         return ret;
+    }
+
+    @Override
+    public Admin getAdminInfo(Store store) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            store.setAccessToken(store.getToken());
+            store.setRole("ROLE_STORE");
+        }
+        Admin admin = storeMapper.selectAdminInfo(store);
+
+        return admin;
     }
 }

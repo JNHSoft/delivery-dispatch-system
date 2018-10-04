@@ -19,10 +19,10 @@
 					<div class="head_info">
 						<select th:if="*{regionLocale} != null and *{regionLocale.toString()} neq zh_TW" id="selectLang" class="select" style="height: 20px; font-size: 11px" onchange="window.open(value,'_self')">
 							<option th:text="${#messages.msg('gnb.select.language')}" />
-							<option th:if="*{regionLocale.toString()} eq zh_HK or *{regionLocale.toString()} eq ko_KR" id="langHK" th:text="${#messages.msg('gnb.language.hk')}" value="?lang=zh_HK"/>
-							<option th:if="*{regionLocale.toString()} eq zh_TW or *{regionLocale.toString()} eq ko_KR" id="langTW" th:text="${#messages.msg('gnb.language.tw')}" value="?lang=zh_TW"/>
-							<option id="langUS" th:text="${#messages.msg('gnb.language.us')}" value="?lang=en_US"/>
-							<option th:if="*{regionLocale.toString()} eq ko_KR" id="langKR" th:text="${#messages.msg('gnb.language.kr')}" value="?lang=ko_KR"/>
+							<option th:if="*{regionLocale.toString()} eq zh_HK or *{regionLocale.toString()} eq ko_KR" id="zh_HK" th:text="${#messages.msg('gnb.language.hk')}" value="?lang=zh_HK"/>
+							<option th:if="*{regionLocale.toString()} eq zh_TW or *{regionLocale.toString()} eq ko_KR" id="zh_TW" th:text="${#messages.msg('gnb.language.tw')}" value="?lang=zh_TW"/>
+							<option id="en_US" th:text="${#messages.msg('gnb.language.us')}" value="?lang=en_US"/>
+							<option th:if="*{regionLocale.toString()} eq ko_KR" id="ko_KR" th:text="${#messages.msg('gnb.language.kr')}" value="?lang=ko_KR"/>
 						</select>
 						<a href="/setting-notice" class="head_notice" id="notice_alarm" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
 						<a href="/setting-account" class="user_id"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span id="myStoreName"/></a>

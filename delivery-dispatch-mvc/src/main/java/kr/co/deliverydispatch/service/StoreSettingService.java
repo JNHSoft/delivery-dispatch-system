@@ -1,5 +1,6 @@
 package kr.co.deliverydispatch.service;
 
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
@@ -90,4 +91,14 @@ public interface StoreSettingService {
      * @return int
      */
     public int putNoticeConfirm(Notice notice);
+
+    /**
+     * <p> getAdminInfo
+     *
+     * @param store
+     * @return Admin
+     */
+    public Admin getAdminInfo(Store store);
+
+
 }

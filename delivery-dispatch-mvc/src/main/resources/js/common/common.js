@@ -27,7 +27,9 @@ $(document).ready(function() {
             }
         }
     }
-
+    $('#selectLang').change(function () {
+        changeAlarmByLang();
+    });
 });
 
 function noticeAlarm() {
@@ -170,4 +172,32 @@ function regOrderIdReduce(regOrderId) {
     }else {
         return regOrderId;
     }
+}
+
+function changeAlarmByLang() {
+    var lang = $("#selectLang option:selected").attr("id");
+    $.ajax({
+        url : "/loginSuccessSetAlarm",
+        type : 'get',
+        data : {
+            lang : lang
+        },
+        success : function(data) {
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    if(data[key].alarmType=='0'){
+                        $.cookie("new_alarm", data[key].fileName, {"expires" : 365});
+                    }else if(data[key].alarmType=='1'){
+                        $.cookie("assign_alarm", data[key].fileName, {"expires" : 365});
+                    }else if(data[key].alarmType=='2'){
+                        $.cookie("assignCancel_alarm", data[key].fileName, {"expires" : 365});
+                    }else if(data[key].alarmType=='3'){
+                        $.cookie("complete_alarm", data[key].fileName, {"expires" : 365});
+                    }else if(data[key].alarmType=='4'){
+                        $.cookie("cancel_alarm", data[key].fileName, {"expires" : 365});
+                    }
+                }
+            }
+        }
+    });
 }

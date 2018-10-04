@@ -1,6 +1,7 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
@@ -207,5 +208,13 @@ public interface StoreMapper {
      * @return
      */
     public List<ByDate> selectStoreStatisticsByDate(Order order);
+
+    /**
+     * <p> Admin 정보 조회
+     *
+     * @param common
+     * @return Admin Info 조회 결과값
+     */
+    public Admin selectAdminInfo(Common common);
 
 }
