@@ -25,7 +25,7 @@
 								<label class="radio"><input name="newAlarm" value="0" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '0')}" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="newAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '0')}"/><i></i>
+								<label class="radio"><input name="newAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'true' : !#strings.contains(store.alarm, '0')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a class="button" id="newAlarmBtn" onclick="javascript:newClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -37,7 +37,7 @@
 								<label class="radio"><input name="assignAlarm" value="1" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '1')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="assignAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '1')}"/><i></i>
+								<label class="radio"><input name="assignAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'true' : !#strings.contains(store.alarm, '1')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="assignAlarmBtn" onclick="javascript:assignClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -49,7 +49,7 @@
 								<label class="radio"><input name="assignCancelAlarm" value="2" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '2')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="assignCancelAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '2')}"/><i></i>
+								<label class="radio"><input name="assignCancelAlarm" value="" type="radio" th:checked="${#lists.isEmpty(store.alarm) ? 'true' : !#strings.contains(store.alarm, '2')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="assignCancelAlarmBtn" onclick="javascript:assignCancelClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -61,7 +61,7 @@
 								<label class="radio"><input name="completeAlarm" type="radio" value="3" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '3')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="completeAlarm" type="radio" value="" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '3')}"/><i></i>
+								<label class="radio"><input name="completeAlarm" type="radio" value="" th:checked="${#lists.isEmpty(store.alarm) ? 'true' : !#strings.contains(store.alarm, '3')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="completeAlarmBtn" onclick="javascript:completeClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>
@@ -73,7 +73,7 @@
 								<label class="radio"><input name="cancelAlarm" type="radio" value="4" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : #strings.contains(store.alarm, '4')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.used')}" />
 								</label>
-								<label class="radio"><input name="cancelAlarm" type="radio" value="" th:checked="${#lists.isEmpty(store.alarm) ? 'false' : !#strings.contains(store.alarm, '4')}"/><i></i>
+								<label class="radio"><input name="cancelAlarm" type="radio" value="" th:checked="${#lists.isEmpty(store.alarm) ? 'true' : !#strings.contains(store.alarm, '4')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('answer.unused')}" />
 								</label>
 								<a href="#" class="button" id="cancelAlarmBtn" onclick="javascript:cancelClick()"><i class="fa fa-play" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('alarm.preview')}"></i></a>

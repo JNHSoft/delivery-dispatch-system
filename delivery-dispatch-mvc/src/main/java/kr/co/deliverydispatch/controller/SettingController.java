@@ -222,7 +222,7 @@ public class SettingController {
             for (int i = 0; i < defaultAlarmArray.length; i++) {
                 Alarm tmpAlarm = new Alarm();
                 tmpAlarm.setAlarmType(i + "");
-                tmpAlarm.setFileName(locale.toString() + "/" + defaultAlarmArray[i]);
+                tmpAlarm.setFileName("default/" + locale.toString() + "/" + defaultAlarmArray[i]);
                 alarmList.add(tmpAlarm);
             }
         }
