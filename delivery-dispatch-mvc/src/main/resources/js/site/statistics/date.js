@@ -184,8 +184,14 @@ function getStoreStatisticsByDate() {
             avgData.min90Under = (min90UnderSum/rowCnt).toFixed(2) +"%";
             avgData.totalSales = (totalSalesSum/rowCnt).toFixed(2);
             avgData.tc = (tcSum/rowCnt).toFixed(2);
-            avgData.tplh = (tplhSum/tpSpCnt).toFixed(2);
-            avgData.spmh = (spmhSum/tpSpCnt).toFixed(2);
+            if(tpSpCnt!=0){
+                avgData.tplh = (tplhSum/tpSpCnt).toFixed(2);
+                avgData.spmh = (spmhSum/tpSpCnt).toFixed(2);
+            }else{
+                avgData.tplh = "-";
+                avgData.spmh = "-";
+            }
+
             avgData.totalPickupReturn = totalTimeSet((totalPickupReturnSum*1000)/rowReduceCnt);
             avgData.avgDistance = (avgDistanceSum/distanceCnt).toFixed(2) +'km';
 
