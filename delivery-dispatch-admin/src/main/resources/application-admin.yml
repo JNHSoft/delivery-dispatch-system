@@ -51,8 +51,8 @@ logging:
 
 # [DDE-TEST]
 #  config: classpath:logback-spring-test.xml
-# datasource
 
+# datasource
 datasource:
   deliveryDispatch:
     initialize: true
@@ -71,7 +71,7 @@ datasource:
     password: twuserpw!
 
 #    [DDE-TEST]
-#    url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
+#    url: jdbc:mysql://127.0.0.1:3306/devdb?useUnicode=true&characterEncoding=utf8
 #    username: devuser
 #    password: devuserpw!
 
