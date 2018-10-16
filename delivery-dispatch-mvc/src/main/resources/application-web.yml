@@ -50,6 +50,9 @@ logging:
 # [DDE-HK-MAIN]
 #  config: classpath:logback-spring-hk.xml
 
+# [DDE-TEST]
+#  config: classpath:logback-spring-test.xml
+
 # datasource
 datasource:
   deliveryDispatch:
@@ -71,15 +74,15 @@ datasource:
     username: twuser
     password: twuserpw!
 
-#    [DDE-TW-TEST]
-#    url: jdbc:mysql://delivery-dispatch-test-db.cktgcdnnnhc9.ap-northeast-2.rds.amazonaws.com:3306/dde?useUnicode=true&characterEncoding=utf8
-#    username: nanum
-#    password: snaskzhf
-
 #    [DDE-HK-MAIN]
 #    url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8
 #    username: hkuser
 #    password: hkuserpw!
+
+#    [DDE-TEST]
+#    url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
+#    username: devuser
+#    password: devuserpw!
 
 # concurrent
 cntt.concurrent.enable: true
@@ -165,15 +168,15 @@ cntt.restPool:
       port: 8091
       maxPerRoute: 20
 
-#      [DDE-TW-TEST]
-#      scheme: http
-#      host: dev-api.cntt.co.kr
-#      port: 8091
-#      maxPerRoute: 20
-
 #      [DDE-HK-MAIN]
 #      scheme: http
 #      host: ddehk-api.cntt.co.kr
+#      port: 8091
+#      maxPerRoute: 20
+
+#      [DDE-TEST]
+#      scheme: http
+#      host: dev-api.cntt.co.kr
 #      port: 8091
 #      maxPerRoute: 20
 
@@ -184,15 +187,15 @@ cntt.restPool:
       port: 443
       maxPerRoute: 20
 
-#      [DDE-TW-TEST]
-#      scheme: https
-#      host: dev-api.cntt.co.kr
-#      port: 443
-#      maxPerRoute: 20
-
 #      [DDE-HK-MAIN]
 #      scheme: https
 #      host: ddehk-api.cntt.co.kr
+#      port: 443
+#      maxPerRoute: 20
+
+#      [DDE-TEST]
+#      scheme: https
+#      host: dev-api.cntt.co.kr
 #      port: 443
 #      maxPerRoute: 20
 
@@ -207,12 +210,12 @@ spring:
     host: 192.168.100.81
     port: 6379
 
-#    [DDE-TW-TEST]
-#    host: nanum-taiwan-redis.e6yhbk.0001.apn2.cache.amazonaws.com
-#    port: 6379
-
 #    [DDE-HK-MAIN]
 #    host: 192.168.100.81
+#    port: 6379
+
+#    [DDE-TEST]
+#    host: 1.255.51.183
 #    port: 6379
 
 #    [DDE-KR-LOCAL]
@@ -231,17 +234,19 @@ api.upload.path.alarm: /root/dde-upload/alarm
 #api.upload.path.notice: /home/ddehk/dde-upload/notice
 #api.upload.path.alarm: /home/ddehk/dde-upload/alarm
 
+#[DDE-TEST]
+#api.upload.path.notice: /home/ddetest/dde-upload/notice
+#api.upload.path.alarm: /home/ddetest/dde-upload/alarm
+
 ---
 #[DDE-TW-MAIN]
 websocket.localhost: https://ddetw-store.cntt.co.kr
-##websocket.localhost: 52.78.71.21:3000
-
-#[DDE-TW-TEST]
-#websocket.localhost: https://dev-store.cntt.co.kr
-##websocket.localhost: 13.125.18.185:3000
 
 #[DDE-HK-MAIN]
 #websocket.localhost: https://ddehk-store.cntt.co.kr
+
+#[DDE-TEST]
+#websocket.localhost: 1.255.51.183:3000
 
 #[DDE-KR-LOCAL]
 #websocket.localhost: 127.0.0.1:3000
