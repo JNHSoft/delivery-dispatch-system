@@ -91,7 +91,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
             Misc misc = new Misc();
 
-            for (Iterator<Rider> rider = riderList.iterator();rider.hasNext();) { //iterator를 써야 for문 안에서 리스트 제거가능
+            for (Iterator<Rider> rider = riderList.iterator();rider.hasNext();) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
                 Rider r = rider.next();
                 if (r.getLatitude() != null) {
                     try {
