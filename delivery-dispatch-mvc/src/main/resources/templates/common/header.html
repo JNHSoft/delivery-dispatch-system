@@ -17,7 +17,7 @@
 						<div class="clock"></div>
 					</div>
 					<div class="head_info">
-						<select th:if="*{regionLocale} != null and *{regionLocale.toString()} neq zh_TW" id="selectLang" class="select" style="height: 20px; font-size: 11px" onchange="window.open(value,'_self')">
+						<select th:if="*{regionLocale} != null and *{regionLocale.toString()} neq zh_TW" id="selectLang" class="select" style="height: 20px; font-size: 11px">
 							<option th:text="${#messages.msg('gnb.select.language')}" />
 							<option th:if="*{regionLocale.toString()} eq zh_HK or *{regionLocale.toString()} eq ko_KR" id="zh_HK" th:text="${#messages.msg('gnb.language.hk')}" value="?lang=zh_HK"/>
 							<option th:if="*{regionLocale.toString()} eq zh_TW or *{regionLocale.toString()} eq ko_KR" id="zh_TW" th:text="${#messages.msg('gnb.language.tw')}" value="?lang=zh_TW"/>

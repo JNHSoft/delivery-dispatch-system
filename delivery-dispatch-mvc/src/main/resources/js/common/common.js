@@ -198,6 +198,7 @@ function changeAlarmByLang() {
                     }
                 }
             }
+            location.href=location.pathname+"?lang="+lang;
         }
     });
 }
