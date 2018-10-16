@@ -207,7 +207,7 @@ spring:
     port: 6379
 
 #    [DDE-TEST]
-#    host: 1.255.51.183
+#    host: 127.0.0.1
 #    port: 6379
 
 #    [DDE-HK-MAIN]
