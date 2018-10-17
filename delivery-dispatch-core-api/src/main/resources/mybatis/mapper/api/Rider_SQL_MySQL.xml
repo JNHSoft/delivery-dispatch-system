@@ -706,6 +706,7 @@
 		, B.store_id AS rider_store_id
 		, E.id AS order_id
 		, E.store_id AS order_store_id
+		, K.order_count
 		FROM TB_RIDER AS A
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
 		ON A.id = B.rider_id
@@ -726,6 +727,15 @@
 		ON E.rider_id = A.id
 		LEFT JOIN TB_STORE AS I
 		ON B.store_id = I.id
+
+		LEFT JOIN
+		(select count(J.rider_id) as order_count
+		, J.rider_id
+		from TB_ORDER as J
+		where J.assigned_datetime is not null
+		and J.created_datetime > CURRENT_DATE() and J.status in(1,2) group by J.rider_id) AS K
+		ON A.id = K.rider_id
+
 		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 		AND (
 			(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)

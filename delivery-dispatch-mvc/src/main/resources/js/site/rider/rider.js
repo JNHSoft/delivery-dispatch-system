@@ -208,8 +208,16 @@ function gridRiderList(data, $status, riderCount) {
     }else {
         shtml +="<td>-</td>";
     }
-    if(data.orderStore){
+    // 상태가 배정,픽업이고 배정받은지 가장 오래된 주문의 상점 이름
+    /*if(data.orderStore){
         shtml += "<td>"+data.orderStore.storeName+"</td>";
+    }else {
+        shtml +="<td>-</td>";
+    }*/
+
+    // 주문상점 이름 -> 라이더가 들고있는 주문 갯수로 변경
+    if(data.orderCount){
+        shtml += "<td>"+data.orderCount+"</td>";
     }else {
         shtml +="<td>-</td>";
     }

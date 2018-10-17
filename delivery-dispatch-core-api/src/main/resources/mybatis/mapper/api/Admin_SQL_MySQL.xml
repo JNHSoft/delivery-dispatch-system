@@ -1334,6 +1334,7 @@
 		FROM TB_RIDER
 		WHERE
 		login_id = #{loginId}
+		AND deleted IS NOT NULL
 	</select>
 
 
