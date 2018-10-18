@@ -272,9 +272,10 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);*/
         Store S_Store = storeMapper.selectStoreInfo(order);
 
-        if (!S_Store.getAssignmentStatus().equals("0")&&!regionLocale.toString().equals("zh_TW")) {
+        //자동배정시 강제배정이 안되도록 설정하는 부분
+        /*if (!S_Store.getAssignmentStatus().equals("0")&&!regionLocale.toString().equals("zh_TW")) {
             return 0;
-        }
+        }*/
 
         /*Rider tmpRider = new Rider();
         tmpRider.setIsAdmin("0");
