@@ -3,9 +3,6 @@ spring:
   profiles: api
   application.name: delivery-dispatch-api
   mvc:
-    locale: zh_TW
-#    locale: zh_HK
-#    locale: ko_KR
     favicon.enabled: false
   messages:
     cache-seconds: -1
@@ -19,48 +16,6 @@ spring:
       force: true
     multipart:
       enabled: true
-
-# logging
-logging:
-# [DDE-TW-MAIN]
-  config: classpath:logback-spring-tw.xml
-
-# [DDE-HK-MAIN]
-#  config: classpath:logback-spring-hk.xml
-
-# [DDE-TEST]
-#  config: classpath:logback-spring-test.xml
-
-# datasource
-datasource:
-  deliveryDispatch:
-    initialize: true
-    initial-size: 10
-    max-total: 50
-    max-idle: 50
-    min-idle: 10
-    max-wait-millis: 3000
-    test-on-borrow: true
-    validation-query: select 1
-    test-while-idle: true
-    min-evictable-idle-time-millis: 28700
-    time-between-eviction-runs-millis: 60000
-    driver-class-name: com.mysql.jdbc.Driver
-
-#    [DDE-TW-MAIN]
-    url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8
-    username: twuser
-    password: twuserpw!
-
-#    [DDE-HK-MAIN]
-#    url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8&noAccessToProcedureBodies=true
-#    username: hkuser
-#    password: hkuserpw!
-
-#    [DDE-TEST]
-#    url: jdbc:mysql://127.0.0.1:3306/devdb?useUnicode=true&characterEncoding=utf8
-#    username: devuser
-#    password: devuserpw!
 
 # concurrent 설정
 cntt.concurrent.enable: true
@@ -85,10 +40,6 @@ cntt.restPool:
     port: 8091
     maxPerRoute: 20
 
-# Logger 설정
-cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.cntt.api
-
 ---
 spring:
   profiles: dev
@@ -104,58 +55,7 @@ cntt.restPool:
     port: 8085
     maxPerRoute: 20
 
-# Logger 설정
-cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.cntt.api
-
 ---
-spring:
-  profiles: oper
-
-# rest template
-cntt.restPool:
-  enable: true
-  pool-size: 20
-  defaultMaxPerRoute: 20
-  hosts:
-    -
-#      [DDE-TW-MAIN]
-      scheme: http
-      host: ddetw-api.cntt.co.kr
-      port: 8091
-      maxPerRoute: 20
-
-#      [DDE-HK-MAIN]
-#      scheme: http
-#      host: ddehk-api.cntt.co.kr
-#      port: 8091
-#      maxPerRoute: 20
-
-#      [DDE-TEST]
-#      scheme: http
-#      host: dev-api.cntt.co.kr
-#      port: 8091
-#      maxPerRoute: 20
-
-    -
-#      [DDE-TW-MAIN]
-      scheme: https
-      host: ddetw-api.cntt.co.kr
-      port: 443
-      maxPerRoute: 20
-
-#      [DDE-HK-MAIN]
-#      scheme: https
-#      host: ddehk-api.cntt.co.kr
-#      port: 443
-#      maxPerRoute: 20
-
-#      [DDE-TEST]
-#      scheme: https
-#      host: dev-api.cntt.co.kr
-#      port: 443
-#      maxPerRoute: 20
-
 # Logger 설정
 cntt.monitor.enable: true
 cntt.monitor.basepackage: kr.co.cntt.api
@@ -175,36 +75,4 @@ api.token.secretKey : ATE6OLdQuouPbqyZ5qt1H++taImbDhqSPw53ClPT7+k=
 api.token.expiration : 6000
 
 ---
-spring:
-  redis:
-#    [DDE-TW-MAIN]
-    host: 192.168.100.81
-    port: 6379
-
-#    [DDE-HK-MAIN]
-#    host: 192.168.100.81
-#    port: 6379
-
-#    [DDE-TEST]
-#    host: 127.0.0.1
-#    port: 6379
-
-#    [DDE-KR-LOCAL]
-#    host: 127.0.0.1
-#    port: 6379
-
----
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
-
----
-#[DDE-TW-MAIN]
-api.upload.path.notice: /root/dde-upload/notice
-api.upload.path.alarm: /root/dde-upload/alarm
-
-#[DDE-HK-MAIN]
-#api.upload.path.notice: /home/ddehk/dde-upload/notice
-#api.upload.path.alarm: /home/ddehk/dde-upload/alarm
-
-#[DDE-TEST]
-#api.upload.path.notice: /home/ddetest/dde-upload/notice
-#api.upload.path.alarm: /home/ddetest/dde-upload/alarm

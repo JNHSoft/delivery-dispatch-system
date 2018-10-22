@@ -1,22 +1,9 @@
 ---
 spring:
-  profiles: api
-  application.name: delivery-dispatch-api
+  profiles: api-local
+  profiles.include: api
   mvc:
     locale: ko_KR
-    favicon.enabled: false
-  messages:
-    cache-seconds: -1
-    basename: classpath:/META-INF/messages/exceptions
-    encoding: UTF-8
-    #fallback-to-system-locale: true
-  http:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-    multipart:
-      enabled: true
 
 # logging
 logging:
@@ -27,8 +14,8 @@ datasource:
   deliveryDispatch:
     initialize: true
     initial-size: 10
-    max-total: 50
-    max-idle: 50
+    max-total: 10
+    max-idle: 10
     min-idle: 10
     max-wait-millis: 3000
     test-on-borrow: true
@@ -41,52 +28,6 @@ datasource:
     url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
     username: devuser
     password: devuserpw!
-
-# concurrent 설정
-cntt.concurrent.enable: true
-cntt.concurrent.threadCount: 8
-
-# spring security and actuator management
-security.basic.enabled: false
-management.security.enabled: false
-
----
-spring:
-  profiles: local
-
-# rest template
-cntt.restPool:
-  enable: true
-  pool-size: 20
-  defaultMaxPerRoute: 20
-  hosts:
-    scheme: http
-    host: localhost
-    port: 8091
-    maxPerRoute: 20
-
-# Logger 설정
-cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.cntt.api
-
----
-spring:
-  profiles: dev
-
-# rest template
-cntt.restPool:
-  enable: true
-  pool-size: 20
-  defaultMaxPerRoute: 20
-  hosts:
-    scheme: http
-    host: localhost
-    port: 8085
-    maxPerRoute: 20
-
-# Logger 설정
-cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.cntt.api
 
 ---
 spring:
@@ -103,39 +44,17 @@ cntt.restPool:
       host: dev-api.cntt.co.kr
       port: 8091
       maxPerRoute: 20
-
     -
       scheme: https
       host: dev-api.cntt.co.kr
       port: 443
       maxPerRoute: 20
 
-# Logger 설정
-cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.cntt.api
-
----
-spring:
-  profiles: api
-server:
-  port: 8091
-  tomcat:
-    uri-encoding: UTF-8
-  jsp-servlet:
-    init-parameters:
-      development: true
-api.token.serviceKey : testkey
-api.token.secretKey : ATE6OLdQuouPbqyZ5qt1H++taImbDhqSPw53ClPT7+k=
-api.token.expiration : 6000
-
 ---
 spring:
   redis:
     host: 127.0.0.1
     port: 6379
-
----
-api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
 api.upload.path.notice: /home/ddetest/dde-upload/notice

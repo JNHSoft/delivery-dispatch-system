@@ -1,44 +1,9 @@
 ---
 spring:
-  profiles: web
-  application.name: delivery-dispatch-mvc
+  profiles: web-local
+  profiles.include: web
   mvc:
     locale: ko_KR
-    favicon.enabled: false
-  messages:
-    cache-seconds: -1
-    basename: classpath:/META-INF/messages/exceptions
-                , classpath:/META-INF/messages/messages
-    encoding: UTF-8
-    #fallback-to-system-locale: true
-  http:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-    multipart:
-      enabled: true
-#  thymeleaf.cache : false
-  thymeleaf:
-      cache: false
-      prefix: classpath:/templates
-
-management:
-  context-path: /monitor
-
-# was
-server:
-  port: 8080
-  tomcat:
-    uri-encoding: UTF-8
-  jsp-servlet:
-    init-parameters:
-      development: true
-  session:
-    timeout: 10800
-    cookie:
-#      http-only: true
-#      secure: true
 
 # logging
 logging:
@@ -48,10 +13,10 @@ logging:
 datasource:
   deliveryDispatch:
     initialize: true
-    initial-size: 20
-    max-total: 100
-    max-idle: 100
-    min-idle: 20
+    initial-size: 10
+    max-total: 10
+    max-idle: 10
+    min-idle: 10
     max-wait-millis: 3000
     test-on-borrow: true
     validation-query: select 1
@@ -63,33 +28,6 @@ datasource:
     url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
     username: devuser
     password: devuserpw!
-
-# concurrent
-cntt.concurrent.enable: true
-cntt.concurrent.threadCount: 8
-
-# spring security disabled
-security.basic.enabled: false
-management.security.enabled: false
-
-# mail service
-#cntt.mail:
-#  enable : true
-#  sender : Do_not_reply@burgerking.co.kr
-#  imageHeader : http://delivery.burgerking.co.kr/files/mail/mail_header.gif
-#  imageLock : http://delivery.burgerking.co.kr/files/mail/img_lock.gif
-#  tempPasswordMailTitle : TEST
-#  tempPasswordMailHtmlPath : classpath:templates/mail/tempPasswordMail.html
-#  tempPasswordMailSampleHtmlPath1 : classpath:templates/mail/tempPasswordMailSample1.html
-#  tempPasswordMailSampleHtmlPath2 : classpath:templates/mail/tempPasswordMailSample2.html
-#  tempPasswordMailSampleHtmlPath3 : classpath:templates/mail/tempPasswordMailSample3.html
-
-cntt:
-  underConstruction:
-    redirectUrl: /caution
-    ignoreIps: 127.0.0.1, 0:0:0:0:0:0:0:1, 123.111.91.3
-    paramAdminPw: cbody
-    active: true
 
 ---
 spring:
@@ -107,30 +45,6 @@ cntt.restPool:
       port: 8091
       maxPerRoute: 20
 
-# Logger
-cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.deliverydispatch
-
----
-spring:
-  profiles: dev
-
-# rest template
-cntt.restPool:
-  enable: true
-  pool-size: 20
-  defaultMaxPerRoute: 20
-  hosts:
-    -
-      scheme: http
-      host: localhost
-      port: 8085
-      maxPerRoute: 20
-
-# Logger
-cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.deliverydispatch
-
 ---
 spring:
   profiles: oper
@@ -146,31 +60,25 @@ cntt.restPool:
       host: dev-api.cntt.co.kr
       port: 8091
       maxPerRoute: 20
+
     -
       scheme: https
       host: dev-api.cntt.co.kr
       port: 443
       maxPerRoute: 20
 
-# Logger
-cntt.monitor.enable: true
-cntt.monitor.basepackage: kr.co.deliverydispatch
-
 ---
+# Redis
 spring:
   redis:
     host: 127.0.0.1
     port: 6379
 
 ---
-api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
-
----
+# Upload Path
 api.upload.path.notice: /home/ddetest/dde-upload/notice
 api.upload.path.alarm: /home/ddetest/dde-upload/alarm
 
 ---
+# Web socket
 websocket.localhost: 127.0.0.1:3000
-
----
-api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav
