@@ -42,7 +42,6 @@ server:
 
 # logging
 logging:
-# [DDE-TW-MAIN]
   config: classpath:logback-spring-tw.xml
 
 # datasource
@@ -61,7 +60,6 @@ datasource:
     time-between-eviction-runs-millis: 60000
     driver-class-name: com.mysql.jdbc.Driver
 
-#    [DDE-TW-MAIN]
     url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8
     username: twuser
     password: twuserpw!
@@ -144,13 +142,11 @@ cntt.restPool:
   defaultMaxPerRoute: 20
   hosts:
     -
-#      [DDE-TW-MAIN]
       scheme: http
       host: ddetw-api.cntt.co.kr
       port: 8091
       maxPerRoute: 20
     -
-#      [DDE-TW-MAIN]
       scheme: https
       host: ddetw-api.cntt.co.kr
       port: 443
@@ -163,7 +159,6 @@ cntt.monitor.basepackage: kr.co.deliverydispatch
 ---
 spring:
   redis:
-#    [DDE-TW-MAIN]
     host: 192.168.100.81
     port: 6379
 
@@ -171,14 +166,11 @@ spring:
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
-#[DDE-TW-MAIN]
 api.upload.path.notice: /root/dde-upload/notice
 api.upload.path.alarm: /root/dde-upload/alarm
 
 ---
-#[DDE-TW-MAIN]
 websocket.localhost: https://ddetw-store.cntt.co.kr
 
 ---
-#[DDE-DEFAULT-ALARMS]
 api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav

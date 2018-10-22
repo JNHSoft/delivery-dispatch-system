@@ -36,8 +36,8 @@ server:
   session:
     timeout: 3600
     cookie:
-      secure: true
-      http-only: true
+#      secure: true
+#      http-only: true
 
 # logging
 logging:
@@ -55,7 +55,6 @@ datasource:
     test-on-borrow: true
     #validation-query: select 1
     driver-class-name: com.mysql.jdbc.Driver
-
 
     url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
     username: devuser
@@ -172,5 +171,4 @@ api.upload.path.notice: /home/ddetest/dde-upload/notice
 api.upload.path.alarm: /home/ddetest/dde-upload/alarm
 
 ---
-#[DDE-DEFAULT-ALARMS]
 api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav

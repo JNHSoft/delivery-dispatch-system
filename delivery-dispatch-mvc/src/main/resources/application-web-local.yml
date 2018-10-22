@@ -146,7 +146,6 @@ cntt.restPool:
       host: dev-api.cntt.co.kr
       port: 8091
       maxPerRoute: 20
-
     -
       scheme: https
       host: dev-api.cntt.co.kr
@@ -171,8 +170,7 @@ api.upload.path.notice: /home/ddetest/dde-upload/notice
 api.upload.path.alarm: /home/ddetest/dde-upload/alarm
 
 ---
-websocket.localhost: 1.255.51.183:3000
+websocket.localhost: 127.0.0.1:3000
 
 ---
-#[DDE-DEFAULT-ALARMS]
 api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav

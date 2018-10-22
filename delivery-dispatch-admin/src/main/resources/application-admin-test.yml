@@ -60,7 +60,6 @@ datasource:
     username: devuser
     password: devuserpw!
 
-
 # concurrent
 cntt.concurrent.enable: true
 cntt.concurrent.threadCount: 8
@@ -139,20 +138,15 @@ cntt.restPool:
   defaultMaxPerRoute: 20
   hosts:
     -
-
       scheme: http
       host: dev-api.cntt.co.kr
       port: 8091
       maxPerRoute: 20
-
-
     -
-
       scheme: https
       host: dev-api.cntt.co.kr
       port: 443
       maxPerRoute: 20
-
 
 # Logger
 cntt.monitor.enable: true
@@ -164,7 +158,6 @@ spring:
     host: 127.0.0.1
     port: 6379
 
-
 api.token.serviceKey : testkey
 api.token.secretKey : ATE6OLdQuouPbqyZ5qt1H++taImbDhqSPw53ClPT7+k=
 api.token.expiration : 6000
@@ -173,11 +166,8 @@ api.token.expiration : 6000
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
-
-#[DDE-TEST]
 api.upload.path.notice: /home/ddetest/dde-upload/notice
 api.upload.path.alarm: /home/ddetest/dde-upload/alarm
 
 ---
-#[DDE-DEFAULT-ALARMS]
 api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav

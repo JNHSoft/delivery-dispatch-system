@@ -4,7 +4,6 @@ spring:
   application.name: delivery-dispatch-mvc
   mvc:
     locale: zh_HK
-
     favicon.enabled: false
   messages:
     cache-seconds: -1
@@ -43,7 +42,6 @@ server:
 
 # logging
 logging:
-# [DDE-HK-MAIN]
   config: classpath:logback-spring-hk.xml
 
 # datasource
@@ -62,7 +60,6 @@ datasource:
     time-between-eviction-runs-millis: 60000
     driver-class-name: com.mysql.jdbc.Driver
 
-#    [DDE-HK-MAIN]
     url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8
     username: hkuser
     password: hkuserpw!
@@ -145,13 +142,11 @@ cntt.restPool:
   defaultMaxPerRoute: 20
   hosts:
     -
-#      [DDE-HK-MAIN]
       scheme: http
       host: ddehk-api.cntt.co.kr
       port: 8091
       maxPerRoute: 20
     -
-#      [DDE-HK-MAIN]
       scheme: https
       host: ddehk-api.cntt.co.kr
       port: 443
@@ -164,7 +159,6 @@ cntt.monitor.basepackage: kr.co.deliverydispatch
 ---
 spring:
   redis:
-#    [DDE-HK-MAIN]
     host: 192.168.100.81
     port: 6379
 
@@ -172,12 +166,11 @@ spring:
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
-#[DDE-HK-MAIN]
 api.upload.path.notice: /home/ddehk/dde-upload/notice
 api.upload.path.alarm: /home/ddehk/dde-upload/alarm
+
 ---
-#[DDE-HK-MAIN]
 websocket.localhost: https://ddehk-store.cntt.co.kr
+
 ---
-#[DDE-DEFAULT-ALARMS]
 api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav

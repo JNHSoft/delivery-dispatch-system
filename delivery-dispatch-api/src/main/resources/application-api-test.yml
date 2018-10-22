@@ -38,7 +38,6 @@ datasource:
     time-between-eviction-runs-millis: 60000
     driver-class-name: com.mysql.jdbc.Driver
 
-#    [DDE-TEST]
     url: jdbc:mysql://127.0.0.1:3306/devdb?useUnicode=true&characterEncoding=utf8
     username: devuser
     password: devuserpw!
