@@ -1,0 +1,183 @@
+---
+spring:
+  profiles: web
+  application.name: delivery-dispatch-mvc
+  mvc:
+    locale: zh_HK
+
+    favicon.enabled: false
+  messages:
+    cache-seconds: -1
+    basename: classpath:/META-INF/messages/exceptions
+                , classpath:/META-INF/messages/messages
+    encoding: UTF-8
+    #fallback-to-system-locale: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    multipart:
+      enabled: true
+#  thymeleaf.cache : false
+  thymeleaf:
+      cache: false
+      prefix: classpath:/templates
+
+management:
+  context-path: /monitor
+
+# was
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+  jsp-servlet:
+    init-parameters:
+      development: true
+  session:
+    timeout: 10800
+    cookie:
+      http-only: true
+      secure: true
+
+# logging
+logging:
+# [DDE-HK-MAIN]
+  config: classpath:logback-spring-hk.xml
+
+# datasource
+datasource:
+  deliveryDispatch:
+    initialize: true
+    initial-size: 20
+    max-total: 100
+    max-idle: 100
+    min-idle: 20
+    max-wait-millis: 3000
+    test-on-borrow: true
+    validation-query: select 1
+    test-while-idle: true
+    min-evictable-idle-time-millis: 28700
+    time-between-eviction-runs-millis: 60000
+    driver-class-name: com.mysql.jdbc.Driver
+
+#    [DDE-HK-MAIN]
+    url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8
+    username: hkuser
+    password: hkuserpw!
+
+# concurrent
+cntt.concurrent.enable: true
+cntt.concurrent.threadCount: 8
+
+# spring security disabled
+security.basic.enabled: false
+management.security.enabled: false
+
+# mail service
+#cntt.mail:
+#  enable : true
+#  sender : Do_not_reply@burgerking.co.kr
+#  imageHeader : http://delivery.burgerking.co.kr/files/mail/mail_header.gif
+#  imageLock : http://delivery.burgerking.co.kr/files/mail/img_lock.gif
+#  tempPasswordMailTitle : TEST
+#  tempPasswordMailHtmlPath : classpath:templates/mail/tempPasswordMail.html
+#  tempPasswordMailSampleHtmlPath1 : classpath:templates/mail/tempPasswordMailSample1.html
+#  tempPasswordMailSampleHtmlPath2 : classpath:templates/mail/tempPasswordMailSample2.html
+#  tempPasswordMailSampleHtmlPath3 : classpath:templates/mail/tempPasswordMailSample3.html
+
+cntt:
+  underConstruction:
+    redirectUrl: /caution
+    ignoreIps: 127.0.0.1, 0:0:0:0:0:0:0:1, 123.111.91.3
+    paramAdminPw: cbody
+    active: true
+
+---
+spring:
+  profiles: local
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    -
+      scheme: http
+      host: localhost
+      port: 8091
+      maxPerRoute: 20
+
+# Logger
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.deliverydispatch
+
+---
+spring:
+  profiles: dev
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    -
+      scheme: http
+      host: localhost
+      port: 8085
+      maxPerRoute: 20
+
+# Logger
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.deliverydispatch
+
+---
+spring:
+  profiles: oper
+
+# rest template
+cntt.restPool:
+  enable: true
+  pool-size: 20
+  defaultMaxPerRoute: 20
+  hosts:
+    -
+#      [DDE-HK-MAIN]
+      scheme: http
+      host: ddehk-api.cntt.co.kr
+      port: 8091
+      maxPerRoute: 20
+    -
+#      [DDE-HK-MAIN]
+      scheme: https
+      host: ddehk-api.cntt.co.kr
+      port: 443
+      maxPerRoute: 20
+
+# Logger
+cntt.monitor.enable: true
+cntt.monitor.basepackage: kr.co.deliverydispatch
+
+---
+spring:
+  redis:
+#    [DDE-HK-MAIN]
+    host: 192.168.100.81
+    port: 6379
+
+---
+api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
+
+---
+#[DDE-HK-MAIN]
+api.upload.path.notice: /home/ddehk/dde-upload/notice
+api.upload.path.alarm: /home/ddehk/dde-upload/alarm
+---
+#[DDE-HK-MAIN]
+websocket.localhost: https://ddehk-store.cntt.co.kr
+---
+#[DDE-DEFAULT-ALARMS]
+api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav
