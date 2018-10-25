@@ -27,6 +27,7 @@ $(function() {
                 });
                 socket.on('message', function(data){
                     var objData = JSON.parse(data);
+                    var type = objData.type;
                     var subgroup_id = objData.subGroupId;
                     var store_id = objData.storeId;
                     var chatUserId = objData.recvChatUserId;
@@ -41,6 +42,9 @@ $(function() {
                         if(RiderChatUserId == chatUserId){
                             getChatList(chatUserId, chatUserName);
                         }
+                    }
+                    if(type == 'rider_updated'){
+                        getRiderList();
                     }
 
                 });
