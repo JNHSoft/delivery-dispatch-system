@@ -90,7 +90,10 @@ $(function() {
 });
 
 function riderAlarmMessage(data) {
-    if(data.match('rider_')=='rider_'){
+    var objData = JSON.parse(data);
+    var type = objData.type;
+
+    if(data.match('rider_')=='rider_' || type == 'order_denied'){
         getRiderList();
         if(map_region){
             if(map_region!="tw"){
