@@ -147,7 +147,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             if (S_Rider.getSubGroupStoreRel() != null) {
                 redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).storeId(S_Rider.getSubGroupStoreRel().getStoreId()).subGroupId(S_Rider.getSubGroupStoreRel().getSubGroupId()).build());
             } else {
-                redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).build());
+                redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).storeId(S_Rider.getStore().getId()).build());
             }
         }
 
@@ -175,7 +175,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             if (S_Rider.getSubGroupStoreRel() != null) {
                 redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).storeId(S_Rider.getSubGroupStoreRel().getStoreId()).subGroupId(S_Rider.getSubGroupStoreRel().getSubGroupId()).build());
             } else {
-                redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).build());
+                redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).storeId(S_Rider.getStore().getId()).build());
             }
         }
 

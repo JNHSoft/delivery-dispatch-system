@@ -37,6 +37,8 @@ $(function() {
                     }else if(my_store.subGroup){
                         if(subgroup_id == my_store.subGroup.id){
                             riderAlarmMessage(data);
+                        } else if (my_store.id == store_id){
+                            riderAlarmMessage(data);
                         }
                     }
                     //이부분도 riderAlarmMessage에 넣는게 좋을 것 같습니다
