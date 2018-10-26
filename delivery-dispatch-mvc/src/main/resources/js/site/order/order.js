@@ -186,7 +186,8 @@ function orderAlarmMessage(data, statusArray, storeId) {
 
 function timeSet(time) {
     if (time) {
-        var d = new Date(time);
+        var t = time.split(/[- :]/);
+        var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
         return $.datepicker.formatDate('mm/dd ', d) + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
     } else {
         return "-";
@@ -195,7 +196,9 @@ function timeSet(time) {
 
 function timeSet2(time) {
     if (time) {
-        var d = new Date(time);
+        var t = time.split(/[- :]/);
+        var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+
         return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
     } else {
         return "-";
