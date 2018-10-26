@@ -60,6 +60,10 @@
 			<result property="orderId" column="deny_order_id" />
 			<result property="deniedDatetime" column="denied_datetime" />
 		</association>
+
+		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="id" column="store_id" />
+		</association>
 	</resultMap>
 
 	<!-- selectRiderNowResult -->
@@ -226,6 +230,7 @@
 		, TR.name
 		, TR.phone
 		, TS.store_name
+		, TS.id AS store_id
 		, TR.login_id
 		, TR.login_pw
 		, TR.code

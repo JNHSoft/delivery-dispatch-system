@@ -138,7 +138,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setSubGroupRiderRel(null);
         }
 
-
         int nRet = riderMapper.updateRiderInfo(rider);
 
         Rider S_Rider = riderMapper.getRiderInfo(rider);
