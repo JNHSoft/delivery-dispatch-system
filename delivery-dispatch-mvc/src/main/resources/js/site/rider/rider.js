@@ -26,6 +26,7 @@ $(function() {
                     transports: ['websocket'] // websocket만을 사용하도록 설정
                 });
                 socket.on('message', function(data){
+                    //data.match를 type 으로 바꿔야 합니다
                     var objData = JSON.parse(data);
                     var type = objData.type;
                     var subgroup_id = objData.subGroupId;
@@ -38,13 +39,11 @@ $(function() {
                             riderAlarmMessage(data);
                         }
                     }
+                    //이부분도 riderAlarmMessage에 넣는게 좋을 것 같습니다
                     if(data.match('chat_')=='chat_'){
                         if(RiderChatUserId == chatUserId){
                             getChatList(chatUserId, chatUserName);
                         }
-                    }
-                    if(type == 'rider_updated'){
-                        getRiderList();
                     }
 
                 });
