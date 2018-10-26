@@ -35,7 +35,7 @@ hr{margin:10px 0;border:0 none;height:1px;background:#ddd;}
 h1,h2,h3,h4,h5,h6,b,strong,th{font-weight:600;}
 
 /* Chrome, Safari용 스크롤 바 */
-::-webkit-scrollbar{width:8px;height:8px;border:3px solid #fff;}
+::-webkit-scrollbar{width:10px;height:10px;border:3px solid #fff;}
 ::-webkit-scrollbar-track{background:#efefef;-webkit-border-radius:10px;border-radius:10px;-webkit-box-shadow:inset 0 0 4px rgba(0,0,0,.2)}
 ::-webkit-scrollbar-thumb{height:50px;width:50px;background:rgba(0,0,0,.2);-webkit-border-radius:8px;border-radius:8px;-webkit-box-shadow:inset 0 0 4px rgba(0,0,0,.1)}
 
@@ -99,7 +99,7 @@ body.hidden{overflow:hidden;}
 	#gnb ul li dl dd a:hover {color:#67AEEB}
 
 #container{position:relative;}
-#contents{position:relative;padding:10px;background:#ececec;box-sizing:border-box;min-height:400px;}
+#contents{position:relative;padding:10px;background:#ececec;box-sizing:border-box;min-height:400px;height:auto !important;}
 #contents:after{content:'';display:block;clear:both;}
 
 
@@ -380,7 +380,7 @@ table .t_right{text-align:right !important;}
 .frozen-bdiv:after{content:'';width:1px;height:100%;position:absolute;right:0;top:0;background:#e4e8ee;}
 .ui-jqgrid .ui-jqgrid-hdiv{background:#565656}
 .ui-jqgrid thead th .ui-icon{background-image:url(./lib/images/ui-icons_ffffff_256x240.png);}
-.ui-jqgrid tr.jqgrow td{letter-spacing:-1px}
+.ui-jqgrid tr.jqgrow td{letter-spacing:-1px;padding:5px 0;}
 
 /* 페이징 */
 .paging_wrap{overflow:hidden;position:relative;text-align:center;margin-top:15px;min-height:30px;}
