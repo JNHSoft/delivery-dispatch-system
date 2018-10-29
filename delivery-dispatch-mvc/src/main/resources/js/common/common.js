@@ -146,8 +146,7 @@ function footerRiders() {
                     if(data[i].working == "1"){
                         standbyCnt = parseInt(data[i].workCount) - parseInt(data[i].orderCount);
                         workCnt = data[i].orderCount;
-                        console.log(data[i].myWorkCount);
-                        console.log(data[i].orderCount);
+
                         myStandbyCnt = parseInt(data[i].myWorkCount) - parseInt(data[i].orderCount);
                         myWorkCnt = data[i].orderCount;
                     }
