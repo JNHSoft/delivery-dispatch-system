@@ -33,6 +33,7 @@ public interface StoreRiderService {
      */
     public List<Rider> getRiderFooter(Common common);
 
+
     /**
      * <p> putRiderReturnTime
      *

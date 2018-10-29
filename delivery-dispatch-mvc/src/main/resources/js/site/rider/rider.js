@@ -88,7 +88,7 @@ $(function() {
     });
 
 });
-
+// 라이더 push
 function riderAlarmMessage(data) {
     var objData = JSON.parse(data);
     var type = objData.type;

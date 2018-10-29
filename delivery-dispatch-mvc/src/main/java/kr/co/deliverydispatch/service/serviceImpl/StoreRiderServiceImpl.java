@@ -122,6 +122,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
         return S_Rider;
     }
 
+
     @Override
     public int putRiderReturnTime(Rider rider){
         int nRet = riderMapper.updateRiderReturnTime(rider);

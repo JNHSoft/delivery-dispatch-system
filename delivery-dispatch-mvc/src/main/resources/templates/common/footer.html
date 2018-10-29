@@ -4,10 +4,19 @@
 	<!-- 푸터영역 -->
 	<footer id="footer">
 		<div class="f_left" id="footer_left">
+			<span class="inblock" th:text="${#messages.msg('rider.title')}" /><span id="title"/>
 			<span class="inblock" th:text="${#messages.msg('rider.work')}" /><span id="work"/>
 			<span class="inblock" th:text="${#messages.msg('rider.standby')}" /><span id="standby"/>
-			<span class="inblock" th:text="${#messages.msg('rider.rest')}" /><span id="rest"/>
+			<span class="inblock" th:text="${#messages.msg('rider.rest')}" /><span id="rest"/> &nbsp; / &nbsp;
 		</div>
+		<!-- 내 상점 기사들 보기 적용-->
+		<div class="f_left" id="my_footer_left">
+			<span class="inblock t_red"  th:text="${#messages.msg('rider.myTitle')}" /><span id="myTitle"/>
+			<span class="inblock t_red"  th:text="${#messages.msg('rider.myWork')}" /><span id="myWork" style="color:red"/>
+			<span class="inblock t_red"  th:text="${#messages.msg('rider.myStandby')}" /><span id="myStandby" style="color:red"/>
+			<span class="inblock t_red"  th:text="${#messages.msg('rider.myRest')}" /><span id="myRest" style="color:red"/>
+		</div>
+
 		<div class="f_right">
 			<span class="inblock" th:text="${#messages.msg('order.count.new')}" /><span id="new" />
 			<span class="inblock" th:text="${#messages.msg('order.count.assigned')}" /><span id="assigned"/>

@@ -99,6 +99,7 @@ public class MainController {
     @RequestMapping("/footerRiderList")
     @ResponseBody
     public List<Rider> getFooterRiderList(){
+
         Rider rider = new Rider();
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         rider.setToken(storeInfo.getStoreAccessToken());

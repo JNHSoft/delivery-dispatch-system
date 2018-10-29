@@ -30,6 +30,7 @@ $(document).ready(function() {
     $('#selectLang').change(function () {
         changeAlarmByLang();
     });
+
 });
 
 function noticeAlarm() {
@@ -127,30 +128,47 @@ function footerOrders() {
         }
     });
 }
+// footer 부분
 function footerRiders() {
     $.ajax({
-        url : "/footerRiderList",
+        url : '/footerRiderList',
         success : function(data) {
             if(typeof data == 'object') {
                 var restCnt = 0;
                 var workCnt = 0;
                 var standbyCnt = 0;
+
+                var myRestCnt = 0;
+                var myWorkCnt = 0;
+                var myStandbyCnt = 0;
+
                 for (i =0; i <data.length; i++){
                     if(data[i].working == "1"){
                         standbyCnt = parseInt(data[i].workCount) - parseInt(data[i].orderCount);
                         workCnt = data[i].orderCount;
+                        console.log(data[i].myWorkCount);
+                        console.log(data[i].orderCount);
+                        myStandbyCnt = parseInt(data[i].myWorkCount) - parseInt(data[i].orderCount);
+                        myWorkCnt = data[i].orderCount;
                     }
+
                     if(data[i].working == "3"){
                         restCnt = parseInt(data[i].workCount);
+                        myRestCnt = parseInt(data[i].myWorkCount);
                     }
                 }
                 $('#work').text(workCnt);
                 $('#standby').text(standbyCnt);
                 $('#rest').text(restCnt);
+
+                $('#myWork').text(myWorkCnt);
+                $('#myStandby').text(myStandbyCnt);
+                $('#myRest').text(myRestCnt);
             }
         }
     });
 }
+
 
 function showKeyCode(event) {
     event = event || window.event;
