@@ -1,19 +1,13 @@
 package kr.co.deliverydispatch.controller;
 
-import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.deliverydispatch.security.SecurityUser;
-import kr.co.deliverydispatch.service.StoreNoticeService;
 import kr.co.deliverydispatch.service.StoreOrderService;
-import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -161,4 +154,17 @@ public class OrderController {
         List<Rider> riderList = storeOrderService.getSubgroupRiderRels(common);
         return riderList;
     }
+
+    @GetMapping("/order-post")
+    @CnttMethodDescription("주문 등록 페이지")
+    public String postOrder(Store store, Model model) {
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        store.setToken(storeInfo.getStoreAccessToken());
+        Store myStore = storeOrderService.getStoreInfo(store);
+        model.addAttribute("store", myStore);
+        model.addAttribute("token", store.getToken());
+        model.addAttribute("regionLocale", regionLocale);
+        return "/order/order_post";
+    }
+
 }

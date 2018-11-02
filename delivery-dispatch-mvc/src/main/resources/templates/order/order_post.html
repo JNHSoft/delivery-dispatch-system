@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
+	<!-- 컨텐츠 영역 -->
+	<section id="container" layout:fragment="content">
+		<div class="tabmenu"></div>
+		<div id="contents">
+			<div class="cont_box">
+				<div class="top">
+					<strong>Order Post</strong>
+				</div>
+				<div class="cont">
+					<ul class="form_list">
+						<li>
+							<strong>areaAddress</strong>
+							<div>
+								<input class="input w_100" id="areaAddress" type="text" value="bangkok, Thailand" />
+							</div>
+						</li>
+						<li>
+							<strong>districtAddress</strong>
+							<div>
+								<input class="input w_100" id="districtAddress" type="text" value="Pathumwan District" />
+							</div>
+						</li>
+						<li>
+							<strong>streetAddress</strong>
+							<div>
+								<input class="input w_100" id="streetAddress" type="text" value="Ratchadamri Road" />
+							</div>
+						</li>
+						<li>
+							<strong>buildingAddress</strong>
+							<div>
+								<input class="input w_100" id="buildingAddress" type="text" value="127 Gaysorn Tower" />
+							</div>
+						</li>
+						<li>
+							<strong>detailAddress</strong>
+							<div>
+								<input class="input w_100" id="detailAddress" type="text" value="Unit A 17th Floor" />
+							</div>
+						</li>
+						<li>
+							<strong>menuPrice</strong>
+							<div>
+								<input class="input w_100" id="menuPrice" type="text" value="9.90" />
+							</div>
+						</li>
+						<li>
+							<strong>menuName</strong>
+							<div>
+								<input class="input w_100" id="menuName" type="text" value="pizza" />
+							</div>
+						</li>
+						<li>
+							<strong>regOrderId</strong>
+							<div>
+								<input class="input w_100" id="regOrderId" type="text" value="s-20181101-cnt-wtest-0001" />
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="button_box">
+					<ul class="form_list">
+						<li style="width: 100%;">
+							<a href="#" class="button btn_blue w120 h30" onclick="orderPost(0)">orderPost</a>
+						</li>
+						<li style="width: 100%;">
+							<input class="input" id="count" type="number" value="5" /> <a href="#" class="button btn_blue w120 h30" onclick="orderPosts()">orderPosts</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="return" style="color: red;"></div>
+
+			<div>
+				<br />
+				<br />
+				<a href="https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi/related?utm_source=chrome-ntp-icon" target="_blank">
+					* Install Chrome Extensions - Allow-Control-Allow-Origin
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- //컨텐츠 영역 -->
+	<script layout:fragment="script" th:inline="javascript">
+        /*<![CDATA[*/
+        var my_store = /*[[${store}]]*/ 'my_store';
+        var token = /*[[${token}]]*/ 'token';
+
+        $(document).ready(function(){
+            $("#regOrderId").val("s-" + $.datepicker.formatDate("yymmdd", new Date()) + "-cnt-wtest-0001");
+        });
+
+        function Padder(len, pad) {
+            if (len === undefined) {
+                len = 1;
+            } else if (pad === undefined) {
+                pad = "0";
+            }
+
+            var pads = "";
+            while (pads.length < len) {
+                pads += pad;
+            }
+
+            this.pad = function (what) {
+                var s = what.toString();
+                return pads.substring(0, pads.length - s.length) + s;
+            };
+        }
+
+        function orderPosts() {
+            var count = $("#count").val();
+            orderPost(count-1);
+        }
+
+        function orderPost(count) {
+            if (my_store.adminId != "4") {
+                alert("This is not a test account.");
+                return;
+            }
+
+            $("#return").empty();
+
+            for (i = 0; i <= count; i++) {
+                var regNum = $("#regOrderId").val().split('-').pop(-1);
+                var zero4 = new Padder(4);
+                var lastIndex = $("#regOrderId").val().lastIndexOf(regNum);
+                var regOrderId = $("#regOrderId").val().substring(0, lastIndex) + zero4.pad(parseInt(regNum)+i);
+
+                jData = {
+                    "body": {
+                        "token":token,
+                        "level":"2",
+                        "areaAddress": $("#areaAddress").val(),
+                        "districtAddress": $("#districtAddress").val(),
+                        "streetAddress": $("#streetAddress").val(),
+                        "buildingAddress": $("#buildingAddress").val(),
+                        "detailAddress": $("#detailAddress").val(),
+                        "menuPrice": $("#menuPrice").val(),
+                        "menuName":$("#menuName").val(),
+                        "regOrderId": regOrderId
+                    }
+                }
+
+                $.ajax({
+                    url: "http://localhost:8091/API/postOrder",
+                    type: "POST",
+                    dataType: 'json',
+                    data: JSON.stringify(jData),
+                    contentType: "application/json",
+                    async : false,
+                    success : function(data){
+                        console.log(data);
+                        var body = data.body;
+                        if (body.error_desc != null) {
+                            var error_desc = body.error_desc;
+                            var error = error_desc.error;
+                            var error_code = error_desc.error_code;
+                            $("#return").append("<br>"+regOrderId+": "+error+"("+error_code+")");
+                        }
+                        if (body.code != null) {
+                            $("#return").append("<br>"+regOrderId+": success!");
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr);
+                    }
+                });
+            }
+        }
+        /*]]>*/
+	</script>
+</html>
+
