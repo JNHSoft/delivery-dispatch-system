@@ -76,3 +76,6 @@ api.upload.path.alarm: /root/dde-upload/alarm
 # Web socket
 websocket.localhost: https://ddetw-store.cntt.co.kr
 
+---
+#cors domain
+api.cors.origin: http://ddetw-api.cntt.co.kr

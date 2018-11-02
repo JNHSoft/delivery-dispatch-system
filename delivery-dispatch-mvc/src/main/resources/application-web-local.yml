@@ -82,3 +82,7 @@ api.upload.path.alarm: /home/ddetest/dde-upload/alarm
 ---
 # Web socket
 websocket.localhost: 127.0.0.1:3000
+
+---
+#cors domain
+api.cors.origin: http://localhost:8091
