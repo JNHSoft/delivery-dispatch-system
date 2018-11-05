@@ -247,8 +247,10 @@
 	.group_wrap > div > div{width:280px;display:inline-block;float:none;white-space:initial;padding:0;}
 
 	.state_wrap.on > .left{margin-right:0px;margin-bottom:20px;}
-	.state_wrap > .left .ui-jqgrid ,
-	.state_wrap > .left .ui-jqgrid .ui-jqgrid-view table {min-width:900px;}
+	.state_wrap.on > .left .jq_grid{overflow: inherit;}
+	.state_wrap > .left .ui-jqgrid,
+	.state_wrap > .left .ui-jqgrid .ui-jqgrid-view{width:auto !important;}
+	.state_wrap.on > .left .ui-jqgrid .ui-jqgrid-view table {min-width:900px;}
 	.state_wrap > .right{width:100%;right:-100%;}
 	.state_wrap.on > .right {position:relative;}
 	.state_wrap .btn_close{left:0;}
