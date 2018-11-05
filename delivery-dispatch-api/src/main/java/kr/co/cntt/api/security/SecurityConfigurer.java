@@ -79,7 +79,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 //			.antMatchers("/API/*").permitAll()
 			.anyRequest().authenticated();
 
-		http.addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class);
+//		http.addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class);
 		http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 		http.headers().cacheControl();
 		http.headers().frameOptions().disable();
