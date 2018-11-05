@@ -72,3 +72,7 @@ api.upload.path.alarm: /home/ddehk/dde-upload/alarm
 ---
 # Web socket
 websocket.localhost: https://ddehk-store.cntt.co.kr
+
+---
+#cors domain
+api.cors.origin: http://ddehk-api.cntt.co.kr

@@ -30,6 +30,9 @@ public class OrderController {
     @Value("${spring.mvc.locale}")
     private Locale regionLocale;
 
+    @Value("${api.cors.origin}")
+    private String origin;
+
     @Autowired
     public OrderController(StoreOrderService storeOrderService) { this.storeOrderService = storeOrderService; }
 
@@ -163,6 +166,7 @@ public class OrderController {
         Store myStore = storeOrderService.getStoreInfo(store);
         model.addAttribute("store", myStore);
         model.addAttribute("token", store.getToken());
+        model.addAttribute("origin", origin);
         model.addAttribute("regionLocale", regionLocale);
         return "/order/order_post";
     }

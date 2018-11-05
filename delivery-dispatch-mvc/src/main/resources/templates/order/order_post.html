@@ -89,6 +89,7 @@
         /*<![CDATA[*/
         var my_store = /*[[${store}]]*/ 'my_store';
         var token = /*[[${token}]]*/ 'token';
+        var origin = /*[[${origin}]]*/ 'origin';
 
         $(document).ready(function(){
             $("#regOrderId").val("s-" + $.datepicker.formatDate("yymmdd", new Date()) + "-cnt-wtest-0001");
@@ -147,7 +148,7 @@
                 }
 
                 $.ajax({
-                    url: "http://localhost:8091/API/postOrder",
+                    url: origin + "/API/postOrder",
                     type: "POST",
                     dataType: 'json',
                     data: JSON.stringify(jData),
