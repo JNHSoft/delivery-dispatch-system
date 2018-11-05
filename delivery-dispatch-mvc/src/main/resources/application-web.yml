@@ -34,7 +34,7 @@ server:
     init-parameters:
       development: true
   session:
-    timeout: 10800
+    timeout: 28800
 
 # concurrent
 cntt.concurrent.enable: true
