@@ -158,6 +158,7 @@ public class OrderController {
         return riderList;
     }
 
+    /*
     @GetMapping("/order-post")
     @CnttMethodDescription("주문 등록 페이지")
     public String postOrder(Store store, Model model) {
@@ -170,5 +171,6 @@ public class OrderController {
         model.addAttribute("regionLocale", regionLocale);
         return "/order/order_post";
     }
+    */
 
 }
