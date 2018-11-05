@@ -240,14 +240,17 @@
 /* ==========================================================================
   Media Queries for Responsive Design.
   ========================================================================== */
-@media only screen and (max-width:760px){
+@media only screen and (max-width:800px){
 	.group_wrap{margin:0 0 10px;}
 	.group_wrap::-webkit-scrollbar{-webkit-appearance:none;}
 	.group_wrap > div{/* width:900px; */overflow:auto;white-space:nowrap;}
 	.group_wrap > div > div{width:280px;display:inline-block;float:none;white-space:initial;padding:0;}
 
-	.state_wrap.on > .left{margin-right:0px;}
+	.state_wrap.on > .left{margin-right:0px;margin-bottom:20px;}
+	.state_wrap > .left .ui-jqgrid,
+	.state_wrap > .left .ui-jqgrid .ui-jqgrid-view {width:100% !important;}
 	.state_wrap > .right{width:100%;right:-100%;}
+	.state_wrap.on > .right {position:relative;}
 	.state_wrap .btn_close{left:0;}	
 	.state_detail .tit{padding-left:45px;}
 	.state_detail .cont{padding:0 5px;}
