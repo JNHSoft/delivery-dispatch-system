@@ -189,7 +189,7 @@
 		</selectKey>
 	</insert>
 
-	<!-- selectOrders -->
+	<!-- selectOrders  주문리스트 created_datetime에서 reservation_datetime 으로 변경 적용-->
 	<select id="selectOrders" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
 		SELECT
 			A.id
@@ -243,15 +243,8 @@
 
 
 		WHERE
-			<choose>
-				<when test="currentDatetime != null and currentDatetime != ''">
-					date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > A.created_datetime
-					AND A.created_datetime > #{currentDatetime}
-				</when>
-				<otherwise>
-					A.created_datetime > CURRENT_DATE()
-				</otherwise>
-			</choose>
+			A.reservation_datetime > CURRENT_DATE()
+
 			<if test="status != null and status != ''">
 				AND A.status IN
 				<foreach collection="statusArray" item="statusItem" index="index" separator="," open="(" close=")">
@@ -279,8 +272,8 @@
 				</otherwise>
 			</choose>
 			AND (A.reservation_datetime IS NULL
-			OR (A.created_datetime > CURRENT_DATE() AND DATE_FORMAT(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > DATE_FORMAT(A.reservation_datetime, '%Y-%m-%d %H:%i') AND A.reservation_datetime > CURRENT_DATE()))
--- 			OR (A.created_datetime > CURRENT_DATE() AND date_add(now(), interval 2 hour) > A.reservation_datetime AND A.reservation_datetime > CURRENT_DATE()))
+			OR (DATE_FORMAT(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > DATE_FORMAT(A.reservation_datetime, '%Y-%m-%d %H:%i') AND A.reservation_datetime > CURRENT_DATE()))
+-- 			OR (date_add(now(), interval 2 hour) > A.reservation_datetime AND A.reservation_datetime > CURRENT_DATE()))
 		ORDER BY CASE WHEN A.status in (0,5) THEN A.assigned_first END DESC, CASE WHEN A.status in (0,5) THEN A.reservation_datetime END DESC, A.status in (0,5) desc, A.status ASC,  A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime DESC
 	</select>
 
