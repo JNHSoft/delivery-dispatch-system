@@ -546,16 +546,19 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setStatus("0");
 
+        // 예약시간 설정
         if (order.getReservationDatetime() != null && !order.getReservationDatetime().equals("")) {
             order.setReservationDatetime(order.getReservationDatetime().substring(0, 12) +"00");
             order.setReservationStatus("1");
         } else {
             order.setReservationStatus("0");
             LocalDateTime ldt = LocalDateTime.now();
+            // 예약시간은 5분 단위
             int chkMinutes = 0;
             if(ldt.getMinute()%5!=0){
                 chkMinutes = 5-ldt.getMinute()%5;
             }
+
             LocalDateTime reserveLDT = LocalDateTime.now().plusMinutes(Integer.parseInt(order.getCookingTime())+chkMinutes);
             String nowDate = String.format("%02d", reserveLDT.getYear())
                     + String.format("%02d", reserveLDT.getMonthValue())

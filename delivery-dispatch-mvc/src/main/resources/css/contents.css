@@ -26,9 +26,9 @@
 .login_wrap li.btn .button{display:block;padding:0;}
 .login_wrap > p{font-size:12px;padding:10px;text-align:center;background:#fafafa;border-top:1px solid #ddd;}
 
- /* ==============================
-  * content
-  * ============================== */
+/* ==============================
+ * content
+ * ============================== */
 .guide{height:100%;overflow:auto;}
 .guide .cont_in{height:auto;}
 .guide h3{font-size:2em;margin:2em 0 0.5em;}
@@ -45,12 +45,12 @@
 
 
 
-.inp_btn{position:relative;padding-right:80px;}	
+.inp_btn{position:relative;padding-right:80px;}
 .inp_btn .input{width:100%;}
 .inp_btn .btn{position:absolute;right:0;top:0;}
 .inp_btn .button{width:70px;padding:0;}
-	.inp_btn.w50{padding-right:60px;}
-	.inp_btn.w50 .button{width:50px;}
+.inp_btn.w50{padding-right:60px;}
+.inp_btn.w50 .button{width:50px;}
 
 .chat_list{border:1px solid #ddd;background:#eee;}
 .chat_list li{position:relative;background:#fff;border-bottom:1px solid #ddd;}
@@ -97,8 +97,8 @@
 /* faq */
 .faq_list{border-top:1px solid #999;font-size:14px;}
 .faq_list > li{padding:15px 20px;border-bottom:1px solid #eeeeee;}
-	.faq_list > li.on{background-color:#fafafa;}
-	.faq_list > li.no_list{padding:30px;text-align:center;background:none;color:#999;}
+.faq_list > li.on{background-color:#fafafa;}
+.faq_list > li.no_list{padding:30px;text-align:center;background:none;color:#999;}
 .faq_list > li > p{position:relative;padding:0 0 0 20px;font-weight:bold;}
 .faq_list > li > p:before{content:'Q';display:block;position:absolute;left:0;top:0;line-height:1;color:#eb1c23;font-size:18px;}
 .faq_list > li > p > a{position:relative;display:block;padding-right:1.5em;}
@@ -250,7 +250,7 @@
 	.state_wrap.on > .left .jq_grid{overflow: inherit;}
 	.state_wrap > .left .ui-jqgrid,
 	.state_wrap > .left .ui-jqgrid .ui-jqgrid-view{width:auto !important;}
-	.state_wrap.on > .left .ui-jqgrid .ui-jqgrid-view table {min-width:900px;}
+	.state_wrap > .left .ui-jqgrid .ui-jqgrid-view table {min-width:900px;}
 	.state_wrap > .right{width:100%;right:-100%;}
 	.state_wrap.on > .right {position:relative;}
 	.state_wrap .btn_close{left:0;}

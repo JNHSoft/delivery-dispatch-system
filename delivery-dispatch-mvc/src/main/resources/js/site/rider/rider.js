@@ -93,14 +93,23 @@ function riderAlarmMessage(data) {
     var objData = JSON.parse(data);
     var type = objData.type;
 
-    if(data.match('rider_')=='rider_' || type == 'order_completed'){
+    if(type=='rider_update' || type == 'order_completed'){
         getRiderList();
         if(map_region){
             if(map_region!="tw"){
                 footerRiders();
             }
         }
+        // 라이더 위치정보 업데이트 받았을때
+    } else if (type=='rider_location_updated'){
+        var latitude = parseFloat(objData.latitude);
+        var longitude = parseFloat(objData.longitude);
+        var location = {lat: latitude, lng: longitude};
+        var riderId = objData.id;
+        locationMarker(location,riderId);
     }
+
+
     if(data.match('order_')=='order_'){
         footerOrders();
     }
@@ -109,6 +118,12 @@ function riderAlarmMessage(data) {
     }
     alarmSound(data);
 }
+// 라이더 위치정보 변경된걸로 마커 찍기
+function locationMarker(location,riderId) {
+    marker[riderId].setPosition(location);
+}
+
+
 
 function addMarker(location, data, i, status) {
     if($('#myStoreChk').prop('checked') && data.riderStore) {
@@ -126,6 +141,7 @@ function addMarker(location, data, i, status) {
             label : data.name,
             map : map
         });
+
         marker[i].addListener('click', function () {
             chatUserName = this.label;
             RiderChatUserId = this.riderChatUserId;
@@ -153,49 +169,50 @@ function getRiderList() {
         },
         dataType: 'json',
         success: function (data) {
-        for (var j = 1; j < marker.length; j++) {
-            marker[j].setMap(null);
-        }
-        marker=[];
-        marker[0] = new google.maps.Marker({
-            position : {lat: storeLatitude, lng: storeLongitude},
-            map : map
-        });
-        var riderCount = 0;
-        for (var key in data) {
-            if (data.hasOwnProperty(key)) {
-                riderCount++;
-                var latitude = parseFloat(data[key].latitude);
-                var longitude = parseFloat(data[key].longitude)
-                var location = {lat: latitude, lng: longitude};
-                if(data[key].working==1 && typeof data[key].order != "undefined"){
-                    $status = '<i class="ic_txt ic_blue">'+ status_work +'</i>';
-                }else if (data[key].working==1 && typeof data[key].order == "undefined"){
-                    $status = '<i class="ic_txt ic_green">'+ status_standby +'</i>';
-                }else if (data[key].working==3){
-                    $status = '<i class="ic_txt ic_red">'+ status_rest +'</i>';
-                }else{
-                    $status = '<i class="ic_txt">'+ status_off +'</i>';
+            for (var j = 1; j < marker.length; j++) {
+                marker[j].setMap(null);
+            }
+            marker=[];
+            // 마커 배열 0번째는 스토어의 위치다
+            marker[0] = new google.maps.Marker({
+                position : {lat: storeLatitude, lng: storeLongitude},
+                map : map
+            });
+            var riderCount = 0;
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    riderCount++;
+                    var latitude = parseFloat(data[key].latitude);
+                    var longitude = parseFloat(data[key].longitude)
+                    var location = {lat: latitude, lng: longitude};
+                    if(data[key].working==1 && typeof data[key].order != "undefined"){
+                        $status = '<i class="ic_txt ic_blue">'+ status_work +'</i>';
+                    }else if (data[key].working==1 && typeof data[key].order == "undefined"){
+                        $status = '<i class="ic_txt ic_green">'+ status_standby +'</i>';
+                    }else if (data[key].working==3){
+                        $status = '<i class="ic_txt ic_red">'+ status_rest +'</i>';
+                    }else{
+                        $status = '<i class="ic_txt">'+ status_off +'</i>';
+                    }
+                    if($('#srchChk1').prop('checked') && data[key].working==1 && typeof data[key].order != "undefined") {
+                        i = addMarker(location, data[key], data[key].id, $status);
+                        shtml += gridRiderList(data[key], $status, riderCount);
+                    }
+                    if($('#srchChk2').prop('checked') && data[key].working==1 && typeof data[key].order == "undefined") {
+                        i = addMarker(location, data[key], data[key].id, $status);
+                        shtml += gridRiderList(data[key], $status, riderCount);
+                    }
+                    if($('#srchChk3').prop('checked') && data[key].working==3) {
+                        i = addMarker(location, data[key], data[key].id, $status);
+                        shtml += gridRiderList(data[key], $status, riderCount);
+                    }
+                    if($('#srchChk4').prop('checked') && data[key].working==0){
+                        i = addMarker(location, data[key], data[key].id, $status);
+                        shtml += gridRiderList(data[key], $status, riderCount);
+                    }
                 }
-                if($('#srchChk1').prop('checked') && data[key].working==1 && typeof data[key].order != "undefined") {
-                    i = addMarker(location, data[key], i, $status);
-                    shtml += gridRiderList(data[key], $status, riderCount);
-                }
-                if($('#srchChk2').prop('checked') && data[key].working==1 && typeof data[key].order == "undefined") {
-                    i = addMarker(location, data[key], i, $status);
-                    shtml += gridRiderList(data[key], $status, riderCount);
-                }
-                if($('#srchChk3').prop('checked') && data[key].working==3) {
-                    i = addMarker(location, data[key], i, $status);
-                    shtml += gridRiderList(data[key], $status, riderCount);
-                }
-                if($('#srchChk4').prop('checked') && data[key].working==0){
-                    i = addMarker(location, data[key], i, $status);
-                    shtml += gridRiderList(data[key], $status, riderCount);
-                }
-            } 
-        }
-        $('#riderList').html(shtml);
+            }
+            $('#riderList').html(shtml);
         }
     });
 }

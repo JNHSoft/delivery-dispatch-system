@@ -16,4 +16,7 @@ public class Content {
     private String subGroupId;
     private String recvChatUserId;
 
+    // 라이더 로케이션 정보 업데이트를 위해 추가
+    private String latitude;
+    private String longitude;
 }
