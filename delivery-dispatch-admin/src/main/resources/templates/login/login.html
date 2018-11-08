@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/mainLayout">
 	<div class="box" layout:fragment="content">
 		<form id="loginForm" name="loginForm">
-			<h1><img src="./resources/images/common/logo.png" alt="KFC" /></h1>
+			<h1><img src="./resources/images/common/logo.png" th:alt="${#messages.msg('application.title')}" /></h1>
 			<ul>
 				<li class="inp">
 					<input type="text" class="input h50" name="adminId" id="adminId" th:placeholder="${#messages.msg('login.id')}" value="" maxlength="20" />
