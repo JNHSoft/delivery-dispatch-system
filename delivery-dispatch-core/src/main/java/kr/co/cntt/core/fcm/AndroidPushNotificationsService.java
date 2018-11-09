@@ -38,6 +38,7 @@ public class AndroidPushNotificationsService {
             body.put("priority", "high");
             // body.put("dry_run", true);
 
+
             JSONObject notification = new JSONObject();
             notification.put("body", "body string here");
             notification.put("title", "title string here");
@@ -52,6 +53,9 @@ public class AndroidPushNotificationsService {
 
             body.put("notification", notification);
             body.put("data", data);
+
+            // IOS 개발자 추가
+            body.put("content_available", true);
 
 //            System.out.println("body" + body.toString());
 
