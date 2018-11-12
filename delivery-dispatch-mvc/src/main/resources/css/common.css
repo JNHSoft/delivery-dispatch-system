@@ -448,7 +448,7 @@ body .ui-tooltip{font-size:12px;border-width:1px;box-shadow:none}
 	65% {left:59%;-o-transform:rotate(0deg);transform:rotate(0deg);opacity:1;}
 	100% {left:100%;-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0;}
 }
-.jq_grid{overflow:auto;}
+/*.jq_grid{overflow:auto;}*/
 .jq_grid::-webkit-scrollbar{-webkit-appearance:none;}
 .jq_grid > div{min-width:720px;}
 .on .jq_grid > div{min-width:0;}
