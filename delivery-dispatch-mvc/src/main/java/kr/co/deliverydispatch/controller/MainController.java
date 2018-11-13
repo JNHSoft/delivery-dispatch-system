@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,6 +37,8 @@ public class MainController {
     private String websocketHost;
     @Value("${api.default.alarms}")
     private String defaultAlarms;
+    @Value("${spring.mvc.locale}")
+    private Locale regionLocale;
 
     /**
      * 객체 주입
@@ -59,7 +62,10 @@ public class MainController {
      * @return
      */
     @GetMapping("/login")
-    public String login() { return "/login/login"; }
+    public String login(Model model) {
+        model.addAttribute("regionLocale", regionLocale);
+        return "/login/login";
+    }
 
 
     /**
