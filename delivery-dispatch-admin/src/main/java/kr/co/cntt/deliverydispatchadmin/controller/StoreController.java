@@ -337,6 +337,10 @@ public class StoreController {
         store.setAddress(address);
         store.setDetailAddress(detailAddress);
         store.setAssignmentStatus(assignmentStatus);
+        // 자동배정,수동배정시 주문갯수 제한이 없으면 500에러 나옴 강제로 1개를 넣어줌
+        if(store.getAdminAssignmentLimit()==null){
+            store.setAssignmentLimit("2");
+        }
 
         // group model 생성
         Group group = new Group();
