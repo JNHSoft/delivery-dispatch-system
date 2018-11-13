@@ -93,9 +93,9 @@ public class AndroidPushNotificationsService {
 
             body.put("priority", "high");
 
-            /*JSONObject notification = new JSONObject();
+            JSONObject notification = new JSONObject();
             notification.put("body", "body string here");
-            notification.put("title", "title string here");*/
+            notification.put("title", "title string here");
             // notification.put("icon", "myicon");
 
             Gson gson = new GsonBuilder().serializeNulls().create();
@@ -107,8 +107,12 @@ public class AndroidPushNotificationsService {
 //            data.put("key2", "value2");
 
 
-//            body.put("notification", notification);
+            //body.put("notification", notification);
+
             body.put("data", data);
+
+            body.put("content_available",true);
+
 
 //            System.out.println("body" + body.toString());
 
@@ -131,6 +135,8 @@ public class AndroidPushNotificationsService {
 
 
             FirebaseResponse firebaseResponse = restTemplate.postForObject("https://fcm.googleapis.com/fcm/send", request, FirebaseResponse.class);
+
+            System.out.println(request.toString());
 
             return CompletableFuture.completedFuture(firebaseResponse);
         } catch (JSONException e) {

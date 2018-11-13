@@ -74,6 +74,52 @@ th {font-weight:normal;}
     z-index: 1;
 }
 
+.bg_box{
+    width: 430px;
+    height: 244px;
+    object-fit: contain;
+    background: url("../../images/tracker/bg-box.svg");
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    display:table;
+}
+.bg_box > div {display:table-cell; vertical-align: middle;}
+.gps_title{
+    width: 417px;
+    height: 56px;
+    font-family: NanumGothic;
+    font-size: 40px;
+    font-weight: 800;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+    font-family: PingFangSC;
+    font-weight: 600;
+    margin: auto;
+}
+
+.gps_text{
+    width: 407px;
+    height: 80px;
+    font-family: PingFangSC;
+    font-size: 24px;
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.67;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+    margin-top: 12px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .tracker .progress-background {
     text-align: center;
     color: #FFF;

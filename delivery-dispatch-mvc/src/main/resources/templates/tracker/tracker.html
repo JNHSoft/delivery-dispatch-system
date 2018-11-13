@@ -20,6 +20,12 @@
         </div>
         <br/></div>
     <div class="visual_area">
+        <div class="bg_box" style="display: none;">
+            <div>
+                <p class="gps_title" th:text="${#messages.msg('tracker.gps.title')}"/>
+                <p class="gps_text" th:text="${#messages.msg('tracker.gps.text')}"/>
+            </div>
+        </div>
     </div>
     <div id="map" class="mapCtrl" hidden="hidden"></div>
     <div class="tracker-bottom">
@@ -139,6 +145,8 @@
                         setUI();
                     }
 
+                    $('.bg_box').show();
+
                 } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && localStorage.getItem('checkStep')) {
                     localStorage.removeItem('chkComplete');
                     localStorage.removeItem('riderStoreDistance');
@@ -156,10 +164,12 @@
                     }
                     checkEnter = 1;
                     startEndPoint();
+                    $('.bg_box').hide();
                     $('.progress-background').show();
 
                 } else if (trackerStatus == 2 && !localStorage.getItem('chkProgress')) {
                     localStorage.removeItem('chkComplete');
+                    $('.bg_box').hide();
                     $('.progress-background').hide();
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on');
@@ -183,6 +193,7 @@
                         }
                     }, 100);
                 } else if (trackerStatus == 2 && localStorage.getItem('chkProgress')) {
+                    $('.bg_box').hide();
                     $('.progress-background').hide();
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on line');
@@ -202,6 +213,7 @@
                     calculateAndDisplayRoute(directionsService, directionsDisplay);
 
                 } else if (trackerStatus == 3 && !localStorage.getItem('chkComplete')) {
+                    $('.bg_box').hide();
                     $('.progress-background').hide();
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on line');
@@ -221,6 +233,7 @@
                     calculateAndDisplayRoute(directionsService, directionsDisplay);
                     setTimeout('setUI()', 10000);
                 } else if (trackerStatus == 3 && localStorage.getItem('chkComplete')) {
+                    $('.bg_box').hide();
                     $('.progress-background').hide();
                     $('#tNew').addClass('on line');
                     $('#tAssign').addClass('on line');
@@ -235,6 +248,7 @@
                     localStorage.removeItem('riderStoreDistance');
                     localStorage.removeItem('beforeDurationTime');
                 } else if (trackerStatus == 4) {
+                    $('.bg_box').hide();
                     localStorage.clear();
                     location.href = "/error/error-tracker";
                 }
