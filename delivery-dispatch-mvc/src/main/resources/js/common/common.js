@@ -24,6 +24,7 @@ $(document).ready(function() {
                 footerRiders();
             }else{
                 $("#footer_left").hide();
+                $("#my_footer_left").hide();
             }
         }
     }
