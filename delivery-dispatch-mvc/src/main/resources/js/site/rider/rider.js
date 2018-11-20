@@ -171,7 +171,7 @@ function getRiderList() {
         success: function (data) {
             console.log(data);
             for (var j = 0; j < marker.length; j++) {
-                console.log(marker[j]);
+                // console.log(marker[j]);
                 if (marker[j] !== undefined) {
                     marker[j].setMap(null);
                 }
