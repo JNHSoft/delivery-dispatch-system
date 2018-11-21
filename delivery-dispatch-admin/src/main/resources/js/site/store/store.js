@@ -22,11 +22,11 @@ $(document).ready(function () {
             });
             // 전체 검색 일때 다 뿌린다. eq 는 같다라는 뜻임
         }else if(select == 'all'){
-            filter.rules.push({
+            /*filter.rules.push({
                 field : 'th0',
                 op : "eq",
                 data : searchText
-            });
+            });*/
 
             filter.rules.push({
                 field : 'th1',
@@ -41,13 +41,7 @@ $(document).ready(function () {
             });
 
             filter.rules.push({
-                field : 'th5',
-                op : "cn",
-                data : searchText
-            });
-
-            filter.rules.push({
-                field : 'th3',
+                field : 'th4',
                 op : "cn",
                 data : searchText
             });
