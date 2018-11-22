@@ -176,12 +176,12 @@
 							<p><strong class="fz13 t_black" id="store_subgroup_name"/> <span class="fz10" th:text="${#messages.msg('group.store.add.label.sub')}"></span></p>
 							 <!--검색 기능-->
 							<div class="mt10">
-								<input type="text" class="input" />
-								<button class="button"><i class="fa fa-search" aria-hidden="true" th:text="${#messages.msg('list.search')}"></i> </button>
+								<input type="text" class="input" id="searchText"/>
+								<button class="button" id="storeSearch" ><i class="fa fa-search" aria-hidden="true" th:text="${#messages.msg('list.search')}"></i> </button>
 							</div>
 							<hr />
 							<div class="tbl_wrap" th:fragment="storeList" id="storeList">
-								<table class="table">
+								<table class="table" id="store-table">
 									<thead>
 										<tr>
 											<th th:text="${#messages.msg('group.label.no')}"></th>
@@ -192,8 +192,8 @@
 									</thead>
 									<tbody>
 										<tr th:each = "store:${storeList}" th:attr="data-sub-id=${store.subGroupId}" th:attrappend="data-group-id=${store.groupId}">
-											<td th:text="${store.storeId}" name="storeName"></td>
-											<td class="t_left"  th:text="${store.storeName}" name="storeName"></td>
+											<td th:text="${store.storeId}" name="storeId"></td>
+											<td class="t_left"  th:text="${store.storeName}" name="storeName" id="searchName"></td>
 											<td>
 												<select class="select w_100" th:name="*{subGroupList}">
 													<th:block th:each="subGroupList:${subGroupList}" >

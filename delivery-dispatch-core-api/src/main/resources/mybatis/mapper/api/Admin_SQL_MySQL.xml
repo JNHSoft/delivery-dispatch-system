@@ -268,7 +268,7 @@
 	</update>
 
 
-	<!-- selectGroups -->
+	<!-- selectGroups  그룹 카운트 지워진꺼까지 카운트가되는 오류 수정-->
 	<select id="selectGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.Group">
 		SELECT
 			A.created_datetime
@@ -276,10 +276,9 @@
 			, A.id
 			, A.name
 			, A.admin_id
--- 			, COUNT(B.id) AS subGroupCount
-			, (SELECT COUNT(id) from TB_SUBGROUP WHERE group_id=A.id) AS subGroupCount
+			, (SELECT COUNT(id) from TB_SUBGROUP WHERE group_id=A.id AND deleted IS NULL) AS subGroupCount
 			, COUNT(C.id) AS subGroupStoreCount
--- 			, (SELECT COUNT(id) from TB_SUBGROUP_STORE_REL WHERE subgroup_id=B.id) AS subGroupStoreCount
+
 		FROM TB_GROUP AS A
 		LEFT JOIN TB_SUBGROUP AS B
 		ON A.id = B.group_id
