@@ -124,7 +124,7 @@ $(function() {
 
     // 스토어
     $('#storeList').on('dblclick', 'table tbody tr', function() {
-        console.log("진입!");
+        // console.log("진입!");
         var $tr = $(this).closest('tr');
         // var $targetTr = $(this).closest('tbody').find('tr');
         $(this).closest('tbody').find('tr').removeClass('selected');
@@ -132,7 +132,7 @@ $(function() {
     });
 
     $('#storeList').on("change", 'select', function() {
-        console.log("변경!!");
+        // console.log("변경!!");
         if(!confirm(alert_confirm_mod)) return;
         var $tr = $(this).closest('tr');
         var params = {
