@@ -47,6 +47,8 @@ DDELib.Orders.prototype = {
             }
         }
         this.mydata = [];
+        this.alldata = [];
+        this.lastModifyDatetime = null;
     },
     bindEvent: function () {
         this.log("bindEvent");
@@ -80,6 +82,8 @@ DDELib.Orders.prototype = {
             changeChkInputMessage = true;
         });
         $("#searchButton").click(function () {
+            self.log("click searchButton");
+
             var searchText = $("#searchText").val();
             var filter = {
                 groupOp: "OR",
@@ -199,45 +203,86 @@ DDELib.Orders.prototype = {
         });
         return arr;
     },
-    getOrderList : function() {
+    getOrderList : function(order_id) {
+        this.log("getOrderList:"+order_id);
         var statusArray = this.checkStatusValus();
         this.log("checkStatusValus:"+statusArray.join());
+        this.log("modifiedDatetime:"+this.lastModifyDatetime);
         var self = this;
-        var mydata = [];
+        /*
+        data: {
+                statusArray: statusArray.filter(n => n), //null 제거
+                status: statusArray.join(''),
+                modifiedDatetime :  this.modifiedDatetime
+             },
+         */
+        var send_data;
+        if(typeof order_id !== "undefined") {
+            send_data = {
+                id : order_id
+            }
+        } else {
+            send_data = {
+                modifiedDatetime :  this.lastModifyDatetime
+            }
+        }
+
         $.ajaxSettings.traditional = true;// ajax 배열 던지려면 필요함
         $.ajax({
             url: "/getOrderList",
             type: 'get',
-            data: {
-                statusArray: statusArray.filter(n => n), //null 제거
-                status: statusArray.join('')
-             },
+            data: send_data,
             dataType: 'json',
             success: function(data) {
                 self.log("getOrderList result");
                 self.log(data);
-                self.paintOrderList(data);
+                if(self.lastModifyDatetime == null) {
+                    self.log("firstdata");
+                    currentOrderList = [];
+                }
+                for (var key in data) {
+                    self.log("checkdata");
+                    if (data.hasOwnProperty(key)) {
+                        var ev = data[key];
+                        currentOrderList[ev.id] = ev;
+                    }
+                }
+                self.paintOrderList();
 
             }
         });
     },
-    paintOrderList:function(data) {
+    paintOrderList:function() {
         this.log("paintOrderList");
         var i = 0;
-        currentOrderList = data;
+        var statusArray = this.checkStatusValus();
         this.mydata = [];
+        data = currentOrderList;
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                 i++;
                 var ev = data[key];
                 var tmpdata = this.makeRowOrder(i, ev);
-
-                if (this.checkBoxs.myStoreChk.is(":checked")) {
-                    if (ev.storeId ==  this.storeId) {
+                if( $.inArray(ev.status, statusArray) > -1 ) {
+                    if (this.checkBoxs.myStoreChk.is(":checked")) {
+                        if (ev.storeId ==  this.storeId) {
+                            this.mydata.push(tmpdata);
+                        }
+                    } else {
                         this.mydata.push(tmpdata);
                     }
-                } else {
-                    this.mydata.push(tmpdata);
+                }
+               // this.log("modifiedDatetime:"+ ev.modifiedDatetime);
+                if(typeof ev.modifiedDatetime !== "undefined" && ev.modifiedDatetime != null  ){
+                  //  this.log("modifiedDatetime:"+ this.lastModifyDatetime);
+
+                    if(this.lastModifyDatetime == null) {
+                   //     this.log("modifiedDatetime set:"+ ev.modifiedDatetime);
+                        this.lastModifyDatetime = ev.modifiedDatetime;
+                    } else if(this.lastModifyDatetime < ev.modifiedDatetime) {
+                   //     this.log("modifiedDatetime change:"+ ev.modifiedDatetime);
+                        this.lastModifyDatetime = ev.modifiedDatetime;
+                    }
                 }
             }
         }
@@ -256,7 +301,7 @@ DDELib.Orders.prototype = {
             data: this.mydata,
             page:1,
             colModel: [
-                {label:order_number, name:'No', width:25, key:true, align:'center'},
+                {label: order_number, name:'No', width:25, key:true, align:'center'},
                 {label: order_reg_order_id, name: 'reg_order_id', width: 80, align: 'center'},
                 {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden: true},
                 {label: order_status, name: 'state', width: 80, align: 'center'},
@@ -273,7 +318,9 @@ DDELib.Orders.prototype = {
                 {label: order_return, name: 'time6', width: 80, align: 'center'},
                 {label: order_reserved, name: 'time7', width: 80, align: 'center'},
                 {label: rider_name, name: 'rider', width: 80, align: 'center'},
-                {label: order_assigned_advance, name: 'button', width: 80, align: 'center'}
+                {label: order_assigned_advance, name: 'button', width: 80, align: 'center'},
+                {label: "", name: 'orderbystatus', width: 80, align: 'center'},
+                {label: "", name: 'assignedFirst', width: 80, align: 'center'}
             ],
             height: 680,
             autowidth: true,
@@ -289,17 +336,26 @@ DDELib.Orders.prototype = {
                 }, 300)//그리드 리사이즈
             }
         });
+        resizeJqGrid('#jqGrid'); //그리드 리사이즈
     },
     reloadGrid : function(){
         this.log("reloadGrid");
         this.htLayer.grid.clearGridData();
-        this.htLayer.grid.jqGrid('setGridParam', {data:this.mydata});
+        this.htLayer.grid.jqGrid('hideCol',["orderbystatus","assignedFirst"])
+        this.htLayer.grid.jqGrid('setGridParam', {data:this.mydata , multiSort:true})
+            .jqGrid('sortGrid', 'orderbystatus', true, 'asc')
+            .jqGrid('sortGrid', 'assignedFirst', true, 'desc')
+            .jqGrid('sortGrid', 'time7', true, 'desc')
+            .jqGrid('sortGrid', 'time1', true, 'desc')
+            .jqGrid('sortGrid', 'reg_order_id', true, 'desc');
         this.htLayer.grid.trigger("reloadGrid");
+        setTimeout(function () {
+            $(window).trigger('resize');
+        }, 300)//그리드 리사이즈
 
-        resizeJqGrid('#jqGrid'); //그리드 리사이즈
     },
     makeRowOrder : function(i, ev) {
-        this.log("makeRowOrder:"+i);
+        //this.log("makeRowOrder:"+i);
         var tmpdata = new Object();
 
         tmpdata.No = i;
@@ -324,6 +380,8 @@ DDELib.Orders.prototype = {
         // 서드 파티 추가
         tmpdata.rider = this.getRiderOrThirdTypeName(ev);
         tmpdata.button = this.makeButtonOrderData(ev,'putAssignedAdvanceFirst');
+        tmpdata.orderbystatus = (ev.status == 5)? 0 : ev.status ;
+        tmpdata.assignedFirst =  ev.assignedFirst;
 
         return tmpdata;
     },
@@ -835,7 +893,7 @@ DDELib.Orders.prototype = {
         }, 300);
     },
     orderAlarmMessage:function(data) {
-
+        this.log("orderAlarmMessage:"+data);
         var objData = JSON.parse(data);
         var subgroup_id = objData.subGroupId;
         var isAlarm = false;
@@ -849,7 +907,11 @@ DDELib.Orders.prototype = {
         }
         if( isAlarm ) {
             if (data.match('order_') == 'order_') {
-                this.getOrderList();
+                if(objData.type == 'order_new') {
+                    this.getOrderList(objData.orderId);
+                } else {
+                    this.getOrderList();
+                }
                 footerOrders();
             }
             if (data.match('rider_') == 'rider_') {

@@ -6,6 +6,7 @@
         <result property="id" column="id" />
         <result property="regOrderId" column="reg_order_id" />
         <result property="createdDatetime" column="created_datetime" />
+		<result property="modifiedDatetime" column="modified_datetime" />
         <result property="storeId" column="store_id" />
         <result property="riderId" column="rider_id" />
         <result property="address" column="address" />
@@ -195,6 +196,7 @@
 			A.id
 			, A.reg_order_id
 			, A.created_datetime
+			, A.modified_datetime
             , A.store_id
             , A.rider_id
 			, A.address
@@ -222,7 +224,6 @@
 			, D.store_name AS store_real_name
 			, D.latitude AS store_latitude
 			, D.longitude AS store_longitude
-
 			, E.id AS third_party_id
 			, E.name AS third_party_name
 
@@ -251,7 +252,12 @@
 					#{statusItem}
 				</foreach>
 			</if>
-
+			<if test="modifiedDatetime != null and modifiedDatetime != ''">
+				AND ifnull(A.modified_datetime,A.created_datetime) > #{modifiedDatetime}
+			</if>
+			<if test="id != null and id != ''">
+				AND A.id = #{id}
+			</if>
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
 					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))

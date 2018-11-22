@@ -49,9 +49,9 @@ public class OrderController {
         store.setToken(storeInfo.getStoreAccessToken());
         order.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeOrderService.getStoreInfo(store);
-        List<Order> orderList = storeOrderService.getOrders(order);
+        //List<Order> orderList = storeOrderService.getOrders(order);
         model.addAttribute("store", myStore);
-        model.addAttribute("orderList", orderList);
+        //model.addAttribute("orderList", orderList);
         model.addAttribute("regionLocale", regionLocale);
         return "/order/order";
     }
@@ -63,6 +63,8 @@ public class OrderController {
 //        System.out.println(Arrays.toString(order.getStatusArray()));
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
+        System.out.println("getOrderList(order):"+order.getModifiedDatetime());
         List<Order> orderList = storeOrderService.getOrders(order);
         return orderList;
     }
