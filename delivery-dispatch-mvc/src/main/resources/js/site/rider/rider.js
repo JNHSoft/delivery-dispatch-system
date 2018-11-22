@@ -169,8 +169,12 @@ function getRiderList() {
         },
         dataType: 'json',
         success: function (data) {
-            for (var j = 1; j < marker.length; j++) {
-                marker[j].setMap(null);
+            console.log(data);
+            for (var j = 0; j < marker.length; j++) {
+                // console.log(marker[j]);
+                if (marker[j] !== undefined) {
+                    marker[j].setMap(null);
+                }
             }
             marker=[];
             // 마커 배열 0번째는 스토어의 위치다

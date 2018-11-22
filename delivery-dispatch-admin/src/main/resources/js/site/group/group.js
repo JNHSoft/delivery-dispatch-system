@@ -59,7 +59,7 @@ $(function() {
         var params = {
             groupId : $tr.data('group-id'),
             subGroupId : $tr.data('sub-id'),
-            storeId : $tr.find('td[name="storeName"]').html()
+            storeId : $tr.find('td[name="storeId"]').html()
         }
 
         // 그룹 소그룹 삭제 부분
@@ -124,6 +124,7 @@ $(function() {
 
     // 스토어
     $('#storeList').on('dblclick', 'table tbody tr', function() {
+        // console.log("진입!");
         var $tr = $(this).closest('tr');
         // var $targetTr = $(this).closest('tbody').find('tr');
         $(this).closest('tbody').find('tr').removeClass('selected');
@@ -131,18 +132,35 @@ $(function() {
     });
 
     $('#storeList').on("change", 'select', function() {
+        // console.log("변경!!");
         if(!confirm(alert_confirm_mod)) return;
         var $tr = $(this).closest('tr');
         var params = {
             groupId : $tr.data('group-id'),
             subGroupId : $(this).val(),
-            storeId : $tr.find('td[name="storeName"]').html()
+            storeId : $tr.find('td[name="storeId"]').html()
         }
         putStoreSubGroup(params);
     });
 
+
+    // search 검색 기능
+    $("#storeSearch").click(function () {
+        var searchText = $("#searchText").val();
+        // console.log(searchText);
+        var offset = $("#searchName").offset();
+        $('#store-table tbody tr').scrollTop('0');
+        // console.log(offset);
+
+        $('#store-table tbody tr').removeClass('selected');
+        $('#store-table tbody tr td:nth-child(2):contains('+searchText+')').parent().addClass('selected');
+    });
+
+
+
     // 그룹 select 박스 변경시 서브 그룹 리스트 호출
     $('#noneGroupList').on("change", 'select', function () {
+        // console.log("111");
         if($(this).attr('name') === 'groupList') {
             var params = {
                 groupId : $(this).val()
@@ -152,6 +170,7 @@ $(function() {
         }
         // 서브그룹 select 박스 변경시 insert
         else if($(this).attr('name') === 'subGroupList') {
+            // console.log("2222");
             if(!confirm(alert_confirm_mod)) return;
             var $tr = $(this).closest('tr');
             var params = {
@@ -162,7 +181,6 @@ $(function() {
             postStoreGroupSubGroup(params);
         }
     });
-
 
     // checkbox
     $('input[name=checkbox]:checkbox').click(function () {
@@ -341,6 +359,7 @@ function postSubGroup() {
 
 /**
  * 미등록 상점 등록시 서브 그룹 List 불러오기
+ * 미그룹에서 그룹설정 변경시 두번 진행해야했던 오류 수정 nick
  */
 function getNoneStoreSubGroupList(params, $subGroupList) {
     $.ajax({
@@ -350,7 +369,7 @@ function getNoneStoreSubGroupList(params, $subGroupList) {
         dataType : 'json',
         success : function(data){
             if(data.length > 0) {
-                var noneStoreSubGroupHtml = "";
+                var noneStoreSubGroupHtml = "<option>-</option>";
                 for (var i in data){
                     noneStoreSubGroupHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
                 }
