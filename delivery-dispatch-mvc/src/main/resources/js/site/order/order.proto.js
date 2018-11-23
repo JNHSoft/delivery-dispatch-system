@@ -47,7 +47,6 @@ DDELib.Orders.prototype = {
             }
         }
         this.mydata = [];
-        this.alldata = [];
         this.lastModifyDatetime = null;
     },
     bindEvent: function () {
@@ -197,7 +196,7 @@ DDELib.Orders.prototype = {
             if($(this).is(":checked")) {
                 arr.push($(this).val());
                 if($(this).val() == "0") {
-                    arr.push(5);
+                    arr.push("5");
                 }
             }
         });
@@ -238,6 +237,7 @@ DDELib.Orders.prototype = {
                 self.log(data);
                 if(self.lastModifyDatetime == null) {
                     self.log("firstdata");
+
                     currentOrderList = [];
                 }
                 for (var key in data) {
@@ -258,12 +258,16 @@ DDELib.Orders.prototype = {
         var statusArray = this.checkStatusValus();
         this.mydata = [];
         data = currentOrderList;
+
+        //this.log("statusArray:"+statusArray.join());
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                 i++;
                 var ev = data[key];
                 var tmpdata = this.makeRowOrder(i, ev);
+                //this.log("ev:"+ev.status);
                 if( $.inArray(ev.status, statusArray) > -1 ) {
+
                     if (this.checkBoxs.myStoreChk.is(":checked")) {
                         if (ev.storeId ==  this.storeId) {
                             this.mydata.push(tmpdata);
@@ -271,6 +275,8 @@ DDELib.Orders.prototype = {
                     } else {
                         this.mydata.push(tmpdata);
                     }
+                } else {
+                   // this.log("not have");
                 }
                // this.log("modifiedDatetime:"+ ev.modifiedDatetime);
                 if(typeof ev.modifiedDatetime !== "undefined" && ev.modifiedDatetime != null  ){
@@ -289,9 +295,6 @@ DDELib.Orders.prototype = {
         //if (this.mydata) {
             this.reloadGrid();
         //}
-
-
-
 
     },
     setGrid : function(){
@@ -1010,8 +1013,8 @@ function minusTimeSet(time1, time2) {
 $(document).ready(function () {
 
 }).ajaxStart(function () {
-    loading.show();
+   // loading.show();
 }).ajaxStop(function () {
-    loading.hide();
+  //  loading.hide();
 });
 /*]]>*/
