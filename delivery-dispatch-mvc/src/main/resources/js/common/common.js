@@ -4,8 +4,9 @@ $(document).ready(function() {
         timeout : 30000,
         error : function (request,status,error) {
             // alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-            console.log("error: "+order_detail_error+"\n"+(request?"code: "+request.status:"errMessage : "+error));
+            // console.log("error: "+order_detail_error+"\n"+(request?"code: "+request.status:"errMessage : "+error));
             // location.href = "/order";
+            location.reload();
         }
     });
     $('#logout').click(function () {
