@@ -19,26 +19,26 @@
 	<link th:if="*{regionLocale} != null and *{regionLocale.toString()} eq zh_TW" rel="stylesheet" th:href="@{/resources/css/contents-tw.css}"/>
 	<link th:unless="*{regionLocale} != null and *{regionLocale.toString()} eq zh_TW" rel="stylesheet" th:href="@{/resources/css/contents.css}"/>
 
-	<!--
+
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-3.3.1.min.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-migrate-3.0.1.min.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-ui-1.12.1.min.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.cookie.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.number.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.fileDownload.js}"></script>
-	-->
+	<script type="text/javascript" th:src="@{/resources/js/lib/socket.io-2.0.4.js}"></script>
 
-	<script type="text/javascript" src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-	<script type="text/javascript" src="//code.jquery.com/jquery-migrate-3.0.1.min.js"></script>
-	<script type="text/javascript" src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/df-number-format/2.1.5/jquery.number.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.fileDownload/1.4.2/jquery.fileDownload.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+	<!--<script type="text/javascript" src="//code.jquery.com/jquery-3.3.1.min.js"></script>-->
+	<!--<script type="text/javascript" src="//code.jquery.com/jquery-migrate-3.0.1.min.js"></script>-->
+	<!--<script type="text/javascript" src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>-->
+	<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>-->
+	<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/df-number-format/2.1.5/jquery.number.min.js"></script>-->
+	<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.fileDownload/1.4.2/jquery.fileDownload.min.js"></script>-->
+	<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>-->
 
-	<!-- <script th:src="@{/resources/js/lib/html5shiv-3.7.3.js}"></script> -->
+	<!--<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>-->
 	<!--[if lt IE 9]>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+	<script th:src="@{/resources/js/lib/html5shiv-3.7.3.js}"></script>
 	<![endif]-->
 	<script type="text/javascript" th:src="@{/resources/js/plugins.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/flipclock.min.js}"></script>
