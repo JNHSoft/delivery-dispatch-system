@@ -89,7 +89,7 @@ th {font-weight:normal;}
 .gps_title{
     width: 417px;
     height: 56px;
-    font-family: NanumGothic;
+    font-family: "Microsoft JhengHei";
     font-size: 40px;
     font-weight: 800;
     font-style: normal;
@@ -98,7 +98,6 @@ th {font-weight:normal;}
     letter-spacing: normal;
     text-align: center;
     color: #ffffff;
-    font-family: PingFangSC;
     font-weight: 600;
     margin: auto;
 }
@@ -106,7 +105,7 @@ th {font-weight:normal;}
 .gps_text{
     width: 407px;
     height: 80px;
-    font-family: PingFangSC;
+    font-family: "Microsoft JhengHei";
     font-size: 24px;
     font-weight: 600;
     font-style: normal;
