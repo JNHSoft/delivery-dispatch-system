@@ -164,6 +164,7 @@ DDELib.Riders.prototype = {
                     this.removeMarker(ev);
                 } else {
                     if(addon) {
+                        this.removeMarker(ev);
                         this.setMarker(ev);
                         this.htLayer.list.append(trdata);
                     } else {
