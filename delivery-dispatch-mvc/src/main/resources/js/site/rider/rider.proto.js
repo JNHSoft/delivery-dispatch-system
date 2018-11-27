@@ -365,7 +365,7 @@ DDELib.Riders.prototype = {
      postChat: function() {
         var chatUserId = RiderChatUserId;
         var message = $('#chatTextarea').val();
-        if(message.size() > 1) {
+        if(message.trim().length > 0) {
             var self = this;
             $.ajax({
                 url: "/postChat",
