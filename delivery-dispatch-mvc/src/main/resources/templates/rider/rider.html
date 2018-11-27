@@ -52,8 +52,7 @@
                             <th scope="col" th:text="${#messages.msg('rider.reset')}"/>
                         </tr>
                         </thead>
-                        <tbody id="riderList">
-                        <!--<tbody id="riderList" class="riderList">-->
+                        <tbody id="riderList" class="riderList">
                         </tbody>
                     </table>
                 </div>
@@ -84,8 +83,8 @@
         var my_store = /*[[${store}]]*/ 'my_store';
         /*]]>*/
     </script>
-    <script type="text/javascript" th:src="@{/resources/js/site/rider/rider.js}" layout:fragment="script2"></script>
-    <!--<script type="text/javascript" th:src="@{/resources/js/site/rider/rider.proto.js}" layout:fragment="script2"></script>-->
+    <!--<script type="text/javascript" th:src="@{/resources/js/site/rider/rider.js}" layout:fragment="script2"></script>-->
+    <script type="text/javascript" th:src="@{/resources/js/site/rider/rider.proto.js}" layout:fragment="script2"></script>
     <script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}"></script>
 </section>
 </html>
