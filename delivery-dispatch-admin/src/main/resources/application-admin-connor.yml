@@ -1,13 +1,20 @@
 ---
 spring:
-  profiles: web-connor
-  profiles.include: web
+  profiles: admin-connor
+  profiles.include: admin
   mvc:
     locale: ko_KR
 
+# was
+server:
+  session:
+    cookie:
+      secure: true
+      http-only: true
+
 # logging
 logging:
-  config: classpath:logback-spring-test.xml
+  config: classpath:logback-spring-connor.xml
 
 # datasource
 datasource:
@@ -19,31 +26,12 @@ datasource:
     min-idle: 10
     max-wait-millis: 3000
     test-on-borrow: true
-    validation-query: select 1
-    test-while-idle: true
-    min-evictable-idle-time-millis: 28700
-    time-between-eviction-runs-millis: 60000
+    #validation-query: select 1
     driver-class-name: com.mysql.jdbc.Driver
 
     url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
     username: devuser
     password: devuserpw!
-
----
-spring:
-  profiles: local
-
-# rest template
-cntt.restPool:
-  enable: true
-  pool-size: 20
-  defaultMaxPerRoute: 20
-  hosts:
-    -
-      scheme: http
-      host: localhost
-      port: 8091
-      maxPerRoute: 20
 
 ---
 spring:
@@ -60,7 +48,6 @@ cntt.restPool:
       host: dde-api.connor.local
       port: 8091
       maxPerRoute: 20
-
     -
       scheme: https
       host: dde-api.connor.local
@@ -68,21 +55,14 @@ cntt.restPool:
       maxPerRoute: 20
 
 ---
-# Redis
 spring:
   redis:
     host: 192.168.0.8
     port: 6379
 
 ---
-# Upload Path
 api.upload.path.notice: /home/connor/websites/DDE/dde-upload/notice
 api.upload.path.alarm: /home/connor/websites/DDE/dde-upload/alarm
 
 ---
-# Web socket
-websocket.localhost: 192.168.0.10:3000
-
----
-#cors domain
-api.cors.origin: https://dde-api.connor.local
+api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav

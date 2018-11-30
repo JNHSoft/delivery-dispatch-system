@@ -1,21 +1,21 @@
 ---
 spring:
-  profiles: web-connor
-  profiles.include: web
+  profiles: api-connor
+  profiles.include: api
   mvc:
-    locale: ko_KR
+    locale: zh_HK
 
 # logging
 logging:
-  config: classpath:logback-spring-test.xml
+  config: classpath:logback-spring-connor.xml
 
 # datasource
 datasource:
   deliveryDispatch:
     initialize: true
     initial-size: 10
-    max-total: 10
-    max-idle: 10
+    max-total: 50
+    max-idle: 50
     min-idle: 10
     max-wait-millis: 3000
     test-on-borrow: true
@@ -31,22 +31,6 @@ datasource:
 
 ---
 spring:
-  profiles: local
-
-# rest template
-cntt.restPool:
-  enable: true
-  pool-size: 20
-  defaultMaxPerRoute: 20
-  hosts:
-    -
-      scheme: http
-      host: localhost
-      port: 8091
-      maxPerRoute: 20
-
----
-spring:
   profiles: oper
 
 # rest template
@@ -57,32 +41,22 @@ cntt.restPool:
   hosts:
     -
       scheme: http
-      host: dde-api.connor.local
+      host: dev-api.connor.local
       port: 8091
       maxPerRoute: 20
 
     -
       scheme: https
-      host: dde-api.connor.local
+      host: dev-api.connor.local
       port: 443
       maxPerRoute: 20
 
 ---
-# Redis
 spring:
   redis:
     host: 192.168.0.8
     port: 6379
 
 ---
-# Upload Path
 api.upload.path.notice: /home/connor/websites/DDE/dde-upload/notice
 api.upload.path.alarm: /home/connor/websites/DDE/dde-upload/alarm
-
----
-# Web socket
-websocket.localhost: 192.168.0.10:3000
-
----
-#cors domain
-api.cors.origin: https://dde-api.connor.local

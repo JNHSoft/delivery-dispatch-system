@@ -1,5 +1,6 @@
 /*<![CDATA[*/
 let loading = $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
+;
 
 if(typeof DDELib === 'undefined'){
     DDELib = {};
@@ -238,13 +239,16 @@ DDELib.Orders.prototype = {
                 if(self.lastModifyDatetime == null) {
                     self.log("firstdata");
 
-                    currentOrderList = [];
+                    currentOrderList.clear();
                 }
                 for (var key in data) {
                     self.log("checkdata");
                     if (data.hasOwnProperty(key)) {
                         var ev = data[key];
-                        currentOrderList[ev.id] = ev;
+                        if(currentOrderList.has(ev.id.toString())) {
+                            currentOrderList.delete(ev.id.toString());
+                        }
+                        currentOrderList.set(ev.id.toString(), ev);
                     }
                 }
                 self.paintOrderList();
@@ -254,17 +258,22 @@ DDELib.Orders.prototype = {
     },
     paintOrderList:function() {
         this.log("paintOrderList");
-        var i = 0;
+        var i = currentOrderList.size;
         var statusArray = this.checkStatusValus();
         this.mydata = [];
-        data = currentOrderList;
+       // data = currentOrderList;
 
         //this.log("statusArray:"+statusArray.join());
-        for (var key in data) {
-            if (data.hasOwnProperty(key)) {
-                i++;
-                var ev = data[key];
+        //this.log("currentOrderList:"+currentOrderList.size);
+
+        for (let [key, value] of currentOrderList) {
+            //console.log(key);
+            //console.log(value);
+            //if (currentOrderList.hasOwnProperty(key)) {
+
+                var ev = value;
                 var tmpdata = this.makeRowOrder(i, ev);
+                i--;
                 //this.log("ev:"+ev.status);
                 if( $.inArray(ev.status, statusArray) > -1 ) {
 
@@ -290,7 +299,7 @@ DDELib.Orders.prototype = {
                         this.lastModifyDatetime = ev.modifiedDatetime;
                     }
                 }
-            }
+            //}
         }
         //if (this.mydata) {
             this.reloadGrid();
@@ -938,7 +947,8 @@ var selectedOriginOrder;
 var map;
 var marker;
 var changeChkInputMessage = false;
-var currentOrderList;
+//var currentOrderList;
+let currentOrderList = new Map();
 
 function initMap() {
     var uluru = {lat: 37.5806376, lng: 126.9058433};
