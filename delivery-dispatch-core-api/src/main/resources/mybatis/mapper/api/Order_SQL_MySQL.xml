@@ -196,7 +196,7 @@
 			A.id
 			, A.reg_order_id
 			, A.created_datetime
-			, A.modified_datetime
+			, ifnull(A.modified_datetime,A.created_datetime) as modified_datetime
             , A.store_id
             , A.rider_id
 			, A.address
