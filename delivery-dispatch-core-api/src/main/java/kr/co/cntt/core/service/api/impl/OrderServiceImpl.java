@@ -1099,9 +1099,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (result != 0) {
             if (S_Store.getSubGroup() != null){
-                redisService.setPublisher(Content.builder().type("order_picked_up").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
+                redisService.setPublisher(Content.builder().type("order_picked_up").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
             }else{
-                redisService.setPublisher(Content.builder().type("order_picked_up").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
+                redisService.setPublisher(Content.builder().type("order_picked_up").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
             }
         }
 
@@ -1161,9 +1161,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (result != 0) {
             if (S_Store.getSubGroup() != null){
-                redisService.setPublisher(Content.builder().type("order_completed").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
+                redisService.setPublisher(Content.builder().type("order_completed").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
             }else {
-                redisService.setPublisher(Content.builder().type("order_completed").id(tmpOrderId).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
+                redisService.setPublisher(Content.builder().type("order_completed").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
             }
 
             if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {

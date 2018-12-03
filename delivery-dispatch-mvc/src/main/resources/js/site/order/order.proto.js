@@ -921,6 +921,9 @@ DDELib.Orders.prototype = {
                 if(objData.type == 'order_new') {
                     this.getOrderList(objData.orderId);
                 } else {
+                    if ($('.state_wrap').hasClass('on') && objData.orderId === selectedOriginOrder.regOrderId) {
+                        this.getOrderDetail(selectedOriginOrder.regOrderId);
+                    }
                     this.getOrderList();
                 }
                 footerOrders();
