@@ -238,7 +238,7 @@ DDELib.Orders.prototype = {
                 self.log(data);
                 if(self.lastModifyDatetime == null) {
                     self.log("firstdata");
-
+                    self.lastOrderCount = 0;
                     currentOrderList.clear();
                 }
                 for (var key in data) {
@@ -258,22 +258,19 @@ DDELib.Orders.prototype = {
     },
     paintOrderList:function() {
         this.log("paintOrderList");
-        var i = currentOrderList.size;
         var statusArray = this.checkStatusValus();
         this.mydata = [];
        // data = currentOrderList;
 
         //this.log("statusArray:"+statusArray.join());
-        //this.log("currentOrderList:"+currentOrderList.size);
+        this.log("currentOrderList:"+currentOrderList.size);
 
         for (let [key, value] of currentOrderList) {
-            //console.log(key);
-            //console.log(value);
+            console.log(key);
+            console.log(value);
             //if (currentOrderList.hasOwnProperty(key)) {
-
                 var ev = value;
-                var tmpdata = this.makeRowOrder(i, ev);
-                i--;
+                var tmpdata = this.makeRowOrder(ev);
                 //this.log("ev:"+ev.status);
                 if( $.inArray(ev.status, statusArray) > -1 ) {
 
@@ -287,15 +284,15 @@ DDELib.Orders.prototype = {
                 } else {
                    // this.log("not have");
                 }
-               // this.log("modifiedDatetime:"+ ev.modifiedDatetime);
+                this.log("modifiedDatetime:"+ ev.modifiedDatetime);
                 if(typeof ev.modifiedDatetime !== "undefined" && ev.modifiedDatetime != null  ){
-                  //  this.log("modifiedDatetime:"+ this.lastModifyDatetime);
+                    this.log("modifiedDatetime:"+ this.lastModifyDatetime);
 
                     if(this.lastModifyDatetime == null) {
-                   //     this.log("modifiedDatetime set:"+ ev.modifiedDatetime);
+                        this.log("modifiedDatetime set:"+ ev.modifiedDatetime);
                         this.lastModifyDatetime = ev.modifiedDatetime;
                     } else if(this.lastModifyDatetime < ev.modifiedDatetime) {
-                   //     this.log("modifiedDatetime change:"+ ev.modifiedDatetime);
+                        this.log("modifiedDatetime change:"+ ev.modifiedDatetime);
                         this.lastModifyDatetime = ev.modifiedDatetime;
                     }
                 }
@@ -313,7 +310,6 @@ DDELib.Orders.prototype = {
             data: this.mydata,
             page:1,
             colModel: [
-                {label: order_number, name:'No', width:25, key:true, align:'center'},
                 {label: order_reg_order_id, name: 'reg_order_id', width: 80, align: 'center'},
                 {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden: true},
                 {label: order_status, name: 'state', width: 80, align: 'center'},
@@ -336,7 +332,10 @@ DDELib.Orders.prototype = {
             ],
             height: 680,
             autowidth: true,
+            viewrecords: true,
             rowNum: 20,
+            rownumbers: true, // show row numbers
+            rownumWidth: 25, // the width of the row numbers columns
             pager: "#jqGridPager",
             ondblClickRow: function (rowid, icol, cellcontent, e) {
                 var rowData = jQuery(this).getRowData(rowid);
@@ -359,18 +358,18 @@ DDELib.Orders.prototype = {
             .jqGrid('sortGrid', 'assignedFirst', true, 'desc')
             .jqGrid('sortGrid', 'time7', true, 'desc')
             .jqGrid('sortGrid', 'time1', true, 'desc')
-            .jqGrid('sortGrid', 'reg_order_id', true, 'desc');
+            .jqGrid('sortGrid', 'id', true, 'desc');
         this.htLayer.grid.trigger("reloadGrid");
         setTimeout(function () {
             $(window).trigger('resize');
         }, 300)//그리드 리사이즈
 
     },
-    makeRowOrder : function(i, ev) {
-        //this.log("makeRowOrder:"+i);
+    makeRowOrder : function(ev,) {
+        //this.log("makeRowOrder");
         var tmpdata = new Object();
 
-        tmpdata.No = i;
+        //tmpdata.No = i;
         tmpdata.state = this.getStatusInfo(ev.status);
         tmpdata.id = ev.id;
         tmpdata.time1 = timeSet2(ev.createdDatetime);
