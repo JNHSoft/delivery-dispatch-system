@@ -241,7 +241,7 @@ DDELib.Riders.prototype = {
     getPutRiderReturnTime :function(data){
         if(typeof data.order != "undefined" && typeof data.orderStore != "undefined"){
             if(data.riderStore.id == $('#storeId').val() && data.riderStore.id != data.orderStore.id && typeof data.returnTime == "undefined"){
-                return this.tpl.riderbutton.replace(/{=CLASSMODE}/g,"rider_return").replace(/{=ID}/g,data.id).replace(/{=REST}/g,rider_rest);
+                return this.tpl.riderbutton.replace(/{=CLASSMODE}/g,"rider_return").replace(/{=ID}/g,data.id).replace(/{=REST}/g,"rider_rest");
             }
         }
         return "-";
@@ -307,7 +307,7 @@ DDELib.Riders.prototype = {
             }
         }
         if(isProcMessage) {
-            if(data.match('rider_')=='rider_' || type == 'order_completed'){
+            if(data.match('rider_')=='rider_' || type == 'order_picked_up' || type == 'order_completed'){
                 this.getRiderList();
                 if(map_region){
                     if(map_region!="tw"){
