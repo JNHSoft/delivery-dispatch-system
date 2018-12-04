@@ -767,6 +767,7 @@
 			, A.latitude
 			, A.longitude
 			, A.location_updated
+			, A.return_time
 			, B.store_id AS subGroupRiderRel_store_id
 			, C.id AS subgroup_id
 			, C.group_id AS subgroup_group_id

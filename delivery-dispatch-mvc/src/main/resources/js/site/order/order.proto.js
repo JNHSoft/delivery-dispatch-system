@@ -631,9 +631,12 @@ DDELib.Orders.prototype = {
                                     }
                                 }
                             } else {
-                                shtml += self.tpl.option.replace(/{=VALUE}/,ev.id).replace(/{=TEXT}/g,ev.name);
-                                var tmpId = ev.id;
-                                shtml2 += '<span id="rider' + tmpId + '" class="riderPhone" style="display:none">' + ev.phone + '</span>';
+                                if ((ev.subGroupRiderRel.storeId == $('#orderMyStoreChk').val())
+                                    || (ev.subGroupRiderRel.storeId != $('#orderMyStoreChk').val() && ev.returnTime == null)) {
+                                    shtml += self.tpl.option.replace(/{=VALUE}/,ev.id).replace(/{=TEXT}/g,ev.name);
+                                    var tmpId = ev.id;
+                                    shtml2 += '<span id="rider' + tmpId + '" class="riderPhone" style="display:none">' + ev.phone + '</span>';
+                                }
                             }
                             $('#selectedRider').html(shtml);
                             $('#riderPhone').html(shtml2);
