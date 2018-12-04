@@ -184,6 +184,7 @@ DDELib.Orders.prototype = {
             this.log("MyStoreChk checkbox change:"+el.attr("id"));
             this.getOrderList();
         }
+        this.onCloseDetail();
     },
     checkStatusValus:function(){
         this.log("checkStatusValus:");
