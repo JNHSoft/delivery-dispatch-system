@@ -8,34 +8,7 @@ var rider;
 var RiderChatUserId = "";
 var chatUserName = "";
 
-function initMap() {
-    store = parseLocation(storeLatitude, storeLongitude);
-    map = new google.maps.Map(document.getElementById('map'), { zoom: 15, center: store });
-    setMyStore();
-}
-function setMyStore(){
-    if(store != null) marker[0] = new google.maps.Marker({ position : store, map : map });
-}
 
-function parseLocation(lat, lng){
-    try {
-        return new google.maps.LatLng(lat,lng);
-    } catch(err) {
-        return null;
-    }
-}
-function moveMap(data) {
-    var loc = parseLocation(data.latitude,  data.longitude);
-    map.setCenter(loc);
-}
-
-function updateMarker(data) {
-    var loc = parseLocation(data.latitude,  data.longitude);
-    if(loc != null) {
-      var mk = marker.get(data.id);
-      mk.setPosition(loc);
-    }
-}
 
 if(typeof DDELib === 'undefined'){
     DDELib = {};
@@ -86,6 +59,8 @@ DDELib.Riders.prototype = {
         };
 
         this.riderlist = new Map();
+        this.isprocchat = false;
+        this.isPressCtrl = false;
 
     },
     bindEvent: function () {
@@ -95,7 +70,8 @@ DDELib.Riders.prototype = {
         this.htLayer.list.bind('click', $.proxy(this.onButtonClick, this));
         this.checkBoxs.all.bind('change', $.proxy(this.onCheckBoxClick, this));
         this.checkBoxs.srchChk.bind('change', $.proxy(this.onCheckBoxClick, this));
-        this.htChat.textBox.bind('keyup',$.proxy(this.onKeyEnter, this))
+        this.htChat.textBox.bind('keyup',$.proxy(this.onKeyUp, this));
+        this.htChat.textBox.bind('keydown',$.proxy(this.onKeyDown, this))
         this.getRiderList();
 
         $('.chat-item').last().focus();
@@ -314,12 +290,21 @@ DDELib.Riders.prototype = {
             this.getRiderList();
         }
     },
-    onKeyEnter : function(e){
-        this.log("onKeyEnter:"+e.which);
+    onKeyUp : function(e){
+        this.log("onKeyUp:"+e.which);
         var el = $(e.target);
-        this.log(el);
-        if(e.which == 13){
-            //CNTApi.log("Enter");
+        // 쉬프트 엔터는 무시하게함
+        if(e.which == 16) this.isPressCtrl=false;
+
+    },
+    onKeyDown : function(e){
+        this.log("onKeyDown:"+e.which);
+        var el = $(e.target);
+        // Ctrl + Enter 입력시 발송되게함
+        if(e.which == 16) this.isPressCtrl=true;
+
+
+        if(e.which == 13 && this.isPressCtrl == true) {
             if(el.is(this.htChat.textBox)){
                 this.postChat();
             }
@@ -353,6 +338,8 @@ DDELib.Riders.prototype = {
                         footerRiders();
                     }
                 }
+            } else if (type=='rider_location_updated'){
+                updateMarker(objData);
             }
             if(data.match('order_')=='order_'){
                 footerOrders();
@@ -407,22 +394,32 @@ DDELib.Riders.prototype = {
         console.log("postChat");
         var chatUserId = RiderChatUserId;
         var message = this.htChat.textBox.val();
-        if(message.trim().length > 0) {
-            var self = this;
-            $.ajax({
-                url: "/postChat",
-                type: 'post',
-                data: {
-                    chatUserId : chatUserId,
-                    message : message
-                },
-                dataType: 'json',
-                success: function (data) {
-                    self.getChatList(chatUserId, chatUserName);
-                    self.htChat.textBox.val("");
-                }
-            });
+        if(!this.isprocchat) {
+            this.isprocchat = true;
+            if(message.trim().length > 0) {
+                var self = this;
+                $.ajax({
+                    url: "/postChat",
+                    type: 'post',
+                    data: {
+                        chatUserId : chatUserId,
+                        message : message
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        self.isprocchat = false;
+                        self.getChatList(chatUserId, chatUserName);
+                        self.htChat.textBox.val("");
+
+                    },
+                    error : function () {
+                        self.isprocchat = false;
+                    }
+                });
+            }
         }
+
+
     }
 };
 function daySet(time) {
@@ -436,4 +433,36 @@ function daySet(time) {
 function messageTimeSet(time) {
     return new Date(time).toLocaleTimeString();
 }
-var cntrider = new DDELib.Riders("#container");
+
+var cntrider = null;
+
+function initMap() {
+    store = parseLocation(storeLatitude, storeLongitude);
+    map = new google.maps.Map(document.getElementById('map'), { zoom: 15, center: store });
+    setMyStore();
+    cntrider = new DDELib.Riders("#container");
+
+}
+function setMyStore(){
+    if(store != null) marker[0] = new google.maps.Marker({ position : store, map : map });
+}
+
+function parseLocation(lat, lng){
+    try {
+        return new google.maps.LatLng(lat,lng);
+    } catch(err) {
+        return null;
+    }
+}
+function moveMap(data) {
+    var loc = parseLocation(data.latitude,  data.longitude);
+    map.setCenter(loc);
+}
+
+function updateMarker(data) {
+    var loc = parseLocation(data.latitude,  data.longitude);
+    if(loc != null) {
+        var mk = marker.get(data.id);
+        mk.setPosition(loc);
+    }
+}
