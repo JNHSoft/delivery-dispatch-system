@@ -82,6 +82,7 @@ DDELib.Riders.prototype = {
         this.log("bindEvent");
         this.htLayer.checkbox.bind('click', $.proxy(this.getRiderList, this));
         this.htLayer.button.bind('click', $.proxy(this.onButtonClick, this));
+        this.htLayer.list.bind('click', $.proxy(this.onButtonClick, this));
         this.checkBoxs.all.bind('change', $.proxy(this.onCheckBoxClick, this));
         this.checkBoxs.srchChk.bind('change', $.proxy(this.onCheckBoxClick, this));
 
@@ -166,6 +167,7 @@ DDELib.Riders.prototype = {
                     if(addon) {
                         this.removeMarker(ev);
                         this.setMarker(ev);
+                        // this.makeSelectChat(ev);
                         this.htLayer.list.append(trdata);
                     } else {
                         this.removeMarker(ev);
@@ -177,7 +179,7 @@ DDELib.Riders.prototype = {
     },
     setMarker:function(data) {
         this.log("setMarker");
-        this.log(data);
+        this.log(data)
         var loc = parseLocation(data.latitude, data.longitude);
         var self = this;
         marker[data.id] = new google.maps.Marker({
@@ -268,7 +270,25 @@ DDELib.Riders.prototype = {
             this.putRiderReturnTime(el.attr('data-id'));
         } else if(el.attr("id") == "sendChat") {
             this.postChat();
+        } else if (e.target.tagName == "TD"){
+            el.parent("tr").addClass('selected').siblings().removeClass('selected');
+            // this.makeSelectChat();
         }
+
+    },
+    makeSelectChat : function (ev) {
+        // console.log("11111111");
+        // console.log(ev);
+        // chatUserName = this.label;
+        // console.log(chatUserName);
+        // RiderChatUserId = this.riderChatUserId;
+        // $('tr').removeClass('selected');
+        // $('#riderMapId' + this.riderMapId).addClass('selected');
+        // this.getChatList(this.riderChatUserId, this.label);
+        // var name = this.label + rider_chat_title;
+        // $('#chatRider').text(name);
+        // $('#workingStatus').html(status);
+
 
     },
     onCheckBoxClick : function (e) {
