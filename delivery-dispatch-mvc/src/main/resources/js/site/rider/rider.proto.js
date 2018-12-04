@@ -2,7 +2,7 @@ var storeLatitude = parseFloat($('#storeLatitude').val());
 var storeLongitude = parseFloat($('#storeLongitude').val());
 var storeId = $('#storeId').val();
 var map;
-var marker = [];
+var marker = new Map();
 var store;
 var rider;
 var RiderChatUserId = "";
@@ -24,11 +24,16 @@ function parseLocation(lat, lng){
         return null;
     }
 }
+function moveMap(data) {
+    var loc = parseLocation(data.latitude,  data.longitude);
+    map.setCenter(loc);
+}
 
 function updateMarker(data) {
     var loc = parseLocation(data.latitude,  data.longitude);
     if(loc != null) {
-        marker[data.id].setPosition(loc);
+      var mk = marker.get(data.id);
+      mk.setPosition(loc);
     }
 }
 
@@ -63,9 +68,12 @@ DDELib.Riders.prototype = {
             all : this.$el.find("input:checkbox[name=orderAllChk]"),
             srchChk : this.$el.find("input:checkbox[name=srchChk]")
         }
+        this.htChat = {
+            textBox : $('#chatTextarea'),
+        }
 
         this.tpl = {
-            ridertr : "<tr id='riderMapId{=RIDER}'>"
+            ridertr : "<tr id='{=RIDER}'>"
             +"<td>{=IDX}</td>"
             +"<td>{=NAME}</td>"
             +"<td>{=STATUS}</td>"
@@ -77,6 +85,8 @@ DDELib.Riders.prototype = {
 
         };
 
+        this.riderlist = new Map();
+
     },
     bindEvent: function () {
         this.log("bindEvent");
@@ -85,15 +95,10 @@ DDELib.Riders.prototype = {
         this.htLayer.list.bind('click', $.proxy(this.onButtonClick, this));
         this.checkBoxs.all.bind('change', $.proxy(this.onCheckBoxClick, this));
         this.checkBoxs.srchChk.bind('change', $.proxy(this.onCheckBoxClick, this));
-
+        this.htChat.textBox.bind('keyup',$.proxy(this.onKeyEnter, this))
         this.getRiderList();
 
         $('.chat-item').last().focus();
-
-        $('.table tr').click(function () {
-            $(this).addClass('selected').siblings().removeClass('selected');
-            $('.chat_wrap').addClass('active');
-        });
 
         $('.chat_wrap .close').click(function (e) {
             e.preventDefault();
@@ -136,42 +141,39 @@ DDELib.Riders.prototype = {
             },
             dataType: 'json',
             success: function (data) {
-                self.paintRiderList(data);
+
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        var ev = data[key];
+                        if( self.riderlist.has(ev.id.toString()) ) {
+                            self.riderlist.delete(ev.id.toString());
+                        }
+                        self.riderlist.set(ev.id.toString(),ev);
+                    }
+                }
+
+                self.paintRiderList();
             }
         });
     },
-    paintRiderList : function(data){
+    paintRiderList : function(){
         this.log("paintRiderList");
         var riderCount = 0;
-        for (var key in data) {
-            if (data.hasOwnProperty(key)) {
+        for (let [key, value] of this.riderlist) {
+            console.log(key);
+            console.log(value);
+            if (value != null && typeof value !== 'undefined' ) {
+                var ev = value;
                 riderCount++;
-                var ev = data[key];
                 var trdata = this.makeRiderRow(riderCount, ev);
-                var addon = false;
-                if($('#srchChk1').is(':checked') && data[key].working==1 && typeof data[key].order != "undefined") {
-                    addon = true;
-                }
-                if($('#srchChk2').is(':checked') && data[key].working==1 && typeof data[key].order == "undefined") {
-                    addon = true;
-                }
-                if($('#srchChk3').is(':checked') && data[key].working==3) {
-                    addon = true;
-                }
-                if($('#srchChk4').is(':checked') && data[key].working==0){
-                    addon = true;
-                }
+
                 if(trdata == '') {
                     this.removeMarker(ev);
                 } else {
-                    if(addon) {
-                        this.removeMarker(ev);
-                        this.setMarker(ev);
-                        // this.makeSelectChat(ev);
-                        this.htLayer.list.append(trdata);
-                    } else {
-                        this.removeMarker(ev);
-                    }
+                    this.removeMarker(ev);
+                    this.setMarker(ev);
+                    // this.makeSelectChat(ev);
+                    this.htLayer.list.append(trdata);
                 }
 
             }
@@ -182,50 +184,60 @@ DDELib.Riders.prototype = {
         this.log(data)
         var loc = parseLocation(data.latitude, data.longitude);
         var self = this;
-        marker[data.id] = new google.maps.Marker({
+        var mk = new google.maps.Marker({
             position : loc,
-            riderMapId : data.id,
-            riderChatUserId : data.chatUserId,
+            rider : data,
             label : data.name,
             map : map
         });
-        marker[data.id].addListener('click', function () {
-            chatUserName = this.label;
-            RiderChatUserId = this.riderChatUserId;
-            $('tr').removeClass('selected');
-            $('#riderMapId' + this.riderMapId).addClass('selected');
-            self.getChatList(this.riderChatUserId, this.label);
-            var name = this.label + rider_chat_title;
-            $('#chatRider').text(name);
-            $('#workingStatus').html(status);
+        mk.addListener('click', function () {
+            self.makeSelectChat(this.rider);
         });
+        if(marker.has(data.id.toString())) {
+            marker.delete(data.id.toString())
+        }
+        marker.set(data.id.toString(), mk);
     },
     removeMarker : function(ev) {
         this.log("removeMarker");
         try{
-            marker[ev.id].setMap(null);
+            var mk = marker.get(ev.id.toString());
+            mk.setMap(null);
+            marker.delete(ev.id.toString());
         } catch (e) {
 
         }
     },
-    makeRiderRow:function(i, data) {
-        if($('#myStoreChk').is(':checked') && data.riderStore) {
-            if (data.riderStore.id != $('#storeId').val()){
+    makeRiderRow:function(i, ev) {
+        if($('#srchChk1').is(':checked') && ev.working==1 && typeof ev.order != "undefined") {
+            addon = true;
+        }
+        if($('#srchChk2').is(':checked') && ev.working==1 && typeof ev.order == "undefined") {
+            addon = true;
+        }
+        if($('#srchChk3').is(':checked') && ev.working==3) {
+            addon = true;
+        }
+        if($('#srchChk4').is(':checked') && ev.working==0){
+            addon = true;
+        }
+        if(!addon) return '';
+        if($('#myStoreChk').is(':checked') && ev.riderStore) {
+            if (ev.riderStore.id != $('#storeId').val()){
                 return '';
             }
-        }else if($('#myStoreChk').is(':checked') && !data.riderStore){
+        }else if($('#myStoreChk').is(':checked') && !ev.riderStore){
             return '';
         }
-        var shtml = this.tpl.ridertr
+        return this.tpl.ridertr
             .replace(/{=IDX}/g,i)
-            .replace(/{=RIDER}/g,data.id)
-            .replace(/{=NAME}/g,data.name)
-            .replace(/{=STATUS}/g,this.getStatusInfo(data))
-            .replace(/{=STORE}/g,(data.riderStore==null?"-":data.riderStore.storeName))
-            .replace(/{=ORDER}/g,(data.orderCount==null?"-":data.orderCount))
-            .replace(/{=ETC}/g,this.getPutRiderReturnTime(data))
+            .replace(/{=RIDER}/g,ev.id)
+            .replace(/{=NAME}/g,ev.name)
+            .replace(/{=STATUS}/g,this.getStatusInfo(ev))
+            .replace(/{=STORE}/g,(ev.riderStore==null?"-":ev.riderStore.storeName))
+            .replace(/{=ORDER}/g,(ev.orderCount==null?"-":ev.orderCount))
+            .replace(/{=ETC}/g,this.getPutRiderReturnTime(ev))
         ;
-        return shtml;
     },
     getStatusInfo:function(rowdata) {
         var status = '';
@@ -271,24 +283,20 @@ DDELib.Riders.prototype = {
         } else if(el.attr("id") == "sendChat") {
             this.postChat();
         } else if (e.target.tagName == "TD"){
-            el.parent("tr").addClass('selected').siblings().removeClass('selected');
+            this.makeSelectChat(this.riderlist.get(el.parent("tr").attr("id")) );
             // this.makeSelectChat();
         }
 
     },
     makeSelectChat : function (ev) {
-        // console.log("11111111");
-        // console.log(ev);
-        // chatUserName = this.label;
-        // console.log(chatUserName);
-        // RiderChatUserId = this.riderChatUserId;
-        // $('tr').removeClass('selected');
-        // $('#riderMapId' + this.riderMapId).addClass('selected');
-        // this.getChatList(this.riderChatUserId, this.label);
-        // var name = this.label + rider_chat_title;
-        // $('#chatRider').text(name);
-        // $('#workingStatus').html(status);
-
+        $('tr').removeClass('selected');
+        $('#' + ev.id).addClass('selected');
+        RiderChatUserId = ev.chatUserId;
+        this.getChatList(ev.chatUserId, ev.name);
+        var name =  ev.name + rider_chat_title;
+        $('#chatRider').text(name);
+        $('#workingStatus').html(this.getStatusInfo(ev));
+        moveMap(ev);
 
     },
     onCheckBoxClick : function (e) {
@@ -304,6 +312,17 @@ DDELib.Riders.prototype = {
         } else if( el.is(this.checkBoxs.srchChk) ){
             this.log("Other checkbox change:"+el.attr("id"));
             this.getRiderList();
+        }
+    },
+    onKeyEnter : function(e){
+        this.log("onKeyEnter:"+e.which);
+        var el = $(e.target);
+        this.log(el);
+        if(e.which == 13){
+            //CNTApi.log("Enter");
+            if(el.is(this.htChat.textBox)){
+                this.postChat();
+            }
         }
     },
     riderAlarmMessage:function(data) {
@@ -350,6 +369,7 @@ DDELib.Riders.prototype = {
         }
     },
     getChatList :function(chatUserId, riderName) {
+        console.log("getChatList:"+chatUserId);
         var shtml = "";
         var tmpDate;
         $.ajax({
@@ -384,8 +404,9 @@ DDELib.Riders.prototype = {
         });
     },
      postChat: function() {
+        console.log("postChat");
         var chatUserId = RiderChatUserId;
-        var message = $('#chatTextarea').val();
+        var message = this.htChat.textBox.val();
         if(message.trim().length > 0) {
             var self = this;
             $.ajax({
@@ -398,7 +419,7 @@ DDELib.Riders.prototype = {
                 dataType: 'json',
                 success: function (data) {
                     self.getChatList(chatUserId, chatUserName);
-                    $('#chatTextarea').val("");
+                    self.htChat.textBox.val("");
                 }
             });
         }
