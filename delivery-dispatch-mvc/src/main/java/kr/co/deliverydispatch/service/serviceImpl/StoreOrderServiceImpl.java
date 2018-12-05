@@ -206,6 +206,8 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                 order.setCombinedOrderId(tmpRegOrderId);
             } else {
                 order.setCombinedOrderId("-1");
+                order.setThirdParty(null);
+                order.setStatus(null);
             }
 
             int selectCombinedThirdPartyStatus = orderMapper.selectOrderIsThirdPartyStatus(order);
