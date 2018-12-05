@@ -764,9 +764,12 @@ DDELib.Orders.prototype = {
         var menuPrice = $('#menuPrice').val() ? $('#menuPrice').val() : 0;
         var deliveryPrice = $('#deliveryPrice').val() ? $('#deliveryPrice').val() : 0;
         var paid = $('#selectPaid').val();
-        var combinedOrderId = '';
+        var combinedOrderId = combinedOrderId = $('#selectCombined').val();
+        var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
-            combinedOrderId = $('#selectCombined').val();
+            isCombined = true;
+        } else {
+            isCombined = false;
         }
         var self = this;
         $.ajax({
@@ -780,6 +783,7 @@ DDELib.Orders.prototype = {
                 deliveryPrice: deliveryPrice,
                 paid: paid,
                 combinedOrderId: combinedOrderId,
+                isCombined: isCombined
             },
             dataType: 'json',
             success: function (data) {
@@ -888,9 +892,12 @@ DDELib.Orders.prototype = {
             return;
         }
         var id = $('.tit').attr("orderId");
-        var combinedOrderId = "";
+        var combinedOrderId = $('#selectCombined').val();
+        var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
-            combinedOrderId = $('#selectCombined').val();
+            isCombined = true;
+        } else {
+            isCombined = false;
         }
         var self = this;
         $.ajax({
@@ -898,7 +905,8 @@ DDELib.Orders.prototype = {
             type: 'put',
             data: {
                 id: id,
-                combinedOrderId: combinedOrderId
+                combinedOrderId: combinedOrderId,
+                isCombined: isCombined
             },
             dataType: 'json',
             success: function (data) {

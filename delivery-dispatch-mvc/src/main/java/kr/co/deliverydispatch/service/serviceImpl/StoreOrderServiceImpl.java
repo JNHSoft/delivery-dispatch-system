@@ -432,12 +432,21 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         order.setCompletedDatetime(null);
 
         String tmpRegOrderId = order.getId();
+        String tmpCombinedOrderId = order.getCombinedOrderId();
+
+        if (!order.getIsCombined()) {
+            order.setCombinedOrderId("-1");
+        }
 
         int nRet = this.putOrder(order);
 
-        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            order.setId(order.getCombinedOrderId());
-            order.setCombinedOrderId(order.getId());
+        if (order.getIsCombined() != null && !order.getCombinedOrderId().equals("")) {
+            order.setId(tmpCombinedOrderId);
+            if (order.getIsCombined()) {
+                order.setCombinedOrderId(tmpRegOrderId);
+            } else {
+                order.setCombinedOrderId("-1");
+            }
 
             /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             if (selectCombinedOrderIsApprovalCompleted != 0) {
@@ -512,10 +521,22 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         order.setStatus("4");
         order.setModifiedDatetime(LocalDateTime.now().toString());
         String tmpOrderId = order.getId();
+        String tmpCombinedOrderId = order.getCombinedOrderId();
+
+        if (!order.getIsCombined()) {
+            order.setCombinedOrderId("-1");
+        }
+
         int nRet = this.putOrder(order);
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            order.setId(order.getCombinedOrderId());
+            order.setId(tmpCombinedOrderId);
+            if (order.getIsCombined()) {
+                order.setCombinedOrderId(tmpOrderId);
+            } else {
+                order.setCombinedOrderId("-1");
+                order.setStatus(null);
+            }
             /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderCanceled);
             if (selectCombinedOrderIsApprovalCompleted != 0) {
                 return 0;

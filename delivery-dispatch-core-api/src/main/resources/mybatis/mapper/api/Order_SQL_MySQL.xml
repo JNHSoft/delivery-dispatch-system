@@ -472,8 +472,11 @@
 		<if test="completedDatetime != null and completedDatetime != ''">
 			, completed_datetime = #{completedDatetime}
 		</if>
-		<if test="combinedOrderId != null and combinedOrderId != ''">
+		<if test="combinedOrderId != null and combinedOrderId != '' and combinedOrderId != '-1'">
 			, combined_order_id = #{combinedOrderId}
+		</if>
+		<if test="combinedOrderId == '-1'">
+			, combined_order_id = NULL
 		</if>
 		<if test="deviceOs != null and deviceOs != ''">
 			, device_os = #{deviceOs}
