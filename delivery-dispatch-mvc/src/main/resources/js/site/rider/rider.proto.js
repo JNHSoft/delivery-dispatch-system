@@ -294,14 +294,14 @@ DDELib.Riders.prototype = {
         this.log("onKeyUp:"+e.which);
         var el = $(e.target);
         // 쉬프트 엔터는 무시하게함
-        if(e.which == 16) this.isPressCtrl=false;
+        if(e.which == 17) this.isPressCtrl=false;
 
     },
     onKeyDown : function(e){
         this.log("onKeyDown:"+e.which);
         var el = $(e.target);
         // Ctrl + Enter 입력시 발송되게함
-        if(e.which == 16) this.isPressCtrl=true;
+        if(e.which == 17) this.isPressCtrl=true;
 
 
         if(e.which == 13 && this.isPressCtrl == true) {
@@ -339,6 +339,8 @@ DDELib.Riders.prototype = {
                     }
                 }
             } else if (type=='rider_location_updated'){
+                // 우선 마커만 움직임
+                //
                 updateMarker(objData);
             }
             if(data.match('order_')=='order_'){
