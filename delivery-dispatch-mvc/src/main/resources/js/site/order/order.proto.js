@@ -554,10 +554,17 @@ DDELib.Orders.prototype = {
                     }
                     $('input[name=combinedChk]:checkbox').prop("checked", true);
                     $('#selectCombined').val(data.combinedOrderId).prop("selected", true);
-                    $('#selectCombined').attr("disabled", false);
+                    if (data.status == "2" || data.status == "3" || data.status == "4"){
+                        $('#combinedChk').attr("disabled", true);
+                        $('#selectCombined').attr("disabled", true);
+                    } else {
+                        $('#combinedChk').attr("disabled", false);
+                        $('#selectCombined').attr("disabled", false);
+                    }
                 } else {
                     self.getNewOrderList(statusNewArray);
                     $('input[name=combinedChk]:checkbox').removeAttr("checked");
+                    $('#combinedChk').attr("disabled", false);
                     $('#selectCombined').attr("disabled", true);
                 }
                 self.getMyRiderList(data);
