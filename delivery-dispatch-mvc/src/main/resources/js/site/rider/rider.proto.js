@@ -63,9 +63,9 @@ DDELib.Riders.prototype = {
             all : this.$el.find("input:checkbox[name=orderAllChk]"),
             srchChk : this.$el.find("input:checkbox[name=srchChk]")
         }
-
+        // rider 클릭시 rider 객체를 받기위해서 riderid='{=RIDER} 추가해줌
         this.tpl = {
-            ridertr : "<tr id='riderMapId{=RIDER}'>"
+            ridertr : "<tr id='riderMapId{=RIDER}' riderid='{=RIDER}'>"
             +"<td>{=IDX}</td>"
             +"<td>{=NAME}</td>"
             +"<td>{=STATUS}</td>"
@@ -76,6 +76,8 @@ DDELib.Riders.prototype = {
             riderbutton : "<button class='button h20 {=CLASSMODE}' data-id='{=ID}'>{=REST}</button>"
 
         };
+        // 객체를 담기위해 배열 선언
+        this.riderlist = [];
 
     },
     bindEvent: function () {
@@ -167,8 +169,9 @@ DDELib.Riders.prototype = {
                     if(addon) {
                         this.removeMarker(ev);
                         this.setMarker(ev);
-                        // this.makeSelectChat(ev);
                         this.htLayer.list.append(trdata);
+                        // 위에선언한 배열에 그려진 list를 넣어준다. ev.id 에 ev=data 값이 다들어감
+                        this.riderlist[ev.id] = ev;
                     } else {
                         this.removeMarker(ev);
                     }
@@ -264,6 +267,7 @@ DDELib.Riders.prototype = {
     },
     onButtonClick : function (e) {
         this.log("onButtonClick:"+e.which);
+        console.log(e);
         var el = $(e.target);
         if(el.hasClass('rider_return')){
             this.log("onButtonClick:rider_return:"+el.attr('data-id'));
@@ -271,25 +275,31 @@ DDELib.Riders.prototype = {
         } else if(el.attr("id") == "sendChat") {
             this.postChat();
         } else if (e.target.tagName == "TD"){
-            el.parent("tr").addClass('selected').siblings().removeClass('selected');
-            // this.makeSelectChat();
+            // console.log("버튼이벤트");
+            // console.log("riderid:"+el.parent("tr").attr("riderid"));
+            // el.parent("tr").addClass('selected').siblings().removeClass('selected');
+            this.makeSelectChat(this.riderlist[el.parent("tr").attr("riderid")]);
         }
 
     },
-    makeSelectChat : function (ev) {
-        // console.log("11111111");
-        // console.log(ev);
-        // chatUserName = this.label;
-        // console.log(chatUserName);
-        // RiderChatUserId = this.riderChatUserId;
-        // $('tr').removeClass('selected');
-        // $('#riderMapId' + this.riderMapId).addClass('selected');
-        // this.getChatList(this.riderChatUserId, this.label);
-        // var name = this.label + rider_chat_title;
-        // $('#chatRider').text(name);
-        // $('#workingStatus').html(status);
-
-
+    makeSelectChat : function (e) {
+        // console.log("makeselectchat");
+        // console.log(e);
+        chatUserName = e.name;
+        RiderChatUserId = e.chatUserId;
+        $('tr').removeClass('selected');
+        $('#riderMapId' + e.id).addClass('selected').siblings().removeClass('selected');
+        this.getChatList(RiderChatUserId, chatUserName);
+        this.mapCenter(e.latitude,e.longitude);
+        var name =chatUserName + rider_chat_title;
+        $('#chatRider').text(name);
+        $('#workingStatus').html(status);
+    },
+    mapCenter : function (la,ln) {
+        // console.log(la);
+        // console.log(ln);
+        var center = new google.maps.LatLng(la, ln);
+        map.panTo(center);
     },
     onCheckBoxClick : function (e) {
         this.log("onCheckBoxChange:"+e.which);
@@ -297,8 +307,8 @@ DDELib.Riders.prototype = {
         if(el.is(this.checkBoxs.all)){
             this.log("ALL checkbox change:"+el.is(":checked"));
             this.checkBoxs.srchChk.each(function() {
-               $(this).prop("checked", el.is(":checked"));
-               $(this).attr("disabled", el.is(":checked"));
+                $(this).prop("checked", el.is(":checked"));
+                $(this).attr("disabled", el.is(":checked"));
             });
             this.getRiderList();
         } else if( el.is(this.checkBoxs.srchChk) ){
@@ -383,7 +393,7 @@ DDELib.Riders.prototype = {
             }
         });
     },
-     postChat: function() {
+    postChat: function() {
         var chatUserId = RiderChatUserId;
         var message = $('#chatTextarea').val();
         if(message.trim().length > 0) {
