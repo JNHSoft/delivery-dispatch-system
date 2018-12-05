@@ -538,12 +538,18 @@ DDELib.Orders.prototype = {
                 var statusNewArray = ["0", "5"];
 
                 if (data.combinedOrderId) {
-                    for (var key in currentOrderList) {
+                    /*for (var key in currentOrderList) {
                         if (currentOrderList.hasOwnProperty(key)) {
                             if (currentOrderList[key].regOrderId == data.combinedOrderId) {
                                 var shtml = '<option value="' + currentOrderList[key].regOrderId + '">' + order_id + ':' + currentOrderList[key].regOrderId + '|' + order_created + ':' + timeSet(currentOrderList[key].createdDatetime) + '</option>';
                                 $('#selectCombined').html(shtml);
                             }
+                        }
+                    }*/
+                    for (let [key, value] of currentOrderList) {
+                        if (value.regOrderId == data.combinedOrderId) {
+                            var shtml = '<option value="' + value.regOrderId + '">' + order_id + ':' + value.regOrderId + '|' + order_created + ':' + timeSet(value.createdDatetime) + '</option>';
+                            $('#selectCombined').html(shtml);
                         }
                     }
                     $('input[name=combinedChk]:checkbox').prop("checked", true);

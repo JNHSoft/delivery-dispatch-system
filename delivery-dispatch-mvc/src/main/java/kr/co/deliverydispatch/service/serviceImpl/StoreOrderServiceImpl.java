@@ -310,6 +310,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
 //            Order combinedOrderAssigned = new Order();
             order.setId(order.getCombinedOrderId());
+            order.setCombinedOrderId(tmpOrderId);
             /*combinedOrderAssigned.setRiderId(order.getRiderId());
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
@@ -328,7 +329,6 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             if (selectCombinedOrderIsCompletedIsCanceled != 0) {
                 return 0;
             }
-
             this.putOrder(order);
         }
         order.setId(tmpOrderId);
@@ -604,6 +604,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
 //            Order combinedOrderAssignCanceled = new Order();
             order.setId(order.getCombinedOrderId());
+            order.setCombinedOrderId(tmpOrderId);
 
             /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderAssignCanceled);
             if (selectCombinedOrderIsApprovalCompleted != 0) {
