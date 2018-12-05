@@ -724,9 +724,12 @@ DDELib.Orders.prototype = {
             return;
         }
 
-        var combinedOrderId = "";
+        var combinedOrderId = $('#selectCombined').val();
+        var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
-            combinedOrderId = $('#selectCombined').val();
+            isCombined = true;
+        } else {
+            isCombined = false;
         }
 
         var regOrderId = selectedOriginOrder.regOrderId;
@@ -741,6 +744,7 @@ DDELib.Orders.prototype = {
                 id: regOrderId,
                 status: orderStatus,
                 combinedOrderId : combinedOrderId,
+                isCombined: isCombined,
                 thirdParty: {id:thirdPartyId}
             }),
             contentType:'application/json',

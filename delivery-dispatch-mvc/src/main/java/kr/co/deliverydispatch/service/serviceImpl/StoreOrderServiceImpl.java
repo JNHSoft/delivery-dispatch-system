@@ -179,6 +179,8 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             order.setRole("ROLE_RIDER");
         }
         String tmpRegOrderId = order.getId();
+        String tmpCombinedOrderId = order.getCombinedOrderId();
+
         order.setId(null);
         Store S_Store = storeMapper.selectStoreInfo(order);
         order.setId(tmpRegOrderId);
@@ -189,13 +191,23 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             return 0;
         }
 
+        if (!order.getIsCombined()) {
+            order.setCombinedOrderId("-1");
+        }
+
         int orderStatusThirdParty = orderMapper.updateOrderThirdParty(order);
         if (orderStatusThirdParty == 0 ){
             return 0;
         }
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            order.setId(order.getCombinedOrderId());
+            order.setId(tmpCombinedOrderId);
+            if (order.getIsCombined()) {
+                order.setCombinedOrderId(tmpRegOrderId);
+            } else {
+                order.setCombinedOrderId("-1");
+            }
+
             int selectCombinedThirdPartyStatus = orderMapper.selectOrderIsThirdPartyStatus(order);
             if (selectCombinedThirdPartyStatus != 0){
                 return 0;

@@ -369,6 +369,12 @@
 			, third_party_id = #{thirdParty.id}
 			, status = 3
 		</if>
+		<if test="combinedOrderId != null and combinedOrderId != '' and combinedOrderId != '-1'">
+			, combined_order_id = #{combinedOrderId}
+		</if>
+		<if test="combinedOrderId == '-1'">
+			, combined_order_id = NULL
+		</if>
 
 		<choose>
 			<when test="role != null and role == 'ROLE_SYSTEM'">
