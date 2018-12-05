@@ -64,6 +64,8 @@ public class Order extends Common implements Dto {
     private String pickupXy;
     private String completeXy;
     private String reservationStatus;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean isCombined;
 
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

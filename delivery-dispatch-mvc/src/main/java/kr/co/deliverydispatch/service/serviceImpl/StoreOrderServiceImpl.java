@@ -179,6 +179,8 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             order.setRole("ROLE_RIDER");
         }
         String tmpRegOrderId = order.getId();
+        String tmpCombinedOrderId = order.getCombinedOrderId();
+
         order.setId(null);
         Store S_Store = storeMapper.selectStoreInfo(order);
         order.setId(tmpRegOrderId);
@@ -189,13 +191,25 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             return 0;
         }
 
+        if (!order.getIsCombined()) {
+            order.setCombinedOrderId("-1");
+        }
+
         int orderStatusThirdParty = orderMapper.updateOrderThirdParty(order);
         if (orderStatusThirdParty == 0 ){
             return 0;
         }
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            order.setId(order.getCombinedOrderId());
+            order.setId(tmpCombinedOrderId);
+            if (order.getIsCombined()) {
+                order.setCombinedOrderId(tmpRegOrderId);
+            } else {
+                order.setCombinedOrderId("-1");
+                order.setThirdParty(null);
+                order.setStatus(null);
+            }
+
             int selectCombinedThirdPartyStatus = orderMapper.selectOrderIsThirdPartyStatus(order);
             if (selectCombinedThirdPartyStatus != 0){
                 return 0;
@@ -432,12 +446,21 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         order.setCompletedDatetime(null);
 
         String tmpRegOrderId = order.getId();
+        String tmpCombinedOrderId = order.getCombinedOrderId();
+
+        if (!order.getIsCombined()) {
+            order.setCombinedOrderId("-1");
+        }
 
         int nRet = this.putOrder(order);
 
-        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            order.setId(order.getCombinedOrderId());
-            order.setCombinedOrderId(order.getId());
+        if (order.getIsCombined() != null && !order.getCombinedOrderId().equals("")) {
+            order.setId(tmpCombinedOrderId);
+            if (order.getIsCombined()) {
+                order.setCombinedOrderId(tmpRegOrderId);
+            } else {
+                order.setCombinedOrderId("-1");
+            }
 
             /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             if (selectCombinedOrderIsApprovalCompleted != 0) {
@@ -512,10 +535,22 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         order.setStatus("4");
         order.setModifiedDatetime(LocalDateTime.now().toString());
         String tmpOrderId = order.getId();
+        String tmpCombinedOrderId = order.getCombinedOrderId();
+
+        if (!order.getIsCombined()) {
+            order.setCombinedOrderId("-1");
+        }
+
         int nRet = this.putOrder(order);
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
-            order.setId(order.getCombinedOrderId());
+            order.setId(tmpCombinedOrderId);
+            if (order.getIsCombined()) {
+                order.setCombinedOrderId(tmpOrderId);
+            } else {
+                order.setCombinedOrderId("-1");
+                order.setStatus(null);
+            }
             /*int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderCanceled);
             if (selectCombinedOrderIsApprovalCompleted != 0) {
                 return 0;

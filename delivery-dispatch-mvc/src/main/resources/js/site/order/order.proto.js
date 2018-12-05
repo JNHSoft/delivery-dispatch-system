@@ -554,10 +554,17 @@ DDELib.Orders.prototype = {
                     }
                     $('input[name=combinedChk]:checkbox').prop("checked", true);
                     $('#selectCombined').val(data.combinedOrderId).prop("selected", true);
-                    $('#selectCombined').attr("disabled", false);
+                    if (data.status == "2" || data.status == "3" || data.status == "4"){
+                        $('#combinedChk').attr("disabled", true);
+                        $('#selectCombined').attr("disabled", true);
+                    } else {
+                        $('#combinedChk').attr("disabled", false);
+                        $('#selectCombined').attr("disabled", false);
+                    }
                 } else {
                     self.getNewOrderList(statusNewArray);
                     $('input[name=combinedChk]:checkbox').removeAttr("checked");
+                    $('#combinedChk').attr("disabled", false);
                     $('#selectCombined').attr("disabled", true);
                 }
                 self.getMyRiderList(data);
@@ -724,9 +731,12 @@ DDELib.Orders.prototype = {
             return;
         }
 
-        var combinedOrderId = "";
+        var combinedOrderId = $('#selectCombined').val();
+        var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
-            combinedOrderId = $('#selectCombined').val();
+            isCombined = true;
+        } else {
+            isCombined = false;
         }
 
         var regOrderId = selectedOriginOrder.regOrderId;
@@ -741,6 +751,7 @@ DDELib.Orders.prototype = {
                 id: regOrderId,
                 status: orderStatus,
                 combinedOrderId : combinedOrderId,
+                isCombined: isCombined,
                 thirdParty: {id:thirdPartyId}
             }),
             contentType:'application/json',
@@ -764,9 +775,12 @@ DDELib.Orders.prototype = {
         var menuPrice = $('#menuPrice').val() ? $('#menuPrice').val() : 0;
         var deliveryPrice = $('#deliveryPrice').val() ? $('#deliveryPrice').val() : 0;
         var paid = $('#selectPaid').val();
-        var combinedOrderId = '';
+        var combinedOrderId = combinedOrderId = $('#selectCombined').val();
+        var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
-            combinedOrderId = $('#selectCombined').val();
+            isCombined = true;
+        } else {
+            isCombined = false;
         }
         var self = this;
         $.ajax({
@@ -780,6 +794,7 @@ DDELib.Orders.prototype = {
                 deliveryPrice: deliveryPrice,
                 paid: paid,
                 combinedOrderId: combinedOrderId,
+                isCombined: isCombined
             },
             dataType: 'json',
             success: function (data) {
@@ -888,9 +903,12 @@ DDELib.Orders.prototype = {
             return;
         }
         var id = $('.tit').attr("orderId");
-        var combinedOrderId = "";
+        var combinedOrderId = $('#selectCombined').val();
+        var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
-            combinedOrderId = $('#selectCombined').val();
+            isCombined = true;
+        } else {
+            isCombined = false;
         }
         var self = this;
         $.ajax({
@@ -898,7 +916,8 @@ DDELib.Orders.prototype = {
             type: 'put',
             data: {
                 id: id,
-                combinedOrderId: combinedOrderId
+                combinedOrderId: combinedOrderId,
+                isCombined: isCombined
             },
             dataType: 'json',
             success: function (data) {
