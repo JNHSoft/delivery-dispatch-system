@@ -136,8 +136,8 @@ DDELib.Riders.prototype = {
         this.log("paintRiderList");
         var riderCount = 0;
         for (let [key, value] of this.riderlist) {
-            console.log(key);
-            console.log(value);
+            this.log(key);
+            this.log(value);
             if (value != null && typeof value !== 'undefined' ) {
                 var ev = value;
                 riderCount++;
@@ -358,7 +358,7 @@ DDELib.Riders.prototype = {
         }
     },
     getChatList :function(chatUserId, riderName) {
-        console.log("getChatList:"+chatUserId);
+        this.log("getChatList:"+chatUserId);
         var shtml = "";
         var tmpDate;
         $.ajax({
@@ -393,7 +393,7 @@ DDELib.Riders.prototype = {
         });
     },
     postChat: function() {
-        console.log("postChat");
+        this.log("postChat");
         var chatUserId = RiderChatUserId;
         var message = this.htChat.textBox.val();
         if(!this.isprocchat) {
@@ -432,8 +432,16 @@ function daySet(time) {
     }
     return d;
 }
+// 사파리 오픈시 invalid date 오류 제거를 위한 정규식 변경 적용
 function messageTimeSet(time) {
-    return new Date(time).toLocaleTimeString();
+    if(time){
+        var t = time.split(/[- :]/);
+        var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+        return $.datepicker.formatDate('mm/dd ', d) + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    } else {
+        "-"
+    }
+    // return new Date(time).toLocaleTimeString();
 }
 
 var cntrider = null;
