@@ -185,6 +185,7 @@ DDELib.Riders.prototype = {
         }
     },
     makeRiderRow:function(i, ev) {
+        addon = false;
         if($('#srchChk1').is(':checked') && ev.working==1 && typeof ev.order != "undefined") {
             addon = true;
         }
