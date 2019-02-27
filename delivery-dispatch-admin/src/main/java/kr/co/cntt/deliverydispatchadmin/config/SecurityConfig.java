@@ -99,6 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 권한 상관 없이 접근 허용
                 // .antMatchers("/").permitAll()
+                .antMatchers("/healthCheck").permitAll()				// 헬스체크 페이지 Nick
                 .antMatchers("/login").permitAll()
                 // 슈퍼, 개발자만 허용
                 .antMatchers("/admin/list/**").access("hasRole('SUPER') or hasRole('GOD')")

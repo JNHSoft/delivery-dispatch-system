@@ -5,12 +5,12 @@
 <!-- 컨텐츠 영역 -->
 <section id="container" layout:fragment="content">
     <div th:object="${store}" style="display:none">
-        <input type="hidden" id="storeId" th:value="*{id}"/>
-        <input type="hidden" id="statusArray"/>
-        <input type="hidden" id="storeLatitude" th:value="*{latitude}"/>
-        <input type="hidden" id="storeLongitude" th:value="*{longitude}"/>
-        <input type="hidden" id="storeChatUserId" th:value="*{chatUserId}"/>
-    </div>
+    <input type="hidden" id="storeId" th:value="*{id}"/>
+    <input type="hidden" id="statusArray"/>
+    <input type="hidden" id="storeLatitude" th:value="*{latitude}"/>
+    <input type="hidden" id="storeLongitude" th:value="*{longitude}"/>
+    <input type="hidden" id="storeChatUserId" th:value="*{chatUserId}"/>
+</div>
     <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}"/>
     <div class="search_box">
         <div class="left state">
@@ -84,7 +84,7 @@
         /*]]>*/
     </script>
     <!--<script type="text/javascript" th:src="@{/resources/js/site/rider/rider.js}" layout:fragment="script2"></script>-->
-    <script type="text/javascript" th:src="@{/resources/js/site/rider/rider.proto.js}" layout:fragment="script2"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/rider/rider2.proto.js}" layout:fragment="script2"></script>
     <script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}"></script>
 </section>
 </html>

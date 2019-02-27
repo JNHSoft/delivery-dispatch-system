@@ -106,6 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 권한 상관 없이 접근 허용
                 // .antMatchers("/").permitAll()
+                .antMatchers("/healthCheck").permitAll() // 헬스체크 설정 Nick
                 .antMatchers("/login").permitAll()
                 .antMatchers("/tracker").permitAll()    // 트래커 페이지
                 .antMatchers("/trackerInfo").permitAll()    // 트래커 정보요청

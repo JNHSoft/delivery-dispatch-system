@@ -67,6 +67,13 @@ public class MainController {
         return "/login/login";
     }
 
+    /**
+     * 헬스체크 페이지
+     * Nick
+     * @return
+     */
+    @GetMapping("healthCheck")
+    public String healthCheck(){return "/healthCheck";}
 
     /**
      * 로그아웃
