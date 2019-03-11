@@ -266,12 +266,13 @@
 						, C.subgroup_id IS NULL AND D.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 					<!--AND C.deleted IS NULL-->
 				</when>
+				<!--서브그룹이 없을때 오류 적용 Nick-->
 				<when test="role != null and role == 'ROLE_RIDER'">
 					AND A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) IS NOT NULL
-						, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
-						, C.subgroup_id IS NULL)
-					AND C.deleted IS NULL
+					AND IF(C.subgroup_id IS NULL OR C.deleted IS NOT NULL,
+					A.store_id = (SELECT store_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) ,
+					C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
+					)
                 </when>
 				<otherwise>
 					AND A.id IS NULL
@@ -346,12 +347,15 @@
 						, C.subgroup_id IS NULL AND D.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 					<!--AND C.deleted IS NULL-->
 				</when>
+				<!--서브그룹이 없을때 오류 적용 Nick-->
 				<when test="role != null and role == 'ROLE_RIDER'">
 					AND A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) IS NOT NULL
-						, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
-						, C.subgroup_id IS NULL)
-					AND C.deleted IS NULL
+					AND IF(
+						C.subgroup_id IS NULL OR C.deleted IS NOT NULL,
+						A.store_id = (SELECT store_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) ,
+						C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
+						)
+					<!--AND C.deleted IS NULL-->
 				</when>
 				<otherwise>
 					AND A.id IS NULL
@@ -554,12 +558,13 @@
 	</select>
 
 	<!-- selectOrderIsThirdPartyStatus -->
+	<!--신규 0 배정 1 취소 후 신규 5 번일때 서드파티 배정가능하도록 적용 Nick-->
 	<select id="selectOrderIsThirdPartyStatus" parameterType="kr.co.cntt.core.model.order.Order" resultType="int">
 		SELECT
 		COUNT(*)
 		FROM TB_ORDER
 		WHERE reg_order_id=#{id}
-		AND status in (1,2,3,4)
+		AND status in (2,3,4)
 	</select>
 
 
@@ -709,10 +714,15 @@
         LEFT JOIN TB_SUBGROUP_STORE_REL AS C
         ON B.id = C.store_id
         WHERE B.deleted IS NULL
-            AND C.deleted IS NULL
+            <!--AND C.deleted IS NULL-->
             AND B.assignment_status=1
             AND (A.status = 0 OR A.status =5)
             AND A.created_datetime > CURRENT_DATE()
+			<!--자동배정 오류 설정  group by 추가 Nick-->
+			AND IF( C.subgroup_id IS NULL OR C.deleted IS NOT NULL,
+					C.store_id = (SELECT store_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = A.store_id ORDER BY created_datetime DESC LIMIT 1) ,
+					C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = A.store_id ORDER BY created_datetime DESC LIMIT 1)
+					)
 			<choose>
 				<when test="locale eq 'zh_TW'">
 					<![CDATA[
@@ -728,6 +738,7 @@
    			<!--AND (A.reservation_datetime IS NULL
 			OR (date_add(now(), interval 2 hour) > A.reservation_datetime))
             AND C.subgroup_id IS NOT NULL-->
+		GROUP BY A.id
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC
 
 	</select>

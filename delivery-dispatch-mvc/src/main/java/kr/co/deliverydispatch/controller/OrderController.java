@@ -85,8 +85,8 @@ public class OrderController {
     public boolean putOrderThirdParty(@RequestBody Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
-
-        if(order.getStatus().equals("0") || order.getStatus().equals("5")){
+        // 서드파티 배정 된 상태에서도 배정할수있도록 변경 Nick
+        if(order.getStatus().equals("0") || order.getStatus().equals("1") || order.getStatus().equals("5")){
             storeOrderService.putOrderThirdParty(order);
             return true;
         } else {

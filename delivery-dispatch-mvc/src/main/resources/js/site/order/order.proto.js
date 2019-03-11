@@ -718,8 +718,9 @@ DDELib.Orders.prototype = {
         });
     },
     thirdPartyUpdate:function() {
-    // 서드파티 업데이트
-        if(selectedOriginOrder.status == 1 || selectedOriginOrder.status == 2 || selectedOriginOrder.status == 4){
+        // 서드파티 업데이트
+        // 신규 배정 일때 서드파티로 적용 가능 Nick
+        if(selectedOriginOrder.status == 2 || selectedOriginOrder.status == 4){
             alert(order_confirm_thirdparty_status);
             return;
         }else if(selectedOriginOrder.status == 3){
@@ -798,9 +799,11 @@ DDELib.Orders.prototype = {
             },
             dataType: 'json',
             success: function (data) {
-                self.getOrderDetail(selectedOriginOrder.regOrderId);
+                // self.getOrderDetail(selectedOriginOrder.regOrderId);
                 self.getOrderList();
                 changeChkInputMessage = false;
+                // 기사배정 후 팝업창 닫기 적용 Nick
+                self.onCloseDetail();
             }
         });
     },
@@ -847,8 +850,9 @@ DDELib.Orders.prototype = {
                 if (data == false) {
                     alert(alert_order_assign_max);
                 } else {
-                    self.getOrderDetail(selectedOriginOrder.regOrderId);
+                    // self.getOrderDetail(selectedOriginOrder.regOrderId);
                     self.getOrderList();
+                    self.onCloseDetail();
                 }
                 // console.log(new Date().getTime() - firstTime);
             }

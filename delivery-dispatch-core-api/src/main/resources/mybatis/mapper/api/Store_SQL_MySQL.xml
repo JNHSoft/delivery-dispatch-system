@@ -401,26 +401,27 @@
 
 		WHERE 1=1
             AND A.deleted IS NULL
-        AND
-        CASE WHEN
-          (SELECT * FROM
-            (SELECT deleted FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)
-          AS D) IS NULL
-        THEN B.deleted IS NULL
-        ELSE B.deleted =
-              (SELECT * FROM
-                (SELECT deleted FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)
-              AS D) END
-        AND
-        CASE WHEN
-          (SELECT * FROM
-            (SELECT deleted FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)
-          AS E) IS NULL
-        then C.deleted is null
-        ELSE C.deleted =
-          (SELECT * FROM
-            (SELECT deleted FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)
-          AS E) END
+        <!--그룹이 있던 없던 설정 적용은 되야하므로 조건 주석 처리 Nick-->
+        <!--AND-->
+        <!--CASE WHEN-->
+          <!--(SELECT * FROM-->
+            <!--(SELECT deleted FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)-->
+          <!--AS D) IS NULL-->
+        <!--THEN B.deleted IS NULL OR B.deleted IS NOT NULL-->
+        <!--ELSE B.deleted =-->
+              <!--(SELECT * FROM-->
+                <!--(SELECT deleted FROM TB_SUBGROUP_STORE_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)-->
+              <!--AS D) END-->
+        <!--AND-->
+        <!--CASE WHEN-->
+          <!--(SELECT * FROM-->
+            <!--(SELECT deleted FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)-->
+          <!--AS E) IS NULL-->
+        <!--then C.deleted is null-->
+        <!--ELSE C.deleted =-->
+          <!--(SELECT * FROM-->
+            <!--(SELECT deleted FROM TB_SUBGROUP_RIDER_REL WHERE store_id = #{id} ORDER BY deleted IS NOT NULL, deleted LIMIT 1)-->
+          <!--AS E) END-->
             <choose>
                 <when test="id != null and id != ''">
                     AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
@@ -928,6 +929,38 @@
         FROM TB_ADMIN
         WHERE id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
     </select>
+
+    <!-- insertRangeStore by Nick-->
+    <insert id="insertRangeStore" parameterType="kr.co.cntt.core.model.store.StoreRange">
+
+		INSERT INTO TB_RANGE_STORE(id, ord, rlatitude,rlongitude)
+        VALUES(
+			#{id}
+			, #{ord}
+			, #{rlatitude}
+			, #{rlongitude}
+		)
+
+    </insert>
+
+    <!-- selectRangeStore  by Nick-->
+    <select id="selectRangeStore" parameterType="kr.co.cntt.core.model.store.StoreRange" resultType="kr.co.cntt.core.model.store.StoreRange">
+        SELECT
+         id
+        , ord
+        , rlatitude
+        , rlongitude
+        FROM TB_RANGE_STORE
+        WHERE id = #{id}
+    </select>
+
+    <delete id="deleteRangeStore" parameterType="kr.co.cntt.core.model.store.StoreRange">
+        DELETE
+        FROM
+        TB_RANGE_STORE
+        WHERE
+        id = #{id}
+    </delete>
 
 </mapper>
  

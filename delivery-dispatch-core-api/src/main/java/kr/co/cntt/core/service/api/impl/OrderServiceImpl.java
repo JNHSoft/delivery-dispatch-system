@@ -1386,9 +1386,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
 
-        if (S_OrderConfirm.size() != 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00013), ErrorCodeEnum.E00013.name());
-        }
+//        서브그룹없을때 오류 발생 주석.. DB 변경으로 혹시나 나중에 문제가 있을 수 있으나
+//        자동 배정 및 수동 배정에서도 문제 없이 잘돌아감
+//        if (S_OrderConfirm.size() != 0) {
+//            log.info("555555555555555555555555555555555555555555555555555555555555");
+//            throw new AppTrException(getMessage(ErrorCodeEnum.E00013), ErrorCodeEnum.E00013.name());
+//        }
 
         int nRet = orderMapper.insertOrderConfirm(needOrderId);
         if (nRet !=0){
@@ -1434,9 +1437,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 */
 
         List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
-        if (S_OrderConfirm.size() != 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00014), ErrorCodeEnum.E00014.name());
-        }
+
+//        if (S_OrderConfirm.size() != 0) {
+//            throw new AppTrException(getMessage(ErrorCodeEnum.E00014), ErrorCodeEnum.E00014.name());
+//        }
 
         List<OrderCheckAssignment> S_OrderDeny = orderMapper.selectOrderDeny(needOrderId);
 
@@ -1485,8 +1489,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             ret = this.putOrder(orderAssignCanceled);
         }
-
-        if (!locale.toString().equals("zh_TW")) {
+        // 홍콩도 대만처럼 강제 배정 되도록 주석 처리 적용
+//        if (!locale.toString().equals("zh_TW")) {
             int orderDenyCount = orderMapper.selectOrderDenyCount(currentRider);
             if (orderDenyCount > 1) {
                 currentRider.setWorking("2");
@@ -1503,7 +1507,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     checkFcmResponse(pushNotification);
                 }
             }
-        }
+//        }
 
         Store storeDTO = new Store();
         storeDTO.setId(needOrderId.getStoreId());
