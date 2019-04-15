@@ -930,37 +930,6 @@
         WHERE id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
     </select>
 
-    <!-- insertRangeStore by Nick-->
-    <insert id="insertRangeStore" parameterType="kr.co.cntt.core.model.store.StoreRange">
-
-		INSERT INTO TB_RANGE_STORE(id, ord, rlatitude,rlongitude)
-        VALUES(
-			#{id}
-			, #{ord}
-			, #{rlatitude}
-			, #{rlongitude}
-		)
-
-    </insert>
-
-    <!-- selectRangeStore  by Nick-->
-    <select id="selectRangeStore" parameterType="kr.co.cntt.core.model.store.StoreRange" resultType="kr.co.cntt.core.model.store.StoreRange">
-        SELECT
-         id
-        , ord
-        , rlatitude
-        , rlongitude
-        FROM TB_RANGE_STORE
-        WHERE id = #{id}
-    </select>
-
-    <delete id="deleteRangeStore" parameterType="kr.co.cntt.core.model.store.StoreRange">
-        DELETE
-        FROM
-        TB_RANGE_STORE
-        WHERE
-        id = #{id}
-    </delete>
 
 </mapper>
  
