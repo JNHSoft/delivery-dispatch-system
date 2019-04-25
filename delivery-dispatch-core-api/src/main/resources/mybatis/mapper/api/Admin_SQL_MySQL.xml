@@ -1320,20 +1320,21 @@
 	<!--상점 아이디 중복 체크  -->
 	<select id="selectStoreLoginIdCheck" parameterType="kr.co.cntt.core.model.store.Store" resultType="int">
 	SELECT
-		count(*) as user_count
+		COUNT(*) as user_count
 	FROM TB_STORE
 	WHERE
 		login_id = #{loginId}
+		AND deleted IS NULL
 	</select>
 
 	<!--기사 아이디 중복 체크-->
 	<select id="selectRiderLoginIdCheck" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="int">
 		SELECT
-		count(*) as user_count
+		COUNT(*) as user_count
 		FROM TB_RIDER
 		WHERE
-		login_id = #{loginId}
-		AND deleted IS NOT NULL
+			login_id = #{loginId}
+			AND deleted IS NULL
 	</select>
 
 
