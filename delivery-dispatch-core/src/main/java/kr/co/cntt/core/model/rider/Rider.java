@@ -72,4 +72,10 @@ public class Rider extends User implements Dto {
     private int distance;
 
     private OrderCheckAssignment orderCheckAssignment;
+
+    private String loginId;
+    private String loginPw;
+    private String currentPw;
+    private String newPw;
+
 }

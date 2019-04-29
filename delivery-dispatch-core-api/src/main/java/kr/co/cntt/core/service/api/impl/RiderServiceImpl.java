@@ -12,6 +12,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
+import kr.co.cntt.core.util.ShaEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -127,6 +128,18 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setIsAdmin(null);
             rider.setCode(null);
             rider.setSubGroupRiderRel(null);
+            // 현재 비밀번호 받아서 비밀번호 변경 적용
+            ShaEncoder sha = new ShaEncoder(512);
+            rider.setCurrentPw(sha.encode(rider.getCurrentPw()));
+            Rider tempRider = riderMapper.getRiderInfo(rider);
+//            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+riderMapper.getRiderInfo(rider));
+//            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+rider.getCurrentPw());
+            if(tempRider.getLoginPw().equals(rider.getCurrentPw())){
+                rider.setLoginPw(sha.encode(rider.getNewPw()));
+            } else{
+                return 0;
+            }
+
         } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             rider.setCode(null);
 //            rider.setSubGroupRiderRel(null);
