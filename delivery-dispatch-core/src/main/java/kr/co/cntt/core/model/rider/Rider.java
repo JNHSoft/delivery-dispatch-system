@@ -73,6 +73,7 @@ public class Rider extends User implements Dto {
 
     private OrderCheckAssignment orderCheckAssignment;
 
+    // 비밀번호 비교 및 변경을 위해 추가
     private String loginId;
     private String loginPw;
     private String currentPw;

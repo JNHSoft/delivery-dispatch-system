@@ -667,6 +667,7 @@
         AND third_party_id IS NULL
     </select>
 
+    <!-- 통계 30분 미만 통계에서 35분 미만통계로 계산만 변경적용 Nick -->
     <!-- 통계 조회 List2 -->
     <select id="selectStoreStatisticsByDate" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.ByDate">
         SELECT
@@ -686,7 +687,7 @@
 
         , avg(timediff(A.return_datetime,IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)))) AS order_return
         <![CDATA[
-        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime)<=30 THEN 1 END)
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) <= 35 THEN 1 END)
         / count(A.id) *100 AS min_30below
 
         , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) <= 40

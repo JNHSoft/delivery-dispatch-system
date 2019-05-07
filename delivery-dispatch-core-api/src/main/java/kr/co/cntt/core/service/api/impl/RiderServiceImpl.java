@@ -120,6 +120,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
     public int updateRiderInfo(Rider rider) throws AppTrException {
+//        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
@@ -128,7 +129,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setIsAdmin(null);
             rider.setCode(null);
             rider.setSubGroupRiderRel(null);
-            // 현재 비밀번호 받아서 비밀번호 변경 적용
+            // 현재 비밀번호 받아서 비밀번호 변경 적용 Nick
             ShaEncoder sha = new ShaEncoder(512);
             rider.setCurrentPw(sha.encode(rider.getCurrentPw()));
             Rider tempRider = riderMapper.getRiderInfo(rider);
