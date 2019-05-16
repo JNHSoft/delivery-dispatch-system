@@ -102,7 +102,15 @@ public class StaffAdminServiceImpl implements StaffAdminService {
 
     // 기사 삭제
     @Override
-    public int deleteRider(Rider rider){return adminMapper.deleteRider(rider);}
+    public int deleteRider(Rider rider){
+        int result = adminMapper.deleteRider(rider);
+
+        if (result > 0) {
+            return adminMapper.deleteRiderToken(rider);
+        } else {
+            return result;
+        }
+    }
 
     // insert Admin token
     @Override

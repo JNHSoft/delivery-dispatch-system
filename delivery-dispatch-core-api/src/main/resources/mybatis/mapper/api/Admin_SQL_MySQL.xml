@@ -720,6 +720,15 @@
 		    AND B.deleted IS NULL
 	</update>
 
+	<!-- deleteRiderToken -->
+	<delete id="deleteRiderToken" parameterType="kr.co.cntt.core.model.common.Common">
+		DELETE FROM TB_RIDER_SESSION
+
+		WHERE rider_id = #{id}
+	</delete>
+
+
+
 
 	<!-- selectStores -->
 	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectStoresResult">

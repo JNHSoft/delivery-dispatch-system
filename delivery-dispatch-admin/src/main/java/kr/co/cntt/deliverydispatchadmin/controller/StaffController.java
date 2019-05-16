@@ -435,6 +435,8 @@ public class StaffController {
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
         rider.setId(riderId);
 
+//        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
 
         if(staffAdminService.deleteRider(rider) == 0) {
             return false;

@@ -451,4 +451,13 @@ public interface AdminMapper {
      * @return
      */
     public int updateRiderSubGroup(Store store);
+
+    /**
+     * <p> 라이더 Token 삭제
+     *
+     * @param rider
+     * @return
+     */
+    public int deleteRiderToken(Rider rider);
+
 }

@@ -187,7 +187,8 @@
 			, #{accessToken}
 			, now()
 		FROM TB_RIDER
-		WHERE login_id = #{loginId} AND deleted IS NULL
+		WHERE login_id = #{loginId}
+		AND deleted IS NULL
 		]]>
 	</insert>
 
@@ -202,6 +203,7 @@
 			, now()
 		FROM TB_RIDER
 		WHERE login_id = #{loginId}
+		AND deleted IS NULL
 		]]>
 	</insert>
 

@@ -26,6 +26,12 @@ datasource:
     username: devuser
     password: devuserpw!
 
+#    url: jdbc:mysql://110.234.0.156:3306/twdb?useUnicode=true&characterEncoding=utf8
+#    username: twuser
+#    password: twuserpw!
+
+
+
 ---
 spring:
   profiles: oper

@@ -715,7 +715,7 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
     }
 
 
-    // 상점 로그인 아이디 중복 조회
+    // 기사 로그인 아이디 중복 조회
     @Secured("ROLE_ADMIN")
     @Override
     public int selectRiderLoginIdCheck(Rider rider) throws AppTrException {
