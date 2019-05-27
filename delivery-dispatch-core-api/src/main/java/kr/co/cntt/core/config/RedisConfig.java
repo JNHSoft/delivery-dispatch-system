@@ -17,7 +17,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 @Configuration
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800)
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 86400)
 public class RedisConfig {
 
     private @Value("${spring.redis.host}")

@@ -82,6 +82,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         Map<String, String> localeMap = new HashMap<>();
         localeMap.put("locale", locale.toString());
         List<Order> orderList = orderMapper.selectForAssignOrders(localeMap);
+
+        log.debug(">>> autoAssign_GetOrderList:::: orderList: " + orderList);
+
         for (Order order : orderList) {
             Map map = new HashMap();
             map.put("order", order);
@@ -89,6 +92,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             denyOrderIdChkMap.put("orderId", order.getId());
             denyOrderIdChkMap.put("storeId", order.getStore().getId());
             List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
+
+            log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
+            log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
+            log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
             Misc misc = new Misc();
 
             for (Iterator<Rider> rider = riderList.iterator(); rider.hasNext(); ) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
@@ -105,6 +112,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
 //                log.info(r+"!!!!!!!!!!원본!!!!!!!!!!!"+r.getId());//test
             }
+            log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList);
 
 //            Rider assginRider = riderList.stream() //첫번째 라이더로 바로 받을지 고려, optional 고려
             riderList = riderList.stream()
@@ -112,20 +120,27 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius())*1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
                     .filter(a -> {
                         if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
+                                log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
                             return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
                         } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때
+                                log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
+                                log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
                         } else {
+                            log.debug(">>> autoAssignRider_Stream False:::: Stream False:::: ");
                             return false;
                         }
                     })
                     .filter(a -> {
                         if (a.getOrderStandbyDatetime() == null || a.getOrderStandbyStatus().equals("0")) {
+                                log.debug(">>> autoAssignRider_Stream Third_1:::: Stream :::: " + a.getOrderStandbyDatetime());
+                                log.debug(">>> autoAssignRider_Stream Third_2:::: Stream :::: " + a.getOrderStandbyStatus());
                             return true;
                         } else {
                             LocalDateTime orderStandbyDatetime = LocalDateTime.parse((a.getOrderStandbyDatetime()).replace(" ", "T"));
                             LocalDateTime ldt = LocalDateTime.now();
 //                            LocalDateTime ldt = LocalDateTime.now().minusHours(1); //testServer (timezone이 다름)
+                            log.debug(">>> autoAssignRider_Stream Third_Else:::: Stream Else  :::: ");
                             return orderStandbyDatetime.until(ldt, ChronoUnit.SECONDS) >= 60;
                         }
                     })//현재 앱에서 배정 수락 거절 중인지 확인(앱 통신 상태가 안좋을 수도 있을 경우 대비 하여 1분) *****
@@ -143,9 +158,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             if (!riderList.isEmpty()) {//riderList.size()!=0
                 map.put("rider", riderList.get(0));
+
+                log.debug(">>> autoAssign_GetRiderList::::: riderListMap: " + riderList.get(0));
+                log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);
+                log.debug(">>> autoAssign_GetRiderList_OrderId:::: riderListMap_OrderId: " + order.getId());
                 this.autoAssignOrderProc(map);
-            } else {
-                throw new AppTrException(getMessage(ErrorCodeEnum.E00029, locale), ErrorCodeEnum.E00029.name());//해당 주문을 배정받을 기사가 없습니다.
+            }
+            else {
+                log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: " + order.getId());
+//                throw new AppTrException(getMessage(ErrorCodeEnum.E00029, locale), ErrorCodeEnum.E00029.name());//해당 주문을 배정받을 기사가 없습니다.
             }
         }
     }
@@ -401,7 +422,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     public int autoAssignOrderProc(Map map) throws AppTrException {
         if (map.get("rider") == null) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
+            log.debug(">>> autoAssignOrderProc_GetRiderList:::: riderListMap: " + map.get("rider"));
+//            throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
+            return -1;
         } else {
             Rider rider = (Rider) map.get("rider");
             Order order = (Order) map.get("order");
@@ -425,8 +448,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             storeDTO.setId(order.getStoreId());
 
             storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
+
+            log.debug(">>> autoAssignOrderProc:::: storeId: " + order.getStoreId() + ", orderId: " + order.getId() + ", regOrderId: " + order.getRegOrderId() + ", riderId: " + rider.getId());
+            log.debug(">>> autoAssignOrderProc_Result ::::: Result: " + result);
+
             if (result != 0) {
-                log.debug(">>> autoAssignOrderProc:::: storeId: " + order.getStoreId() + ", orderId: " + order.getId() + ", regOrderId: " + order.getRegOrderId() + ", riderId: " + rider.getId());
                 riderMapper.updateRiderOrderStandbyDateTime(rider);
                 riderMapper.updateRiderOrderStandbyStatus(rider);
                 if (storeDTO.getSubGroup() != null) {
