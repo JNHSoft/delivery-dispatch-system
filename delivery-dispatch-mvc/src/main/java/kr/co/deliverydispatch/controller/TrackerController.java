@@ -12,21 +12,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.TimeZone;
 
 @Slf4j
@@ -38,13 +35,17 @@ public class TrackerController {
     private TrackerService trackerService;
 
     @Autowired
-    public TrackerController(TrackerService trackerService) { this.trackerService = trackerService; }
+    public TrackerController(TrackerService trackerService) {
+        this.trackerService = trackerService;
+    }
 
     @GetMapping("/tracker-test")
-    public String tracker(Model model) {
-        // String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
+    public String tracker(Model model, @RequestParam(required = false) String code, @RequestParam(required = false) String webOrderId, @RequestParam(required = false) String reqDate) {
+//         String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
+//        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"s01\",\"webOrderId\":\"s-20181112-cnt-s01a-0001\",\"reqDate\":\"20181112160000\"}";
 
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"s01\",\"webOrderId\":\"s-20181112-cnt-s01a-0001\",\"reqDate\":\"20181112160000\"}";
+//        /tracker-test?code=s01&webOrderId=s-20190524-cnt-s01t-0001&reqDate=20190524150000
+        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"" + code + "\",\"webOrderId\":\"" + webOrderId + "\",\"reqDate\":\"" + reqDate + "\"}";
 
         try {
             String encKey = tKey;
@@ -81,10 +82,10 @@ public class TrackerController {
     }
 
     @GetMapping("/tracker")
-    public String getTracker(@RequestParam(required=false) String encParam, Model model) throws Exception {
+    public String getTracker(@RequestParam(required = false) String encParam, Model model) throws Exception {
         if (encParam != null) {
             Tracker trackerResult = trackerService.getTracker(encParam);
-            if(trackerResult == null){
+            if (trackerResult == null) {
                 model.addAttribute("encParam", encParam);
                 return "/tracker/null";
             }
@@ -93,22 +94,22 @@ public class TrackerController {
 
             long rqDate = LocalDateTime.parse(trackerResult.getRequestDate(), DATEFORMATTER).atZone(timeZone.toZoneId()).toInstant().toEpochMilli();
             long localNow = LocalDateTime.now(timeZone.toZoneId()).atZone(timeZone.toZoneId()).toInstant().toEpochMilli();
-            long abs = Math.abs(rqDate-localNow)/60000;
+            long abs = Math.abs(rqDate - localNow) / 60000;
 
 //            System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
 //            System.out.println("getRequestDate = "+trackerResult.getRequestDate());
 //            System.out.println("abs = "+abs);
 
-            if(trackerResult.getRiderLatitude() != null){
+            if (trackerResult.getRiderLatitude() != null) {
                 Misc misc = new Misc();
-                trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
+                trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude()) / (double) 1000));
             }
             trackerResult.setRequestDate(null);
-            if (abs < 60){
+            if (abs < 60) {
                 model.addAttribute("encParam", encParam);
                 model.addAttribute("tracker", trackerResult);
                 return "/tracker/tracker";
-            }else {
+            } else {
                 return "/tracker/null";
             }
         } else {
@@ -119,11 +120,11 @@ public class TrackerController {
     @ResponseBody
     @GetMapping("/trackerInfo")
     @CnttMethodDescription("tracker 정보 조회")
-    public Tracker getTrackerInfo(@RequestParam(required=false) String encParam) throws Exception{
+    public Tracker getTrackerInfo(@RequestParam(required = false) String encParam) throws Exception {
         Tracker trackerResult = trackerService.getTracker(encParam);
-        if(trackerResult.getRiderLatitude() != null){
+        if (trackerResult.getRiderLatitude() != null) {
             Misc misc = new Misc();
-            trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude())/(double) 1000));
+            trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude()) / (double) 1000));
         }
         trackerResult.setRequestDate(null);
         return trackerResult;

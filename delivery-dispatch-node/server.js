@@ -123,19 +123,20 @@ pubclient.on("error", function (err) {
 
 subclient.on('message', (channel, message) => {
     try{
-        logger.debug(message);
-        socket.emit('message', message);
+        if (JSON.parse(message).type != 'rider_location_updated') {
+            logger.debug(message);
+            // socket.emit('message', message);
+        }
     }
     catch(exception){
         logger.error(exception);
     }
-    
-}); 
+});
 
 io.sockets.on('connection', (socket) => {
     subclient.on('message', (channel, message) => {
         try{
-            logger.debug(message);
+            // logger.debug(message);
             socket.emit('message', message);
         }
         catch(exception){
