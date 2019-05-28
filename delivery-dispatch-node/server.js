@@ -14,22 +14,22 @@ process.on('uncaughtException', function (err) {
 
 //log 경로
 //TW
-// const logDir = '/root/logs/delivery-dispatch/oper/node/';
+const logDir = '/root/logs/delivery-dispatch/oper/node/';
 //HK
 // const logDir = '/home/ddehk/logs/delivery-dispatch/oper/node/';
 //TEST
-const logDir = '/home/ddetest/logs/deliver-dispatch/oper/node/'
+//const logDir = '/home/ddetest/logs/deliver-dispatch/oper/node/'
 //LOCAL
 // const logDir = './log/';
 
 
 //redis - HK, TW 공통
-// const subclient = redis.createClient(6379 , '192.168.100.81');
-// const pubclient = redis.createClient(6379 , '192.168.100.81');
+const subclient = redis.createClient(6379 , '192.168.100.81');
+const pubclient = redis.createClient(6379 , '192.168.100.81');
 
 //redis - LOCAL, TEST
-const subclient = redis.createClient(6379 , '127.0.0.1');
-const pubclient = redis.createClient(6379 , '127.0.0.1');
+//const subclient = redis.createClient(6379 , '127.0.0.1');
+//const pubclient = redis.createClient(6379 , '127.0.0.1');
 
 const myFormat = winston.format.printf(info => {
     return `${info.timestamp} ${info.level}: ${info.message}`;
@@ -124,7 +124,7 @@ pubclient.on("error", function (err) {
 subclient.on('message', (channel, message) => {
     try{
         if (JSON.parse(message).type != 'rider_location_updated') {
-            logger.debug(message);
+            logger.info(message);
             // socket.emit('message', message);
         }
     }
