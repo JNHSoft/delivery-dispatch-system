@@ -71,13 +71,13 @@ spring:
 cntt.restPool:
   enable: true
   pool-size: 20
-  defaultMaxPerRoute: 20
+  defaultMaxPerRoute: 100
   hosts:
     -
       scheme: http
       host: localhost
       port: 8091
-      maxPerRoute: 20
+      maxPerRoute: 100
 
 ---
 spring:
@@ -86,14 +86,14 @@ spring:
 # rest template
 cntt.restPool:
   enable: true
-  pool-size: 20
-  defaultMaxPerRoute: 20
+  pool-size: 100
+  defaultMaxPerRoute: 100
   hosts:
     -
       scheme: http
       host: localhost
       port: 8085
-      maxPerRoute: 20
+      maxPerRoute: 100
 
 ---
 # Logger

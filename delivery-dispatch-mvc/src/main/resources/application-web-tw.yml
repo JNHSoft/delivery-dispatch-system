@@ -43,19 +43,19 @@ spring:
 # rest template
 cntt.restPool:
   enable: true
-  pool-size: 20
-  defaultMaxPerRoute: 20
+  pool-size: 100
+  defaultMaxPerRoute: 100
   hosts:
     -
       scheme: http
       host: ddetw-api.cntt.co.kr
       port: 8091
-      maxPerRoute: 20
+      maxPerRoute: 100
     -
       scheme: https
       host: ddetw-api.cntt.co.kr
       port: 443
-      maxPerRoute: 20
+      maxPerRoute: 100
 
 ---
 # Redis
