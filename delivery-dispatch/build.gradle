@@ -4,9 +4,7 @@ buildscript {
     }
     ext['hibernate.version'] = '5.2.10.Final'
     repositories {
-        maven {
-            url 'http://192.168.170.112:9999/content/groups/public'
-        }
+        mavenCentral()
     }
     dependencies {
 //        classpath 'org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}'
@@ -51,9 +49,7 @@ subprojects {
     }
     */
     repositories {
-        maven {
-            url 'http://192.168.170.112:9999/content/groups/public'
-        }
+        mavenCentral()
     }
 
     dependencyManagement {
@@ -74,7 +70,9 @@ subprojects {
                 file {
                     withXml { provider ->
                         def module = provider.asNode().'wb-module'
-                        module.'dependent-module'.findAll { it.@'handle'.startsWith('module:/classpath') }*.replaceNode {}
+                        module.'dependent-module'.findAll {
+                            it.@'handle'.startsWith('module:/classpath')
+                        }*.replaceNode {}
                     }
                 }
             }
@@ -111,6 +109,8 @@ subprojects {
 //        compile 'cglib:cglib:3.2.6'
         compile 'com.google.maps:google-maps-services:0.2.6'
         compile 'org.apache.commons:commons-lang3:3.7'
+        compile 'org.json:json:20180813'
+        compile 'org.apache.httpcomponents:httpclient:4.5.8'
         compile("org.springframework.boot:spring-boot-starter-data-redis")
         compile("org.springframework.session:spring-session-data-redis")
 //        compile group: 'org.codehaus.janino', name: 'janino', version: '2.7.8'
@@ -122,11 +122,11 @@ subprojects {
 
 project(':delivery-dispatch-core') {
     dependencies {
-        compile 'kr.co.cntt.common:std-cntt-common-concurrent:1.0.2'
-        compile 'kr.co.cntt.common:std-cntt-common-trace:1.0.3'
-        compile 'kr.co.cntt.common:std-cntt-common-rest:1.0.6'
-        compile 'kr.co.cntt.common:std-cntt-common-mail:1.0.2'
-        //compileOnly 'kr.co.cntt.common:std-cntt-common-payment-kcp:1.0.6'
+//        compile fileTree(dir: 'libs', includes: ['*.jar'])
+        compile files('libs/std-cntt-common-concurrent-1.0.2.jar')
+        compile files('libs/std-cntt-common-mail-1.0.2.jar')
+        compile files('libs/std-cntt-common-rest-1.0.6.jar')
+        compile files('libs/std-cntt-common-trace-1.0.3.jar')
     }
 }
 
