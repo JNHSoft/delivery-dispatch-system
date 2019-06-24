@@ -698,7 +698,6 @@
 		    , A.latitude
 		    , A.longitude
 		    , A.store_id
-		    , B.id AS store_id
 		    , B.latitude AS store_latitude
 		    , B.longitude AS store_longitude
 		    , B.radius
@@ -707,7 +706,7 @@
 		    , B.admin_id
 		    , B.store_name
 		    , A.address
-			, C.subgroup_id
+			, ANY_VALUE(C.subgroup_id) AS subgroup_id
 		FROM TB_ORDER AS A
         LEFT JOIN TB_STORE AS B
         ON A.store_id = B.id

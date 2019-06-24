@@ -876,8 +876,8 @@
 			, A.return_time
 			, A.order_standby_datetime
 			, A.order_standby_status
-			, B.subgroup_id AS subGroupRiderRel_subgroup_id
-			, B.store_id AS subGroupRiderRel_store_id
+			, ANY_VALUE(B.subgroup_id) AS subGroupRiderRel_subgroup_id
+			, ANY_VALUE(B.store_id) AS subGroupRiderRel_store_id
 			, (SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND (status = 1 OR status = 2) AND created_datetime > CURRENT_DATE()) AS assign_count
    			, (SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
 			, (SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
