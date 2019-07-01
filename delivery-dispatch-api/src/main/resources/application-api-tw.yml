@@ -14,8 +14,8 @@ datasource:
   deliveryDispatch:
     initialize: true
     initial-size: 10
-    max-total: 50
-    max-idle: 50
+    max-total: 200
+    max-idle: 100
     min-idle: 10
     max-wait-millis: 3000
     test-on-borrow: true
