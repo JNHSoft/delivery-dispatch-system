@@ -128,12 +128,16 @@ function chart30minute(data){
     $('#avg_30minute').html('');
 
     var sum = 0;
+    var avgLength = 0;
+    var avg = 0;
     data.forEach(function(d){
         if(d.min_30below != undefined){
-            sum+=d.min_30below
+            sum+=d.min_30below;
+            avgLength++;
         }
     })
-    var avg = sum/data.length;
+
+    avg = (avgLength == 0)? avg : sum/avgLength;
 
     $('#avg_30minute').html(`D30 MINS : ${avg.toFixed(2)}%`);
 
