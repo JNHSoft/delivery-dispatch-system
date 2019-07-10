@@ -739,6 +739,39 @@
         AND third_party_id IS NULL
     </select>
 
+    <!-- 통계 조회 List3 - 배달완료율 30분 미만 목록-->
+    <select id="selectStoreStatisticsMin30BelowByDate" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
+        SELECT
+            A.DATE as day_to_day,
+            B.min_30below
+        FROM (
+            SELECT CURDATE() - INTERVAL (a.a + (10 * b.a) + (100 * c.a) + (1000 * d.a) ) DAY AS DATE
+            FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+            CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+            CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+            CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS d
+        ) A LEFT JOIN (
+            SELECT
+                DATE_FORMAT(O.CREATED_DATETIME,'%y-%m-%d') AS day_to_day,
+            <![CDATA[
+                COUNT(
+                    CASE WHEN TIMESTAMPDIFF(MINUTE, IF(O.RESERVATION_STATUS = 0, O.CREATED_DATETIME, DATE_SUB(O.RESERVATION_DATETIME, INTERVAL 30 MINUTE)), COMPLETED_DATETIME) <= 35 THEN 1 END
+                ) / COUNT(O.ID) *100 AS min_30below
+            ]]>
+            FROM
+                TB_ORDER AS O
+            WHERE
+                O.STORE_ID = (SELECT STORE_ID FROM TB_STORE_SESSION WHERE ACCESS_TOKEN = #{token}) AND
+                O.STATUS IN (3) AND
+                DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)  > O.CREATED_DATETIME AND
+                O.CREATED_DATETIME > #{currentDatetime} AND
+                THIRD_PARTY_ID IS NULL
+            GROUP BY
+                day_to_day
+        ) B
+        ON A.DATE = B.day_to_day
+        WHERE A.DATE BETWEEN #{currentDatetime} AND #{endDate} ORDER BY A.DATE
+    </select>
 
     <!-- 통계 조회 info -->
     <select id="selectStoreStatisticsInfo" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">

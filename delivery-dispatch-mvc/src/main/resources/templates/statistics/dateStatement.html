@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="/layout">
-
 <!-- 컨텐츠 영역 -->
 <section id="container" layout:fragment="content">
+    <div class="date_graph_layer">
+        <div class="date_graph_inner">
+            <div class="date_graph_content">
+                <div id="chart_content" class="date_chart_wrap">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="date_graph_layer" style="border-bottom: 1px solid #2f528f">
+        <div class="date_graph_inner">
+            <div class="date_graph_content">
+                <div id="orderPickup" class="box"></div>
+                <div id="pickupComplete" class="box"></div>
+                <div id="orderComplete" class="box"></div>
+                <div id="completeReturn" class="box"></div>
+                <div id="pickupReturn" class="box"></div>
+                <div id="orderReturn" class="box"></div>
+            </div>
+        </div>
+    </div>
     <form name="searchForm" id="filter-form" class="form-horizontal" role="form" action="">
         <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
         <div class="search_box">
@@ -13,9 +33,9 @@
             <div class="right">
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
-                <input type="text" name="datepicker" id="day1" class="input datepicker"/>
+                <input type="text" name="datepicker" id="day1" class="input picker"/>
                 ~
-                <input type="text" name="datepicker" id="day2" class="input datepicker"/>
+                <input type="text" name="datepicker" id="day2" class="input picker"/>
                 <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByDate();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>
@@ -32,6 +52,9 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/core.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/charts.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/animated.js}"></script>
     <script type="text/javascript" th:src="@{/resources/js/site/statistics/date.js}" layout:fragment="script2"></script>
 </section>
 <!-- //컨텐츠 영역 -->
@@ -80,6 +103,8 @@
     var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
     var my_store = /*[[${store}]]*/ 'my_store';
     var regionLocale = /*[[${regionLocale}]]*/ 'regionLocale';
+
+    var result_none = /*[[#{result.none}]]*/ 'result_none';
 
     $(document).ready(function () {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;

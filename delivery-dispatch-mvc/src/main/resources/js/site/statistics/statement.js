@@ -1,9 +1,24 @@
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
-    $('input[name="datepicker"]').change(function () {
-        getStoreStatistics();
-    })
-    $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd', new Date));
+    let date = $.datepicker.formatDate('yy-mm-dd', new Date);
+    $('#day1, #day2').val(date);
+
+    $('#day1').datepicker({
+        maxDate : date,
+        onClose: function(selectedDate) {
+            $('#day2').datepicker('option', 'minDate', selectedDate);
+            getStoreStatistics();
+        }
+    });
+
+    $('#day2').datepicker({
+        minDate : date,
+        onClose: function( selectedDate ) {
+            $('#day1').datepicker('option', 'maxDate', selectedDate);
+            getStoreStatistics();
+        }
+    });
+
     getStoreStatistics();
 });
 

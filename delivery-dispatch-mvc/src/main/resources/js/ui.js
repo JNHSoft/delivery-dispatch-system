@@ -108,8 +108,8 @@ function formStyle(){
 	});
 
 	//datepicker
-	if($('.datepicker').length > 0){
-		$( '.datepicker' ).datepicker({
+	if($('.picker').length > 0){
+        $.datepicker.setDefaults({
 			closeText: '닫기',
 			prevText: datepicker_prev_month,
 			nextText: datepicker_next_month,
@@ -127,7 +127,7 @@ function formStyle(){
 	}
 	
 	if($('.datepicker_month').length > 0){
-		$( '.datepicker_month' ).datepicker({
+        $.datepicker.setDefaults({
 			closeText: '닫기',
 			prevText: datepicker_prev_month,
 			nextText: datepicker_next_month,
@@ -146,7 +146,7 @@ function formStyle(){
 	
 	//팝업내에서 스크롤시 달력 숨김
 	$('.pop_wrap').scroll(function(){
-		$('.datepicker').datepicker('hide');
+		$('.picker').datepicker('hide');
 		$('.datepicker_month').datepicker('hide');
 	})
 	

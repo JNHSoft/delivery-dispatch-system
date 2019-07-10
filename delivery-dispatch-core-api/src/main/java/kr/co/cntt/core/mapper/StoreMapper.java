@@ -210,11 +210,19 @@ public interface StoreMapper {
     public List<ByDate> selectStoreStatisticsByDate(Order order);
 
     /**
+     * Store 일별 배달완료율 30분 미만 목록
+     * @param order
+     * @return
+     */
+    public List<Map> selectStoreStatisticsMin30BelowByDate(Order order);
+
+    /**
      * <p> Admin 정보 조회
      *
      * @param common
      * @return Admin Info 조회 결과값
      */
     public Admin selectAdminInfo(Common common);
+
 
 }

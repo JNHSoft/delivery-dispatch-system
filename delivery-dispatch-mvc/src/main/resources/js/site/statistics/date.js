@@ -1,9 +1,24 @@
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
-    $('input[name="datepicker"]').change(function () {
-        getStoreStatisticsByDate();
-    })
-    $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd', new Date));
+    let date = $.datepicker.formatDate('yy-mm-dd', new Date);
+    $('#day1, #day2').val(date);
+
+    $('#day1').datepicker({
+        maxDate : date,
+        onClose: function(selectedDate) {
+            $('#day2').datepicker('option', 'minDate', selectedDate);
+            getStoreStatisticsByDate();
+        }
+    });
+
+    $('#day2').datepicker({
+        minDate : date,
+        onClose: function( selectedDate ) {
+            $('#day1').datepicker('option', 'maxDate', selectedDate);
+            getStoreStatisticsByDate();
+        }
+    });
+
     getStoreStatisticsByDate();
 });
 
@@ -200,10 +215,16 @@ function getStoreStatisticsByDate() {
                 mydata.push(avgData);
             }
 
-            if (mydata != null) {
+            if (mydata.length > 0) {
+                dateGraph(avgData);
+                dateInfo(avgData);
                 jQuery('#jqGrid').jqGrid('clearGridData');
                 jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1});
                 jQuery('#jqGrid').trigger('reloadGrid');
+            } else {
+                dateGraph();
+                dateInfo(avgData);
+                jQuery('#jqGrid').jqGrid('clearGridData');
             }
             $("#jqGrid").jqGrid({
                 datatype: "local",
@@ -258,6 +279,115 @@ function getStoreStatisticsByDate() {
             });
         }
     });
+}
+function dateGraph(avgData){
+    $('#chart_content').html('');
+
+    if(avgData == null || avgData == 'undefined'){
+        $('#chart_content').html(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
+    } else {
+        am4core.ready(function() {
+            am4core.useTheme(am4themes_animated);
+
+            let chart = am4core.create("chart_content", am4charts.XYChart);
+
+            chart.data = [{
+                "category" : "",
+                "orderPickup": convertToMinute(avgData.orderPickup),
+                "pickupComplete": convertToMinute(avgData.pickupComplete),
+                "completeReturn": convertToMinute(avgData.completeReturn)
+            }];
+
+            chart.legend = new am4charts.Legend();
+            chart.legend.position = "right";
+            chart.legend.width = 200;
+            chart.legend.markers.template.disabled = true;
+            chart.legend.labels.template.text = "[bold {color}]{name} : [/]";
+
+            let categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.dataFields.category = "category";
+            categoryAxis.renderer.grid.template.location = 0;
+            categoryAxis.renderer.labels.template.disabled = true;
+
+            let valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+            valueAxis.min = 0;
+            valueAxis.renderer.grid.template.opacity = 0;
+            valueAxis.renderer.ticks.template.strokeOpacity = 0.5;
+            valueAxis.renderer.ticks.template.stroke = am4core.color("#495C43");
+            valueAxis.renderer.ticks.template.length = 10;
+            valueAxis.renderer.line.strokeOpacity = 0.5;
+            valueAxis.renderer.baseGrid.disabled = true;
+            valueAxis.renderer.minGridDistance = 40;
+
+            valueAxis.calculateTotals = true;
+            valueAxis.min = 0;
+            //valueAxis.max = 60;
+            valueAxis.strictMinMax = true;
+
+            function createSeries(field, name) {
+                let series = chart.series.push(new am4charts.ColumnSeries());
+                series.name = name;
+                series.dataFields.valueX = field;
+                series.dataFields.categoryY = "category";
+                series.sequencedInterpolation = true;
+                series.stacked = true;
+                series.columns.template.width = am4core.percent(95);
+                series.columns.template.tooltipText = "[bold]{name}[/]\n[font-size:14px]{valueX}";
+
+                series.legendSettings.labelText = "[bold {color}]{name} : [/]";
+                series.legendSettings.valueText = "{valueX.close}";
+                series.legendSettings.itemValueText = "[bold]{valueX}[/bold]";
+
+                let labelBullet = series.bullets.push(new am4charts.LabelBullet());
+                labelBullet.label.text = "{valueX}";
+                labelBullet.locationX = 0.5;
+
+                return series;
+            }
+
+            createSeries('orderPickup', label_in_store_time);
+            createSeries('pickupComplete', label_delivery_time);
+            createSeries('completeReturn', label_return_time);
+        });
+    }
+}
+function convertToMinute(time){
+    return (time == '-')? null : (time.split(':').reduce((acc,time) => (60 * acc) + +time) / 60).toFixed(2)
+}
+function convertToHms(time){
+    let arr = time.split(':');
+
+    if(arr.length == 3){
+        let result = '';
+        if(arr[0] != '00') result += `${parseInt(arr[0])}h `;
+        if(arr[1] != '00') result += `${arr[1]}m `;
+        if(arr[2] != '00') result += `${arr[2]}s`;
+
+        return (time == '00:00:00')? '00s':result
+    }else {
+        return '-';
+    }
+}
+
+function dateInfo(avgData){
+    $('.date_graph_content .box').html('');
+
+    var colName = $("<div></div>").addClass('col_name');
+    var colVal = $("<div></div>").addClass('col_val');
+
+    let orderPickup = avgData.orderPickup;
+    let pickupComplete = avgData.pickupComplete;
+    let orderComplete = avgData.orderComplete;
+    let completeReturn = avgData.completeReturn;
+    let pickupReturn = avgData.pickupReturn;
+    let orderReturn = avgData.orderReturn;
+
+    $('#orderPickup.box').append(colName.clone().html(label_in_store_time)).append(colVal.clone().html(convertToHms(orderPickup)));
+    $('#pickupComplete.box').append(colName.clone().html(label_delivery_time)).append(colVal.clone().html(convertToHms(pickupComplete)));
+    $('#orderComplete.box').append(colName.clone().html(label_completed_time)).append(colVal.clone().html(convertToHms(orderComplete)));
+    $('#completeReturn.box').append(colName.clone().html(label_return_time)).append(colVal.clone().html(convertToHms(completeReturn)));
+    $('#pickupReturn.box').append(colName.clone().html(label_out_time)).append(colVal.clone().html(convertToHms(pickupReturn)));
+    $('#orderReturn.box').append(colName.clone().html(label_total_delivery_time)).append(colVal.clone().html(convertToHms(orderReturn)));
 }
 
 function excelDownloadByDate(){

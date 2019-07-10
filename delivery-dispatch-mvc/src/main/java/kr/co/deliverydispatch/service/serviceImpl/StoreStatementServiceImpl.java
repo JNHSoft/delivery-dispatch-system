@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service("storeStatementService")
@@ -311,6 +312,15 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         interval.setIntervalMinuteCounts(list);
 
         return interval;
+    }
+
+    @Override
+    public List<Map> getStoreStatisticsMin30BelowByDate(Order order) {
+        List<Map> min30Below_Statistics = storeMapper.selectStoreStatisticsMin30BelowByDate(order);
+        if (min30Below_Statistics.size() == 0) {
+            return Collections.<Map>emptyList();
+        }
+        return min30Below_Statistics;
     }
 
     public double addInterval(List list, int intervalSize, long intervalCount, double sumIntervalCount) {

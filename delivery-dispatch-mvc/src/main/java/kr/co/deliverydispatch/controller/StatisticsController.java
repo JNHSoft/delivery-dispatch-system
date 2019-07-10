@@ -24,9 +24,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -274,11 +272,12 @@ public class StatisticsController {
     @ResponseBody
     @GetMapping("/getStoreStatisticsByInterval")
     @CnttMethodDescription("구간별 통계 리스트 조회")
-    public Interval getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate
+    public Map getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate
             , @RequestParam(value = "endDate") String endDate){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
+        order.setEndDate(endDate);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date sdfStartDate = formatter.parse(startDate);
@@ -293,8 +292,14 @@ public class StatisticsController {
         order.setToken(storeInfo.getStoreAccessToken());
 
         Interval statisticsInterval = storeStatementService.getStoreStatisticsByInterval(order);
+        //구간별 통계 리스트 조회페이지에 추가된 그래프 정보
+        List<Map> statisticsMin30Below = storeStatementService.getStoreStatisticsMin30BelowByDate(order);
 
-        return statisticsInterval;
+        Map result = new HashMap();
+        result.put("intervalData", statisticsInterval);
+        result.put("intervalMin30Below", statisticsMin30Below);
+
+        return result;
     }
 
     @GetMapping("/excelDownloadByInterval")

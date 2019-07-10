@@ -6,6 +6,7 @@ import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StoreStatementService {
     /**
@@ -41,6 +42,13 @@ public interface StoreStatementService {
     public List<ByDate> getStoreStatisticsByDate(Order order);
 
     /**
+     * Store 구간별 배달완료율 30분 미만 목록
+     * @param order
+     * @return
+     */
+    public List<Map> getStoreStatisticsMin30BelowByDate(Order order);
+
+    /**
      * Store 통계 조회
      * @param order
      * @return
@@ -55,7 +63,6 @@ public interface StoreStatementService {
      */
     public List<Order> getStoreStatisticsExcel(Order order);
 
-
     /**
      * 통계 Date Excel
      * @param order
@@ -63,13 +70,10 @@ public interface StoreStatementService {
      */
     public List<ByDate> getStoreStatisticsExcelByDate(Order order);
 
-
-
     /**
      * Store 구간별 통계 목록
      * @param order
      * @return
      */
     public Interval getStoreStatisticsByInterval(Order order);
-
 }

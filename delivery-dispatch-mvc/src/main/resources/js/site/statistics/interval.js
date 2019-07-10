@@ -1,9 +1,24 @@
 var loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
-    $('input[name="datepicker"]').change(function () {
-        getStoreStatisticsByInterval();
-    })
-    $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd', new Date));
+    let date = $.datepicker.formatDate('yy-mm-dd', new Date);
+    $('#day1, #day2').val(date);
+
+    $('#day1').datepicker({
+        maxDate : date,
+        onClose: function(selectedDate) {
+            $('#day2').datepicker('option', 'minDate', selectedDate);
+            getStoreStatisticsByInterval();
+        }
+    });
+
+    $('#day2').datepicker({
+        minDate : date,
+        onClose: function( selectedDate ) {
+            $('#day1').datepicker('option', 'maxDate', selectedDate);
+            getStoreStatisticsByInterval();
+        }
+    });
+
     getStoreStatisticsByInterval();
 });
 
@@ -61,8 +76,10 @@ function minusTime(time1, time2) {
 }
 
 function getStoreStatisticsByInterval() {
-    var mydata = [];
+    var tcData = [];
+
     loading.show();
+
     $.ajax({
         url: "/getStoreStatisticsByInterval",
         type: 'get',
@@ -75,9 +92,10 @@ function getStoreStatisticsByInterval() {
             var tmpChartLabels = [];
             var tmpChartData = [];
 
-            for (var key in data.intervalMinuteCounts) {
+            var intervalData = data.intervalData.intervalMinuteCounts;
+            for (var key in intervalData) {
 
-                tmpChartData.push(data.intervalMinuteCounts[key][0]);
+                tmpChartData.push(intervalData[key][0]);
 
                 var interval_key = Number(key) + 9;
                 if (interval_key == 9) {
@@ -94,72 +112,222 @@ function getStoreStatisticsByInterval() {
 
                 var tmpObject = new Object();
                 tmpObject.intervalMinute = interval_key;
-                tmpObject.intervalCount = data.intervalMinuteCounts[key][0];
-                tmpObject.intervalCount1 = data.intervalMinuteCounts[key][1]+"%";
-                tmpObject.intervalCount2 = data.intervalMinuteCounts[key][2]+"%";
-                mydata.push(tmpObject);
+                tmpObject.intervalCount = intervalData[key][0];
+                tmpObject.intervalCount1 = intervalData[key][1];
+                tmpObject.intervalCount2 = intervalData[key][2];
+                tcData.push(tmpObject);
             }
-
-            if (mydata != null) {
-                jQuery('#jqGrid').jqGrid('clearGridData');
-                jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1});
-                jQuery('#jqGrid').trigger('reloadGrid');
-            }
-            $("#jqGrid").jqGrid({
-                datatype: "local",
-                data: mydata,
-                colModel: [
-                    {label: label_interval, name: 'intervalMinute', width: 25, align: 'center'},
-                    {label: label_count, name: 'intervalCount', width: 25, align: 'center'},
-                    {label: label_percentage, name: 'intervalCount1', width: 25, align: 'center'},
-                    {label: label_cumulative, name: 'intervalCount2', width: 25, align: 'center'}
-                ],
-                height: 680,
-                autowidth: true,
-                rowNum: 20,
-                // footerrow: true,
-                pager: "#jqGridPager"
-            });
-
-            resizeJqGrid('#jqGrid'); //그리드 리사이즈
             loading.hide();
-            $('.state_wrap .btn_close').click(function (e) {
-                e.preventDefault();
-                $('.state_wrap').removeClass('on'); //상세보기 닫기
-                setTimeout(function () {
-                    $(window).trigger('resize');
-                }, 300)//그리드 리사이즈
-            });
-
-            var chartData = {
-                labels: tmpChartLabels,
-                datasets: [{
-                    label: label_count,
-                    data: tmpChartData,
-                    backgroundColor: 'rgba(0, 0, 255, 0.6)',
-                    borderColor: 'rgba(0, 0, 255, 1)',
-                    borderWidth: 1
-                }]
-            };
-            if(stackedBar){
-                stackedBar.clear();
-            }
-            intervalChart(chartData);
+            intervalGraph(tcData, data.intervalMin30Below);
         }
     });
 }
-var stackedBar;
-function intervalChart(chartData) {
-    var cnvs = document.getElementById('intervalCanvas');
-    var ctx = cnvs.getContext('2d');
 
-    ctx.clearRect(0, 0, cnvs.width, cnvs.height);
-    ctx.beginPath();
+function chart30minute(data){
+    //30미만 평균 퍼센트 구하기
+    $('#avg_30minute').html('');
 
-    stackedBar = new Chart(ctx, {
-        type: 'bar',
-        data: chartData
-    });
+    var sum = 0;
+    data.forEach(function(d){
+        if(d.min_30below != undefined){
+            sum+=d.min_30below
+        }
+    })
+    var avg = sum/data.length;
+
+    $('#avg_30minute').html(`D30 MINS : ${avg.toFixed(2)}%`);
+
+    //30미만 그래프 구하기
+    var chart = am4core.create("chart_30minute", am4charts.XYChart);
+    chart.scrollbarX = new am4core.Scrollbar();
+
+    chart.data = data;
+
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "day_to_day";
+    categoryAxis.autoGridCount = false;
+    categoryAxis.gridCount = 10;
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.renderer.minGridDistance = 20;
+    categoryAxis.renderer.labels.template.fontSize = 13;
+    categoryAxis.renderer.labels.template.horizontalCenter = "right";
+    categoryAxis.renderer.labels.template.verticalCenter = "middle";
+    categoryAxis.renderer.labels.template.rotation = 270;
+    categoryAxis.tooltip.disabled = true;
+    categoryAxis.renderer.minHeight = 50;
+    //categoryAxis.renderer.grid.template.disabled = true;
+
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.renderer.minWidth = 30;
+    valueAxis.min = 0;
+    valueAxis.max = 100;
+    //valueAxis.renderer.grid.template.disabled = true;
+
+    var series = chart.series.push(new am4charts.ColumnSeries());
+    series.dataFields.valueY = "min_30below";
+    series.dataFields.categoryX = "day_to_day";
+    series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}%[/]";
+    series.columns.template.tooltipY = 0;
+    series.columns.template.strokeWidth = 0;
+    series.columns.template.fill = am4core.color("#85a9e3");
+    series.tooltip.pointerOrientation = "vertical";
+
+    series.columns.template.width = am4core.percent(100);
+    /*var labelBullet = new am4charts.LabelBullet();
+    series.bullets.push(labelBullet);
+    labelBullet.strokeOpacity = 0;
+    labelBullet.stroke = am4core.color("#dadada");
+    labelBullet.dy = -20;
+    labelBullet.minWidth = 20;
+    labelBullet.label.text = "{valueY}";
+    labelBullet.label.fontSize = 10;
+    labelBullet.label.adapter.add("text", function(value, target) {
+        if(target.dataItem.valueY == 0) return '';
+        return value;
+    })*/
+}
+
+function chartPercentage(data){
+    $('#chart_percentage').html('');
+
+    //파이 그래프 데이터 작업
+    var count = [];
+    var x = [];
+    var sliceStart = 1;
+    var result = [];
+    data.forEach((d)=> x.push(d.intervalCount))
+
+    count.push(x.slice(0,1)[0]);//10분 미만은 먼저 추가
+
+    //10분부터 60분이상 까지 5분 간격으로 표시
+    for(var i=0; i<11; i++){
+        count.push(x.slice(sliceStart,sliceStart+5).reduce((a,b)=>a+b));
+        sliceStart+= 5
+    }
+
+    //전부 값이 0이면 그래프 표출 안하기 위해서
+    var value = count.reduce((a, b) => a + b);
+    if(value != 0){
+        result.push({'intervalMinute':'00~10', 'intervalCount':count[0]});
+        result.push({'intervalMinute':'10~15', 'intervalCount':count[1]});
+        result.push({'intervalMinute':'15~20', 'intervalCount':count[2]});
+        result.push({'intervalMinute':'20~25', 'intervalCount':count[3]});
+        result.push({'intervalMinute':'25~30', 'intervalCount':count[4]});
+        result.push({'intervalMinute':'30~35', 'intervalCount':count[5]});
+        result.push({'intervalMinute':'35~40', 'intervalCount':count[6]});
+        result.push({'intervalMinute':'40~45', 'intervalCount':count[7]});
+        result.push({'intervalMinute':'45~50', 'intervalCount':count[8]});
+        result.push({'intervalMinute':'50~55', 'intervalCount':count[9]});
+        result.push({'intervalMinute':'55~60', 'intervalCount':count[10]});
+        result.push({'intervalMinute':'60~  ', 'intervalCount':count[11]});
+
+        var chart = am4core.create("chart_percentage", am4charts.PieChart);
+
+        chart.innerRadius = am4core.percent(30);
+
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.alignLabels = false;
+        pieSeries.isActive = false;
+        pieSeries.dataFields.value = "intervalCount";
+        pieSeries.dataFields.category = "intervalMinute";
+
+        pieSeries.slices.template.stroke = am4core.color("#fff");
+        pieSeries.slices.template.strokeWidth = 1;
+        pieSeries.slices.template.strokeOpacity = 1;
+        pieSeries.slices.template.cursorOverStyle = [{"property": "cursor","value": "pointer"}];
+        pieSeries.marginLeft = 20;
+
+        //pieSeries.tooltip.getFillFromObject = false;
+        //pieSeries.tooltip.label.fill = am4core.color('#fff');
+
+        pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+        pieSeries.labels.template.radius = am4core.percent(-30);
+
+        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+            if (target.dataItem && (target.dataItem.values.value.percent < 5)) return 0;
+            return radius;
+        });
+
+        pieSeries.labels.template.adapter.add("text", function(value, target) {
+            if (target.dataItem.values.value.percent == 0) return '';
+            return value;
+        });
+
+        chart.data = result;
+
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "right";
+        chart.legend.width = 110;
+        //chart.legend.markers.template.disabled = true;
+        chart.legend.labels.template.text = "[bold {color}]{name}";
+        chart.legend.valueLabels.template.text = "{value.value}";
+        //chart.legend.itemContainers.template.tooltipText = "";
+        chart.legend.itemContainers.template.hoverable = false;
+    } else {
+        $('#chart_percentage').html(`<div class="no_chart_wrap">${label_count}<br>${result_none}</div>`);
+    }
+
+}
+
+function chartTc(data){
+    var chart = am4core.create("chart_tc", am4charts.XYChart);
+    //chart.scrollbarX = new am4core.Scrollbar();
+
+    chart.data = data;
+
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "intervalMinute";
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.renderer.minGridDistance = 10;
+    categoryAxis.renderer.labels.template.fontSize = 13;
+    categoryAxis.renderer.labels.template.horizontalCenter = "right";
+    categoryAxis.renderer.labels.template.verticalCenter = "middle";
+    categoryAxis.renderer.labels.template.rotation = 270;
+    categoryAxis.tooltip.disabled = true;
+    categoryAxis.renderer.minHeight = 50;
+    //categoryAxis.renderer.grid.template.disabled = true;
+
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.renderer.minWidth = 30;
+    valueAxis.min = 0
+    //valueAxis.renderer.grid.template.disabled = true;
+
+    var series = chart.series.push(new am4charts.ColumnSeries());
+    series.dataFields.valueY = "intervalCount";
+    series.dataFields.categoryX = "intervalMinute";
+    series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+    series.columns.template.tooltipY = 0;
+    series.columns.template.strokeWidth = 0;
+    series.columns.template.fill = am4core.color("#85a9e3");
+    series.tooltip.pointerOrientation = "vertical";
+
+    /*series.columns.template.column.cornerRadiusTopLeft = 5;
+    series.columns.template.column.cornerRadiusTopRight = 5;
+    series.columns.template.column.fillOpacity = 0.8;*/
+    series.columns.template.width = am4core.percent(85);
+
+    var labelBullet = new am4charts.LabelBullet();
+    series.bullets.push(labelBullet);
+    labelBullet.label.text = "{valueY}";
+    labelBullet.strokeOpacity = 0;
+    labelBullet.stroke = am4core.color("#dadada");
+    labelBullet.dy = -20;
+    labelBullet.minWidth = 20;
+    labelBullet.label.fontSize = 10;
+    labelBullet.label.adapter.add("text", function(value, target) {
+        if(target.dataItem.valueY == 0) return '';
+        return value;
+    })
+
+}
+
+function intervalGraph(tcData, less30MinuteData) {
+    am4core.useTheme(am4themes_animated);
+
+    chart30minute(less30MinuteData)
+    chartPercentage(tcData)
+    chartTc(tcData)
 }
 
 function excelDownloadByInterval(){
