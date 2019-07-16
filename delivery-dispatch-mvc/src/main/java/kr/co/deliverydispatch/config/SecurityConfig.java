@@ -90,9 +90,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        RequestMatcher matcher = new AntPathRequestMatcher("/tracker");
+        RequestMatcher trackerMatcher = new AntPathRequestMatcher("/tracker");
+        RequestMatcher trackerTestMatcher = new AntPathRequestMatcher("/tracker-test");
         List<RequestMatcher> whiteList = new ArrayList<>();
-        whiteList.add(matcher);
+        whiteList.add(trackerMatcher);
+        whiteList.add(trackerTestMatcher);
         DelegatingRequestMatcherHeaderWriter headerWriter = new DelegatingRequestMatcherHeaderWriter(
                 new NegatedRequestMatcher(
                         new OrRequestMatcher(
@@ -109,6 +111,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/healthCheck").permitAll() // 헬스체크 설정 Nick
                 .antMatchers("/login").permitAll()
                 .antMatchers("/tracker").permitAll()    // 트래커 페이지
+                .antMatchers("/tracker-test").permitAll()    // 트래커 페이지
                 .antMatchers("/trackerInfo").permitAll()    // 트래커 정보요청
                 .antMatchers("/error/error-tracker").permitAll()    // 트래커 페이지
                 // 슈퍼, 개발자만 허용

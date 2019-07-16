@@ -47,31 +47,15 @@
 /*<![CDATA[*/
 var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
 var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
-//var webOrderId = /*[[${tracker.webOrderId}]]*/ 'webOrderId';
 var trackerStatus = /*[[${tracker.status}]]*/ 'trackerStatus';
 var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
 var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
-//var cookingTime = /*[[${tracker.cookingTime}]]*/ 'cookingTime';
 var storeName = /*[[${tracker.storeName}]]*/ 'storeName';
-//var storePhone = /*[[${tracker.storePhone}]]*/ 'storePhone';
 var storeLatitude = /*[[${tracker.storeLatitude}]]*/ 'storeLatitude';
 var storeLongitude = /*[[${tracker.storeLongitude}]]*/ 'storeLongitude';
-//var riderName = /*[[${tracker.riderName}]]*/ 'riderName';
-//var riderPhone = /*[[${tracker.riderPhone}]]*/ 'riderPhone';
-var riderLatitude = /*[[${tracker.riderLatitude}]]*/ 'riderLatitude';
-var riderLongitude = /*[[${tracker.riderLongitude}]]*/ 'riderLongitude';
 var distance = /*[[${tracker.distance}]]*/ 'distance';
-//var trackerDetailAddress = /*[[${tracker.detailAddress}]]*/ 'trackerDetailAddress';
-var storeDetailAddress = /*[[${tracker.storeDetailAddress}]]*/ 'storeDetailAddress';
 var encParam = /*[[${encParam}]]*/ 'encParam';
 
-var remain_distance = /*[[#{tracker.remain.distance}]]*/ 'remain_distance';
-var rest_time = /*[[#{tracker.rest.time}]]*/ 'rest_time';
-var tracker_destination = /*[[#{tracker.destination}]]*/ 'tracker_destination';
-var tracker_assign = /*[[#{tracker.assign}]]*/ 'tracker_assign';
-
-//console.log(distance);
-//console.log(webOrderId, status, storeName, storePhone, storeLatitude, storeLongitude, riderName, riderPhone, riderLatitude, riderLongitude, latitude, longitude, reservationDatetime);
 var map;
 var marker = [];
 var directionsDisplay;
@@ -83,10 +67,8 @@ var checkProgressValue = 0;
 var durationTime;
 var beforeDurationTime = 60;
 var routeArray = [];
-var durationCheckTime = [];
-var pointLocation = [];
 var AllDurationTime = [];
-var direction = [];
+
 function setUI() {
     $.ajax({
         url:"/trackerInfo",
@@ -98,7 +80,7 @@ function setUI() {
         success : function(data) {
            console.log(data);
             trackerStatus = data.status;
-            console.log(trackerStatus)
+            // console.log(trackerStatus)
             if (data.reservationDatetime) {
                 var arriveTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
                 var createTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
@@ -112,12 +94,7 @@ function setUI() {
 				}
             }
 
-            /*if(checkTime-1800*1000>0) {
-                setTimeout('setUI()',checkTime-1800*1000);
-            }*/
-//            console.log(checkReserveTime-3600*1000);
-            if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime-3600*1000<=0){//예약시간과 등록시간이 1시간이내인지 체크
-//                $.cookie('checkStep','true',{expires:1});
+            if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime - 3600 * 1000 <= 0){//예약시간과 등록시간이 1시간이내인지 체크
                 localStorage.setItem('checkStep','true');
             }
             if(data.storeName){
@@ -129,20 +106,16 @@ function setUI() {
             if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && !localStorage.getItem('checkStep')/*!$.cookie('checkStep')*/) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on');
-//                $('.visual_area').html('<div class="loading"></div>');
-//                $('.visual_area').html('<div class="gps_loading"></div>');
-//				console.log(checkTime-1800*1000);
 				if($(".visual_area").has('#map').prevObject.length){
                     $(".mapCtrl").attr("id","map");
                     $(".visual_area").attr("id","");
 				}
-//                console.log(checkTime-1800*1000);
-				if(checkTime-1800*1000<=0){//예약시간과 현재시간이 30분 이내인지 체크
-//					$.cookie('checkStep','true',{expires:1});
+
+				if(checkTime - 1800 * 1000 <= 0){//예약시간과 현재시간이 30분 이내인지 체크
                     localStorage.setItem('checkStep','true');
                     setUI();
 				}
-//                setTimeout('setUI()',30000);
+
             } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1)&& localStorage.getItem('checkStep')/*$.cookie('checkStep')*/) {
                 $('#tNew').addClass('on line');
                 $('#tAssign').addClass('on');
@@ -155,7 +128,7 @@ function setUI() {
 				checkEnter = 1;
                 startEndPoint();
                 $('.progress-background').show();
-//                setTimeout('startEndPoint()',30000);
+
             } else if (trackerStatus == 2 && !localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on line');
@@ -176,7 +149,7 @@ function setUI() {
                     if(checkProgressValue==100){
                         clearInterval(plusProgress);
                     }
-				    }, 100);
+				}, 100);
  			} else if (trackerStatus == 2 && localStorage.getItem('chkProgress')/*$.cookie('chkProgress')*/) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on line');
@@ -565,13 +538,22 @@ function initMap() {
 //        calculateAndDisplayRoute(directionsService, directionsDisplay);
     }
 
-    var bounds  = new google.maps.LatLngBounds();
+    var bounds = new google.maps.LatLngBounds();
 //    bounds.extend(new google.maps.LatLng(latitude>storeLatitude?parseFloat(latitude)+0.003:parseFloat(latitude)-0.003,parseFloat(longitude)));
     bounds.extend(new google.maps.LatLng(parseFloat(latitude),parseFloat(longitude)));
     bounds.extend(new google.maps.LatLng(parseFloat(storeLatitude), parseFloat(storeLongitude)));
 
 	map.fitBounds(bounds);
     map.panToBounds(bounds);
+
+	/*var zoomChangeBoundsListener =
+			google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
+				if ( this.getZoom() ){   // or set a minimum
+					this.setZoom(this.getZoom() +1);  // set zoom here
+				}
+			});
+
+	setTimeout(function(){google.maps.event.removeListener(zoomChangeBoundsListener)}, 2000);*/
 }
 var overlay;
 function myOverlay(marker,content, map) {
@@ -602,181 +584,84 @@ function startEndPoint() {
                 overlay.onRemove();
                 overlay == null;
             }
-//            $(".messageBox").remove();
 
             for (var i = 0; i < marker.length; i++) {
                 marker[i].setMap(null);
             }
-
-            /*marker[0] = new google.maps.Marker({
-                position: new google.maps.LatLng(data.latitude, data.longitude),
-                map: map,
-                /!*label:{fontWeight: "bold",
-                    text:tracker_destination},*!/
-                icon: {
-                    url:'/resources/images/tracker/pin_home.png?ver=0.2',
-                    scaledSize: new google.maps.Size(30, 40)
-                }
-            });
-
-            marker[1] = new google.maps.Marker({
-                position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
-                map: map,
-                /!*label:{fontWeight: "bold", text:data.storeName},*!/
-                icon: {
-                    url:'/resources/images/tracker/pin_store.png?ver=0.2',
-                    scaledSize: new google.maps.Size(35, 35)
-                }
-            });*/
-//            console.log(checkProgressValue);
             $("#progressbar").progressbar( "value", checkProgressValue>100?100:checkProgressValue);
-
-            /*var contentString = '<div class="messageBox"><span class="sidePadding">餐點準備中</span></div>';
-
-            myOverlay.prototype.onAdd = function () {
-                var div = document.createElement('div');
-                div.style.borderStyle = 'none';
-                div.style.position = 'absolute';
-                div.style.width = '140px';
-
-                div.innerHTML = this.content_;
-
-                this.div_ = div;
-                var panes = this.getPanes();
-                panes.overlayLayer.appendChild(div);
-            }
-
-            myOverlay.prototype.draw = function () {
-                var overlayProjection = this.getProjection();
-
-                var ne = overlayProjection.fromLatLngToDivPixel(this.marker_.getPosition());
-
-                var div = this.div_;
-                div.style.left = data.longitude<data.storeLongitude?ne.x - 155 + 'px':ne.x + 10 + 'px';
-                div.style.top = data.latitude<data.storeLatitude?ne.y - 10 +'px':ne.y - 63 + 'px';
-            }
-            overlay = new myOverlay(marker[1],contentString,map);*/
-
-            /*var contentString = '<div id="progressbar"><div class="progress-label">aaaa</div></div>';
-
-            myOverlay.prototype.onAdd = function () {
-                var div = document.createElement('div');
-                div.style.width = '150px';
-                div.style.width = '50px';
-                div.innerHTML = this.content_;
-
-                this.div_ = div;
-                var panes = this.getPanes();
-                panes.floatPane.appendChild(div);
-            }
-
-            myOverlay.prototype.draw = function () {
-                var overlayProjection = this.getProjection();
-
-                var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
-                console.log(this.map_)
-				console.log(overlayProjection);
-
-                var div = this.div_;
-                div.style.left = ne.x;
-                div.style.top = ne.y;
-            }
-            overlay = new myOverlay(marker[1],contentString,map);*/
         }
 	});
 }
 
 function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-    $.ajax({
-        url:"/trackerInfo",
-        type:'get',
-        data : {
-            encParam : encParam
-        },
-        dataType : 'json',
-        success : function(data) {
-//            console.log(data);
+	$.ajax({
+		url: "/trackerInfo",
+		type: 'get',
+		data: {
+			encParam: encParam
+		},
+		dataType: 'json',
+		success: function (data) {
 //            $(".messageBox").remove();
 
-            myOverlay.prototype.onRemove = function () {
-                if(this.div_ && this.div_.parentNode){
-                    this.div_.parentNode.removeChild(this.div_);
-                }
-//                            this.div_ = null;
-            }
-			if(overlay){
-			    if($('.bigText')){
-                    $('.bigText').remove();
+			myOverlay.prototype.onRemove = function () {
+				if (this.div_ && this.div_.parentNode) {
+					this.div_.parentNode.removeChild(this.div_);
 				}
-                overlay.onRemove();
+//                            this.div_ = null;
 			}
-            trackerStatus = data.status;
-            if(trackerStatus!=2){
-                setUI();
+			if (overlay) {
+				if ($('.bigText')) {
+					$('.bigText').remove();
+				}
+				overlay.onRemove();
+			}
+			trackerStatus = data.status;
+			if(trackerStatus!=2){
+				setUI();
 			}else{
-                /*for (var i = 0; i < marker.length-1; i++) {
-                    marker[i].setMap(null);
-                }*/
-                /*for (var i = 0; i < infowindow.length; i++) {
-                    infowindow[i].close();
-                }
-                infowindow=[];*/
-                var selectedMode = 'DRIVING';
-                //		var selectedMode = 'TRANSIT';
-                //      var selectedMode = 'WALKING';
-//                marker[2]?marker[2].getPostion:
-                directionsService.route({
+				var selectedMode = 'DRIVING';
+				//		var selectedMode = 'TRANSIT';
+				//      var selectedMode = 'WALKING';
+				directionsService.route({
 //                    origin: marker[2]?new google.maps.LatLng(marker[2].gm_accessors_.animationPosition.gd.position.lat(), marker[2].gm_accessors_.animationPosition.gd.position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
-                    origin: marker[2]?new google.maps.LatLng(marker[2].position.lat(), marker[2].position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
-                    destination: new google.maps.LatLng(data.latitude, data.longitude),
+					origin: marker[2]?new google.maps.LatLng(marker[2].position.lat(), marker[2].position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
+					destination: new google.maps.LatLng(data.latitude, data.longitude),
 //                    destination: new google.maps.LatLng(data.riderLatitude, data.riderLongitude),
-                    // Note that Javascript allows us to access the constant
-                    // using square brackets and a string value as its
-                    // "property."
-                    travelMode: google.maps.TravelMode[selectedMode],
-                    drivingOptions: {
-                        departureTime: new Date(),
-                        trafficModel: 'bestguess'
-                    },
-                    optimizeWaypoints : true,
+					// Note that Javascript allows us to access the constant
+					// using square brackets and a string value as its
+					// "property."
+					travelMode: google.maps.TravelMode[selectedMode],
+					drivingOptions: {
+						departureTime: new Date(),
+						trafficModel: 'bestguess'
+					},
+					optimizeWaypoints : true,
 					waypoints: [{location : new google.maps.LatLng(data.riderLatitude, data.riderLongitude)
 						,stopover:true}]
-                }, function(response, status) {
-                    if (status == 'OK') {
-//                        console.log(routeArray[a]);
-                        for(var a = 0; a <routeArray.length;a++){
-                            clearTimeout(routeArray[a]);
-						}
-                        routeArray = [];
-                        AllDurationTime = [];
-                        durationCheckTime =[];
-                        pointLocation = [];
-                        var route = response.routes[0].legs[0];
-                        var route2 = response.routes[0].legs[1];
-//                        console.log(response);
-						/*for(var a = 0; a<(route.steps).length;a++){
-							console.log(route.steps[a].start_location + ':' +route.steps[a].end_location);
-						}*/
-//                        var orderDistance = (route.distance).text;
-                        var durationInTraffic = 0;
-						for(var a = 0; a<response.routes[0].legs.length;a++){
-                            durationInTraffic+= response.routes[0].legs[a].duration.value;
-						}
-                        durationInTraffic = durationInTraffic/60;
-//                        var durationInTraffic = ((route.duration_in_traffic).value)/60;
+				}, function(response, status) {
+					if (status == 'OK') {
+						console.log(response)
+						routeArray.forEach(function(route){
+							return clearTimeout(route);
+						})
 
-                        /*var contentString = '<div class="map_info">'+
-                            '<img src="/resources/images/tracker/ICON_helmet.png" alt="" /> '+
-                            '<span class="t_blk" id="distance">' + remain_distance + orderDistance + '</span>'+
-                            '<span class="t_blk">|</span> '+
-                            '<span class="t_red">' + Math.round(durationInTraffic) + rest_time + '</span>'+
-                            '</div>';*/
+						routeArray = [];
+						AllDurationTime = [];
+						var route = response.routes[0].legs[0];
+						var route2 = response.routes[0].legs[1];
+
+						var durationInTraffic = response.routes[0].legs.reduce(function (sum, leg) {
+							return sum + leg.duration.value
+						},0)/60;
+
 						durationTime = Math.round(durationInTraffic);
-						if(beforeDurationTime - durationTime < -2){
-						    durationTime = beforeDurationTime;
+
+						if (beforeDurationTime - durationTime < -2){
+							durationTime = beforeDurationTime;
 						}
-						if(localStorage.getItem('restCheckTime')){
-                            durationTime = 0;
+						if (localStorage.getItem('restCheckTime')){
+							durationTime = 0;
 						}
 						var contentString = '<div class="messageBox">'+
 								'<span class="bigText">'+ (durationTime<10?'&nbsp;'+durationTime:durationTime) + '</span>' +
@@ -784,39 +669,43 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 								'<p class="grayText">預計到達時間</p></div></div>';
 						beforeDurationTime = Math.round(durationInTraffic);
 //                        var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
-                        var arriveTrafficTime = new Date((new Date).getTime()+durationInTraffic*60*1000);
+						var arriveTrafficTime = new Date((new Date).getTime()+durationInTraffic*60*1000);
 
-                        $('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
+						$('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
 						if(!marker[0]){
-                            marker[0] = new google.maps.Marker({
-                                position: response.routes[0].legs[response.routes[0].legs.length-1].end_location,
-                                map: map,
-                                /*label:{fontWeight: "bold",
+							marker[0] = new google.maps.Marker({
+								position: response.routes[0].legs[response.routes[0].legs.length-1].end_location,
+								map: map,
+								zIndex:101,
+								/*label:{fontWeight: "bold",
                                     text:tracker_destination},*/
-                                icon: {
-                                    url:'/resources/images/tracker/pin_home.png?ver=0.4',
-                                    scaledSize: new google.maps.Size(30, 40)
-                                }
-                            });
+								icon: {
+									url:'/resources/images/tracker/pin_home.png?ver=0.4',
+									scaledSize: new google.maps.Size(30, 40)
+								}
+							});
 						}
-                        if(!marker[1]){
-                            marker[1] = new google.maps.Marker({
-                                position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
-                                map: map,
-                                /*label:{fontWeight: "bold", text:data.storeName},*/
-                                icon: {
-                                    url:'/resources/images/tracker/pin_store.png?ver=0.4',
-                                    scaledSize: new google.maps.Size(35, 35)
-                                }
-                            });
+						if(!marker[1]){
+							marker[1] = new google.maps.Marker({
+								position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
+								map: map,
+								zIndex:103,
+								/*label:{fontWeight: "bold", text:data.storeName},*/
+								icon: {
+									url:'/resources/images/tracker/pin_store.png?ver=0.4',
+									scaledSize: new google.maps.Size(35, 35)
+								}
+							});
 						}
 
-                        if(!marker[2]){
-                            marker[2] = new SlidingMarker({
-                                position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)),
-                                map: map,
+						if(!marker[2]){
+							marker[2] = new SlidingMarker({
+								// position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)),
+								position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng()),
+								map: map,
+								zIndex:102,
 								icon: {
-                                    url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
+									url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
 									scaledSize: new google.maps.Size(40, 49)
 								},
 								duration: durationInTraffic*60*1000,
@@ -824,201 +713,102 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 								easing: "linear"
 //								easing: "easeOutCirc"
 // 								easing: "easeOutExpo"
-                                });
-                            /*var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i){
-                                routeArray[i] = setTimeout(function () {
-                                    marker[2].setDuration(durationCheckTime);
-                                    marker[2].setPosition(pointLocation);
-                                },AllDurationTime);
-                            }
-                            var tempDurationTime = 0;
-							for(var a = 0; a<(route.steps).length;a++){
-                                var turnTime = 60 * 1000/(route.steps).length;
-//									durationCheckTime[a] = route.steps[a].duration.value * 1000;
-                                durationCheckTime[a] = turnTime;
-								pointLocation[a] = route.steps[a].end_location;
-								if(a==0){
-									marker[2].setDuration(durationCheckTime[a]);
-									marker[2].setPosition(pointLocation[a]);
-								}
-								if(a>0){
-									routeTimeout(durationCheckTime[a],pointLocation[a],AllDurationTime[a-1]);
-									/!*routeArray[a] = setTimeout(function () {
-                                      		marker[2].setDuration(durationCheckTime[a]);
-                                            marker[2].setPosition(pointLocation[a]);
-                                        },AllDurationTime[a-1]);*!/
-								}
-								tempDurationTime += route.steps[a].duration.value * 1000;
-								AllDurationTime[a] = tempDurationTime;
-								/!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
-                                console.log(route.steps[a].end_location);
-                                console.log(route.end_location);*!/
-                            }*/
+							});
 						}else {
-//                            marker[2].setPosition(new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)));
-//							marker[2].setDuration((route.duration_in_traffic).value * 1000);
-//							marker[2].setPosition(route.end_location);
-							var routeTimeout = function(durationCheckTime, pointLocation,AllDurationTime,i,direction,restStepTime){
-                                routeArray[i] = setTimeout(function () {
-                                    marker[2].setDuration(durationCheckTime);
-                                    marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-                                    marker[2].setPosition(pointLocation);
-                                    if(restStepTime==0){
-                                        localStorage.setItem('restCheckTime','true');
+							var tempDurationTime = 0;
+							var routeTimeout = function(durationCheckTime, pointLocation, direction, restStepTime, AllTime){
+								var routeSetTime = setTimeout(function () {
+									marker[2].setDuration(durationCheckTime);
+									if(direction != 'keep'){
+										marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
 									}
-                                    $('.bigText').html(restStepTime<10?'&nbsp;'+restStepTime:restStepTime);
-//                                    console.log(direction);
-                                },AllDurationTime);
-							}
-                            var tempDurationTime = 0;
-
-                            /*if(data.distance>0.1  && !localStorage.getItem('restCheckTime')){
-								for(var a = 0; a<(route.steps).length;a++){
-								    var turnTime = 50 * 1000/(route.steps).length;
-//									durationCheckTime[a] = route.steps[a].duration.value * 1000;
-                                    durationCheckTime[a] = turnTime;
-									pointLocation[a] = route.steps[a].end_location;
-                                    direction[a] = route.steps[a].end_location.lng()>route.steps[a].start_location.lng()?'right':'left';
-//									console.log(route.steps[a].end_location.lng() + ':' + route.steps[a].start_location.lng());
-                                    var restStepTime = route.steps[a].duration.value;
-                                    for(var b = 0; b<(route2.steps).length;b++){
-                                        restStepTime += route2.steps[b].duration.value;
+									marker[2].setPosition(pointLocation);
+									if(restStepTime == 0){
+										localStorage.setItem('restCheckTime','true');
 									}
-									restStepTime = Math.round(restStepTime/60);
-									if(a==0){
-										marker[2].setDuration(durationCheckTime[a]);
-                                        marker[2].setIcon({url:(direction[a]== 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-										marker[2].setPosition(pointLocation[a]);
-									}
-									if(a>0){
-                                        routeTimeout(durationCheckTime[a],pointLocation[a],AllDurationTime[a-1],a-1,direction[a],restStepTime);
-										/!*routeArray[a] = setTimeout(function () {
-											marker[2].setDuration(durationCheckTime[a]);
-											marker[2].setPosition(pointLocation[a]);
-										},AllDurationTime[a-1]);*!/
-									}
-//									tempDurationTime += route.steps[a].duration.value * 1000;
-									tempDurationTime += durationCheckTime[a];
-                                    AllDurationTime[a] = tempDurationTime;
-                                    /!*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
-                                    console.log(route.steps[a].end_location);
-                                    console.log(route.end_location);*!/
-								}
-                            }*/
+									$('.bigText').html(restStepTime<10?'&nbsp;'+restStepTime:restStepTime);
+								},AllTime);
+								routeArray.push(routeSetTime);
+							};
 
 							if(data.distance > 0.1 && !localStorage.getItem('restCheckTime')){
-								var countB = 0
-								for(var a = 0; a < (route.steps).length; a++){
-									var restStepTime = route.steps[a].duration.value;
-									for(var b = 0; b<(route2.steps).length;b++){
-										restStepTime += route2.steps[b].duration.value;
-									}
-									restStepTime = Math.round(restStepTime/60);
+								var stepTimes = route.steps.concat(route2.steps).reduce(function (total, step, index) {
+									return total.concat(step.lat_lngs.map(function(lat_lng){
+										return JSON.stringify({duration : step.duration.value, index : index});// 배열안의 객체 비교 편하게 하려고 문자열로 변환
+									}));
+								},[]);// 구간별 걸리는 시간
 
-									for(var b = 0; b < route.steps[a].lat_lngs.length; b++) {
-										var allRoute = route.steps.reduce(function (a,b) {
-											return a + b.lat_lngs.length
-										},0)
-										console.log('allRoute :::', allRoute)
-										var turnTime = 50 * 1000/ (allRoute)
-										console.log('turnTime :::', turnTime)
+								var restStepTime = stepTimes.map(function (stepTime1) {
+										return stepTimes.filter(function(step, index) {
+											return stepTimes.indexOf(step) === index;
+										}).reduce(function (total, stepTime2) {
+											if(JSON.parse(stepTime1).index > JSON.parse(stepTime2).index){
+												return total;
+											}else {
+												return total + JSON.parse(stepTime2).duration;
+											}
+										},0);
+								});// 구간별 남은 누적 시간
 
-										durationCheckTime[countB] = turnTime;
-										pointLocation[countB] = new google.maps.LatLng(
-												route.steps[a].lat_lngs[b].lat(),
-												route.steps[a].lat_lngs[b].lng()
-										)
-										if(b + 1 < route.steps[a].lat_lngs.length) {
-											direction[countB] = route.steps[a].lat_lngs[b+1].lng() > route.steps[a].lat_lngs[b].lng()?'right':'left';
-											console.log(countB)
-										} else if (b - 1 == route.steps[a].lat_lngs.length && a + 1 < route.steps.length) {
-											direction[countB] = route.steps[a+1].lat_lngs[0].lng() > route.steps[a].lat_lngs[b].lng()?'right':'left';
-										}
+								var allRoute = route.steps.reduce(function (total, step) {
+									return total.concat(step.lat_lngs);
+								},[]).concat(route.end_location); // 총 경로
 
-										if(countB==0){
-											marker[2].setDuration(durationCheckTime[countB]);
-											marker[2].setIcon({url:(direction[countB]== 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-											marker[2].setPosition(pointLocation[countB]);
-										}
-										if(countB>0){
-											routeTimeout(durationCheckTime[countB],pointLocation[countB],AllDurationTime[countB-1],countB-1,direction[countB],restStepTime);
-											/*routeArray[a] = setTimeout(function () {
-                                                marker[2].setDuration(durationCheckTime[a]);
-                                                marker[2].setPosition(pointLocation[a]);
-                                            },AllDurationTime[a-1]);*/
-										}
-										tempDurationTime += durationCheckTime[countB];
-										AllDurationTime[countB] = tempDurationTime;
-										countB++
-									}
-//
+								var turnTime = 50 * 1000/ allRoute.length; //각 경로당 이동시간
 
-//									tempDurationTime += route.steps[a].duration.value * 1000;
+								console.log(allRoute.map(route => {return {lat : route.lat(), lng : route.lng()} }))
+								allRoute.some(function (route, index) {
+									var direction = allRoute[index + 1] && allRoute[index + 1].lng() > route.lng() ? 'right':(allRoute[index + 1] && allRoute[index + 1].lng() < route.lng()?'left':'keep'); //마커 방향
 
-									/*console.log(route.steps[a].duration.value * 1000 + ':' +(route.steps[a]).end_location);
-                                    console.log(route.steps[a].end_location);
-                                    console.log(route.end_location);*/
-								}
+									routeTimeout(turnTime, route, direction, Math.round(restStepTime[index]/60), AllDurationTime[index - 1]);
+									tempDurationTime += turnTime;
+									AllDurationTime[index] = tempDurationTime;
+
+									return index + 1 == allRoute.length;
+								});
 							}
-                        }
-						/*console.log(marker[2].gm_accessors_.animationPosition.gd);
-						console.log(marker[2]);*/
-                        /*if(data.distance > 0.1){
-                            marker[2] = new google.maps.Marker({
-                                position: route.start_location,
-                                map: map,
-                                icon: {
-                                    url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.2':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
-                                    scaledSize: new google.maps.Size(40, 49)
-                                }
-                            });
-                        }*/
-                        myOverlay.prototype.onAdd = function () {
-                            var div = document.createElement('div');
-                            div.style.borderStyle = 'none';
-                            div.style.position = 'absolute';
-                            div.style.width = '140px';
+						}
+						myOverlay.prototype.onAdd = function () {
+							var div = document.createElement('div');
+							div.style.borderStyle = 'none';
+							div.style.position = 'absolute';
+							div.style.width = '140px';
 
-                            div.innerHTML = this.content_;
+							div.innerHTML = this.content_;
 
-                            this.div_ = div;
-                            var panes = this.getPanes();
-                            panes.overlayLayer.appendChild(div);
+							this.div_ = div;
+							var panes = this.getPanes();
+							panes.overlayLayer.appendChild(div);
 //                            panes.floatPane.appendChild(div);
-                        }
-                        myOverlay.prototype.draw = function () {
-                            var overlayProjection = this.getProjection();
+						}
+						myOverlay.prototype.draw = function () {
+							var overlayProjection = this.getProjection();
 
-                            var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
+							var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
 
-                            var div = this.div_;
+							var div = this.div_;
 
-                            div.style.left = data.longitude>data.storeLongitude?ne.x - 160 + 'px':ne.x + 18+ 'px';
-                            if(data.longitude>data.storeLongitude){
-                                div.style.top = data.latitude<data.storeLatitude?ne.y + 92 + 'px':ne.y - 150 + 'px';
+							div.style.left = data.longitude>data.storeLongitude?ne.x - 160 + 'px':ne.x + 18+ 'px';
+							if(data.longitude>data.storeLongitude){
+								div.style.top = data.latitude<data.storeLatitude?ne.y + 92 + 'px':ne.y - 150 + 'px';
 							}else{
-                                div.style.top = data.latitude<data.storeLatitude?ne.y + 79 + 'px':ne.y - 150 + 'px';
+								div.style.top = data.latitude<data.storeLatitude?ne.y + 79 + 'px':ne.y - 150 + 'px';
 							}
-                        }
+						}
 
-                        overlay = new myOverlay(marker[0],contentString,map);
+						overlay = new myOverlay(marker[0],contentString,map);
 
-                        /*infowindow = new google.maps.InfoWindow({
-                            content: contentString
-                        });
-                        infowindow.open(map, marker[1]);*/
-
-                        directionsDisplay.setDirections(response);
-                    } else {
-                        window.alert('Directions request failed due to ' + status);
-                    }
-                });
+						directionsDisplay.setDirections(response);
+					} else {
+						window.alert('Directions request failed due to ' + status);
+					}
+				});
 			}
-        }/*,
+		}/*,
         error : function (request,status,error) {
             alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
         }*/
-    })
+	})
 }
 
 function setHourMin(time1) {

@@ -108,7 +108,7 @@ public class TrackerController {
             if (abs < 60) {
                 model.addAttribute("encParam", encParam);
                 model.addAttribute("tracker", trackerResult);
-                return "/tracker/tracker";
+                return "tracker4";
             } else {
                 return "/tracker/null";
             }

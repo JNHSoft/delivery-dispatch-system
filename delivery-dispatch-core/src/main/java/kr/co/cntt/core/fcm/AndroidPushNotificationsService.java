@@ -136,7 +136,7 @@ public class AndroidPushNotificationsService {
 
             FirebaseResponse firebaseResponse = restTemplate.postForObject("https://fcm.googleapis.com/fcm/send", request, FirebaseResponse.class);
 
-            System.out.println(request.toString());
+//            System.out.println(request.toString());
 
             return CompletableFuture.completedFuture(firebaseResponse);
         } catch (JSONException e) {

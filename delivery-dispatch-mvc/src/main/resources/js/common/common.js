@@ -6,7 +6,9 @@ $(document).ready(function() {
             // alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
             // console.log("error: "+order_detail_error+"\n"+(request?"code: "+request.status:"errMessage : "+error));
             // location.href = "/order";
-            location.reload();
+            if(self == top) {
+                location.reload();
+            }
         }
     });
     $('#logout').click(function () {
@@ -39,7 +41,7 @@ function noticeAlarm() {
     $.ajax({
         url : "/commonNotice",
         success : function(data) {
-            if(data && my_store){
+            if(data && typeof my_store != 'undefined'){
                 $('#myStoreName').text(my_store.storeName);
             }
             $("#notice_alarm").removeClass('new');
@@ -60,7 +62,7 @@ function alarmSound(data) {
     var assignCancel_alarm = $.cookie("assignCancel_alarm");
     var complete_alarm = $.cookie("complete_alarm");
     var cancel_alarm = $.cookie("cancel_alarm");
-    if(my_store.alarm){
+    if(typeof my_store != 'undefined' && my_store.alarm){
         if(data.match('order_')=='order_'){
             if(data.match('new')=='new'){
                 if ((my_store.alarm).match('0')=='0'){

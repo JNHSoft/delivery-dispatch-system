@@ -64,7 +64,7 @@ public class OrderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
 
-        System.out.println("getOrderList(order):"+order.getModifiedDatetime());
+//        System.out.println("getOrderList(order):"+order.getModifiedDatetime());
         List<Order> orderList = storeOrderService.getOrders(order);
         return orderList;
     }
