@@ -24,7 +24,7 @@ datasource:
     max-total: 100
     max-idle: 100
     min-idle: 20
-    max-wait-millis: 3000
+    max-wait-millis: 10000
     test-on-borrow: true
     validation-query: select 1
     test-while-idle: true
