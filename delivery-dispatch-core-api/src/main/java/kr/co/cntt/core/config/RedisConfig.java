@@ -16,6 +16,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 @Configuration
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 86400)
 public class RedisConfig {
@@ -65,8 +67,10 @@ public class RedisConfig {
     @Bean
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setQueueCapacity(1);
         taskExecutor.setCorePoolSize(10);
+        taskExecutor.setMaxPoolSize(250);
+        taskExecutor.setQueueCapacity(500);
+        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
         return taskExecutor;
     }
 
