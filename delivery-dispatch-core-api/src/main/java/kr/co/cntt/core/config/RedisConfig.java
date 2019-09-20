@@ -14,6 +14,7 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.util.concurrent.ThreadPoolExecutor;
@@ -26,6 +27,8 @@ public class RedisConfig {
     String redisHost;
     private @Value("${spring.redis.port}")
     int redisPort;
+    private @Value("${spring.redis.database}")
+    int redisDatabase;
 
     @Bean
     public JedisConnectionFactory connectionFactory() {
@@ -34,6 +37,7 @@ public class RedisConfig {
         jedisConnectionFactory.setHostName(redisHost);
         jedisConnectionFactory.setPort(redisPort);
         jedisConnectionFactory.setUsePool(true);
+        jedisConnectionFactory.setDatabase(redisDatabase);
 
         return jedisConnectionFactory;
     }
@@ -77,6 +81,15 @@ public class RedisConfig {
     @Bean
     ChannelTopic topic() {
         return new ChannelTopic("pubsub:web-notification");
+    }
+
+    /***
+     * AWS, GCP에서 제공하는 레디스를 사용 시
+     * 설정에 대한 수정 권한이 없음
+     */
+    @Bean
+    public ConfigureRedisAction configureRedisAction(){
+        return ConfigureRedisAction.NO_OP;
     }
 
 }

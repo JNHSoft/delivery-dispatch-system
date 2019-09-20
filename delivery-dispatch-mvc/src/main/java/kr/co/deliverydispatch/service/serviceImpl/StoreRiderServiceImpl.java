@@ -217,6 +217,9 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
                 noti.setTitle(resultStore.getStoreName());
                 noti.setMessage(chat.getMessage());
                 noti.setChat_user_id(resultStore.getChatUserId());
+                // 19.09.18 안드로이드 푸쉬 전송 시 채팅방번호 전달
+                noti.setChat_room_id(chat.getChatRoomId());
+
                 CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
                 checkFcmResponse(pushNotification);
             }

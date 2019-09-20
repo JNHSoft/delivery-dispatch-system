@@ -30,9 +30,10 @@ datasource:
     test-while-idle: true
     min-evictable-idle-time-millis: 10000
     time-between-eviction-runs-millis: 18000
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    #url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    url: jdbc:mysql://10.156.32.3:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowMultiQueries=true
     username: twuser
     password: twuserpw!
 
@@ -48,12 +49,15 @@ cntt.restPool:
   hosts:
     -
       scheme: http
-      host: ddetw-api.cntt.co.kr
-      port: 8091
+      #host: ddetw-api.cntt.co.kr
+      #port: 8091
+      host: dde-api.jrgtw.com
+      port: 80
       maxPerRoute: 100
     -
       scheme: https
-      host: ddetw-api.cntt.co.kr
+      #host: ddetw-api.cntt.co.kr
+      host: dde-api.jrgtw.com
       port: 443
       maxPerRoute: 100
 
@@ -61,21 +65,23 @@ cntt.restPool:
 # Redis
 spring:
   redis:
-    host: 192.168.100.81
+    #host: 192.168.100.81
+    host: 10.150.16.4
     port: 6379
+    database: 2
 
 ---
 api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
 # Upload Path
-api.upload.path.notice: /root/dde-upload/notice
-api.upload.path.alarm: /root/dde-upload/alarm
+api.upload.path.notice: /home/ddetw/dde-upload/notice
+api.upload.path.alarm: /home/ddetw/dde-upload/alarm
 
 ---
 # Web socket
-websocket.localhost: https://ddetw-store.cntt.co.kr
+websocket.localhost: https://dde-store.jrgtw.com
 
 ---
 #cors domain
-api.cors.origin: http://ddetw-api.cntt.co.kr
+api.cors.origin: http://dde-api.jrgtw.com

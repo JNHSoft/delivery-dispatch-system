@@ -14,22 +14,30 @@ process.on('uncaughtException', function (err) {
 
 //log 경로
 //TW
-const logDir = '/root/logs/delivery-dispatch/oper/node/';
+//const logDir = '/root/logs/delivery-dispatch/oper/node/';
+//TW-GCP
+const logDir = '/home/ddetw/logs/delivery-dispatch/oper/node/';
 //HK
 // const logDir = '/home/ddehk/logs/delivery-dispatch/oper/node/';
 //TEST
-//const logDir = '/home/ddetest/logs/deliver-dispatch/oper/node/'
+//const logDir = '/home/devtest/logs/delivery-dispatch/oper/node/'
 //LOCAL
 // const logDir = './log/';
 
 
 //redis - HK, TW 공통
-const subclient = redis.createClient(6379 , '192.168.100.81');
-const pubclient = redis.createClient(6379 , '192.168.100.81');
+//const subclient = redis.createClient(6379 , '192.168.100.81');
+// const pubclient = redis.createClient(6379 , '192.168.100.81');
+//redis - HK, TW 공통 - GCP
+const subclient = redis.createClient(6379 , '10.150.16.4');
+const pubclient = redis.createClient(6379 , '10.150.16.4');
 
 //redis - LOCAL, TEST
-//const subclient = redis.createClient(6379 , '127.0.0.1');
-//const pubclient = redis.createClient(6379 , '127.0.0.1');
+//const subclient = redis.createClient(6379 , '192.168.99.100');
+//const pubclient = redis.createClient(6379 , '192.168.99.100');
+
+// const subclient = redis.createClient(6379 , '192.168.101.3');
+// const pubclient = redis.createClient(6379 , '192.168.101.3');
 
 const myFormat = winston.format.printf(info => {
     return `${info.timestamp} ${info.level}: ${info.message}`;

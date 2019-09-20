@@ -9,6 +9,7 @@ public class Notification {
     private String message;
     private String chat_user_id;
     private int rider_id;
+    private String chat_room_id;       // 19.09.18 push 전송 시 채팅방번호 전송
 
 
     public int getRider_id() {
@@ -73,6 +74,16 @@ public class Notification {
 
     public void setChat_user_id(String chat_user_id) {
         this.chat_user_id = chat_user_id;
+    }
+
+    // 19.09.18 push 전송 시 채팅방번호 전송
+    public String getChat_room_id(){
+        return chat_room_id;
+    }
+
+    // 19.09.18 push 전송 시 채팅방번호 전송
+    public void setChat_room_id(String chat_room_id){
+        this.chat_room_id = chat_room_id;
     }
 
     public interface NOTI{

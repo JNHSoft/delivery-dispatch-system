@@ -401,7 +401,7 @@
 			</if>
 
 			<if test="changePhone eq '1'.toString() ">
-				, B.push_token = null
+				, C.push_token = null
 			</if>
 			<!--<choose>
 				<when test="subGroupRiderRel != null and subGroupRiderRel != ''" >

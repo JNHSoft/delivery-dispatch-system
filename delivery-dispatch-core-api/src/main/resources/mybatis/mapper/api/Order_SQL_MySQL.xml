@@ -261,8 +261,8 @@
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
 					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) IS NOT NULL
-						, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
+					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1) IS NOT NULL
+						, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime limit 1) ORDER BY created_datetime DESC LIMIT 1)
 						, C.subgroup_id IS NULL AND D.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 					<!--AND C.deleted IS NULL-->
 				</when>
@@ -342,8 +342,8 @@
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
 					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) IS NOT NULL
-						, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
+					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1) IS NOT NULL
+						, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1)
 						, C.subgroup_id IS NULL AND D.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 					<!--AND C.deleted IS NULL-->
 				</when>
@@ -683,8 +683,8 @@
 		ON A.store_id = D.id
 		WHERE	A.created_datetime > current_date()
 		AND A.status IN (0,1,2,3,4,5)
-		AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-		AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)
+		AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) and deleted is null limit 1)
+		AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1)
 		AND C.deleted IS NULL group by A.status;
 	</select>
 

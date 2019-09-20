@@ -3,10 +3,10 @@
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<springProfile name="api">
 		<springProfile name="dev">
-			<property value="/root/logs/delivery-dispatch/dev/api/dde_api_application" name="LOG_FILE_PREFIX" />
+			<property value="/home/ddetw/logs/delivery-dispatch/dev/api/dde_api_application" name="LOG_FILE_PREFIX" />
 		</springProfile>
 		<springProfile name="oper">
-			<property value="/root/logs/delivery-dispatch/oper/api/dde_api_application" name="LOG_FILE_PREFIX" />
+			<property value="/home/ddetw/logs/delivery-dispatch/oper/api/dde_api_application" name="LOG_FILE_PREFIX" />
 		</springProfile>
 	</springProfile>
 
