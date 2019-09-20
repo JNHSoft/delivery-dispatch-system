@@ -17,15 +17,15 @@ datasource:
     max-total: 10
     max-idle: 10
     min-idle: 10
-    max-wait-millis: 3000
+    max-wait-millis: 10000
     test-on-borrow: true
     validation-query: select 1
     test-while-idle: true
     min-evictable-idle-time-millis: 28700
     time-between-eviction-runs-millis: 60000
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowMultiQueries=true
     username: devuser
     password: devuserpw!
 
