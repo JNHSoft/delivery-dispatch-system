@@ -320,46 +320,83 @@
 
 	<!-- deleteGroup -->
 	<update id="deleteGroup" parameterType="kr.co.cntt.core.model.group.Group">
-		UPDATE TB_GROUP AS A
-		LEFT JOIN TB_SUBGROUP AS B
-		ON A.id = B.group_id
-		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
-		ON B.id = C.group_id
-		LEFT JOIN TB_SUBGROUP_RIDER_REL AS D
-		ON B.id = D.group_id
-		SET A.deleted = now()
-			,B.deleted = now()
-			,C.deleted = now()
-			,D.group_id = null
-            ,D.subgroup_id = null
-		WHERE A.id = #{id}
-			AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			AND A.deleted IS NULL
-			AND B.deleted IS NULL
-			AND C.deleted IS NULL
-			AND D.deleted IS NULL
+		<!--UPDATE TB_GROUP AS A-->
+		<!--LEFT JOIN TB_SUBGROUP AS B-->
+		<!--ON A.id = B.group_id-->
+		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS C-->
+		<!--ON B.id = C.group_id-->
+		<!--LEFT JOIN TB_SUBGROUP_RIDER_REL AS D-->
+		<!--ON B.id = D.group_id-->
+		<!--SET A.deleted = now()-->
+			<!--,B.deleted = now()-->
+			<!--,C.deleted = now()-->
+			<!--,D.group_id = null-->
+            <!--,D.subgroup_id = null-->
+		<!--WHERE A.id = #{id}-->
+			<!--AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
+			<!--AND A.deleted IS NULL-->
+			<!--AND B.deleted IS NULL-->
+			<!--AND C.deleted IS NULL-->
+			<!--AND D.deleted IS NULL-->
+
+		update	 TB_GROUP as A
+		left join TB_SUBGROUP as B
+			on	 A.id = B.group_id
+			and	 A.admin_id = B.admin_id
+			and	 isnull(B.deleted)
+		left join TB_SUBGROUP_STORE_REL as C
+			on	 B.id = C.group_id
+			and	 B.id = C.subgroup_id
+			and	 B.admin_id = C.admin_id
+			and	 isnull(C.deleted)
+		left join TB_SUBGROUP_RIDER_REL as D
+			on	 C.id = D.group_id
+			and	 C.id = D.subgroup_id
+			and	 C.store_id = D.store_id
+			and	 C.admin_id = D.admin_id
+			and	 isnull(D.deleted)
+		set		 A.deleted = now()
+				,B.deleted = now()
+				,C.deleted = now()
+				,D.group_id = null
+				,D.subgroup_id = null
+		where	 A.id = #{id}
+		and		 A.admin_id = (select admin_id from TB_ADMIN_SESSION where access_token = #{token})
 	</update>
 
 
 	<!-- selectSubGroups -->
 	<select id="selectSubGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.SubGroup">
-		SELECT
-			A.created_datetime
-			, A.modified_datetime
-			, A.id
-			, A.name
-			, A.group_id
-			, A.admin_id
-			, COUNT(B.id) AS subGroupStoreCount
-		FROM TB_SUBGROUP AS A
-		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
-		ON A.id = B.subgroup_id
-		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			AND A.group_id = #{id}
-			AND A.deleted IS NULL
-			AND B.deleted IS NULL
-		GROUP BY A.id
-		ORDER BY A.name ASC
+		<!--SELECT-->
+			<!--A.created_datetime-->
+			<!--, A.modified_datetime-->
+			<!--, A.id-->
+			<!--, A.name-->
+			<!--, A.group_id-->
+			<!--, A.admin_id-->
+			<!--, COUNT(B.id) AS subGroupStoreCount-->
+		<!--FROM TB_SUBGROUP AS A-->
+		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS B-->
+		<!--ON A.id = B.subgroup_id-->
+		<!--WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
+			<!--AND A.group_id = #{id}-->
+			<!--AND A.deleted IS NULL-->
+			<!--AND B.deleted IS NULL-->
+		<!--GROUP BY A.id-->
+		<!--ORDER BY A.name ASC-->
+
+		select	 A.created_datetime
+				,A.modified_datetime
+				,A.id
+				,A.name
+				,A.group_id
+				,A.admin_id
+				,( select count(*) from TB_SUBGROUP_STORE_REL where isnull(deleted) and admin_id = A.admin_id and group_id = A.group_id and subgroup_id = A.id )	as subGroupStoreCount
+		from	 TB_SUBGROUP	A
+		where	 isnull(A.deleted)
+		and		 A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		and		 A.group_id = #{id}
+		order by A.name asc;
 	</select>
 
 
@@ -393,21 +430,42 @@
 
 	<!-- deleteSubGroup -->
 	<update id="deleteSubGroup" parameterType="kr.co.cntt.core.model.group.SubGroup">
-		UPDATE TB_SUBGROUP AS A
+		<!--UPDATE TB_SUBGROUP AS A-->
+		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS B-->
+		<!--ON A.id = B.subgroup_id-->
+		<!--LEFT JOIN TB_SUBGROUP_RIDER_REL AS C-->
+		<!--ON A.id = C.subgroup_id-->
+		<!--SET A.deleted = now()-->
+			<!--,B.deleted = now()-->
+			<!--,C.group_id = null-->
+            <!--,C.subgroup_id = null-->
+		<!--WHERE A.id = #{id}-->
+		<!--AND A.group_id = #{groupId}-->
+		<!--AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
+		<!--AND A.deleted IS NULL-->
+		<!--AND B.deleted IS NULL-->
+		<!--AND C.deleted IS NULL-->
+
+		UPDATE	 TB_SUBGROUP AS A
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
-		ON A.id = B.subgroup_id
+			ON	 A.id = B.subgroup_id
+			AND	 A.group_id = B.group_id
+			AND	 A.admin_id = B.admin_id
+			AND	 isnull(B.deleted)
 		LEFT JOIN TB_SUBGROUP_RIDER_REL AS C
-		ON A.id = C.subgroup_id
-		SET A.deleted = now()
-			,B.deleted = now()
-			,C.group_id = null
-            ,C.subgroup_id = null
-		WHERE A.id = #{id}
-		AND A.group_id = #{groupId}
-		AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-		AND A.deleted IS NULL
-		AND B.deleted IS NULL
-		AND C.deleted IS NULL
+			ON	 A.id = C.subgroup_id
+			AND	 A.group_id = C.group_id
+			AND	 A.admin_id = C.admin_id
+			AND	 B.store_id = C.store_id
+			AND	 isnull(C.deleted)
+		set		 A.deleted = now()
+				,B.deleted = now()
+				,C.group_id = null
+				,C.subgroup_id = null
+		WHERE	 1=1
+		AND		 A.id = #{id}
+		AND		 A.group_id = #{groupId}
+		AND		 A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</update>
 
 

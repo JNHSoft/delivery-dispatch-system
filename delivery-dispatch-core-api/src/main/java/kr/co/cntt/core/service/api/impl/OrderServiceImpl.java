@@ -91,6 +91,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Map denyOrderIdChkMap = new HashMap();
             denyOrderIdChkMap.put("orderId", order.getId());
             denyOrderIdChkMap.put("storeId", order.getStore().getId());
+            // 추가되어 있는 인덱스를 활용하여 조회 속도 업
+            denyOrderIdChkMap.put("adminId", order.getStore().getAdminId());
             List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
 
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);

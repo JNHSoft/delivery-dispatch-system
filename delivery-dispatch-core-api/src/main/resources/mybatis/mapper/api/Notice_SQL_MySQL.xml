@@ -184,36 +184,77 @@
 
     <!--공지사항 상세 보기 store -->
     <select id="getStoreDetailNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
-        SELECT
-            A.created_datetime
-            , A.modified_datetime
-            , A.id
-            , A.admin_id
-            , A.title
-            , A.content
-            , A.to_group_id
-            , A.to_subgroup_id
-            , A.to_store_id
-            , A.ori_file_name
-            , A.file_name
-            , A.file_size
-            , B.name AS group_name
-            , C.name AS subgroup_name
-            , D.name AS store_name
-            , E.confirmed_datetime
-        FROM TB_NOTICE AS A
-        LEFT JOIN TB_GROUP AS B
-            ON A.to_group_id = B.id
-        LEFT JOIN TB_SUBGROUP AS C
-            ON A.to_subgroup_id = C.id
-        LEFT JOIN TB_STORE AS D
-            ON A.to_store_id = D.id
-        LEFT JOIN TB_NOTICE_CONFIRM AS E
-            ON A.id = E.notice_id
-        WHERE A.id = #{id}
-            AND A.deleted IS NUll
-            AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(select store_id from TB_STORE_SESSION where access_token=#{token}))
-        limit 1
+        <!--SELECT-->
+            <!--A.created_datetime-->
+            <!--, A.modified_datetime-->
+            <!--, A.id-->
+            <!--, A.admin_id-->
+            <!--, A.title-->
+            <!--, A.content-->
+            <!--, A.to_group_id-->
+            <!--, A.to_subgroup_id-->
+            <!--, A.to_store_id-->
+            <!--, A.ori_file_name-->
+            <!--, A.file_name-->
+            <!--, A.file_size-->
+            <!--, B.name AS group_name-->
+            <!--, C.name AS subgroup_name-->
+            <!--, D.store_name AS store_name-->
+            <!--, E.confirmed_datetime-->
+        <!--FROM TB_NOTICE AS A-->
+        <!--LEFT JOIN TB_GROUP AS B-->
+            <!--ON A.to_group_id = B.id-->
+        <!--LEFT JOIN TB_SUBGROUP AS C-->
+            <!--ON A.to_subgroup_id = C.id-->
+        <!--LEFT JOIN TB_STORE AS D-->
+            <!--ON A.to_store_id = D.id-->
+        <!--LEFT JOIN TB_NOTICE_CONFIRM AS E-->
+            <!--ON A.id = E.notice_id-->
+        <!--WHERE A.id = #{id}-->
+            <!--AND A.deleted IS NUll-->
+            <!--AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id =(select store_id from TB_STORE_SESSION where access_token=#{token}))-->
+        <!--limit 1-->
+
+        <!-- 19.09.26 불투명한 공지 상세 내용 추출 변경 -->
+        select	 A.created_datetime
+                ,A.modified_datetime
+                ,A.id
+                ,A.admin_id
+                ,A.title
+                ,A.content
+                ,A.to_group_id
+                ,A.to_subgroup_id
+                ,A.to_store_id
+                ,A.ori_file_name
+                ,A.file_name
+                ,A.file_size
+                ,( select name from TB_GROUP where admin_id = A.admin_id and id = A.to_group_id )										as group_name
+                ,( select name from TB_SUBGROUP where admin_id = A.admin_id and group_id = A.to_group_id and id = A.to_subgroup_id )	as sub_group_name
+                ,if(A.to_store_id = '0', NULL, C.store_name)																			as store_name
+                ,D.confirmed_datetime
+        from	 TB_NOTICE	A
+        left join TB_SUBGROUP_STORE_REL	B
+            on	 if(ifnull(A.to_group_id, 0) = 0, B.group_id, A.to_group_id)  = B.group_id
+            and	 if(ifnull(A.to_subgroup_id, 0) = 0, B.subgroup_id, A.to_subgroup_id) = B.subgroup_id
+            and	 if(ifnull(A.to_store_id, 0) = 0, B.store_id, A.to_store_id) = B.store_id
+            and	 A.admin_id = B.admin_id
+        left join TB_STORE	as C
+            on	 A.admin_id = C.admin_id
+            and	 B.admin_id = C.admin_id
+            and	 if(ifnull(A.to_store_id, 0) = 0, C.id, A.to_store_id) = C.id
+            and	 B.store_id = C.id
+        left join TB_NOTICE_CONFIRM	as D
+            on	 A.id = D.notice_id
+            and	 C.id = D.store_id
+            and	 A.admin_id = D.admin_id
+        where	 1=1
+        and		 isnull(A.deleted)
+        and		 isnull(B.deleted)
+        and		 isnull(C.deleted)
+        and		 isnull(D.deleted)
+        and		 A.id = #{id}
+        and		 A.admin_id = (select admin_id from TB_STORE where id=(select store_id from TB_STORE_SESSION where access_token=#{token}))
+        and		 C.id = (select store_id from TB_STORE_SESSION where access_token=#{token});
     </select>
 
 
@@ -304,8 +345,6 @@
 
     <!--store 공지사항 list-->
     <select id="getStoreNoticeList" parameterType="kr.co.cntt.core.model.notice.Notice" resultType="kr.co.cntt.core.model.notice.Notice">
-        set @var = ( select store_id from TB_STORE_SESSION where access_token = #{token} );
-
         select	 A.created_datetime
                 ,A.modified_datetime
                 ,A.id
@@ -340,7 +379,7 @@
         and		 B.deleted is null
         and		 C.deleted is null
         and		 D.deleted is null
-        and		 C.id = @var
+        and		 C.id = ( select store_id from TB_STORE_SESSION where access_token = #{token} )
         order by A.id, A.to_group_id, A.to_subgroup_id, A.to_store_id;
     </select>
 

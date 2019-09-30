@@ -866,43 +866,95 @@
 
 	<!-- selectForAssignRiders -->
 	<select id="selectForAssignRiders" parameterType="Map" resultMap="selectSubgroupRiderRelsResult">
-		SELECT A.id
-			, A.status
-			, A.working
-			, A.working_hours
-			, A.rest_hours
-			, A.latitude
-			, A.longitude
-			, A.return_time
-			, A.order_standby_datetime
-			, A.order_standby_status
-			, ANY_VALUE(B.subgroup_id) AS subGroupRiderRel_subgroup_id
-			, ANY_VALUE(B.store_id) AS subGroupRiderRel_store_id
-			, (SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND (status = 1 OR status = 2) AND created_datetime > CURRENT_DATE()) AS assign_count
-   			, (SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
-			, (SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
-			, (SELECT status FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status
-			, max(C.denied_datetime) as denied_datetime
-			, C.order_id as deny_order_id
-		FROM TB_RIDER AS A
-		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
-		ON A.id = B.rider_id
-		LEFT JOIN TB_ORDER_DENY_ASSIGNMENT AS C
-		ON A.id = C.rider_id
-		<![CDATA[
-		AND timestampdiff(minute, C.denied_datetime, now()) <= 5
-		]]>
-		AND C.order_id = #{orderId}
-		WHERE A.deleted IS NULL
-			AND B.deleted IS NULL
-			AND (
-				(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = #{storeId} and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)
-				OR B.store_id is null
-				OR (B.subgroup_id is null AND B.store_id = #{storeId})
-				OR (select max(B.created_datetime) where B.deleted is not null group by B.rider_id)
+		<!--SELECT A.id-->
+			<!--, A.status-->
+			<!--, A.working-->
+			<!--, A.working_hours-->
+			<!--, A.rest_hours-->
+			<!--, A.latitude-->
+			<!--, A.longitude-->
+			<!--, A.return_time-->
+			<!--, A.order_standby_datetime-->
+			<!--, A.order_standby_status-->
+			<!--, ANY_VALUE(B.subgroup_id) AS subGroupRiderRel_subgroup_id-->
+			<!--, ANY_VALUE(B.store_id) AS subGroupRiderRel_store_id-->
+			<!--, (SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND (status = 1 OR status = 2) AND created_datetime > CURRENT_DATE()) AS assign_count-->
+   			<!--, (SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime-->
+			<!--, (SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime-->
+			<!--, (SELECT status FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status-->
+			<!--, max(C.denied_datetime) as denied_datetime-->
+			<!--, C.order_id as deny_order_id-->
+		<!--FROM TB_RIDER AS A-->
+		<!--LEFT JOIN TB_SUBGROUP_RIDER_REL AS B-->
+		<!--ON A.id = B.rider_id-->
+		<!--LEFT JOIN TB_ORDER_DENY_ASSIGNMENT AS C-->
+		<!--ON A.id = C.rider_id-->
+		<!--<![CDATA[-->
+		<!--AND timestampdiff(minute, C.denied_datetime, now()) <= 5-->
+		<!--]]>-->
+		<!--AND C.order_id = #{orderId}-->
+		<!--WHERE A.deleted IS NULL-->
+			<!--AND B.deleted IS NULL-->
+			<!--AND (-->
+				<!--(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = #{storeId} and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)-->
+				<!--OR B.store_id is null-->
+				<!--OR (B.subgroup_id is null AND B.store_id = #{storeId})-->
+				<!--OR (select max(B.created_datetime) where B.deleted is not null group by B.rider_id)-->
+			<!--)-->
+			<!--AND A.working = 1-->
+		<!--group by A.id-->
+		<!--ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;-->
+		select	 A.id
+				,A.status
+				,A.working
+				,A.working_hours
+				,A.rest_hours
+				,A.latitude
+				,A.longitude
+				,A.return_time
+				,A.order_standby_datetime
+				,A.order_standby_status
+				,B.subgroup_id				as subGroupRiderRel_subgroup_id
+				,B.store_id					as subGroupRiderRel_store_id
+				,(SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND status in (1,2) AND created_datetime > CURRENT_DATE()) AS assign_count
+				,(SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
+				,(SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
+				,(SELECT status FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status
+				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = A.id and admin_id = #{adminId} and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime
+		from	(
+					select	 id
+							,status
+							,working
+							,working_hours
+							,rest_hours
+							,latitude
+							,longitude
+							,return_time
+							,order_standby_datetime
+							,order_standby_status
+					from	 TB_RIDER
+					where	 isnull(deleted)
+					and		 working = 1
+					and		 admin_id = #{adminId}
+				)	A
+		left join
+				(
+					select	 id
+							,admin_id
+							,group_id
+							,subgroup_id
+							,store_id
+							,rider_id
+					from	 TB_SUBGROUP_RIDER_REL
+					where	 isnull(deleted)
+					and		 admin_id = #{adminId}
+				)	B
+			on	 A.id = B.rider_id
+		where	 1=1
+		and	(	 isnull(B.store_id)
+			or	 B.store_id = #{storeId}
+			or	 B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and isnull(deleted) )
 			)
-			AND A.working = 1
-		group by A.id
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
 
