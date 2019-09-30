@@ -821,7 +821,19 @@ function setHourMin(time1) {
 }
 
 function safariSetDate(time) {
-	return (time.replace(/-/gi,'/')).substring(0,time.indexOf("."));
+
+	var changeDate = new Date(time);
+
+	var yyyy = changeDate.getFullYear().toString();
+	var mm = (changeDate.getMonth() + 1).toString();
+	var dd = changeDate.getDate().toString();
+
+	var hh = changeDate.getHours().toString();
+	var nn = changeDate.getMinutes().toString();
+	var ss = changeDate.getSeconds().toString();
+
+	return yyyy + '/' + (mm[1] ? mm : '0' + mm[0]) + '/' + (dd[1]?dd:'0' + dd[0]) + ' '+
+			(hh[1] ? hh : '0' + hh[0]) + ':' + (nn[1] ? nn : '0' + nn[0]) + ':' + (ss[1] ? ss : '0' + ss[0]);
 }
 
 /*]]>*/
