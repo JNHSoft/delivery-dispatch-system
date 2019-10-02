@@ -53,13 +53,13 @@
 							<tr>
 								<th th:text="${#messages.msg('notice.target')}" />
 								<td>
-									<select name="" class="select" id="nNewTargetGroup">
+									<select name="toGroupId" class="select" id="nNewTargetGroup">
 										<option value="">강남</option>
 									</select>
-									<select name="" class="select" id="nNewTargetSubGroup">
+									<select name="toSubGroupId" class="select" id="nNewTargetSubGroup">
 										<option value="">강남A</option>
 									</select>
-									<select name="" class="select" id="nNewTargetStore">
+									<select name="toStoreId" class="select" id="nNewTargetStore">
 										<option value="" th:text="${#messages.msg('list.search.all.store')}" />
 									</select>
 								</td>

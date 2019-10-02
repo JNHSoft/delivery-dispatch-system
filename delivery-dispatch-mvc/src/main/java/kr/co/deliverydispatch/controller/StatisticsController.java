@@ -128,14 +128,28 @@ public class StatisticsController {
                     LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
                     a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
                 }
-               /* LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
-                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));*/
+               /* LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));*/
+                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
                 LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
                 LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+                // 19.08.26 데이터 격차가 음수로 나오는지 여부 체크
+                LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
 //                if(assignTime.until(pickupTime, ChronoUnit.SECONDS)>=120 && pickupTime.until(completeTime, ChronoUnit.SECONDS)>=120 && completeTime.until(returnTime, ChronoUnit.SECONDS)>=120){
-                if(completeTime.until(returnTime, ChronoUnit.SECONDS)>=60){
+
+                // 19.08.26 페이지에서 음수가 나오는 오류 사항 변경
+                if(completeTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
                     return true;
                 }else{
+                    /* 19.08.26 디버그 시 내용 확인*/
+
+//                    System.out.println("###################################################");
+//                    System.out.println(a.getId() + " % " + a.getRegOrderId());
+//                    System.out.println(completeTime.until(returnTime, ChronoUnit.SECONDS));
+//                    System.out.println(createdTime.until(completeTime, ChronoUnit.SECONDS));
+//                    System.out.println(createdTime.until(pickupTime, ChronoUnit.SECONDS));
+//                    System.out.println(createdTime.until(returnTime, ChronoUnit.SECONDS));
+//                    System.out.println("###################################################");
+
                     return false;
                 }
             }else{

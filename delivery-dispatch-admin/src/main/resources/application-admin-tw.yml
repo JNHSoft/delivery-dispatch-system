@@ -27,7 +27,7 @@ datasource:
     max-wait-millis: 3000
     test-on-borrow: true
     #validation-query: select 1
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
     url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
     username: twuser
@@ -59,6 +59,7 @@ spring:
   redis:
     host: 192.168.100.81
     port: 6379
+    database: 1
 
 ---
 api.upload.path.notice: /root/dde-upload/notice

@@ -172,7 +172,7 @@
 				AND B.chatroom_id IN (SELECT chatroom_id FROM TB_CHAT_USER_CHATROOM_REL WHERE chat_user_id = (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})))
 				AND B.chat_user_id != (SELECT chat_user_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
 			</if>
-		GROUP BY B.chatroom_id
+		-- GROUP BY B.chatroom_id
 	</select>
 
 </mapper>

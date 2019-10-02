@@ -21,11 +21,11 @@ datasource:
     test-on-borrow: true
     validation-query: select 1
     test-while-idle: true
-    min-evictable-idle-time-millis: 28700
-    time-between-eviction-runs-millis: 60000
-    driver-class-name: com.mysql.jdbc.Driver
+    min-evictable-idle-time-millis: 10000
+    time-between-eviction-runs-millis: 18000
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
     username: devuser
     password: devuserpw!
 
@@ -53,8 +53,9 @@ cntt.restPool:
 ---
 spring:
   redis:
-    host: 127.0.0.1
+    host: 192.168.99.100
     port: 6379
+    database: 0
 
 ---
 api.upload.path.notice: /home/ddetest/dde-upload/notice
