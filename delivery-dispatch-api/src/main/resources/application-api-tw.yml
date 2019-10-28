@@ -26,7 +26,7 @@ datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     #url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
-    url: jdbc:mysql://10.156.32.3:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowMultiQueries=true
+    url: jdbc:mysql://10.156.32.3:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
     username: twuser
     password: twuserpw!
 
