@@ -77,6 +77,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         this.riderMapper = riderMapper;
     }
 
+    /**********************************************
+     * 19-10-28
+     * 라이더 자동 배정 순위 변경
+     **********************************************/
     @Override
     public void autoAssignOrder() throws AppTrException {
         Map<String, String> localeMap = new HashMap<>();
@@ -105,7 +109,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 if (r.getLatitude() != null) {
                     try {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
-                        r.setDistance(r.getDistance() - r.getDistance() % 100);//거리 100미터 단위
+                        r.setDistance(r.getDistance() - r.getDistance() % 10);//거리 10미터 단위
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -133,24 +137,28 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             return false;
                         }
                     })
-                    .filter(a -> {
-                        if (a.getOrderStandbyDatetime() == null || a.getOrderStandbyStatus().equals("0")) {
-                                log.debug(">>> autoAssignRider_Stream Third_1:::: Stream :::: " + a.getOrderStandbyDatetime());
-                                log.debug(">>> autoAssignRider_Stream Third_2:::: Stream :::: " + a.getOrderStandbyStatus());
-                            return true;
-                        } else {
-                            LocalDateTime orderStandbyDatetime = LocalDateTime.parse((a.getOrderStandbyDatetime()).replace(" ", "T"));
-                            LocalDateTime ldt = LocalDateTime.now();
-//                            LocalDateTime ldt = LocalDateTime.now().minusHours(1); //testServer (timezone이 다름)
-                            log.debug(">>> autoAssignRider_Stream Third_Else:::: Stream Else  :::: ");
-                            return orderStandbyDatetime.until(ldt, ChronoUnit.SECONDS) >= 60;
-                        }
-                    })//현재 앱에서 배정 수락 거절 중인지 확인(앱 통신 상태가 안좋을 수도 있을 경우 대비 하여 1분) *****
+//                    .filter(a -> {
+//                        if (a.getOrderStandbyDatetime() == null || a.getOrderStandbyStatus().equals("0")) {
+//                                log.debug(">>> autoAssignRider_Stream Third_1:::: Stream :::: " + a.getOrderStandbyDatetime());
+//                                log.debug(">>> autoAssignRider_Stream Third_2:::: Stream :::: " + a.getOrderStandbyStatus());
+//                            return true;
+//                        } else {
+//                            LocalDateTime orderStandbyDatetime = LocalDateTime.parse((a.getOrderStandbyDatetime()).replace(" ", "T"));
+//                            LocalDateTime ldt = LocalDateTime.now();
+////                            LocalDateTime ldt = LocalDateTime.now().minusHours(1); //testServer (timezone이 다름)
+//                            log.debug(">>> autoAssignRider_Stream Third_Else:::: Stream Else  :::: ");
+//                            return orderStandbyDatetime.until(ldt, ChronoUnit.SECONDS) >= 60;
+//                        }
+//                    })//현재 앱에서 배정 수락 거절 중인지 확인(앱 통신 상태가 안좋을 수도 있을 경우 대비 하여 1분) *****
                     .filter(a -> !order.getId().equals((a.getOrderCheckAssignment() == null) ? "" : a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
-                    .sorted(Comparator.comparing(Rider::getDistance)//1순위 거리순(100미터 단위)
-                            .thenComparing(Rider::getAssignCount)// 2순위 라이더의 오더 개수....
-                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))//3순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
-                            .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())))//4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
+//                    .sorted(Comparator.comparing(Rider::getDistance)//1순위 거리순(100미터 단위)
+//                            .thenComparing(Rider::getAssignCount)// 2순위 라이더의 오더 개수....
+//                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))//3순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
+//                            .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())))//4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
+                    .sorted(Comparator.comparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder()))// 1순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
+                            .thenComparing(Rider::getDistance)// 2순위 거리순(10미터 단위)
+                            .thenComparing(Rider::getAssignCount)//3순위 라이더의 오더 개수....
+                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))) //4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
                     .collect(Collectors.toList());
 //                    .findFirst().get();//첫번째 라이더로 바로 받을지 고려, 병렬스트림으로 변경시 findAny()적용
 
