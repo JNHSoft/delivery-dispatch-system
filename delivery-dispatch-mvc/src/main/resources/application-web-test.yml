@@ -4,7 +4,7 @@ spring:
   profiles.include: web
   application.name: delivery-dispatch-mvc
   mvc:
-    locale: zh_TW
+    locale: zh_HK
 
 # was
 server:

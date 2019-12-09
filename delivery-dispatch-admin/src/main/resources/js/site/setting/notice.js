@@ -267,7 +267,7 @@ function toSubGroup(toSubGroupId) {
             $('#nTargetStore').empty();
             $('#nTargetStore').append('<option value="0">' + notice_target_all_store + '</option>');
             for (var key in data) {
-                $('#nTargetStore').append('<option value="' + data[key].storeId + '">' + data[key].storeName + '</option>');
+                $('#nTargetStore').append('<option value="' + data[key].id + '">' + data[key].storeName + '</option>');
             }
         }
     });
