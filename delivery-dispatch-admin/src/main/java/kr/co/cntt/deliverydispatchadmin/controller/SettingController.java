@@ -616,4 +616,16 @@ public class SettingController {
 //        return "redirect:/setting-account";
     }
 
+    /**
+     * 19.12.19 Dev Start
+     * 설정 - 라이더 쉐어링
+     * 다른 관리자 라이더 매핑
+     * 조건 : 현 관리자 그룹끼리의 라이더 공유 또는 다른 관리자의 라이더를 공유하기 위함
+     * */
+    @GetMapping("/setting-shared")
+    @CnttMethodDescription("라이더 쉐어링 페이지")
+    public String sharedRiderSetting(){
+        return "/setting/setting_shared";
+    }
+
 }
