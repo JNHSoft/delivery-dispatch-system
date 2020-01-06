@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.rider.RiderAssistant;
 
 import java.util.HashMap;
 import java.util.List;
@@ -175,6 +176,11 @@ public interface RiderMapper {
      * @return
      */
     public List<Rider> selectForAssignRiders(Map map);
+
+    /**
+     * <p> 관리자 또는 그룹에 속한 타 라이더 목록
+     * */
+    List<RiderAssistant> selectForAssignRidersAssistant(Map map);
 
     /**
      *  <p> 자동 휴식 관련 기사 목록

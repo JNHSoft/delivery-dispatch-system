@@ -207,93 +207,163 @@
 
 	<!--store 정보 조회-->
     <select id="selectStoreInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectStoreResult">
-        SELECT
-            TS.created_datetime
-            , TS.modified_datetime
-            , TS.last_access
-            , TS.admin_id
-            , TS.chat_user_id
-            , TS.id
-            , TS.login_id
-            , TS.login_pw
-            , TS.code
-            , TS.name
-            , TS.phone
-            , TS.store_name
-            , TS.ch_store_name
-            , TS.store_phone
-            , TS.address
-            , TS.detail_address
-            , TS.latitude
-            , TS.longitude
-            , TS.store_status
-            , TS.store_distance_sort
-            , TS.radius
-            , TS.assignment_status
-            , TS.assignment_limit
-            , TS.third_party
-            , TS.deleted
-            , TS.alarm
-            , TSG.id AS subgroup_id
-            , TSG.group_id AS subgroup_group_id
-            , TSG.name AS subgroup_name
-            , TSG.admin_id AS subgroup_admin_id
-            , TG.name AS group_name
-            , TG.id AS group_id
-            , TG.admin_id AS group_admin_id
-            , TA.assignment_status AS admin_assignment_status
-            , TA.assignment_limit AS admin_assignment_limit
-            , TSS.access_token
-        FROM TB_STORE TS
+<!--        SELECT-->
+<!--            TS.created_datetime-->
+<!--            , TS.modified_datetime-->
+<!--            , TS.last_access-->
+<!--            , TS.admin_id-->
+<!--            , TS.chat_user_id-->
+<!--            , TS.id-->
+<!--            , TS.login_id-->
+<!--            , TS.login_pw-->
+<!--            , TS.code-->
+<!--            , TS.name-->
+<!--            , TS.phone-->
+<!--            , TS.store_name-->
+<!--            , TS.ch_store_name-->
+<!--            , TS.store_phone-->
+<!--            , TS.address-->
+<!--            , TS.detail_address-->
+<!--            , TS.latitude-->
+<!--            , TS.longitude-->
+<!--            , TS.store_status-->
+<!--            , TS.store_distance_sort-->
+<!--            , TS.radius-->
+<!--            , TS.assignment_status-->
+<!--            , TS.assignment_limit-->
+<!--            , TS.third_party-->
+<!--            , TS.deleted-->
+<!--            , TS.alarm-->
+<!--            , TSG.id AS subgroup_id-->
+<!--            , TSG.group_id AS subgroup_group_id-->
+<!--            , TSG.name AS subgroup_name-->
+<!--            , TSG.admin_id AS subgroup_admin_id-->
+<!--            , TG.name AS group_name-->
+<!--            , TG.id AS group_id-->
+<!--            , TG.admin_id AS group_admin_id-->
+<!--            , TA.assignment_status AS admin_assignment_status-->
+<!--            , TA.assignment_limit AS admin_assignment_limit-->
+<!--            , TSS.access_token-->
+<!--        FROM TB_STORE TS-->
 
-        LEFT JOIN
-        TB_SUBGROUP_STORE_REL AS SSR
-        on TS.id = SSR.store_id
-        AND SSR.deleted is NULL
+<!--        LEFT JOIN-->
+<!--        TB_SUBGROUP_STORE_REL AS SSR-->
+<!--        on TS.id = SSR.store_id-->
+<!--        AND SSR.deleted is NULL-->
 
-        LEFT JOIN
-        TB_SUBGROUP AS TSG
-        on TSG.group_id=SSR.group_id
-        AND TSG.id = SSR.subgroup_id
-        AND TSG.deleted is NULL
+<!--        LEFT JOIN-->
+<!--        TB_SUBGROUP AS TSG-->
+<!--        on TSG.group_id=SSR.group_id-->
+<!--        AND TSG.id = SSR.subgroup_id-->
+<!--        AND TSG.deleted is NULL-->
 
-        LEFT JOIN
-        TB_GROUP AS TG
-        on TG.id = TSG.group_id
-        AND TG.deleted is NULL
+<!--        LEFT JOIN-->
+<!--        TB_GROUP AS TG-->
+<!--        on TG.id = TSG.group_id-->
+<!--        AND TG.deleted is NULL-->
 
-        LEFT JOIN
-        TB_ADMIN AS TA
-        on TS.admin_id = TA.id
+<!--        LEFT JOIN-->
+<!--        TB_ADMIN AS TA-->
+<!--        on TS.admin_id = TA.id-->
 
-        LEFT JOIN
-        TB_STORE_SESSION AS TSS
-        on TS.id = TSS.store_id
+<!--        LEFT JOIN-->
+<!--        TB_STORE_SESSION AS TSS-->
+<!--        on TS.id = TSS.store_id-->
 
-        WHERE 1=1
+<!--        WHERE 1=1-->
+<!--        <choose>-->
+<!--            <when test="role != null and role == 'ROLE_SYSTEM'">-->
+<!--                AND TS.id = #{id}-->
+<!--            </when>-->
+<!--            <otherwise>-->
+<!--                <choose>-->
+<!--                    <when test="id != null and id != ''">-->
+<!--                        <if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">-->
+<!--                            AND TS.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))-->
+<!--                        </if>-->
+<!--                        <if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">-->
+<!--                            AND TS.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
+<!--                        </if>-->
+<!--                        AND TS.id = #{id}-->
+<!--                    </when>-->
+<!--                    <otherwise>-->
+<!--                        AND TS.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
+<!--                        AND TS.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}-->
+<!--                        )-->
+<!--                    </otherwise>-->
+<!--                </choose>-->
+<!--            </otherwise>-->
+<!--        </choose>-->
+
+        select	 A.created_datetime
+                ,A.modified_datetime
+                ,A.last_access
+                ,A.admin_id
+                ,A.chat_user_id
+                ,A.id
+                ,A.login_id
+                ,A.login_pw
+                ,A.code
+                ,A.name
+                ,A.phone
+                ,A.store_name
+                ,A.ch_store_name
+                ,A.store_phone
+                ,A.address
+                ,A.detail_address
+                ,A.latitude
+                ,A.longitude
+                ,A.store_status
+                ,A.store_distance_sort
+                ,A.radius
+                ,A.assignment_status
+                ,A.assignment_limit
+                ,A.third_party
+                ,A.deleted
+                ,A.alarm
+                ,B.subgroup_id				as subgroup_id
+                ,B.group_id					as subgroup_group_id
+                ,( select name from TB_GROUP where admin_id = B.admin_id and id = B.group_id )		as subgroup_name
+                ,B.admin_id					as subgroup_admin_id
+                ,( select name from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id )	as group_name
+                ,B.admin_id					as group_admin_id
+                ,D.assignment_status		as admin_assignment_status
+                ,D.assignment_limit			as admin_assignment_limit
+                ,( select access_token from TB_STORE_SESSION where store_id = A.id )		as access_token
+        from	 TB_STORE	as A
+        left join TB_SUBGROUP_STORE_REL	as B
+            on	 A.admin_id = B.admin_id
+            and	 A.id = B.store_id
+            and	 A.deleted is null
+            and	 B.deleted is null
+                ,TB_ADMIN	as D
+        where	 A.admin_id = D.id
         <choose>
             <when test="role != null and role == 'ROLE_SYSTEM'">
-                AND TS.id = #{id}
+                AND A.id = #{id}
             </when>
             <otherwise>
                 <choose>
                     <when test="id != null and id != ''">
                         <if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-                            AND TS.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                            AND ( A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
+                                or A.admin_id in ( select admin_id from TB_SHARED_ADMIN where allow_sort = 0 and allow_flag = 1 and allow_admin_id = ( select admin_id from TB_RIDER where id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token}) ) )
+                                )
                         </if>
                         <if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-                            AND TS.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </if>
-                        AND TS.id = #{id}
+                        AND A.id = #{id}
                     </when>
                     <otherwise>
-                        AND TS.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-                        AND TS.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}
+                        AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+                        AND A.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}
                         )
                     </otherwise>
                 </choose>
             </otherwise>
         </choose>
+
     </select>
 
 

@@ -129,6 +129,17 @@
 		</association>
 	</resultMap>
 
+	<!-- selectSubgroupRiderRelsResult -->
+	<resultMap id="selectSubgroupAssistRiderRelsResult" type="kr.co.cntt.core.model.rider.RiderAssistant">
+		<result property="ast_admin_id" column="allow_admin_id" />
+		<result property="ast_group_id" column="allow_group_id" />
+		<result property="ast_subgroup_id" column="allow_subgroup_id" />
+		<result property="ast_store_id" column="allow_store_id" />
+		<result property="ast_flag" column="allow_flag" />
+		<result property="ast_sort" column="allow_sort" />
+		<association property="selectSubgroupRiderRelsResult" resultMap="selectSubgroupRiderRelsResult"></association>
+	</resultMap>
+
 	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="Map">
 		SELECT A.login_id AS loginId
 		    , B.access_token AS accessToken
@@ -701,100 +712,204 @@
 
 	<!-- selectRiderNow -->
 	<select id="selectRiderNow" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderNowResult">
-		SELECT A.id
-		, A.name
-		, A.phone
-		, A.status
-		, A.working
-		, I.store_name AS rider_store_name
-		, E.store_name AS order_store_name
-		, A.chat_user_id
-		, A.latitude
-		, A.longitude
-		, A.location_updated
-		, A.return_time
-		, I.latitude AS store_latitude
-		, I.longitude AS store_longitude
-		, B.store_id AS rider_store_id
-		, E.id AS order_id
-		, E.store_id AS order_store_id
-		, K.order_count
-		FROM TB_RIDER AS A
-		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
-		ON A.id = B.rider_id
-		AND B.deleted IS NULL
-		LEFT JOIN TB_SUBGROUP AS C
-		ON B.subgroup_id = C.id
-		LEFT JOIN TB_GROUP AS D
-		ON B.group_id = D.id
-		AND C.deleted IS NULL
-		AND D.deleted IS NULL
-		LEFT JOIN (
-		SELECT F.id, F.rider_id, F.assigned_datetime, F.store_id, G.store_name from TB_ORDER as F
-			LEFT JOIN TB_STORE as G
-    		ON F.store_id = G.id
-			where F.created_datetime > CURRENT_DATE()
-			and F.status in(1,2)
-        	and F.id in(select SUBSTRING_INDEX(group_concat(id order by assigned_datetime asc),',',1) from TB_ORDER where assigned_datetime is not null and created_datetime > CURRENT_DATE() and status in(1,2) group by rider_id )) AS E
-		ON E.rider_id = A.id
-		LEFT JOIN TB_STORE AS I
-		ON B.store_id = I.id
+<!--		SELECT A.id-->
+<!--		, A.name-->
+<!--		, A.phone-->
+<!--		, A.status-->
+<!--		, A.working-->
+<!--		, I.store_name AS rider_store_name-->
+<!--		, E.store_name AS order_store_name-->
+<!--		, A.chat_user_id-->
+<!--		, A.latitude-->
+<!--		, A.longitude-->
+<!--		, A.location_updated-->
+<!--		, A.return_time-->
+<!--		, I.latitude AS store_latitude-->
+<!--		, I.longitude AS store_longitude-->
+<!--		, B.store_id AS rider_store_id-->
+<!--		, E.id AS order_id-->
+<!--		, E.store_id AS order_store_id-->
+<!--		, K.order_count-->
+<!--		FROM TB_RIDER AS A-->
+<!--		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B-->
+<!--		ON A.id = B.rider_id-->
+<!--		AND B.deleted IS NULL-->
+<!--		LEFT JOIN TB_SUBGROUP AS C-->
+<!--		ON B.subgroup_id = C.id-->
+<!--		LEFT JOIN TB_GROUP AS D-->
+<!--		ON B.group_id = D.id-->
+<!--		AND C.deleted IS NULL-->
+<!--		AND D.deleted IS NULL-->
+<!--		LEFT JOIN (-->
+<!--		SELECT F.id, F.rider_id, F.assigned_datetime, F.store_id, G.store_name from TB_ORDER as F-->
+<!--			LEFT JOIN TB_STORE as G-->
+<!--    		ON F.store_id = G.id-->
+<!--			where F.created_datetime > CURRENT_DATE()-->
+<!--			and F.status in(1,2)-->
+<!--        	and F.id in(select SUBSTRING_INDEX(group_concat(id order by assigned_datetime asc),',',1) from TB_ORDER where assigned_datetime is not null and created_datetime > CURRENT_DATE() and status in(1,2) group by rider_id )) AS E-->
+<!--		ON E.rider_id = A.id-->
+<!--		LEFT JOIN TB_STORE AS I-->
+<!--		ON B.store_id = I.id-->
 
-		LEFT JOIN
-		(select count(J.rider_id) as order_count
-		, J.rider_id
-		from TB_ORDER as J
-		where J.assigned_datetime is not null
-		and J.created_datetime > CURRENT_DATE() and J.status in(1,2) group by J.rider_id) AS K
-		ON A.id = K.rider_id
+<!--		LEFT JOIN-->
+<!--		(select count(J.rider_id) as order_count-->
+<!--		, J.rider_id-->
+<!--		from TB_ORDER as J-->
+<!--		where J.assigned_datetime is not null-->
+<!--		and J.created_datetime > CURRENT_DATE() and J.status in(1,2) group by J.rider_id) AS K-->
+<!--		ON A.id = K.rider_id-->
 
-		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-		AND (
-			(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)
-			OR B.store_id is null
-			OR (B.subgroup_id is null AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-			OR (select B.created_datetime where B.deleted is not null group by B.rider_id desc)
-		)
-		AND A.deleted IS NULL AND A.status = 0;
+<!--		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
+<!--		AND (-->
+<!--			(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)-->
+<!--			OR B.store_id is null-->
+<!--			OR (B.subgroup_id is null AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
+<!--			OR (select B.created_datetime where B.deleted is not null group by B.rider_id desc)-->
+<!--		)-->
+<!--		AND A.deleted IS NULL AND A.status = 0;-->
+
+		SELECT	 A.id
+				,A.name
+				,A.phone
+				,A.status
+				,A.chat_user_id
+				,A.latitude
+				,A.longitude
+				,A.location_updated
+				,A.return_time
+				,A.working
+				,B.store_id				as rider_store_id
+				,C.store_name			as rider_store_name
+				,C.latitude				as store_latitude
+				,C.longitude			as store_longitude
+				,( select store_name from TB_STORE where id = E.store_id and admin_id = E.admin_id and deleted is null )	as order_store_name
+				,E.order_id
+				,E.store_id				as order_store_id
+				,E.order_count
+		FROM	 TB_RIDER A
+		left join(
+					SELECT	 admin_id
+					,rider_id
+					,store_id
+					,( select id from TB_ORDER where created_datetime > CURRENT_DATE() and assigned_datetime = min(ord.assigned_datetime) and admin_id = ord.admin_id )		as order_id
+					,count(rider_id)			as order_count
+					FROM	 TB_ORDER	as ord
+					where	 created_datetime > CURRENT_DATE()
+					and		 status in (1, 2)
+					group by admin_id, rider_id, store_id
+				)	as E
+			on	 A.id = E.rider_id
+				,TB_SUBGROUP_RIDER_REL B
+		left join TB_STORE	C
+			on	 B.admin_id = C.admin_id
+			and  B.store_id = C.id
+			and	 C.deleted is null
+		left join(
+					select	 store.admin_id
+							,store.group_id
+							,store.subgroup_id
+							,store.store_id
+							,shared.allow_admin_id
+							,shared.allow_group_id
+							,shared.allow_subgroup_id
+							,shared.allow_store_id
+							,shared.allow_flag
+							,shared.allow_sort
+					from	 TB_SHARED_INFO				as shared
+							,TB_SUBGROUP_STORE_REL		as store
+					where	 shared.admin_id = store.admin_id
+					and		 ifnull(shared.group_id, store.group_id) = store.group_id
+					and		 ifnull(shared.subgroup_id, store.subgroup_id) = store.subgroup_id
+					and		 ifnull(shared.store_id, store.store_id) = store.store_id
+					and		 store.deleted is null
+					and		 shared.deleted_datetime is null
+					and		 ifnull(shared.store_id, store.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
+				)	as D
+			on	 B.admin_id = D.allow_admin_id
+			and	 B.group_id = ifnull(D.allow_group_id, B.group_id)
+			and	 B.subgroup_id = ifnull(D.allow_subgroup_id, B.subgroup_id)
+			and	 B.store_id = ifnull(D.allow_store_id, B.store_id)
+		WHERE	 A.admin_id = B.admin_id
+		AND		 A.id = B.rider_id
+		AND		 A.deleted IS NULL
+		AND		 B.deleted IS NULL
+		AND		 A.status = 0
+		and		 ifnull(D.admin_id, A.admin_id) = ( SELECT admin_id FROM TB_STORE WHERE id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} ) )
+		and	(	 ifnull(D.store_id, B.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
+			or	 ifnull(D.subgroup_id, B.subgroup_id) = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null)
+			)
+		order by A.id;
 	</select>
 
 	<!-- selectSubgroupRiderRels -->
 	<select id="selectSubgroupRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
-		SELECT A.id
-			, A.name
-			, A.phone
-			, A.status
-			, A.working
-			, A.chat_user_id
-			, A.latitude
-			, A.longitude
-			, A.location_updated
-			, A.return_time
-			, B.store_id AS subGroupRiderRel_store_id
-			, C.id AS subgroup_id
-			, C.group_id AS subgroup_group_id
-			, C.name AS subgroup_name
-			, C.admin_id AS subgroup_admin_id
-			, D.id AS group_id
-			, D.name AS group_name
-			, D.admin_id AS group_admin_id
-		FROM TB_RIDER AS A
-		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B
-		ON A.id = B.rider_id
-			AND B.deleted IS NULL
-		LEFT JOIN TB_SUBGROUP AS C
-		ON B.subgroup_id = C.id
-		LEFT JOIN TB_GROUP AS D
-		ON B.group_id = D.id
-			AND C.deleted IS NULL
-			AND D.deleted IS NULL
-		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-			AND (B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) OR B.subgroup_id is null)
-			AND A.deleted IS NULL;
+<!--		SELECT A.id-->
+<!--			, A.name-->
+<!--			, A.phone-->
+<!--			, A.status-->
+<!--			, A.working-->
+<!--			, A.chat_user_id-->
+<!--			, A.latitude-->
+<!--			, A.longitude-->
+<!--			, A.location_updated-->
+<!--			, A.return_time-->
+<!--			, B.store_id AS subGroupRiderRel_store_id-->
+<!--			, C.id AS subgroup_id-->
+<!--			, C.group_id AS subgroup_group_id-->
+<!--			, C.name AS subgroup_name-->
+<!--			, C.admin_id AS subgroup_admin_id-->
+<!--			, D.id AS group_id-->
+<!--			, D.name AS group_name-->
+<!--			, D.admin_id AS group_admin_id-->
+<!--		FROM TB_RIDER AS A-->
+<!--		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B-->
+<!--		ON A.id = B.rider_id-->
+<!--			AND B.deleted IS NULL-->
+<!--		LEFT JOIN TB_SUBGROUP AS C-->
+<!--		ON B.subgroup_id = C.id-->
+<!--		LEFT JOIN TB_GROUP AS D-->
+<!--		ON B.group_id = D.id-->
+<!--			AND C.deleted IS NULL-->
+<!--			AND D.deleted IS NULL-->
+<!--		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
+<!--			AND (B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) OR B.subgroup_id is null)-->
+<!--			AND A.deleted IS NULL;-->
+
+		select	 A.id
+				,A.name
+				,A.phone
+				,A.status
+				,A.working
+				,A.chat_user_id
+				,A.latitude
+				,A.longitude
+				,A.location_updated
+				,A.return_time
+				,B.store_id 			AS subGroupRiderRel_store_id
+				,B.subgroup_id
+				,B.group_id				as subgroup_group_id
+				,( select name from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id )		as subgroup_name
+				,B.admin_id				as subgroup_admin
+				,B.group_id				as group_id
+				,( select name from TB_GROUP where admin_id = B.admin_id and id = B.group_id )		as group_name
+				,B.admin_id				as group_admin_id
+		from	 TB_RIDER				as A
+		inner join TB_SUBGROUP_RIDER_REL	as B
+			on	 A.id = B.rider_id
+			and	 A.admin_id = B.admin_id
+			and	 B.deleted is null
+		left join TB_SHARED_INFO		as C
+			on	 B.admin_id = C.allow_admin_id
+			and	 B.group_id = ifnull(C.allow_group_id, B.group_id)
+			and	 B.subgroup_id = ifnull(C.allow_subgroup_id, B.subgroup_id)
+			and	 B.store_id = ifnull(C.allow_store_id, B.store_id)
+			and	 C.admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null and admin_id = (select admin_id from TB_SHARED_ADMIN where allow_sort = 0 and allow_flag = 1 and deleted_datetime is null) )
+			and	 C.deleted_datetime is null
+		where	 1=1
+		and		 A.deleted is null
+		and		 ifnull(C.admin_id, A.admin_id) = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) )
+		and		 ifnull(C.subgroup_id, B.subgroup_id) = ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null )
 	</select>
-
-
-
 
 	<select id="selectMyStoreRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
 		SELECT A.id
@@ -934,7 +1049,7 @@
 							,order_standby_datetime
 							,order_standby_status
 					from	 TB_RIDER
-					where	 isnull(deleted)
+					where	 deleted is null
 					and		 working = 1
 					and		 admin_id = #{adminId}
 				)	A
@@ -947,16 +1062,140 @@
 							,store_id
 							,rider_id
 					from	 TB_SUBGROUP_RIDER_REL
-					where	 isnull(deleted)
+					where	 deleted is null
 					and		 admin_id = #{adminId}
 				)	B
 			on	 A.id = B.rider_id
 		where	 1=1
-		and	(	 isnull(B.store_id)
-			or	 B.store_id = #{storeId}
-			or	 B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and isnull(deleted) )
+		and	(	 B.store_id = #{storeId}
+			or	 B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and deleted is null )
 			)
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
+	</select>
+
+	<!-- selectForAssignRidersAssistant -->
+	<select id="selectForAssignRidersAssistant" parameterType="Map" resultMap="selectSubgroupAssistRiderRelsResult">
+<!--		select	 a.id-->
+<!--				,a.status-->
+<!--				,a.working-->
+<!--				,a.working_hours-->
+<!--				,a.rest_hours-->
+<!--				,a.latitude-->
+<!--				,a.longitude-->
+<!--				,a.return_time-->
+<!--				,a.order_standby_datetime-->
+<!--				,a.order_standby_status-->
+<!--				,c.req_subgroup_id							as subGroupRiderRel_subgroup_id-->
+<!--				,ifnull(c.req_store_id, #{storeId})					as subGroupRiderRel_store_id-->
+<!--				,(SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = a.id AND status in (1,2) AND created_datetime > CURRENT_DATE()) AS assign_count-->
+<!--				,(SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = a.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime-->
+<!--				,(SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime-->
+<!--				,(SELECT status FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status-->
+<!--				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime-->
+<!--				,(select order_id from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as deny_order_id-->
+<!--				,c.allow_admin_id-->
+<!--				,c.allow_group_id-->
+<!--				,c.allow_subgroup_id-->
+<!--				,c.allow_store_id-->
+<!--				,c.allow_flag-->
+<!--				,c.allow_sort-->
+<!--		from	(-->
+<!--					select	 id-->
+<!--							,status-->
+<!--							,working-->
+<!--							,working_hours-->
+<!--							,rest_hours-->
+<!--							,latitude-->
+<!--							,longitude-->
+<!--							,return_time-->
+<!--							,order_standby_datetime-->
+<!--							,order_standby_status-->
+<!--					from	 TB_RIDER-->
+<!--					where	 deleted is null-->
+<!--					and		 working = 1-->
+<!--				)	as a-->
+<!--			,	(-->
+<!--					select	 admin_id-->
+<!--							,group_id-->
+<!--							,subgroup_id-->
+<!--							,store_id-->
+<!--							,rider_id-->
+<!--					from	 TB_SUBGROUP_RIDER_REL-->
+<!--					where	 deleted is null-->
+<!--				)	as b-->
+<!--			,	(-->
+<!--					select	 admin_id				as req_admin_id-->
+<!--							,group_id				as req_group_id-->
+<!--							,subgroup_id			as req_subgroup_id-->
+<!--							,store_id				as req_store_id-->
+<!--							,allow_admin_id-->
+<!--							,allow_group_id-->
+<!--							,allow_subgroup_id-->
+<!--							,allow_store_id-->
+<!--							,allow_flag-->
+<!--							,allow_sort-->
+<!--					from	 TB_SHARED_INFO-->
+<!--					where	 deleted_datetime is null-->
+<!--					and		 admin_id = #{adminId}-->
+<!--					and		 allow_admin_id in ( select allow_admin_id from TB_SHARED_ADMIN where admin_id = #{adminId} and allow_flag = 1 and allow_sort = 0)-->
+<!--				)	as c-->
+<!--		where	 b.admin_id = c.req_admin_id-->
+<!--		and		 b.group_id = ifnull(c.req_group_id, b.group_id)-->
+<!--		and	     b.subgroup_id = ifnull(c.req_subgroup_id, b.subgroup_id)-->
+<!--		and	     b.store_id = ifnull(c.req_store_id, b.store_id)-->
+<!--		and		 b.rider_id = a.id-->
+<!--		and	(	 c.req_store_id = #{storeId}-->
+<!--		or		(c.req_subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} ))-->
+<!--			)-->
+<!--		order by c.allow_sort, min_assigned_datetime is null desc, assign_count asc, min_assigned_datetime asc;-->
+
+		select	 a.id
+				,a.status
+				,a.working
+				,a.working_hours
+				,a.rest_hours
+				,a.latitude
+				,a.longitude
+				,a.return_time
+				,a.order_standby_datetime
+				,a.order_standby_status
+				,d.subgroup_id							as subGroupRiderRel_subgroup_id
+				,d.store_id								as subGroupRiderRel_store_id
+				,(SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = a.id AND status in (1,2) AND created_datetime > CURRENT_DATE()) AS assign_count
+				,(SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = a.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
+				,(SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
+				,(SELECT status FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status
+				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime
+				,(select order_id from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as deny_order_id
+				,c.allow_admin_id
+				,c.allow_group_id
+				,c.allow_subgroup_id
+				,c.allow_store_id
+				,c.allow_flag
+				,c.allow_sort
+		from	 TB_RIDER				as	a
+				,TB_SUBGROUP_RIDER_REL	as	b
+				,TB_SHARED_INFO 		as	c
+				,TB_SUBGROUP_STORE_REL	as	d
+		where	 a.admin_id = b.admin_id
+		and		 a.id = b.rider_id
+		and		 a.deleted is null
+		and		 b.deleted is null
+		and		 a.working = 1
+		and		 c.admin_id = d.admin_id
+		and		 ifnull(c.group_id, d.group_id) = d.group_id
+		and		 ifnull(c.subgroup_id, d.subgroup_id) = d.subgroup_id
+		and		 ifnull(c.store_id, d.store_id) = d.store_id
+		and		 c.deleted_datetime is null
+		and		 d.deleted is null
+		and		 c.allow_admin_id in ( select allow_admin_id from TB_SHARED_ADMIN where admin_id = #{adminId} and deleted_datetime is null and allow_flag = 1 and allow_sort = 0 )
+		and		 b.admin_id = c.allow_admin_id
+		and		 b.group_id = ifnull(c.allow_group_id, d.group_id)
+		and		 b.subgroup_id = ifnull(c.allow_subgroup_id, b.subgroup_id)
+		and		 b.store_id = ifnull(c.allow_store_id, b.store_id)
+		and		 d.store_id = #{storeId}
+		order by c.allow_sort, min_assigned_datetime is null desc, assign_count asc, min_assigned_datetime asc;
+
 	</select>
 
 	<!-- selectRiderRestHours -->

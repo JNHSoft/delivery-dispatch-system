@@ -15,6 +15,7 @@ import kr.co.cntt.core.model.order.OrderCheckAssignment;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.rider.RiderAssistant;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -98,6 +99,33 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 추가되어 있는 인덱스를 활용하여 조회 속도 업
             denyOrderIdChkMap.put("adminId", order.getStore().getAdminId());
             List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
+            // 19.12.23 제 3자 배달기사 리스트 구하기
+            List<RiderAssistant> astRiderList = riderMapper.selectForAssignRidersAssistant(denyOrderIdChkMap);
+            // 제 3자 배달기사 리스트 중 허용 값만 추출
+            List<RiderAssistant> allowRiderList = astRiderList.stream()
+                                                              .filter(x -> x.getAst_flag() == 1).collect(Collectors.toList());
+
+            System.out.println("allowRiderList 1 => " + allowRiderList.size());
+
+            astRiderList.forEach(x -> {
+                if(x.getAst_flag() == 0){
+                    allowRiderList.stream().filter(y -> {
+                        if (y.getAst_admin_id() == x.getAst_admin_id() && y.getAst_group_id() == x.getAst_group_id()
+                                && y.getAst_subgroup_id() == x.getAst_subgroup_id() && y.getAst_store_id() == x.getAst_store_id() && y.getSelectSubgroupRiderRelsResult().getId().equals(x.getSelectSubgroupRiderRelsResult().getId())){
+                            if (y.getAst_sort() < x.getAst_sort()){
+                                return  false;
+                            }
+                        }
+                        return true;
+                    });
+                }
+            });
+
+            System.out.println("allowRiderList 1 => " + allowRiderList);
+
+            for (RiderAssistant riderAssistant : allowRiderList) {
+                riderList.add(riderAssistant.getSelectSubgroupRiderRelsResult());
+            }
 
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
             log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
@@ -145,7 +173,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                        } else {
 //                            LocalDateTime orderStandbyDatetime = LocalDateTime.parse((a.getOrderStandbyDatetime()).replace(" ", "T"));
 //                            LocalDateTime ldt = LocalDateTime.now();
-////                            LocalDateTime ldt = LocalDateTime.now().minusHours(1); //testServer (timezone이 다름)
+////                            LocalDateTime ldt = Loca dkfflDateTime.now().minusHours(1); //testServer (timezone이 다름)
 //                            log.debug(">>> autoAssignRider_Stream Third_Else:::: Stream Else  :::: ");
 //                            return orderStandbyDatetime.until(ldt, ChronoUnit.SECONDS) >= 60;
 //                        }
@@ -1194,7 +1222,14 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             storeDTO.setId(S_Order.getStoreId());
         }
 
+        /**
+         * 주문 상태를 매장에 전송하기 위하여 추출
+         * */
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);
+
+        System.out.println("####################################");
+        System.out.println("storeDTO =[" + storeDTO + "]");
+        System.out.println("####################################");
 
         if (result != 0) {
             if (S_Store.getSubGroup() != null) {
