@@ -110,7 +110,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
             } else if (level.equals("1")) {
                 adminInfo.setLoginId(loginId);
                 adminInfo.setLoginPw(loginPw);
+                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@5");
                 userSelectLoginMap = adminService.selectLoginAdmin(adminInfo);
+                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@6 // " + userSelectLoginMap);
             } else if (level.equals("4")) {
                 trackerInfo.setLoginId(loginId);
                 trackerInfo.setLoginPw(loginPw);
@@ -120,16 +122,18 @@ public class ApiExporter extends ExporterSupportor implements Api {
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
             log.info("===> [createAuthenticate RequestParam][loginPw : {}]", loginPw);
             log.info("===> [createAuthenticate RequestParam][userLoginId : {}]", userSelectLoginMap.get("loginId"));
-
+            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@4");
 
             if (!loginId.equals(userSelectLoginMap.get("loginId"))) {
                 // 로그인 정보가 다르다.
                 //throw new AppTrException(getMessage(ErrorCodeEnum.S0001), ErrorCodeEnum.S0001.name());
+                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@3");
                 throw new AppTrException("로그인정보가 다릅니다.", "LOERR");
             }
 
 //            Actor actor = customAuthentificateService.createActor(loginId, loginPw);
             Actor actor = customAuthentificateService.createActor(loginId, loginPw, level);
+            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
             if (actor == null) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.A0003), ErrorCodeEnum.A0003.name());
@@ -138,7 +142,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
                     .authenticate(new UsernamePasswordAuthenticationToken(actor.getLoginId(), actor.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             final ActorDetails actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
-
+            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1");
             String token = null;
             if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                 token = tokenManager.generateCustomToken(actorDetails, device);

@@ -147,17 +147,34 @@
 
 	<!-- loginAdminInfo -->
 	<select id="loginAdminInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
-		SELECT
-			A.id, A.chat_user_id, A.login_id, A.login_pw,
-			A.name, A.state, A.assignment_status, A.assignment_limit,
-			B.access_token
-		FROM TB_ADMIN A JOIN TB_ADMIN_SESSION B
-		ON A.id = B.admin_id
-		WHERE A.login_id = #{loginId}
-			AND login_pw = #{loginPw}
-			AND deleted IS NULL
-		ORDER BY B.Created_datetime DESC
-		limit 1
+<!--		SELECT-->
+<!--			A.id, A.chat_user_id, A.login_id, A.login_pw,-->
+<!--			A.name, A.state, A.assignment_status, A.assignment_limit,-->
+<!--			B.access_token-->
+<!--		FROM TB_ADMIN A JOIN TB_ADMIN_SESSION B-->
+<!--		ON A.id = B.admin_id-->
+<!--		WHERE A.login_id = #{loginId}-->
+<!--			AND login_pw = #{loginPw}-->
+<!--			AND deleted IS NULL-->
+<!--		ORDER BY B.Created_datetime DESC-->
+<!--		limit 1-->
+		select	 A.id
+				,A.chat_user_id
+				,A.login_id
+				,A.login_pw
+				,A.name
+				,A.state
+				,A.assignment_status
+				,A.assignment_limit
+				,B.access_token
+				,A.brand_code
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = A.brand_code )	as brand_name
+		from	 TB_ADMIN	A
+				,TB_ADMIN_SESSION	B
+		WHERE	 A.id = B.admin_id
+		and		 A.deleted is null
+		and		 login_id = #{loginId}
+		and		 login_pw = #{loginPw};
 	</select>
 
 
@@ -239,7 +256,9 @@
 			, assignment_status
 			, assignment_limit
 			, default_sound_status
-		FROM TB_ADMIN
+			,brand_code
+			,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = A.brand_code )	as brand_name
+		FROM TB_ADMIN	as A
 		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>
 

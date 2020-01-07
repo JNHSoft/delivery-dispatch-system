@@ -52,6 +52,11 @@ public class AccountAdminServiceImpl implements AccountAdminService {
 
         List<Admin> S_Admin = adminMapper.selectAdminInfo(admin);
 
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println(S_Admin.size());
+        System.out.println(S_Admin.get(0).getBrandCode());
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
         return S_Admin.get(0);
     }
 

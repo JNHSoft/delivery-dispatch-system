@@ -22,4 +22,8 @@ public class User extends Common implements Dto {
     private String pushToken;
     private String level;
 
+    // 사용자 브랜드 관리
+    private String brandCode;
+    private String brandName;
+
 }
