@@ -57,7 +57,8 @@ function headerUI(){
 		$gnbOn = $('#gnbOn').text();
 	
 	if(!$title == ''){
-		document.title = $title + ' | PizzaHut Driver Dispatch';
+		// document.title = $title + ' | PizzaHut Driver Dispatch';
+		document.title = $title + ' | ' + document.title;
 		$('.head_tit').empty().text($title);
 	}
 		

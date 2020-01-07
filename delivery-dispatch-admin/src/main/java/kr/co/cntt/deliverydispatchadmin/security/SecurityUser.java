@@ -56,6 +56,16 @@ public class SecurityUser implements UserDetails {
     private String authLevel;
 
     /**
+     * 20.01.07 <p> 브랜드 코드
+     * */
+    private String adminBrandCode;
+
+    /**
+     * <p> 브랜드 명
+     * */
+    private String adminBrandName;
+
+    /**
      * <p>Auth Collection
      */
     private Collection<? extends GrantedAuthority> authoritiesd;
@@ -67,6 +77,8 @@ public class SecurityUser implements UserDetails {
      * @param adminState 관리자 STATE
      * @param adminAssignmentState 관리자 AssignmentState
      * @param authLevel 관리자 권한 레벨
+     * @param adminBrandCode 관리자의 브랜드 코드
+     * @param adminBrandName 관리자의 브랜드명
      * @param authoritiesd 관리자 권한 콜렉션
      * @author JIN
      */
@@ -79,6 +91,8 @@ public class SecurityUser implements UserDetails {
                         String adminAssignmentState,
                         String adminAccessToken,
                         String authLevel,
+                        String adminBrandCode,
+                        String adminBrandName,
                         Collection<? extends GrantedAuthority> authoritiesd) {
         this.adminSeq = adminSeq;
         this.adminChatSeq = adminChatSeq;
@@ -90,6 +104,9 @@ public class SecurityUser implements UserDetails {
         this.adminAccessToken = adminAccessToken;
         this.authLevel = authLevel;
         this.authoritiesd = authoritiesd;
+
+        this.adminBrandCode = adminBrandCode;
+        this.adminBrandName = adminBrandName;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getAuthorities()

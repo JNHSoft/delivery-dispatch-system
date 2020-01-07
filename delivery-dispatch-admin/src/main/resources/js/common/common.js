@@ -13,6 +13,14 @@ $(document).ready(function() {
         success : function (data) {
             $('#myAdminName').text(data.name);
             $('#defaultSoundStatus').val(data.defaultSoundStatus);
+
+            if (data.brandCode != undefined){
+                alert(data.brandCode);
+                alert(data.brandName);
+
+                $('.imgTitle').attr("src", "../resources/images/common/logo" + data.brandCode + ".jpg");
+                $('.imgTitle').attr("alt", data.brandName);
+            }
         }
     });
 });
