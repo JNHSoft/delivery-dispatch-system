@@ -32,6 +32,10 @@
         <result property="alarm" column="alarm"/>
         <result property="accessToken" column="access_token"/>
 
+        <result property="brandCode" column="brand_code" />
+        <result property="brandName" column="brand_name" />
+        <result property="brandImg" column="brand_img" />
+
         <association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
             <result property="id" column="group_id" />
             <result property="name" column="group_name" />
@@ -114,17 +118,35 @@
 
     <!-- loginStoreInfo -->
     <select id="loginStoreInfo" parameterType="kr.co.cntt.core.model.store.Store" resultType="kr.co.cntt.core.model.store.Store">
-        SELECT
-        A.id, A.chat_user_id, A.login_id, A.login_pw,
-        A.store_status, A.assignment_status, A.assignment_limit,
-        B.access_token
-        FROM TB_STORE A JOIN TB_STORE_SESSION B
-        ON A.id = B.store_id
-        WHERE A.login_id = #{loginId}
-        AND login_pw = #{loginPw}
-        AND deleted IS NULL
-        ORDER BY B.Created_datetime DESC
-        limit 1
+<!--        SELECT-->
+<!--        A.id, A.chat_user_id, A.login_id, A.login_pw,-->
+<!--        A.store_status, A.assignment_status, A.assignment_limit,-->
+<!--        B.access_token-->
+<!--        FROM TB_STORE A JOIN TB_STORE_SESSION B-->
+<!--        ON A.id = B.store_id-->
+<!--        WHERE A.login_id = #{loginId}-->
+<!--        AND login_pw = #{loginPw}-->
+<!--        AND deleted IS NULL-->
+<!--        ORDER BY B.Created_datetime DESC-->
+<!--        limit 1-->
+
+        select	 A.id
+                ,A.chat_user_id
+                ,A.login_id
+                ,A.login_pw
+                ,A.store_status
+                ,A.assignment_status
+                ,A.assignment_limit
+                ,A.brand_code
+                ,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = A.brand_code )	as brand_name
+                ,concat('/resources/images/common/logo', A.brand_code, '.png')		as brand_img
+                ,B.access_token
+        from	 TB_STORE	as A
+                ,TB_STORE_SESSION	as B
+        where	 A.id = B.store_id
+        and		 A.deleted is null
+        and		 A.login_id = #{loginId}
+        and		 A.login_pw = #{loginPw}
     </select>
 
     <!--로그인 ID 확인 -->
@@ -330,6 +352,9 @@
                 ,D.assignment_status		as admin_assignment_status
                 ,D.assignment_limit			as admin_assignment_limit
                 ,( select access_token from TB_STORE_SESSION where store_id = A.id )		as access_token
+                ,A.brand_code
+                ,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = A.brand_code )   as brand_name
+                ,concat('/resources/images/common/logo', A.brand_code, '.png')		as brand_img
         from	 TB_STORE	as A
         left join TB_SUBGROUP_STORE_REL	as B
             on	 A.admin_id = B.admin_id

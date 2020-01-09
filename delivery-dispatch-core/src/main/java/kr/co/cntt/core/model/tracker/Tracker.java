@@ -46,4 +46,11 @@ public class Tracker implements Dto {
 
     private String distance;
 
+    // 트래커가 배달 중인 주문에 대한 브랜드 코드 및 네임
+    private String brandCode;
+    private String brandName;
+
+    //트래커가 배달 중인 스토어에 대한 이미지 경로
+    private String brandImg;
+
 }

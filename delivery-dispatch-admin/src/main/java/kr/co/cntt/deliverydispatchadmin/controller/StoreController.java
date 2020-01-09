@@ -81,11 +81,6 @@ public class StoreController {
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println(adminInfo.getAdminBrandCode());
-        System.out.println(adminInfo.getAdminBrandName());
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
         store.setToken(adminInfo.getAdminAccessToken());
 
         List<Store> storeList = storeAdminService.selectStoreList(store);

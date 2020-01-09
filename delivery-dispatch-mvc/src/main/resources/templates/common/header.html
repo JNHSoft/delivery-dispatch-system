@@ -5,7 +5,7 @@
 	<header id="header" th:fragment="commonHeader">
         <input id="tempLocale" hidden="hidden"/>
 		<div class="mobile_head">
-			<h2 class="head_tit"><img src="../resources/images/common/logo.jpg" alt="JD" /></h2>
+			<h2 class="head_tit"><img src="./resources/images/common/logo.jpg" onerror="this.src='./resources/images/common/logo.jpg'" alt="JD" class="imgTitle" /></h2>
 			<a href="/setting-notice" id="notice_alarm_mobile" class="head_notice" th:text="${#messages.msg('gnb.notice')}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
 		</div>
 		<a href="#" class="btn_gnb"><i></i><span class="blind">GNB 메뉴</span></a>
@@ -29,7 +29,7 @@
 						<a href="#" id="logout" class="button btn_gray h20" th:text="${#messages.msg('gnb.logout')}" />
 					</div>
 				</div>
-				<h1 id="logo"><img src="../resources/images/common/logo.jpg" alt="JD" /></h1>
+				<h1 id="logo"><img src="./resources/images/common/logo.jpg" onerror="this.src='./resources/images/common/logo.jpg'" alt="JD" class="imgTitle" /></h1>
 				<div class="gnb_wrap">
 					<nav id="gnb">
 						<ul>

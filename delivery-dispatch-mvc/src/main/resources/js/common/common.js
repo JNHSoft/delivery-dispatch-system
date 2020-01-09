@@ -43,6 +43,12 @@ function noticeAlarm() {
         success : function(data) {
             if(data && typeof my_store != 'undefined'){
                 $('#myStoreName').text(my_store.storeName);
+
+                // BRAND_CODE별 이미지 노출
+                if (my_store.brandCode != undefined){
+                    $('.imgTitle').attr("src", my_store.brandImg);
+                    $('.imgTitle').attr("alt", my_store.brandName);
+                }
             }
             $("#notice_alarm").removeClass('new');
             $("#notice_alarm_mobile").removeClass('new');

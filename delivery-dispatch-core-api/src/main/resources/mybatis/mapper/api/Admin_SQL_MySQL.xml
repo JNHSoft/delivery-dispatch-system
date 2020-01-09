@@ -169,6 +169,7 @@
 				,B.access_token
 				,A.brand_code
 				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = A.brand_code )	as brand_name
+				,concat('/resources/images/common/logo', A.brand_code, '.png')		as brand_img
 		from	 TB_ADMIN	A
 				,TB_ADMIN_SESSION	B
 		WHERE	 A.id = B.admin_id
@@ -258,6 +259,7 @@
 			, default_sound_status
 			,brand_code
 			,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = A.brand_code )	as brand_name
+			,concat('/resources/images/common/logo', brand_code, '.png')		as brand_img
 		FROM TB_ADMIN	as A
 		WHERE id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</select>

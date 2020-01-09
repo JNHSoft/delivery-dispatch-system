@@ -80,6 +80,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             // 20.01.07 Brand Check
             String adminBrandCode = returnAdmin.getBrandCode();
             String adminBrandName = returnAdmin.getBrandName();
+            String adminBrandImg = returnAdmin.getBrandImg();
 
             String authLevel = "1"; // ADMIN
             List<GrantedAuthority> roles = null;
@@ -88,7 +89,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             } catch (Exception e) {
                 throw new AuthenticationCredentialsNotFoundException("LOGIN AUTHORIZATION FAIL");
             }
-            SecurityUser securityUser = new SecurityUser(adminSeq, adminChatUserId, adminId, adminPassword, adminName, adminState, adminAssignmentStatus, adminAccessToken, authLevel, adminBrandCode, adminBrandName, roles);
+            SecurityUser securityUser = new SecurityUser(adminSeq, adminChatUserId, adminId, adminPassword, adminName, adminState, adminAssignmentStatus, adminAccessToken, authLevel, adminBrandCode, adminBrandName, adminBrandImg, roles);
             UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(adminId, adminPassword, roles);
             result.setDetails(securityUser);
             return result;

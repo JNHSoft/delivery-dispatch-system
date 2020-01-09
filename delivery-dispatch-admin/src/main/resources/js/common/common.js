@@ -15,10 +15,8 @@ $(document).ready(function() {
             $('#defaultSoundStatus').val(data.defaultSoundStatus);
 
             if (data.brandCode != undefined){
-                alert(data.brandCode);
-                alert(data.brandName);
-
-                $('.imgTitle').attr("src", "../resources/images/common/logo" + data.brandCode + ".jpg");
+                //$('.imgTitle').attr("src", "../resources/images/common/logo" + data.brandCode + ".jpg");
+                $('.imgTitle').attr("src", data.brandImg);
                 $('.imgTitle').attr("alt", data.brandName);
             }
         }

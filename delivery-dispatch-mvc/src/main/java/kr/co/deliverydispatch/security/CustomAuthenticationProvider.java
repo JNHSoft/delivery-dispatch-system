@@ -77,6 +77,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             String storeAssignmentStatus = returnStore.getAssignmentStatus();
             String storeAccessToken = returnStore.getAccessToken();
 
+            // brand Code 및 name 추가
+            String storeBrandCode = returnStore.getBrandCode();
+            String storeBrandName = returnStore.getBrandName();
+            // 브랜드 이미지 경로 추가
+            String storeBrandImg = returnStore.getBrandImg();
+
+
             String authLevel = "2"; // STORE
             List<GrantedAuthority> roles = null;
             try {
@@ -84,7 +91,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             } catch (Exception e) {
                 throw new AuthenticationCredentialsNotFoundException("LOGIN AUTHORIZATION FAIL");
             }
-            SecurityUser securityUser = new SecurityUser(storeSeq, storeChatUserId, storeId, storePassword, storeName, storeStoreStatus, storeAssignmentStatus, storeAccessToken, authLevel, roles);
+            SecurityUser securityUser = new SecurityUser(storeSeq, storeChatUserId, storeId, storePassword, storeName, storeStoreStatus, storeAssignmentStatus, storeAccessToken, authLevel, storeBrandCode, storeBrandName, storeBrandImg, roles);
             UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(storeId, storePassword, roles);
             result.setDetails(securityUser);
             return result;

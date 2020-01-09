@@ -66,6 +66,11 @@ public class SecurityUser implements UserDetails {
     private String adminBrandName;
 
     /**
+     * <p> 브랜드 이미지 Path
+     * */
+    private String adminImg;
+
+    /**
      * <p>Auth Collection
      */
     private Collection<? extends GrantedAuthority> authoritiesd;
@@ -93,6 +98,7 @@ public class SecurityUser implements UserDetails {
                         String authLevel,
                         String adminBrandCode,
                         String adminBrandName,
+                        String adminImg,
                         Collection<? extends GrantedAuthority> authoritiesd) {
         this.adminSeq = adminSeq;
         this.adminChatSeq = adminChatSeq;
@@ -107,6 +113,7 @@ public class SecurityUser implements UserDetails {
 
         this.adminBrandCode = adminBrandCode;
         this.adminBrandName = adminBrandName;
+        this.adminImg = adminImg;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getAuthorities()

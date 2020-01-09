@@ -2,7 +2,7 @@
 <html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/mainLayout">
 	<div class="box" layout:fragment="content">
 		<form id="loginForm" name="loginForm">
-			<h1><img src="./resources/images/common/logo.jpg" alt="JD" /></h1>
+			<h1><img src="./resources/images/common/logo.jpg" onerror="this.src='./resources/images/common/logo.jpg'" alt="JD" /></h1>
 			<ul>
 				<li class="inp">
 					<input type="text" class="input h50" name="storeId" id="storeId" th:placeholder="${#messages.msg('login.id')}" value="" maxlength="20" />
@@ -27,6 +27,18 @@
 		</form>
 	</div>
 <script layout:fragment="script">
+
+	<!-- Todo 도메인별로 변경 or 공통 Img 사용 -->
+	$(document).ready(function () {
+		if($(location).attr('hostname') == 'localhost'){
+			$("#imgTitle").attr("src", "./resources/images/common/logo0.png");
+			$("#imgTitle").attr("alt", "PizzaHut");
+		}else if ($(location).attr('hostname') == 'test-admin.test.com'){
+			$("#imgTitle").attr("src", "./resources/images/common/logo1.png");
+			$("#imgTitle").attr("alt", "KFC");
+		}
+	})
+
 	$(function() {
         $(window).resize(function () {
             vaMid('.login_wrap')

@@ -55,6 +55,17 @@ public class SecurityUser implements UserDetails {
     private String authLevel;
 
     /**
+     * 20.01.08 상점 브랜드 코드 및 네임
+     * */
+    private String storeBrandCode;
+    private String storeBrandName;
+
+    /**
+     * 브랜드 이미지 경로
+     * */
+    private String storeBrandImg;
+
+    /**
      * <p>Auth Collection
      */
     private Collection<? extends GrantedAuthority> authoritiesd;
@@ -78,6 +89,9 @@ public class SecurityUser implements UserDetails {
                         String storeAssignmentState,
                         String storeAccessToken,
                         String authLevel,
+                        String storeBrandCode,
+                        String storeBrandName,
+                        String storeBrandImg,
                         Collection<? extends GrantedAuthority> authoritiesd) {
         this.storeSeq = storeSeq;
         this.storeChatSeq = storeChatSeq;
@@ -89,6 +103,10 @@ public class SecurityUser implements UserDetails {
         this.storeAccessToken = storeAccessToken;
         this.authLevel = authLevel;
         this.authoritiesd = authoritiesd;
+
+        this.storeBrandCode = storeBrandCode;
+        this.storeBrandName = storeBrandName;
+        this.storeBrandImg = storeBrandImg;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getAuthorities()

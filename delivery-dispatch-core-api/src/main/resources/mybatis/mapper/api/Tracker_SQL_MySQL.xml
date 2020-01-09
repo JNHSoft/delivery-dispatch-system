@@ -89,6 +89,8 @@
 			<!--, C.phone AS rider_phone-->
 			, C.latitude AS rider_latitude
 			, C.longitude AS rider_longitude
+			, B.brand_code
+			, ( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = B.brand_code )	as brand_name
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_STORE AS B
 		ON A.store_id = B.id

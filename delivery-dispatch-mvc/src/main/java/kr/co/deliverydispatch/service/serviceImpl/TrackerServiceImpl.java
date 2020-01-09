@@ -12,7 +12,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+
+import javax.activation.MimetypesFileTypeMap;
+import java.io.Console;
+import java.io.File;
 
 @Slf4j
 @Service("mvcTrackerService")
@@ -56,6 +61,20 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             if(tracker != null){
                 tracker.setRequestDate(requestDate);
             }
+
+            // 이미지 경로 Check & Value Save
+            String filePath = "";
+            if (!tracker.getBrandCode().isEmpty()){
+                filePath = "images/tracker/pin_store" + tracker.getBrandCode() + ".png";
+            }
+
+            if (new ClassPathResource(filePath).exists()){
+                tracker.setBrandImg("./resources/" + filePath + "?ver=0.4");
+            }else{
+                tracker.setBrandImg("./resources/images/tracker/pin_store.jpg?ver=0.4");
+            }
+
+            System.out.println(tracker.getBrandImg());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

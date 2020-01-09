@@ -26,4 +26,7 @@ public class User extends Common implements Dto {
     private String brandCode;
     private String brandName;
 
+    // 브랜드 이미지 경로
+    private String brandImg;
+
 }
