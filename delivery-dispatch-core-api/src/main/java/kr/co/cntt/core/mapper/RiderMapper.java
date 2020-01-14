@@ -8,8 +8,6 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.login.User;
-import kr.co.cntt.core.model.rider.RiderAssistant;
 
 import java.util.HashMap;
 import java.util.List;
