@@ -348,6 +348,7 @@
                 ,( select name from TB_GROUP where admin_id = B.admin_id and id = B.group_id )		as subgroup_name
                 ,B.admin_id					as subgroup_admin_id
                 ,( select name from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id )	as group_name
+                ,B.group_id                 as group_id
                 ,B.admin_id					as group_admin_id
                 ,D.assignment_status		as admin_assignment_status
                 ,D.assignment_limit			as admin_assignment_limit

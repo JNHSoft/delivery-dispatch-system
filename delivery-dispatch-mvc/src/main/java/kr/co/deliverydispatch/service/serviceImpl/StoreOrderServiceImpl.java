@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("storeOrderService")
@@ -378,6 +379,27 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         if (S_Rider.size() == 0) {
             return Collections.<Rider>emptyList();
         }
+
+
+        // 20.01.13 Shared Check
+//        List<Rider> sharedRider = S_Rider.stream()
+//                                    .filter(x -> x.getShared_admin_id() != null)
+//                                    .collect(Collectors.toList());
+        List<Rider> chkAllowRider = S_Rider.stream()
+                .filter(x->x.getShared_admin_id() != null && x.getShared_flag() == 1)
+                .collect(Collectors.toList());
+        List<Rider> chkRejectRider = S_Rider.stream()
+                .filter(x->x.getShared_admin_id() != null && x.getShared_flag() == 0)
+                .collect(Collectors.toList());
+
+        chkAllowRider.forEach(x -> {
+            chkRejectRider.forEach(y->{
+                if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
+                    S_Rider.remove(y);
+                    S_Rider.remove(x);
+                }
+            });
+        });
 
         return S_Rider;
     }

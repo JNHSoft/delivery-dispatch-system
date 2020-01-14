@@ -658,7 +658,7 @@ DDELib.Orders.prototype = {
                     }
                 }
                 var riderPhone = '#rider' + orderDetailData.riderId;
-                if (orderDetailData.riderId != null) {
+                if (orderDetailData.riderId != null && $('#selectedRider option[value='+ orderDetailData.riderId +']').length > 0) {
                     $('#selectedRider').val(orderDetailData.riderId).prop("selected", true);
                     // $(riderPhone).css('display', 'block');
                     $(riderPhone).css('display', 'none');

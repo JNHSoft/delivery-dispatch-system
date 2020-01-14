@@ -79,4 +79,12 @@ public class Rider extends User implements Dto {
     private String currentPw;
     private String newPw;
 
+    // 20.01.13 다른 그룹 허용 여부 체크
+    private Integer shared_admin_id;
+    private Integer shared_group_id;
+    private Integer shared_subgroup_id;
+    private Integer shared_store_id;
+    private Integer shared_flag;
+    private Integer shared_sort;
+
 }

@@ -100,32 +100,25 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             denyOrderIdChkMap.put("adminId", order.getStore().getAdminId());
             List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
             // 19.12.23 제 3자 배달기사 리스트 구하기
-            List<RiderAssistant> astRiderList = riderMapper.selectForAssignRidersAssistant(denyOrderIdChkMap);
+            List<Rider> astRiderList = riderMapper.selectForAssignRidersAssistant(denyOrderIdChkMap);
             // 제 3자 배달기사 리스트 중 허용 값만 추출
-            List<RiderAssistant> allowRiderList = astRiderList.stream()
-                                                              .filter(x -> x.getAst_flag() == 1).collect(Collectors.toList());
+            List<Rider> allowRiderList = astRiderList.stream()
+                                                  .filter(x -> x.getShared_flag() == 1).collect(Collectors.toList());
+            List<Rider> tempRiderList = new ArrayList<>();
 
-            System.out.println("allowRiderList 1 => " + allowRiderList.size());
-
-            astRiderList.forEach(x -> {
-                if(x.getAst_flag() == 0){
-                    allowRiderList.stream().filter(y -> {
-                        if (y.getAst_admin_id() == x.getAst_admin_id() && y.getAst_group_id() == x.getAst_group_id()
-                                && y.getAst_subgroup_id() == x.getAst_subgroup_id() && y.getAst_store_id() == x.getAst_store_id() && y.getSelectSubgroupRiderRelsResult().getId().equals(x.getSelectSubgroupRiderRelsResult().getId())){
-                            if (y.getAst_sort() < x.getAst_sort()){
-                                return  false;
-                            }
+            for (Iterator<Rider> rider = astRiderList.iterator(); rider.hasNext();){
+                Rider rd = rider.next();
+                if (rd.getShared_flag().equals(0)){
+                    allowRiderList.forEach(y->{
+                        if (y.getId().equals(rd.getId()) && y.getShared_sort().intValue() < rd.getShared_sort().intValue()){
+                            tempRiderList.add(rd);
+                            tempRiderList.add(y);
                         }
-                        return true;
                     });
                 }
-            });
-
-            System.out.println("allowRiderList 1 => " + allowRiderList);
-
-            for (RiderAssistant riderAssistant : allowRiderList) {
-                riderList.add(riderAssistant.getSelectSubgroupRiderRelsResult());
             }
+            astRiderList.removeAll(tempRiderList);
+            riderList.addAll(astRiderList);
 
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
             log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());

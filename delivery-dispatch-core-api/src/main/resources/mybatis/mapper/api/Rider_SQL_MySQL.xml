@@ -34,20 +34,28 @@
 		<result property="orderStandbyDatetime" column="order_standby_datetime" />
 		<result property="orderStandbyStatus" column="order_standby_status" />
 
-		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
+		<!-- 20.01.13 Shared Rider Info -->
+		<result property="shared_admin_id" column="allow_admin_id" />
+		<result property="shared_group_id" column="allow_group_id" />
+		<result property="shared_subgroup_id" column="allow_subgroup_id" />
+		<result property="shared_store_id" column="allow_store_id" />
+		<result property="shared_flag" column="allow_flag" />
+		<result property="shared_sort" column="allow_sort" />
+
+		<association property="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
 			<result property="name" column="group_name" />
 			<result property="adminId" column="group_admin_id" />
 		</association>
 
-		<association property="subGroup" column="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
+		<association property="subGroup" javaType="kr.co.cntt.core.model.group.SubGroup">
 			<result property="id" column="subgroup_id" />
 			<result property="groupId" column="subgroup_group_Id" />
 			<result property="name" column="subgroup_name" />
 			<result property="adminId" column="subgroup_admin_id" />
 		</association>
 
-		<association property="subGroupRiderRel" column="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
+		<association property="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
 			<result property="id" column="subGroupRiderRel_id" />
 			<result property="adminId" column="subGroupRiderRel_admin_id" />
 			<result property="groupId" column="subGroupRiderRel_group_id" />
@@ -56,12 +64,12 @@
 			<result property="riderId" column="subGroupRiderRel_rider_id" />
 		</association>
 
-		<association property="orderCheckAssignment" column="orderCheckAssignment" javaType="kr.co.cntt.core.model.order.OrderCheckAssignment">
+		<association property="orderCheckAssignment" javaType="kr.co.cntt.core.model.order.OrderCheckAssignment">
 			<result property="orderId" column="deny_order_id" />
 			<result property="deniedDatetime" column="denied_datetime" />
 		</association>
 
-		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
+		<association property="store" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="id" column="store_id" />
 		</association>
 	</resultMap>
@@ -94,7 +102,16 @@
 		<result property="workCount" column="work_count" />
 		<result property="orderCount" column="order_count" />
 		<result property="myWorkCount" column="my_work_count" />
-		<association property="subGroupRiderRel" column="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
+
+		<!-- 20.01.13 Shared Rider Info -->
+		<result property="shared_admin_id" column="allow_admin_id" />
+		<result property="shared_group_id" column="allow_group_id" />
+		<result property="shared_subgroup_id" column="allow_subgroup_id" />
+		<result property="shared_store_id" column="allow_store_id" />
+		<result property="shared_flag" column="allow_flag" />
+		<result property="shared_sort" column="allow_sort" />
+
+		<association property="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
 			<result property="id" column="subGroupRiderRel_id" />
 			<result property="adminId" column="subGroupRiderRel_admin_id" />
 			<result property="groupId" column="subGroupRiderRel_group_id" />
@@ -103,7 +120,7 @@
 			<result property="riderId" column="subGroupRiderRel_rider_id" />
 		</association>
 
-		<association property="riderStore" column="store" javaType="kr.co.cntt.core.model.store.Store">
+		<association property="riderStore" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="id" column="rider_store_id" />
 			<result property="storeName" column="rider_store_name" />
 			<result property="latitude" column="rider_store_latitude" />
@@ -113,7 +130,7 @@
 			<result property="storeDistanceSort" column="rider_store_distance_sort" />
 		</association>
 
-		<association property="orderStore" column="store" javaType="kr.co.cntt.core.model.store.Store">
+		<association property="orderStore" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="id" column="order_store_id" />
 			<result property="storeName" column="order_store_name" />
 			<result property="latitude" column="order_store_latitude" />
@@ -123,21 +140,10 @@
 			<result property="storeDistanceSort" column="order_store_distance_sort" />
 		</association>
 
-		<association property="order" column="order" javaType="kr.co.cntt.core.model.order.Order">
+		<association property="order" javaType="kr.co.cntt.core.model.order.Order">
 			<result property="id" column="order_id" />
 			<result property="name" column="order_name" />
 		</association>
-	</resultMap>
-
-	<!-- selectSubgroupRiderRelsResult -->
-	<resultMap id="selectSubgroupAssistRiderRelsResult" type="kr.co.cntt.core.model.rider.RiderAssistant">
-		<result property="ast_admin_id" column="allow_admin_id" />
-		<result property="ast_group_id" column="allow_group_id" />
-		<result property="ast_subgroup_id" column="allow_subgroup_id" />
-		<result property="ast_store_id" column="allow_store_id" />
-		<result property="ast_flag" column="allow_flag" />
-		<result property="ast_sort" column="allow_sort" />
-		<association property="selectSubgroupRiderRelsResult" resultMap="selectSubgroupRiderRelsResult"></association>
 	</resultMap>
 
 	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="Map">
@@ -786,6 +792,13 @@
 				,E.order_id
 				,E.store_id				as order_store_id
 				,E.order_count
+
+				,D.allow_admin_id
+				,D.allow_group_id
+				,D.allow_subgroup_id
+				,D.allow_store_id
+				,D.allow_flag
+				,D.allow_sort
 		FROM	 TB_RIDER A
 		left join(
 					SELECT	 admin_id
@@ -893,18 +906,44 @@
 				,B.group_id				as group_id
 				,( select name from TB_GROUP where admin_id = B.admin_id and id = B.group_id )		as group_name
 				,B.admin_id				as group_admin_id
+
+				,C.allow_admin_id
+				,C.allow_group_id
+				,C.allow_store_id
+				,C.allow_flag
+				,C.allow_sort
 		from	 TB_RIDER				as A
 		inner join TB_SUBGROUP_RIDER_REL	as B
 			on	 A.id = B.rider_id
 			and	 A.admin_id = B.admin_id
 			and	 B.deleted is null
-		left join TB_SHARED_INFO		as C
+		left join
+				(
+					select	 store.admin_id
+							,store.group_id
+							,store.subgroup_id
+							,store.store_id
+							,shared.allow_admin_id
+							,shared.allow_group_id
+							,shared.allow_subgroup_id
+							,shared.allow_store_id
+							,shared.allow_flag
+							,shared.allow_sort
+					from	 TB_SHARED_INFO				as shared
+							,TB_SUBGROUP_STORE_REL		as store
+					where	 shared.admin_id = store.admin_id
+					and		 ifnull(shared.group_id, store.group_id) = store.group_id
+					and		 ifnull(shared.subgroup_id, store.subgroup_id) = store.subgroup_id
+					and		 ifnull(shared.store_id, store.store_id) = store.store_id
+					and		 store.deleted is null
+					and		 shared.deleted_datetime is null
+					and		 ifnull(shared.store_id, store.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbnR0MDFwaCIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6MTU2NzY1NzczOTUxNH0.RMO_1PsBGZ_RYNG2p-R8XrT1cO1jrMg6WJM1wUrv0tg' )
+				)	as C
 			on	 B.admin_id = C.allow_admin_id
 			and	 B.group_id = ifnull(C.allow_group_id, B.group_id)
 			and	 B.subgroup_id = ifnull(C.allow_subgroup_id, B.subgroup_id)
 			and	 B.store_id = ifnull(C.allow_store_id, B.store_id)
 			and	 C.admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null and admin_id = (select admin_id from TB_SHARED_ADMIN where allow_sort = 0 and allow_flag = 1 and deleted_datetime is null) )
-			and	 C.deleted_datetime is null
 		where	 1=1
 		and		 A.deleted is null
 		and		 ifnull(C.admin_id, A.admin_id) = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) )
@@ -1074,7 +1113,7 @@
 	</select>
 
 	<!-- selectForAssignRidersAssistant -->
-	<select id="selectForAssignRidersAssistant" parameterType="Map" resultMap="selectSubgroupAssistRiderRelsResult">
+	<select id="selectForAssignRidersAssistant" parameterType="Map" resultMap="selectSubgroupRiderRelsResult">
 <!--		select	 a.id-->
 <!--				,a.status-->
 <!--				,a.working-->
@@ -1194,8 +1233,7 @@
 		and		 b.subgroup_id = ifnull(c.allow_subgroup_id, b.subgroup_id)
 		and		 b.store_id = ifnull(c.allow_store_id, b.store_id)
 		and		 d.store_id = #{storeId}
-		order by c.allow_sort, min_assigned_datetime is null desc, assign_count asc, min_assigned_datetime asc;
-
+		order by c.allow_sort, min_assigned_datetime is null desc, assign_count asc, min_assigned_datetime asc
 	</select>
 
 	<!-- selectRiderRestHours -->

@@ -316,6 +316,7 @@ public class StoreController {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         // token 부여
         store.setToken(adminInfo.getAdminAccessToken());
+        store.setBrandCode(adminInfo.getAdminBrandCode());
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 

@@ -290,27 +290,39 @@
 
 
 	<!-- selectGroups  그룹 카운트 지워진꺼까지 카운트가되는 오류 수정-->
+	<!-- 20.01.13 그룹 표시 오류 사항 수정 -->
 	<select id="selectGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.Group">
-		SELECT
-			A.created_datetime
-			, A.modified_datetime
-			, A.id
-			, A.name
-			, A.admin_id
-			, (SELECT COUNT(id) from TB_SUBGROUP WHERE group_id=A.id AND deleted IS NULL) AS subGroupCount
-			, COUNT(C.id) AS subGroupStoreCount
+<!--		SELECT-->
+<!--			A.created_datetime-->
+<!--			, A.modified_datetime-->
+<!--			, A.id-->
+<!--			, A.name-->
+<!--			, A.admin_id-->
+<!--			, (SELECT COUNT(id) from TB_SUBGROUP WHERE group_id=A.id AND deleted IS NULL) AS subGroupCount-->
+<!--			, COUNT(C.id) AS subGroupStoreCount-->
 
-		FROM TB_GROUP AS A
-		LEFT JOIN TB_SUBGROUP AS B
-		ON A.id = B.group_id
-		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
-		ON B.id = C.subgroup_id
-		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			AND A.deleted IS NULL
-			AND B.deleted IS NULL
-			AND C.deleted IS NULL
-		GROUP BY A.id
-		ORDER BY A.name ASC
+<!--		FROM TB_GROUP AS A-->
+<!--		LEFT JOIN TB_SUBGROUP AS B-->
+<!--		ON A.id = B.group_id-->
+<!--		LEFT JOIN TB_SUBGROUP_STORE_REL AS C-->
+<!--		ON B.id = C.subgroup_id-->
+<!--		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
+<!--			AND A.deleted IS NULL-->
+<!--			AND B.deleted IS NULL-->
+<!--			AND C.deleted IS NULL-->
+<!--		GROUP BY A.id-->
+<!--		ORDER BY A.name ASC-->
+		select	 A.created_datetime
+				,A.modified_datetime
+				,A.id
+				,A.name
+				,A.admin_id
+				,( select count(id) from TB_SUBGROUP where deleted is null and admin_id = A.admin_id and group_id = A.id )				as subGroupCount
+				,( select count(id) from TB_SUBGROUP_STORE_REL where deleted is null and admin_id = A.admin_id and group_id = A.id ) 	as subGroupStoreCount
+		from	 TB_GROUP		as A
+		where	 deleted is null
+		and		 admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		order by A.name asc;
 	</select>
 
 
@@ -872,6 +884,7 @@
 		, store_distance_sort
 		, assignment_status
 		, assignment_limit
+		, brand_code
 		) VALUES (
 		now()
 		, #{chatUserId}
@@ -943,6 +956,7 @@
 		<if test="assignmentLimit == null or assignmentLimit == ''">
 			, NULL
 		</if>
+			, #{brandCode}
 		)
 		<selectKey keyProperty="id" resultType="String">
 			SELECT LAST_INSERT_ID()
