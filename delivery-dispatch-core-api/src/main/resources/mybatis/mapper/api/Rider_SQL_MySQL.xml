@@ -803,13 +803,13 @@
 		left join(
 					SELECT	 admin_id
 					,rider_id
-					,store_id
-					,( select id from TB_ORDER where created_datetime > CURRENT_DATE() and assigned_datetime = min(ord.assigned_datetime) and admin_id = ord.admin_id )		as order_id
+					,any_value(store_id) 	as store_id
+					,( select id from TB_ORDER where created_datetime > CURRENT_DATE() and assigned_datetime = min(ord.assigned_datetime) and admin_id = ord.admin_id and rider_id = ord.rider_id )		as order_id
 					,count(rider_id)			as order_count
 					FROM	 TB_ORDER	as ord
 					where	 created_datetime > CURRENT_DATE()
 					and		 status in (1, 2)
-					group by admin_id, rider_id, store_id
+					group by admin_id, rider_id
 				)	as E
 			on	 A.id = E.rider_id
 				,TB_SUBGROUP_RIDER_REL B
@@ -937,7 +937,7 @@
 					and		 ifnull(shared.store_id, store.store_id) = store.store_id
 					and		 store.deleted is null
 					and		 shared.deleted_datetime is null
-					and		 ifnull(shared.store_id, store.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbnR0MDFwaCIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6MTU2NzY1NzczOTUxNH0.RMO_1PsBGZ_RYNG2p-R8XrT1cO1jrMg6WJM1wUrv0tg' )
+					and		 ifnull(shared.store_id, store.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
 				)	as C
 			on	 B.admin_id = C.allow_admin_id
 			and	 B.group_id = ifnull(C.allow_group_id, B.group_id)
@@ -1229,7 +1229,7 @@
 		and		 d.deleted is null
 		and		 c.allow_admin_id in ( select allow_admin_id from TB_SHARED_ADMIN where admin_id = #{adminId} and deleted_datetime is null and allow_flag = 1 and allow_sort = 0 )
 		and		 b.admin_id = c.allow_admin_id
-		and		 b.group_id = ifnull(c.allow_group_id, d.group_id)
+		and		 b.group_id = ifnull(c.allow_group_id, b.group_id)
 		and		 b.subgroup_id = ifnull(c.allow_subgroup_id, b.subgroup_id)
 		and		 b.store_id = ifnull(c.allow_store_id, b.store_id)
 		and		 d.store_id = #{storeId}

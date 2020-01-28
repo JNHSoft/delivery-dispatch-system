@@ -391,15 +391,34 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         List<Rider> chkRejectRider = S_Rider.stream()
                 .filter(x->x.getShared_admin_id() != null && x.getShared_flag() == 0)
                 .collect(Collectors.toList());
+        List<Rider> duplicationRider = new ArrayList<>();
 
         chkAllowRider.forEach(x -> {
             chkRejectRider.forEach(y->{
                 if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
-                    S_Rider.remove(y);
+//                    S_Rider.remove(y);
                     S_Rider.remove(x);
                 }
             });
         });
+
+        // 중복된 라이더 제거
+        for (Iterator<Rider> riderX = chkAllowRider.iterator(); riderX.hasNext();){
+            Rider r = riderX.next();
+
+            for (Iterator<Rider> riderY = chkAllowRider.iterator(); riderY.hasNext();){
+                Rider y = riderY.next();
+
+                if (r.getId().equals(y.getId()) && r.getShared_sort() > y.getShared_sort()){
+//                    S_Rider.remove(y);
+//                    chkAllowRider.remove(y);
+                    duplicationRider.add(y);
+                }
+            }
+        }
+
+        S_Rider.removeAll(chkRejectRider);
+        S_Rider.removeAll(duplicationRider);
 
         return S_Rider;
     }

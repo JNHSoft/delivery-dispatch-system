@@ -102,21 +102,49 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 제 3자 배달기사 리스트 중 허용 값만 추출
             List<Rider> allowRiderList = astRiderList.stream()
                                                   .filter(x -> x.getShared_flag() == 1).collect(Collectors.toList());
-            List<Rider> tempRiderList = new ArrayList<>();
 
-            for (Iterator<Rider> rider = astRiderList.iterator(); rider.hasNext();){
-                Rider rd = rider.next();
-                if (rd.getShared_flag().equals(0)){
-                    allowRiderList.forEach(y->{
-                        if (y.getId().equals(rd.getId()) && y.getShared_sort().intValue() < rd.getShared_sort().intValue()){
-                            tempRiderList.add(rd);
-                            tempRiderList.add(y);
-                        }
-                    });
+            // 제 3자 배달기사 리스트 중 비허용 값 추출
+            List<Rider> rejectRiderList = astRiderList.stream()
+                    .filter(x -> x.getShared_flag() == 0).collect(Collectors.toList());
+            List<Rider> duplicationRider = new ArrayList<>();
+
+            System.out.println("####################################################1");
+            System.out.println(astRiderList);
+            System.out.println("####################################################1");
+
+            allowRiderList.forEach(x -> {
+                rejectRiderList.forEach(y->{
+                    if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
+//                    S_Rider.remove(y);
+                        System.out.println(x.getId());
+                        astRiderList.remove(x);
+                    }
+                });
+            });
+
+            astRiderList.removeAll(rejectRiderList);
+
+            for (Iterator<Rider> riderX = astRiderList.iterator(); riderX.hasNext();
+                 ) {
+                Rider r = riderX.next();
+
+                for (Iterator<Rider> riderY = astRiderList.iterator(); riderY.hasNext();){
+                    Rider y = riderY.next();
+
+                    if (r.getId().equals(y.getId()) && r.getShared_sort() > y.getShared_sort()){
+//                        astRiderList.remove(y);
+                        duplicationRider.add(y);
+                    }
                 }
             }
-            astRiderList.removeAll(tempRiderList);
+
+            astRiderList.removeAll(duplicationRider);
+
             riderList.addAll(astRiderList);
+
+            System.out.println("####################################################2");
+            System.out.println(astRiderList);
+            System.out.println("####################################################2");
 
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
             log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());

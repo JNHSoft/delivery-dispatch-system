@@ -1,18 +1,21 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.reason.Reason;
+import kr.co.cntt.core.model.shared.SharedRiderInfo;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
-import kr.co.cntt.core.service.admin.AccountAdminService;
-import kr.co.cntt.core.service.admin.AssignAdminService;
-import kr.co.cntt.core.service.admin.FileUploadAdminService;
-import kr.co.cntt.core.service.admin.NoticeAdminService;
+import kr.co.cntt.core.service.admin.*;
 import kr.co.cntt.core.util.FileUtil;
 import kr.co.cntt.core.util.MediaTypeUtils;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
@@ -34,10 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -59,13 +59,15 @@ public class SettingController {
     private AssignAdminService assignAdminService;
     private FileUploadAdminService fileUploadAdminService;
     private NoticeAdminService noticeAdminService;
+    private SharedInfoService sharedInfoService;
 
     @Autowired
-    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, FileUploadAdminService fileUploadAdminService, NoticeAdminService noticeAdminService) {
+    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, FileUploadAdminService fileUploadAdminService, NoticeAdminService noticeAdminService, SharedInfoService sharedInfoService) {
         this.accountAdminService = accountAdminService;
         this.assignAdminService = assignAdminService;
         this.fileUploadAdminService = fileUploadAdminService;
         this.noticeAdminService = noticeAdminService;
+        this.sharedInfoService = sharedInfoService;
     }
 
     @Autowired
@@ -617,15 +619,147 @@ public class SettingController {
     }
 
     /**
-     * 19.12.19 Dev Start
-     * 설정 - 라이더 쉐어링
-     * 다른 관리자 라이더 매핑
-     * 조건 : 현 관리자 그룹끼리의 라이더 공유 또는 다른 관리자의 라이더를 공유하기 위함
+     * 설정 - 매장 쉐어링에 필요한 공통 항목
      * */
-    @GetMapping("/setting-shared")
-    @CnttMethodDescription("라이더 쉐어링 페이지")
-    public String sharedRiderSetting(){
-        return "/setting/setting_shared";
+    @ResponseBody
+    @GetMapping("/getSharedAdminInfo")
+    @CnttMethodDescription("공유 허용된 관리자 정보")
+    public List<User> getSharedAdminInfo(){
+        List<User> allowAdmin = new ArrayList<>();
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        allowAdmin = sharedInfoService.getAllowAdminInfo(adminInfo.getAdminSeq());
+
+        return allowAdmin;
     }
 
+    @ResponseBody
+    @GetMapping("/getSharedGroupInfo")
+    @CnttMethodDescription("공유된 관리자의 그룹 정보")
+    public List<Group> getSharedGroupInfo(@RequestParam(value ="sharedAdminID") Integer sharedAdminID){
+        if (sharedAdminID == null){
+            return new ArrayList<>();
+        }
+
+        //SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        List<Group> groupList = sharedInfoService.getSharedGroupListForAdmin(sharedAdminID);
+
+        return groupList;
+    }
+
+    @ResponseBody
+    @GetMapping("/getSharedSubGroupInfo")
+    @CnttMethodDescription("공유된 관리자의 하위 그룹 정보")
+    public List<SubGroup> getSharedSubGroupInfo(@RequestParam(value="sharedAdminID") Integer sharedAdminID,
+                                                @RequestParam(value="sharedGroupID") Integer sharedGroupID){
+        if (sharedAdminID == null || sharedGroupID == null){
+            return new ArrayList<>();
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("sharedAdminID", sharedAdminID);
+        map.put("sharedGroupID", sharedGroupID);
+
+        List<SubGroup> subGroupList = sharedInfoService.getSharedSubGroupListForAdmin(map);
+
+        return subGroupList;
+    }
+
+    @ResponseBody
+    @GetMapping("/getSharedStoreInfo")
+    @CnttMethodDescription("공유된 관리자의 매장 정보")
+    public List<Store> getSharedSubGroupInfo(@RequestParam(value="sharedAdminID") Integer sharedAdminID,
+                                             @RequestParam(value="sharedGroupID") Integer sharedGroupID,
+                                             @RequestParam(value = "sharedSubGroupID") Integer sharedSubGroupID){
+        if (sharedAdminID == null || sharedGroupID == null || sharedSubGroupID == null){
+            return new ArrayList<>();
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("sharedAdminID", sharedAdminID);
+        map.put("sharedGroupID", sharedGroupID);
+        map.put("sharedSubGroupID", sharedSubGroupID);
+
+        List<Store> subGroupList = sharedInfoService.getSharedStoreListForAdmin(map);
+
+        return subGroupList;
+    }
+
+    @ResponseBody
+    @GetMapping("/getSharedInfoList")
+    @CnttMethodDescription("공유 허용된 정보 리스트")
+    public List<SharedRiderInfo> getSharedInfoList(){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        List<SharedRiderInfo> riderInfos = sharedInfoService.getSharedInfoListForAdmin(adminInfo.getAdminSeq());
+
+        return riderInfos;
+    }
+
+    /**
+     * 19.12.19 Dev Start
+     * 설정 - 관리자 쉐어링 관리
+     * 다른 관리자 라이더 매핑
+     * */
+    @GetMapping("/setting-shared-admin")
+    @CnttMethodDescription("관리자 쉐어링 페이지")
+    public String sharedAdminSetting(){
+        return "/setting/setting_shared_admin";
+    }
+
+    /**
+     * 19.12.19 Dev Start
+     * 설정 - 관리자 쉐어링 관리
+     * 다른 관리자 라이더 매핑
+     * */
+    @GetMapping("/setting-shared-rider")
+    @CnttMethodDescription("라이더 쉐어링 페이지")
+    public String sharedRiderSetting(){
+        return "/setting/setting_shared_rider";
+    }
+
+    @ResponseBody
+    @PostMapping("/save-shared-rider")
+    @CnttMethodDescription("라이더 쉐어링 정보 저장")
+    public String postSaveSharedRider(@RequestParam(value = "sharedRiders")String strRider){
+        int adminID = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails()).getAdminSeq();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<SharedRiderInfo> riderInfos = new ArrayList<>();
+
+        try {
+            riderInfos = Arrays.asList(mapper.readValue(strRider, SharedRiderInfo[].class));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (riderInfos.stream()
+                .filter(x-> x.getShared_adminid() == null || x.getShared_adminid().toString() == "" || x.getGroupid() == null || x.getGroupid().toString() == "" )
+                .count() > 0){
+            return "failed";
+        }
+
+        System.out.println("@@@@@@@@@@@@@@@@@ ==> " + riderInfos.size());
+        System.out.println("@@@@@@@@@@@@@@@@@ ==> " + riderInfos.get(0).getGroupid());
+
+        for (SharedRiderInfo rider:riderInfos
+             ) {
+            rider.setAdminid(adminID);
+            sharedInfoService.setSharedInfoUpdate(rider);
+        }
+
+        return "success";
+    }
+
+    @ResponseBody
+    @PostMapping("/update-shared-info")
+    @CnttMethodDescription("쉐어링 정보 삭제")
+    public String postSaveSharedRider(SharedRiderInfo riderInfo){
+        int adminID = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails()).getAdminSeq();
+
+        riderInfo.setAdminid(adminID);
+        sharedInfoService.setSharedInfoUpdate(riderInfo);
+
+        return "OK";
+    }
 }

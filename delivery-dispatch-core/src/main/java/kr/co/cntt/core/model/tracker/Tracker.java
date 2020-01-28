@@ -52,5 +52,7 @@ public class Tracker implements Dto {
 
     //트래커가 배달 중인 스토어에 대한 이미지 경로
     private String brandImg;
+    private String riderLeftImg;
+    private String riderRightImg;
 
 }

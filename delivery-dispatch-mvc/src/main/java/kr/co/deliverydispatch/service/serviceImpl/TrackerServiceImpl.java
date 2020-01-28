@@ -63,18 +63,36 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             }
 
             // 이미지 경로 Check & Value Save
-            String filePath = "";
+            String brandPath = "";
+            String riderLeftPath = "";
+            String riderRightPath = "";
+
             if (!tracker.getBrandCode().isEmpty()){
-                filePath = "images/tracker/pin_store" + tracker.getBrandCode() + ".png";
+                brandPath = "images/tracker/pin_store" + tracker.getBrandCode() + ".png";
+                riderLeftPath = "images/tracker/pin_moto_left" + tracker.getBrandCode() + ".png";
+                riderRightPath = "images/tracker/pin_moto_right" + tracker.getBrandCode() + ".png";
             }
 
-            if (new ClassPathResource(filePath).exists()){
-                tracker.setBrandImg("./resources/" + filePath + "?ver=0.4");
+            // Brand Image Check
+            if (new ClassPathResource(brandPath).exists()){
+                tracker.setBrandImg("./resources/" + brandPath + "?ver=0.4");
             }else{
                 tracker.setBrandImg("./resources/images/tracker/pin_store.jpg?ver=0.4");
             }
 
-            System.out.println(tracker.getBrandImg());
+            // Rider Left Image Check
+            if (new ClassPathResource(riderLeftPath).exists()){
+                tracker.setRiderLeftImg("./resources/" + riderLeftPath);
+            }else{
+                tracker.setRiderLeftImg("./resources/pin_moto_left.png");
+            }
+
+            // Rider Right Image Check
+            if (new ClassPathResource(riderRightPath).exists()){
+                tracker.setRiderRightImg("./resources/" + riderRightPath);
+            }else{
+                tracker.setRiderRightImg("./resources/pin_moto_right.png");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return null;
