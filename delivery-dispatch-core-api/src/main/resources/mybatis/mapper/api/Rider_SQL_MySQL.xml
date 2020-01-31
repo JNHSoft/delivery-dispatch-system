@@ -143,6 +143,7 @@
 		<association property="order" javaType="kr.co.cntt.core.model.order.Order">
 			<result property="id" column="order_id" />
 			<result property="name" column="order_name" />
+			<result property="status" column="order_status" />
 		</association>
 	</resultMap>
 
@@ -792,6 +793,7 @@
 				,E.order_id
 				,E.store_id				as order_store_id
 				,E.order_count
+				,E.order_status
 
 				,D.allow_admin_id
 				,D.allow_group_id
@@ -803,6 +805,7 @@
 		left join(
 					SELECT	 admin_id
 					,rider_id
+					,max(status) 			as order_status
 					,any_value(store_id) 	as store_id
 					,( select id from TB_ORDER where created_datetime > CURRENT_DATE() and assigned_datetime = min(ord.assigned_datetime) and admin_id = ord.admin_id and rider_id = ord.rider_id )		as order_id
 					,count(rider_id)			as order_count

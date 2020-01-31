@@ -219,7 +219,21 @@ DDELib.Riders.prototype = {
     getStatusInfo:function(rowdata) {
         var status = '';
         if (rowdata.working == 1 && typeof rowdata.order != "undefined") {
-            status = '<i class="ic_txt ic_blue">' + status_work + '</i>';
+
+            // 주문 상태에 따른 변화
+            switch (rowdata.order.status) {
+                case '1':
+                    status = '<i class="ic_txt ic_blue">' + status_assigned + '</i>';
+                    break;
+                case '2':
+                    status = '<i class="ic_txt ic_blue">' + status_pickedup + '</i>';
+                    break;
+                default:
+                    status = '<i class="ic_txt ic_blue">' + status_work + '</i>';
+                    break;
+            }
+
+            //status = '<i class="ic_txt ic_blue">' + status_work + '</i>';
         } else if (rowdata.working == 1 && typeof rowdata.order == "undefined") {
             status = '<i class="ic_txt ic_green">' + status_standby + '</i>';
         } else if (rowdata.working == 3) {
@@ -331,6 +345,14 @@ DDELib.Riders.prototype = {
                 isProcMessage = true;
             }
         }
+
+        // 공유된 라이더의 경우 매칭되지 못하므로
+        if (!isProcMessage && RiderChatUserId == chatUserId){
+            isProcMessage = true;
+        }
+
+
+
         if(isProcMessage) {
             if(data.match('rider_')=='rider_' || type == 'order_picked_up' || type == 'order_completed'){
                 this.getRiderList();
