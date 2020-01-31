@@ -351,7 +351,6 @@ DDELib.Riders.prototype = {
                 noticeAlarm();
             }
             if(data.match('chat_')=='chat_'){
-                system.out.println("졸려", + chatUserId + ' 22 ' + chatUserName)
 
                 if(RiderChatUserId == chatUserId){
                     this.getChatList(chatUserId, chatUserName);

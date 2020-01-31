@@ -85,6 +85,7 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
 
             String regOrderId = jsonObject.get("regOrderId").toString();
             String code = jsonObject.get("code").toString();
+            String webOrderId = jsonObject.get("webOrderId").toString();
 
 //            Map<String, String> query_pairs = new LinkedHashMap<>();
 //            String decParam = aesUtil.aesDecode(encParam);
@@ -99,6 +100,7 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
 
             tracker.setRegOrderId(regOrderId);
             tracker.setCode(code);
+            tracker.setWebOrderId(webOrderId);
 
         } catch (Exception e) {
             e.printStackTrace();

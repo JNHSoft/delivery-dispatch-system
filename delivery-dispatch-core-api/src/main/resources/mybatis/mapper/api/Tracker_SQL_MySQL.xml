@@ -36,7 +36,7 @@
 		- login ID  및 Aceess 토근 값체크
 		- expiry_datetime 이 NULL 이거나 금일 datetime 보다 큰 값
 	-->
-	<select id="selectTrackerTokenLoginCheck" parameterType="kr.co.cntt.core.model.login.User" resultType="int">
+	<select id="selectTrackerTokenLoginCheck" parameterType="kr.co.cntt.core.model.login.User" resultType="kr.co.cntt.core.model.login.User">
 		<![CDATA[
 		SELECT
 			A.login_id, A.login_pw
