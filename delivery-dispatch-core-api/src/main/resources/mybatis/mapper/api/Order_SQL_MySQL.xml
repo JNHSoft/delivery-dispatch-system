@@ -750,6 +750,7 @@
 				and		 timestampdiff(minute, now(), A.reservation_datetime) <![CDATA[<=]]> 50
 			</otherwise>
 		</choose>
+		and		 (reservation_status = 1 and timestampdiff(minute, now(), A.reservation_datetime) <![CDATA[<=]]> cooking_time)
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC;
 	</select>
 
