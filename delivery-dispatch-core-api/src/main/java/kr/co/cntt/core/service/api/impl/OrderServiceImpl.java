@@ -591,26 +591,27 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setAddress(address);
 
-        Geocoder geocoder = new Geocoder();
+        // 20.02.03 주문 등록 시, 좌표가 있는 경우 요청한 좌표 사용, 없는 경우 입력된 주소 값으로 좌표 사용
+        if (order.getLongitude() == null || order.getLatitude() == null || order.getLongitude().trim().equals("") || order.getLatitude().trim().equals("") ) {
+            Geocoder geocoder = new Geocoder();
 
-        String orderLatitude = null;
-        String orderLongitude = null;
+            try {
+                Map<String, String> geo = geocoder.getLatLng(order.getAddress());
+                if (geo.get("lat") != null && geo.get("lng") != null) {
+                    order.setLatitude(geo.get("lat"));
+                    order.setLongitude(geo.get("lng"));
+                } else {
+                    order.setLatitude("0");
+                    order.setLongitude("0");
+                }
 
-        try {
-            Map<String, String> geo = geocoder.getLatLng(order.getAddress());
-            if (geo.get("lat") != null && geo.get("lng") != null) {
-                order.setLatitude(geo.get("lat"));
-                order.setLongitude(geo.get("lng"));
-                orderLatitude = geo.get("lat");
-                orderLongitude = geo.get("lng");
-            } else {
-                order.setLatitude("0");
-                order.setLongitude("0");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        String orderLatitude = order.getLatitude();
+        String orderLongitude = order.getLongitude();
 
         if (order.getDeliveryPrice() == null || order.getDeliveryPrice().equals("")) {
             order.setDeliveryPrice("0");
