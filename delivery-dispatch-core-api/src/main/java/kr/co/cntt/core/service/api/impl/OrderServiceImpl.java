@@ -591,6 +591,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setAddress(address);
 
+        // 20.02.03 좌표값 변수 값 사용이 달라, 공통적인 변수 값으로 변경
+        if (order.getItem_XA11() != null && order.getItem_XA12() != null
+                && !(order.getItem_XA12().trim().equals("") && order.getItem_XA11().trim().equals(""))){
+            System.out.println("@#### Hello");
+            order.setLatitude(order.getItem_XA12());
+            order.setLongitude(order.getItem_XA11());
+        }
+
+
         // 20.02.03 주문 등록 시, 좌표가 있는 경우 요청한 좌표 사용, 없는 경우 입력된 주소 값으로 좌표 사용
         if (order.getLongitude() == null || order.getLatitude() == null || order.getLongitude().trim().equals("") || order.getLatitude().trim().equals("") ) {
             Geocoder geocoder = new Geocoder();

@@ -93,4 +93,7 @@ public class Order extends Common implements Dto {
     // 서드파티 추가
     private ThirdParty thirdParty;
 
+    // 20.02.03 봇 사용으로 인한 필드 추가
+    private String item_XA12;           //latitude
+    private String item_XA11;           //longitude
 }
