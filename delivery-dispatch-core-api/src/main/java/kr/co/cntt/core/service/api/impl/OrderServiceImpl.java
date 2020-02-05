@@ -108,10 +108,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     .filter(x -> x.getShared_flag() == 0).collect(Collectors.toList());
             List<Rider> duplicationRider = new ArrayList<>();
 
-            System.out.println("####################################################1");
-            System.out.println(astRiderList);
-            System.out.println("####################################################1");
-
             allowRiderList.forEach(x -> {
                 rejectRiderList.forEach(y->{
                     if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
@@ -141,10 +137,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             astRiderList.removeAll(duplicationRider);
 
             riderList.addAll(astRiderList);
-
-            System.out.println("####################################################2");
-            System.out.println(astRiderList);
-            System.out.println("####################################################2");
 
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
             log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
@@ -192,7 +184,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                        } else {
 //                            LocalDateTime orderStandbyDatetime = LocalDateTime.parse((a.getOrderStandbyDatetime()).replace(" ", "T"));
 //                            LocalDateTime ldt = LocalDateTime.now();
-////                            LocalDateTime ldt = Loca dkfflDateTime.now().minusHours(1); //testServer (timezone이 다름)
+////                            LocalDateTime ldt = LocalDateTime.now().minusHours(1); //testServer (timezone이 다름)
 //                            log.debug(">>> autoAssignRider_Stream Third_Else:::: Stream Else  :::: ");
 //                            return orderStandbyDatetime.until(ldt, ChronoUnit.SECONDS) >= 60;
 //                        }
@@ -594,7 +586,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         // 20.02.03 좌표값 변수 값 사용이 달라, 공통적인 변수 값으로 변경
         if (order.getItem_XA11() != null && order.getItem_XA12() != null
                 && !(order.getItem_XA12().trim().equals("") && order.getItem_XA11().trim().equals(""))){
-            System.out.println("@#### Hello");
             order.setLatitude(order.getItem_XA12());
             order.setLongitude(order.getItem_XA11());
         }
