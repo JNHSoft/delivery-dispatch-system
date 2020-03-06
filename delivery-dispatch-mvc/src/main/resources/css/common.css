@@ -623,3 +623,17 @@ body .ui-tooltip{font-size:12px;border-width:1px;box-shadow:none}
 	left: 10px;
 	position: relative;
 }
+
+.interval_graph_content #avg_07minute{
+	background: white;
+	width: 250px;
+	padding: 10px;
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 20px;
+	border: 1px solid #2f528f;
+	border-radius: 4px;
+	left: 10px;
+	position: relative;
+}

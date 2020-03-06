@@ -200,7 +200,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
-    public List<Integer> selectStoreStatisticsByInterval(Order order);
+    public List<Map> selectStoreStatisticsByInterval(Order order);
 
     /**
      * Store 일별 통계 목록

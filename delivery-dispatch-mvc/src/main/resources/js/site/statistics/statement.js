@@ -40,7 +40,7 @@ function timeSetDate(time) {
     }
 }
 
-function totalTimeSet(time) {
+function    totalTimeSet(time) {
     if (time) {
         let d = new Date(time);
         return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
@@ -228,6 +228,9 @@ function getStoreStatistics() {
             let pickupReturnSum = 0;
             let orderReturnSum = 0;
             let distanceSum = 0;
+
+            let D7TimerSum=0;
+
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
                     let tmpData = new Object();
@@ -236,14 +239,22 @@ function getStoreStatistics() {
                     tmpData.id = data[key].id;
                     tmpData.origin_reg_order_id = data[key].regOrderId;
                     tmpData.orderDate = timeSetDate(data[key].createdDatetime);
+
+                    tmpData.assignedDate = timeSet(data[key].assignedDatetime);
+                    tmpData.qtTimes = data[key].cookingTime > 30 ? 30 : data[key].cookingTime;
+
                     tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
+
+                    tmpData.D7Timer = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);;
+
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
                     tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].completedDatetime);
+
 
                     orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
                     pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].completedDatetime);
                     orderCompleteSum += minusTime(data[key].createdDatetime, data[key].completedDatetime);
-
+                    D7TimerSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
 
                     if(data[key].returnDatetime){
                         tmpData.completeReturn1 = minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime);
@@ -279,6 +290,9 @@ function getStoreStatistics() {
             totalData.pickupReturn1 = totalTimeSet(pickupReturnSum);
             totalData.orderReturn1 = totalTimeSet(orderReturnSum);
             totalData.distance = (distanceSum ==0?0:parseFloat(distanceSum).toFixed(2)) + 'km';
+
+            totalData.D7Timer = totalTimeSet(D7TimerSum);
+
             myData.push(totalData);
 
             let averageData = new Object();
@@ -294,6 +308,9 @@ function getStoreStatistics() {
             averageData.pickupReturn1 = averageTimeSet(pickupReturnSum,rowNum - chkReturnTimeCnt);
             averageData.orderReturn1 = averageTimeSet(orderReturnSum,rowNum - chkReturnTimeCnt);
             averageData.distance = (distanceSum == 0?0:parseFloat(distanceSum/(rowNum - chkDistanceCnt)).toFixed(2)) + 'km';
+
+            averageData.D7Timer = averageTimeSet(D7TimerSum,rowNum);
+
             myData.push(averageData);
 
             if (myData != null) {
@@ -310,7 +327,10 @@ function getStoreStatistics() {
                     {label: order_id, name: 'id', width: 80, align: 'center', hidden: true},
                     {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden: true},
                     {label: label_order_date, name: 'orderDate', width: 80, align: 'center'},
+                    {label: '배정시간', name: 'assignedDate', width: 80, align: 'center'},
+                    {label: 'QT', name: 'qtTimes', width: 80, align: 'center'},
                     {label: label_order_in_store_time, name: 'orderPickup1', index: 'orderPickup1', width: 80, align: 'center'},
+                    {label: 'D7', name: 'D7Timer', width: 80, align: 'center'},
                     {label: label_order_delivery_time, name: 'pickupComplete1', index: 'pickupComplete1', width: 80, align: 'center'},
                     {label: label_order_completed_time, name: 'orderComplete1', index: 'orderComplete1', width: 80, align: 'center'},
                     {label: label_order_return_time, name: 'completeReturn1', index: 'completeReturn1', width: 80, align: 'center'},

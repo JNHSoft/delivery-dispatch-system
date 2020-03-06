@@ -32,5 +32,7 @@ public class ByDate implements Dto {
     private String spmh;
     private String totalPickupReturn;
     private String avgDistance;
+
+    private String d7Success;
    
 }

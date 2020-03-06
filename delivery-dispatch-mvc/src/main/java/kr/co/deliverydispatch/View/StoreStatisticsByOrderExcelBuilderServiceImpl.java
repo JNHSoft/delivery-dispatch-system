@@ -106,9 +106,27 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.date",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 배정시간
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.assign",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            // QT
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.QT",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.in.store.time",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            // D7
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.D7",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
@@ -199,9 +217,15 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             cell.setCellValue(storeStatisticsByOrderList.get(i).getCreatedDatetime());
             cell.setCellStyle(dataCellStyle);
 
+            // 배정시간
+
+            // QT
+
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(orderPickup));
             cell.setCellStyle(dataCellStyle);
+
+            // D7
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(pickupComplete));

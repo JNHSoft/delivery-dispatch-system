@@ -93,19 +93,32 @@ function getStoreStatisticsByInterval() {
             var tmpChartData = [];
 
             var intervalData = data.intervalData.intervalMinuteCounts;
+
             for (var key in intervalData) {
 
                 tmpChartData.push(intervalData[key][0]);
+                var interval_key;
 
-                var interval_key = Number(key) + 9;
-                if (interval_key == 9) {
-                    interval_key = "~" + interval_key + ":59";
-                } else if (interval_key == 60) {
-                    interval_key = "1:00:00";
-                } else if (interval_key > 60) {
-                    interval_key = "1:01:00~";
-                } else {
-                    interval_key = interval_key + ":00"
+                // index 번호 0, 1은 규칙이 없으므로 예외처리
+                switch (Number(key)) {
+                    case 0:                 // 0~7분 데이터
+                        interval_key = "~6:59";
+                        console.log("index = 0 " + interval_key);
+                        break;
+                    case 1:                 // 7~10분 데이터
+                        interval_key = "~9:59";
+                        console.log("index = 1 " + interval_key);
+                        break;
+                    default:
+                        interval_key = Number(key) + 8;
+                        if (interval_key == 60){
+                            interval_key = "1:00:00";
+                        }else if (interval_key > 60){
+                            interval_key = "1:01:00~";
+                        }else {
+                            interval_key = interval_key + ":00";
+                        }
+                        break;
                 }
 
                 tmpChartLabels.push(interval_key);
@@ -115,6 +128,9 @@ function getStoreStatisticsByInterval() {
                 tmpObject.intervalCount = intervalData[key][0];
                 tmpObject.intervalCount1 = intervalData[key][1];
                 tmpObject.intervalCount2 = intervalData[key][2];
+                tmpObject.d7intervalCount = intervalData[key][3];
+                tmpObject.d7intervalCount1 = intervalData[key][4];
+                tmpObject.d7intervalCount2 = intervalData[key][5];
                 tcData.push(tmpObject);
             }
             loading.hide();
@@ -126,20 +142,32 @@ function getStoreStatisticsByInterval() {
 function chart30minute(data){
     //30미만 평균 퍼센트 구하기
     $('#avg_30minute').html('');
+    $('#avg_07minute').html('');
 
     var sum = 0;
     var avgLength = 0;
     var avg = 0;
+
+    let d7avg = 0;
+    let d7sum = 0;
+    let d7avgLength = 0;
     data.forEach(function(d){
         if(d.min_30below != undefined){
             sum+=d.min_30below;
             avgLength++;
         }
+
+        if (d.min_07below != undefined){
+            d7sum+=d.min_07below;
+            d7avgLength++;
+        }
     })
 
     avg = (avgLength == 0)? avg : sum/avgLength;
+    d7avg = (d7avgLength == 0)? d7avg : d7sum/d7avgLength;
 
-    $('#avg_30minute').html(`D30 MINS : ${avg.toFixed(2)}%`);
+    $('#avg_30minute').html(`D30 MINS : ${parseFloat(avg.toFixed(1))}%`);
+    $('#avg_07minute').html(`D07 MINS : ${parseFloat(d7avg.toFixed(2))}%`);
 
     //30미만 그래프 구하기
     var chart = am4core.create("chart_30minute", am4charts.XYChart);
@@ -167,6 +195,7 @@ function chart30minute(data){
     valueAxis.max = 100;
     //valueAxis.renderer.grid.template.disabled = true;
 
+    // min 30에 대한 그래프 정보
     var series = chart.series.push(new am4charts.ColumnSeries());
     series.dataFields.valueY = "min_30below";
     series.dataFields.categoryX = "day_to_day";
@@ -177,6 +206,19 @@ function chart30minute(data){
     series.tooltip.pointerOrientation = "vertical";
 
     series.columns.template.width = am4core.percent(100);
+
+    // D7에 대한 그래픽 정보
+    var series1 = chart.series.push(new am4charts.ColumnSeries());
+    series1.dataFields.valueY = "min_07below";
+    series1.dataFields.categoryX = "day_to_day";
+    series1.columns.template.tooltipText = "{categoryX}: [bold]{valueY}%[/]";
+    series1.columns.template.tooltipY = 0;
+    series1.columns.template.strokeWidth = 0;
+    series1.columns.template.fill = am4core.color("#ffa9f1");
+    series1.tooltip.pointerOrientation = "vertical";
+
+    series1.columns.template.width = am4core.percent(100);
+
     /*var labelBullet = new am4charts.LabelBullet();
     series.bullets.push(labelBullet);
     labelBullet.strokeOpacity = 0;
@@ -191,39 +233,54 @@ function chart30minute(data){
     })*/
 }
 
+let testData;
+
 function chartPercentage(data){
     $('#chart_percentage').html('');
 
     //파이 그래프 데이터 작업
     var count = [];
+    var d7count = [];
     var x = [];
-    var sliceStart = 1;
+    var y = [];
+    var sliceStart = 2;
     var result = [];
-    data.forEach((d)=> x.push(d.intervalCount))
+    data.forEach((d)=> x.push(d.intervalCount));
+    data.forEach((d)=> y.push(d.d7intervalCount));
 
-    count.push(x.slice(0,1)[0]);//10분 미만은 먼저 추가
+    testData = y;
+
+    count.push(x.slice(0,1)[0]);//0~7분 추가
+    count.push(x.slice(1,2)[0]);//7~10분 추가
+    d7count.push(y.slice(0, 1)[0]); // d7 0-7분 추가
+    d7count.push(y.slice(1, 2)[0]); // d7 7-10분 추가
 
     //10분부터 60분이상 까지 5분 간격으로 표시
     for(var i=0; i<11; i++){
         count.push(x.slice(sliceStart,sliceStart+5).reduce((a,b)=>a+b));
-        sliceStart+= 5
+        d7count.push(y.slice(sliceStart,sliceStart+5).reduce((a,b)=>a+b));
+        sliceStart+= 5;
     }
 
     //전부 값이 0이면 그래프 표출 안하기 위해서
     var value = count.reduce((a, b) => a + b);
-    if(value != 0){
-        result.push({'intervalMinute':'00~10', 'intervalCount':count[0]});
-        result.push({'intervalMinute':'10~15', 'intervalCount':count[1]});
-        result.push({'intervalMinute':'15~20', 'intervalCount':count[2]});
-        result.push({'intervalMinute':'20~25', 'intervalCount':count[3]});
-        result.push({'intervalMinute':'25~30', 'intervalCount':count[4]});
-        result.push({'intervalMinute':'30~35', 'intervalCount':count[5]});
-        result.push({'intervalMinute':'35~40', 'intervalCount':count[6]});
-        result.push({'intervalMinute':'40~45', 'intervalCount':count[7]});
-        result.push({'intervalMinute':'45~50', 'intervalCount':count[8]});
-        result.push({'intervalMinute':'50~55', 'intervalCount':count[9]});
-        result.push({'intervalMinute':'55~60', 'intervalCount':count[10]});
-        result.push({'intervalMinute':'60~  ', 'intervalCount':count[11]});
+    var d7value = count.reduce((a, b) => a + b);
+    if(value != 0 || d7value != 0){
+        result.push({'intervalMinute':'00~07', 'intervalCount':Number(count[0]) + Number(d7count[0])});
+        result.push({'intervalMinute':'07~10', 'intervalCount':Number(count[1]) + Number(d7count[1])});
+        result.push({'intervalMinute':'10~15', 'intervalCount':Number(count[2]) + Number(d7count[2])});
+        result.push({'intervalMinute':'15~20', 'intervalCount':Number(count[3]) + Number(d7count[3])});
+        result.push({'intervalMinute':'20~25', 'intervalCount':Number(count[4]) + Number(d7count[4])});
+        result.push({'intervalMinute':'25~30', 'intervalCount':Number(count[5]) + Number(d7count[5])});
+        result.push({'intervalMinute':'30~35', 'intervalCount':Number(count[6]) + Number(d7count[6])});
+        result.push({'intervalMinute':'35~40', 'intervalCount':Number(count[7]) + Number(d7count[7])});
+        result.push({'intervalMinute':'40~45', 'intervalCount':Number(count[8]) + Number(d7count[8])});
+        result.push({'intervalMinute':'45~50', 'intervalCount':Number(count[9]) + Number(d7count[9])});
+        result.push({'intervalMinute':'50~55', 'intervalCount':Number(count[10]) + Number(d7count[10])});
+        result.push({'intervalMinute':'55~60', 'intervalCount':Number(count[11]) + Number(d7count[11])});
+        result.push({'intervalMinute':'60~  ', 'intervalCount':Number(count[12]) + Number(d7count[12])});
+
+        console.log(result);
 
         var chart = am4core.create("chart_percentage", am4charts.PieChart);
 
@@ -240,7 +297,7 @@ function chartPercentage(data){
         pieSeries.slices.template.strokeWidth = 1;
         pieSeries.slices.template.strokeOpacity = 1;
         pieSeries.slices.template.cursorOverStyle = [{"property": "cursor","value": "pointer"}];
-        pieSeries.marginLeft = 20;
+
 
         //pieSeries.tooltip.getFillFromObject = false;
         //pieSeries.tooltip.label.fill = am4core.color('#fff');
@@ -303,16 +360,27 @@ function chartTc(data){
     series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
     series.columns.template.tooltipY = 0;
     series.columns.template.strokeWidth = 0;
-    series.columns.template.fill = am4core.color("#85a9e3");
+    series.columns.template.fill = am4core.color("#f2d32a");
     series.tooltip.pointerOrientation = "vertical";
+
+    var series1 = chart.series.push(new am4charts.ColumnSeries());
+    series1.dataFields.valueY = "d7intervalCount";
+    series1.dataFields.categoryX = "intervalMinute";
+    series1.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+    series1.columns.template.tooltipY = 0;
+    series1.columns.template.strokeWidth = 0;
+    series1.columns.template.fill = am4core.color("#a1d3f5");
+    series1.tooltip.pointerOrientation = "vertical";
 
     /*series.columns.template.column.cornerRadiusTopLeft = 5;
     series.columns.template.column.cornerRadiusTopRight = 5;
     series.columns.template.column.fillOpacity = 0.8;*/
     series.columns.template.width = am4core.percent(85);
+    series1.columns.template.width = am4core.percent(85);
 
     var labelBullet = new am4charts.LabelBullet();
     series.bullets.push(labelBullet);
+    series1.bullets.push(labelBullet);
     labelBullet.label.text = "{valueY}";
     labelBullet.strokeOpacity = 0;
     labelBullet.stroke = am4core.color("#dadada");

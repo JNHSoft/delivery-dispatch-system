@@ -121,33 +121,64 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
             addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.cumulative",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            /// D7 데이터 추가
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.d7count",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.d7percentage",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.d7cumulative",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             rowNum++;
         }
 
         Drawing drawing = sheet.createDrawingPatriarch();
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
+        System.out.println("data = " + storeStatisticsByInterval.getIntervalMinuteCounts().size());
+
         // 내용 부분
         for(int i = 0, r = storeStatisticsByInterval.getIntervalMinuteCounts().size(); i<r; i++) {
-
-            if (i + 9 == 9) {
-                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", "~" + String.valueOf(i+9));
-            } else if (i + 9 > 60) {
-                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+9) + "~");
-            } else {
-                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+9));
-            }
-
             String time = null;
-            if (i + 9 == 9) {
-                time = "~" + i + 9 + ":59";
-            } else if (i + 9 == 60) {
-                time = "1:00:00";
-            } else if (i + 9 > 60) {
-                time = "1:01:00~";
-            } else {
-                time = i + 9 + ":00";
+
+            /// D7 데이터로 인하여 세부 분류
+            switch (i){
+                case 0 :
+                    dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", "~6:59");
+                    dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString()), "D7TC", "~6:59");
+                    time = "~6:59";
+                    break;
+                case 1:
+                    dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", "~9:59");
+                    dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString()), "D7TC", "~9:59");
+                    time = "~9:59";
+                    break;
+                default:
+                    if (i + 8 > 60){
+                        dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+8) + "~");
+                        dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString()), "D7TC", String.valueOf(i+8) + "~");
+                    }else{
+                        dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+8));
+                        dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString()), "D7TC", String.valueOf(i+8));
+                    }
+                    if (i+8 == 60){
+                        time = "1:00:00";
+                    }else if (i+8 > 60){
+                        time = "1:01:00~";
+                    }else{
+                        time = (1 + 8) +":00";
+                    }
+                    break;
             }
+
 
             colNum = 0;
             Row addListRow = sheet.createRow(rowNum);
@@ -157,7 +188,7 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString() + "%");
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -166,6 +197,18 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[2].toString() + "%");
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString());
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[4].toString() + "%");
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[5].toString() + "%");
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
@@ -206,9 +249,9 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
         renderer.setDefaultItemLabelPaint(Color.LIGHT_GRAY);
         renderer.setDefaultItemLabelsVisible(true);
 
-        for (int i = 0, r = storeStatisticsByInterval.getIntervalMinuteCounts().size(); i<r; i++) {
-            renderer.setSeriesPaint(i, Color.BLUE);
-        }
+//        for (int i = 0, r = storeStatisticsByInterval.getIntervalMinuteCounts().size(); i<r; i++) {
+//            renderer.setSeriesPaint(i, Color.BLUE);
+//        }
 
         int width = 16*100;
         int height = 9*100;
@@ -219,7 +262,7 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
             bos.close();
 
             ClientAnchor anchor = new XSSFClientAnchor();
-            anchor.setCol1(5);
+            anchor.setCol1(8);
             anchor.setCol2(20);
             anchor.setRow1(1);
             anchor.setRow2(20);
