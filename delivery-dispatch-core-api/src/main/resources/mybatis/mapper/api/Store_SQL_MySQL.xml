@@ -908,7 +908,7 @@
                         ,SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) <=7 THEN 1 ELSE 0 END) / COUNT(O.ID) * 100 as min_07below
                     ]]>
                 FROM	 TB_ORDER AS O
-                WHERE	 O.STORE_ID = (SELECT STORE_ID FROM TB_STORE_SESSION WHERE ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrb3JlYV90ZXN0X3N0b3JlIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTMyMzE5MjU5MjIxfQ.QgFJoxaAr6ULS4B0enmvR3Nb0pLiHusqg9_-wm2d8aw')
+                WHERE	 O.STORE_ID = (SELECT STORE_ID FROM TB_STORE_SESSION WHERE ACCESS_TOKEN = #{token})
                 AND		 O.STATUS IN (3)
                 AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
                 AND		 THIRD_PARTY_ID IS NULL

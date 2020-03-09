@@ -230,6 +230,7 @@ function getStoreStatistics() {
             let distanceSum = 0;
 
             let D7TimerSum=0;
+            let QTTimerSum=0;
 
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -241,7 +242,8 @@ function getStoreStatistics() {
                     tmpData.orderDate = timeSetDate(data[key].createdDatetime);
 
                     tmpData.assignedDate = timeSet(data[key].assignedDatetime);
-                    tmpData.qtTimes = data[key].cookingTime > 30 ? 30 : data[key].cookingTime;
+                    // tmpData.qtTimes = data[key].cookingTime > 30 ? 30 : data[key].cookingTime;
+                    tmpData.qtTimes = data[key].cookingTime;
 
                     tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
 
@@ -255,6 +257,7 @@ function getStoreStatistics() {
                     pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].completedDatetime);
                     orderCompleteSum += minusTime(data[key].createdDatetime, data[key].completedDatetime);
                     D7TimerSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
+                    QTTimerSum += Number(data[key].cookingTime);
 
                     if(data[key].returnDatetime){
                         tmpData.completeReturn1 = minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime);
@@ -292,6 +295,7 @@ function getStoreStatistics() {
             totalData.distance = (distanceSum ==0?0:parseFloat(distanceSum).toFixed(2)) + 'km';
 
             totalData.D7Timer = totalTimeSet(D7TimerSum);
+            totalData.qtTimes = QTTimerSum;
 
             myData.push(totalData);
 
@@ -310,6 +314,7 @@ function getStoreStatistics() {
             averageData.distance = (distanceSum == 0?0:parseFloat(distanceSum/(rowNum - chkDistanceCnt)).toFixed(2)) + 'km';
 
             averageData.D7Timer = averageTimeSet(D7TimerSum,rowNum);
+            averageData.qtTimes = QTTimerSum / rowNum;
 
             myData.push(averageData);
 
