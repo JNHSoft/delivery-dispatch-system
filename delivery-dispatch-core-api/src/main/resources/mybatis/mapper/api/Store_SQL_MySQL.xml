@@ -137,7 +137,7 @@
                 ,A.store_status
                 ,A.assignment_status
                 ,A.assignment_limit
-                ,A.brand_code
+                ,ifnull(A.brand_code, '') as brand_code
                 ,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = A.brand_code )	as brand_name
                 ,concat('/resources/images/common/logo', A.brand_code, '.png')		as brand_img
                 ,B.access_token
@@ -353,7 +353,7 @@
                 ,D.assignment_status		as admin_assignment_status
                 ,D.assignment_limit			as admin_assignment_limit
                 ,( select access_token from TB_STORE_SESSION where store_id = A.id )		as access_token
-                ,A.brand_code
+                ,ifnull(A.brand_code, '') as brand_code
                 ,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = A.brand_code )   as brand_name
                 ,concat('/resources/images/common/logo', A.brand_code, '.png')		as brand_img
         from	 TB_STORE	as A

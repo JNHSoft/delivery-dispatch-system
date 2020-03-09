@@ -79,6 +79,17 @@ function setUI() {
         dataType : 'json',
         success : function(data) {
            console.log(data);
+
+           // 주문 매장의 브랜드 코드에 따른 이미지 변경
+			switch (data.brandCode) {
+				case "1":
+					$(".visual_area").css({"position":"relative","height":"300px","background":"url('../resources/images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat","background-size":"cover"});
+					break;
+				default:
+					break;
+			}
+
+
             trackerStatus = data.status;
             // console.log(trackerStatus)
             if (data.reservationDatetime) {
@@ -176,7 +187,15 @@ function setUI() {
                 $('.t_red').text('');
                 $(".visual_area").attr("id","");
                 $(".mapCtrl").attr("id","map");
-                $(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
+				// 주문 매장의 브랜드 코드에 따른 문구 색상 변경
+				switch (data.brandCode) {
+					case "1":
+						$(".visual_area").html('<p class="tit_red">請享用熱騰騰<br/>的美味餐點</p>');
+						break;
+					default:
+						$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
+						break;
+				}
 /*                $.removeCookie('checkStep');
                 $.removeCookie('chkProgress');*/
                 localStorage.clear();
@@ -574,6 +593,16 @@ function startEndPoint() {
         },
         dataType : 'json',
         success : function(data) {
+        	console.log(data.brandCode);
+
+        	switch (data.brandCode) {
+        		case "1":
+					$(".progress-background").addClass("kfc");
+        			break;
+				default:
+					break;
+			}
+
             if(overlay){
                 myOverlay.prototype.onRemove = function () {
                     if(this.div_ && this.div_.parentNode){
