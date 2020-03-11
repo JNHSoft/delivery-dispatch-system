@@ -905,7 +905,7 @@
             (	SELECT	 DATE_FORMAT(O.CREATED_DATETIME,'%y-%m-%d') AS day_to_day
                     <![CDATA[
                         ,COUNT(CASE WHEN TIMESTAMPDIFF(MINUTE, IF(O.RESERVATION_STATUS = 0, O.CREATED_DATETIME, DATE_SUB(O.RESERVATION_DATETIME, INTERVAL 30 MINUTE)), COMPLETED_DATETIME) <= 35 THEN 1 END) / COUNT(O.ID) * 100 AS min_30below
-                        ,SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) <=7 THEN 1 ELSE 0 END) / COUNT(O.ID) * 100 as min_07below
+                        ,SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) < 7 THEN 1 ELSE 0 END) / COUNT(O.ID) * 100 as min_07below
                     ]]>
                 FROM	 TB_ORDER AS O
                 WHERE	 O.STORE_ID = (SELECT STORE_ID FROM TB_STORE_SESSION WHERE ACCESS_TOKEN = #{token})

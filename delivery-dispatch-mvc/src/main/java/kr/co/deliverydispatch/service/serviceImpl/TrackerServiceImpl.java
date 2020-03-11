@@ -6,6 +6,7 @@ import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.util.AES256Util;
 import kr.co.cntt.core.util.CustomEncryptUtil;
+import kr.co.cntt.core.util.StringUtil;
 import kr.co.deliverydispatch.service.TrackerService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.Console;
@@ -67,28 +69,28 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             String riderLeftPath = "";
             String riderRightPath = "";
 
-            if (!tracker.getBrandCode().isEmpty()){
+            if (!StringUtils.isEmpty(tracker.getBrandCode())){
                 brandPath = "images/tracker/pin_store" + tracker.getBrandCode() + ".png";
                 riderLeftPath = "images/tracker/pin_moto_left" + tracker.getBrandCode() + ".png";
                 riderRightPath = "images/tracker/pin_moto_right" + tracker.getBrandCode() + ".png";
             }
 
             // Brand Image Check
-            if (new ClassPathResource(brandPath).exists()){
+            if (!StringUtils.isEmpty(brandPath) && new ClassPathResource(brandPath).exists()){
                 tracker.setBrandImg("./resources/" + brandPath + "?ver=0.4");
             }else{
                 tracker.setBrandImg("./resources/images/tracker/pin_store.jpg?ver=0.4");
             }
 
             // Rider Left Image Check
-            if (new ClassPathResource(riderLeftPath).exists()){
+            if (!StringUtils.isEmpty(riderLeftPath) && new ClassPathResource(riderLeftPath).exists()){
                 tracker.setRiderLeftImg("./resources/" + riderLeftPath);
             }else{
                 tracker.setRiderLeftImg("./resources/pin_moto_left.png");
             }
 
             // Rider Right Image Check
-            if (new ClassPathResource(riderRightPath).exists()){
+            if (!StringUtils.isEmpty(riderRightPath) && new ClassPathResource(riderRightPath).exists()){
                 tracker.setRiderRightImg("./resources/" + riderRightPath);
             }else{
                 tracker.setRiderRightImg("./resources/pin_moto_right.png");

@@ -392,7 +392,7 @@ function dateInfo(avgData){
     let orderReturn = avgData.orderReturn;
     let d7SuccessRate = avgData.d7Success;
 
-    $('#d7Timer.box').append(colName.clone().html(label_in_store_time)).append(colVal.clone().html(formatInt(d7SuccessRate, 1) + '%'));
+    $('#d7Timer.box').append(colName.clone().html(label_in_d7_completed)).append(colVal.clone().html(formatInt(d7SuccessRate, 1) + '%'));
     $('#orderPickup.box').append(colName.clone().html(label_in_store_time)).append(colVal.clone().html(convertToHms(orderPickup)));
     $('#pickupComplete.box').append(colName.clone().html(label_delivery_time)).append(colVal.clone().html(convertToHms(pickupComplete)));
     $('#orderComplete.box').append(colName.clone().html(label_completed_time)).append(colVal.clone().html(convertToHms(orderComplete)));
