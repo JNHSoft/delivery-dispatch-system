@@ -30,10 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -111,6 +108,22 @@ public class StatisticsController {
 
     ) {
         log.info("getStatisticsList");
+
+        // 날짜 차이가 31일 이상인 경우 프로세스 종료
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+            Date dateStart = format.parse(startDate);
+            Date dateEnd = format.parse(endDate);
+
+            long dateDiff = ((dateEnd.getTime() - dateStart.getTime()) / (1000*3600*24));
+
+            if (dateDiff > 31){
+                return new ArrayList<>();
+            }
+
+        }catch (ParseException ex){
+
+        }
 
         Order order = new Order();
 
@@ -301,6 +314,7 @@ public class StatisticsController {
         Order order = new Order();
 
         order.setCurrentDatetime(startDate);
+
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
@@ -308,6 +322,11 @@ public class StatisticsController {
             Date sdfEndDate = formatter.parse(endDate);
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            // 31일까지만 조회 가능
+            if (diffDays > 31){
+                return  null;
+            }
 
             order.setDays(Integer.toString((int) (long) diffDays + 1));
         } catch (ParseException e) {
