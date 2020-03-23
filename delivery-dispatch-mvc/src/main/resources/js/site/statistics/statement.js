@@ -207,6 +207,12 @@ function getStatisticsInfo(regOrderId) {
 }
 
 function getStoreStatistics() {
+    let diffDate = Math.ceil((new Date($('#day2').val()).getTime() - new Date($('#day1').val()).getTime()) / (1000*3600*24));
+    if (diffDate > 31){
+        return;
+    }
+
+
     let myData = [];
     loading.show();
     $.ajax({
@@ -390,6 +396,12 @@ function getStoreStatistics() {
 function excelDownloadByOrder(){
     let startDate = $('#day1').val();
     let endDate = $('#day2').val();
+
+    let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
+    if (diffDate > 31){
+        return;
+    }
+
     loading.show();
     $.fileDownload("/excelDownloadByOrder",{
         httpMethod:"GET",

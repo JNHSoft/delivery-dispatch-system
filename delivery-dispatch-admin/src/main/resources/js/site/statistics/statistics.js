@@ -314,6 +314,13 @@ function initMap() {
  * 통계 목록 List
  */
 function getStatisticsList() {
+
+    let diffDate = Math.ceil((new Date($('#endDate').val()).getTime() - new Date($('#startDate').val()).getTime()) / (1000*3600*24));
+
+    if (diffDate > 31){
+        return;
+    }
+
     var $mydata = [];
     loading.show();
     $.ajax({
@@ -590,6 +597,13 @@ function excelDownload(){
 
     let startDate = $('#startDate').val();
     let endDate = $('#endDate').val();
+
+    let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
+
+    if (diffDate > 31){
+        return;
+    }
+
 
     loading.show();
 

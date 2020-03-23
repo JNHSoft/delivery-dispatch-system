@@ -116,6 +116,11 @@ public class StatisticsController {
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
+            // 31일까지만 가능
+            if (diffDays > 31){
+                return new ArrayList<>();
+            }
+
             order.setDays(Integer.toString((int) (long) diffDays + 1));
         } catch (ParseException e) {
             e.printStackTrace();
@@ -212,6 +217,11 @@ public class StatisticsController {
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
+            // 31일까지만 가능
+            if (diffDays > 31){
+                return null;
+            }
+
             order.setDays(Integer.toString((int) (long) diffDays + 1));
         } catch (ParseException e) {
             e.printStackTrace();
@@ -242,6 +252,11 @@ public class StatisticsController {
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
+            //31일까지만 조회가능
+            if (diffDays > 31){
+                return new ArrayList<>();
+            }
+
             order.setDays(Integer.toString((int) (long) diffDays + 1));
         } catch (ParseException e) {
             e.printStackTrace();
@@ -268,6 +283,11 @@ public class StatisticsController {
             Date sdfEndDate = formatter.parse(endDate);
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            //31일까지만 가능
+            if (diffDays>31){
+                return null;
+            }
 
             order.setDays(Integer.toString((int) (long) diffDays + 1));
         } catch (ParseException e) {
@@ -298,6 +318,11 @@ public class StatisticsController {
             Date sdfEndDate = formatter.parse(endDate);
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            //31일까지만 조회가능
+            if (diffDays > 31){
+                return new HashMap();
+            }
 
             order.setDays(Integer.toString((int) (long) diffDays + 1));
         } catch (ParseException e) {
@@ -330,6 +355,11 @@ public class StatisticsController {
             Date sdfEndDate = formatter.parse(endDate);
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            //31일까지만 가능
+            if (diffDays > 31){
+                return null;
+            }
 
             order.setDays(Integer.toString((int) (long) diffDays + 1));
         } catch (ParseException e) {
