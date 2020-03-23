@@ -790,7 +790,7 @@
 				,C.latitude				as store_latitude
 				,C.longitude			as store_longitude
 				,( select store_name from TB_STORE where id = E.store_id and admin_id = E.admin_id and deleted is null )	as order_store_name
-				,E.order_id
+				-- ,E.order_id
 				,E.store_id				as order_store_id
 				,E.order_count
 				,E.order_status
@@ -807,7 +807,7 @@
 					,rider_id
 					,max(status) 			as order_status
 					,any_value(store_id) 	as store_id
-					,( select id from TB_ORDER where created_datetime > CURRENT_DATE() and assigned_datetime = min(ord.assigned_datetime) and admin_id = ord.admin_id and rider_id = ord.rider_id )		as order_id
+					-- ,( select id from TB_ORDER where created_datetime > CURRENT_DATE() and assigned_datetime = min(ord.assigned_datetime) and admin_id = ord.admin_id and rider_id = ord.rider_id )		as order_id
 					,count(rider_id)			as order_count
 					FROM	 TB_ORDER	as ord
 					where	 created_datetime > CURRENT_DATE()
