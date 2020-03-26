@@ -109,6 +109,7 @@ function setUI() {
 				if($(".visual_area").has('#map').prevObject.length){
                     $(".mapCtrl").attr("id","map");
                     $(".visual_area").attr("id","");
+					$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
 				}
 
 				if(checkTime - 1800 * 1000 <= 0){//예약시간과 현재시간이 30분 이내인지 체크
