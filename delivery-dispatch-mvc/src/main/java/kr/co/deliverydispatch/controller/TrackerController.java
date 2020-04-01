@@ -65,7 +65,12 @@ public class TrackerController {
         map.put("token", strToken);
         map.put("code", code);
         map.put("webOrderId", webOrderId);
-        map.put("reqDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+
+        if(reqDate.length() > 0){
+            map.put("reqDate", reqDate);
+        }else{
+            map.put("reqDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        }
 
         String strJson = new Gson().toJson(map);
 
@@ -110,6 +115,7 @@ public class TrackerController {
             Tracker trackerResult = trackerService.getTracker(encParam);
             if (trackerResult == null) {
                 model.addAttribute("encParam", encParam);
+                model.addAttribute("ErrorValue", "This order information<br />is not valid.");
                 return "/tracker/null";
             }
             TimeZone timeZone = TimeZone.getTimeZone("Asia/Taipei");
@@ -133,6 +139,7 @@ public class TrackerController {
                 model.addAttribute("tracker", trackerResult);
                 return "/tracker/tracker4";
             } else {
+                model.addAttribute("ErrorValue", "It is not a requestable time.");
                 return "/tracker/null";
             }
         } else {

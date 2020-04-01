@@ -42,6 +42,12 @@
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
 var encParam = /*[[${encParam}]]*/ 'encParam';
+var ErrorMsg = /*[[${ErrorValue}]]*/ 'ErrorMsg';
+
+if (ErrorMsg == undefined || ErrorMsg == ""){
+	ErrorMsg = "Check your order information.";
+}
+
 $(document).ready(function(){
     if(self == top){
         location.href ="/error/error-tracker";
@@ -49,6 +55,9 @@ $(document).ready(function(){
 	if(encParam){
         setInterval('returnPage()', 30000);
 	}
+
+	$(".visual_area").html('<p class="tit_wh">' + ErrorMsg + '</p>');
+
 })
 function returnPage() {
     return location.href = "/tracker?encParam="+encParam;
