@@ -87,6 +87,7 @@ public class TrackerController {
             Tracker trackerResult = trackerService.getTracker(encParam);
             if (trackerResult == null) {
                 model.addAttribute("encParam", encParam);
+                model.addAttribute("ErrorValue", "This order information<br />is not valid.");
                 return "/tracker/null";
             }
             TimeZone timeZone = TimeZone.getTimeZone("Asia/Taipei");
@@ -110,6 +111,7 @@ public class TrackerController {
                 model.addAttribute("tracker", trackerResult);
                 return "/tracker/tracker4";
             } else {
+                model.addAttribute("ErrorValue", "It is not a requestable time.");
                 return "/tracker/null";
             }
         } else {
