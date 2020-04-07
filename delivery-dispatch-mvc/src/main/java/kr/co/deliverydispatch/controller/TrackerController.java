@@ -1,5 +1,6 @@
 package kr.co.deliverydispatch.controller;
 
+import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.util.AES256Util;
@@ -9,12 +10,14 @@ import kr.co.deliverydispatch.service.TrackerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -22,13 +25,20 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.TimeZone;
+import java.util.*;
 
 @Slf4j
 @Controller
 public class TrackerController {
+
+    @Resource
+    private MessageSource messageSource;
+
+    @Value("${spring.mvc.locale}")
+    private Locale locale;
 
     @Value("${api.tracker.key}")
     private String tKey;
@@ -87,7 +97,7 @@ public class TrackerController {
             Tracker trackerResult = trackerService.getTracker(encParam);
             if (trackerResult == null) {
                 model.addAttribute("encParam", encParam);
-                model.addAttribute("ErrorValue", "This order information<br />is not valid.");
+                model.addAttribute("ErrorValue", messageSource.getMessage("tracker.error.infomation",null, locale));
                 return "/tracker/null";
             }
             TimeZone timeZone = TimeZone.getTimeZone("Asia/Taipei");
@@ -111,7 +121,7 @@ public class TrackerController {
                 model.addAttribute("tracker", trackerResult);
                 return "/tracker/tracker4";
             } else {
-                model.addAttribute("ErrorValue", "It is not a requestable time.");
+                model.addAttribute("ErrorValue", messageSource.getMessage("tracker.error.timeout",null, locale));
                 return "/tracker/null";
             }
         } else {
