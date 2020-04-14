@@ -1,6 +1,7 @@
 package kr.co.deliverydispatch.controller;
 
 import com.google.gson.Gson;
+import com.mysql.cj.util.StringUtils;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.util.AES256Util;
@@ -50,7 +51,7 @@ public class TrackerController {
     }
 
     @GetMapping("/tracker-test")
-    public String tracker(Model model, @RequestParam(required = false) String code, @RequestParam(required = false) String webOrderId, @RequestParam(required = false) String reqDate, @RequestParam(required = false) String chkBrand) {
+    public String tracker(Model model, @RequestParam(required = false) String code, @RequestParam(required = false) String webOrderId, @RequestParam(required = false) String reqDate, @RequestParam(required = false) String chkBrand, @RequestParam(required = false) String aseValue) {
 //         String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 //        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"s01\",\"webOrderId\":\"s-20181112-cnt-s01a-0001\",\"reqDate\":\"20181112160000\"}";
 
@@ -94,6 +95,16 @@ public class TrackerController {
             model.addAttribute("decBase", decBase);
             model.addAttribute("decAes", decAes);
 
+
+            if (!StringUtils.isNullOrEmpty(aseValue)){
+                String decBase1 = CustomEncryptUtil.decodeBase64(aseValue);
+                String decAes1 = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(aseValue));
+
+                System.out.println("#####################################################");
+                System.out.println("decBase1 = " + decBase1);
+                System.out.println("decAes1 = " + decAes1);
+                System.out.println("#####################################################");
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
