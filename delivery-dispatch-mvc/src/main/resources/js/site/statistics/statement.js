@@ -251,9 +251,7 @@ function getStoreStatistics() {
                     // tmpData.qtTimes = data[key].cookingTime > 30 ? 30 : data[key].cookingTime;
                     tmpData.qtTimes = data[key].cookingTime;
 
-                    tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
-
-                    tmpData.D7Timer = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);;
+                    tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime) + " (" + minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime); + ")";
 
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
                     tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].completedDatetime);
@@ -292,7 +290,7 @@ function getStoreStatistics() {
             totalData.id = "";
             totalData.origin_reg_order_id = "";
             totalData.orderDate = "";
-            totalData.orderPickup1 = totalTimeSet(orderPickupSum);
+            totalData.orderPickup1 = totalTimeSet(orderPickupSum) + " (" + totalTimeSet(D7TimerSum) + ")";
             totalData.pickupComplete1 = totalTimeSet(pickupCompleteSum);
             totalData.orderComplete1 = totalTimeSet(orderCompleteSum);
             totalData.completeReturn1 = totalTimeSet(completeReturnSum);
@@ -300,7 +298,6 @@ function getStoreStatistics() {
             totalData.orderReturn1 = totalTimeSet(orderReturnSum);
             totalData.distance = (distanceSum ==0?0:parseFloat(distanceSum).toFixed(2)) + 'km';
 
-            totalData.D7Timer = totalTimeSet(D7TimerSum);
             totalData.qtTimes = QTTimerSum;
 
             myData.push(totalData);
@@ -311,7 +308,7 @@ function getStoreStatistics() {
             averageData.id = "";
             averageData.origin_reg_order_id = "";
             averageData.orderDate = "";
-            averageData.orderPickup1 = averageTimeSet(orderPickupSum,rowNum);
+            averageData.orderPickup1 = averageTimeSet(orderPickupSum,rowNum) + " (" + averageTimeSet(D7TimerSum,rowNum) + ")";
             averageData.pickupComplete1 = averageTimeSet(pickupCompleteSum,rowNum);
             averageData.orderComplete1 = averageTimeSet(orderCompleteSum,rowNum);
             averageData.completeReturn1 = averageTimeSet(completeReturnSum,rowNum - chkReturnTimeCnt);
@@ -319,7 +316,6 @@ function getStoreStatistics() {
             averageData.orderReturn1 = averageTimeSet(orderReturnSum,rowNum - chkReturnTimeCnt);
             averageData.distance = (distanceSum == 0?0:parseFloat(distanceSum/(rowNum - chkDistanceCnt)).toFixed(2)) + 'km';
 
-            averageData.D7Timer = averageTimeSet(D7TimerSum,rowNum);
             averageData.qtTimes = QTTimerSum / rowNum;
 
             myData.push(averageData);
@@ -340,8 +336,7 @@ function getStoreStatistics() {
                     {label: label_order_date, name: 'orderDate', width: 80, align: 'center'},
                     {label: label_order_assign, name: 'assignedDate', width: 80, align: 'center'},
                     {label: label_order_qt, name: 'qtTimes', width: 80, align: 'center'},
-                    {label: label_order_in_store_time, name: 'orderPickup1', index: 'orderPickup1', width: 80, align: 'center'},
-                    {label: label_order_d7, name: 'D7Timer', width: 80, align: 'center'},
+                    {label: label_order_in_store_time + " (" + label_order_d7 + ")", name: 'orderPickup1', index: 'orderPickup1', width: 80, align: 'center'},
                     {label: label_order_delivery_time, name: 'pickupComplete1', index: 'pickupComplete1', width: 80, align: 'center'},
                     {label: label_order_completed_time, name: 'orderComplete1', index: 'orderComplete1', width: 80, align: 'center'},
                     {label: label_order_return_time, name: 'completeReturn1', index: 'completeReturn1', width: 80, align: 'center'},
