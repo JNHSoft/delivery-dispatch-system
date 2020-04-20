@@ -798,6 +798,16 @@
         AND		 A.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
         AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
         AND		 third_party_id IS NULL
+
+        -- 시간대별 통계에 대한 조건 추가
+        AND		 A.assigned_datetime is not null
+        AND		 A.picked_up_datetime is not null
+        AND		 A.completed_datetime is not null
+        AND		 A.return_datetime is not null
+        AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
+        AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(A.reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, completed_datetime) >= 0
+        AND		 timestampdiff(SECOND, created_datetime, picked_up_datetime) >= 0
+        AND		 timestampdiff(SECOND, created_datetime, return_datetime) >= 0
         group by day_to_day, A.store_id;
     </select>
 

@@ -120,13 +120,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.in.store.time",null, locale));
-            addTitle.setCellStyle(titleCellStyle);
-
-            // D7
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.D7",null, locale));
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.in.store.time",null, locale) + " (" + messageSource.getMessage("statistics.1st.label.order.D7",null, locale) + ")");
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
@@ -242,12 +236,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(minusChkFilter(orderPickup));
-            cell.setCellStyle(dataCellStyle);
-
-            // D7
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue(minusChkFilter(d7Timer));
+            cell.setCellValue(minusChkFilter(orderPickup) + " (" + minusChkFilter(d7Timer) + ")");
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -299,12 +288,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(minusChkFilter(orderPickupTime));
-                cell2.setCellStyle(dataCellStyle);
-
-                // D7
-                cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(minusChkFilter(d7TotlaTime));
+                cell2.setCellValue(minusChkFilter(orderPickupTime) + " (" + minusChkFilter(d7TotlaTime) + ")");
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
@@ -354,12 +338,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);
-                cell3.setCellValue(minusChkFilter(orderPickupTime/totalCnt));
-                cell3.setCellStyle(dataCellStyle);
-
-                // D7
-                cell3 = addListRow.createCell(colNum++);
-                cell3.setCellValue(minusChkFilter(d7TotlaTime/totalCnt));
+                cell3.setCellValue(minusChkFilter(orderPickupTime/totalCnt) + " (" + minusChkFilter(d7TotlaTime/totalCnt) + ")");
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);

@@ -229,7 +229,43 @@ public class StatisticsController {
 
         ModelAndView modelAndView = new ModelAndView("StoreStatisticsByOrderExcelBuilderServiceImpl");
         List<Order> storeStatisticsByOrderList = storeStatementService.getStoreStatisticsByOrder(order);
-        modelAndView.addObject("getStoreStatisticsByOrderExcel", storeStatisticsByOrderList);
+
+        /*
+         * 2020.04.17 통계 View와 동일하게 표시될 수 있도록 적용
+         * */
+        List<Order> filerStoreStatisticsByOrderList =
+                storeStatisticsByOrderList.stream().filter(a -> {
+                    // 다음 4가지의 모든 시간이 NULL 이 아닌 경우만 가져온다
+                    if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null){
+                        // 예약 주문인 경우 30분을 제외한다.
+                        if (a.getReservationStatus().equals("1")){
+                            LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                            a.setCreatedDatetime((reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S"))));
+                        }
+
+                        // 픽업 시간
+                        LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+                        // 배달 완료 시간
+                        LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+                        // 기사 복귀 시간
+                        LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+
+                        // 주문 등록 시간
+                        LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
+
+                        // 다음 조건에 부합한 경우만 표기되도록 적용
+                        if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                            return  true;
+                        }else {
+                            return  false;
+                        }
+                    }else{
+                        return  false;
+                    }
+                }).collect(Collectors.toList());
+
+        modelAndView.addObject("getStoreStatisticsByOrderExcel", filerStoreStatisticsByOrderList);
+
 
         return modelAndView;
     }
