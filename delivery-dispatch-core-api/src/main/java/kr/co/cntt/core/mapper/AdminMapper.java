@@ -253,6 +253,14 @@ public interface AdminMapper {
     public List<Rider> selectRiders(Common common);
 
     /**
+     * <p> 기사 목록 조회
+     *
+     * @param common
+     * @return
+     */
+    public int selectRiderCountForStore(Common common);
+
+    /**
      * <p> 기사 등록
      *
      * @param rider
