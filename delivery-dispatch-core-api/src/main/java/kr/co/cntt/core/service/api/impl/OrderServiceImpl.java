@@ -119,7 +119,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                log.info(r+"!!!!!!!!!!원본!!!!!!!!!!!"+r.getId());//test
             }
             log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList);
-            log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList.get(0).getId());
 
 //            Rider assginRider = riderList.stream() //첫번째 라이더로 바로 받을지 고려, optional 고려
             riderList = riderList.stream()

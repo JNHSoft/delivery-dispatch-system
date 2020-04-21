@@ -308,7 +308,6 @@ function getRiderDetail() {
                 $("#riderDetailVehicleNumber").val(data.A_Rider.vehicleNumber);
 
                 popOpen("#popRiderDetail");
-                console.log("Completed");
             }
         });
     }
