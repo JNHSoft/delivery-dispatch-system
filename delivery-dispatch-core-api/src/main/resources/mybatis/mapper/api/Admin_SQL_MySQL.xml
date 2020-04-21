@@ -742,6 +742,15 @@
 			ORDER BY A.name
 	</select>
 
+	<!-- selectRiderCountForStore -->
+	<select id="selectRiderCountForStore" parameterType="kr.co.cntt.core.model.common.Common" resultType="int">
+		select	 count(*)
+		from	 TB_SUBGROUP_RIDER_REL
+		where	 deleted is null
+		and		 admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
+		and		 store_id = #{id}
+	</select>
+
 
 	<!-- insertRider -->
 	<insert id="insertRider" parameterType="kr.co.cntt.core.model.rider.Rider">
