@@ -1,5 +1,6 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
+import com.mysql.cj.util.StringUtils;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
@@ -168,6 +169,11 @@ public class StaffController {
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
+        if (StringUtils.isNullOrEmpty(storeId.trim())){
+            log.info("===============> postRider Null Check storeId     : {}", storeId);
+            return "err";
+        }
+
         rider.setId(riderId);
 //        rider.setIsAdmin("1");
         rider.setCode(code);
@@ -251,6 +257,11 @@ public class StaffController {
         rider.setToken(adminInfo.getAdminAccessToken());
 
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+
+        if (StringUtils.isNullOrEmpty(storeId.trim())){
+            log.info("===============> postRider Null Check storeId     : {}", storeId);
+            return "err";
+        }
 
         Rider riderSession = new Rider();
 

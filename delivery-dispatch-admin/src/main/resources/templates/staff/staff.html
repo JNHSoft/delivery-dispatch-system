@@ -22,6 +22,7 @@ var loginid_uncheck = /*[[#{loginid.uncheck}]]*/ 'loginid_uncheck';
 var alert_confirm_mod_success = /*[[#{alert.confirm.mod.success}]]*/ 'alert_confirm_mod_success';
 var alert_created_success = /*[[#{alert.created.success}]]*/ 'alert_created_success';
 var alert_riderSelect_check = /*[[#{alert.riderSelect.check}]]*/ 'alert_riderSelect_check';
+var alert_storeSelect_check = /*[[#{alert.storeSelect.check}]]*/ 'alert_storeSelect_check';
 /*]]>*/
 </script>
 
@@ -205,7 +206,7 @@ var alert_riderSelect_check = /*[[#{alert.riderSelect.check}]]*/ 'alert_riderSel
 				<div class="left"><a href="#" class="button h40 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}" /></div>
 				<div class="right">
 					<a href="#" class="button h40 btn_red" th:text="${#messages.msg('btn.delete')}" onClick="javascript:deleteRider()"/>
-					<a href="" class="button h40 btn_blue" th:text="${#messages.msg('btn.confirm')}" onClick="javascript:putRiderDetail()"/>
+					<a href="#" class="button h40 btn_blue" th:text="${#messages.msg('btn.confirm')}" onClick="javascript:putRiderDetail()"/>
 				</div>
 			</div>
 			<a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}" />

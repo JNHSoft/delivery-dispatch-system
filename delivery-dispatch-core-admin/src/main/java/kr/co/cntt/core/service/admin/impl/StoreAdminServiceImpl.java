@@ -99,7 +99,15 @@ public class StoreAdminServiceImpl implements StoreAdminService {
 
     // 기사 삭제
     @Override
-    public int deleteStore(Store store){return adminMapper.deleteStore(store);}
+    public int deleteStore(Store store){
+        // 2020.04.21 Store 삭제 시 소속된 라이더 존재 시 삭제 미 진행
+        if (adminMapper.selectRiderCountForStore(store) > 0){
+            log.info("deleteStore => selectRiderCountForStore  StoreInfo : {}", store.getId());
+            return 0;
+        }
+
+        return adminMapper.deleteStore(store);
+    }
 
     // insert Admin token
     @Override
