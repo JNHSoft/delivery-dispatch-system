@@ -212,7 +212,7 @@ function getRiderDetail() {
                 subGroupId : subGroupId
             },
             dataType : 'json',
-            success : function(data){
+            success: function (data){
                 // 아이디
                 $("#riderDetailLoginId").val(data.A_Rider.loginId);
                 //password
@@ -317,8 +317,16 @@ function getRiderDetail() {
  * Rider 수정
  */
 function putRiderDetail() {
-    var riderId = $("#selectedRiderId").val();
+
     var storeId = $("#riderDetailStoreName option:selected").val();
+
+    if (storeId.trim() == ""){
+        alert(alert_storeSelect_check);
+        return false;
+    }
+    
+
+    var riderId = $("#selectedRiderId").val();
     var groupId = $("#selectedGroupId").val();
     var subGroupId = $("#selectedSubGroupId").val();
     var tmpHours = [];
@@ -331,7 +339,7 @@ function putRiderDetail() {
     $.ajax({
         url : "/putRiderDetail",
         type : 'put',
-        dataType : 'json',
+        dataType : 'text',
         async : false,
         data : {
             riderId				: riderId,
@@ -350,10 +358,14 @@ function putRiderDetail() {
             vehicleNumber       : $("#riderDetailVehicleNumber").val(),
             hasGroup		    : $("#hasGroup").val()
         },
-        success : function(data){
+        success: function (data) {
+            if (data == 'err'){
+                return;
+            }else{
                 alert(alert_confirm_mod_success);
                 getRiderList();
                 location.reload();
+            }
         }
     });
 
@@ -366,6 +378,12 @@ function postRider() {
     var storeId =$("#postRiderStoreList option:selected").val();
     /*var groupId = $("#selectedGroupId").val();
     var subGroupId = $("#selectedSubGroupId").val();*/
+
+    if (storeId == undefined || storeId.trim() == ""){
+        alert(alert_storeSelect_check);
+        return false;
+    }
+
 
     var tmpHours = [];
     $('input[name="riderRestTime"]:checked').each(function(index, element) {
