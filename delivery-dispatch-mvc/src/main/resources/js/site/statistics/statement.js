@@ -251,7 +251,7 @@ function getStoreStatistics() {
                     // tmpData.qtTimes = data[key].cookingTime > 30 ? 30 : data[key].cookingTime;
                     tmpData.qtTimes = data[key].cookingTime;
 
-                    tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime) + " (" + minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime); + ")";
+                    tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime) + " (" + minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime) + ")";
 
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
                     tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].completedDatetime);

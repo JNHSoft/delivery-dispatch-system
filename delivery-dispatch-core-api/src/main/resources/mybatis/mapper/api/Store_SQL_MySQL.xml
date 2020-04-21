@@ -819,6 +819,15 @@
         WHERE    store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
         AND      status in (3)
         AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+        -- 시간대별 통계에 대한 조건 추가
+        AND		 assigned_datetime is not null
+        AND		 picked_up_datetime is not null
+        AND		 completed_datetime is not null
+        AND		 return_datetime is not null
+        AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
+        AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, completed_datetime) >= 0
+        AND		 timestampdiff(SECOND, created_datetime, picked_up_datetime) >= 0
+        AND		 timestampdiff(SECOND, created_datetime, return_datetime) >= 0
         AND      third_party_id IS NULL
     </select>
 
@@ -923,6 +932,15 @@
                 AND		 O.STATUS IN (3)
                 AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
                 AND		 THIRD_PARTY_ID IS NULL
+                -- 시간대별 통계에 대한 조건 추가
+                AND		 assigned_datetime is not null
+                AND		 picked_up_datetime is not null
+                AND		 completed_datetime is not null
+                AND		 return_datetime is not null
+                AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
+                AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, completed_datetime) >= 0
+                AND		 timestampdiff(SECOND, created_datetime, picked_up_datetime) >= 0
+                AND		 timestampdiff(SECOND, created_datetime, return_datetime) >= 0
                 GROUP BY day_to_day
             )	B
             ON	 A.DATE = B.day_to_day

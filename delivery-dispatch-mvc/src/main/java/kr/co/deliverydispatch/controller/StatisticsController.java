@@ -300,6 +300,7 @@ public class StatisticsController {
         order.setToken(storeInfo.getStoreAccessToken());
 
         List<ByDate> statisticsDate = storeStatementService.getStoreStatisticsByDate(order);
+
         return statisticsDate;
     }
 
