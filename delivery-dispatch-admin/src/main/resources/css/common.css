@@ -82,14 +82,21 @@ body.hidden{overflow:hidden;}
 	#gnb{}
 	#gnb img{height:36px;}
 	#gnb ul{display:table;width:100%;table-layout:fixed;border-collapse:collapse;}
-	#gnb ul li{display:table-cell;width:100%;vertical-align:middle;border:1px solid #ddd;border-width:0 1px;background-image:-webkit-linear-gradient(#fff,#f0f0f0);background-image:linear-gradient(#fff,#f0f0f0);}
+	#gnb ul li{display:table-cell;width:100%;vertical-align:middle;border:1px solid #ddd;border-width:0 1px;background-image:-webkit-linear-gradient(#fff,#f0f0f0);background-image:linear-gradient(#fff,#f0f0f0);position:relative;}
 	#gnb ul li:hover{background-image:-webkit-linear-gradient(#f0f0f0,#fff);background-image:linear-gradient(#f0f0f0,#fff);}
 	#gnb ul li a{position:relative;display:block;padding:8px 0;text-align:center;font-weight:bold;color:#19283f;opacity:0.7;}
 	#gnb ul li a:hover{opacity:1;}
 	#gnb ul li a strong{display:block;line-height:1;margin-top:4px;}
 	#gnb ul li a:before{content:'';position:absolute;left:50%;bottom:0;width:0;height:3px;background:#2d8fe3;transition:all 0.5s ease;}
-	#gnb ul li.on a{opacity:1;}
-	#gnb ul li.on a:before{left:0;width:100%;}
+	#gnb ul li.on > a{opacity:1;}
+	#gnb ul li.on > a:before{left:0;width:100%;}
+	/* 20.04.23 스토어 통계 내용 추가 */
+	#gnb ul li dl {display:none;position:absolute;top:70px;left:0;width:224px; box-sizing:border-box;font-size:12px; border:2px solid #67AEEB;padding:5px;z-index:10; background:#fff;text-align:center;}
+	#gnb ul li dl.on {display:block}
+	#gnb ul li dl dt {display:none;}
+	#gnb ul li dl dd {margin:3px 0}
+	#gnb ul li dl dd a {padding: 0 10px;}
+	#gnb ul li dl dd a:hover {color:#67AEEB}
 
 #container{position:relative;}
 #contents{position:relative;padding:10px;background:#ececec;box-sizing:border-box;min-height:400px;}

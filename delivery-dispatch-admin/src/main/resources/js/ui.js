@@ -93,6 +93,13 @@ function gnbActive(txt){
 			$(this).parents('li').addClass('on');
 		}
 	});
+
+	/* 20.04.23 스토어 통계 페이지 추가 */
+	$('.1depth').on('click',function(e){
+		e.preventDefault();
+		$(this).next('dl').toggleClass('on');
+	})
+
 }
 
 /*폼요소*/
@@ -106,14 +113,14 @@ function formStyle(){
 
 	//datepicker
 	if($('.datepicker').length > 0){
-		$( '.datepicker' ).datepicker({
+		$.datepicker.setDefaults({
 			closeText: '닫기',
-            prevText: datepicker_prev_month,
-            nextText: datepicker_next_month,
+			prevText: datepicker_prev_month,
+			nextText: datepicker_next_month,
 			currentText: '오늘',
 			monthNamesShort: ['01','02','03','04','05','06','07','08','09','10','11','12'],
 			monthNames: ['01','02','03','04','05','06','07','08','09','10','11','12'],
-            dayNamesMin: [datepicker_sunday,datepicker_monday,datepicker_tuesday,datepicker_wednesday,datepicker_thursday,datepicker_friday,datepicker_saturday],
+			dayNamesMin: [datepicker_sunday,datepicker_monday,datepicker_tuesday,datepicker_wednesday,datepicker_thursday,datepicker_friday,datepicker_saturday],
 			dateFormat: 'yy-mm-dd',
 			showMonthAfterYear: true,
 			showOn: 'both',
@@ -121,17 +128,33 @@ function formStyle(){
 			changeMonth: true,
 			changeYear: true
 		});
+
+		// $( '.datepicker' ).datepicker({
+		// 	closeText: '닫기',
+        //     prevText: datepicker_prev_month,
+        //     nextText: datepicker_next_month,
+		// 	currentText: '오늘',
+		// 	monthNamesShort: ['01','02','03','04','05','06','07','08','09','10','11','12'],
+		// 	monthNames: ['01','02','03','04','05','06','07','08','09','10','11','12'],
+        //     dayNamesMin: [datepicker_sunday,datepicker_monday,datepicker_tuesday,datepicker_wednesday,datepicker_thursday,datepicker_friday,datepicker_saturday],
+		// 	dateFormat: 'yy-mm-dd',
+		// 	showMonthAfterYear: true,
+		// 	showOn: 'both',
+		// 	buttonText: '기간조회',
+		// 	changeMonth: true,
+		// 	changeYear: true
+		// });
 	}
 	
 	if($('.datepicker_month').length > 0){
-		$( '.datepicker_month' ).datepicker({
+		$.datepicker.setDefaults({
 			closeText: '닫기',
-            prevText: datepicker_prev_month,
-            nextText: datepicker_next_month,
+			prevText: datepicker_prev_month,
+			nextText: datepicker_next_month,
 			currentText: '오늘',
 			monthNamesShort: ['01','02','03','04','05','06','07','08','09','10','11','12'],
 			monthNames: ['01','02','03','04','05','06','07','08','09','10','11','12'],
-            dayNamesMin: [datepicker_sunday,datepicker_monday,datepicker_tuesday,datepicker_wednesday,datepicker_thursday,datepicker_friday,datepicker_saturday],
+			dayNamesMin: [datepicker_sunday,datepicker_monday,datepicker_tuesday,datepicker_wednesday,datepicker_thursday,datepicker_friday,datepicker_saturday],
 			dateFormat: 'yy-mm',
 			showMonthAfterYear: true,
 			showOn: 'both',
@@ -139,6 +162,22 @@ function formStyle(){
 			changeMonth: true,
 			changeYear: true
 		});
+
+		// $( '.datepicker_month' ).datepicker({
+		// 	closeText: '닫기',
+        //     prevText: datepicker_prev_month,
+        //     nextText: datepicker_next_month,
+		// 	currentText: '오늘',
+		// 	monthNamesShort: ['01','02','03','04','05','06','07','08','09','10','11','12'],
+		// 	monthNames: ['01','02','03','04','05','06','07','08','09','10','11','12'],
+        //     dayNamesMin: [datepicker_sunday,datepicker_monday,datepicker_tuesday,datepicker_wednesday,datepicker_thursday,datepicker_friday,datepicker_saturday],
+		// 	dateFormat: 'yy-mm',
+		// 	showMonthAfterYear: true,
+		// 	showOn: 'both',
+		// 	buttonText: '기간조회',
+		// 	changeMonth: true,
+		// 	changeYear: true
+		// });
 	}
 	
 	//팝업내에서 스크롤시 달력 숨김
@@ -146,7 +185,7 @@ function formStyle(){
 		$('.datepicker').datepicker('hide');
 		$('.datepicker_month').datepicker('hide');
 	})
-	
+
 
 	//inp_file
 	$('.inp_file > input').focus(function(){

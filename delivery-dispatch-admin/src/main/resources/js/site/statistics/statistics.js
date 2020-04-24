@@ -1,16 +1,27 @@
 /*<![CDATA[*/
 var loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
-    // 날짜 변경될때마다
-    $('input[name="datepicker"]').change(function () {
-        getStatisticsList();
-    })
-
-    // 오늘 날짜로 초기화
-    $('input[name=datepicker]').val($.datepicker.formatDate('yy-mm-dd',new Date));
+    let date = $.datepicker.formatDate('yy-mm-dd', new Date);
+    $('#startDate, #endDate').val(date);
 
     getStatisticsList();
     getGroupList();
+
+    $('#startDate').datepicker({
+        maxDate : date,
+        onClose: function(selectedDate) {
+            $('#endDate').datepicker('option', 'minDate', selectedDate);
+            getStatisticsList();
+        }
+    });
+
+    $('#endDate').datepicker({
+        minDate : date,
+        onClose: function( selectedDate ) {
+            $('#startDate').datepicker('option', 'maxDate', selectedDate);
+            getStatisticsList();
+        }
+    });
 
     $(".select").change(function () {
         selectId = $(this);
@@ -18,11 +29,11 @@ $(function () {
         getStatisticsList();
         searchList(selectId, selectIdOption);
     });
+
     $("#searchButton").click(function () {
         getStatisticsList();
         searchList(selectId, selectIdOption);
     });
-
 });
 
 var selectId =$("#statisticsStoreList");

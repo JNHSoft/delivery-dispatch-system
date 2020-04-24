@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/layout">
+
+<!-- 컨텐츠 영역 -->
+<section id="container" layout:fragment="content">
+    <form name="searchForm" id="filter-form" class="form-horizontal" role="form" action="">
+
+        <input type="hidden" id="selectedStoreId"/>
+        <input type="hidden" id="selectedGroupId"/>
+        <input type="hidden" id="selectedSubGroupId"/>
+
+        <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
+        <div class="search_box">
+            <div class="top">
+                <span class="lbl" th:text="${#messages.msg('statistics.1st.title')}" style="font-size: 15px; font-weight: bold; color:black" />
+            </div>
+            <div class="left">
+                <select name="" class="select" id="statisticsGroupList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.group')}" />
+                </select>
+                <select name="" class="select" id="statisticsSubGroupList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.subgroup')}" />
+                </select>
+                <select name="" class="select" id="statisticsStoreList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.store')}" />
+                </select>
+            </div>
+            <div class="left" style="display: inline-flex">
+                <input type="hidden" name="startDate"/>
+                <input type="hidden" name="endDate"/>
+                <input type="text" name="datepicker" id="startDate" class="input datepicker"/>
+                <span style="padding: 5px;">~</span>
+                <input type="text" name="datepicker" id="endDate" class="input datepicker"/>
+            </div>
+
+            <div class="right">
+				<span class="inblock">
+					<select name="" class="searchSelect select" id="searchSelect">
+						<option value="all" th:text="${#messages.msg('list.search.all')}" />
+						<option value="reg_order_id" th:text="${#messages.msg('order.reg.order.id')}" />
+						<option value="pay" th:text="${#messages.msg('list.search.payment')}" />
+						<option value="rider" th:text="${#messages.msg('list.search.rider')}" />
+					</select>
+					<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}" />
+					<button type="button" class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" /></button>
+				</span>
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByOrder();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+            </div>
+        </div>
+
+    </form>
+    <div id="contents">
+        <div class="state_wrap">
+            <div class="left">
+                <div class="jq_grid">
+                    <div>
+                        <table id="jqGrid"></table>
+                    </div>
+                </div>
+                <div id="jqGridPager"></div>
+            </div>
+            <div class="right">
+                <a href="#" class="btn_close"><i class="fa fa-times" aria-hidden="true"></i><span
+                        class="blind">닫기</span></a>
+                <div class="state_detail">
+                    <div class="tit">
+                    </div>
+                    <div class="cont">
+                        <div>
+                            <ul>
+                                <li>
+                                    <span th:text="${#messages.msg('order.created')}"/>
+                                    <div id="createdDatetime">-</div>
+                                </li>
+                                <li>
+                                    <span th:text="${#messages.msg('order.reserved')}"/>
+                                    <div id="reservationDatetime">-</div>
+                                </li>
+                                <li class="clear">
+                                    <span th:text="${#messages.msg('order.time')}"/>
+                                    <div id="passtime">-</div>
+                                </li>
+                                <li>
+                                    <span th:text="${#messages.msg('order.assigned')}"/>
+                                    <div id="assignedDatetime">-</div>
+                                </li>
+                                <li class="clear">
+                                    <span th:text="${#messages.msg('order.pickedup')}"/>
+                                    <div id="pickedUpDatetime">-</div>
+                                </li>
+                                <li>
+                                    <span th:text="${#messages.msg('order.completed')}"/>
+                                    <div id="completedDatetime">-</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <span th:text="${#messages.msg('order.summary')}"/>
+                                    <div id="menuName">-</div>
+                                </li>
+                                <li>
+                                    <span th:text="${#messages.msg('order.cooking')}"/>
+                                    <div><span id="cookingTime">-</span><span
+                                            th:text="${#messages.msg('order.minute')}"/></div>
+                                </li>
+                                <li class="clear">
+                                    <span th:text="${#messages.msg('order.menu.price')}"/>
+                                    <div><span id="menuPrice">-</span><span
+                                            th:text="${#messages.msg('order.currency.unit')}"/></div>
+                                </li>
+                                <li>
+                                    <span th:text="${#messages.msg('order.delivery.price')}"/>
+                                    <div><span id="deliveryPrice">-</span><span
+                                            th:text="${#messages.msg('order.currency.unit')}"/></div>
+                                </li>
+                                <li class="clear">
+                                    <span th:text="${#messages.msg('order.total.price')}"/>
+                                    <div><span id="totalPrice">-</span><span
+                                            th:text="${#messages.msg('order.currency.unit')}"/></div>
+                                </li>
+                                <li>
+                                    <span th:text="${#messages.msg('order.payment')}"/>
+                                    <div id="paid"></div>
+                                    <!--<div th:text="${#messages.msg('order.payment.card')}" />-->
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul>
+                                <li class="full">
+                                    <span th:text="${#messages.msg('order.combined')}"/>
+                                    <div id="combinedOrder">-</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <span th:text="${#messages.msg('rider.name')}"/>
+                                    <div id="riderName">-</div>
+                                </li>
+                                <li>
+                                    <span th:text="${#messages.msg('rider.phone')}"/>
+                                    <div id="riderPhone">-</div>
+                                </li>
+                                <li class="clear full">
+                                    <span th:text="${#messages.msg('order.message')}"/>
+                                    <div id="memo">-</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul>
+                                <li class="full">
+                                    <span th:text="${#messages.msg('order.customer.phone')}"/>
+                                    <div id="userPhone">-</div>
+                                </li>
+                                <li class="full">
+                                    <span th:text="${#messages.msg('order.customer.address')}"/>
+                                    <div id="userAddress"></div>
+                                </li>
+                                <li class="full">
+                                    <span th:text="${#messages.msg('order.distance')}"/>
+                                    <div id="distance"></div>
+                                </li>
+                                <li class="full">
+                                    <div id="map" style="width: 314px; height: 150px; background-color: gray;">
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statisticsOrder.js}" layout:fragment="script2"></script>
+    <script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}"></script>
+</section>
+<!-- //컨텐츠 영역 -->
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var label_order_number = /*[[#{statistics.1st.label.order.number}]]*/ 'label_order_number';
+    var label_order_date = /*[[#{statistics.1st.label.order.date}]]*/ 'label_order_date';
+    var label_order_in_store_time = /*[[#{statistics.1st.label.order.in.store.time}]]*/ 'label_order_in_store_time';
+    var label_order_delivery_time = /*[[#{statistics.1st.label.order.delivery.time}]]*/ 'label_order_delivery_time';
+    var label_order_completed_time = /*[[#{statistics.1st.label.order.completed.time}]]*/ 'label_order_completed_time';
+    var label_order_return_time = /*[[#{statistics.1st.label.order.return.time}]]*/ 'label_order_return_time';
+    var label_order_out_time = /*[[#{statistics.1st.label.order.out.time}]]*/ 'label_order_out_time';
+    var label_order_total_time = /*[[#{statistics.1st.label.order.total.time}]]*/ 'label_order_total_time';
+    var label_order_distance = /*[[#{statistics.1st.label.order.distance}]]*/ 'label_order_distance';
+    var label_order_assign = /*[[#{statistics.1st.label.order.assign}]]*/ 'label_order_assign';
+    var label_order_qt = /*[[#{statistics.1st.label.order.QT}]]*/ 'label_order_qt';
+    var label_order_d7 = /*[[#{statistics.1st.label.order.D7}]]*/ 'label_order_d7';
+
+    var status_new = /*[[#{status.new}]]*/ 'status_new';
+    var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+    var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+    var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
+    var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
+    var order_confirm = /*[[#{btn.confirm}]]*/ 'order_confirm';
+    var order_status = /*[[#{order.status}]]*/ 'order_status';
+    var order_id = /*[[#{order.id}]]*/ 'order_id';
+    var order_created = /*[[#{order.created}]]*/ 'order_created';
+    var order_address = /*[[#{order.address}]]*/ 'order_address';
+    var order_summary = /*[[#{order.summary}]]*/ 'order_summary';
+    var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
+    var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
+    var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
+    var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
+    var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
+    var order_payment_cash = /*[[#{order.payment.cash}]]*/ 'order_payment_cash';
+    var order_payment_card = /*[[#{order.payment.card}]]*/ 'order_payment_card';
+    var order_payment_prepayment = /*[[#{order.payment.prepayment}]]*/ 'order_payment_prepayment';
+    var order_payment_service = /*[[#{order.payment.service}]]*/ 'order_payment_service';
+    var order_reg_order_id = /*[[#{order.reg.order.id}]]*/ 'order_reg_order_id';
+    var order_detail = /*[[#{order.detail}]]*/ 'order_detail';
+    var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
+    var my_store = /*[[${store}]]*/ 'my_store';
+
+
+    var list_search_all_group = /*[[#{list.search.all.group}]]*/ 'list_search_all_group';
+    var list_search_all_subgroup = /*[[#{list.search.all.subgroup}]]*/ 'list_search_all_subgroup';
+    var list_search_all_store = /*[[#{list.search.all.store}]]*/ 'list_search_all_store';
+    var subGroup_name = /*[[#{subgroup.name}]]*/ 'subGroup_name';
+    var store_name = /*[[#{store.name}]]*/ 'store_name';
+    var group_name = /*[[#{group.name}]]*/ 'group_name';
+    var group_none = /*[[#{group.none}]]*/ 'group_none';
+    /*]]>*/
+</script>
+</html>

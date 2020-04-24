@@ -14,6 +14,7 @@ import kr.co.cntt.core.util.Misc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service("StatisticsAdminService")
@@ -94,6 +95,16 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
             }
         }*/
         return statisticsList;
+    }
+
+    // 주문별 통계 페이지
+    public List<Order> selectStoreStatisticsByOrderForAdmin(Order order){
+        List<Order> statistByOrder =  adminMapper.selectStoreStatisticsByOrderForAdmin(order);
+        if (statistByOrder.size() == 0) {
+            return Collections.<Order>emptyList();
+        }
+
+        return statistByOrder;
     }
 
 }

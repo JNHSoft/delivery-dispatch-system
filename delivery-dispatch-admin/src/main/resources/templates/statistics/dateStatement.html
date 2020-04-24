@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/layout">
+<!-- 컨텐츠 영역 -->
+<section id="container" layout:fragment="content">
+    <div class="date_graph_layer">
+        <div class="date_graph_inner">
+            <div class="date_graph_content">
+                <div id="chart_content" class="date_chart_wrap">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="date_graph_layer" style="border-bottom: 1px solid #2f528f">
+        <div class="date_graph_inner">
+            <div class="date_graph_content">
+                <div id="d7Timer" class="box"></div>
+                <div id="orderPickup" class="box"></div>
+                <div id="pickupComplete" class="box"></div>
+                <div id="orderComplete" class="box"></div>
+                <div id="completeReturn" class="box"></div>
+                <div id="pickupReturn" class="box"></div>
+                <div id="orderReturn" class="box"></div>
+            </div>
+        </div>
+    </div>
+    <form name="searchForm" id="filter-form" class="form-horizontal" role="form" action="">
+        <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
+        <div class="search_box">
+            <div class="left">
+                <span class="lbl" th:text="${#messages.msg('statistics.2nd.title')}" style="font-size: 15px; font-weight: bold; color:black" />
+            </div>
+            <div class="right">
+                <input type="hidden" name="startDate"/>
+                <input type="hidden" name="endDate"/>
+                <input type="text" name="datepicker" id="day1" class="input picker"/>
+                ~
+                <input type="text" name="datepicker" id="day2" class="input picker"/>
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByDate();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+            </div>
+        </div>
+    </form>
+    <div id="contents">
+        <div class="state_wrap">
+            <div class="left">
+                <div class="jq_grid">
+                    <div>
+                        <table id="jqGrid"></table>
+                    </div>
+                </div>
+                <div id="jqGridPager"></div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/core.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/charts.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/animated.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statisticsDate.js}" layout:fragment="script2"></script>
+</section>
+<!-- //컨텐츠 영역 -->
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var label_store = /*[[#{statistics.2nd.label.store}]]*/ 'label_store';
+    var label_date = /*[[#{statistics.2nd.label.date}]]*/ 'label_date';
+    var label_in_d7_completed = /*[[#{statistics.2nd.label.in.d7}]]*/ 'label_in_d7_completed';
+    var label_in_store_time = /*[[#{statistics.2nd.label.in.store.time}]]*/ 'label_in_store_time';
+    var label_delivery_time = /*[[#{statistics.2nd.label.delivery.time}]]*/ 'label_delivery_time';
+    var label_completed_time = /*[[#{statistics.2nd.label.completed.time}]]*/ 'label_completed_time';
+    var label_return_time = /*[[#{statistics.2nd.label.return.time}]]*/ 'label_return_time';
+    var label_out_time = /*[[#{statistics.2nd.label.out.time}]]*/ 'label_out_time';
+    var label_total_delivery_time = /*[[#{statistics.2nd.label.total.delivery.time}]]*/ 'label_total_delivery_time';
+    var label_sales = /*[[#{statistics.2nd.label.sales}]]*/ 'label_sales';
+    var label_tc = /*[[#{statistics.2nd.label.tc}]]*/ 'label_tc';
+    var label_tplh = /*[[#{statistics.2nd.label.tplh}]]*/ 'label_tplh';
+    var label_spmh = /*[[#{statistics.2nd.label.spmh}]]*/ 'label_spmh';
+    var label_total_time = /*[[#{statistics.2nd.label.total.time}]]*/ 'label_total_time';
+    var label_average_distance = /*[[#{statistics.2nd.label.average.distance}]]*/ 'label_average_distance';
+    var label_average_time = /*[[#{statistics.2nd.label.average.time}]]*/ 'label_average_time';
+    var label_percent_completed = /*[[#{statistics.2nd.label.percent.completed}]]*/ 'label_percent_completed';
+    var label_productivity = /*[[#{statistics.2nd.label.productivity}]]*/ 'label_productivity';
+
+    var status_new = /*[[#{status.new}]]*/ 'status_new';
+    var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+    var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+    var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
+    var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
+    var order_confirm = /*[[#{btn.confirm}]]*/ 'order_confirm';
+    var order_status = /*[[#{order.status}]]*/ 'order_status';
+    var order_id = /*[[#{order.id}]]*/ 'order_id';
+    var order_created = /*[[#{order.created}]]*/ 'order_created';
+    var order_address = /*[[#{order.address}]]*/ 'order_address';
+    var order_summary = /*[[#{order.summary}]]*/ 'order_summary';
+    var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
+    var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
+    var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
+    var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
+    var order_reserved = /*[[#{order.reserved}]]*/ 'order_reserved';
+    var order_payment_cash = /*[[#{order.payment.cash}]]*/ 'order_payment_cash';
+    var order_payment_card = /*[[#{order.payment.card}]]*/ 'order_payment_card';
+    var order_payment_prepayment = /*[[#{order.payment.prepayment}]]*/ 'order_payment_prepayment';
+    var order_payment_service = /*[[#{order.payment.service}]]*/ 'order_payment_service';
+    var order_reg_order_id = /*[[#{order.reg.order.id}]]*/ 'order_reg_order_id';
+    var order_detail = /*[[#{order.detail}]]*/ 'order_detail';
+    var rider_name = /*[[#{rider.name}]]*/ 'rider_name';
+    var my_store = /*[[${store}]]*/ 'my_store';
+    var regionLocale = /*[[${regionLocale}]]*/ 'regionLocale';
+
+    var result_none = /*[[#{result.none}]]*/ 'result_none';
+
+    /*]]>*/
+</script>
+</html>

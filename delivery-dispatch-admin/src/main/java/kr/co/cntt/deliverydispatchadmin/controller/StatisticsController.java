@@ -30,7 +30,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -122,7 +126,7 @@ public class StatisticsController {
             }
 
         }catch (ParseException ex){
-
+            ex.printStackTrace();
         }
 
         Order order = new Order();
@@ -148,7 +152,14 @@ public class StatisticsController {
 
         order.setToken(adminInfo.getAdminAccessToken());
 
-        List<Order> statisticsList = statisticsAdminService.selectAdminStatistics(order);
+        List<Order> statisticsList;
+
+        try{
+            statisticsList = statisticsAdminService.selectAdminStatistics(order);
+        }catch (Exception e){
+            e.printStackTrace();
+            statisticsList = new ArrayList<>();
+        }
 
 
 //        log.info("@@@@@@@@@@@@@@@@@@@@@@"+statisticsList);
@@ -165,9 +176,7 @@ public class StatisticsController {
     @ResponseBody
     @GetMapping("/getStatisticsInfo")
     @CnttMethodDescription("통계 상세 보기")
-    public Order getStatisticsInfo(@RequestParam(required=false) String frag,@RequestParam("regOrderId") String regOrderId
-
-    ) {
+    public Order getStatisticsInfo(@RequestParam(required=false) String frag,@RequestParam("regOrderId") String regOrderId) {
         log.info("getStatisticsInfo");
 
         Order order = new Order();
@@ -345,5 +354,121 @@ public class StatisticsController {
 
         return modelAndView;
     }
+
+
+    /**
+     * 2020-04-23 Store 통계 페이지 추가
+     * */
+
+    /**
+     * 주문별 통계 페이지
+     * Main 통계 페이지와는 다소 다름
+     * */
+    @GetMapping("/statisticsByOrder")
+    public String statisticsByOrder(Order order,@RequestParam(required=false) String frag, Model model) {
+        log.info("adminStatisticsByOrder");
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        order.setToken(adminInfo.getAdminAccessToken());
+
+        // Todo: 주문별 통계 내용 시 필요한 정보 넘기기
+
+        return "/statistics/orderStatement";
+    }
+
+    @ResponseBody
+    @GetMapping("/getStoreStatisticsByOrder")
+    @CnttMethodDescription("관리자 주문별 통계 리스트 조회")
+    public List<Order> getStoreStatisticsByOrder(@RequestParam(value = "startDate") String startDate
+                                                ,@RequestParam(value = "endDate") String endDate) {
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            if (diffDays > 31) {
+                return new ArrayList<>();
+            }
+
+            order.setDays((Integer.toString(((int) (long) diffDays + 1))));
+
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+
+        order.setToken(adminInfo.getAdminAccessToken());
+        List<Order> statistByOrder = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+
+        return statistByOrder.stream().filter(a -> {
+            if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null) {
+                if (a.getReservationStatus().equals("1")) {
+                    LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                    a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
+                }
+
+                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+                LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+                LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+                // 19.08.26 데이터 격차가 음수로 나오는지 여부 체크
+                LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
+
+                // 19.08.26 페이지에서 음수가 나오는 오류 사항 변경
+                if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)) {
+                    return true;
+                } else {
+//                    System.out.println("###################################################");
+//                    System.out.println(a.getId() + " % " + a.getRegOrderId());
+//                    System.out.println(completeTime.until(returnTime, ChronoUnit.SECONDS));
+//                    System.out.println(createdTime.until(completeTime, ChronoUnit.SECONDS));
+//                    System.out.println(createdTime.until(pickupTime, ChronoUnit.SECONDS));
+//                    System.out.println(createdTime.until(returnTime, ChronoUnit.SECONDS));
+//                    System.out.println("###################################################");
+
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
+    }
+
+
+    ///////////////////////////////////////
+    // *   주문별 통계 자료 종료 구간    * //
+    ///////////////////////////////////////
+
+    /**
+     * 기간별 통계 페이지
+     * */
+    @GetMapping("/statisticsByDate")
+    public String statisticsByDate(Order order, @RequestParam(required = false) String frag, Model model){
+        return "/statistics/dateStatement";
+    }
+
+    ///////////////////////////////////////
+    // *   기간별 통계 자료 종료 구간    * //
+    ///////////////////////////////////////
+
+
+    /**
+     * 누적 완료 통계 페이지
+     * */
+    @GetMapping("/statisticsByInterval")
+    public String statisticsByInterval(Order order, @RequestParam(required = false) String frag, Model model){
+        return "/statistics/interval";
+    }
+
+    ///////////////////////////////////////
+    // *  누적 완료 통계 자료 종료 구간  * //
+    ///////////////////////////////////////
 
 }

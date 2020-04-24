@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/layout">
+
+<!-- 컨텐츠 영역 -->
+<section id="container" layout:fragment="content">
+    <form name="searchForm" id="filter-form" class="form-horizontal" role="form" action="">
+        <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
+        <div class="search_box">
+            <div class="left">
+                <span class="lbl" th:text="${#messages.msg('statistics.3rd.title')}" style="font-size: 15px; font-weight: bold; color:black" />
+            </div>
+            <div class="right">
+                <input type="hidden" name="startDate"/>
+                <input type="hidden" name="endDate"/>
+                <input type="text" name="datepicker" id="day1" class="input picker"/>
+                ~
+                <input type="text" name="datepicker" id="day2" class="input picker"/>
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByInterval();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+            </div>
+        </div>
+    </form>
+    <div id="contents">
+        <div class="state_wrap" style="background: white;">
+            <div class="interval_graph_layer" style="">
+                <div class="interval_graph_inner" style="height: 600px;">
+                    <div class="interval_graph_content" style="display: flex;">
+                        <div id="avg_30minute" style="margin-right: 10px;"></div>
+                        <div id="avg_07minute"></div>
+                    </div>
+                    <div class="interval_graph_content" style="width: 100%;float: right;height: 300px;padding-top: 20px;">
+                        <div id="chart_30minute" style="width: 100%;height: 300px;"></div>
+                    </div>
+                    <div class="interval_graph_content" style="width: 35%;float: left;padding-top: 20px;">
+                        <div id="chart_percentage" style="width: 100%;height: 600px;"></div>
+                    </div>
+                    <div class="interval_graph_content" style="width: 65%;float: right;padding-top: 20px;">
+                        <div id="chart_tc" style="width: 100%;height: 600px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/core.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/charts.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/lib/chart/animated.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statisticsInterval.js}" layout:fragment="script2"></script>
+</section>
+<!-- //컨텐츠 영역 -->
+<!-- //컨텐츠 영역 -->
+<script layout:fragment="script" th:inline="javascript">
+    /*<![CDATA[*/
+    var befoore_function = /*[[#{alert.befoore.function}]]*/ 'befoore_function';
+
+    var label_interval = /*[[#{statistics.3rd.label.interval}]]*/ 'label_interval';
+    var label_count = /*[[#{statistics.3rd.label.count}]]*/ 'label_count';
+    var label_percentage = /*[[#{statistics.3rd.label.percentage}]]*/ 'label_percentage';
+    var label_cumulative = /*[[#{statistics.3rd.label.cumulative}]]*/ 'label_cumulative';
+    var label_percent_completed = 'label_percent_completed';
+
+    var status_new = /*[[#{status.new}]]*/ 'status_new';
+    var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+    var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+    var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
+    var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
+
+    var my_store = /*[[${store}]]*/ 'my_store';
+    var result_none = /*[[#{result.none}]]*/ 'result_none';
+    /*]]>*/
+</script>
+</html>

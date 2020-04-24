@@ -468,4 +468,10 @@ public interface AdminMapper {
      */
     public int deleteRiderToken(Rider rider);
 
+    /**
+     * 2020.04.24 통계 페이지 추가
+     * */
+
+    List<Order> selectStoreStatisticsByOrderForAdmin(Order order);
+
 }

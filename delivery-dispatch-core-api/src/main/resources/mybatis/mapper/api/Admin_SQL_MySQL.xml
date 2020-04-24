@@ -1485,4 +1485,35 @@
 		AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		AND deleted IS NULL
 	</update>
+
+
+
+	<!--
+	///// 2020.04.24 Store 통계페이지의 관리자 형태로 변경
+	-->
+
+	<select id="selectStoreStatisticsByOrderForAdmin" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
+		SELECT	 admin_id
+				,store_id
+				,( SELECT store_name FROM TB_STORE WHERE id = ORD.store_id )	as	store_name
+				,rider_id
+				,status
+				,id
+				,created_datetime
+				,cooking_time
+				,assigned_datetime
+				,picked_up_datetime
+				,completed_datetime
+				,return_datetime
+				,reservation_datetime
+				,reservation_status
+				,reg_order_id
+				,distance
+		FROM	 TB_ORDER		as ORD
+		WHERE	 status in (3)
+		AND		 third_party_id IS NULL
+		AND		 created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+		AND		 admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
+	</select>
+
 </mapper>

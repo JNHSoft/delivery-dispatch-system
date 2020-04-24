@@ -60,4 +60,16 @@ public interface StatisticsAdminService {
      * @return
      */
     public List<Order> selectAdminStatisticsExcel(Order order);
+
+
+    /**
+     * 2020.04.24 Store 통계 페이지 추가
+     * */
+
+    /**
+     * 주문별 통게페이지
+     * @param order
+     * @return
+     * */
+    List<Order> selectStoreStatisticsByOrderForAdmin(Order order);
 }
