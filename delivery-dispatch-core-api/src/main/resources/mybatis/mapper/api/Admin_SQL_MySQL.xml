@@ -1493,27 +1493,37 @@
 	-->
 
 	<select id="selectStoreStatisticsByOrderForAdmin" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
-		SELECT	 admin_id
-				,store_id
+		SELECT	 ORD.admin_id
+				,ORD.store_id
 				,( SELECT store_name FROM TB_STORE WHERE id = ORD.store_id )	as	store_name
-				,rider_id
-				,status
-				,id
-				,created_datetime
-				,cooking_time
-				,assigned_datetime
-				,picked_up_datetime
-				,completed_datetime
-				,return_datetime
-				,reservation_datetime
-				,reservation_status
-				,reg_order_id
-				,distance
-		FROM	 TB_ORDER		as ORD
-		WHERE	 status in (3)
-		AND		 third_party_id IS NULL
-		AND		 created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-		AND		 admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
+				,ORD.rider_id
+				,ORD.status
+				,ORD.id
+				,ORD.created_datetime
+				,ORD.cooking_time
+				,ORD.assigned_datetime
+				,ORD.picked_up_datetime
+				,ORD.completed_datetime
+				,ORD.return_datetime
+				,ORD.reservation_datetime
+				,ORD.reservation_status
+				,ORD.reg_order_id
+				,ORD.distance
+				-- 검색조건을 위한 컬럼
+				,sbStore.group_id
+				,( SELECT name FROM TB_GROUP WHERE admin_id = ORD.admin_id AND id = sbStore.group_id AND deleted is null )	AS group_name
+				,sbStore.subgroup_id
+				,( SELECT name FROM TB_SUBGROUP WHERE admin_id = ORD.admin_id AND group_id = sbStore.group_id AND id = sbStore.subgroup_id AND deleted is null )	AS subgroup_name
+				,( SELECT name FROM TB_RIDER WHERE id = ORD.rider_id )		AS rider_name
+		FROM	 TB_ORDER					as ORD
+		LEFT JOIN TB_SUBGROUP_STORE_REL		as sbStore
+			ON	 ORD.admin_id = sbStore.admin_id
+			AND	 ORD.store_id = sbStore.store_id
+			AND	 sbStore.deleted is null
+		WHERE	 ORD.status in (3)
+		AND		 ORD.third_party_id IS NULL
+		AND		 ORD.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+		AND		 ORD.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
 	</select>
 
 </mapper>

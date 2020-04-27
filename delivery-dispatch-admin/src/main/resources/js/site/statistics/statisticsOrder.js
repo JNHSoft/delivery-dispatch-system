@@ -29,7 +29,7 @@ $(function () {
     });     // 종료일 이벤트
 
     $(".select").change(function(){
-        selectedId = $(this);
+        selectId = $(this);
         selectIdOption = $('option:selected', this);
         getStoreStatistics();
         searchList(selectId, selectIdOption);
@@ -258,6 +258,19 @@ function getStoreStatistics() {
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
                     tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].completedDatetime);
 
+                    // 검색 조건을 위한 데이터 입력
+                    tmpData.rider_name = data[key].rider.name;
+                    if (data[key].group){
+                        tmpData.group_name = data[key].group.name;
+                    }else{
+                        tmpData.group_name = group_none;
+                    }
+
+                    if (data[key].subGroup){
+                        tmpData.subGroup_name = data[key].subGroup.name;
+                    }else{
+                        tmpData.subGroup_name = group_none;
+                    }
 
                     orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
                     pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].completedDatetime);
@@ -301,6 +314,11 @@ function getStoreStatistics() {
             totalData.orderReturn1 = totalTimeSet(orderReturnSum);
             totalData.distance = (distanceSum ==0?0:parseFloat(distanceSum).toFixed(2)) + 'km';
 
+            // 검색 조건을 위한 데이터 입력
+            totalData.rider_name = "";
+            totalData.group_name = "";
+            totalData.subGroup_name = "";
+
             totalData.qtTimes = QTTimerSum;
 
             myData.push(totalData);
@@ -319,6 +337,12 @@ function getStoreStatistics() {
             averageData.pickupReturn1 = averageTimeSet(pickupReturnSum,rowNum - chkReturnTimeCnt);
             averageData.orderReturn1 = averageTimeSet(orderReturnSum,rowNum - chkReturnTimeCnt);
             averageData.distance = (distanceSum == 0?0:parseFloat(distanceSum/(rowNum - chkDistanceCnt)).toFixed(2)) + 'km';
+
+            // 검색 조건을 위한 데이터 입력
+            averageData.rider_name = "";
+            averageData.group_name = "";
+            averageData.subGroup_name = "";
+
 
             averageData.qtTimes = QTTimerSum / rowNum;
 
@@ -350,6 +374,10 @@ function getStoreStatistics() {
                     {label: label_order_out_time, name: 'pickupReturn1', index: 'pickupReturn1', width: 80, align: 'center'},
                     {label: label_order_total_time, name: 'orderReturn1', index: 'orderReturn1', width: 80, align: 'center'},
                     {label: label_order_distance, name: 'distance', width: 80, align: 'center'},
+
+                    {label: group_name, name: 'group_name', width: 80, align: 'center', hidden: true},
+                    {label: subGroup_name, name: 'subGroup_name', width: 80, align: 'center', hidden: true},
+                    {label: rider_name, name: 'rider_name', width: 80, align: 'center', hidden: true}
                 ],
                 // minHeight: 400,
                 height: 680,
@@ -416,13 +444,7 @@ function excelDownloadByOrder(){
  * */
 function searchList(selectId, selectIdOption) {
 
-    alert("selectId = " + selectId);
-    alert("selectIdOption = " + selectIdOption);
-
-    console.log(selectId);
-    console.log(selectIdOption);
-
-
+    console.log(selectId.attr('id'));
 
     if(selectId.attr('id')=="statisticsGroupList"){
         $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
@@ -441,6 +463,7 @@ function searchList(selectId, selectIdOption) {
 
     var searchText = $("#searchText").val();
 
+
     var filter2= {
         groupOp: "OR",
         rules: []
@@ -450,13 +473,13 @@ function searchList(selectId, selectIdOption) {
 
     if(select == 'reg_order_id'){
         filter2.rules.push({
-            field : 'origin_reg_order_id',
+            field : 'reg_order_id',
             op : "eq",
             data : searchText
         });
     }else if(select == 'all'){
         filter2.rules.push({
-            field : 'origin_reg_order_id',
+            field : 'reg_order_id',
             op : "eq",
             data : searchText
         });
@@ -465,23 +488,23 @@ function searchList(selectId, selectIdOption) {
         //     op : "cn",
         //     data : searchText
         // });
-        // filter2.rules.push({
-        //     field : 'th14',
-        //     op : "cn",
-        //     data : searchText
-        // });
-    }else if (select == 'pay'){
+        filter2.rules.push({
+            field : 'rider_name',
+            op : "cn",
+            data : searchText
+        });
+    }/*else if (select == 'pay'){
         // filter2.rules.push({
         //     field : 'th10',
         //     op : "cn",
         //     data : searchText
         // });
-    }else if (select == 'rider'){
-        // filter2.rules.push({
-        //     field : 'th14',
-        //     op : "cn",
-        //     data : searchText
-        // });
+    }*/else if (select == 'rider'){
+        filter2.rules.push({
+            field : 'rider_name',
+            op : "cn",
+            data : searchText
+        });
     }
 
     var searchText1= $("#statisticsGroupList option:selected").text();
@@ -496,32 +519,52 @@ function searchList(selectId, selectIdOption) {
         rules: [],
         groups : [filter2]
     };
-    // if(searchTextVal1 != "reset"){
-    //     filter.rules.push({
-    //         field : 'th1',
-    //         op : "eq",
-    //         data : searchText1
-    //     });
-    //     if(searchTextVal2 != "reset"){
-    //         filter.rules.push({
-    //             field : 'th2',
-    //             op : "eq",
-    //             data : searchText2
-    //         });
-    //         if(searchTextVal3 != "reset"){
-    //             filter.rules.push({
-    //                 field : 'th3',
-    //                 op : "eq",
-    //                 data : searchText3
-    //             });
-    //         }
-    //     }
-    // }
+
+    if(searchTextVal1 != "reset"){
+        filter.rules.push({
+            field : 'group_name',
+            op : "eq",
+            data : searchText1
+        });
+        if(searchTextVal2 != "reset"){
+            filter.rules.push({
+                field : 'subGroup_name',
+                op : "eq",
+                data : searchText2
+            });
+            if(searchTextVal3 != "reset"){
+                filter.rules.push({
+                    field : 'store_name',
+                    op : "eq",
+                    data : searchText3
+                });
+            }
+        }
+    }
+
+    var filter3 = {
+        groupOp: "OR",
+        rules: [],
+        groups : [filter]
+    };
+
+    filter3.rules.push({
+        field : 'reg_order_id',
+        op : "eq",
+        data : 'TOTAL'
+    });
+
+    filter3.rules.push({
+        field: "reg_order_id",
+        op : "eq",
+        data : "AVERAGE"
+    });
+
     var grid = jQuery('#jqGrid');
-    if(filter.rules.length > 0 || filter2.rules.length >0){
+    if(filter.rules.length > 0 || filter2.rules.length > 0 || filter3.rules.length > 0){
         grid[0].p.search = true;
     }
-    $.extend(grid[0].p.postData, { filters: filter });
+    $.extend(grid[0].p.postData, { filters: filter3 });
     grid.trigger("reloadGrid", [{ page: 1 }]);
 }
 

@@ -425,14 +425,6 @@ public class StatisticsController {
                 if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)) {
                     return true;
                 } else {
-//                    System.out.println("###################################################");
-//                    System.out.println(a.getId() + " % " + a.getRegOrderId());
-//                    System.out.println(completeTime.until(returnTime, ChronoUnit.SECONDS));
-//                    System.out.println(createdTime.until(completeTime, ChronoUnit.SECONDS));
-//                    System.out.println(createdTime.until(pickupTime, ChronoUnit.SECONDS));
-//                    System.out.println(createdTime.until(returnTime, ChronoUnit.SECONDS));
-//                    System.out.println("###################################################");
-
                     return false;
                 }
             } else {
@@ -441,6 +433,75 @@ public class StatisticsController {
         }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
     }
 
+    @GetMapping("/excelDownloadByOrder")
+    @CnttMethodDescription("관리자 주문별 통계 리스트 엑셀 출력")
+    public ModelAndView statisticsByOrderExcelDownload(HttpServletResponse response
+                                                      ,@RequestParam(value = "startDate") String startDate
+                                                      ,@RequestParam(value = "endDate") String endDate){
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            if (diffDays > 31){
+                return null;
+            }
+
+            order.setDays(Integer.toString((int)(long) diffDays + 1));
+
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        order.setToken(adminInfo.getAdminAccessToken());
+        ModelAndView modelAndView = new ModelAndView("StatisticsAdminOrderBuilderServiceImpl");
+        List<Order> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+
+        List<Order> filterStoreOrderListByAdmin =
+                storeOrderListByAdmin.stream().filter(a -> {
+                    // 다음 4가지의 모든 시간이 NULL 이 아닌 경우만 가져온다
+                    if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null){
+                        // 예약 주문인 경우 30분을 제외한다.
+                        if (a.getReservationStatus().equals("1")){
+                            LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                            a.setCreatedDatetime((reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S"))));
+                        }
+
+                        // 픽업 시간
+                        LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+                        // 배달 완료 시간
+                        LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+                        // 기사 복귀 시간
+                        LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+
+                        // 주문 등록 시간
+                        LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
+
+                        // 다음 조건에 부합한 경우만 표기되도록 적용
+                        if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                            return  true;
+                        }else {
+                            return  false;
+                        }
+                    }else{
+                        return  false;
+                    }
+                }).collect(Collectors.toList());
+
+        modelAndView.addObject("selectStoreStatisticsByOrderForAdmin", filterStoreOrderListByAdmin);
+
+        return modelAndView;
+    }
 
     ///////////////////////////////////////
     // *   주문별 통계 자료 종료 구간    * //
