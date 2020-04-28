@@ -29,9 +29,14 @@ th {font-weight:normal;}
 .tracker-top .state span.step2:before {background-image:url('../../images/tracker/ico_step2.png?ver=0.4');}
 .tracker-top .state span.step3:before {background-image:url('../../images/tracker/ico_step3.png?ver=0.4');}
 .tracker-top .state span.step4:before {background-image:url('../../images/tracker/ico_step4.png?ver=0.4');}
+
+/* 브랜드별 css 추가 */
+.tracker-top .state span.kfc:before{background-image:url('../../images/tracker/ico_step2_kfc.png?ver=0.4');}
+
 .tracker-top .state span.on,
 .tracker-top .state span.line + i {opacity:1}
 .tracker-top .state span.on:after{content:"";display:block; background:url('../../images/tracker/ico_chk.png?ver=0.4') 0 0 no-repeat; background-size:15px 15px; width:15px;height:15px; position:absolute;top:0;right:6px;}
+
 
 .tracker-bottom {padding:4px 1%;position:relative;box-sizing:border-box}
 .tracker-bottom td {padding:12px 0;color:#2d2926;}

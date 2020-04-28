@@ -84,6 +84,12 @@ function setUI() {
 			switch (data.brandCode) {
 				case "1":
 					$(".visual_area").css({"position":"relative","height":"300px","background":"url('../resources/images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat","background-size":"cover"});
+
+					console.log("brandCode");
+
+					$("#tAssign").removeClass('.step2');
+
+					$("#tAssign").addClass('kfc');
 					break;
 				default:
 					break;
