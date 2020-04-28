@@ -34,9 +34,9 @@
             <div class="right">
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
-                <input type="text" name="datepicker" id="day1" class="input picker"/>
+                <input type="text" name="datepicker" id="startDate" class="input datepicker"/>
                 ~
-                <input type="text" name="datepicker" id="day2" class="input picker"/>
+                <input type="text" name="datepicker" id="endDate" class="input datepicker"/>
                 <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByDate();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>

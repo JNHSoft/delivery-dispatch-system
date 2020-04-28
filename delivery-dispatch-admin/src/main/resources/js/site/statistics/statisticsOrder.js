@@ -99,7 +99,6 @@ function minusTimeSet2(time1, time2) {
         let minusTime = new Date(Math.abs(d2.getTime() - d1.getTime()));
         return "-"+('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
     }
-
 }
 
 let map;

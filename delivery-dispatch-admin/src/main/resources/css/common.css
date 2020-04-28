@@ -547,3 +547,59 @@ body .ui-tooltip{font-size:12px;border-width:1px;box-shadow:none}
 	body .ui-tooltip{z-index:3;}
 	span.inp_file .input{display:none;}
 }
+
+/*
+ #### 2020.04.28 매장 통계 자료 추가
+*/
+.date_graph_layer {
+	display: table;
+	width: 100%;
+	height: 150px;
+	min-width: 1340px;
+}
+.date_graph_inner {
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+}
+.date_graph_content {
+	display: inline-block;
+	color:#fff;
+}
+.date_graph_content .box {
+	min-width: 200px;
+	height: 100px;
+	color: black;
+	text-align: center;
+	float: left;
+	margin-right: 15px;
+}
+
+.date_graph_content .box:last-child{
+	margin-right: 0px !important;
+}
+
+.date_graph_content .box .col_val {
+	border: 1px solid #2f528f;
+	background: white;
+	height: 80px;
+	min-height: 80px;
+	top: 10px;
+	position: relative;
+	font-size: 20px;
+	border-radius: 5px;
+	line-height: 80px;
+}
+
+.date_graph_content .box .col_name {
+	font-size: 17px;
+	font-weight: bold;
+}
+
+.date_chart_wrap {
+	text-align: center;
+	float: left;
+	width: 1300px;
+	height: 150px;
+	position: relative;
+}

@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.GroupAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
@@ -17,6 +18,7 @@ import kr.co.cntt.core.service.admin.StoreAdminService;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -60,6 +62,9 @@ public class StatisticsController {
      * 객체 주입
      */
     NoticeAdminService noticeAdminService;
+
+    @Value("${spring.mvc.locale}")
+    private Locale regionLocale;
 
 
     @Autowired
@@ -512,7 +517,45 @@ public class StatisticsController {
      * */
     @GetMapping("/statisticsByDate")
     public String statisticsByDate(Order order, @RequestParam(required = false) String frag, Model model){
+
+        model.addAttribute("regionLocale", regionLocale);
+
         return "/statistics/dateStatement";
+    }
+
+    @ResponseBody
+    @GetMapping("/getStoreStatisticsByDate")
+    @CnttMethodDescription("날짜별 통계 리스트 조회")
+    public List<ByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
+                                                ,@RequestParam("endDate") String endDate){
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24* 60 * 60 * 1000);
+
+            if (diffDays > 31) {
+                return new ArrayList<>();
+            }
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        order.setToken(adminInfo.getAdminAccessToken());
+
+        List<ByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+
+        return byDateList;
     }
 
     ///////////////////////////////////////
@@ -525,6 +568,7 @@ public class StatisticsController {
      * */
     @GetMapping("/statisticsByInterval")
     public String statisticsByInterval(Order order, @RequestParam(required = false) String frag, Model model){
+
         return "/statistics/interval";
     }
 

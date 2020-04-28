@@ -6,6 +6,7 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
@@ -72,4 +73,10 @@ public interface StatisticsAdminService {
      * @return
      * */
     List<Order> selectStoreStatisticsByOrderForAdmin(Order order);
+
+    /**
+     * 매장 기간별 통계 페이지
+     * */
+    List<ByDate> selectStoreStatisticsByDateForAdmin(Order order);
+
 }

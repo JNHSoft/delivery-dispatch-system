@@ -8,12 +8,14 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
 import kr.co.cntt.core.util.Misc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -105,6 +107,17 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
         }
 
         return statistByOrder;
+    }
+
+    // 매장 일자별 통계 페이지
+    public List<ByDate> selectStoreStatisticsByDateForAdmin(Order order){
+        List<ByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdmin(order);
+
+        if (statistByDate.size() == 0){
+            return Collections.<ByDate>emptyList();
+        }
+
+        return statistByDate;
     }
 
 }
