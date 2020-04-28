@@ -1,6 +1,7 @@
 package kr.co.deliverydispatch.controller;
 
 import com.google.gson.Gson;
+import com.mysql.cj.util.StringUtils;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.util.AES256Util;
@@ -50,28 +51,60 @@ public class TrackerController {
     }
 
     @GetMapping("/tracker-test")
-    public String tracker(Model model, @RequestParam(required = false) String code, @RequestParam(required = false) String webOrderId, @RequestParam(required = false) String reqDate) {
+    public String tracker(Model model, @RequestParam(required = false) String code, @RequestParam(required = false) String webOrderId, @RequestParam(required = false) String reqDate, @RequestParam(required = false) String chkBrand, @RequestParam(required = false) String aseValue) {
 //         String param = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA&level=4&code=016&regOrderId=15";
 //        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"s01\",\"webOrderId\":\"s-20181112-cnt-s01a-0001\",\"reqDate\":\"20181112160000\"}";
 
 //        /tracker-test?code=s01&webOrderId=s-20190524-cnt-s01t-0001&reqDate=20190524150000
-        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"" + code + "\",\"webOrderId\":\"" + webOrderId + "\",\"reqDate\":\"" + reqDate + "\"}";
+//        String param = "{\"level\":\"4\",\"token\":\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA\",\"code\":\"" + code + "\",\"webOrderId\":\"" + webOrderId + "\",\"reqDate\":\"" + reqDate + "\"}";
+
+        String strToken = "";
+
+        if (chkBrand != null && chkBrand.toUpperCase() == "KFC"){
+            strToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyX2tmYyIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6MTU4MDM1OTc2ODMyMH0.85lddh4HehEyq0lRZOXvEig2y4aCtZKQ__03qVvPNYQ";
+        }else{
+            strToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d190cmFja2VyIiwiYXVkaWVuY2UiOiJ3ZWIiLCJjcmVhdGVkIjoxNTIxNjAwMjIxMzc5fQ.fQYha8zo4g8i2xDhF6wpDYqawl-BQF-RcTQZ8vCl3iA";
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("level", 4);
+        map.put("token", strToken);
+        map.put("code", code);
+        map.put("webOrderId", webOrderId);
+
+        if(reqDate.length() > 0){
+            map.put("reqDate", reqDate);
+        }else{
+            map.put("reqDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        }
+
+        String strJson = new Gson().toJson(map);
 
         try {
             String encKey = tKey;
             AES256Util aesUtil = new AES256Util(encKey);
 
-            String encParam = aesUtil.aesEncode(param);
+            String encParam = aesUtil.aesEncode(strJson);
             String encBase = CustomEncryptUtil.encodeBase64(encParam);
 
             String decBase = CustomEncryptUtil.decodeBase64(encBase);
             String decAes = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(encBase));
 
-            model.addAttribute("strParam", param);
+            model.addAttribute("strParam", strJson);
             model.addAttribute("encBase", encBase);
             model.addAttribute("decBase", decBase);
             model.addAttribute("decAes", decAes);
 
+
+//            if (!StringUtils.isNullOrEmpty(aseValue)){
+//                String decBase1 = CustomEncryptUtil.decodeBase64(aseValue);
+//                String decAes1 = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(aseValue));
+//
+//                System.out.println("#####################################################");
+//                System.out.println("decBase1 = " + decBase1);
+//                System.out.println("decAes1 = " + decAes1);
+//                System.out.println("#####################################################");
+//            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
