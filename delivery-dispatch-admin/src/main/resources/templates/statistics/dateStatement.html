@@ -28,15 +28,30 @@
     <form name="searchForm" id="filter-form" class="form-horizontal" role="form" action="">
         <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
         <div class="search_box">
-            <div class="left">
+
+            <div class="top">
                 <span class="lbl" th:text="${#messages.msg('statistics.2nd.title')}" style="font-size: 15px; font-weight: bold; color:black" />
             </div>
-            <div class="right">
+            <div class="left">
+                <select name="" class="select" id="statisticsGroupList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.group')}" />
+                </select>
+                <select name="" class="select" id="statisticsSubGroupList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.subgroup')}" />
+                </select>
+                <select name="" class="select" id="statisticsStoreList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.store')}" />
+                </select>
+            </div>
+            <div class="left" style="display: inline-flex">
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
                 <input type="text" name="datepicker" id="startDate" class="input datepicker"/>
-                ~
+                <span style="padding: 5px;">~</span>
                 <input type="text" name="datepicker" id="endDate" class="input datepicker"/>
+            </div>
+
+            <div class="right">
                 <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByDate();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>

@@ -19,9 +19,15 @@ $(function () {
         }
     });
 
+    $(".select").change(function(){
+        selectId = $(this);
+        selectIdOption = $('option:selected', this);
+        getGroupList();
+        searchList(selectId, selectIdOption);
+    });     //select box의 change 이벤트
+
     getStoreStatisticsByDate();
 });
-
 
 function totalTimeSet(time) {
     if (time) {
@@ -296,6 +302,7 @@ function getStoreStatisticsByDate() {
         }
     });
 }
+
 function dateGraph(avgData){
     $('#chart_content').html('');
 
@@ -453,4 +460,113 @@ function formatFloat(sender, pointer) {
     }
 
     return parseFloat(parseFloat(sender).toFixed(pointer));
+}
+
+
+/**
+ * 2020.04.29 통계 검색 조건 관련 함수들 추가
+ * */
+var selectId =$("#statisticsStoreList");
+var selectIdOption = $("#statisticsStoreList option:selected");
+
+
+/**
+ * 그룹 List 불러오기
+ */
+function getGroupList() {
+    $.ajax({
+        url : "/getStatisticsGroupList",
+        type : 'get',
+        data : {
+
+        },
+        async : false,
+        dataType : 'json',
+        success : function(data) {
+            if (data) {
+
+                var statisticsGroupListHtml = "<option value='reset'>" + list_search_all_group + "</option>";
+                // var statisticsGroupListHtml = "";
+                for (var i in data) {
+                    statisticsGroupListHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
+                }
+                statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
+                $("#statisticsGroupList").html(statisticsGroupListHtml);
+
+                $("#statisticsGroupList").on("change", function () {
+                    getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                });
+            }
+        }
+    });
+}
+
+/**
+ * 서브 그룹 List 불러오기
+ */
+function getStatisticsSubGroupList(gId, subGroup) {
+    var selectGroupId = null;
+
+    if (gId == null) {
+        selectGroupId = '1';
+    } else {
+        selectGroupId = gId
+    }
+
+    $.ajax({
+        url : "/getStatisticsSubGroupList",
+        type : 'get',
+        data : {
+            groupId : selectGroupId
+        },
+        async : false,
+        dataType : 'json',
+        success : function(data){
+            if(data) {
+                var pstatisticsSubGroupListHtml = "<option value='reset'>" + list_search_all_subgroup + "</option>";
+                for (var i in data){
+                    pstatisticsSubGroupListHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
+                }
+                $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
+
+                $("#statisticsSubGroupList").on("change", function () {
+                    getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                });
+
+            }
+        }
+    });
+}
+
+/**
+ * 상점 List 불러오기
+ */
+function getStatisticsStoreList(subId, gId) {
+    var selectGroupId = gId;
+    var selecSubGroupId = subId;
+    // debugger;
+    $.ajax({
+        url : "/getStatisticsStoreList",
+        type : 'get',
+        data : {
+            groupId : selectGroupId,
+            subGroupId : selecSubGroupId
+        },
+        async : false,
+        dataType : 'json',
+        success : function(data){
+            if(data) {
+                var statisticsStoreListHtml = "<option value='reset'>" + list_search_all_store + "</option>";
+                for (var i in data){
+                    statisticsStoreListHtml += "<option value='" + data[i].id  + "'>" + data[i].storeName + "</option>";
+                }
+                $("#statisticsStoreList").html(statisticsStoreListHtml);
+
+                $("#statisticsStoreList").on("change", function () {
+                    getStoreStatisticsByDate();
+                });
+
+            }
+        }
+    });
 }

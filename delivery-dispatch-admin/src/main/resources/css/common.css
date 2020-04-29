@@ -603,3 +603,9 @@ body .ui-tooltip{font-size:12px;border-width:1px;box-shadow:none}
 	height: 150px;
 	position: relative;
 }
+
+.no_chart_wrap {
+	font-size: 20px;
+	color: black;
+	text-align: center;
+}
