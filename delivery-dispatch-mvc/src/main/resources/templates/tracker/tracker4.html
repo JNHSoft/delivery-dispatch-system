@@ -126,15 +126,16 @@ function setUI() {
 				if($(".visual_area").has('#map').prevObject.length){
                     $(".mapCtrl").attr("id","map");
                     $(".visual_area").attr("id","");
-					// 주문 매장의 브랜드 코드에 따른 문구 색상 변경
-					switch (data.brandCode) {
-						case "1":
-							$(".visual_area").html('<p class="tit_red">已安排餐廳製作</p>');
-							break;
-						default:
-							$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
-							break;
-					}
+					$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
+					// // 주문 매장의 브랜드 코드에 따른 문구 색상 변경
+					// switch (data.brandCode) {
+					// 	case "1":
+					// 		$(".visual_area").html('<p class="tit_red">已安排餐廳製作</p>');
+					// 		break;
+					// 	default:
+					// 		$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
+					// 		break;
+					// }
 				}
 
 				if(checkTime - 1800 * 1000 <= 0){//예약시간과 현재시간이 30분 이내인지 체크
