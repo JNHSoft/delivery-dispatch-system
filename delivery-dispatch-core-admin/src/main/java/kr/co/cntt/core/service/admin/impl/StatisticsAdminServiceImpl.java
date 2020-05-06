@@ -8,16 +8,18 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.ByDate;
+import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
 import kr.co.cntt.core.util.Misc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service("StatisticsAdminService")
 public class StatisticsAdminServiceImpl implements StatisticsAdminService {
@@ -110,14 +112,168 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     }
 
     // 매장 일자별 통계 페이지
-    public List<ByDate> selectStoreStatisticsByDateForAdmin(Order order){
-        List<ByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdmin(order);
+    public List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order){
+        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdmin(order);
 
         if (statistByDate.size() == 0){
-            return Collections.<ByDate>emptyList();
+            return Collections.<AdminByDate>emptyList();
         }
 
         return statistByDate;
+    }
+
+    // 매장 누적 통계
+    public Interval selectAdminStatisticsByInterval(Order order) {
+        Interval interval = new Interval();
+        interval.setIntervalMinute(adminMapper.selectStatisticsByInterval(order));
+
+        List<Object[]> list = new ArrayList<>();
+
+        Map<String, Integer> intervalSize = new HashMap<>();
+        Map<String, Long> intervalCount = new HashMap<>();
+        Map<String, Double> sumIntervalCount = new HashMap<>();
+
+        interval.getIntervalMinute().forEach(x->{
+            System.out.println(x);
+        });
+
+        List<Integer> d30List = new ArrayList<>();
+        List<Integer> d7List = new ArrayList<>();
+
+        for (Map map:interval.getIntervalMinute()
+        ) {
+            if (map.get("interval_minute") != null){
+                d30List.add(Integer.parseInt(map.get("interval_minute").toString()));
+            }
+            if (map.get("d7_minute") != null){
+                d7List.add(Integer.parseInt(map.get("d7_minute").toString()));
+            }
+        }
+
+        /// D30에 대한 집계 함수 실행
+        Map<Integer, Long> d30Result =
+                d30List.stream().collect(
+                        Collectors.groupingBy(
+                                Function.identity(), Collectors.counting()
+                        )
+                );
+
+        /// D07에 대한 집계 함수 실행
+        Map<Integer, Long> d7Result =
+                d7List.stream().collect(
+                        Collectors.groupingBy(
+                                Function.identity(), Collectors.counting()
+                        )
+                );
+
+        // 데이터 토탈 개수
+        intervalSize.put("d30IntervalSize", d30List.size());
+        intervalSize.put("d7IntervalSize", d7List.size());
+
+
+        System.out.println(d30Result);
+        System.out.println(d7Result);
+
+        // 7분 미만 주문의 카운트
+        intervalCount.put("d30IntervalCount", d30Result.entrySet().parallelStream().filter(x->x.getKey() < 7).mapToLong(x -> x.getValue()).sum());
+        intervalCount.put("d7IntervalCount", d7Result.entrySet().parallelStream().filter(x->x.getKey() < 7).mapToLong(x -> x.getValue()).sum());
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+        intervalCount.clear();
+
+        // 7분 이상 10분 미만 주문의 카운트
+        intervalCount.put("d30IntervalCount", d30Result.entrySet().parallelStream().filter(x->x.getKey() >= 7 && x.getKey() < 10).mapToLong(x -> x.getValue()).sum());
+        intervalCount.put("d7IntervalCount", d7Result.entrySet().parallelStream().filter(x->x.getKey() >= 7 && x.getKey() < 10).mapToLong(x -> x.getValue()).sum());
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+        intervalCount.clear();
+
+        for (int i = 10; i < 61; i++) {
+            final int z = i;
+            intervalCount.put("d30IntervalCount", d30Result.entrySet().parallelStream().filter(x->x.getKey() == z).mapToLong(x -> x.getValue()).sum());
+            intervalCount.put("d7IntervalCount", d7Result.entrySet().parallelStream().filter(x->x.getKey() == z).mapToLong(x -> x.getValue()).sum());
+            sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+            intervalCount.clear();
+        }
+
+        // 60분 초과 주문의 카운트
+        intervalCount.put("d30IntervalCount", d30Result.entrySet().parallelStream().filter(x->x.getKey() >= 61).mapToLong(x -> x.getValue()).sum());
+        intervalCount.put("d7IntervalCount", d7Result.entrySet().parallelStream().filter(x->x.getKey() >= 61).mapToLong(x -> x.getValue()).sum());
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+        intervalCount.clear();
+
+        interval.setIntervalMinuteCounts(list);
+
+        return interval;
+    }
+
+    // 매장 누적 통계 30분 미만 목록
+    public List<Map> selectAdminStatisticsMin30BelowByDate(Order order){
+        List<Map> min30Below_Statistics = adminMapper.selectStatisticsMin30BelowByDate(order);
+        if (min30Below_Statistics.size() == 0){
+            return Collections.<Map>emptyList();
+        }
+
+        return min30Below_Statistics;
+    }
+
+    public Map<String, Double> addInterval(List list, Map<String, Integer> intervalSize, Map<String, Long> intervalCount, Map<String, Double> sumIntervalCount) {
+
+        /// 0 = 분별 개수 1 = 분별 퍼센트 2 = 토탈 퍼센트
+        /// 3 = D7 개수 4 = D7 퍼센트 5 = D7 토탈 퍼센트
+        Object[] array = new Object[6];
+
+        double d30Sum = 0;
+        double d7Sum = 0;
+
+        // D30 내용 추가
+        array[0] = intervalCount.get("d30IntervalCount");
+        if (intervalCount.get("d30IntervalCount") != null && intervalCount.get("d30IntervalCount").intValue() > 0){
+            array[1] = Double.parseDouble(String.format("%.2f", intervalCount.get("d30IntervalCount").intValue() / intervalSize.get("d30IntervalSize").doubleValue() * 100));
+        }else{
+            array[1] = 0;
+        }
+
+        d30Sum = Double.parseDouble(String.format("%.2f", intervalCount.get("d30IntervalCount").intValue() / intervalSize.get("d30IntervalSize").doubleValue() * 100));
+
+        if(!sumIntervalCount.containsKey("d30SumIntervalCount")){
+            sumIntervalCount.put("d30SumIntervalCount", d30Sum);
+        }else{
+            d30Sum = sumIntervalCount.get("d30SumIntervalCount").doubleValue() + d30Sum;
+            sumIntervalCount.put("d30SumIntervalCount", d30Sum);
+        }
+
+        if (d30Sum > 0){
+            array[2] = d30Sum;
+        }else{
+            array[2] = 0;
+        }
+
+        // D7 내용 추가
+        array[3] = intervalCount.get("d7IntervalCount");
+        if (intervalCount.get("d7IntervalCount") != null && intervalCount.get("d7IntervalCount").intValue() > 0){
+            array[4] = Double.parseDouble(String.format("%.2f", intervalCount.get("d7IntervalCount").intValue() / intervalSize.get("d7IntervalSize").doubleValue() * 100));
+        }else{
+            array[4] = 0;
+        }
+
+        d7Sum = Double.parseDouble(String.format("%.2f", intervalCount.get("d7IntervalCount").intValue() / intervalSize.get("d7IntervalSize").doubleValue() * 100));
+
+        if(!sumIntervalCount.containsKey("d7SumIntervalCount")){
+            sumIntervalCount.put("d7SumIntervalCount", d7Sum);
+        }else{
+            d7Sum = sumIntervalCount.get("d7SumIntervalCount").doubleValue() + d7Sum;
+            sumIntervalCount.put("d7SumIntervalCount", d7Sum);
+        }
+
+        if (d7Sum > 0){
+            array[5] = d7Sum;
+        }else{
+            array[5] = 0;
+        }
+
+
+        list.add(array);
+
+        return sumIntervalCount;
     }
 
 }

@@ -11,7 +11,9 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.ByDate;
+import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.model.login.User;
@@ -478,6 +480,16 @@ public interface AdminMapper {
     /**
      * 2020.04.28 일자별 통계 페이지 추가
      * */
-    List<ByDate> selectStoreStatisticsByDateForAdmin(Order order);
+    List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order);
+
+    /**
+     * 누적 통계 페이지 추가 1
+     * */
+    List<Map> selectStatisticsByInterval(Order order);
+
+    /**
+     * 누적 통계 페이지 추가 1
+     * */
+    List<Map> selectStatisticsMin30BelowByDate(Order order);
 
 }

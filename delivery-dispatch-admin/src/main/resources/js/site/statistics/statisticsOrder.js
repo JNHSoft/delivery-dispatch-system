@@ -443,17 +443,15 @@ function excelDownloadByOrder(){
  * */
 function searchList(selectId, selectIdOption) {
 
-    console.log(selectId.attr('id'));
-
     if(selectId.attr('id')=="statisticsGroupList"){
         $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
-        if(selectIdOption.val() == "rest"){
+        if(selectIdOption.val() == "reset"){
             $("#statisticsSubGroupList").html("<option value='reset'>" + list_search_all_subgroup + "</option>");
         }else{
             $("#statisticsSubGroupList").val("reset").prop("selected", true);
         }
     }else if(selectId.attr('id')=="statisticsSubGroupList"){
-        if(selectIdOption.val() == "rest") {
+        if(selectIdOption.val() == "reset") {
             $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
         }else{
             $("#statisticsStoreList").val("reset").prop("selected", true);

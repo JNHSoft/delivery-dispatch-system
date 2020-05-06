@@ -126,4 +126,13 @@ public class ExcelComm extends AbstractView {
     public String minusChkFilter(long mills){
         return mills>=0? DurationFormatUtils.formatDuration(mills,"HH:mm:ss"):"-"+DurationFormatUtils.formatDuration(Math.abs(mills),"HH:mm:ss");
     }
+
+    public String minusChkFilter(String millsData){
+        if(millsData !=null){
+            long mills = Long.parseLong(Math.round(Double.parseDouble(millsData)*1000)+"");
+            return mills>=0?DurationFormatUtils.formatDuration(mills,"HH:mm:ss"):"-"+DurationFormatUtils.formatDuration(Math.abs(mills),"HH:mm:ss");
+        } else{
+            return "-";
+        }
+    }
 }

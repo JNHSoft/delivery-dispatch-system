@@ -806,8 +806,8 @@
         AND		 A.return_datetime is not null
         AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
         AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(A.reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, completed_datetime) >= 0
-        AND		 timestampdiff(SECOND, created_datetime, picked_up_datetime) >= 0
-        AND		 timestampdiff(SECOND, created_datetime, return_datetime) >= 0
+        AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, picked_up_datetime) >= 0
+        AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, return_datetime) >= 0
         group by day_to_day, A.store_id;
     </select>
 
@@ -826,8 +826,8 @@
         AND		 return_datetime is not null
         AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
         AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, completed_datetime) >= 0
-        AND		 timestampdiff(SECOND, created_datetime, picked_up_datetime) >= 0
-        AND		 timestampdiff(SECOND, created_datetime, return_datetime) >= 0
+        AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, picked_up_datetime) >= 0
+        AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, return_datetime) >= 0
         AND      third_party_id IS NULL
     </select>
 
@@ -939,8 +939,8 @@
                 AND		 return_datetime is not null
                 AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
                 AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, completed_datetime) >= 0
-                AND		 timestampdiff(SECOND, created_datetime, picked_up_datetime) >= 0
-                AND		 timestampdiff(SECOND, created_datetime, return_datetime) >= 0
+                AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, picked_up_datetime) >= 0
+                AND		 timestampdiff(SECOND, CASE WHEN ifnull(reservation_status, 0) = 1 THEN date_sub(reservation_datetime, INTERVAL 30 MINUTE) ELSE created_datetime end, return_datetime) >= 0
                 GROUP BY day_to_day
             )	B
             ON	 A.DATE = B.day_to_day

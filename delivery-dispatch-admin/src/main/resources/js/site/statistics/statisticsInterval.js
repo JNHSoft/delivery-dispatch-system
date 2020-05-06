@@ -1,20 +1,20 @@
 var loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 $(function () {
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
-    $('#day1, #day2').val(date);
+    $('#startDate, #endDate').val(date);
 
-    $('#day1').datepicker({
+    $('#startDate').datepicker({
         maxDate : date,
         onClose: function(selectedDate) {
-            $('#day2').datepicker('option', 'minDate', selectedDate);
+            $('#endDate').datepicker('option', 'minDate', selectedDate);
             getStoreStatisticsByInterval();
         }
     });
 
-    $('#day2').datepicker({
+    $('#endDate').datepicker({
         minDate : date,
         onClose: function( selectedDate ) {
-            $('#day1').datepicker('option', 'maxDate', selectedDate);
+            $('#startDate').datepicker('option', 'maxDate', selectedDate);
             getStoreStatisticsByInterval();
         }
     });
@@ -77,7 +77,7 @@ function minusTime(time1, time2) {
 
 function getStoreStatisticsByInterval() {
 
-    let diffDate = Math.ceil((new Date($('#day2').val()).getTime() - new Date($('#day1').val()).getTime()) / (1000*3600*24));
+    let diffDate = Math.ceil((new Date($('#endDate').val()).getTime() - new Date($('#startDate').val()).getTime()) / (1000*3600*24));
     if (diffDate > 31){
         return;
     }
@@ -90,8 +90,8 @@ function getStoreStatisticsByInterval() {
         url: "/getStoreStatisticsByInterval",
         type: 'get',
         data: {
-            startDate: $('#day1').val(),
-            endDate: $('#day2').val()
+            startDate: $('#startDate').val(),
+            endDate: $('#endDate').val()
         },
         dataType: 'json',
         success: function (data) {
@@ -409,8 +409,8 @@ function intervalGraph(tcData, less30MinuteData) {
 }
 
 function excelDownloadByInterval(){
-    let startDate = $('#day1').val();
-    let endDate = $('#day2').val();
+    let startDate = $('#startDate').val();
+    let endDate = $('#endDate').val();
 
     let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
     if (diffDate > 31){
@@ -418,6 +418,8 @@ function excelDownloadByInterval(){
     }
 
     loading.show();
+
+    console.log('DownLoadStart');
     $.fileDownload("/excelDownloadByInterval",{
         httpMethod:"GET",
         data : {
@@ -427,7 +429,7 @@ function excelDownloadByInterval(){
         successCallback: function(url){
             loading.hide();
         },
-        failCallback: function(responseHtml,url){
+        failCallback: function(responseHtml,url,err){
             loading.hide();
         }
     });

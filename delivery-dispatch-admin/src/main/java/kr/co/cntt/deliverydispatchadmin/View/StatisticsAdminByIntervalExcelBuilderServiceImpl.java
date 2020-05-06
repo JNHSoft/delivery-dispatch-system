@@ -1,7 +1,7 @@
-package kr.co.deliverydispatch.View;
+package kr.co.cntt.deliverydispatchadmin.View;
 
 import kr.co.cntt.core.model.statistic.Interval;
-import org.apache.commons.lang3.time.DurationFormatUtils;
+import kr.co.cntt.core.service.admin.impl.Excel.ExcelComm;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -18,13 +18,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.StackedBarRenderer;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.view.AbstractView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
@@ -35,25 +31,10 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 
-@Component("StoreStatisticsByIntervalExcelBuilderServiceImpl")
-public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractView {
-    @Resource
-    private MessageSource messageSource;
-
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-
-    private String nullCheck(String str){
-        return str!=null?str:"";
-    }
-
-    @Value("${spring.mvc.locale}")
-    private Locale locale;
-
+@Component("StatisticsAdminByIntervalExcelBuilderServiceImpl")
+public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm {
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         locale = LocaleContextHolder.getLocale();
@@ -64,9 +45,9 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
         SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
         if(request.getRequestURI().matches("/excelDownloadByInterval")) {
-            Interval storeStatisticsByInterval = (Interval) model.get("getStoreStatisticsByIntervalExcel");
+            Interval storeStatisticsByInterval = (Interval) model.get("getAdminStatisticsByIntervalExcel");
             setStoreStatisticsByIntervalExcel(workbook, storeStatisticsByInterval);
-            fileName += " Interval_Report.xlsx";
+            fileName += " Interval_Analysis_Report.xlsx";
         }
 
         String encordedFilename = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
@@ -80,6 +61,7 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
         if(fs != null) fs.close();
         workbook.dispose();
     }
+
     // 내용 셋팅 하는 부분
     public void setStoreStatisticsByIntervalExcel(SXSSFWorkbook wb, Interval storeStatisticsByInterval) {
         int rowNum = 0;
@@ -221,7 +203,7 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
                 , dataset, PlotOrientation.VERTICAL, true, true, false);
 
         barChart.setBorderVisible(true);
-        barChart.setBorderPaint(Color.GRAY);
+        barChart.setBorderPaint(java.awt.Color.GRAY);
         barChart.getLegend().setFrame(BlockBorder.NONE);
         barChart.getLegend().setMargin(0, 0, 10, 0);
         barChart.getLegend().setPosition(RectangleEdge.BOTTOM);
@@ -229,8 +211,8 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
         CategoryPlot plot = (CategoryPlot) barChart.getPlot();
         plot.setBackgroundPaint(java.awt.Color.WHITE);
         plot.setOutlineVisible(false);
-        plot.setDomainGridlinePaint(Color.GRAY);
-        plot.setRangeGridlinePaint(Color.GRAY);
+        plot.setDomainGridlinePaint(java.awt.Color.GRAY);
+        plot.setRangeGridlinePaint(java.awt.Color.GRAY);
 
         barChart.getTitle().setFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 20));
         plot.getDomainAxis().setLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 14));
@@ -274,99 +256,4 @@ public class StoreStatisticsByIntervalExcelBuilderServiceImpl extends AbstractVi
         }
 
     }
-
-    public String minusChkFilter(long mills){
-        return mills>=0?DurationFormatUtils.formatDuration(mills,"HH:mm:ss"):"-"+DurationFormatUtils.formatDuration(Math.abs(mills),"HH:mm:ss");
-    }
-
-    public Font setTotalCellFont(SXSSFWorkbook wb) {
-        Font dataCellFont = wb.createFont();
-        dataCellFont.setFontHeightInPoints((short) 10);
-        dataCellFont.setBoldweight(Font.BOLDWEIGHT_NORMAL);
-        dataCellFont.setFontName("맑은 고딕");
-
-        return dataCellFont;
-    }
-
-    public CellStyle setTotalCell(SXSSFWorkbook wb){
-        // 합계 셀 스타일
-        CellStyle TotalRowStyle = wb.createCellStyle();
-        TotalRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
-        TotalRowStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
-        TotalRowStyle.setFillForegroundColor(IndexedColors.YELLOW.index);
-        TotalRowStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        TotalRowStyle.setBorderBottom(CellStyle.BORDER_THIN);
-        TotalRowStyle.setBottomBorderColor(IndexedColors.BLACK.index);
-        TotalRowStyle.setBorderLeft(CellStyle.BORDER_THIN);
-        TotalRowStyle.setLeftBorderColor(IndexedColors.BLACK.index);
-        TotalRowStyle.setBorderRight(CellStyle.BORDER_THIN);
-        TotalRowStyle.setRightBorderColor(IndexedColors.BLACK.index);
-        TotalRowStyle.setBorderTop(CellStyle.BORDER_THIN);
-        TotalRowStyle.setTopBorderColor(IndexedColors.BLACK.index);
-        TotalRowStyle.setWrapText(true);
-        Font TotalRowFont = wb.createFont();
-        TotalRowFont.setFontHeightInPoints((short) 10);
-        TotalRowFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
-        TotalRowFont.setFontName("맑은 고딕");
-        TotalRowStyle.setFont(TotalRowFont);
-
-        return TotalRowStyle;
-    }
-
-
-    public Font setDataCellFont(SXSSFWorkbook wb) {
-        Font dataCellFont = wb.createFont();
-        dataCellFont.setFontHeightInPoints((short) 10);
-        dataCellFont.setBoldweight(Font.BOLDWEIGHT_NORMAL);
-        dataCellFont.setFontName("맑은 고딕");
-
-        return dataCellFont;
-    }
-
-    public CellStyle setDataCell(SXSSFWorkbook wb) {
-
-        CellStyle dataCellStyle = wb.createCellStyle();
-        dataCellStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        dataCellStyle.setVerticalAlignment(CellStyle.ALIGN_CENTER);
-        dataCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
-        dataCellStyle.setBottomBorderColor(IndexedColors.BLACK.index);
-        dataCellStyle.setBorderLeft(CellStyle.BORDER_THIN);
-        dataCellStyle.setLeftBorderColor(IndexedColors.BLACK.index);
-        dataCellStyle.setBorderRight(CellStyle.BORDER_THIN);
-        dataCellStyle.setRightBorderColor(IndexedColors.BLACK.index);
-        dataCellStyle.setBorderTop(CellStyle.BORDER_THIN);
-        dataCellStyle.setTopBorderColor(IndexedColors.BLACK.index);
-
-        return dataCellStyle;
-    }
-
-    public CellStyle settTitleCell(SXSSFWorkbook wb) {
-
-        CellStyle titleCellStyle = wb.createCellStyle();
-        titleCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
-        titleCellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
-        titleCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-        titleCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        titleCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
-        titleCellStyle.setBottomBorderColor(IndexedColors.BLACK.index);
-        titleCellStyle.setBorderLeft(CellStyle.BORDER_THIN);
-        titleCellStyle.setLeftBorderColor(IndexedColors.BLACK.index);
-        titleCellStyle.setBorderRight(CellStyle.BORDER_THIN);
-        titleCellStyle.setRightBorderColor(IndexedColors.BLACK.index);
-        titleCellStyle.setBorderTop(CellStyle.BORDER_THIN);
-        titleCellStyle.setTopBorderColor(IndexedColors.BLACK.index);
-
-        return titleCellStyle;
-    }
-
-    public Font setTitleCellFont(SXSSFWorkbook wb) {
-
-        Font titleCellFont = wb.createFont();
-        titleCellFont.setFontHeightInPoints((short) 10);
-        titleCellFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
-        titleCellFont.setFontName("맑은 고딕");
-
-        return titleCellFont;
-    }
-
 }

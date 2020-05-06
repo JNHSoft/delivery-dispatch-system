@@ -9,7 +9,9 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.ByDate;
+import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.GroupAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
@@ -526,7 +528,7 @@ public class StatisticsController {
     @ResponseBody
     @GetMapping("/getStoreStatisticsByDate")
     @CnttMethodDescription("날짜별 통계 리스트 조회")
-    public List<ByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
+    public List<AdminByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
                                                 ,@RequestParam("endDate") String endDate){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -553,9 +555,48 @@ public class StatisticsController {
 
         order.setToken(adminInfo.getAdminAccessToken());
 
-        List<ByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+        List<AdminByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
 
         return byDateList;
+    }
+
+    @GetMapping("/excelDownloadByDate")
+    @CnttMethodDescription("관리자 기간별 통계 리스트 엑셀 출력")
+    public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response,
+                                                      @RequestParam(value = "startDate") String startDate,
+                                                      @RequestParam(value = "endDate") String endDate){
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            if (diffDays > 31){
+                return null;
+            }
+
+            order.setDays(Integer.toString((int)(long) diffDays + 1));
+
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        order.setToken(adminInfo.getAdminAccessToken());
+        ModelAndView modelAndView = new ModelAndView("StatisticsAdminByDateBuilderServiceImpl");
+        List<AdminByDate> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+
+        modelAndView.addObject("selectStoreStatisticsByDateForAdmin", storeOrderListByAdmin);
+
+        return modelAndView;
     }
 
     ///////////////////////////////////////
@@ -568,10 +609,88 @@ public class StatisticsController {
      * */
     @GetMapping("/statisticsByInterval")
     public String statisticsByInterval(Order order, @RequestParam(required = false) String frag, Model model){
-
         return "/statistics/interval";
     }
 
+    @ResponseBody
+    @GetMapping("/getStoreStatisticsByInterval")
+    @CnttMethodDescription("구간별 통계 리스트 조회")
+    public Map getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate,
+                                            @RequestParam(value = "endDate") String endDate){
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+        order.setEndDate(endDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24* 60 * 60 * 1000);
+
+            if (diffDays > 31) {
+                return new HashMap();
+            }
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        order.setToken(adminInfo.getAdminAccessToken());
+
+
+        Interval statisticsInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
+        //구간별 통계 리스트 조회페이지에 추가된 그래프 정보
+        List<Map> statisticsMin30Below = statisticsAdminService.selectAdminStatisticsMin30BelowByDate(order);
+
+        Map result = new HashMap();
+        result.put("intervalData", statisticsInterval);
+        result.put("intervalMin30Below", statisticsMin30Below);
+
+        return result;
+    }
+
+    @GetMapping("/excelDownloadByInterval")
+    public ModelAndView statisticsByIntervalExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+        order.setEndDate(endDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24* 60 * 60 * 1000);
+
+            if (diffDays > 31) {
+                return null;
+            }
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        order.setToken(adminInfo.getAdminAccessToken());
+
+        ModelAndView modelAndView = new ModelAndView("StatisticsAdminByIntervalExcelBuilderServiceImpl");
+        Interval storeStatisticsByInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
+        modelAndView.addObject("getAdminStatisticsByIntervalExcel", storeStatisticsByInterval);
+
+        return modelAndView;
+    }
     ///////////////////////////////////////
     // *  누적 완료 통계 자료 종료 구간  * //
     ///////////////////////////////////////

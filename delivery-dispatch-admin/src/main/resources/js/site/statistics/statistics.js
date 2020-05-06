@@ -39,15 +39,17 @@ $(function () {
 var selectId =$("#statisticsStoreList");
 var selectIdOption = $("#statisticsStoreList option:selected");
 function searchList(selectId, selectIdOption) {
+    console.log("serchList");
+
     if(selectId.attr('id')=="statisticsGroupList"){
         $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
-        if(selectIdOption.val() == "rest"){
+        if(selectIdOption.val() == "reset"){
             $("#statisticsSubGroupList").html("<option value='reset'>" + list_search_all_subgroup + "</option>");
         }else{
             $("#statisticsSubGroupList").val("reset").prop("selected", true);
         }
     }else if(selectId.attr('id')=="statisticsSubGroupList"){
-        if(selectIdOption.val() == "rest") {
+        if(selectIdOption.val() == "reset") {
             $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
         }else{
             $("#statisticsStoreList").val("reset").prop("selected", true);
@@ -139,6 +141,7 @@ function searchList(selectId, selectIdOption) {
     $.extend(grid[0].p.postData, { filters: filter });
     grid.trigger("reloadGrid", [{ page: 1 }]);
 }
+
 /**
  * 그룹 List 불러오기
  */
@@ -343,6 +346,7 @@ function getStatisticsList() {
         },
         dataType: 'json',
         success: function (data) {
+            console.log("getStatisticsList");
             var i = 1;
             for (var key in data) {
                 var $tmpData = new Object();

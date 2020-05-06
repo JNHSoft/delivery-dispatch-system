@@ -1,7 +1,13 @@
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
+var selectId =$("#statisticsStoreList");
+var selectIdOption = $("#statisticsStoreList option:selected");
+
+
 $(function () {
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
     $('#startDate, #endDate').val(date);
+    getGroupList();                 // 그룹 정보 조회
+    getStoreStatisticsByDate();
 
     $('#startDate').datepicker({
         maxDate : date,
@@ -22,11 +28,9 @@ $(function () {
     $(".select").change(function(){
         selectId = $(this);
         selectIdOption = $('option:selected', this);
-        getGroupList();
+        getStoreStatisticsByDate();
         searchList(selectId, selectIdOption);
     });     //select box의 change 이벤트
-
-    getStoreStatisticsByDate();
 });
 
 function totalTimeSet(time) {
@@ -64,6 +68,9 @@ function getStoreStatisticsByDate() {
         },
         dataType: 'json',
         success: function (data) {
+
+            console.log("데이터 조회 시작");
+
             // 평균 값
             let orderPickupSum = 0;
             let pickupCompleteSum = 0;
@@ -95,6 +102,7 @@ function getStoreStatisticsByDate() {
             let tpSpCnt = 0;
 
             for (let key in data) {
+                console.log(data);
                 if (data.hasOwnProperty(key)) {
                     // 빈값 여부를 위해 chkcount
                     let chkCnt = 0;
@@ -108,6 +116,19 @@ function getStoreStatisticsByDate() {
                     tpSpCnt++;
                     tmpdata.store = data[key].storeName;
                     tmpdata.day = data[key].dayToDay;
+
+                    if (data[key].groupName == ''){
+                        tmpdata.group_name = group_none;
+                    }else{
+                        tmpdata.group_name = data[key].groupName;
+                    }
+
+                    if (data[key].subGroup_name == ''){
+                        tmpdata.subGroup_name = group_none;
+                    }else{
+                        tmpdata.subGroup_name = data[key].subGroupName;
+                    }
+
                     tmpdata.orderPickup = totalTimeSet(data[key].orderPickup*1000);
                     tmpdata.pickupComplete = totalTimeSet(data[key].pickupComplete*1000);
                     tmpdata.orderComplete = totalTimeSet(data[key].orderComplete*1000);
@@ -204,6 +225,10 @@ function getStoreStatisticsByDate() {
             let avgData = new Object();
             avgData.store = "Average" ;
             avgData.day = "";
+
+            avgData.group_name = "";
+            avgData.subGroup_name = "";
+
             avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/rowCnt);
             avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/rowCnt);
             avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/rowCnt);
@@ -247,13 +272,21 @@ function getStoreStatisticsByDate() {
                 dateGraph();
                 dateInfo(avgData);
                 jQuery('#jqGrid').jqGrid('clearGridData');
+                jQuery('#jqGrid').trigger('reloadGrid');
             }
+
+            $("#jqGrid").trigger("reloadGrid");
+
             $("#jqGrid").jqGrid({
                 datatype: "local",
                 data: mydata,
                 colModel: [
+                    {label: group_name, name: 'group_name', width: 80, align: 'center', hidden: true},
+                    {label: subGroup_name, name: 'subGroup_name', width: 80, align: 'center', hidden: true},
+
                     {label: label_store, name: 'store', width: 80, align: 'center'},
                     {label: label_date, name: 'day', width: 80, align: 'center'},
+
                     {label: label_in_store_time, name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
                     {label: label_delivery_time, name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},
                     {label: label_completed_time, name: 'orderComplete', index: 'orderComplete', width: 80, align: 'center'},
@@ -290,15 +323,17 @@ function getStoreStatisticsByDate() {
                     {startColumnName: 'totalSales', numberOfColumns: 6, titleText: label_productivity}
                 ]
             });
+
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
             loading.hide();
-            $('.state_wrap .btn_close').click(function (e) {
-                e.preventDefault();
-                $('.state_wrap').removeClass('on'); //상세보기 닫기
-                setTimeout(function () {
-                    $(window).trigger('resize');
-                }, 300)//그리드 리사이즈
-            });
+
+            // $('.state_wrap .btn_close').click(function (e) {
+            //     e.preventDefault();
+            //     $('.state_wrap').removeClass('on'); //상세보기 닫기
+            //     setTimeout(function () {
+            //         $(window).trigger('resize');
+            //     }, 300)//그리드 리사이즈
+            // });
         }
     });
 }
@@ -374,9 +409,11 @@ function dateGraph(avgData){
         });
     }
 }
+
 function convertToMinute(time){
     return (time == '-')? null : (time.split(':').reduce((acc,time) => (60 * acc) + +time) / 60).toFixed(2)
 }
+
 function convertToHms(time){
     let arr = time.split(':');
 
@@ -466,9 +503,6 @@ function formatFloat(sender, pointer) {
 /**
  * 2020.04.29 통계 검색 조건 관련 함수들 추가
  * */
-var selectId =$("#statisticsStoreList");
-var selectIdOption = $("#statisticsStoreList option:selected");
-
 
 /**
  * 그룹 List 불러오기
@@ -494,6 +528,7 @@ function getGroupList() {
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
                 $("#statisticsGroupList").on("change", function () {
+                    console.log("Group Change");
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                 });
             }
@@ -506,6 +541,9 @@ function getGroupList() {
  */
 function getStatisticsSubGroupList(gId, subGroup) {
     var selectGroupId = null;
+
+    console.log("getStatisticsSubGroupList");
+    console.log(gId);
 
     if (gId == null) {
         selectGroupId = '1';
@@ -569,4 +607,83 @@ function getStatisticsStoreList(subId, gId) {
             }
         }
     });
+}
+
+/**
+ * 검색 조건 관련 함수
+ * */
+function searchList(selectId, selectIdOption) {
+
+    if(selectId.attr('id')=="statisticsGroupList"){
+        $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
+        if(selectIdOption.val() == "reset"){
+            $("#statisticsSubGroupList").html("<option value='reset'>" + list_search_all_subgroup + "</option>");
+        }else{
+            $("#statisticsSubGroupList").val("reset").prop("selected", true);
+        }
+    }else if(selectId.attr('id')=="statisticsSubGroupList"){
+        if(selectIdOption.val() == "reset") {
+            $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
+        }else{
+            $("#statisticsStoreList").val("reset").prop("selected", true);
+        }
+    }
+
+    var searchText1= $("#statisticsGroupList option:selected").text();
+    var searchTextVal1= $("#statisticsGroupList option:selected").val();
+    var searchText2= $("#statisticsSubGroupList option:selected").text();
+    var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
+    var searchText3= $("#statisticsStoreList option:selected").text();
+    var searchTextVal3= $("#statisticsStoreList option:selected").val();
+
+    var filter = {
+        groupOp: "AND",
+        rules: []
+    };
+
+    if(searchTextVal1 != "reset"){
+        filter.rules.push({
+            field : 'group_name',
+            op : "eq",
+            data : searchText1
+        });
+        if(searchTextVal2 != "reset"){
+            filter.rules.push({
+                field : 'subGroup_name',
+                op : "eq",
+                data : searchText2
+            });
+            if(searchTextVal3 != "reset"){
+                filter.rules.push({
+                    field : 'store',
+                    op : "eq",
+                    data : searchText3
+                });
+            }
+        }
+    }
+
+    var filter3 = {
+        groupOp: "OR",
+        rules: [],
+        groups:[filter]
+    };
+
+    if (filter.rules.length > 0){
+        filter3.rules.push({
+            field: "store",
+            op : "eq",
+            data : "Average"
+        });
+    }
+
+    var grid = jQuery('#jqGrid');
+
+    if(filter.rules.length > 0 || filter3.rules.length > 0 ){
+        grid[0].p.search = true;
+    }
+
+    $.extend(grid[0].p.postData, { filters: filter3 });
+    grid.trigger("reloadGrid", [{ page: 1 }]);
+    console.log("grid trigger");
 }
