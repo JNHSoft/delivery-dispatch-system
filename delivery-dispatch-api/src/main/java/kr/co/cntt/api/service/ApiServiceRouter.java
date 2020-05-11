@@ -225,6 +225,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Order 픽업 */
 	ORDER_PICKEDUP("orderService", "putOrderPickedUp", Order.class),
 
+	/** Order 도착 */
+	ORDER_ARRIVED("orderService", "putOrderArrived", Order.class),
+
 	/** Order 완료 */
 	ORDER_COMPLETED("orderService", "putOrderCompleted", Order.class),
 

@@ -177,7 +177,7 @@ function setUI() {
                         clearInterval(plusProgress);
                     }
 				}, 100);
- 			} else if (trackerStatus == 2 && localStorage.getItem('chkProgress')/*$.cookie('chkProgress')*/) {
+ 			} else if ((trackerStatus == 2 || trackerStatus == 6) && localStorage.getItem('chkProgress')/*$.cookie('chkProgress')*/) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on line');
                 $('#tAssign').addClass('on line');
@@ -569,7 +569,7 @@ function initMap() {
     directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
     directionsService = new google.maps.DirectionsService;
 
-    if(trackerStatus == 2){
+    if(trackerStatus == 2 || trackerStatus == 6){
         directionsDisplay.setMap(map);
 //        calculateAndDisplayRoute(directionsService, directionsDisplay);
     }
@@ -663,7 +663,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				overlay.onRemove();
 			}
 			trackerStatus = data.status;
-			if(trackerStatus!=2){
+			if(trackerStatus!=2 && trackerStatus!=6){
 				setUI();
 			}else{
 				// 이미지 경로 저장

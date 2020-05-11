@@ -811,7 +811,7 @@
 					,count(rider_id)			as order_count
 					FROM	 TB_ORDER	as ord
 					where	 created_datetime > CURRENT_DATE()
-					and		 status in (1, 2)
+					and		 status in (1, 2, 6)
 					group by admin_id, rider_id
 				)	as E
 			on	 A.id = E.rider_id

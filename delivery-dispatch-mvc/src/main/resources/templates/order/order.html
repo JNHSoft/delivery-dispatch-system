@@ -23,6 +23,9 @@
 				<label class="checkbox"><input name="srchChk" type="checkbox" value="2" id="orderPickupChk" checked="checked" disabled="true"/><i></i>
 					<span class="lbl" th:text="${#messages.msg('status.pickedup')}"/>
 				</label>
+				<label class="checkbox"><input name="srchChk" type="checkbox" value="6" id="orderArrivedChk" checked="checked" disabled="true"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('status.arrived')}"/>
+				</label>
 				<label class="checkbox"><input name="srchChk" type="checkbox" value="3" id="orderCompleChk" checked="checked" disabled="true"/><i></i>
 					<span class="lbl" th:text="${#messages.msg('status.completed')}"/>
 				</label>
@@ -244,6 +247,7 @@
         var status_new = /*[[#{status.new}]]*/ 'status_new';
         var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
         var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
+		var status_arrived = /*[[#{status.arrived}]]*/ 'status_arrived';
         var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
         var status_canceled = /*[[#{status.canceled}]]*/ 'status_canceled';
         var order_confirm = /*[[#{order.confirm}]]*/ 'order_confirm';
