@@ -323,7 +323,8 @@ DDELib.Orders.prototype = {
                 {label: order_payment, name: 'pay', width: 80, align: 'center', hidden:regionLocale == "zh_HK"?true:false},
                 {label: order_assigned, name: 'time3', width: 80, align: 'center'},
                 {label: order_pickedup, name: 'time4', width: 80, align: 'center'},
-                {label: order_arrived, name: 'time5', width: 80, align: 'center'},
+                {label: order_arrived, name: 'time8', width: 80, align: 'center'},
+                {label: order_completed, name: 'time5', width: 80, align: 'center'},
                 {label: order_return, name: 'time6', width: 80, align: 'center'},
                 {label: order_reserved, name: 'time7', width: 80, align: 'center'},
                 {label: rider_name, name: 'rider', width: 80, align: 'center'},
@@ -388,11 +389,39 @@ DDELib.Orders.prototype = {
         tmpdata.time5 = checkTime(ev.pickedUpDatetime, ev.completedDatetime);
         tmpdata.time6 = this.getPickupTime(ev);
         tmpdata.time7 = this.getReserveTime(ev);
+        // 2020.05.12 고객 집 앞 도착 시간
+        tmpdata.time8 = (!ev.arrivedDatetime )?"-":timeSet2(ev.arrivedDatetime);
 
         // 서드 파티 추가
         tmpdata.rider = this.getRiderOrThirdTypeName(ev);
         tmpdata.button = this.makeButtonOrderData(ev,'putAssignedAdvanceFirst');
-        tmpdata.orderbystatus = (ev.status == 5)? 0 : ev.status ;
+
+        // 20.05.12 상태 값추가로 인하여 정렬 흐트림 방지
+        // tmpdata.orderbystatus = (ev.status == 5)? 0 : ev.status ;
+        switch (ev.status) {
+            case 0:
+            case 5:
+                tmpdata.orderbystatus = 0;
+                break;
+            case 1:
+                tmpdata.orderbystatus = 1;
+                break;
+            case 2:
+                tmpdata.orderbystatus = 2;
+                break;
+            case 3:
+                tmpdata.orderbystatus = 4;
+                break;
+            case 4:
+                tmpdata.orderbystatus = 5;
+                break;
+            case 6:
+                tmpdata.orderbystatus = 3;
+                break;
+            default:
+                tmpdata.orderbystatus = 7;
+        }
+
         tmpdata.assignedFirst =  ev.assignedFirst;
 
         return tmpdata;

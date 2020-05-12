@@ -213,6 +213,7 @@
 				,A.assigned_datetime
 				,A.arrived_datetime
 				,A.picked_up_datetime
+				,A.arrived_datetime
 				,A.completed_datetime
 				,A.return_datetime
 				,A.menu_price
@@ -292,6 +293,7 @@
             , A.reservation_status
             , A.assigned_datetime
             , A.picked_up_datetime
+			, A.arrived_datetime
             , A.completed_datetime
             , A.return_datetime
             , A.combined_order_id
