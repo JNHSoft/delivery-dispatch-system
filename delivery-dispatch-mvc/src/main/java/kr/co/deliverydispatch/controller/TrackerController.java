@@ -1,7 +1,6 @@
 package kr.co.deliverydispatch.controller;
 
 import com.google.gson.Gson;
-import com.mysql.cj.util.StringUtils;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.util.AES256Util;
@@ -105,6 +104,16 @@ public class TrackerController {
                 System.out.println("decAes1 = " + decAes1);
                 System.out.println("#####################################################");
             }
+
+//            if (!StringUtils.isNullOrEmpty(aseValue)){
+//                String decBase1 = CustomEncryptUtil.decodeBase64(aseValue);
+//                String decAes1 = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(aseValue));
+//
+//                System.out.println("#####################################################");
+//                System.out.println("decBase1 = " + decBase1);
+//                System.out.println("decAes1 = " + decAes1);
+//                System.out.println("#####################################################");
+//            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
