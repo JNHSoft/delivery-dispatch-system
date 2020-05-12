@@ -222,6 +222,9 @@ public interface Api {
     /** Order 픽업 */
     String ORDER_PICKEDUP = "/putOrderPickedUp.json";
 
+    /** Order 도착 */
+    String ORDER_ARRIVED = "/putOrderArrived.json";
+
     /** Order 완료 */
     String ORDER_COMPLETED = "/putOrderCompleted.json";
 

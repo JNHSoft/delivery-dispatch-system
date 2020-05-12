@@ -434,6 +434,10 @@ DDELib.Orders.prototype = {
         else if (status == 2) {
             str = '<i class="ic_txt ic_blue">' + status_pickedup + '</i>';
         }
+        // 2020.05.08 Arrived Status 추가
+        else if (status == 6) {
+            str = '<i class="ic_txt ic_blue">' + status_arrived + '</i>';
+        }
         else if (status == 3) {
             str = '<i class="ic_txt">' + status_completed + '</i>';
         }

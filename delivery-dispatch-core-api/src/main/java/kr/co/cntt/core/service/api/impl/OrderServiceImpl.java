@@ -740,7 +740,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Rider S_Rider = riderMapper.getRiderInfo(rider);
 
             List<Order> R_Order = new ArrayList<>();
-            char[] allArray = {'0', '1', '2', '3', '4', '5'};
+            char[] allArray = {'0', '1', '2', '3', '4', '5', '6'};
             if (order.getStatus().equals("")) {
                 statusArray = allArray;
             }
@@ -1194,6 +1194,79 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return result;
     }
 
+    @Secured("ROLE_RIDER")
+    @Override
+    public int putOrderArrived(Order order) throws AppTrException{
+        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+        if (selectOrderIsApprovalCompleted != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+        }
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }
+
+        Order orderArrived = new Order();
+
+        orderArrived.setToken(order.getToken());
+        orderArrived.setId(order.getId());
+        orderArrived.setStatus("6");
+        orderArrived.setArrivedDatetime(LocalDateTime.now().toString());
+//        orderArrived.setPickupXy(order.getLatitude() + "|" + order.getLongitude());
+
+        Order combinedOrderArrived = new Order();
+
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
+            combinedOrderArrived.setId(order.getCombinedOrderId());
+            combinedOrderArrived.setStatus("6");
+            combinedOrderArrived.setArrivedDatetime(LocalDateTime.now().toString());
+            combinedOrderArrived.setToken(order.getToken());
+//            combinedOrderArrived.setPickupXy(order.getPickupXy());
+//            combinedOrderArrived.setPickupXy(order.getLatitude() + "|" + order.getLongitude());
+
+            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+            if (selectCombinedOrderIsApprovalCompleted != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+            }
+
+            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+            }
+
+            this.putOrder(combinedOrderArrived);
+        }
+
+        int result = this.putOrder(orderArrived);
+
+        String tmpOrderId = orderArrived.getId();
+
+        orderArrived.setId(order.getId());
+        orderArrived.setRole("ROLE_RIDER");
+
+        Order S_Order = orderMapper.selectOrderInfo(orderArrived);
+
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+        storeDTO.setIsAdmin("0");
+        storeDTO.setId(S_Order.getStoreId());
+        Store S_Store = storeMapper.selectStoreInfo(storeDTO);
+
+        if (result != 0) {
+            if (S_Store.getSubGroup() != null) {
+                redisService.setPublisher(Content.builder().type("order_arrived").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
+            } else {
+                redisService.setPublisher(Content.builder().type("order_arrived").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
+            }
+        }
+
+        return result;
+    }
+
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public int putOrderCompleted(Order order) throws AppTrException {
@@ -1383,6 +1456,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
         orderAssignCanceled.setAssignedDatetime("-1");
         orderAssignCanceled.setPickedUpDatetime("-1");
+        orderAssignCanceled.setArrivedDatetime("-1");
         orderAssignCanceled.setToken(order.getToken());
 
         Order combinedOrderAssignCanceled = new Order();
@@ -1394,6 +1468,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
             combinedOrderAssignCanceled.setAssignedDatetime("-1");
             combinedOrderAssignCanceled.setPickedUpDatetime("-1");
+            combinedOrderAssignCanceled.setArrivedDatetime("-1");
             combinedOrderAssignCanceled.setToken(order.getToken());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(combinedOrderAssignCanceled);

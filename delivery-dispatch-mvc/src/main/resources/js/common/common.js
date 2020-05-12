@@ -113,6 +113,7 @@ function footerOrders() {
             if(typeof data == 'object') {
                 var newCnt = 0;
                 var assignedCnt = 0;
+                var arrivedCnt = 0;
                 var completedCnt = 0;
                 var canceledCnt = 0;
                 for (i =0; i <data.length; i++){
@@ -128,10 +129,13 @@ function footerOrders() {
                         canceledCnt += parseInt(data[i].count);
                     }else if(data[i].status=="5"){
                         newCnt += parseInt(data[i].count);
+                    }else if(data[i].status=="6"){
+                        arrivedCnt += parseInt(data[i].count);
                     }
                 }
                 $('#new').text(newCnt);
                 $('#assigned').text(assignedCnt);
+                $('#arrived').text(arrivedCnt);
                 $('#completed').text(completedCnt);
                 $('#canceled').text(canceledCnt);
             }

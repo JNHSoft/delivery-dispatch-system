@@ -75,6 +75,15 @@ public interface OrderService {
     public int putOrderPickedUp(Order order) throws AppTrException;
 
     /**
+     * <p> putOrderArrived </p>
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     * */
+    int putOrderArrived(Order order) throws AppTrException;
+
+    /**
      * <p> putOrderCompleted
      *
      * @param order

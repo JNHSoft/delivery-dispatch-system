@@ -55,6 +55,7 @@ public class Order extends Common implements Dto {
     private String reservationDatetime;
     private String assignedDatetime;
     private String pickedUpDatetime;
+    private String arrivedDatetime;         // 2020.05.08 배달지 문앞도착
     private String completedDatetime;
     private String returnDatetime;
     private String deviceOs;
