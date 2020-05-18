@@ -411,23 +411,23 @@ DDELib.Orders.prototype = {
         // 20.05.12 상태 값추가로 인하여 정렬 흐트림 방지
         // tmpdata.orderbystatus = (ev.status == 5)? 0 : ev.status ;
         switch (ev.status) {
-            case 0:
-            case 5:
+            case '0':
+            case '5':
                 tmpdata.orderbystatus = 0;
                 break;
-            case 1:
+            case '1':
                 tmpdata.orderbystatus = 1;
                 break;
-            case 2:
+            case '2':
                 tmpdata.orderbystatus = 2;
                 break;
-            case 3:
+            case '3':
                 tmpdata.orderbystatus = 4;
                 break;
-            case 4:
+            case '4':
                 tmpdata.orderbystatus = 5;
                 break;
-            case 6:
+            case '6':
                 tmpdata.orderbystatus = 3;
                 break;
             default:
