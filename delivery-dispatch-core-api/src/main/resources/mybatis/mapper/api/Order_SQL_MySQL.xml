@@ -36,6 +36,8 @@
         <association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
             <result property="id" column="rider_id" />
             <result property="name" column="rider_name" />
+			<result property="latitude" column="rider_latitude" />
+			<result property="longitude" column="rider_longitude" />
         </association>
 
 		<association property="subGroupStoreRel" column="subGroupStoreRel" javaType="kr.co.cntt.core.model.group.SubGroupStoreRel">
@@ -226,6 +228,12 @@
 				,C.store_name																	as store_real_name
 				,C.latitude																		as store_latitude
 				,C.longitude																	as store_longitude
+
+
+				-- 2020.05.14 배달 시간 확인을 위한 데이터 추가
+				,( select latitude from TB_RIDER where id = A.rider_id and deleted is null)		as rider_latitude
+				,( select longitude from TB_RIDER where id = A.rider_id and deleted is null)		as rider_longitude
+
 				,A.third_party_id
 				,(select name from TB_THIRD_PARTY where id = A.third_party_id and deleted is null )	as third_party_name
 		from	 TB_ORDER	A

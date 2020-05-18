@@ -1,6 +1,6 @@
 /*<![CDATA[*/
 let loading = $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
-;
+let orderArray = [];
 
 if(typeof DDELib === 'undefined'){
     DDELib = {};
@@ -237,6 +237,8 @@ DDELib.Orders.prototype = {
             success: function(data) {
                 self.log("getOrderList result");
                 self.log(data);
+                orderArray = [];
+
                 if(self.lastModifyDatetime == null) {
                     self.log("firstdata");
                     self.lastOrderCount = 0;
@@ -347,6 +349,15 @@ DDELib.Orders.prototype = {
                 setTimeout(function () {
                     $(window).trigger('resize');
                 }, 300)//그리드 리사이즈
+            },
+            loadComplete: function (data) {
+                let ids = $("#jqGrid").getDataIDs();
+
+                $.each(ids, function (idx, rowId) {
+                    if (orderArray.findIndex((value) => value == rowId) > -1){
+                        $("#jqGrid").setRowData(rowId, false, {background: '#FFAA55'});
+                    }
+                });
             }
         });
         resizeJqGrid('#jqGrid'); //그리드 리사이즈
@@ -370,6 +381,7 @@ DDELib.Orders.prototype = {
     makeRowOrder : function(ev,) {
         //this.log("makeRowOrder");
         var tmpdata = new Object();
+        let directionsService = new google.maps.DirectionsService;
 
         //tmpdata.No = i;
         tmpdata.state = this.getStatusInfo(ev.status);
@@ -423,6 +435,22 @@ DDELib.Orders.prototype = {
         }
 
         tmpdata.assignedFirst =  ev.assignedFirst;
+        //this.arrivedTimeCheck(ev, directionsService);
+
+        /// 2020.05.14 Google Map API 작업
+        switch (ev.status) {
+            case '0':
+            case '1':
+            case '2':
+            case '5':
+                // 단순 시간 비교 시에도 예상시간이 지난 경우에도 표기
+                if (convertDateTime(ev.reservationDatetime) < new Date()){
+                    orderArray.push(ev.id);
+                } else if (ev.status == '2'){
+                    this.arrivedTimeCheck(ev, directionsService);
+                }
+                break;
+        }
 
         return tmpdata;
     },
@@ -629,6 +657,7 @@ DDELib.Orders.prototype = {
         });
     },
     getNewOrderList:function (statusNewArray) {
+        orderArray = [];
         var self = this;
         jQuery.ajaxSettings.traditional = true;// ajax 배열 던지려면 필요함
         $.ajax({
@@ -883,11 +912,9 @@ DDELib.Orders.prototype = {
                 if (data == false) {
                     alert(alert_order_assign_max);
                 } else {
-                    // self.getOrderDetail(selectedOriginOrder.regOrderId);
                     self.getOrderList();
                     self.onCloseDetail();
                 }
-                // console.log(new Date().getTime() - firstTime);
             }
         });
     },
@@ -1006,8 +1033,39 @@ DDELib.Orders.prototype = {
             }
             alarmSound(data);
         }
-    }
+    },
+    arrivedTimeCheck:function(data, directionsService){
+        //var directionsService = new google.maps.DirectionsService;
+        let mode = 'DRIVING';
 
+        directionsService.route({
+             origin: new google.maps.LatLng(data.rider.latitude, data.rider.longitude)                   /// 출발지
+            //origin: new google.maps.LatLng(24.987451, 121.552371)
+            ,destination: new google.maps.LatLng(data.latitude, data.longitude)               /// 도착지
+            ,travelMode: google.maps.TravelMode[mode]              /// 조회 방법
+            ,drivingOptions:{
+                 departureTime: new Date() // 현재 시간
+                ,trafficModel: 'bestguess'  // 조회 방식
+            }
+            ,optimizeWaypoints: true
+        },function (response, status) {
+            if (status === 'OK'){
+                console.log("Call API = [" + data.id + "]");
+
+                var durationInTraffic = response.routes[0].legs.reduce(function (sum, leg) {
+                    return sum + leg.duration.value
+                },0)/60;
+
+                var arriveTrafficTime = new Date((new Date).getTime()+durationInTraffic*60*1000);
+
+                if (convertDateTime(data.reservationDatetime) < arriveTrafficTime){
+                    $("#jqGrid").setRowData(data.id, false, {background: '#FFAA55'});
+                }
+
+            }
+        }
+        );
+    }
 }
 
 var ddeorder = new DDELib.Orders("#container");
@@ -1086,7 +1144,24 @@ function minusTimeSet(time1, time2) {
         return "-";
     }
 }
+function convertDateTime(time){
+    time = time.replace(' ', 'T') + 'Z';
 
+    var changeDate = new Date(time);
+
+    var yyyy = changeDate.getUTCFullYear().toString();
+    var mm = (changeDate.getUTCMonth()).toString();
+    var dd = changeDate.getUTCDate().toString();
+
+    var hh = changeDate.getUTCHours().toString();
+    var nn = changeDate.getUTCMinutes().toString();
+    var ss = changeDate.getUTCSeconds().toString();
+
+    return new Date(yyyy, mm, dd, hh, nn, ss);
+
+    // return yyyy + '/' + (mm[1] ? mm : '0' + mm[0]) + '/' + (dd[1]?dd:'0' + dd[0]) + ' '+
+    //     (hh[1] ? hh : '0' + hh[0]) + ':' + (nn[1] ? nn : '0' + nn[0]) + ':' + (ss[1] ? ss : '0' + ss[0]);
+}
 
 $(document).ready(function () {
 
