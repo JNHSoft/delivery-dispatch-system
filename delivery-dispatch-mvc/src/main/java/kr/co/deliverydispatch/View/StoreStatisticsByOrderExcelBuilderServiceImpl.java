@@ -120,7 +120,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.in.store.time",null, locale) + " (" + messageSource.getMessage("statistics.1st.label.order.D7",null, locale) + ")");
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.in.store.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
@@ -163,8 +163,6 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
         long pickupReturnTime = 0L;
         long orderReturnTime = 0L;
 
-        // D7
-        long d7TotlaTime = 0L;
         long qtTotalTime = 0L;
 
         double totalDistance = 0d;
@@ -187,15 +185,12 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 returnNullCnt++;
             }
 
-            long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
+            long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
             long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
-            long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
+            long orderComplete = assignTime.until(completeTime, ChronoUnit.MILLIS);
             long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-
-            // D7 Time
-            long d7Timer = assignTime.until(pickupTime, ChronoUnit.MILLIS);
+            long orderReturn = returnTime != LocalDateTime.MIN ? assignTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
             orderPickupTime += orderPickup;
             pickupCompleteTime += pickupComplete;
@@ -204,8 +199,6 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             pickupReturnTime += pickupReturn;
             orderReturnTime += orderReturn;
 
-            // D7 Total
-            d7TotlaTime += d7Timer;
             qtTotalTime += Long.parseLong(storeStatisticsByOrderList.get(i).getCookingTime());
 
             if(storeStatisticsByOrderList.get(i).getDistance() != null){
@@ -236,7 +229,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(minusChkFilter(orderPickup) + " (" + minusChkFilter(d7Timer) + ")");
+            cell.setCellValue(minusChkFilter(orderPickup));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -288,7 +281,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(minusChkFilter(orderPickupTime) + " (" + minusChkFilter(d7TotlaTime) + ")");
+                cell2.setCellValue(minusChkFilter(orderPickupTime));
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
@@ -338,7 +331,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);
-                cell3.setCellValue(minusChkFilter(orderPickupTime/totalCnt) + " (" + minusChkFilter(d7TotlaTime/totalCnt) + ")");
+                cell3.setCellValue(minusChkFilter(orderPickupTime/totalCnt));
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);

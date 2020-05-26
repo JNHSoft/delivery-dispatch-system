@@ -12,6 +12,7 @@ import org.springframework.web.servlet.view.AbstractView;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Type;
 import java.util.Locale;
 import java.util.Map;
 
@@ -134,5 +135,81 @@ public class ExcelComm extends AbstractView {
         } else{
             return "-";
         }
+    }
+
+    public String changeType(Type type, String value){
+        String strReturn = "";
+
+        try{
+            if (type.equals(Integer.class)){
+                Integer intValue = 0;
+
+                try{
+                    intValue = Integer.parseInt(value);
+                }catch (NumberFormatException e){
+                    Double doubleValue = 0d;
+
+                    doubleValue = Double.parseDouble(changeType(Double.class, value)) + 0.5d;       // 반올림 적용
+                    intValue = doubleValue.intValue();
+
+                }catch (NullPointerException e){
+                    logger.debug("changeType Data NullPoint = " + value);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                strReturn = intValue.toString();
+            }else if (type.equals(Float.class)){
+                Float floatValue = 0f;
+
+                try{
+                    floatValue = Float.parseFloat(value);
+                }catch (NullPointerException e){
+                    logger.debug("changeType Data NullPoint = " + value);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                strReturn = floatValue.toString();
+            }else if (type.equals(Double.class)){
+                Double doubleValue = 0d;
+
+                try{
+                    doubleValue = Double.parseDouble(value);
+                }catch (NullPointerException e){
+                    logger.debug("changeType Data NullPoint = " + value);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                strReturn = doubleValue.toString();
+            }else if (type.equals(String.class)){
+                if (value != null){
+                    strReturn = value.toString();
+                }
+            }else if (type.equals(Long.class)){
+                Long longValue = 0l;
+
+                try{
+                    longValue = Long.parseLong(value);
+                }catch (NumberFormatException e){
+                    Double doubleValue = 0d;
+
+                    doubleValue = Double.parseDouble(changeType(Double.class, value)) + 0.5d;       // 반올림 적용
+
+                    longValue = doubleValue.longValue();
+                }catch (NullPointerException e){
+                    logger.debug("changeType Data NullPoint = " + value);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                strReturn = longValue.toString();
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return strReturn;
     }
 }

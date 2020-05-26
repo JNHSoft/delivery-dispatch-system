@@ -109,11 +109,9 @@ function getStoreStatisticsByInterval() {
                 switch (Number(key)) {
                     case 0:                 // 0~7분 데이터
                         interval_key = "~6:59";
-                        console.log("index = 0 " + interval_key);
                         break;
                     case 1:                 // 7~10분 데이터
                         interval_key = "~9:59";
-                        console.log("index = 1 " + interval_key);
                         break;
                     default:
                         interval_key = Number(key) + 8;
@@ -286,8 +284,6 @@ function chartPercentage(data){
         result.push({'intervalMinute':'55~60', 'intervalCount':Number(count[11]) + Number(d7count[11])});
         result.push({'intervalMinute':'60~  ', 'intervalCount':Number(count[12]) + Number(d7count[12])});
 
-        console.log(result);
-
         var chart = am4core.create("chart_percentage", am4charts.PieChart);
 
         chart.innerRadius = am4core.percent(30);
@@ -419,7 +415,6 @@ function excelDownloadByInterval(){
 
     loading.show();
 
-    console.log('DownLoadStart');
     $.fileDownload("/excelDownloadByInterval",{
         httpMethod:"GET",
         data : {
