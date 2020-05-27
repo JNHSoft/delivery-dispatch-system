@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component("StatisticsAdminByDateBuilderServiceImpl")
 public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
@@ -293,6 +294,15 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
 
         int rowCnt = storeStatisticsByDateList.size();
+        int tcRowCnt = storeStatisticsByDateList.stream()
+                .filter(x -> {
+                    if (Integer.parseInt(changeType(Integer.class, x.getTc())) > 0){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }).collect(Collectors.toList()).size();
+
         int returnNullCnt = 0;
         int tpSpNullCnt = 0;
         int distanceNullCnt = 0;
@@ -505,24 +515,24 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (orderPickupTime > 0 && rowCnt > 0){
-                    cell2.setCellValue(avgChkFilter(orderPickupTime/rowCnt));
+                if (orderPickupTime > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(avgChkFilter(orderPickupTime/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (pickupCompleteTime > 0 && rowCnt > 0){
-                    cell2.setCellValue(avgChkFilter(pickupCompleteTime/rowCnt));
+                if (pickupCompleteTime > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(avgChkFilter(pickupCompleteTime/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (orderCompleteTime > 0 && rowCnt > 0){
-                    cell2.setCellValue(avgChkFilter(orderCompleteTime/rowCnt));
+                if (orderCompleteTime > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(avgChkFilter(orderCompleteTime/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
@@ -554,16 +564,16 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (minD7Below > 0 && rowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f",minD7Below/rowCnt) +"%");
+                if (minD7Below > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(String.format("%.2f",minD7Below/tcRowCnt) +"%");
                 }else{
                     cell2.setCellValue("0%");
                 }
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (min30Below > 0 && rowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f",min30Below/rowCnt) +"%");
+                if (min30Below > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(String.format("%.2f",min30Below/tcRowCnt) +"%");
                 }else{
                     cell2.setCellValue("0%");
                 }
@@ -571,48 +581,48 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
                 if(!locale.toString().equals("zh_TW")) {
                     cell2 = addListRow.createCell(colNum++);
-                    if (min30To40 > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min30To40 / rowCnt) + "%");
+                    if (min30To40 > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min30To40 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (min40To50 > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min40To50 / rowCnt) + "%");
+                    if (min40To50 > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min40To50 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (min50To60 > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min50To60 / rowCnt) + "%");
+                    if (min50To60 > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min50To60 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (min60To90 > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min60To90 / rowCnt) + "%");
+                    if (min60To90 > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min60To90 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (min90Under > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min90Under / rowCnt) + "%");
+                    if (min90Under > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min90Under / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (totalSales > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", totalSales / rowCnt));
+                    if (totalSales > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", totalSales / tcRowCnt));
                     }else{
                         cell2.setCellValue("0");
                     }
@@ -628,8 +638,8 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (tc > 0 && rowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f", tc/rowCnt));
+                if (tc > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(String.format("%.2f", tc/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }

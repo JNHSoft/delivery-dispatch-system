@@ -171,7 +171,7 @@ function chart30minute(data){
     d7avg = (d7avgLength == 0)? d7avg : d7sum/d7avgLength;
 
     $('#avg_30minute').html(`D30 MINS : ${parseFloat(avg.toFixed(1))}%`);
-    $('#avg_07minute').html(`D07 MINS : ${parseFloat(d7avg.toFixed(2))}%`);
+    $('#avg_07minute').html(`D07 MINS : ${parseFloat(d7avg.toFixed(1))}%`);
 
     //30미만 그래프 구하기
     var chart = am4core.create("chart_30minute", am4charts.XYChart);

@@ -160,7 +160,7 @@ function getStatisticsInfo(regOrderId) {
             $('#assignedDatetime').html(timeSet(data.assignedDatetime));
             $('#pickedUpDatetime').html(timeSet(data.pickedUpDatetime));
             $('#completedDatetime').html(timeSet(data.completedDatetime));
-            $('#passtime').html(minusTimeSet(data.createdDatetime, data.completedDatetime));
+            $('#passtime').html(minusTimeSet(data.assignedDatetime, data.completedDatetime));
             $('#menuName').html(data.menuName);
             $('#cookingTime').html(data.cookingTime);
             $('#menuPrice').html(data.menuPrice);
@@ -252,10 +252,10 @@ function getStoreStatistics() {
                     // tmpData.qtTimes = data[key].cookingTime > 30 ? 30 : data[key].cookingTime;
                     tmpData.qtTimes = data[key].cookingTime;
 
-                    tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime) + " (" + minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime) + ")";
+                    tmpData.orderPickup1 = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);
 
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
-                    tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].completedDatetime);
+                    tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].completedDatetime);
 
                     // 검색 조건을 위한 데이터 입력
                     tmpData.rider_name = data[key].rider.name;
@@ -271,19 +271,19 @@ function getStoreStatistics() {
                         tmpData.subGroup_name = group_none;
                     }
 
-                    orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
+                    orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
                     pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].completedDatetime);
-                    orderCompleteSum += minusTime(data[key].createdDatetime, data[key].completedDatetime);
+                    orderCompleteSum += minusTime(data[key].assignedDatetime, data[key].completedDatetime);
                     D7TimerSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
                     QTTimerSum += Number(data[key].cookingTime);
 
                     if(data[key].returnDatetime){
                         tmpData.completeReturn1 = minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime);
                         tmpData.pickupReturn1 = minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        tmpData.orderReturn1 = minusTimeSet2(data[key].createdDatetime, data[key].returnDatetime);
+                        tmpData.orderReturn1 = minusTimeSet2(data[key].assignedDatetime, data[key].returnDatetime);
                         completeReturnSum += minusTime(data[key].completedDatetime, data[key].returnDatetime);
                         pickupReturnSum += minusTime(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        orderReturnSum += minusTime(data[key].createdDatetime, data[key].returnDatetime);
+                        orderReturnSum += minusTime(data[key].assignedDatetime, data[key].returnDatetime);
                     }else{
                         chkReturnTimeCnt++;
                     }
@@ -305,7 +305,7 @@ function getStoreStatistics() {
             totalData.store_name = "";
             totalData.origin_reg_order_id = "";
             totalData.orderDate = "";
-            totalData.orderPickup1 = totalTimeSet(orderPickupSum) + " (" + totalTimeSet(D7TimerSum) + ")";
+            totalData.orderPickup1 = totalTimeSet(orderPickupSum);
             totalData.pickupComplete1 = totalTimeSet(pickupCompleteSum);
             totalData.orderComplete1 = totalTimeSet(orderCompleteSum);
             totalData.completeReturn1 = totalTimeSet(completeReturnSum);
@@ -329,7 +329,7 @@ function getStoreStatistics() {
             averageData.store_name = "";
             averageData.origin_reg_order_id = "";
             averageData.orderDate = "";
-            averageData.orderPickup1 = averageTimeSet(orderPickupSum,rowNum) + " (" + averageTimeSet(D7TimerSum,rowNum) + ")";
+            averageData.orderPickup1 = averageTimeSet(orderPickupSum,rowNum);
             averageData.pickupComplete1 = averageTimeSet(pickupCompleteSum,rowNum);
             averageData.orderComplete1 = averageTimeSet(orderCompleteSum,rowNum);
             averageData.completeReturn1 = averageTimeSet(completeReturnSum,rowNum - chkReturnTimeCnt);
@@ -366,7 +366,7 @@ function getStoreStatistics() {
                     {label: label_order_date, name: 'orderDate', width: 80, align: 'center'},
                     {label: label_order_assign, name: 'assignedDate', width: 80, align: 'center'},
                     {label: label_order_qt, name: 'qtTimes', width: 80, align: 'center'},
-                    {label: label_order_in_store_time + " (" + label_order_d7 + ")", name: 'orderPickup1', index: 'orderPickup1', width: 80, align: 'center'},
+                    {label: label_order_in_store_time, name: 'orderPickup1', index: 'orderPickup1', width: 80, align: 'center'},
                     {label: label_order_delivery_time, name: 'pickupComplete1', index: 'pickupComplete1', width: 80, align: 'center'},
                     {label: label_order_completed_time, name: 'orderComplete1', index: 'orderComplete1', width: 80, align: 'center'},
                     {label: label_order_return_time, name: 'completeReturn1', index: 'completeReturn1', width: 80, align: 'center'},

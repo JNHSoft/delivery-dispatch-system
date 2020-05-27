@@ -96,6 +96,8 @@ function getStoreStatisticsByDate() {
             let avgDistanceSum = 0;
             // row 갯수
             let rowCnt = 0;
+            // 정상 TC가 있는 row 갯수
+            let tcRowCnt = 0;
             // 빈값이 들어간 row 갯수
             let rowReduceCnt = 0;
             // 거리값 제외 count
@@ -116,6 +118,12 @@ function getStoreStatisticsByDate() {
                     rowReduceCnt++;
                     distanceCnt++;
                     tpSpCnt++;
+
+                    // 정상 Row 체크
+                    if(formatInt(data[key].tc, 1) > 0){
+                        tcRowCnt++;
+                    }
+
                     tmpdata.store = data[key].storeName;
                     tmpdata.day = data[key].dayToDay;
 
@@ -211,6 +219,7 @@ function getStoreStatisticsByDate() {
                     // D7 성공 개수
                     totalD7Success += formatFloat(data[key].d7Success, 1);
 
+                    errtcSum += formatFloat(data[key].errtc, 1);
                     tcSum += formatFloat(data[key].tc, 1);
 
                     mydata.push(tmpdata);
@@ -234,24 +243,24 @@ function getStoreStatisticsByDate() {
             avgData.group_name = "";
             avgData.subGroup_name = "";
 
-            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/rowCnt);
-            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/rowCnt);
-            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/rowCnt);
+            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/tcRowCnt);
+            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/tcRowCnt);
+            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/tcRowCnt);
             avgData.completeReturn = totalTimeSet((completeReturnSum*1000)/rowReduceCnt);
             avgData.pickupReturn =  totalTimeSet((pickupReturnSum*1000)/rowReduceCnt);
             avgData.orderReturn =   totalTimeSet((orderReturnSum*1000)/rowReduceCnt);
-            avgData.minD7Below = formatInt((minD7BelowSum/rowCnt), 1) + "%";
-            avgData.min30Below = formatInt((min30BelowSum/rowCnt), 1) +"%";
-            avgData.min30To40 =formatInt((min30To40Sum/rowCnt), 1) +"%";
-            avgData.min40To50 = formatInt((min40To50Sum/rowCnt), 1) +"%";
-            avgData.min50To60 = formatInt((min50To60Sum/rowCnt), 1) +"%";
-            avgData.min60To90 = formatInt((min60To90Sum/rowCnt), 1) +"%";
-            avgData.min90Under = formatInt((min90UnderSum/rowCnt), 1) +"%";
-            avgData.totalSales = formatInt((totalSalesSum/rowCnt), 1);
+            avgData.minD7Below = formatInt((minD7BelowSum/tcRowCnt), 1) + "%";
+            avgData.min30Below = formatInt((min30BelowSum/tcRowCnt), 1) +"%";
+            avgData.min30To40 =formatInt((min30To40Sum/tcRowCnt), 1) +"%";
+            avgData.min40To50 = formatInt((min40To50Sum/tcRowCnt), 1) +"%";
+            avgData.min50To60 = formatInt((min50To60Sum/tcRowCnt), 1) +"%";
+            avgData.min60To90 = formatInt((min60To90Sum/tcRowCnt), 1) +"%";
+            avgData.min90Under = formatInt((min90UnderSum/tcRowCnt), 1) +"%";
+            avgData.totalSales = formatInt((totalSalesSum/tcRowCnt), 1);
             avgData.errtc = formatInt((errtcSum/rowCnt), 1);
-            avgData.tc = formatInt((tcSum/rowCnt), 1);
+            avgData.tc = formatInt((tcSum/tcRowCnt), 1);
 
-            avgData.d7Success = (totalD7Success / tcSum) * 100;
+            //avgData.d7Success = (totalD7Success / tcSum) * 100;
 
             if(tpSpCnt!=0){
                 avgData.tplh = formatInt((tplhSum/tpSpCnt), 1);
@@ -328,7 +337,7 @@ function getStoreStatisticsByDate() {
                 useColSpanStyle: true,
                 groupHeaders:[
                     {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: label_average_time},
-                    {startColumnName: 'min30Below', numberOfColumns: 7, titleText: label_percent_completed},
+                    {startColumnName: 'minD7Below', numberOfColumns: 7, titleText: label_percent_completed},
                     {startColumnName: 'totalSales', numberOfColumns: 7, titleText: label_productivity}
                 ]
             });
@@ -450,9 +459,9 @@ function dateInfo(avgData){
     let completeReturn = avgData.completeReturn;
     let pickupReturn = avgData.pickupReturn;
     let orderReturn = avgData.orderReturn;
-    let d7SuccessRate = avgData.d7Success;
+    let d7SuccessRate = avgData.minD7Below;
 
-    $('#d7Timer.box').append(colName.clone().html(label_in_d7_completed)).append(colVal.clone().html(formatInt(d7SuccessRate, 1) + '%'));
+    $('#d7Timer.box').append(colName.clone().html(label_in_d7_completed)).append(colVal.clone().html(d7SuccessRate));
     $('#orderPickup.box').append(colName.clone().html(label_in_store_time)).append(colVal.clone().html(convertToHms(orderPickup)));
     $('#pickupComplete.box').append(colName.clone().html(label_delivery_time)).append(colVal.clone().html(convertToHms(pickupComplete)));
     $('#orderComplete.box').append(colName.clone().html(label_completed_time)).append(colVal.clone().html(convertToHms(orderComplete)));
