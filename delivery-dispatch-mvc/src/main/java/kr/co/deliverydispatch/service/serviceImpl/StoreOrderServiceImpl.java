@@ -1,5 +1,6 @@
 package kr.co.deliverydispatch.service.serviceImpl;
 
+import com.mysql.cj.util.StringUtils;
 import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
 import kr.co.cntt.core.fcm.FirebaseResponse;
 import kr.co.cntt.core.mapper.OrderMapper;
@@ -261,6 +262,8 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             order.setRole("ROLE_RIDER");
         }
 
+        log.info("putOrder => order.Role = [" + order.getRole() + "] # order.ID = [" + order.getId() + "] order.RiderID = [" + order.getRiderId() + "] # order.OrderStatus = [" + order.getStatus() + "]");
+
         int S_Order = orderMapper.updateOrder(order);
         if (S_Order == 0) {
             return 0;
@@ -286,6 +289,17 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         storeDTO.setToken(order.getToken());
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);*/
         Store S_Store = storeMapper.selectStoreInfo(order);
+
+        // 2020.05.27
+        /**
+         * 주문 변경 건인지 체크를 위한 변수 적용
+         * */
+        Order searchOrder = new Order();
+        searchOrder.setId(tmpOrderId);
+        searchOrder.setToken(order.getToken());
+        searchOrder.setRole("ROLE_STORE");
+
+        Order resultOrder = orderMapper.selectOrderInfo(searchOrder);
 
         //자동배정시 강제배정이 안되도록 설정하는 부분
         /*if (!S_Store.getAssignmentStatus().equals("0")&&!regionLocale.toString().equals("zh_TW")) {
@@ -313,7 +327,12 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             orderAssigned.setAssignXy("none");
         }*/
         order.setStatus("1");
-        order.setAssignedDatetime(LocalDateTime.now().toString());
+
+        /// 배정 시간 유무를 체크 후 있는 경우 기존 데이터로 대체
+        if (!(resultOrder != null && !StringUtils.isNullOrEmpty(resultOrder.getAssignedDatetime()))){
+            order.setAssignedDatetime(LocalDateTime.now().toString());
+        }
+
         if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
             order.setAssignXy(S_Rider.getLatitude()+"|"+S_Rider.getLongitude());
         } else {
@@ -484,6 +503,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         order.setRiderId(null);
         order.setAssignedDatetime(null);
         order.setPickedUpDatetime(null);
+        order.setArrivedDatetime(null);
         order.setCompletedDatetime(null);
 
         String tmpRegOrderId = order.getId();
@@ -671,8 +691,9 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         order.setStatus("5");
         order.setRiderId("-1");
         order.setModifiedDatetime(LocalDateTime.now().toString());
-        order.setAssignedDatetime("-1");
+        //order.setAssignedDatetime("-1");
         order.setPickedUpDatetime("-1");
+        order.setArrivedDatetime("-1");
 
         String tmpOrderId = order.getId();
 

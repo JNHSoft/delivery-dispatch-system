@@ -917,6 +917,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         order.setRiderId(null);
         order.setAssignedDatetime(null);
         order.setPickedUpDatetime(null);
+        order.setArrivedDatetime(null);
         order.setCompletedDatetime(null);
 
         Order combinedOrder = new Order();
@@ -1639,6 +1640,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
             orderAssignCanceled.setAssignedDatetime("-1");
             orderAssignCanceled.setPickedUpDatetime("-1");
+            orderAssignCanceled.setArrivedDatetime("-1");
             orderAssignCanceled.setToken(order.getToken());
 
             if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
@@ -1650,6 +1652,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
                 combinedOrderAssignCanceled.setAssignedDatetime("-1");
                 combinedOrderAssignCanceled.setPickedUpDatetime("-1");
+                combinedOrderAssignCanceled.setArrivedDatetime("-1");
                 combinedOrderAssignCanceled.setToken(order.getToken());
 
                 this.putOrder(combinedOrderAssignCanceled);
