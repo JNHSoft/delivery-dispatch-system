@@ -739,9 +739,6 @@ public class SettingController {
             return "failed";
         }
 
-        System.out.println("@@@@@@@@@@@@@@@@@ ==> " + riderInfos.size());
-        System.out.println("@@@@@@@@@@@@@@@@@ ==> " + riderInfos.get(0).getGroupid());
-
         for (SharedRiderInfo rider:riderInfos
              ) {
             rider.setAdminid(adminID);

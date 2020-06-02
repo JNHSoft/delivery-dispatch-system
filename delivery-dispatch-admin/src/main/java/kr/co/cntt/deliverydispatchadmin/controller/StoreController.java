@@ -232,7 +232,6 @@ public class StoreController {
 //        System.out.println("!!!!"+groupId);
         // 위도 경도
         if (store.getAddress() != null && !store.getAddress().equals("")) {
-            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+store.getAddress());
             Geocoder geocoder = new Geocoder();
             try {
                 Map<String, String> geo = geocoder.getLatLng(store.getAddress());
@@ -243,7 +242,6 @@ public class StoreController {
             }
         }
 
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@" + store.getLatitude());
         if (store.getLatitude() == null || store.getLongitude() == null) {
             return "geo_err";
         }

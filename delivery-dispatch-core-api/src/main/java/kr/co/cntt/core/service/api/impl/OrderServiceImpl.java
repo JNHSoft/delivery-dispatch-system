@@ -143,27 +143,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             astRiderList.removeAll(duplicationRider);
             riderList.addAll(astRiderList);
 
-            System.out.println("firstAssignedRider Count = [" + firstAssignedRider.size() + "]");
-            log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
-            System.out.println("firstAssignedRider Count = [" + firstAssignedRider.size() + "]");
-
             /// 20.05.29 반경 범위의 라이더가 존재하는 경우 작업
             if (firstAssignedRider.size() > 0){
                 // 라이더 범위에서 제외가 되어야될 아이들을 추출한다.
                 List<Rider> removeRider = riderList.stream().filter(x ->{
-                    System.out.println("rider Data S");
-                    System.out.println(x.getId());
-                    System.out.println(x.getName());
-                    System.out.println(x.getMinOrderStatus());
-                    System.out.println(x.getAssignCount());
-                    System.out.println(x.getSubGroupRiderRel().getStoreId());
-                    System.out.println(order.getStoreId());
-//                    System.out.println(x.getStore().getId());
-                    System.out.println(order.getStore().getAssignmentLimit());
-                    System.out.println("rider Data E");
-
                     if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
-                        System.out.println("ELSE IF TRUE 1");
                         return true;
                     }else{
                         switch (x.getMinOrderStatus()){
@@ -173,7 +157,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             case "4":           //// 주문 취소
                             case "5":           //// 신규주문
                             case "6":           //// 도착
-                                System.out.println("IF ELSE TRUE 1");
                                 return true;
                             case "1":           //// 배정 완료
                             default:
@@ -186,10 +169,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                         return false;
                                     }
                                 }).count() > 0){
-                                    System.out.println("IF ELSE FALSE 1");
                                     return false;
                                 }else{
-                                    System.out.println("ELSE IF TRUE 2");
                                     return true;
                                 }
                         }
@@ -202,10 +183,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     firstAssignedRider.removeIf(x ->x.getRiderId().equals(rmR.getId()));
                 }
 
-                System.out.println("firstAssignedRider Size");
-                System.out.println(firstAssignedRider.size());
-                System.out.println(removeRider.size());
-
                 if (firstAssignedRider.size() > 0){
                     for (Rider rmR:removeRider
                     ) {
@@ -213,9 +190,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
                 }
             }
-
-
-
 
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
             log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
