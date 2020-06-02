@@ -840,5 +840,43 @@
 		-
 		(SELECT COUNT(rider_id) FROM TB_ORDER WHERE rider_id = #{riderId} AND status in(1,2) AND created_datetime > CURRENT_DATE()) as oderAdmitCount;
 	</select>
+
+	<!-- 20.05.29 배정할 주문 목적지의 근처에 있는 라이더 유무 정보 가져오기 -->
+	<select id="selectNearOrderRider" parameterType="Map" resultMap="selectOrdersResult">
+		select	 A.id
+				,A.admin_id
+				,A.store_id
+				,A.rider_id
+				,A.status
+				,(6371 * acos(cos(radians(B.latitude)) * cos(radians(A.latitude)) * cos(radians(A.longitude) - radians(B.longitude))
+					+ sin(radians(B.latitude)) * sin(radians(A.latitude))) * 1000)		as distance
+		from	(
+					select	 id
+							,admin_id
+							,store_id
+							,rider_id
+							,reg_order_id
+							,web_order_id
+							,status
+							,latitude
+							,longitude
+					from	 TB_ORDER
+					where	 created_datetime > CURRENT_DATE()
+					and		 status in (1)
+					and		 rider_id not in (select id from TB_RIDER where 1=1 and working <![CDATA[<>]]> 1 and deleted is null )
+				)	as A
+		cross join
+				(
+					select	 id
+							,admin_id
+							,store_id
+							,latitude
+							,longitude
+					from	 TB_ORDER
+					where	 id = #{id}
+				)	as B
+			ON	 A.store_id = B.store_id
+		having distance <![CDATA[<]]> #{distance}
+	</select>
 </mapper>
  

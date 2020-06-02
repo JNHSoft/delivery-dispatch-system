@@ -173,4 +173,9 @@ public interface OrderMapper {
      */
     public int selectOrderIsThirdPartyStatus(Order order);
 
+    /**
+     * <p> 배정할 주문의 목적지와 가까운 주문을 가진 Rider 정보를 가져온다
+     * */
+    List<Order> selectNearOrderRider(Map searchMap);
+
 }

@@ -108,11 +108,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     .filter(x -> x.getShared_flag() == 0).collect(Collectors.toList());
             List<Rider> duplicationRider = new ArrayList<>();
 
+            // 20.05.29 주문 번호를 이용하여, 거리 측정 및 라이더 ID 가져오기.
+            Map<String, String> searchMap = new HashMap<>();
+            searchMap.put("id", order.getId());
+            searchMap.put("distance", "500");        // 목적지 반경 거리 (단위 : 미터)
+
+
+            List<Order> firstAssignedRider = orderMapper.selectNearOrderRider(searchMap);
+
             allowRiderList.forEach(x -> {
                 rejectRiderList.forEach(y->{
                     if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
-//                    S_Rider.remove(y);
-                        System.out.println(x.getId());
                         astRiderList.remove(x);
                     }
                 });
@@ -135,8 +141,81 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             astRiderList.removeAll(duplicationRider);
-
             riderList.addAll(astRiderList);
+
+            System.out.println("firstAssignedRider Count = [" + firstAssignedRider.size() + "]");
+            log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
+            System.out.println("firstAssignedRider Count = [" + firstAssignedRider.size() + "]");
+
+            /// 20.05.29 반경 범위의 라이더가 존재하는 경우 작업
+            if (firstAssignedRider.size() > 0){
+                // 라이더 범위에서 제외가 되어야될 아이들을 추출한다.
+                List<Rider> removeRider = riderList.stream().filter(x ->{
+                    System.out.println("rider Data S");
+                    System.out.println(x.getId());
+                    System.out.println(x.getName());
+                    System.out.println(x.getMinOrderStatus());
+                    System.out.println(x.getAssignCount());
+                    System.out.println(x.getSubGroupRiderRel().getStoreId());
+                    System.out.println(order.getStoreId());
+//                    System.out.println(x.getStore().getId());
+                    System.out.println(order.getStore().getAssignmentLimit());
+                    System.out.println("rider Data E");
+
+                    if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
+                        System.out.println("ELSE IF TRUE 1");
+                        return true;
+                    }else{
+                        switch (x.getMinOrderStatus()){
+                            case "0":           /// 신규주문
+                            case "2":           //// 픽업 완료
+                            case "3":           //// 복귀 완료
+                            case "4":           //// 주문 취소
+                            case "5":           //// 신규주문
+                            case "6":           //// 도착
+                                System.out.println("IF ELSE TRUE 1");
+                                return true;
+                            case "1":           //// 배정 완료
+                            default:
+
+                                // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
+                                if (firstAssignedRider.stream().filter(y -> {
+                                    if (y.getRiderId().equals(x.getId())){
+                                        return true;
+                                    }else{
+                                        return false;
+                                    }
+                                }).count() > 0){
+                                    System.out.println("IF ELSE FALSE 1");
+                                    return false;
+                                }else{
+                                    System.out.println("ELSE IF TRUE 2");
+                                    return true;
+                                }
+                        }
+                    }
+                })
+                .collect(Collectors.toList());
+
+                for (Rider rmR:removeRider
+                     ) {
+                    firstAssignedRider.removeIf(x ->x.getRiderId().equals(rmR.getId()));
+                }
+
+                System.out.println("firstAssignedRider Size");
+                System.out.println(firstAssignedRider.size());
+                System.out.println(removeRider.size());
+
+                if (firstAssignedRider.size() > 0){
+                    for (Rider rmR:removeRider
+                    ) {
+                        riderList.removeIf(x ->x.getId().equals(rmR.getId()));
+                    }
+                }
+            }
+
+
+
 
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
             log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
