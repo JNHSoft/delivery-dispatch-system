@@ -111,7 +111,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 20.05.29 주문 번호를 이용하여, 거리 측정 및 라이더 ID 가져오기.
             Map<String, String> searchMap = new HashMap<>();
             searchMap.put("id", order.getId());
-            searchMap.put("distance", "500");        // 목적지 반경 거리 (단위 : 미터)
+            searchMap.put("distance", "300");        // 목적지 반경 거리 (단위 : 미터)
 
 
             List<Order> firstAssignedRider = orderMapper.selectNearOrderRider(searchMap);
