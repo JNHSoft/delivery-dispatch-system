@@ -11,6 +11,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
+import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
 import kr.co.cntt.core.util.Misc;
@@ -123,8 +124,8 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     }
 
     // 매장 누적 통계
-    public Interval selectAdminStatisticsByInterval(Order order) {
-        Interval interval = new Interval();
+    public IntervalAtTWKFC selectAdminStatisticsByInterval(Order order) {
+        IntervalAtTWKFC interval = new IntervalAtTWKFC();
         interval.setIntervalMinute(adminMapper.selectStatisticsByInterval(order));
 
         List<Object[]> list = new ArrayList<>();

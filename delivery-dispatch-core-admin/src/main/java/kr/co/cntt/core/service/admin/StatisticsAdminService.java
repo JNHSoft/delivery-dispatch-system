@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
+import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
@@ -85,7 +86,7 @@ public interface StatisticsAdminService {
     /**
      * 매장 누적 통계 페이지
      * */
-    Interval selectAdminStatisticsByInterval(Order order);
+    IntervalAtTWKFC selectAdminStatisticsByInterval(Order order);
 
     /**
      * 매장 누적 통계 페이지 - 30분 미만 목록

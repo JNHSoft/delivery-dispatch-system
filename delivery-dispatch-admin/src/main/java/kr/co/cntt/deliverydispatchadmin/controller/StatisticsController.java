@@ -12,6 +12,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
+import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.GroupAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
@@ -659,7 +660,7 @@ public class StatisticsController {
         order.setToken(adminInfo.getAdminAccessToken());
 
 
-        Interval statisticsInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
+        IntervalAtTWKFC statisticsInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
         //구간별 통계 리스트 조회페이지에 추가된 그래프 정보
         List<Map> statisticsMin30Below = statisticsAdminService.selectAdminStatisticsMin30BelowByDate(order);
 
@@ -701,7 +702,7 @@ public class StatisticsController {
         order.setToken(adminInfo.getAdminAccessToken());
 
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminByIntervalExcelBuilderServiceImpl");
-        Interval storeStatisticsByInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
+        IntervalAtTWKFC storeStatisticsByInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
         modelAndView.addObject("getAdminStatisticsByIntervalExcel", storeStatisticsByInterval);
 
         return modelAndView;

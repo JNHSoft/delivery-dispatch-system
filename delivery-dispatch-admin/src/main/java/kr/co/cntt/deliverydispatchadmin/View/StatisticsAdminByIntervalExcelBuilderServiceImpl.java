@@ -1,6 +1,7 @@
 package kr.co.cntt.deliverydispatchadmin.View;
 
 import kr.co.cntt.core.model.statistic.Interval;
+import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.cntt.core.service.admin.impl.Excel.ExcelComm;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Font;
@@ -45,7 +46,7 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
         SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
         if(request.getRequestURI().matches("/excelDownloadByInterval")) {
-            Interval storeStatisticsByInterval = (Interval) model.get("getAdminStatisticsByIntervalExcel");
+            IntervalAtTWKFC storeStatisticsByInterval = (IntervalAtTWKFC) model.get("getAdminStatisticsByIntervalExcel");
             setStoreStatisticsByIntervalExcel(workbook, storeStatisticsByInterval);
             fileName += " Interval_Analysis_Report.xlsx";
         }
@@ -63,7 +64,7 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
     }
 
     // 내용 셋팅 하는 부분
-    public void setStoreStatisticsByIntervalExcel(SXSSFWorkbook wb, Interval storeStatisticsByInterval) {
+    public void setStoreStatisticsByIntervalExcel(SXSSFWorkbook wb, IntervalAtTWKFC storeStatisticsByInterval) {
         int rowNum = 0;
         int colNum = 0;
 
