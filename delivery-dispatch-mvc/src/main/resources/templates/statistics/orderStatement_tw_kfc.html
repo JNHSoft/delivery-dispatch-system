@@ -8,43 +8,15 @@
         <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
         <div class="search_box">
             <div class="left">
-                <label class="checkbox"><input name="srchAllChk" id="allChk" type="checkbox" checked="checked"/><i></i>
-                    <span class="lbl" th:text="${#messages.msg('status.all')}"/>
-                </label>
-                <label class="checkbox"><input name="srchChk" id="completeChk" type="checkbox" checked="checked"
-                                               disabled="disabled"/><i></i>
-                    <span class="lbl" th:text="${#messages.msg('status.completed')}"/>
-                </label>
-                <label class="checkbox"><input name="srchChk" id="canceledChk" type="checkbox" checked="checked"
-                                               disabled="disabled"/><i></i>
-                    <span class="lbl" th:text="${#messages.msg('status.canceled')}"/>
-                </label>
-            </div>
-            <div class="left">
-                <input type="hidden" name="startDate"/>
-                <input type="hidden" name="endDate"/>
-                <input type="text" name="datepicker" id="day1" class="input datepicker"/>
-                ~
-                <input type="text" name="datepicker" id="day2" class="input datepicker"/>
+                <span class="lbl" th:text="${#messages.msg('statistics.1st.title')}" style="font-size: 15px; font-weight: bold; color:black" />
             </div>
             <div class="right">
-                <label class="checkbox"><input name="" type="checkbox"/><i></i>
-                    <span class="lbl" th:text="${#messages.msg('order.mine')}"/>
-                </label>
-                <span class="inblock">
-					<select name="" id="searchSelect" class="select">
-						<option value="all" th:text="${#messages.msg('list.search.all')}"/>
-                        <!--<option value="id" th:text="${#messages.msg('list.search.id')}" />-->
-						<option value="reg_order_id" th:text="${#messages.msg('order.reg.order.id')}"/>
-						<option value="pay" th:text="${#messages.msg('list.search.payment')}"/>
-						<option value="rider" th:text="${#messages.msg('list.search.rider')}"/>
-					</select>
-					<input type="text" class="input" id="searchText"
-                           th:placeholder="${#messages.msg('list.search.placeholder')}"/>
-					<button type="button" class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true"
-                                                                th:text="'&nbsp;' + ${#messages.msg('list.search')}"/></button>
-				</span>
-                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownload();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+                <input type="hidden" name="startDate"/>
+                <input type="hidden" name="endDate"/>
+                <input type="text" name="datepicker" id="day1" class="input picker"/>
+                ~
+                <input type="text" name="datepicker" id="day2" class="input picker"/>
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByOrder();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>
     </form>
@@ -175,13 +147,26 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statement.js}" layout:fragment="script2"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statement_tw_kfc.js}" layout:fragment="script2"></script>
     <script layout:fragment="script3" type="text/javascript"
             th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}"></script>
 </section>
 <!-- //컨텐츠 영역 -->
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
+    var label_order_number = /*[[#{statistics.1st.label.order.number}]]*/ 'label_order_number';
+    var label_order_date = /*[[#{statistics.1st.label.order.date}]]*/ 'label_order_date';
+    var label_order_in_store_time = /*[[#{statistics.1st.label.order.in.store.time}]]*/ 'label_order_in_store_time';
+    var label_order_delivery_time = /*[[#{statistics.1st.label.order.delivery.time}]]*/ 'label_order_delivery_time';
+    var label_order_completed_time = /*[[#{statistics.1st.label.order.completed.time}]]*/ 'label_order_completed_time';
+    var label_order_return_time = /*[[#{statistics.1st.label.order.return.time}]]*/ 'label_order_return_time';
+    var label_order_out_time = /*[[#{statistics.1st.label.order.out.time}]]*/ 'label_order_out_time';
+    var label_order_total_time = /*[[#{statistics.1st.label.order.total.time}]]*/ 'label_order_total_time';
+    var label_order_distance = /*[[#{statistics.1st.label.order.distance}]]*/ 'label_order_distance';
+    var label_order_assign = /*[[#{statistics.1st.label.order.assign}]]*/ 'label_order_assign';
+    var label_order_qt = /*[[#{statistics.1st.label.order.QT}]]*/ 'label_order_qt';
+    var label_order_d7 = /*[[#{statistics.1st.label.order.D7}]]*/ 'label_order_d7';
+
     var status_new = /*[[#{status.new}]]*/ 'status_new';
     var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
     var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';

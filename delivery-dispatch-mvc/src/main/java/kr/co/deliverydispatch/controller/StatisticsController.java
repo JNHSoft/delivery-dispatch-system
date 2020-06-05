@@ -49,32 +49,69 @@ public class StatisticsController {
      */
     @GetMapping("/statisticsByOrder")
     public String statisticsByOrder(Store store, @RequestParam(required = false) String frag, Model model) {
+        String viewPath = "/statistics";
+
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
         model.addAttribute("regionLocale", regionLocale);
-        return "/statistics/orderStatement";
+
+        /**
+         * 2020.06.04 대만 요청으로 인하여 통계 View 화면은 KFC 및 PIZZAHUT이 다르게 보여져야함
+         * */
+        if (myStore.getBrandCode().trim().equals("1"))       /// KFC
+        {
+            viewPath = viewPath.concat("/orderStatement_tw_kfc");
+        }else{
+            viewPath = viewPath.concat("/orderStatement");
+        }
+
+        return viewPath;
     }
 
     @GetMapping("/statisticsByDate")
     public String statisticsByDate(Store store, @RequestParam(required = false) String frag, Model model) {
+        String viewPath = "/statistics";
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
         model.addAttribute("regionLocale", regionLocale);
-        return "/statistics/dateStatement";
+
+        /**
+         * 2020.06.04 대만 요청으로 인하여 통계 View 화면은 KFC 및 PIZZAHUT이 다르게 보여져야함
+         * */
+        if (myStore.getBrandCode().trim().equals("1"))       /// KFC
+        {
+            viewPath = viewPath.concat("/dateStatement_tw_kfc");
+        }else{
+            viewPath = viewPath.concat("/dateStatement");
+        }
+
+        return viewPath;
     }
 
     @GetMapping("/statisticsByInterval")
     public String statisticsByInterval(Store store, @RequestParam(required = false) String frag, Model model) {
+        String viewPath = "/statistics";
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeStatementService.getStoreInfo(store);
         model.addAttribute("store", myStore);
         model.addAttribute("regionLocale", regionLocale);
-        return "/statistics/interval";
+
+        /**
+         * 2020.06.04 대만 요청으로 인하여 통계 View 화면은 KFC 및 PIZZAHUT이 다르게 보여져야함
+         * */
+        if (myStore.getBrandCode().trim().equals("1"))       /// KFC
+        {
+            viewPath = viewPath.concat("/interval_tw_kfc");
+        }else{
+            viewPath = viewPath.concat("/interval");
+        }
+
+        return viewPath;
     }
 
     /*@ResponseBody
@@ -130,28 +167,19 @@ public class StatisticsController {
         return statisticsList.stream().filter(a->{
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
                 if (a.getReservationStatus().equals("1")) {
-                    // 2020.05.18 예약시간 - 30분 시간이 실제 주문 시간보다 큰 경우에만 적용
-                    LocalDateTime createDatetime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                    LocalDateTime bookingDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-
-                    if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
-                        LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                        a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
-                    }
+                    LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                    a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
                 }
-               /* LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));*/
+                /* LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));*/
                 LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
                 LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
                 LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
-                // 19.08.26 데이터 격차가 음수로 나오는지 여부 체크 / 날짜 기준 변경
-                //LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                // 19.08.26 데이터 격차가 음수로 나오는지 여부 체크
+                LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
 //                if(assignTime.until(pickupTime, ChronoUnit.SECONDS)>=120 && pickupTime.until(completeTime, ChronoUnit.SECONDS)>=120 && completeTime.until(returnTime, ChronoUnit.SECONDS)>=120){
 
                 // 19.08.26 페이지에서 음수가 나오는 오류 사항 변경
-                //if(completeTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
-                // 20.05.22 기준 시간 변경
-                if(completeTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(assignTime.until(completeTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                if(completeTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
                     return true;
                 }else{
                     /* 19.08.26 디버그 시 내용 확인*/
@@ -238,51 +266,7 @@ public class StatisticsController {
 
         ModelAndView modelAndView = new ModelAndView("StoreStatisticsByOrderExcelBuilderServiceImpl");
         List<Order> storeStatisticsByOrderList = storeStatementService.getStoreStatisticsByOrder(order);
-
-        /*
-         * 2020.04.17 통계 View와 동일하게 표시될 수 있도록 적용
-         * */
-        List<Order> filerStoreStatisticsByOrderList =
-                storeStatisticsByOrderList.stream().filter(a -> {
-                    // 다음 4가지의 모든 시간이 NULL 이 아닌 경우만 가져온다
-                    if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null){
-                        // 예약 주문인 경우 30분을 제외한다.
-                        if (a.getReservationStatus().equals("1")){
-                            // 2020.05.18 예약시간 - 30분 시간이 실제 주문 시간보다 큰 경우에만 적용
-                            LocalDateTime createDatetime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                            LocalDateTime bookingDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-
-                            if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
-                                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                                a.setCreatedDatetime((reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S"))));
-                            }
-                        }
-
-                        // 픽업 시간
-                        LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
-                        // 배달 완료 시간
-                        LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
-                        // 기사 복귀 시간
-                        LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
-
-                        // 주문 등록 시간
-                        //LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                        LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
-
-                        // 다음 조건에 부합한 경우만 표기되도록 적용
-                        //if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
-                        if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(completeTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
-                            return  true;
-                        }else {
-                            return  false;
-                        }
-                    }else{
-                        return  false;
-                    }
-                }).collect(Collectors.toList());
-
-        modelAndView.addObject("getStoreStatisticsByOrderExcel", filerStoreStatisticsByOrderList);
-
+        modelAndView.addObject("getStoreStatisticsByOrderExcel", storeStatisticsByOrderList);
 
         return modelAndView;
     }

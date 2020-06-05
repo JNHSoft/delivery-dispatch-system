@@ -8,6 +8,7 @@ import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
+import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -112,14 +113,14 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         return S_Statistics;
     }
 
-    //통계 조회 엑셀
     @Override
-    public List<ByDate> getStoreStatisticsExcelByDate(Order order) {
-        List<ByDate> statisticsDate = storeMapper.selectStoreStatisticsByDate(order);
-        return statisticsDate;
+    public List<ByDate> getStoreStatisticsByDateAtTWKFC(Order order){
+        List<ByDate> S_Statistics = storeMapper.selectStoreStatisticsByDateAtTWKFC(order);
+        if (S_Statistics.size() == 0) {
+            return Collections.<ByDate>emptyList();
+        }
+        return S_Statistics;
     }
-
-
 
     // 통계 조회
     @Override
@@ -146,6 +147,184 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
 
         List<Object[]> list = new ArrayList<>();
 
+        int intervalSize = interval.getIntervalMinute().size();
+        long intervalCount = 0;
+        double sumIntervalCount = 0;
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> i < 10).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 10 && i < 11)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 11 && i < 12)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 12 && i < 13)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 13 && i < 14)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 14 && i < 15)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 15 && i < 16)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 16 && i < 17)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 17 && i < 18)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 18 && i < 19)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 19 && i < 20)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 20 && i < 21)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 21 && i < 22)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 22 && i < 23)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 23 && i < 24)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 24 && i < 25)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 25 && i < 26)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 26 && i < 27)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 27 && i < 28)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 28 && i < 29)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 29 && i < 30)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 30 && i < 31)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 31 && i < 32)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 32 && i < 33)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 33 && i < 34)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 34 && i < 35)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 35 && i < 36)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 36 && i < 37)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 37 && i < 38)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 38 && i < 39)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 39 && i < 40)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 40 && i < 41)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 41 && i < 42)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 42 && i < 43)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 43 && i < 44)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 44 && i < 45)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 45 && i < 46)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 46 && i < 47)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 47 && i < 48)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 48 && i < 49)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 49 && i < 50)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 50 && i < 51)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 51 && i < 52)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 52 && i < 53)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 53 && i < 54)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 54 && i < 55)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 55 && i < 56)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 56 && i < 57)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 57 && i < 58)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 58 && i < 59)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 59 && i < 60)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> (i >= 60 && i < 61)).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        intervalCount = interval.getIntervalMinute().parallelStream().filter(i -> i >= 61).count();
+        sumIntervalCount = addInterval(list, intervalSize, intervalCount, sumIntervalCount);
+
+        interval.setIntervalMinuteCounts(list);
+
+        return interval;
+    }
+
+    /**
+     * 20.06.04 대만 KFC 요청 건
+     * */
+    public IntervalAtTWKFC getStoreStatisticsByIntervalAtTWKFC(Order order) {
+
+        IntervalAtTWKFC interval = new IntervalAtTWKFC();
+        interval.setIntervalMinute(storeMapper.selectStoreStatisticsByIntervalAtTWKFC(order));
+
+        List<Object[]> list = new ArrayList<>();
+
         Map<String, Integer> intervalSize = new HashMap<>();
         Map<String, Long> intervalCount = new HashMap<>();
         Map<String, Double> sumIntervalCount = new HashMap<>();
@@ -158,7 +337,7 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         List<Integer> d7List = new ArrayList<>();
 
         for (Map map:interval.getIntervalMinute()
-             ) {
+        ) {
             if (map.get("interval_minute") != null){
                 d30List.add(Integer.parseInt(map.get("interval_minute").toString()));
             }
@@ -231,6 +410,41 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         return min30Below_Statistics;
     }
 
+    @Override
+    public List<Map> getStoreStatisticsMin30BelowByDateAtTWKFC(Order order) {
+        List<Map> min30Below_Statistics = storeMapper.selectStoreStatisticsMin30BelowByDateAtTWKFC(order);
+        if (min30Below_Statistics.size() == 0) {
+            return Collections.<Map>emptyList();
+        }
+        return min30Below_Statistics;
+    }
+
+    public double addInterval(List list, int intervalSize, long intervalCount, double sumIntervalCount) {
+
+        Object[] array = new Object[3];
+
+        array[0] = intervalCount;
+        if (intervalCount > 0) {
+            array[1] = Double.parseDouble(String.format("%.2f", intervalCount / (double) intervalSize * 100));
+        } else {
+            array[1] = 0;
+        }
+
+        sumIntervalCount = sumIntervalCount + Double.parseDouble(String.format("%.2f", intervalCount / (double) intervalSize * 100));
+        if (sumIntervalCount > 0) {
+            array[2] = Double.parseDouble(String.format("%.2f", sumIntervalCount));
+        } else {
+            array[2] = 0;
+        }
+
+        list.add(array);
+
+        return sumIntervalCount;
+    }
+
+    /**
+     * 20.06.05 대만 KFC 요청 건
+     * */
     public Map<String, Double> addInterval(List list, Map<String, Integer> intervalSize, Map<String, Long> intervalCount, Map<String, Double> sumIntervalCount) {
 
         /// 0 = 분별 개수 1 = 분별 퍼센트 2 = 토탈 퍼센트
@@ -291,5 +505,6 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
 
         return sumIntervalCount;
     }
-    
+
+
 }

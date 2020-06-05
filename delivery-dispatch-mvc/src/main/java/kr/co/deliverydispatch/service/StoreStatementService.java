@@ -3,6 +3,7 @@ package kr.co.deliverydispatch.service;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
+import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
@@ -42,11 +43,26 @@ public interface StoreStatementService {
     public List<ByDate> getStoreStatisticsByDate(Order order);
 
     /**
+     * Store 일자별 통계 목록 KFC용
+     * @param order
+     * @return
+     * @throws
+     */
+    public List<ByDate> getStoreStatisticsByDateAtTWKFC(Order order);
+
+    /**
      * Store 구간별 배달완료율 30분 미만 목록
      * @param order
      * @return
      */
     public List<Map> getStoreStatisticsMin30BelowByDate(Order order);
+
+    /**
+     * Store 구간별 배달완료율 30분 미만 목록 At TW KFC
+     * @param order
+     * @return
+     */
+    public List<Map> getStoreStatisticsMin30BelowByDateAtTWKFC(Order order);
 
     /**
      * Store 통계 조회
@@ -64,16 +80,16 @@ public interface StoreStatementService {
     public List<Order> getStoreStatisticsExcel(Order order);
 
     /**
-     * 통계 Date Excel
-     * @param order
-     * @return
-     */
-    public List<ByDate> getStoreStatisticsExcelByDate(Order order);
-
-    /**
      * Store 구간별 통계 목록
      * @param order
      * @return
      */
     public Interval getStoreStatisticsByInterval(Order order);
+
+    /**
+     * Store 구간별 통계 목록 At TW KFC
+     * @param order
+     * @return
+     */
+    public IntervalAtTWKFC getStoreStatisticsByIntervalAtTWKFC(Order order);
 }

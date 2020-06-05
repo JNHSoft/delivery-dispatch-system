@@ -15,6 +15,7 @@
     <div class="date_graph_layer" style="border-bottom: 1px solid #2f528f">
         <div class="date_graph_inner">
             <div class="date_graph_content">
+                <div id="d7Timer" class="box"></div>
                 <div id="orderPickup" class="box"></div>
                 <div id="pickupComplete" class="box"></div>
                 <div id="orderComplete" class="box"></div>
@@ -55,13 +56,14 @@
     <script type="text/javascript" th:src="@{/resources/js/lib/chart/core.js}"></script>
     <script type="text/javascript" th:src="@{/resources/js/lib/chart/charts.js}"></script>
     <script type="text/javascript" th:src="@{/resources/js/lib/chart/animated.js}"></script>
-    <script type="text/javascript" th:src="@{/resources/js/site/statistics/date.js}" layout:fragment="script2"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/date_tw_kfc.js}" layout:fragment="script2"></script>
 </section>
 <!-- //컨텐츠 영역 -->
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
     var label_store = /*[[#{statistics.2nd.label.store}]]*/ 'label_store';
     var label_date = /*[[#{statistics.2nd.label.date}]]*/ 'label_date';
+    var label_in_d7_completed = /*[[#{statistics.2nd.label.in.d7}]]*/ 'label_in_d7_completed';
     var label_in_store_time = /*[[#{statistics.2nd.label.in.store.time}]]*/ 'label_in_store_time';
     var label_delivery_time = /*[[#{statistics.2nd.label.delivery.time}]]*/ 'label_delivery_time';
     var label_completed_time = /*[[#{statistics.2nd.label.completed.time}]]*/ 'label_completed_time';
@@ -69,6 +71,7 @@
     var label_out_time = /*[[#{statistics.2nd.label.out.time}]]*/ 'label_out_time';
     var label_total_delivery_time = /*[[#{statistics.2nd.label.total.delivery.time}]]*/ 'label_total_delivery_time';
     var label_sales = /*[[#{statistics.2nd.label.sales}]]*/ 'label_sales';
+    var label_errtc = /*[[#{statistics.2nd.label.errtc}]]*/ 'label_errtc';
     var label_tc = /*[[#{statistics.2nd.label.tc}]]*/ 'label_tc';
     var label_tplh = /*[[#{statistics.2nd.label.tplh}]]*/ 'label_tplh';
     var label_spmh = /*[[#{statistics.2nd.label.spmh}]]*/ 'label_spmh';

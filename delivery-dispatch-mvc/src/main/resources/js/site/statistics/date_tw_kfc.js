@@ -50,7 +50,7 @@ function getStoreStatisticsByDate() {
     let mydata = [];
     loading.show();
     $.ajax({
-        url: "/getStoreStatisticsByDate",
+        url: "/getStoreStatisticsByDateAtTWKFC",
         type: 'get',
         data: {
             startDate: $('#day1').val(),
@@ -65,6 +65,7 @@ function getStoreStatisticsByDate() {
             let completeReturnSum = 0;
             let pickupReturnSum = 0;
             let orderReturnSum = 0;
+            let minD7BelowSum = 0;
             let min30BelowSum = 0;
             let min30To40Sum = 0;
             let min40To50Sum = 0;
@@ -72,6 +73,9 @@ function getStoreStatisticsByDate() {
             let min60To90Sum = 0;
             let min90UnderSum = 0;
             let totalSalesSum = 0;
+            let totalD7Success = 0;
+
+            let errtcSum = 0;
             let tcSum = 0;
             let tplhSum = 0;
             let spmhSum = 0;
@@ -81,6 +85,8 @@ function getStoreStatisticsByDate() {
             let rowCnt = 0;
             // 빈값이 들어간 row 갯수
             let rowReduceCnt = 0;
+            // 정상 TC가 있는 row 갯수
+            let tcRowCnt = 0;
             // 거리값 제외 count
             let distanceCnt = 0;
             // tpsp 제외 count
@@ -98,6 +104,12 @@ function getStoreStatisticsByDate() {
                     rowReduceCnt++;
                     distanceCnt++;
                     tpSpCnt++;
+
+                    // 정상 Row 체크
+                    if(formatInt(data[key].tc, 1) > 0){
+                        tcRowCnt++;
+                    }
+
                     tmpdata.store = my_store.storeName;
                     tmpdata.day = data[key].dayToDay;
                     tmpdata.orderPickup = totalTimeSet(data[key].orderPickup*1000);
@@ -106,75 +118,84 @@ function getStoreStatisticsByDate() {
                     tmpdata.completeReturn = totalTimeSet(data[key].completeReturn*1000);
                     tmpdata.pickupReturn = totalTimeSet(data[key].pickupReturn*1000);
                     tmpdata.orderReturn = totalTimeSet(data[key].orderReturn*1000);
-                    tmpdata.min30Below = parseInt(data[key].min30Below) + "%";
-                    tmpdata.min30To40 = parseInt(data[key].min30To40) + "%";
-                    tmpdata.min40To50 = parseInt(data[key].min40To50) + "%";
-                    tmpdata.min50To60 = parseInt(data[key].min50To60) + "%";
-                    tmpdata.min60To90 = parseInt(data[key].min60To90) + "%";
-                    tmpdata.min90Under = parseInt(data[key].min90Under) + "%";
-                    tmpdata.totalSales = data[key].totalSales;
-                    tmpdata.tc = data[key].tc;
+                    tmpdata.minD7Below = formatFloat(data[key].minD7Below, 1) + "%";
+                    tmpdata.min30Below = formatFloat(data[key].min30Below, 1) + "%";
+                    tmpdata.min30To40 = formatInt(data[key].min30To40, 1) + "%";
+                    tmpdata.min40To50 = formatInt(data[key].min40To50, 1) + "%";
+                    tmpdata.min50To60 = formatInt(data[key].min50To60, 1) + "%";
+                    tmpdata.min60To90 = formatInt(data[key].min60To90, 1) + "%";
+                    tmpdata.min90Under = formatInt(data[key].min90Under, 1) + "%";
+                    tmpdata.totalSales = formatInt(data[key].totalSales, 1);
+                    tmpdata.errtc = formatInt(data[key].errtc, 1);
+                    tmpdata.tc = formatInt(data[key].tc, 1);
 
                     if(data[key].tplh){
-                        tmpdata.tplh = parseFloat(data[key].tplh).toFixed(2);
-                        tplhSum += parseFloat(data[key].tplh);
+                        tmpdata.tplh = formatFloat(data[key].tplh, 1);
+                        tplhSum += formatFloat(data[key].tplh, 1);
                     } else{
                         tmpdata.tplh = "-";
                         chkTpSpCnt++;
                     }
 
                     if(data[key].spmh){
-                        tmpdata.spmh = parseFloat(data[key].spmh).toFixed(2);
-                        spmhSum += parseFloat(data[key].spmh);
+                        tmpdata.spmh = formatFloat(data[key].spmh, 1);
+                        spmhSum += formatFloat(data[key].spmh, 1);
                     } else{
                         tmpdata.spmh = "-";
                         chkTpSpCnt++;
                     }
                     tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn*1000);
-                    tmpdata.avgDistance = (data[key].avgDistance?parseFloat(data[key].avgDistance).toFixed(2):0) +'km';
+                    tmpdata.avgDistance = (data[key].avgDistance?formatFloat(data[key].avgDistance, 1):0) +'km';
 
                     // 평균 값
-                    orderPickupSum += parseFloat(data[key].orderPickup);
-                    pickupCompleteSum += parseFloat(data[key].pickupComplete);
-                    orderCompleteSum += parseFloat(data[key].orderComplete);
+                    orderPickupSum += formatFloat(data[key].orderPickup, 1);
+                    pickupCompleteSum += formatFloat(data[key].pickupComplete, 1);
+                    orderCompleteSum += formatFloat(data[key].orderComplete, 1);
 
                     if(tmpdata.completeReturn != "-"){
-                        completeReturnSum += parseFloat(data[key].completeReturn);
+                        completeReturnSum += formatFloat(data[key].completeReturn, 1);
                     } else{
                         chkCnt++;
                     }
 
                     if(tmpdata.pickupReturn != "-"){
-                        pickupReturnSum += parseFloat(data[key].pickupReturn);
+                        pickupReturnSum += formatFloat(data[key].pickupReturn, 1);
                     } else{
                         chkCnt++;
                     }
 
                     if(tmpdata.orderReturn != "-"){
-                        orderReturnSum += parseFloat(data[key].orderReturn);
+                        orderReturnSum += formatFloat(data[key].orderReturn, 1);
                     } else{
                         chkCnt++;
                     }
 
                     if(tmpdata.totalPickupReturn != "-"){
-                        totalPickupReturnSum += parseFloat(data[key].totalPickupReturn);
+                        totalPickupReturnSum += formatFloat(data[key].totalPickupReturn, 1);
                     } else{
                         chkCnt++;
                     }
 
                     if(tmpdata.avgDistance != "-"){
-                        avgDistanceSum += parseFloat(data[key].avgDistance?data[key].avgDistance:0);
+                        avgDistanceSum += formatFloat(data[key].avgDistance?data[key].avgDistance:0, 1);
                     } else{
                         chkDistanceCnt++;
                     }
-                    min30BelowSum += parseInt(data[key].min30Below);
-                    min30To40Sum += parseInt(data[key].min30To40);
-                    min40To50Sum += parseInt(data[key].min40To50);
-                    min50To60Sum += parseInt(data[key].min50To60);
-                    min60To90Sum += parseInt(data[key].min60To90);
-                    min90UnderSum += parseInt(data[key].min90Under);
-                    totalSalesSum += parseInt(data[key].totalSales);
-                    tcSum += parseInt(data[key].tc);
+
+                    minD7BelowSum += formatFloat(data[key].minD7Below, 1);
+                    min30BelowSum += formatFloat(data[key].min30Below, 1);
+                    min30To40Sum += formatFloat(data[key].min30To40, 1);
+                    min40To50Sum += formatFloat(data[key].min40To50, 1);
+                    min50To60Sum += formatFloat(data[key].min50To60, 1);
+                    min60To90Sum += formatFloat(data[key].min60To90, 1);
+                    min90UnderSum += formatFloat(data[key].min90Under, 1);
+                    totalSalesSum += formatFloat(data[key].totalSales, 1);
+                    // D7 성공 개수
+                    totalD7Success += formatFloat(data[key].d7Success, 1);
+
+                    errtcSum += formatFloat(data[key].errtc, 1);
+                    tcSum += formatFloat(data[key].tc, 1);
+
                     mydata.push(tmpdata);
                     if(chkCnt !=0){
                         rowReduceCnt--;
@@ -188,34 +209,38 @@ function getStoreStatisticsByDate() {
 
                 }
             }
+
             // 평균 값
             let avgData = new Object();
             avgData.store = "Average" ;
             avgData.day = "";
-            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/rowCnt);
-            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/rowCnt);
-            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/rowCnt);
+            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/tcRowCnt);
+            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/tcRowCnt);
+            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/tcRowCnt);
             avgData.completeReturn = totalTimeSet((completeReturnSum*1000)/rowReduceCnt);
             avgData.pickupReturn =  totalTimeSet((pickupReturnSum*1000)/rowReduceCnt);
             avgData.orderReturn =   totalTimeSet((orderReturnSum*1000)/rowReduceCnt);
-            avgData.min30Below = (min30BelowSum/rowCnt).toFixed(2) +"%";
-            avgData.min30To40 = (min30To40Sum/rowCnt).toFixed(2) +"%";
-            avgData.min40To50 = (min40To50Sum/rowCnt).toFixed(2) +"%";
-            avgData.min50To60 = (min50To60Sum/rowCnt).toFixed(2) +"%";
-            avgData.min60To90 = (min60To90Sum/rowCnt).toFixed(2) +"%";
-            avgData.min90Under = (min90UnderSum/rowCnt).toFixed(2) +"%";
-            avgData.totalSales = (totalSalesSum/rowCnt).toFixed(2);
-            avgData.tc = (tcSum/rowCnt).toFixed(2);
+            avgData.minD7Below = formatInt((minD7BelowSum/tcRowCnt), 1) + "%";
+            avgData.min30Below = formatInt((min30BelowSum/tcRowCnt), 1) +"%";
+            avgData.min30To40 =formatInt((min30To40Sum/tcRowCnt), 1) +"%";
+            avgData.min40To50 = formatInt((min40To50Sum/tcRowCnt), 1) +"%";
+            avgData.min50To60 = formatInt((min50To60Sum/tcRowCnt), 1) +"%";
+            avgData.min60To90 = formatInt((min60To90Sum/tcRowCnt), 1) +"%";
+            avgData.min90Under = formatInt((min90UnderSum/tcRowCnt), 1) +"%";
+            avgData.totalSales = formatInt((totalSalesSum/tcRowCnt), 1);
+            avgData.errtc = formatInt((errtcSum/rowCnt), 1);
+            avgData.tc = formatInt((tcSum/tcRowCnt), 1);
+
             if(tpSpCnt!=0){
-                avgData.tplh = (tplhSum/tpSpCnt).toFixed(2);
-                avgData.spmh = (spmhSum/tpSpCnt).toFixed(2);
+                avgData.tplh = formatInt((tplhSum/tpSpCnt), 1);
+                avgData.spmh = formatInt((spmhSum/tpSpCnt), 1);
             }else{
                 avgData.tplh = "-";
                 avgData.spmh = "-";
             }
 
             avgData.totalPickupReturn = totalTimeSet((totalPickupReturnSum*1000)/rowReduceCnt);
-            avgData.avgDistance = (avgDistanceSum/distanceCnt).toFixed(2) +'km';
+            avgData.avgDistance = formatFloat((avgDistanceSum/distanceCnt), 1) +'km';
 
             // 날짜 조회시 avg 노출
             if(rowCnt!=0){
@@ -245,6 +270,7 @@ function getStoreStatisticsByDate() {
                     {label: label_return_time, name: 'completeReturn', index: 'completeReturn', width: 80, align: 'center'},
                     {label: label_out_time, name: 'pickupReturn', index: 'pickupReturn', width: 80, align: 'center'},
                     {label: label_total_delivery_time, name: 'orderReturn', index: 'orderReturn', width: 80, align: 'center'},
+                    {label: '< D7 MINS %', name: 'minD7Below', index: 'minD7Below', width: 80, align: 'center'},
                     {label: '<=30 MINS %', name: 'min30Below', index: 'min30Below', width: 80, align: 'center'},
                     {label: '<=40 MINS %', name: 'min30To40', index: 'min30To40', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: '<=50 MINS %', name: 'min40To50', index: 'min40To50', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
@@ -252,6 +278,7 @@ function getStoreStatisticsByDate() {
                     {label: '<=90 MINS %', name: 'min60To90', index: 'min60To90', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
+                    {label: label_errtc, name: 'errtc', index: 'errtc', width: 50, align: 'center'},
                     {label: label_tc, name: 'tc', index: 'tc', width: 50, align: 'center'},
                     {label: label_tplh, name: 'tplh', index: 'tplh', width: 80, align: 'center'},
                     {label: label_spmh, name: 'spmh', index: 'spmh', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
@@ -262,7 +289,6 @@ function getStoreStatisticsByDate() {
                 height: 660,
                 autowidth: true,
                 rowNum: 20,
-                // footerrow: true,
                 pager: "#jqGridPager",
             });
 
@@ -271,8 +297,8 @@ function getStoreStatisticsByDate() {
                 useColSpanStyle: true,
                 groupHeaders:[
                     {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: label_average_time},
-                    {startColumnName: 'min30Below', numberOfColumns: 6, titleText: label_percent_completed},
-                    {startColumnName: 'totalSales', numberOfColumns: 6, titleText: label_productivity}
+                    {startColumnName: 'minD7Below', numberOfColumns: 7, titleText: label_percent_completed},
+                    {startColumnName: 'totalSales', numberOfColumns: 7, titleText: label_productivity}
                 ]
             });
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
@@ -328,7 +354,6 @@ function dateGraph(avgData){
 
             valueAxis.calculateTotals = true;
             valueAxis.min = 0;
-            //valueAxis.max = 60;
             valueAxis.strictMinMax = true;
 
             function createSeries(field, name) {
@@ -388,7 +413,9 @@ function dateInfo(avgData){
     let completeReturn = avgData.completeReturn;
     let pickupReturn = avgData.pickupReturn;
     let orderReturn = avgData.orderReturn;
+    let d7SuccessRate = avgData.minD7Below;
 
+    $('#d7Timer.box').append(colName.clone().html(label_in_d7_completed)).append(colVal.clone().html(d7SuccessRate));
     $('#orderPickup.box').append(colName.clone().html(label_in_store_time)).append(colVal.clone().html(convertToHms(orderPickup)));
     $('#pickupComplete.box').append(colName.clone().html(label_delivery_time)).append(colVal.clone().html(convertToHms(pickupComplete)));
     $('#orderComplete.box').append(colName.clone().html(label_completed_time)).append(colVal.clone().html(convertToHms(orderComplete)));
@@ -406,14 +433,8 @@ function excelDownloadByDate(){
         return;
     }
 
-    // let storeName = $('#myStoreName').text();
-    //
-    //
-    // console.log("!!!!!!!!!!!!");
-    // console.log(storeName);
-
     loading.show();
-    $.fileDownload("/excelDownloadByDate",{
+    $.fileDownload("/excelDownloadByDateAtTWKFC",{
         httpMethod:"GET",
         data : {
             startDate : startDate,
@@ -423,8 +444,22 @@ function excelDownloadByDate(){
             loading.hide();
         },
         failCallback: function(responseHtml,url){
-            // console.log(responseHtml);
             loading.hide();
         }
     })
+}
+
+function formatInt(sender, pointer) {
+    if (sender == null || isNaN(sender)){
+        return 0;
+    }
+    return parseFloat(parseInt(sender).toFixed(pointer));
+}
+
+function formatFloat(sender, pointer) {
+    if (sender == null || isNaN(sender)){
+        return 0;
+    }
+
+    return parseFloat(parseFloat(sender).toFixed(pointer));
 }

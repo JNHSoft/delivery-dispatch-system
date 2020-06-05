@@ -200,7 +200,15 @@ public interface StoreMapper {
      * @param order
      * @return
      */
-    public List<Map> selectStoreStatisticsByInterval(Order order);
+    public List<Integer> selectStoreStatisticsByInterval(Order order);
+
+    /**
+     * Store 구간별 통계 목록 At TW KFC
+     * @param order
+     * @return
+     */
+    public List<Map> selectStoreStatisticsByIntervalAtTWKFC(Order order);
+
 
     /**
      * Store 일별 통계 목록
@@ -210,11 +218,27 @@ public interface StoreMapper {
     public List<ByDate> selectStoreStatisticsByDate(Order order);
 
     /**
+     * Store 일별 통계 목록 At TW KFC
+     * @param order
+     * @return
+     */
+    public List<ByDate> selectStoreStatisticsByDateAtTWKFC(Order order);
+
+    /**
      * Store 일별 배달완료율 30분 미만 목록
      * @param order
      * @return
      */
     public List<Map> selectStoreStatisticsMin30BelowByDate(Order order);
+
+
+    /**
+     * Store 일별 배달완료율 30분 미만 목록 At TW KFC
+     * @param order
+     * @return
+     */
+    public List<Map> selectStoreStatisticsMin30BelowByDateAtTWKFC(Order order);
+
 
     /**
      * <p> Admin 정보 조회
