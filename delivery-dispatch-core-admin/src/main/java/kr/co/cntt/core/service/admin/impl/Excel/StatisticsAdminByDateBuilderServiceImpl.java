@@ -136,6 +136,8 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.productivity",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 

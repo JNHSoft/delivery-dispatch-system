@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"> 
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <meta charset="UTF-8" />
 	<!-- 헤더영역 -->
 	<header id="header" th:fragment="commonHeader">
@@ -29,9 +30,13 @@
 							<li><a href="/store"><img src="../resources/images/common/gnb_store.png" alt="" /><strong th:text="${#messages.msg('gnb.store')}" /></a></li>
 							<li><a href="/group"><img src="../resources/images/common/gnb_group.png" alt="" /><strong th:text="${#messages.msg('gnb.group')}" /></a></li>
 							<li><a href="/staff"><img src="../resources/images/common/gnb_staff.png" alt="" /><strong th:text="${#messages.msg('gnb.staff')}" /></a></li>
+
+
+
+
 							<!-- 20.04.23 스토어 통계 페이지 추가 -->
-							<!--<li><a href="/statistics"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong th:text="${#messages.msg('gnb.statistics')}" /></a></li>-->
-							<li>
+							<!-- 20.06.08 분기처리 -->
+							<li id="menu_kfc" style="display: none">
 								<a href="/statistics" class="1depth"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong th:text="${#messages.msg('gnb.statistics')}" /></a>
 								<dl>
 									<dt>하위메뉴</dt>
@@ -40,6 +45,11 @@
 									<dd><a href="/statisticsByDate" th:text="${#messages.msg('statistics.2nd.title')}"></a></dd>
 									<dd><a href="/statisticsByInterval" th:text="${#messages.msg('statistics.3rd.title')}"></a></dd>
 								</dl>
+							</li>
+							<li id="menu_default" style="display: none">
+								<a href="/statistics">
+									<img src="../resources/images/common/gnb_statement.png" alt="" /><strong th:text="${#messages.msg('gnb.statistics')}" />
+								</a>
 							</li>
 
 							<li><a href="/setting-account"><img src="../resources/images/common/gnb_setting.png" alt="" /><strong th:text="${#messages.msg('gnb.setting')}" /></a></li>
