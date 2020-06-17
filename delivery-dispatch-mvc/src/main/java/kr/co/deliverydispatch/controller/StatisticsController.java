@@ -114,6 +114,28 @@ public class StatisticsController {
         return viewPath;
     }
 
+    /**
+     * 2020-06-16
+     * */
+    @GetMapping("/statisticsByOrderDetail")
+    public String statisticsByOrderDetail(Store store, @RequestParam(required = false) String frag, Model model){
+        String viewPath = "/statistics";
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        store.setToken(storeInfo.getStoreAccessToken());
+        Store myStore = storeStatementService.getStoreInfo(store);
+        model.addAttribute("store", myStore);
+        model.addAttribute("regionLocale", regionLocale);
+
+        if (myStore.getBrandCode().trim().equals("1"))       /// KFC
+        {
+            viewPath = viewPath.concat("/orderdetail_tw_kfc");
+        }else{
+            viewPath = "redirect:/statisticsByOrder";
+        }
+
+        return viewPath;
+    }
+
     /*@ResponseBody
     @GetMapping("/getStoreStatistics")
     @CnttMethodDescription("통계 리스트 조회")

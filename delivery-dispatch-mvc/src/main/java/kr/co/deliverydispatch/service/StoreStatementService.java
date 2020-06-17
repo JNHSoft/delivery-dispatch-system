@@ -92,4 +92,10 @@ public interface StoreStatementService {
      * @return
      */
     public IntervalAtTWKFC getStoreStatisticsByIntervalAtTWKFC(Order order);
+
+    /**
+     * 2020-06-16 주문 리스트 데이터 출력
+     * */
+    List<Order> getStoreOrderList(Order order);
+
 }

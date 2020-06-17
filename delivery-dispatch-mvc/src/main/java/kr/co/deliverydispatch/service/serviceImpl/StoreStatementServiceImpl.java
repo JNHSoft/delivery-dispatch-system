@@ -506,5 +506,14 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         return sumIntervalCount;
     }
 
-
+    /**
+     * 2020-06-16 주문 리스트 데이터 출력
+     * */
+    public List<Order> getStoreOrderList(Order order){
+        List<Order> storeOrderList = storeMapper.selectOrderListForStore(order);
+        if (storeOrderList.size() == 0) {
+            return Collections.<Order>emptyList();
+        }
+        return storeOrderList;
+    }
 }

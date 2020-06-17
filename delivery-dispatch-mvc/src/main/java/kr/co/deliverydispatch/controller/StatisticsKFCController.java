@@ -322,4 +322,73 @@ public class StatisticsKFCController {
 
         return modelAndView;
     }
+
+    /**
+     * 2020-06-16 orderdetail_tw_kfc.html
+     * */
+    @ResponseBody
+    @GetMapping("/getStoreOrderListAtTWKFC")
+    @CnttMethodDescription("날짜별 주문 리스트 조회 TW KFC")
+    public List<Order> getStoreOrderListAtTWKFC(@RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate){
+        // 날짜
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setCurrentDatetime(startDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            //31일까지만 조회가능
+            if (diffDays > 31){
+                return new ArrayList<>();
+            }
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        order.setToken(storeInfo.getStoreAccessToken());
+
+        List<Order> orderList = storeStatementService.getStoreOrderList(order);
+
+
+        return orderList;
+    }
+
+    @GetMapping("/excelDownloadByOrderListAtTWKFC")
+    public ModelAndView statisticsByOrderListExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate){
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Order order = new Order();
+        order.setToken(storeInfo.getStoreAccessToken());
+        order.setCurrentDatetime(startDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date sdfStartDate = formatter.parse(startDate);
+            Date sdfEndDate = formatter.parse(endDate);
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            //31일까지만 가능
+            if (diffDays > 31){
+                return null;
+            }
+
+            order.setDays(Integer.toString((int) (long) diffDays + 1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        ModelAndView modelAndView = new ModelAndView("StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl");
+        List<Order> storeStatisticsByOrderList = storeStatementService.getStoreOrderList(order);
+        modelAndView.addObject("getStoreStatisticsByOrderListAtTWKFCExcel", storeStatisticsByOrderList);
+
+        return modelAndView;
+    }
+
 }

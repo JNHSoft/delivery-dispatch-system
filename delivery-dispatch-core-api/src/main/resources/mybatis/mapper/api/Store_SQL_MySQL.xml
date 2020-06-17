@@ -1665,6 +1665,34 @@
         WHERE id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
     </select>
 
+    <!-- selectOrderListForStore -->
+    <select id="selectOrderListForStore" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
+        select	 A.id
+                ,A.reg_order_id
+                ,A.created_datetime
+                ,ifnull(A.modified_datetime, A.created_datetime)	as modified_datetime
+                ,A.store_id
+                ,A.address
+                ,A.detail_address
+                ,A.status
+                ,A.reservation_datetime
+                ,A.reservation_status
+                ,A.assigned_datetime
+                ,A.arrived_datetime
+                ,A.picked_up_datetime
+                ,A.arrived_datetime
+                ,A.completed_datetime
+                ,A.return_datetime
+                ,A.combined_order_id
+                ,A.phone
+                ,A.message
+        from	 TB_ORDER	A
+        where	 date_format(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > date_format(ifnull(reservation_datetime, now()), '%Y-%m-%d %H:%i')
+        and		 A.status in (3, 4)
+        and		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+        and		 A.store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} )
+        ORDER BY A.id
+    </select>
 
 </mapper>
  

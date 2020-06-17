@@ -248,5 +248,5 @@ public interface StoreMapper {
      */
     public Admin selectAdminInfo(Common common);
 
-
+    List<Order> selectOrderListForStore(Order order);
 }
