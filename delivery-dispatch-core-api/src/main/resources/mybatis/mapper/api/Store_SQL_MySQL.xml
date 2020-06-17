@@ -61,6 +61,7 @@
         <result property="menuName" column="menu_name" />
         <result property="assignedDatetime" column="assigned_datetime" />
         <result property="pickedUpDatetime" column="picked_up_datetime" />
+        <result property="arrivedDatetime" column="arrived_datetime" />
         <result property="reservationDatetime" column="reservation_datetime" />
         <result property="reservationStatus" column="reservation_status" />
         <result property="completedDatetime" column="completed_datetime" />
