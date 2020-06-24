@@ -80,20 +80,20 @@ function setUI() {
         success : function(data) {
            console.log(data);
 
-           // 주문 매장의 브랜드 코드에 따른 이미지 변경
-			switch (data.brandCode) {
-				case "1":
-					$(".visual_area").css({"position":"relative","height":"300px","background":"url('../resources/images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat","background-size":"cover"});
-
-					console.log("brandCode");
-
-					$("#tAssign").removeClass('.step2');
-
-					$("#tAssign").addClass('kfc');
-					break;
-				default:
-					break;
-			}
+           // // 주문 매장의 브랜드 코드에 따른 이미지 변경
+			// switch (data.brandCode) {
+			// 	case "1":
+			// 		$(".visual_area").css({"position":"relative","height":"300px","background":"url('../resources/images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat","background-size":"cover"});
+		   //
+			// 		console.log("brandCode");
+		   //
+			// 		$("#tAssign").removeClass('.step2');
+		   //
+			// 		$("#tAssign").addClass('kfc');
+			// 		break;
+			// 	default:
+			// 		break;
+			// }
 
 
             trackerStatus = data.status;
@@ -127,15 +127,6 @@ function setUI() {
                     $(".mapCtrl").attr("id","map");
                     $(".visual_area").attr("id","");
 					$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
-					// // 주문 매장의 브랜드 코드에 따른 문구 색상 변경
-					// switch (data.brandCode) {
-					// 	case "1":
-					// 		$(".visual_area").html('<p class="tit_red">已安排餐廳製作</p>');
-					// 		break;
-					// 	default:
-					// 		$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
-					// 		break;
-					// }
 				}
 
 				if(checkTime - 1800 * 1000 <= 0){//예약시간과 현재시간이 30분 이내인지 체크
@@ -193,7 +184,6 @@ function setUI() {
                 localStorage.removeItem('checkStep');
                 calculateAndDisplayRoute(directionsService, directionsDisplay);
 
-//                setInterval('calculateAndDisplayRoute(directionsService, directionsDisplay)', 30000);
             } else if(trackerStatus == 3) {
                 $('.progress-background').hide();
                 $('#tNew').addClass('on line');
@@ -204,16 +194,8 @@ function setUI() {
                 $(".visual_area").attr("id","");
                 $(".mapCtrl").attr("id","map");
 				$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
-				// // 주문 매장의 브랜드 코드에 따른 문구 색상 변경
-				// switch (data.brandCode) {
-				// 	case "1":
-				// 		$(".visual_area").html('<p class="tit_red">請享用熱騰騰<br/>的美味餐點</p>');
-				// 		break;
-				// 	default:
-				// 		$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
-				// 		break;
-				// }
-/*                $.removeCookie('checkStep');
+
+				/*                $.removeCookie('checkStep');
                 $.removeCookie('chkProgress');*/
                 localStorage.clear();
             } else if(trackerStatus == 4){
@@ -610,15 +592,15 @@ function startEndPoint() {
         },
         dataType : 'json',
         success : function(data) {
-        	console.log(data.brandCode);
+        	// console.log(data.brandCode);
 
-        	switch (data.brandCode) {
-        		case "1":
-					$(".progress-background").addClass("kfc");
-        			break;
-				default:
-					break;
-			}
+        	// switch (data.brandCode) {
+        	// 	case "1":
+			// 		$(".progress-background").addClass("kfc");
+        	// 		break;
+			// 	default:
+			// 		break;
+			// }
 
             if(overlay){
                 myOverlay.prototype.onRemove = function () {
@@ -666,21 +648,21 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 			if(trackerStatus!=2 && trackerStatus!=6){
 				setUI();
 			}else{
-				// 이미지 경로 저장
-				let imgRiderLeft;
-				let imgRiderRight;
-
-				// 브랜드 코드에 따른 이미지 추출
-				switch (data.brandCode) {
-					case "1":
-						imgRiderLeft = '/resources/images/tracker/pin_moto_left1.png?ver=0.4';
-						imgRiderRight = '/resources/images/tracker/pin_moto_right1.png?ver=0.4';
-						break;
-					default:
-						imgRiderLeft = '/resources/images/tracker/pin_moto_left.png?ver=0.4';
-						imgRiderRight = '/resources/images/tracker/pin_moto_right.png?ver=0.4';
-						break;
-				}
+				// // 이미지 경로 저장
+				// let imgRiderLeft;
+				// let imgRiderRight;
+				//
+				// // 브랜드 코드에 따른 이미지 추출
+				// switch (data.brandCode) {
+				// 	case "1":
+				// 		imgRiderLeft = '/resources/images/tracker/pin_moto_left1.png?ver=0.4';
+				// 		imgRiderRight = '/resources/images/tracker/pin_moto_right1.png?ver=0.4';
+				// 		break;
+				// 	default:
+				// 		imgRiderLeft = '/resources/images/tracker/pin_moto_left.png?ver=0.4';
+				// 		imgRiderRight = '/resources/images/tracker/pin_moto_right.png?ver=0.4';
+				// 		break;
+				// }
 
 				var selectedMode = 'DRIVING';
 				//		var selectedMode = 'TRANSIT';
@@ -754,8 +736,8 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 								zIndex:103,
 								/*label:{fontWeight: "bold", text:data.storeName},*/
 								icon: {
-									//url:'/resources/images/tracker/pin_store.jpg?ver=0.4',
-									url: data.brandImg,
+									url:'/resources/images/tracker/pin_store0.png?ver=0.4',
+									// url: data.brandImg,
 									scaledSize: new google.maps.Size(35, 35)
 								}
 							});
@@ -769,7 +751,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 								zIndex:102,
 								icon: {
 									// url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
-									url: data.longitude>data.riderLongitude?imgRiderRight:imgRiderLeft,
+									url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
 									scaledSize: new google.maps.Size(40, 49)
 								},
 								duration: durationInTraffic*60*1000,
@@ -785,7 +767,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 									marker[2].setDuration(durationCheckTime);
 									if(direction != 'keep'){
 										// marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-										marker[2].setIcon({url:(direction == 'right')?imgRiderRight:imgRiderLeft, scaledSize: new google.maps.Size(40, 49)});
+										marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
 									}
 									marker[2].setPosition(pointLocation);
 									if(restStepTime == 0){

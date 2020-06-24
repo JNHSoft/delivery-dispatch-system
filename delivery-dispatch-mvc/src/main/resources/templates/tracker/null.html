@@ -6,14 +6,15 @@
 		<div class="state">
 			<span id="tNew" class="step1 on" th:text="${#messages.msg('tracker.new')}" />
 			<i></i>
-			<span id="tAssign" class="step2" th:text="${#messages.msg('tracker.assign')}"/>
+			<span id="tAssign" style="display: none" class="step2" th:text="${#messages.msg('tracker.assign')}"/>
+			<span id="tAssign_kfc" style="display: none" class="kfc" th:text="${#messages.msg('tracker.assign')}"/>
 			<i></i>
 			<span id="tPickup" class="step3" th:text="${#messages.msg('tracker.pickedup')}"/>
 			<i></i>
 			<span id="tComplete" class="step4" th:text="${#messages.msg('tracker.completed')}"/>
 		</div>
 	</div>
-	<div class="visual_area h390">
+	<div class="visual_area h390" style="display: none">
 		<!--<div class="loading"></div>-->
 	</div>
 	<!--<div class="tracker-bottom">
@@ -43,6 +44,7 @@
 /*<![CDATA[*/
 var encParam = /*[[${encParam}]]*/ 'encParam';
 var ErrorMsg = /*[[${ErrorValue}]]*/ 'ErrorMsg';
+var brandCode = /*[[${brandCode}]]*/ 'brandCode';
 
 if (ErrorMsg == undefined || ErrorMsg == ""){
 	ErrorMsg = "Check your order information.";
@@ -52,6 +54,18 @@ $(document).ready(function(){
     if(self == top){
         location.href ="/error/error-tracker";
     }
+
+    if (brandCode == "1"){
+		$('#tAssign_kfc').css('display', '');
+		$(".visual_area").css({"position":"relative","height":"300px","background":"url('../resources/images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat","background-size":"cover"});
+		$('#tAssign').css('display', 'none');
+		$('.visual_area').css('display', '');
+	}else{
+		$('#tAssign').css('display', '');
+		$('#tAssign_kfc').css('display', 'none');
+		$('.visual_area').css('display', '');
+	}
+
 	if(encParam){
         setInterval('returnPage()', 30000);
 	}
