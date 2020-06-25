@@ -255,7 +255,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     .collect(Collectors.toList());
 //                    .findFirst().get();//첫번째 라이더로 바로 받을지 고려, 병렬스트림으로 변경시 findAny()적용
 
-            /*for(Rider r : riderList){
+            /*for(Rider r : riderList){b
                 log.info(r+"!!!!!!!!!!필터링 및 정렬 후!!!!!!!!!!!"+r.getId());//test
             }*/
 
