@@ -138,6 +138,12 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("order.pickedup",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 20.07.15 arrived datetime
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("order.arrived",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("order.completed",null, locale));
@@ -276,6 +282,11 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getPickedUpDatetime()));
+            cell.setCellStyle(dataCellStyle);
+
+            // 20.07.15 도착시간
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getArrivedDatetime()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);

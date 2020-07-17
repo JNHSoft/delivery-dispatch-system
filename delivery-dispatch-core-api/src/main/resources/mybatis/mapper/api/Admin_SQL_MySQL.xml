@@ -89,6 +89,7 @@
 		<result property="menuName" column="menu_name" />
 		<result property="assignedDatetime" column="assigned_datetime" />
 		<result property="pickedUpDatetime" column="picked_up_datetime" />
+		<result property="arrivedDatetime" column="arrived_datetime" />
 		<result property="reservationDatetime" column="reservation_datetime" />
 		<result property="reservationStatus" column="reservation_status" />
 		<result property="completedDatetime" column="completed_datetime" />
@@ -1090,6 +1091,7 @@
 	, TBP.type
 	, TBO.assigned_datetime
 	, TBO.picked_up_datetime
+	, TBO.arrived_datetime
 	, TBO.reservation_datetime
 	, TBO.reservation_status
 	, TBR.name AS rider_name
@@ -1168,6 +1170,7 @@
         , TBO.reservation_status
         , TBO.assigned_datetime
 		, TBO.picked_up_datetime
+		, TBO.arrived_datetime
         , TBO.completed_datetime
 		, TBO.return_datetime
 		, TBO.menu_name

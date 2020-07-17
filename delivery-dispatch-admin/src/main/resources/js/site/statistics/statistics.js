@@ -411,6 +411,13 @@ function getStatisticsList() {
                             $tmpData.th12 = timeSet(data[key].pickedUpDatetime);
                         }
 
+                        // 20.07.15 arrived datetime 추가
+                        if (!data[key].arrivedDatetime){
+                            $tmpData.th18 = "-";
+                        }else{
+                            $tmpData.th18 = timeSet(data[key].arrivedDatetime);
+                        }
+
                         if(!data[key].reservationDatetime){
                             $tmpData.th13 = "-";
                         }else if(data[key].reservationStatus==1){
@@ -475,6 +482,7 @@ function getStatisticsList() {
                     {label: order_payment, name: 'th10', width: 80, align: 'center'},
                     {label: order_assigned, name: 'th11', width: 80, align: 'center'},
                     {label: order_pickedup, name: 'th12', width: 80, align: 'center'},
+                    {label: order_arrived, name: 'th18', width: 80, align: 'center'},
                     {label: order_reserved, name: 'th13', width: 80, align: 'center'},
                     {label: rider_name, name: 'th14', width: 80, align: 'center'}/*,
                     {label:'그룹ID', name:'th15', width:60, hidden:'hidden'},
