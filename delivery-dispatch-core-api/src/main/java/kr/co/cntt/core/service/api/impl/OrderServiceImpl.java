@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.api.impl;
 
+import com.mysql.cj.util.StringUtils;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
@@ -147,7 +148,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if (firstAssignedRider.size() > 0){
                 // 라이더 범위에서 제외가 되어야될 아이들을 추출한다.
                 List<Rider> removeRider = riderList.stream().filter(x ->{
-                    if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
+                    // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
+                    //if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
+                    if (x.getMinOrderStatus() == null){
                         return true;
                     }else{
                         switch (x.getMinOrderStatus()){
@@ -205,6 +208,25 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                    // 거리 계산과 별도의 공식
+                    try{
+                        if (!StringUtils.isNullOrEmpty(r.getAssignCount()) && Integer.parseInt(r.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) && firstAssignedRider.size() > 0 &&
+                                firstAssignedRider.stream()
+                                        .filter(x -> {
+                                            if(x.getRiderId().equals(r.getId())){
+                                                return true;
+                                            }else{
+                                                return false;
+                                            }
+                                        })
+                                        .count() > 0){
+                            r.setAssignCount(String.valueOf(Integer.parseInt(r.getAssignCount()) % Integer.parseInt(order.getStore().getAssignmentLimit())));
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
                 } else {
                     riderList.remove(r);//위치정보가 없는 라이더 제거
                 }
@@ -249,8 +271,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))//3순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
 //                            .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())))//4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
                     .sorted(Comparator.comparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder()))// 1순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
-                            .thenComparing(Rider::getDistance)// 2순위 거리순(10미터 단위)
-                            .thenComparing(Rider::getAssignCount)//3순위 라이더의 오더 개수....
+                            .thenComparing(Rider::getAssignCount)//2순위 라이더의 오더 개수....
+                            .thenComparing(Rider::getDistance)// 3순위 거리순(10미터 단위)           // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
                             .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))) //4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
                     .collect(Collectors.toList());
 //                    .findFirst().get();//첫번째 라이더로 바로 받을지 고려, 병렬스트림으로 변경시 findAny()적용

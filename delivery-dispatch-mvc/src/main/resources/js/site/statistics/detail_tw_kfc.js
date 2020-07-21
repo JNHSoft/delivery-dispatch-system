@@ -54,9 +54,9 @@ function getStoreOrderList() {
                     tmpData.state = getStatusName(data[key].status);
                     tmpData.id = data[key].id;
                     tmpData.createdDatetime = timeSet(data[key].createdDatetime);
-                    tmpData.address = data[key].address;
-                    tmpData.message = (!data[key].message)? "-":data[key].message;
-                    tmpData.phone = (!data[key].phone)? "-":data[key].phone;
+                    // tmpData.address = data[key].address;
+                    // tmpData.message = (!data[key].message)? "-":data[key].message;
+                    // tmpData.phone = (!data[key].phone)? "-":data[key].phone;
                     tmpData.assignedDatetime = timeSet(data[key].assignedDatetime);
                     tmpData.pickedUpDatetime = timeSet(data[key].pickedUpDatetime);
                     tmpData.arrivedDatetime = timeSet(data[key].arrivedDatetime);
@@ -83,9 +83,9 @@ function getStoreOrderList() {
                    {label: order_status, name: 'state', width: 80, align: 'center'},
                    {label: order_id, name: 'id', width: 80, align: 'center', hidden: true},
                    {label: order_created, name: 'createdDatetime', width: 80, align: 'center'},
-                   {label: order_address, name: 'address', width: 200},
-                   {label: order_message, name: 'message', width: 80, align: 'center'},
-                   {label: order_customer_phone, name: 'phone', width: 80, align: 'center'},
+                   // {label: order_address, name: 'address', width: 200},
+                   // {label: order_message, name: 'message', width: 80, align: 'center'},
+                   // {label: order_customer_phone, name: 'phone', width: 80, align: 'center'},
                    {label: order_assigned, name: 'assignedDatetime', width: 80, align: 'center'},
                    {label: order_pickedup, name: 'pickedUpDatetime', width: 80, align: 'center'},
                    {label: order_arrived, name: 'arrivedDatetime', width: 80, align: 'center'},

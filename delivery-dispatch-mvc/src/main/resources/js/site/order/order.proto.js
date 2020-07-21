@@ -351,13 +351,13 @@ DDELib.Orders.prototype = {
                 }, 300)//그리드 리사이즈
             },
             loadComplete: function (data) {
-                let ids = $("#jqGrid").getDataIDs();
+                // let ids = $("#jqGrid").getDataIDs();
 
-                $.each(ids, function (idx, rowId) {
-                    if (orderArray.findIndex((value) => value == rowId) > -1){
-                        $("#jqGrid").setRowData(rowId, false, {background: '#FFAA55'});
-                    }
-                });
+                // $.each(ids, function (idx, rowId) {
+                //     if (orderArray.findIndex((value) => value == rowId) > -1){
+                //         $("#jqGrid").setRowData(rowId, false, {background: '#FFAA55'});
+                //     }
+                // });
             }
         });
         resizeJqGrid('#jqGrid'); //그리드 리사이즈
@@ -381,7 +381,7 @@ DDELib.Orders.prototype = {
     makeRowOrder : function(ev,) {
         //this.log("makeRowOrder");
         var tmpdata = new Object();
-        let directionsService = new google.maps.DirectionsService;
+        // let directionsService = new google.maps.DirectionsService;
 
         //tmpdata.No = i;
         tmpdata.state = this.getStatusInfo(ev.status);
@@ -443,13 +443,13 @@ DDELib.Orders.prototype = {
             case '1':
             case '2':
             case '5':
-                // 단순 시간 비교 시에도 예상시간이 지난 경우에도 표기
-                if (convertDateTime(ev.reservationDatetime) < new Date()){
-                    orderArray.push(ev.id);
-                } else if (ev.status == '2'){
-                    this.arrivedTimeCheck(ev, directionsService);
-                }
-                break;
+                // // 단순 시간 비교 시에도 예상시간이 지난 경우에도 표기
+                // if (convertDateTime(ev.reservationDatetime) < new Date()){
+                //     orderArray.push(ev.id);
+                // } else if (ev.status == '2'){
+                //     this.arrivedTimeCheck(ev, directionsService);
+                // }
+                // break;
         }
 
         return tmpdata;
@@ -1038,33 +1038,33 @@ DDELib.Orders.prototype = {
         //var directionsService = new google.maps.DirectionsService;
         let mode = 'DRIVING';
 
-        directionsService.route({
-             origin: new google.maps.LatLng(data.rider.latitude, data.rider.longitude)                   /// 출발지
-            //origin: new google.maps.LatLng(24.987451, 121.552371)
-            ,destination: new google.maps.LatLng(data.latitude, data.longitude)               /// 도착지
-            ,travelMode: google.maps.TravelMode[mode]              /// 조회 방법
-            ,drivingOptions:{
-                 departureTime: new Date() // 현재 시간
-                ,trafficModel: 'bestguess'  // 조회 방식
-            }
-            ,optimizeWaypoints: true
-        },function (response, status) {
-            if (status === 'OK'){
-                console.log("Call API = [" + data.id + "]");
-
-                var durationInTraffic = response.routes[0].legs.reduce(function (sum, leg) {
-                    return sum + leg.duration.value
-                },0)/60;
-
-                var arriveTrafficTime = new Date((new Date).getTime()+durationInTraffic*60*1000);
-
-                if (convertDateTime(data.reservationDatetime) < arriveTrafficTime){
-                    $("#jqGrid").setRowData(data.id, false, {background: '#FFAA55'});
-                }
-
-            }
-        }
-        );
+        // directionsService.route({
+        //      origin: new google.maps.LatLng(data.rider.latitude, data.rider.longitude)                   /// 출발지
+        //     //origin: new google.maps.LatLng(24.987451, 121.552371)
+        //     ,destination: new google.maps.LatLng(data.latitude, data.longitude)               /// 도착지
+        //     ,travelMode: google.maps.TravelMode[mode]              /// 조회 방법
+        //     ,drivingOptions:{
+        //          departureTime: new Date() // 현재 시간
+        //         ,trafficModel: 'bestguess'  // 조회 방식
+        //     }
+        //     ,optimizeWaypoints: true
+        // },function (response, status) {
+        //     if (status === 'OK'){
+        //         console.log("Call API = [" + data.id + "]");
+        //
+        //         var durationInTraffic = response.routes[0].legs.reduce(function (sum, leg) {
+        //             return sum + leg.duration.value
+        //         },0)/60;
+        //
+        //         var arriveTrafficTime = new Date((new Date).getTime()+durationInTraffic*60*1000);
+        //
+        //         if (convertDateTime(data.reservationDatetime) < arriveTrafficTime){
+        //             $("#jqGrid").setRowData(data.id, false, {background: '#FFAA55'});
+        //         }
+        //
+        //     }
+        // }
+        // );
     }
 }
 

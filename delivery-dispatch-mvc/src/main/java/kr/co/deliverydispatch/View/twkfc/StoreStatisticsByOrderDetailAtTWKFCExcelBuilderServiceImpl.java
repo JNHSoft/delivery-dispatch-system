@@ -99,23 +99,23 @@ public class StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl extends 
             addTitle.setCellValue(messageSource.getMessage("order.created",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            // 고객 주소
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("order.address",null, locale));
-            addTitle.setCellStyle(titleCellStyle);
-
-            // 고객명
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("order.message",null, locale));
-            addTitle.setCellStyle(titleCellStyle);
-
-            // 고객 전화번호
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("order.customer.phone",null, locale));
-            addTitle.setCellStyle(titleCellStyle);
+//            // 고객 주소
+//            sheet.setColumnWidth(colNum, 17*256);
+//            addTitle = titleRow.createCell(colNum++);
+//            addTitle.setCellValue(messageSource.getMessage("order.address",null, locale));
+//            addTitle.setCellStyle(titleCellStyle);
+//
+//            // 고객명
+//            sheet.setColumnWidth(colNum, 17*256);
+//            addTitle = titleRow.createCell(colNum++);
+//            addTitle.setCellValue(messageSource.getMessage("order.message",null, locale));
+//            addTitle.setCellStyle(titleCellStyle);
+//
+//            // 고객 전화번호
+//            sheet.setColumnWidth(colNum, 17*256);
+//            addTitle = titleRow.createCell(colNum++);
+//            addTitle.setCellValue(messageSource.getMessage("order.customer.phone",null, locale));
+//            addTitle.setCellStyle(titleCellStyle);
 
             // 배정시간
             sheet.setColumnWidth(colNum, 17*256);
@@ -184,20 +184,20 @@ public class StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl extends 
             cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getCreatedDatetime()));
             cell.setCellStyle(dataCellStyle);
 
-            // 고객 주소
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getAddress()));
-            cell.setCellStyle(dataCellStyle);
-
-            // 고객 메모
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getMessage()));
-            cell.setCellStyle(dataCellStyle);
-
-            // 고객 전화번호
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getPhone()));
-            cell.setCellStyle(dataCellStyle);
+//            // 고객 주소
+//            cell = addListRow.createCell(colNum++);
+//            cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getAddress()));
+//            cell.setCellStyle(dataCellStyle);
+//
+//            // 고객 메모
+//            cell = addListRow.createCell(colNum++);
+//            cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getMessage()));
+//            cell.setCellStyle(dataCellStyle);
+//
+//            // 고객 전화번호
+//            cell = addListRow.createCell(colNum++);
+//            cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getPhone()));
+//            cell.setCellStyle(dataCellStyle);
 
             // 배정 시간
             cell = addListRow.createCell(colNum++);
