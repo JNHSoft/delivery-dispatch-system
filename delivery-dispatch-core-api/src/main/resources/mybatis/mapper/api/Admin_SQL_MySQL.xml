@@ -1078,7 +1078,7 @@
 	, TSG.admin_id AS subgroup_admin_id
 	, TSG.group_id AS subgroup_group_id
 	, SSR.store_id AS subGroupStoreRel_store_id
-	, TBS.store_name
+	, IFNULL(TBS.store_name, concat('[DEL] ', (select ifnull(store_name, '') from TB_STORE where id = TBO.store_id and admin_id = TBO.admin_id)))		as store_name
 	, TBO.admin_id
 	, TBO.store_id
 	, TBO.rider_id
@@ -1159,7 +1159,7 @@
 		, TSG.admin_id AS subgroup_admin_id
 		, TSG.group_id AS subgroup_group_id
 		, SSR.store_id AS subGroupStoreRel_store_id
-		, TBS.store_name
+		, IFNULL(TBS.store_name, concat('[DEL] ', (select ifnull(store_name, '') from TB_STORE where id = TBO.store_id and admin_id = TBO.admin_id)))		as store_name
 		, TBO.admin_id
 		, TBO.store_id
 		, TBO.rider_id
