@@ -25,11 +25,13 @@ import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -978,6 +980,39 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         }*/
 
+        order.setRole("ROLE_STORE");
+        // 20.07.01 주문 예약 시간 변동 시, 라이더 배정 취소 프로세스 추가
+        Order orgOrd = getOrderInfo(order);     // 변경 전 주문 정보 추출
+        try {
+
+            // 예약 시간이 입력이 되었는지 유무가 기준이 된다.
+            if (!StringUtils.isNullOrEmpty(order.getReservationDatetime()) && !StringUtils.isNullOrEmpty(orgOrd.getRiderId())){
+                Date changeDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());             // 변경될 예약 시간의 형식 변경
+                //Date orgDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orgOrd.getReservationDatetime());          // 기존에 적용된 예약 시간
+
+                Locale regionLocale = LocaleContextHolder.getLocale();
+
+                int iTimer = regionLocale.toString().equals("zh_TW") ? 31 : 51;     // 국가별 배정 타임이 다르므로
+
+                // 변경된 예약 시간이 현재 시간보다 30분을 초과하는 경우 (넉넉하게 31분 기준)
+                if ((changeDate.getTime() - new Date().getTime()) / 1000 > (iTimer * 60)){
+                    // 변경되어야 될 내용 적용 ex. 배정취소
+                    // 20.08.03 배정 취소 사라지게 하기
+                    order.setAssignedDatetime("-1");
+                    putOrderAssignCanceled(order);
+                    order.setAssignedDatetime(null);
+                    log.info("########### Order Updated # Order Cancel Completed #############");
+                    log.info(order.getId());
+                    log.info(changeDate.toString());
+                    log.info(orgOrd.getReservationDatetime());
+                    log.info(orgOrd.getRiderId());
+                    log.info("########### Order Updated # Order Cancel Completed #############");
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         if (order.getMenuPrice() == null || order.getMenuPrice().equals("")) {
             order.setMenuPrice("0");
         }
@@ -1516,6 +1551,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     public int putOrderAssignCanceled(Order order) throws AppTrException {
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+        ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);      // 위치변경 20.07.16 주문이 취소되기 전에 구해놓은다.
 
         if (selectOrderIsApprovalCompleted != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00017), ErrorCodeEnum.E00017.name());
@@ -1530,7 +1566,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssignCanceled.setStatus("5");
         orderAssignCanceled.setRiderId("-1");
         orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
-        orderAssignCanceled.setAssignedDatetime("-1");
+
+        // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
+        if(order.getAssignedDatetime() != null && order.getAssignedDatetime() == "-1"){
+            orderAssignCanceled.setAssignedDatetime("-1");
+        }
+
+
         orderAssignCanceled.setPickedUpDatetime("-1");
         orderAssignCanceled.setArrivedDatetime("-1");
         orderAssignCanceled.setToken(order.getToken());
@@ -1542,7 +1584,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssignCanceled.setStatus("5");
             combinedOrderAssignCanceled.setRiderId("-1");
             combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
-            combinedOrderAssignCanceled.setAssignedDatetime("-1");
+            // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
+            if (order.getAssignedDatetime() != null && order.getAssignedDatetime() == "-1"){
+                combinedOrderAssignCanceled.setAssignedDatetime("-1");
+            }
+
             combinedOrderAssignCanceled.setPickedUpDatetime("-1");
             combinedOrderAssignCanceled.setArrivedDatetime("-1");
             combinedOrderAssignCanceled.setToken(order.getToken());
@@ -1597,7 +1643,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 redisService.setPublisher(Content.builder().type("order_assign_canceled").id(tmpOrderId).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
             }
             if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-                ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(orderAssignCanceled);
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN_CANCEL);
