@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -121,6 +122,12 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.completed.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 20.07.15 컬럼추가
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.stay.time",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.return.time",null, locale));
@@ -148,6 +155,8 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
         long pickupCompleteTime = 0L;
         long orderCompleteTime = 0L;
         long completeReturnTime = 0L;
+        // 20.07.15 Stay
+        long staySumTime = 0L;
         long pickupReturnTime = 0L;
         long orderReturnTime = 0L;
 
@@ -161,16 +170,23 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             LocalDateTime pickupTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
             LocalDateTime completeTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getCompletedDatetime()).replace(" ", "T"));
             LocalDateTime returnTime = LocalDateTime.MIN;
+            LocalDateTime arrivedTime = LocalDateTime.MIN;
             if(storeStatisticsByOrderList.get(i).getReturnDatetime()!=null){
                 returnTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getReturnDatetime()).replace(" ", "T"));
             }else{
                 returnNullCnt++;
+            }
+            // 컬럼추가
+            if (storeStatisticsByOrderList.get(i).getArrivedDatetime()!=null){
+                arrivedTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getArrivedDatetime()).replace(" ", "T"));;
             }
 
             long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
             long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
             long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
             long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            //long stayTime = arrivedTime != LocalDateTime.MIN ? completeTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            long stayTime = arrivedTime != LocalDateTime.MIN ? arrivedTime.until(completeTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
@@ -178,6 +194,7 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             pickupCompleteTime += pickupComplete;
             orderCompleteTime += orderComplete;
             completeReturnTime += completeReturn;
+            staySumTime += stayTime;
             pickupReturnTime += pickupReturn;
             orderReturnTime += orderReturn;
 
@@ -209,6 +226,11 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(orderComplete));
+            cell.setCellStyle(dataCellStyle);
+
+            // 20.07.15 Stay Time
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(minusChkFilter(stayTime));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -253,6 +275,11 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
                 cell2.setCellValue(minusChkFilter(orderCompleteTime));
                 cell2.setCellStyle(dataCellStyle);
 
+                // 20.07.15 Stay 합계
+                cell2 = addListRow.createCell(colNum++);
+                cell2.setCellValue(minusChkFilter(staySumTime));
+                cell2.setCellStyle(dataCellStyle);
+
                 cell2 = addListRow.createCell(colNum++);
                 cell2.setCellValue(minusChkFilter(completeReturnTime));
                 cell2.setCellStyle(dataCellStyle);
@@ -291,6 +318,11 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
 
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(orderCompleteTime/totalCnt));
+                cell3.setCellStyle(dataCellStyle);
+
+                // 20.07.15 Stay 평균
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(staySumTime/totalCnt));
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);

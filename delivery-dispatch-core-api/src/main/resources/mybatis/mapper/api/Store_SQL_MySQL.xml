@@ -749,6 +749,7 @@
         , cooking_time
         , assigned_datetime
         , picked_up_datetime
+        , arrived_datetime
         , completed_datetime
         , return_datetime
         , reservation_datetime
@@ -776,6 +777,8 @@
         , avg(time_to_sec(timediff(A.picked_up_datetime, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE))))) AS order_pickup
 
         , avg(time_to_sec(timediff(A.completed_datetime, A.picked_up_datetime))) AS pickup_complete
+
+        , avg(time_to_sec(timediff(A.completed_datetime, A.arrived_datetime))) as stay_time
 
         , avg(time_to_sec(timediff(A.completed_datetime, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE))))) AS order_complete
 
@@ -806,7 +809,24 @@
 
         , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) < 90 THEN 1 END)
         / count(A.id) *100 AS min_90under
+
+        ,ifnull(count(
+            case
+                when	 assigned_datetime is not null
+                    and	 picked_up_datetime is not null
+                    and	 completed_datetime is not null
+                    and	 return_datetime is not null
+                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
+                    and	 timestampdiff(SECOND, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) >= 0
+                    and	 timestampdiff(SECOND, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), picked_up_datetime) >= 0
+                    and	 timestampdiff(SECOND, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), return_datetime) >= 0
+                then NULL
+                else 1
+            end
+        ), 0) AS errtc
 		]]>
+
+
         , count(A.id) AS tc
         , sum(A.total_price) AS total_sales
         , count(A.id) / (TRUNCATE((sum(timestampdiff(MINUTE,A.picked_up_datetime, A.return_datetime)) / 30 ),0) /2) AS tplh

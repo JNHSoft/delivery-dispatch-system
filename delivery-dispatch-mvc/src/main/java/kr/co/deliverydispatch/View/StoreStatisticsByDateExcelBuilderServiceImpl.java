@@ -89,10 +89,10 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
             sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
             sheet.addMergedRegion(new CellRangeAddress(0,1,1,1));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,2,7));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,2,8));
 
-            sheet.addMergedRegion(new CellRangeAddress(0,0,8,defaultLocale.toString().equals("zh_TW")?8:13));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,defaultLocale.toString().equals("zh_TW")?9:14,defaultLocale.toString().equals("zh_TW")?12:19));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,9,defaultLocale.toString().equals("zh_TW")?9:14));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,defaultLocale.toString().equals("zh_TW")?10:15,defaultLocale.toString().equals("zh_TW")?14:21));
 
 
             sheet.setColumnWidth(colNum, 15*256);
@@ -109,6 +109,9 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.average.time",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+            //
+            addTitle = titleRow.createCell(colNum++);
             addTitle.setCellStyle(titleCellStyle);
             //
             addTitle = titleRow.createCell(colNum++);
@@ -190,6 +193,13 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.completed.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 20.07.15 Stay Time
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.stay.time",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.return.time",null, locale));
@@ -240,8 +250,13 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                 addTitle = titleRow.createCell(colNum++);
                 addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.sales",null, locale));
                 addTitle.setCellStyle(titleCellStyle);
-
             }
+
+            // 20.07.15
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.errtc",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
@@ -276,6 +291,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
         long orderPickupTime = 0L;
         long pickupCompleteTime = 0L;
+        long riderStayTimeSum = 0L;
         long orderCompleteTime = 0L;
         long completeReturnTime = 0L;
         long pickupReturnTime = 0L;
@@ -288,6 +304,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
         float min60To90 = 0f;
         float min90Under = 0f;
         float totalSales = 0f;
+        float errtc = 0f;           // 20.07.15
         float tc = 0f;
         float tplh = 0f;
         float spmh = 0f;
@@ -308,6 +325,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
                 orderPickupTime += Long.parseLong(storeStatisticsByDateList.get(i).getOrderPickup().substring(0,storeStatisticsByDateList.get(i).getOrderPickup().length()-1).replace(".",""));
                 pickupCompleteTime += Long.parseLong(storeStatisticsByDateList.get(i).getPickupComplete().substring(0,storeStatisticsByDateList.get(i).getPickupComplete().length()-1).replace(".",""));
+                riderStayTimeSum += Long.parseLong(storeStatisticsByDateList.get(i).getStayTime().substring(0, storeStatisticsByDateList.get(i).getStayTime().length()-1).replace(".", ""));
                 orderCompleteTime += Long.parseLong(storeStatisticsByDateList.get(i).getOrderComplete().substring(0,storeStatisticsByDateList.get(i).getOrderComplete().length()-1).replace(".",""));
                 // 빈값 가능
                 if(storeStatisticsByDateList.get(i).getCompleteReturn() !=null){
@@ -336,6 +354,8 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                 min90Under += Float.parseFloat(storeStatisticsByDateList.get(i).getMin90Under());
 
                 totalSales += Float.parseFloat(storeStatisticsByDateList.get(i).getTotalSales());
+
+                errtc += Float.parseFloat(storeStatisticsByDateList.get(i).getErrtc());
                 tc += Float.parseFloat(storeStatisticsByDateList.get(i).getTc());
 
                 if(storeStatisticsByDateList.get(i).getTplh() !=null){
@@ -387,6 +407,12 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                 cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getOrderComplete()));
                 cell.setCellStyle(dataCellStyle);
 
+                // 20.07.15
+                cell = addListRow.createCell(colNum++);
+                cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getStayTime()));
+                cell.setCellStyle(dataCellStyle);
+
+
                 cell = addListRow.createCell(colNum++);
                 cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getCompleteReturn()));
                 cell.setCellStyle(dataCellStyle);
@@ -428,6 +454,10 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                     cell.setCellValue(nullCheck(storeStatisticsByDateList.get(i).getTotalSales()));
                     cell.setCellStyle(dataCellStyle);
                 }
+
+                cell = addListRow.createCell(colNum++);
+                cell.setCellValue(storeStatisticsByDateList.get(i).getErrtc());
+                cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
                 cell.setCellValue(nullCheck(storeStatisticsByDateList.get(i).getTc()));
@@ -490,6 +520,12 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                     cell2.setCellValue(avgChkFilter(orderCompleteTime/rowCnt));
                     cell2.setCellStyle(dataCellStyle);
 
+                    // 20.07.15 도착
+                    cell2 = addListRow.createCell(colNum++);
+                    cell2.setCellValue(avgChkFilter(riderStayTimeSum/rowCnt));
+                    cell2.setCellStyle(dataCellStyle);
+
+
                     // 빈값 가능
                     cell2 = addListRow.createCell(colNum++);
                     cell2.setCellValue(avgChkFilter(completeReturnTime/returnNullCnt));
@@ -532,6 +568,15 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                         cell2.setCellValue(String.format("%.2f", totalSales / rowCnt));
                         cell2.setCellStyle(dataCellStyle);
                     }
+
+                    cell2 = addListRow.createCell(colNum++);
+                    if (errtc > 0 && rowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f",errtc/rowCnt));
+                    }else{
+                        cell2.setCellValue("0");
+                    }
+                    cell2.setCellStyle(dataCellStyle);
+
 
                     cell2 = addListRow.createCell(colNum++);
                     cell2.setCellValue(String.format("%.2f",tc/rowCnt));

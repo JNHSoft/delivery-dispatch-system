@@ -16,6 +16,7 @@ public class ByDate implements Dto {
     private String dayToDay;
     private String orderPickup;
     private String pickupComplete;
+    private String stayTime;
     private String orderComplete;
     private String completeReturn;
     private String pickupReturn;

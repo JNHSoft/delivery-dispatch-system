@@ -229,6 +229,7 @@ function getStoreStatistics() {
             let rowNum = 0;
             let orderPickupSum = 0;
             let pickupCompleteSum = 0;
+            let riderStayTimeSum = 0;
             let orderCompleteSum = 0;
             let completeReturnSum = 0;
             let pickupReturnSum = 0;
@@ -244,6 +245,15 @@ function getStoreStatistics() {
                     tmpData.orderDate = timeSetDate(data[key].createdDatetime);
                     tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
+
+                    // 고객에게 머무른 시간 체크
+                    if (data[key].arrivedDatetime){
+                        tmpData.riderStayTime = minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime);
+                        riderStayTimeSum += minusTime(data[key].arrivedDatetime, data[key].completedDatetime);
+                    }else{
+                        tmpData.riderStayTime = "-"
+                    }
+
                     tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].completedDatetime);
 
                     orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
@@ -281,6 +291,7 @@ function getStoreStatistics() {
             totalData.orderPickup1 = totalTimeSet(orderPickupSum);
             totalData.pickupComplete1 = totalTimeSet(pickupCompleteSum);
             totalData.orderComplete1 = totalTimeSet(orderCompleteSum);
+            totalData.riderStayTime = totalTimeSet(riderStayTimeSum);
             totalData.completeReturn1 = totalTimeSet(completeReturnSum);
             totalData.pickupReturn1 = totalTimeSet(pickupReturnSum);
             totalData.orderReturn1 = totalTimeSet(orderReturnSum);
@@ -296,6 +307,7 @@ function getStoreStatistics() {
             averageData.orderPickup1 = averageTimeSet(orderPickupSum,rowNum);
             averageData.pickupComplete1 = averageTimeSet(pickupCompleteSum,rowNum);
             averageData.orderComplete1 = averageTimeSet(orderCompleteSum,rowNum);
+            averageData.riderStayTime = averageTimeSet(riderStayTimeSum,rowNum);
             averageData.completeReturn1 = averageTimeSet(completeReturnSum,rowNum - chkReturnTimeCnt);
             averageData.pickupReturn1 = averageTimeSet(pickupReturnSum,rowNum - chkReturnTimeCnt);
             averageData.orderReturn1 = averageTimeSet(orderReturnSum,rowNum - chkReturnTimeCnt);
@@ -319,6 +331,7 @@ function getStoreStatistics() {
                     {label: label_order_in_store_time, name: 'orderPickup1', index: 'orderPickup1', width: 80, align: 'center'},
                     {label: label_order_delivery_time, name: 'pickupComplete1', index: 'pickupComplete1', width: 80, align: 'center'},
                     {label: label_order_completed_time, name: 'orderComplete1', index: 'orderComplete1', width: 80, align: 'center'},
+                    {label: label_order_stay_time, name: 'riderStayTime', index: 'riderStayTime', width: 80, align: 'center'},
                     {label: label_order_return_time, name: 'completeReturn1', index: 'completeReturn1', width: 80, align: 'center'},
                     {label: label_order_out_time, name: 'pickupReturn1', index: 'pickupReturn1', width: 80, align: 'center'},
                     {label: label_order_total_time, name: 'orderReturn1', index: 'orderReturn1', width: 80, align: 'center'},
