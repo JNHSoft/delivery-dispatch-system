@@ -1,8 +1,6 @@
 package kr.co.cntt.core.service.admin.impl.Excel;
 
-import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.AdminByDate;
-import kr.co.cntt.core.model.statistic.ByDate;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -19,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component("StatisticsAdminByDateBuilderServiceImpl")
-public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
+@Component("StatisticsAdminByDateAtTWKFCBuilderServiceImpl")
+public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", locale);
@@ -31,10 +29,10 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
         SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
         // 요청 하는 url 에 따라서 필요한 값을 넣어줌
-        if (request.getRequestURI().matches("/excelDownloadByDate")) {
+        if (request.getRequestURI().matches("/excelDownloadByDateAtTWKFC")) {
 
             // 필요한 리스트 controller 에서 던져주는 List 					 		Nick
-            List<AdminByDate> dateStatisticsByAdminList = (List<AdminByDate>) model.get("selectStoreStatisticsByDateForAdmin");
+            List<AdminByDate> dateStatisticsByAdminList = (List<AdminByDate>) model.get("selectStoreStatisticsByDateForAdminAtTWKFC");
             setStoreStatisticsByDateExcel(workbook, dateStatisticsByAdminList);
             // 파일 이름은 이렇게 한다. 											Nick
             fileName += " Date_Analysis_Report.xlsx";
@@ -178,12 +176,6 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.completed.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            // 20.07.15 Stay Time
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.stay.time",null, locale));
-            addTitle.setCellStyle(titleCellStyle);
-
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.return.time",null, locale));
@@ -197,6 +189,11 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.excel.label.total.delivery.time",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue("< D7 MINS %");
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
@@ -275,12 +272,12 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
         long orderPickupTime = 0L;
         long pickupCompleteTime = 0L;
-        long riderStayTimeSum = 0L;
         long orderCompleteTime = 0L;
         long completeReturnTime = 0L;
         long pickupReturnTime = 0L;
         long orderReturnTime = 0L;
 
+        float minD7Below = 0f;
         float min30Below = 0f;
         float min30To40 = 0f;
         float min40To50 = 0f;
@@ -297,6 +294,15 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
 
         int rowCnt = storeStatisticsByDateList.size();
+        int tcRowCnt = storeStatisticsByDateList.stream()
+                .filter(x -> {
+                    if (Integer.parseInt(changeType(Integer.class, x.getTc())) > 0){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }).collect(Collectors.toList()).size();
+
         int returnNullCnt = 0;
         int tpSpNullCnt = 0;
         int distanceNullCnt = 0;
@@ -307,13 +313,8 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             int chkTpSpCnt = 0;
             int chkDistanceCnt = 0;
 
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            System.out.println(storeStatisticsByDateList.get(i).getPickupComplete());
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
-            pickupCompleteTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getPickupComplete())) * 1000;
             orderPickupTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderPickup())) * 1000;
-            riderStayTimeSum += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getStayTime())) * 1000;
+            pickupCompleteTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getPickupComplete())) * 1000;
             orderCompleteTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderComplete())) * 1000;
 
             // 빈값 가능
@@ -335,6 +336,7 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 chkCnt++;
             }
 
+            minD7Below += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMinD7Below()));
             min30Below += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30Below()));
             min30To40 += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30To40()));
             min40To50 += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin40To50()));
@@ -394,11 +396,6 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getOrderComplete()));
             cell.setCellStyle(dataCellStyle);
 
-            // 20.07.15
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getStayTime()));
-            cell.setCellStyle(dataCellStyle);
-
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getCompleteReturn()));
             cell.setCellStyle(dataCellStyle);
@@ -409,6 +406,10 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getOrderReturn()));
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(String.format("%.2f",Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMinD7Below())))+"%");
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -495,40 +496,27 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (orderPickupTime > 0 && rowCnt > 0){
-                    cell2.setCellValue(avgChkFilter(orderPickupTime/rowCnt));
-                    System.out.println("########################################");
-                    System.out.println("rowCnt = " + rowCnt + " #  orderPickupTime" + orderPickupTime);
-                    System.out.println("########################################");
+                if (orderPickupTime > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(avgChkFilter(orderPickupTime/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (pickupCompleteTime > 0 && rowCnt > 0){
-                    cell2.setCellValue(avgChkFilter(pickupCompleteTime/rowCnt));
+                if (pickupCompleteTime > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(avgChkFilter(pickupCompleteTime/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (orderCompleteTime > 0 && rowCnt > 0){
-                    cell2.setCellValue(avgChkFilter(orderCompleteTime/rowCnt));
+                if (orderCompleteTime > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(avgChkFilter(orderCompleteTime/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
-                cell2.setCellStyle(dataCellStyle);
-
-                // 20.07.15 도착
-                cell2 = addListRow.createCell(colNum++);
-                if (riderStayTimeSum > 0 && rowCnt > 0){
-                    cell2.setCellValue(avgChkFilter(riderStayTimeSum/rowCnt));
-                }else {
-                    cell2.setCellValue("0");
-                }
-
                 cell2.setCellStyle(dataCellStyle);
 
                 // 빈값 가능
@@ -557,8 +545,16 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (min30Below > 0 && rowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f",min30Below/rowCnt) +"%");
+                if (minD7Below > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(String.format("%.2f",minD7Below/tcRowCnt) +"%");
+                }else{
+                    cell2.setCellValue("0%");
+                }
+                cell2.setCellStyle(dataCellStyle);
+
+                cell2 = addListRow.createCell(colNum++);
+                if (min30Below > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(String.format("%.2f",min30Below/tcRowCnt) +"%");
                 }else{
                     cell2.setCellValue("0%");
                 }
@@ -566,48 +562,48 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
                 if(!locale.toString().equals("zh_TW")) {
                     cell2 = addListRow.createCell(colNum++);
-                    if (min30To40 > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min30To40 / rowCnt) + "%");
+                    if (min30To40 > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min30To40 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (min40To50 > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min40To50 / rowCnt) + "%");
+                    if (min40To50 > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min40To50 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (min50To60 > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min50To60 / rowCnt) + "%");
+                    if (min50To60 > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min50To60 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (min60To90 > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min60To90 / rowCnt) + "%");
+                    if (min60To90 > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min60To90 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (min90Under > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min90Under / rowCnt) + "%");
+                    if (min90Under > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", min90Under / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    if (totalSales > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", totalSales / rowCnt));
+                    if (totalSales > 0 && tcRowCnt > 0){
+                        cell2.setCellValue(String.format("%.2f", totalSales / tcRowCnt));
                     }else{
                         cell2.setCellValue("0");
                     }
@@ -623,8 +619,8 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (tc > 0 && rowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f", tc/rowCnt));
+                if (tc > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(String.format("%.2f", tc/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }

@@ -1,10 +1,9 @@
 package kr.co.cntt.deliverydispatchadmin.View;
 
-import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.cntt.core.service.admin.impl.Excel.ExcelComm;
-import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.jfree.chart.ChartFactory;
@@ -24,8 +23,8 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
 import java.awt.Color;
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,8 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-@Component("StatisticsAdminByIntervalExcelBuilderServiceImpl")
-public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm {
+@Component("StatisticsAdminByIntervalAtTWKFCExcelBuilderServiceImpl")
+public class StatisticsAdminByIntervalAtTWKFCExcelBuilderServiceImpl extends ExcelComm {
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         locale = LocaleContextHolder.getLocale();
@@ -45,8 +44,8 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
         String fileName = "[" + dTime + "]";
         SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
-        if(request.getRequestURI().matches("/excelDownloadByInterval")) {
-            Interval storeStatisticsByInterval = (Interval) model.get("getAdminStatisticsByIntervalExcel");
+        if(request.getRequestURI().matches("/excelDownloadByIntervalAtTWKFC")) {
+            IntervalAtTWKFC storeStatisticsByInterval = (IntervalAtTWKFC) model.get("getAdminStatisticsByIntervalExcelAtTWKFC");
             setStoreStatisticsByIntervalExcel(workbook, storeStatisticsByInterval);
             fileName += " Interval_Analysis_Report.xlsx";
         }
@@ -64,7 +63,7 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
     }
 
     // 내용 셋팅 하는 부분
-    public void setStoreStatisticsByIntervalExcel(SXSSFWorkbook wb, Interval storeStatisticsByInterval) {
+    public void setStoreStatisticsByIntervalExcel(SXSSFWorkbook wb, IntervalAtTWKFC storeStatisticsByInterval) {
         int rowNum = 0;
         int colNum = 0;
 
@@ -104,6 +103,22 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
             addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.cumulative",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            /// D7 데이터 추가
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.d7count",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.d7percentage",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.3rd.label.d7cumulative",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             rowNum++;
         }
 
@@ -114,23 +129,36 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
         for(int i = 0, r = storeStatisticsByInterval.getIntervalMinuteCounts().size(); i<r; i++) {
             String time = null;
 
-            if (i + 9 == 9){
-                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", "~" + String.valueOf(i+9));
-            }else if (i + 9 > 60){
-                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+9) + "~");
-            }else {
-                dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+9));
+            /// D7 데이터로 인하여 세부 분류
+            switch (i){
+                case 0 :
+                    dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", "~6:59");
+                    dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString()), "D7TC", "~6:59");
+                    time = "~6:59";
+                    break;
+                case 1:
+                    dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", "~9:59");
+                    dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString()), "D7TC", "~9:59");
+                    time = "~9:59";
+                    break;
+                default:
+                    if (i + 8 > 60){
+                        dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+8) + "~");
+                        dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString()), "D7TC", String.valueOf(i+8) + "~");
+                    }else{
+                        dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString()), "TC", String.valueOf(i+8));
+                        dataset.addValue(Integer.parseInt(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString()), "D7TC", String.valueOf(i+8));
+                    }
+                    if (i+8 == 60){
+                        time = "1:00:00";
+                    }else if (i+8 > 60){
+                        time = "1:01:00~";
+                    }else{
+                        time = (i + 8) +":00";
+                    }
+                    break;
             }
 
-            if (i + 9 == 9) {
-                time = "~" + i + 9 + ":59";
-            } else if (i + 9 == 60) {
-                time = "1:00:00";
-            } else if (i + 9 > 60) {
-                time = "1:01:00~";
-            } else {
-                time = i + 9 + ":00";
-            }
 
             colNum = 0;
             Row addListRow = sheet.createRow(rowNum);
@@ -140,7 +168,7 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString() + "%");
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -149,6 +177,18 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[2].toString() + "%");
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[3].toString());
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[4].toString() + "%");
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[5].toString() + "%");
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
@@ -161,16 +201,16 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
                 , dataset, PlotOrientation.VERTICAL, true, true, false);
 
         barChart.setBorderVisible(true);
-        barChart.setBorderPaint(java.awt.Color.GRAY);
+        barChart.setBorderPaint(Color.GRAY);
         barChart.getLegend().setFrame(BlockBorder.NONE);
         barChart.getLegend().setMargin(0, 0, 10, 0);
         barChart.getLegend().setPosition(RectangleEdge.BOTTOM);
 
         CategoryPlot plot = (CategoryPlot) barChart.getPlot();
-        plot.setBackgroundPaint(java.awt.Color.WHITE);
+        plot.setBackgroundPaint(Color.WHITE);
         plot.setOutlineVisible(false);
-        plot.setDomainGridlinePaint(java.awt.Color.GRAY);
-        plot.setRangeGridlinePaint(java.awt.Color.GRAY);
+        plot.setDomainGridlinePaint(Color.GRAY);
+        plot.setRangeGridlinePaint(Color.GRAY);
 
         barChart.getTitle().setFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 20));
         plot.getDomainAxis().setLabelFont(new java.awt.Font("맑은고딕", Font.BOLDWEIGHT_BOLD, 14));
@@ -202,7 +242,7 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
             bos.close();
 
             ClientAnchor anchor = new XSSFClientAnchor();
-            anchor.setCol1(5);
+            anchor.setCol1(8);
             anchor.setCol2(20);
             anchor.setRow1(1);
             anchor.setRow2(20);
