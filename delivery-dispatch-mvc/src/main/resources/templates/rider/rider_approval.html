@@ -12,10 +12,10 @@
         <input type="hidden" id="adminId" th:value="*{adminId}" />
     </div>
 
-        <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
+        <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}"/>
         <div class="search_box">
             <div class="left">
-                <span class="lbl" th:text="${#messages.msg('statistics.1st.title')}" style="font-size: 15px; font-weight: bold; color:black" />
+                <span class="lbl" th:text="${#messages.msg('rider.approval.title')}" style="font-size: 15px; font-weight: bold; color:black" />
             </div>
             <div class="right">
                 <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="getApprovalRiderList()" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
@@ -37,7 +37,7 @@
     <div id="popRiderInfo" class="pop_wrap" layout:fragment="popup">
         <article class="popup">
             <div class="pop_head">
-                <h1 th:text="${#messages.msg('store.detail')}"></h1>
+                <h1 th:text="${#messages.msg('rider.approval.popup.title')}"></h1>
             </div>
             <div class="pop_cont">
                 <div class="tbl_wrap">
@@ -47,8 +47,8 @@
             <div class="pop_foot">
                 <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
                 <div class="right">
-                    <a href="" class="button h30 btn_red" onClick="javascript:deleteStore()" th:text="${#messages.msg('btn.delete')}"></a>
-                    <a href="#" class="button h30 btn_blue" onClick="javascript:putStoreDetail()" th:text="${#messages.msg('btn.confirm')}"></a>
+                    <a href="" class="button h30 btn_blue" th:text="${#messages.msg('rider.approval.button.disapproval')}"></a>
+                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}"></a>
                 </div>
             </div>
             <a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>

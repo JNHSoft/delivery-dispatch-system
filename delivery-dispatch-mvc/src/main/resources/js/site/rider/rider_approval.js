@@ -76,6 +76,7 @@ function makeGrid(data){
         rowNum: 20,
         pager: "#jqGridPager",
         loadComplete: function (data) {
+            $("#expDate").datepicker();
             console.log("loadCompleted");
         }
     });
@@ -98,12 +99,12 @@ function makeRowButton(obj){
     switch (obj.approvalStatus){
         case "0":           // 요청
             btn_approval = "<button class='button btn_pale_green h30 w110 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ")'> Approval</button>";
-            btn_setDate = "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;'>Validity period Setting</button>"
+            btn_setDate = "<input type='text' name='datepicker' id='expDate' class='input datepicker' /> <button class='button btn_pink h30 w180 mr10' style='font-size: 14px;'>Validity period Setting</button>"
             btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             break;
         case "1":           // 수락
             btn_approval = "<button class='button btn_onahau h30 w110 mr10' style='font-size: 12px;'><i class='fa fa-check mr5' />Approval</button>";
-            btn_setDate = "<button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;'><i class='fa fa-check mr5 t_pink' />Validity period Setting</button>"
+            btn_setDate = "<input type='text' name='datepicker' id='expDate' class='input datepicker' /> <button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;'><i class='fa fa-check mr5 t_pink' />Validity period Setting</button>"
             btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             break;
         case "2":           // 거절
