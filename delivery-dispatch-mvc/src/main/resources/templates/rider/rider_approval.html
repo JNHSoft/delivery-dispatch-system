@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/layout">
+
+<!-- 컨텐츠 영역 -->
+<section id="container" layout:fragment="content">
+
+    <div th:object="${store}" style="display:none">
+        <input type="hidden" id="storeId" th:value="*{id}"/>
+        <input type="hidden" id="statusArray"/>
+        <input type="hidden" id="assignmentStatus" th:value="*{assignmentStatus}"/>
+        <input type="hidden" id="adminId" th:value="*{adminId}" />
+    </div>
+
+        <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.statistics')}"/>
+        <div class="search_box">
+            <div class="left">
+                <span class="lbl" th:text="${#messages.msg('statistics.1st.title')}" style="font-size: 15px; font-weight: bold; color:black" />
+            </div>
+            <div class="right">
+                <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="getApprovalRiderList()" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+            </div>
+        </div>
+
+    <div id="contents">
+        <div class="jq_grid">
+            <div>
+                <table id="jqGrid"></table>
+            </div>
+        </div>
+        <div id="jqGridPager">
+
+        </div>
+    </div>
+
+    <!-- POPUP 관련 S -->
+    <div id="popRiderInfo" class="pop_wrap" layout:fragment="popup">
+        <article class="popup">
+            <div class="pop_head">
+                <h1 th:text="${#messages.msg('store.detail')}"></h1>
+            </div>
+            <div class="pop_cont">
+                <div class="tbl_wrap">
+                    내용을 입력하기
+                </div>
+            </div>
+        </article>
+    </div>
+    <!-- POPUP 관련 F -->
+
+    <script type="text/javascript" th:src="@{/resources/js/site/rider/rider_approval.js}" layout:fragment="script2">
+    </script>
+</section>
+<!-- //컨텐츠 영역 -->
+<script layout:fragment="script" th:inline="javascript">
+    var my_store = /*[[${store}]]*/ 'my_store';
+
+    var tmpTitle = /*[[#{statistics.4th.title}]]*/ 'tmpTitle';
+</script>
+</html>

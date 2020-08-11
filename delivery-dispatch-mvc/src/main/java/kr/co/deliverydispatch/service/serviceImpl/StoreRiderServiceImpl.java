@@ -12,6 +12,7 @@ import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -265,5 +266,51 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
         }
 
         return S_Chat;
+    }
+
+    /**
+     * 20.08.07
+     * 라이더 승인 리스트
+     * */
+    @Override
+    public List<RiderApprovalInfo> getRiderApprovalList(Common common){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            common.setRole("ROLE_STORE");
+        }
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1");
+        List<RiderApprovalInfo> approvalRider = riderMapper.selectApprovalRiderList(common);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2");
+        if (approvalRider.size() == 0) {
+            return Collections.<RiderApprovalInfo>emptyList();
+        }
+
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+        return approvalRider;
+
+
+        //common.setRole("ROLE_STORE");
+    }
+
+    /**
+     * 라이더 승인 개별 정보
+     * */
+    @Override
+    public RiderApprovalInfo getRiderApprovalInfo(Common common){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            common.setRole("ROLE_STORE");
+        }
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println(common.getId());
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+        RiderApprovalInfo info = riderMapper.selectApprovalRiderInfo(common);
+
+        return info;
     }
 }

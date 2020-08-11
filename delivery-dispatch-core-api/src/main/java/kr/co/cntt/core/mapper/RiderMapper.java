@@ -8,6 +8,7 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -248,4 +249,14 @@ public interface RiderMapper {
      */
     public int updateRiderOrderStandbyStatus(Common common);
 
+    /**
+     * 20.08.07
+     * 라이더 승인 관련
+     * */
+    public List<RiderApprovalInfo> selectApprovalRiderList(Common common);
+
+    /**
+     * 라이더 승인 정보
+     * */
+    public RiderApprovalInfo selectApprovalRiderInfo(Common common);
 }
