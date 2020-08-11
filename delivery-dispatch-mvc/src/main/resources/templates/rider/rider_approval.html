@@ -44,6 +44,14 @@
                     내용을 입력하기
                 </div>
             </div>
+            <div class="pop_foot">
+                <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
+                <div class="right">
+                    <a href="" class="button h30 btn_red" onClick="javascript:deleteStore()" th:text="${#messages.msg('btn.delete')}"></a>
+                    <a href="#" class="button h30 btn_blue" onClick="javascript:putStoreDetail()" th:text="${#messages.msg('btn.confirm')}"></a>
+                </div>
+            </div>
+            <a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>
         </article>
     </div>
     <!-- POPUP 관련 F -->
