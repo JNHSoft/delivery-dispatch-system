@@ -1,6 +1,6 @@
 /*<![CDATA[*/
 let loading = $('<div id="loading"><div><p style="background-color: #838d96"></p></div></div>').appendTo(document.body).hide();
-
+let dateMap = new Map();
 // Start Function after page loading completed.
 $(function (){
     getApprovalRiderList();
@@ -76,7 +76,6 @@ function makeGrid(data){
         rowNum: 20,
         pager: "#jqGridPager",
         loadComplete: function (data) {
-            $("#expDate").datepicker();
             console.log("loadCompleted");
         }
     });
@@ -99,12 +98,14 @@ function makeRowButton(obj){
     switch (obj.approvalStatus){
         case "0":           // 요청
             btn_approval = "<button class='button btn_pale_green h30 w110 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ")'> Approval</button>";
-            btn_setDate = "<input type='text' name='datepicker' id='expDate' class='input datepicker' /> <button class='button btn_pink h30 w180 mr10' style='font-size: 14px;'>Validity period Setting</button>"
+            btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' class='input picker' />" +
+                        "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;' onclick='javascript:showExpDateCalendar(this, " + obj.id + ")'>Validity period Setting</button>"
             btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             break;
         case "1":           // 수락
             btn_approval = "<button class='button btn_onahau h30 w110 mr10' style='font-size: 12px;'><i class='fa fa-check mr5' />Approval</button>";
-            btn_setDate = "<input type='text' name='datepicker' id='expDate' class='input datepicker' /> <button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;'><i class='fa fa-check mr5 t_pink' />Validity period Setting</button>"
+            btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' class='input picker' />" +
+                        "<button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;' onclick='javascript:showExpDateCalendar(this, " + obj.id + ")'><i class='fa fa-check mr5 t_pink' />Validity period Setting</button>"
             btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             break;
         case "2":           // 거절
@@ -169,6 +170,28 @@ function searchRiderApprovalDetail(rowID){
             console.log(data);
         }
     });
+}
+
+function showExpDateCalendar(obj, rowID){
+    console.log("showExpDateCalendar");
+    $("#expDate" + rowID).datepicker({
+        onSelect: function (selectDate, obj){
+            checkExpDate(rowID, selectDate, obj);
+        }
+    });
+    $("#expDate" + rowID).datepicker('show');
+}
+
+function checkExpDate(rowid, selectedDate, obj){
+    var date = dateMap.has(rowid) ? dateMap.get(rowid) : "";
+
+    if (date != selectedDate){
+        dateMap.set(rowid, selectedDate);
+    }
+
+    // 알림을 띄운 후 저장 프로세스 생성
+
+    // 저장 프로세스 만들기
 }
 
 /*]]>*/
