@@ -177,9 +177,9 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
 
 
             long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
-            long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
-            long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
-            long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            long orderComplete = arrivedTime != LocalDateTime.MIN ? orderTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long stayTime = arrivedTime != LocalDateTime.MIN ? arrivedTime.until(completeTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
@@ -243,7 +243,8 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(orderList.get(i).getDistance()))));
+            //cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(orderList.get(i).getDistance()))));
+            cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, orderList.get(i).getDistance()))));
             cell.setCellStyle(dataCellStyle);
 
             rowNum++;

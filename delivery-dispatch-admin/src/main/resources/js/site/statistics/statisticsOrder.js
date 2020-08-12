@@ -160,7 +160,7 @@ function getStatisticsInfo(regOrderId) {
             $('#assignedDatetime').html(timeSet(data.assignedDatetime));
             $('#pickedUpDatetime').html(timeSet(data.pickedUpDatetime));
             $('#completedDatetime').html(timeSet(data.completedDatetime));
-            $('#passtime').html(minusTimeSet(data.assignedDatetime, data.completedDatetime));
+            $('#passtime').html(minusTimeSet(data.createdDatetime, data.completedDatetime));
             $('#menuName').html(data.menuName);
             $('#cookingTime').html(data.cookingTime);
             $('#menuPrice').html(data.menuPrice);
@@ -244,8 +244,8 @@ function getStoreStatistics() {
                     tmpData.id = data[key].id;
                     tmpData.origin_reg_order_id = data[key].regOrderId;
                     tmpData.orderDate = timeSetDate(data[key].createdDatetime);
-                    tmpData.orderPickup1 = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);
-                    tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
+                    tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
+                    tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
 
                     if (data[key].arrivedDatetime){
                         tmpData.riderStayTime = minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime);
@@ -254,11 +254,11 @@ function getStoreStatistics() {
                         tmpData.riderStayTime = "-";
                     }
 
-                    tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].completedDatetime);
+                    tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].arrivedDatetime);
 
-                    orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
-                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].completedDatetime);
-                    orderCompleteSum += minusTime(data[key].assignedDatetime, data[key].completedDatetime);
+                    orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
+                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
+                    orderCompleteSum += minusTime(data[key].createdDatetime, data[key].arrivedDatetime);
 
                     // 검색 조건을 위한 데이터 입력
                     tmpData.store_name = data[key].store.storeName;
@@ -277,12 +277,12 @@ function getStoreStatistics() {
 
 
                     if(data[key].returnDatetime){
-                        tmpData.completeReturn1 = minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime);
+                        tmpData.completeReturn1 = minusTimeSet2(data[key].arrivedDatetime, data[key].returnDatetime);
                         tmpData.pickupReturn1 = minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        tmpData.orderReturn1 = minusTimeSet2(data[key].assignedDatetime, data[key].returnDatetime);
-                        completeReturnSum += minusTime(data[key].completedDatetime, data[key].returnDatetime);
+                        tmpData.orderReturn1 = minusTimeSet2(data[key].createdDatetime, data[key].returnDatetime);
+                        completeReturnSum += minusTime(data[key].arrivedDatetime, data[key].returnDatetime);
                         pickupReturnSum += minusTime(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        orderReturnSum += minusTime(data[key].assignedDatetime, data[key].returnDatetime);
+                        orderReturnSum += minusTime(data[key].createdDatetime, data[key].returnDatetime);
                     }else{
                         chkReturnTimeCnt++;
                     }

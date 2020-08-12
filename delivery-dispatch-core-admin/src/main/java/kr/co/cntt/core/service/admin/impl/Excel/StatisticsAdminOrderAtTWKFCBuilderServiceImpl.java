@@ -172,12 +172,18 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
                 returnNullCnt++;
             }
 
+            LocalDateTime arrivedTime = LocalDateTime.MIN;
+            if (orderList.get(i).getArrivedDatetime()!=null){
+                arrivedTime = LocalDateTime.parse((orderList.get(i).getArrivedDatetime()).replace(" ", "T"));;
+            }
+
+
             //long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
             long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
-            long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
+            long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             //long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
-            long orderComplete = assignTime.until(completeTime, ChronoUnit.MILLIS);
-            long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             //long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long orderReturn = returnTime != LocalDateTime.MIN ? assignTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
@@ -247,7 +253,8 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(orderList.get(i).getDistance()))));
+            //cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(orderList.get(i).getDistance()))));
+            cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, orderList.get(i).getDistance()))));
             cell.setCellStyle(dataCellStyle);
 
             rowNum++;

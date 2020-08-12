@@ -182,9 +182,9 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             }
 
             long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
-            long pickupComplete = pickupTime.until(completeTime, ChronoUnit.MILLIS);
-            long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
-            long completeReturn = returnTime != LocalDateTime.MIN ? completeTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            long orderComplete = arrivedTime != LocalDateTime.MIN ? orderTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             //long stayTime = arrivedTime != LocalDateTime.MIN ? completeTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long stayTime = arrivedTime != LocalDateTime.MIN ? arrivedTime.until(completeTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
