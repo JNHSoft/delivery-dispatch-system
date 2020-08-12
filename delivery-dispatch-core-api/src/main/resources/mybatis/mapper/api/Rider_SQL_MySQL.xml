@@ -1213,7 +1213,7 @@
 		select	 REQ.id											as approval_id
 				,REQ.created_datetime
 				,IFNULL(R.admin_id, REQ.admin_id)				as admin_id
-				,REQ.store_id
+				,REQ.store_id									as rider_store_id
 				,IFNULL(R.login_id, REQ.login_id)				as login_id
 				,IFNULL(R.name, REQ.rider_name)					as name
 				,IFNULL(R.phone, REQ.phone)						as phone
@@ -1246,7 +1246,7 @@
 		select	 REQ.id											as approval_id
 				,REQ.created_datetime
 				,IFNULL(R.admin_id, REQ.admin_id)				as admin_id
-				,REQ.store_id
+				,REQ.store_id									as rider_store_id
 				,IFNULL(R.login_id, REQ.login_id)				as login_id
 				,IFNULL(R.name, REQ.rider_name)					as name
 				,IFNULL(R.phone, REQ.phone)						as phone
@@ -1257,6 +1257,7 @@
 				,REQ.longitude
 				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
+				,IFNULL(R.code, REQ.code)						as code
 				,REQ.req_status
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
