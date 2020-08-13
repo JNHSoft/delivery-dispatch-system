@@ -1544,19 +1544,19 @@
 				,( select name from TB_SUBGROUP where group_id = B.group_id and id = B.subgroup_id ) as subgroup_name
 
 				,avg(time_to_sec(timediff(A.picked_up_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END))) AS order_pickup
-				,avg(time_to_sec(timediff(A.completed_datetime, A.picked_up_datetime))) AS pickup_complete
+				,avg(time_to_sec(timediff(A.arrived_datetime, A.picked_up_datetime))) AS pickup_complete
 				,avg(time_to_sec(timediff(A.completed_datetime, A.arrived_datetime))) as stay_time
-				,avg(time_to_sec(timediff(A.completed_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END))) AS order_complete
-				,avg(time_to_sec(timediff(A.return_datetime, A.completed_datetime))) AS complete_return
+				,avg(time_to_sec(timediff(A.arrived_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END))) AS order_complete
+				,avg(time_to_sec(timediff(A.return_datetime, A.arrived_datetime))) AS complete_return
 				,avg(time_to_sec(timediff(A.return_datetime, A.picked_up_datetime))) AS pickup_return
 				,avg(timediff(A.return_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END)) AS order_return
 
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, completed_datetime) <= 35 THEN 1 END) / count(A.id) *100 AS min_30below
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, completed_datetime) between 31 and 41 THEN 1 END) / count(A.id) *100 AS min_30to40
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, completed_datetime) between 41 and 51 THEN 1 END) / count(A.id) *100 AS min_40to50
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, completed_datetime) between 51 and 61 THEN 1 END) / count(A.id) *100 AS min_50to60
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, completed_datetime) between 61 and 91 THEN 1 END) / count(A.id) *100 AS min_60to90
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, completed_datetime) < 90 THEN 1 END) / count(A.id) *100 AS min_90under
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) <= 35 THEN 1 END) / count(A.id) *100 AS min_30below
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 31 and 41 THEN 1 END) / count(A.id) *100 AS min_30to40
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 41 and 51 THEN 1 END) / count(A.id) *100 AS min_40to50
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 51 and 61 THEN 1 END) / count(A.id) *100 AS min_50to60
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 61 and 91 THEN 1 END) / count(A.id) *100 AS min_60to90
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) < 90 THEN 1 END) / count(A.id) *100 AS min_90under
 
 				,ifnull(count(
 					case
@@ -1645,7 +1645,7 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.completed_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.completed_datetime, A.picked_up_datetime))
+						then time_to_sec(timediff(A.arrived_datetime, A.picked_up_datetime))
 					else NULL
 					end
 					) AS pickup_complete
@@ -1659,7 +1659,7 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.completed_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.completed_datetime, A.assigned_datetime))
+						then time_to_sec(timediff(A.arrived_datetime, A.assigned_datetime))
 					else NULL
 					end
 					) AS order_complete
@@ -1673,7 +1673,7 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.completed_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.return_datetime, A.completed_datetime))
+						then time_to_sec(timediff(A.return_datetime, A.arrived_datetime))
 					else NULL
 					end
 					) AS complete_return
@@ -1740,7 +1740,7 @@
 					) * 100 AS min_D7below
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) <= 30 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) <= 30 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -1772,7 +1772,7 @@
 					) * 100 AS min_30below
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) between 31 and 41 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) between 31 and 41 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -1803,7 +1803,7 @@
 					) * 100 AS min_30to40
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) between 41 and 51 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) between 41 and 51 THEN
 						case
 							when	 A.assigned_datetime is not null
 								and	 A.picked_up_datetime is not null
@@ -1835,7 +1835,7 @@
 					) * 100 AS min_40to50
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) between 51 and 61 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) between 51 and 61 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -1866,7 +1866,7 @@
 					) * 100 AS min_50to60
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) between 61 and 91 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) between 61 and 91 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -1897,7 +1897,7 @@
 					) * 100 AS min_60to90
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) > 90 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) > 90 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -2068,7 +2068,7 @@
 
 
 	<select id="selectStatisticsByInterval" parameterType="kr.co.cntt.core.model.order.Order" resultType="Integer">
-		SELECT   TIMESTAMPDIFF(MINUTE, (CASE WHEN reservation_status THEN DATE_ADD(reservation_datetime, INTERVAL -30 MINUTE) ELSE created_datetime END), completed_datetime) AS interval_minute
+		SELECT   TIMESTAMPDIFF(MINUTE, (CASE WHEN reservation_status THEN DATE_ADD(reservation_datetime, INTERVAL -30 MINUTE) ELSE created_datetime END), arrived_datetime) AS interval_minute
 		FROM     TB_ORDER
 		WHERE    admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND      status in (3)
@@ -2076,7 +2076,7 @@
 		AND      third_party_id IS NULL
 	</select>
 	<select id="selectStatisticsByIntervalAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
-		SELECT   TIMESTAMPDIFF(MINUTE, assigned_datetime, completed_datetime) AS interval_minute
+		SELECT   TIMESTAMPDIFF(MINUTE, assigned_datetime, arrived_datetime) AS interval_minute
 		,TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) AS d7_minute
 		FROM     TB_ORDER
 		WHERE    admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
@@ -2186,7 +2186,7 @@
 		LEFT JOIN
 			(	SELECT	 DATE_FORMAT(O.CREATED_DATETIME,'%y-%m-%d') AS day_to_day
 						<![CDATA[
-                        ,COUNT(CASE WHEN TIMESTAMPDIFF(MINUTE, CASE WHEN O.reservation_status = 0 THEN O.created_datetime ELSE DATE_SUB(O.reservation_datetime, INTERVAL 30 MINUTE) END, completed_datetime) <= 35 THEN 1 END) / COUNT(O.ID) * 100 AS min_30below
+                        ,COUNT(CASE WHEN TIMESTAMPDIFF(MINUTE, CASE WHEN O.reservation_status = 0 THEN O.created_datetime ELSE DATE_SUB(O.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) <= 35 THEN 1 END) / COUNT(O.ID) * 100 AS min_30below
                   	  	]]>
 				FROM	 TB_ORDER AS O
 				WHERE	 O.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
@@ -2291,7 +2291,7 @@
 		LEFT JOIN
 		(	SELECT	 DATE_FORMAT(O.CREATED_DATETIME,'%y-%m-%d') AS day_to_day
 		<![CDATA[
-                        ,COUNT(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, COMPLETED_DATETIME) <= 30 THEN 1 END) / COUNT(O.ID) * 100 AS min_30below
+                        ,COUNT(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, arrived_datetime) <= 30 THEN 1 END) / COUNT(O.ID) * 100 AS min_30below
                         ,SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) < 7 THEN 1 ELSE 0 END) / COUNT(O.ID) * 100 as min_07below
                   	  	]]>
 		FROM	 TB_ORDER AS O
