@@ -86,12 +86,30 @@ public interface StatisticsAdminService {
     /**
      * 매장 누적 통계 페이지
      * */
-    IntervalAtTWKFC selectAdminStatisticsByInterval(Order order);
+    Interval selectAdminStatisticsByInterval(Order order);
 
     /**
      * 매장 누적 통계 페이지 - 30분 미만 목록
      * */
     List<Map> selectAdminStatisticsMin30BelowByDate(Order order);
 
+    /**
+     * KFC
+     * */
+
+    /**
+     * 매장 기간별 통계 페이지 KFC
+     * */
+    List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(Order order);
+
+    /**
+     * 매장 누적 통계 페이지 KFC
+     * */
+    IntervalAtTWKFC selectAdminStatisticsByIntervalAtTWKFC(Order order);
+
+    /**
+     * 매장 누적 통계 페이지 - 30분 미만 목록 KFC
+     * */
+    List<Map> selectAdminStatisticsMin30BelowByDateAtTWKFC(Order order);
 
 }

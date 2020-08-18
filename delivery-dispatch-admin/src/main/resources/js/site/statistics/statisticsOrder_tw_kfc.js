@@ -138,7 +138,7 @@ function minusTime(time1, time2) {
 }*/
 function getStatisticsInfo(regOrderId) {
     $.ajax({
-        url: "/getStatisticsInfo",
+        url: "/getStatisticsInfoAtTWKFC",
         type: 'get',
         data: {
             regOrderId: regOrderId
@@ -160,7 +160,7 @@ function getStatisticsInfo(regOrderId) {
             $('#assignedDatetime').html(timeSet(data.assignedDatetime));
             $('#pickedUpDatetime').html(timeSet(data.pickedUpDatetime));
             $('#completedDatetime').html(timeSet(data.completedDatetime));
-            $('#passtime').html(minusTimeSet(data.createdDatetime, data.completedDatetime));
+            $('#passtime').html(minusTimeSet(data.assignedDatetime, data.completedDatetime));
             $('#menuName').html(data.menuName);
             $('#cookingTime').html(data.cookingTime);
             $('#menuPrice').html(data.menuPrice);
@@ -216,7 +216,7 @@ function getStoreStatistics() {
     let myData = [];
     loading.show();
     $.ajax({
-        url: "/getStoreStatisticsByOrder",
+        url: "/getStoreStatisticsByOrderAtTWKFC",
         type: 'get',
         data: {
             startDate: $('#startDate').val(),
@@ -229,12 +229,14 @@ function getStoreStatistics() {
             let rowNum = 0;
             let orderPickupSum = 0;
             let pickupCompleteSum = 0;
-            let riderStayTimeSum = 0;
             let orderCompleteSum = 0;
             let completeReturnSum = 0;
             let pickupReturnSum = 0;
             let orderReturnSum = 0;
             let distanceSum = 0;
+
+            let D7TimerSum=0;
+            let QTTimerSum=0;
 
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -242,26 +244,20 @@ function getStoreStatistics() {
                     tmpData.No = ++rowNum;
                     tmpData.reg_order_id = regOrderIdReduce(data[key].regOrderId);
                     tmpData.id = data[key].id;
+                    tmpData.store_name = data[key].store.storeName;
                     tmpData.origin_reg_order_id = data[key].regOrderId;
                     tmpData.orderDate = timeSetDate(data[key].createdDatetime);
-                    tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
+
+                    tmpData.assignedDate = timeSet(data[key].assignedDatetime);
+                    // tmpData.qtTimes = data[key].cookingTime > 30 ? 30 : data[key].cookingTime;
+                    tmpData.qtTimes = data[key].cookingTime;
+
+                    tmpData.orderPickup1 = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);
+
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
-
-                    if (data[key].arrivedDatetime){
-                        tmpData.riderStayTime = minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime);
-                        riderStayTimeSum += minusTime(data[key].arrivedDatetime, data[key].completedDatetime);
-                    }else{
-                        tmpData.riderStayTime = "-";
-                    }
-
-                    tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].arrivedDatetime);
-
-                    orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
-                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
-                    orderCompleteSum += minusTime(data[key].createdDatetime, data[key].arrivedDatetime);
+                    tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
 
                     // 검색 조건을 위한 데이터 입력
-                    tmpData.store_name = data[key].store.storeName;
                     tmpData.rider_name = data[key].rider.name;
                     if (data[key].group){
                         tmpData.group_name = data[key].group.name;
@@ -275,14 +271,19 @@ function getStoreStatistics() {
                         tmpData.subGroup_name = group_none;
                     }
 
+                    orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
+                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
+                    orderCompleteSum += minusTime(data[key].assignedDatetime, data[key].arrivedDatetime);
+                    D7TimerSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
+                    QTTimerSum += Number(data[key].cookingTime);
 
                     if(data[key].returnDatetime){
                         tmpData.completeReturn1 = minusTimeSet2(data[key].arrivedDatetime, data[key].returnDatetime);
                         tmpData.pickupReturn1 = minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        tmpData.orderReturn1 = minusTimeSet2(data[key].createdDatetime, data[key].returnDatetime);
+                        tmpData.orderReturn1 = minusTimeSet2(data[key].assignedDatetime, data[key].returnDatetime);
                         completeReturnSum += minusTime(data[key].arrivedDatetime, data[key].returnDatetime);
                         pickupReturnSum += minusTime(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        orderReturnSum += minusTime(data[key].createdDatetime, data[key].returnDatetime);
+                        orderReturnSum += minusTime(data[key].assignedDatetime, data[key].returnDatetime);
                     }else{
                         chkReturnTimeCnt++;
                     }
@@ -301,22 +302,23 @@ function getStoreStatistics() {
             totalData.No = rowNum+1;
             totalData.reg_order_id = "TOTAL";
             totalData.id = "";
+            totalData.store_name = "";
             totalData.origin_reg_order_id = "";
             totalData.orderDate = "";
             totalData.orderPickup1 = totalTimeSet(orderPickupSum);
             totalData.pickupComplete1 = totalTimeSet(pickupCompleteSum);
             totalData.orderComplete1 = totalTimeSet(orderCompleteSum);
-            totalData.riderStayTime = totalTimeSet(riderStayTimeSum);
             totalData.completeReturn1 = totalTimeSet(completeReturnSum);
             totalData.pickupReturn1 = totalTimeSet(pickupReturnSum);
             totalData.orderReturn1 = totalTimeSet(orderReturnSum);
             totalData.distance = (distanceSum ==0?0:parseFloat(distanceSum).toFixed(2)) + 'km';
 
             // 검색 조건을 위한 데이터 입력
-            totalData.store_name = "";
             totalData.rider_name = "";
             totalData.group_name = "";
             totalData.subGroup_name = "";
+
+            totalData.qtTimes = QTTimerSum;
 
             myData.push(totalData);
 
@@ -324,22 +326,24 @@ function getStoreStatistics() {
             averageData.No = rowNum+2;
             averageData.reg_order_id = "AVERAGE";
             averageData.id = "";
+            averageData.store_name = "";
             averageData.origin_reg_order_id = "";
             averageData.orderDate = "";
             averageData.orderPickup1 = averageTimeSet(orderPickupSum,rowNum);
             averageData.pickupComplete1 = averageTimeSet(pickupCompleteSum,rowNum);
             averageData.orderComplete1 = averageTimeSet(orderCompleteSum,rowNum);
-            averageData.riderStayTime = averageTimeSet(riderStayTimeSum,rowNum);
             averageData.completeReturn1 = averageTimeSet(completeReturnSum,rowNum - chkReturnTimeCnt);
             averageData.pickupReturn1 = averageTimeSet(pickupReturnSum,rowNum - chkReturnTimeCnt);
             averageData.orderReturn1 = averageTimeSet(orderReturnSum,rowNum - chkReturnTimeCnt);
             averageData.distance = (distanceSum == 0?0:parseFloat(distanceSum/(rowNum - chkDistanceCnt)).toFixed(2)) + 'km';
 
             // 검색 조건을 위한 데이터 입력
-            averageData.store_name = "";
             averageData.rider_name = "";
             averageData.group_name = "";
             averageData.subGroup_name = "";
+
+
+            averageData.qtTimes = QTTimerSum / rowNum;
 
             myData.push(averageData);
 
@@ -360,10 +364,11 @@ function getStoreStatistics() {
                     {label: store_name, name: 'store_name', width: 80, align: 'center'},
                     {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden: true},
                     {label: label_order_date, name: 'orderDate', width: 80, align: 'center'},
+                    {label: label_order_assign, name: 'assignedDate', width: 80, align: 'center'},
+                    {label: label_order_qt, name: 'qtTimes', width: 80, align: 'center'},
                     {label: label_order_in_store_time, name: 'orderPickup1', index: 'orderPickup1', width: 80, align: 'center'},
                     {label: label_order_delivery_time, name: 'pickupComplete1', index: 'pickupComplete1', width: 80, align: 'center'},
                     {label: label_order_completed_time, name: 'orderComplete1', index: 'orderComplete1', width: 80, align: 'center'},
-                    {label: label_order_stay_time, name: 'riderStayTime', index: 'riderStayTime', width: 80, align: 'center'},
                     {label: label_order_return_time, name: 'completeReturn1', index: 'completeReturn1', width: 80, align: 'center'},
                     {label: label_order_out_time, name: 'pickupReturn1', index: 'pickupReturn1', width: 80, align: 'center'},
                     {label: label_order_total_time, name: 'orderReturn1', index: 'orderReturn1', width: 80, align: 'center'},
@@ -417,7 +422,7 @@ function excelDownloadByOrder(){
     }
 
     loading.show();
-    $.fileDownload("/excelDownloadByOrder",{
+    $.fileDownload("/excelDownloadByOrderAtTWKFC",{
         httpMethod:"GET",
         data : {
             startDate : startDate,

@@ -481,15 +481,18 @@ public interface AdminMapper {
      * 2020.04.28 일자별 통계 페이지 추가
      * */
     List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order);
+    List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(Order order);
 
     /**
      * 누적 통계 페이지 추가 1
      * */
-    List<Map> selectStatisticsByInterval(Order order);
+    List<Integer> selectStatisticsByInterval(Order order);
+    List<Map> selectStatisticsByIntervalAtTWKFC(Order order);
 
     /**
      * 누적 통계 페이지 추가 1
      * */
     List<Map> selectStatisticsMin30BelowByDate(Order order);
+    List<Map> selectStatisticsMin30BelowByDateAtTWKFC(Order order);
 
 }

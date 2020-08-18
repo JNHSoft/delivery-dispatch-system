@@ -1,15 +1,10 @@
 package kr.co.cntt.core.service.admin.impl.Excel;
 
 import kr.co.cntt.core.model.order.Order;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.view.AbstractView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -20,12 +15,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component("StatisticsAdminOrderBuilderServiceImpl")
-public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
+@Component("StatisticsAdminOrderAtTWKFCBuilderServiceImpl")
+public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", locale);
@@ -36,10 +30,10 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
         SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
         // 요청 하는 url 에 따라서 필요한 값을 넣어줌
-        if (request.getRequestURI().matches("/excelDownloadByOrder")) {
+        if (request.getRequestURI().matches("/excelDownloadByOrderAtTWKFC")) {
 
             // 필요한 리스트 controller 에서 던져주는 List 					 		Nick
-            List<Order> orderStatisticsByAdminList = (List<Order>) model.get("selectStoreStatisticsByOrderForAdmin");
+            List<Order> orderStatisticsByAdminList = (List<Order>) model.get("selectStoreStatisticsByOrderForAdminAtTWKFC");
             setOrderStatisticsByOrderExcel(workbook, orderStatisticsByAdminList);
             // 파일 이름은 이렇게 한다. 											Nick
             fileName += " Order_Time_Analysis_Report.xlsx";
@@ -99,6 +93,18 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.date", null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 배정시간
+            sheet.setColumnWidth(colNum, 17 * 256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.assign", null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            // QT
+            sheet.setColumnWidth(colNum, 17 * 256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.QT", null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             sheet.setColumnWidth(colNum, 17 * 256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.in.store.time", null, locale));
@@ -112,12 +118,6 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             sheet.setColumnWidth(colNum, 17 * 256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.completed.time", null, locale));
-            addTitle.setCellStyle(titleCellStyle);
-
-            // 20.07.15 컬럼추가
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.1st.label.order.stay.time",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17 * 256);
@@ -147,10 +147,10 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
         long pickupCompleteTime = 0L;
         long orderCompleteTime = 0L;
         long completeReturnTime = 0L;
-        // 20.07.15 Stay
-        long staySumTime = 0L;
         long pickupReturnTime = 0L;
         long orderReturnTime = 0L;
+
+        long qtTotalTime = 0L;
 
         double totalDistance = 0d;
 
@@ -161,36 +161,41 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             LocalDateTime orderTime = LocalDateTime.parse((orderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
             LocalDateTime completeTime = LocalDateTime.parse((orderList.get(i).getCompletedDatetime()).replace(" ", "T"));
-            LocalDateTime returnTime = LocalDateTime.MIN;
-            LocalDateTime arrivedTime = LocalDateTime.MIN;
 
+            // Assign Time
+            LocalDateTime assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+
+            LocalDateTime returnTime = LocalDateTime.MIN;
             if (orderList.get(i).getReturnDatetime() != null) {
                 returnTime = LocalDateTime.parse((orderList.get(i).getReturnDatetime()).replace(" ", "T"));
             } else {
                 returnNullCnt++;
             }
 
-            // 컬럼추가
+            LocalDateTime arrivedTime = LocalDateTime.MIN;
             if (orderList.get(i).getArrivedDatetime()!=null){
                 arrivedTime = LocalDateTime.parse((orderList.get(i).getArrivedDatetime()).replace(" ", "T"));;
             }
 
 
-            long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
+            //long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
+            long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
             long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
-            long orderComplete = arrivedTime != LocalDateTime.MIN ? orderTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            //long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
+            long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            long stayTime = arrivedTime != LocalDateTime.MIN ? arrivedTime.until(completeTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            //long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long orderReturn = returnTime != LocalDateTime.MIN ? assignTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
             orderPickupTime += orderPickup;
             pickupCompleteTime += pickupComplete;
             orderCompleteTime += orderComplete;
             completeReturnTime += completeReturn;
-            staySumTime += stayTime;
             pickupReturnTime += pickupReturn;
             orderReturnTime += orderReturn;
+
+            qtTotalTime += Long.parseLong(orderList.get(i).getCookingTime());
 
             if (orderList.get(i).getDistance() != null) {
                 totalDistance += Double.parseDouble(orderList.get(i).getDistance());
@@ -213,6 +218,16 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             cell.setCellValue(orderList.get(i).getCreatedDatetime());
             cell.setCellStyle(dataCellStyle);
 
+            // 배정시간
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(orderList.get(i).getAssignedDatetime());
+            cell.setCellStyle(dataCellStyle);
+
+            // QT
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(orderList.get(i).getCookingTime());
+            cell.setCellStyle(dataCellStyle);
+
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(orderPickup));
             cell.setCellStyle(dataCellStyle);
@@ -223,11 +238,6 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(orderComplete));
-            cell.setCellStyle(dataCellStyle);
-
-            // 20.07.15 Stay Time
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue(minusChkFilter(stayTime));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -265,6 +275,16 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
                 cell2.setCellValue("");
                 cell2.setCellStyle(dataCellStyle);
 
+                // 배정시간
+                cell2 = addListRow.createCell(colNum++);
+                cell2.setCellValue("");
+                cell2.setCellStyle(dataCellStyle);
+
+                // QT
+                cell2 = addListRow.createCell(colNum++);
+                cell2.setCellValue(qtTotalTime);
+                cell2.setCellStyle(dataCellStyle);
+
                 cell2 = addListRow.createCell(colNum++);
                 cell2.setCellValue(minusChkFilter(orderPickupTime));
                 cell2.setCellStyle(dataCellStyle);
@@ -275,11 +295,6 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
 
                 cell2 = addListRow.createCell(colNum++);
                 cell2.setCellValue(minusChkFilter(orderCompleteTime));
-                cell2.setCellStyle(dataCellStyle);
-
-                // 20.07.15 Stay 합계
-                cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue(minusChkFilter(staySumTime));
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
@@ -314,6 +329,16 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
                 cell3.setCellValue("");
                 cell3.setCellStyle(dataCellStyle);
 
+                // 배정시간
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue("");
+                cell3.setCellStyle(dataCellStyle);
+
+                // QT
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(qtTotalTime / totalCnt);
+                cell3.setCellStyle(dataCellStyle);
+
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(orderPickupTime / totalCnt));
                 cell3.setCellStyle(dataCellStyle);
@@ -324,11 +349,6 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
 
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(orderCompleteTime / totalCnt));
-                cell3.setCellStyle(dataCellStyle);
-
-                // 20.07.15 Stay 평균
-                cell3 = addListRow.createCell(colNum++);
-                cell3.setCellValue(minusChkFilter(staySumTime/totalCnt));
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);

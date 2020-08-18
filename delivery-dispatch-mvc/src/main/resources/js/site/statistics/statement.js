@@ -244,7 +244,7 @@ function getStoreStatistics() {
                     tmpData.origin_reg_order_id = data[key].regOrderId;
                     tmpData.orderDate = timeSetDate(data[key].createdDatetime);
                     tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
-                    tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].completedDatetime);
+                    tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
 
                     // 고객에게 머무른 시간 체크
                     if (data[key].arrivedDatetime){
@@ -254,18 +254,17 @@ function getStoreStatistics() {
                         tmpData.riderStayTime = "-"
                     }
 
-                    tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].completedDatetime);
+                    tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].arrivedDatetime);
 
                     orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
-                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].completedDatetime);
-                    orderCompleteSum += minusTime(data[key].createdDatetime, data[key].completedDatetime);
-
+                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
+                    orderCompleteSum += minusTime(data[key].createdDatetime, data[key].arrivedDatetime);
 
                     if(data[key].returnDatetime){
-                        tmpData.completeReturn1 = minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime);
+                        tmpData.completeReturn1 = minusTimeSet2(data[key].arrivedDatetime, data[key].returnDatetime);
                         tmpData.pickupReturn1 = minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime);
                         tmpData.orderReturn1 = minusTimeSet2(data[key].createdDatetime, data[key].returnDatetime);
-                        completeReturnSum += minusTime(data[key].completedDatetime, data[key].returnDatetime);
+                        completeReturnSum += minusTime(data[key].arrivedDatetime, data[key].returnDatetime);
                         pickupReturnSum += minusTime(data[key].pickedUpDatetime, data[key].returnDatetime);
                         orderReturnSum += minusTime(data[key].createdDatetime, data[key].returnDatetime);
                     }else{

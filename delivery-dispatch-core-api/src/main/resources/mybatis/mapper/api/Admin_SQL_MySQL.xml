@@ -1506,6 +1506,7 @@
 				,ORD.cooking_time
 				,ORD.assigned_datetime
 				,ORD.picked_up_datetime
+				,ORD.arrived_datetime
 				,ORD.completed_datetime
 				,ORD.return_datetime
 				,ORD.reservation_datetime
@@ -1533,6 +1534,65 @@
 	///// 2020.04.28 Store 일자별 통계페이지 관리자 버전
 	-->
 	<select id="selectStoreStatisticsByDateForAdmin" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
+		<![CDATA[
+		SELECT	 (SELECT store_name FROM TB_STORE WHERE id = A.store_id) AS store_name
+				,DATE_FORMAT(A.created_datetime,'%Y-%m-%d') AS day_to_day
+
+				,B.group_id
+				,B.subgroup_id
+				,( select name from TB_GROUP where id = B.group_id )	as group_name
+				,( select name from TB_SUBGROUP where group_id = B.group_id and id = B.subgroup_id ) as subgroup_name
+
+				,avg(time_to_sec(timediff(A.picked_up_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END))) AS order_pickup
+				,avg(time_to_sec(timediff(A.arrived_datetime, A.picked_up_datetime))) AS pickup_complete
+				,avg(time_to_sec(timediff(A.completed_datetime, A.arrived_datetime))) as stay_time
+				,avg(time_to_sec(timediff(A.arrived_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END))) AS order_complete
+				,avg(time_to_sec(timediff(A.return_datetime, A.arrived_datetime))) AS complete_return
+				,avg(time_to_sec(timediff(A.return_datetime, A.picked_up_datetime))) AS pickup_return
+				,avg(timediff(A.return_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END)) AS order_return
+
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) <= 35 THEN 1 END) / count(A.id) *100 AS min_30below
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 31 and 41 THEN 1 END) / count(A.id) *100 AS min_30to40
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 41 and 51 THEN 1 END) / count(A.id) *100 AS min_40to50
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 51 and 61 THEN 1 END) / count(A.id) *100 AS min_50to60
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 61 and 91 THEN 1 END) / count(A.id) *100 AS min_60to90
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) < 90 THEN 1 END) / count(A.id) *100 AS min_90under
+
+				,ifnull(count(
+					case
+						when	 assigned_datetime is not null
+							and	 picked_up_datetime is not null
+							and	 completed_datetime is not null
+							and	 return_datetime is not null
+							and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
+							and	 timestampdiff(SECOND, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, completed_datetime) >= 0
+							and	 timestampdiff(SECOND, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, picked_up_datetime) >= 0
+							and	 timestampdiff(SECOND, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, return_datetime) >= 0
+						then NULL
+						else 1
+					end
+				), 0) AS errtc
+
+				,count(A.id) AS tc
+				,sum(A.total_price) AS total_sales
+				,count(A.id) / (TRUNCATE((sum(timestampdiff(MINUTE,A.picked_up_datetime, A.return_datetime)) / 30 ),0) /2) AS tplh
+				,sum(A.total_price) / (TRUNCATE((sum(timestampdiff(MINUTE,A.picked_up_datetime, A.return_datetime)) / 30 ),0) /2) AS spmh
+				,sum(time_to_sec(timediff(A.return_datetime, A.picked_up_datetime))) AS total_pickup_return
+				,avg(A.distance) AS avg_distance
+		FROM	 TB_ORDER AS A
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
+			ON	 A.store_id = B.store_id
+			AND	 A.admin_id = B.admin_id
+			AND	 B.deleted is null
+		WHERE	 A.status in (3)
+		AND		 A.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
+		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+		AND		 third_party_id IS NULL
+		group by day_to_day, A.store_id, B.group_id, B.subgroup_id;
+
+		]]>
+	</select>
+	<select id="selectStoreStatisticsByDateForAdminAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
 		<![CDATA[
 		SELECT	 (SELECT store_name FROM TB_STORE WHERE id = A.store_id) AS store_name
 				,DATE_FORMAT(A.created_datetime,'%Y-%m-%d') AS day_to_day
@@ -1585,7 +1645,7 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.completed_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.completed_datetime, A.picked_up_datetime))
+						then time_to_sec(timediff(A.arrived_datetime, A.picked_up_datetime))
 					else NULL
 					end
 					) AS pickup_complete
@@ -1599,7 +1659,7 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.completed_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.completed_datetime, A.assigned_datetime))
+						then time_to_sec(timediff(A.arrived_datetime, A.assigned_datetime))
 					else NULL
 					end
 					) AS order_complete
@@ -1613,7 +1673,7 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.completed_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.return_datetime, A.completed_datetime))
+						then time_to_sec(timediff(A.return_datetime, A.arrived_datetime))
 					else NULL
 					end
 					) AS complete_return
@@ -1680,7 +1740,7 @@
 					) * 100 AS min_D7below
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) <= 30 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) <= 30 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -1712,7 +1772,7 @@
 					) * 100 AS min_30below
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) between 31 and 41 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) between 31 and 41 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -1743,7 +1803,7 @@
 					) * 100 AS min_30to40
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) between 41 and 51 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) between 41 and 51 THEN
 						case
 							when	 A.assigned_datetime is not null
 								and	 A.picked_up_datetime is not null
@@ -1775,7 +1835,7 @@
 					) * 100 AS min_40to50
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) between 51 and 61 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) between 51 and 61 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -1806,7 +1866,7 @@
 					) * 100 AS min_50to60
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) between 61 and 91 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) between 61 and 91 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -1837,7 +1897,7 @@
 					) * 100 AS min_60to90
 				,count(
 					CASE
-						WHEN timestampdiff(MINUTE, A.assigned_datetime, completed_datetime) > 90 THEN
+						WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) > 90 THEN
 							case
 								when	 A.assigned_datetime is not null
 									and	 A.picked_up_datetime is not null
@@ -2004,9 +2064,20 @@
 		]]>
 	</select>
 
-	<select id="selectStatisticsByInterval" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
-		SELECT   TIMESTAMPDIFF(MINUTE, assigned_datetime, completed_datetime) AS interval_minute
-				,TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) AS d7_minute
+
+
+
+	<select id="selectStatisticsByInterval" parameterType="kr.co.cntt.core.model.order.Order" resultType="Integer">
+		SELECT   TIMESTAMPDIFF(MINUTE, (CASE WHEN reservation_status THEN DATE_ADD(reservation_datetime, INTERVAL -30 MINUTE) ELSE created_datetime END), arrived_datetime) AS interval_minute
+		FROM     TB_ORDER
+		WHERE    admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
+		AND      status in (3)
+		AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+		AND      third_party_id IS NULL
+	</select>
+	<select id="selectStatisticsByIntervalAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
+		SELECT   TIMESTAMPDIFF(MINUTE, assigned_datetime, arrived_datetime) AS interval_minute
+		,TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) AS d7_minute
 		FROM     TB_ORDER
 		WHERE    admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND      status in (3)
@@ -2027,7 +2098,6 @@
 	<select id="selectStatisticsMin30BelowByDate" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
 		SELECT	 A.DATE as day_to_day
 				,B.min_30below
-				,B.min_07below
 		FROM(	SELECT	 CURDATE() - INTERVAL (a.a + (10 * b.a) + (100 * c.a) + (1000 * d.a) ) DAY AS DATE
 			FROM(	SELECT	 0 AS a
 					UNION ALL
@@ -2116,26 +2186,131 @@
 		LEFT JOIN
 			(	SELECT	 DATE_FORMAT(O.CREATED_DATETIME,'%y-%m-%d') AS day_to_day
 						<![CDATA[
-                        ,COUNT(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, COMPLETED_DATETIME) <= 30 THEN 1 END) / COUNT(O.ID) * 100 AS min_30below
-                        ,SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) < 7 THEN 1 ELSE 0 END) / COUNT(O.ID) * 100 as min_07below
+                        ,COUNT(CASE WHEN TIMESTAMPDIFF(MINUTE, CASE WHEN O.reservation_status = 0 THEN O.created_datetime ELSE DATE_SUB(O.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) <= 35 THEN 1 END) / COUNT(O.ID) * 100 AS min_30below
                   	  	]]>
 				FROM	 TB_ORDER AS O
 				WHERE	 O.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 				AND		 O.STATUS IN (3)
 				AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
 				AND		 THIRD_PARTY_ID IS NULL
-				-- 시간대별 통계에 대한 조건 추가
-				AND		 assigned_datetime is not null
-				AND		 picked_up_datetime is not null
-				AND		 completed_datetime is not null
-				AND		 return_datetime is not null
-				AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-				AND		 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
-				AND		 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-				AND		 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
 				GROUP BY day_to_day
 			)	B
 			ON	 A.DATE = B.day_to_day
+		WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}
+		ORDER BY A.DATE
+	</select>
+	<select id="selectStatisticsMin30BelowByDateAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
+		SELECT	 A.DATE as day_to_day
+		,B.min_30below
+		,B.min_07below
+		FROM(	SELECT	 CURDATE() - INTERVAL (a.a + (10 * b.a) + (100 * c.a) + (1000 * d.a) ) DAY AS DATE
+		FROM(	SELECT	 0 AS a
+		UNION ALL
+		SELECT	 1
+		UNION ALL
+		SELECT	 2
+		UNION ALL
+		SELECT	 3
+		UNION ALL
+		SELECT	 4
+		UNION ALL
+		SELECT	 5
+		UNION ALL
+		SELECT	 6
+		UNION ALL
+		SELECT	 7
+		UNION ALL
+		SELECT	 8
+		UNION ALL
+		SELECT	 9
+		)	 AS a
+		CROSS JOIN
+		(	SELECT	 0 AS a
+		UNION ALL
+		SELECT	 1
+		UNION ALL
+		SELECT	 2
+		UNION ALL
+		SELECT	 3
+		UNION ALL
+		SELECT	 4
+		UNION ALL
+		SELECT	 5
+		UNION ALL
+		SELECT	 6
+		UNION ALL
+		SELECT	 7
+		UNION ALL
+		SELECT	 8
+		UNION ALL
+		SELECT	 9
+		)	 AS b
+		CROSS JOIN
+		(	SELECT	 0 AS a
+		UNION ALL
+		SELECT	 1
+		UNION ALL
+		SELECT	 2
+		UNION ALL
+		SELECT	 3
+		UNION ALL
+		SELECT	 4
+		UNION ALL
+		SELECT	 5
+		UNION ALL
+		SELECT	 6
+		UNION ALL
+		SELECT	 7
+		UNION ALL
+		SELECT	 8
+		UNION ALL
+		SELECT	 9
+		)	AS c
+		CROSS JOIN
+		(	SELECT	 0 AS a
+		UNION ALL
+		SELECT	 1
+		UNION ALL
+		SELECT	 2
+		UNION ALL
+		SELECT	 3
+		UNION ALL
+		SELECT	 4
+		UNION ALL
+		SELECT	 5
+		UNION ALL
+		SELECT	 6
+		UNION ALL
+		SELECT	 7
+		UNION ALL
+		SELECT	 8
+		UNION ALL
+		SELECT	 9
+		)	AS d
+		)	 A
+		LEFT JOIN
+		(	SELECT	 DATE_FORMAT(O.CREATED_DATETIME,'%y-%m-%d') AS day_to_day
+		<![CDATA[
+                        ,COUNT(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, arrived_datetime) <= 30 THEN 1 END) / COUNT(O.ID) * 100 AS min_30below
+                        ,SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) < 7 THEN 1 ELSE 0 END) / COUNT(O.ID) * 100 as min_07below
+                  	  	]]>
+		FROM	 TB_ORDER AS O
+		WHERE	 O.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
+		AND		 O.STATUS IN (3)
+		AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
+		AND		 THIRD_PARTY_ID IS NULL
+		-- 시간대별 통계에 대한 조건 추가
+		AND		 assigned_datetime is not null
+		AND		 picked_up_datetime is not null
+		AND		 completed_datetime is not null
+		AND		 return_datetime is not null
+		AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
+		AND		 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+		AND		 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
+		AND		 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
+		GROUP BY day_to_day
+		)	B
+		ON	 A.DATE = B.day_to_day
 		WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}
 		ORDER BY A.DATE
 	</select>

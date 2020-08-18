@@ -60,7 +60,7 @@ function getStoreStatisticsByDate() {
     let mydata = [];
     loading.show();
     $.ajax({
-        url: "/getStoreStatisticsByDate",
+        url: "/getStoreStatisticsByDateAtTWKFC",
         type: 'get',
         data: {
             startDate: $('#startDate').val(),
@@ -69,14 +69,16 @@ function getStoreStatisticsByDate() {
         dataType: 'json',
         success: function (data) {
 
+            console.log("데이터 조회 시작");
+
             // 평균 값
             let orderPickupSum = 0;
             let pickupCompleteSum = 0;
-            let riderStayTimeSum = 0;       // 20.07.15 Stay Time 추가
             let orderCompleteSum = 0;
             let completeReturnSum = 0;
             let pickupReturnSum = 0;
             let orderReturnSum = 0;
+            let minD7BelowSum = 0;
             let min30BelowSum = 0;
             let min30To40Sum = 0;
             let min40To50Sum = 0;
@@ -84,6 +86,7 @@ function getStoreStatisticsByDate() {
             let min60To90Sum = 0;
             let min90UnderSum = 0;
             let totalSalesSum = 0;
+            let totalD7Success = 0;
 
             let errtcSum = 0;
             let tcSum = 0;
@@ -93,6 +96,8 @@ function getStoreStatisticsByDate() {
             let avgDistanceSum = 0;
             // row 갯수
             let rowCnt = 0;
+            // 정상 TC가 있는 row 갯수
+            let tcRowCnt = 0;
             // 빈값이 들어간 row 갯수
             let rowReduceCnt = 0;
             // 거리값 제외 count
@@ -101,6 +106,7 @@ function getStoreStatisticsByDate() {
             let tpSpCnt = 0;
 
             for (let key in data) {
+                console.log(data);
                 if (data.hasOwnProperty(key)) {
                     // 빈값 여부를 위해 chkcount
                     let chkCnt = 0;
@@ -112,6 +118,11 @@ function getStoreStatisticsByDate() {
                     rowReduceCnt++;
                     distanceCnt++;
                     tpSpCnt++;
+
+                    // 정상 Row 체크
+                    if(formatInt(data[key].tc, 1) > 0){
+                        tcRowCnt++;
+                    }
 
                     tmpdata.store = data[key].storeName;
                     tmpdata.day = data[key].dayToDay;
@@ -131,11 +142,10 @@ function getStoreStatisticsByDate() {
                     tmpdata.orderPickup = totalTimeSet(data[key].orderPickup*1000);
                     tmpdata.pickupComplete = totalTimeSet(data[key].pickupComplete*1000);
                     tmpdata.orderComplete = totalTimeSet(data[key].orderComplete*1000);
-                    // 20.07.15 Stay Time
-                    tmpdata.riderStayTime = totalTimeSet(data[key].stayTime*1000);
                     tmpdata.completeReturn = totalTimeSet(data[key].completeReturn*1000);
                     tmpdata.pickupReturn = totalTimeSet(data[key].pickupReturn*1000);
                     tmpdata.orderReturn = totalTimeSet(data[key].orderReturn*1000);
+                    tmpdata.minD7Below = formatFloat(data[key].minD7Below, 1) + "%";
                     tmpdata.min30Below = formatFloat(data[key].min30Below, 1) + "%";
                     tmpdata.min30To40 = formatInt(data[key].min30To40, 1) + "%";
                     tmpdata.min40To50 = formatInt(data[key].min40To50, 1) + "%";
@@ -143,15 +153,7 @@ function getStoreStatisticsByDate() {
                     tmpdata.min60To90 = formatInt(data[key].min60To90, 1) + "%";
                     tmpdata.min90Under = formatInt(data[key].min90Under, 1) + "%";
                     tmpdata.totalSales = formatInt(data[key].totalSales, 1);
-
-                    if (data[key].errtc){
-                        tmpdata.errtc = data[key].errtc;
-                        //20.07.15 err tc 추가
-                        errtcSum += formatFloat(data[key].errtc, 1);
-                    }else{
-                        tmpdata.errtc = "-";
-                    }
-
+                    tmpdata.errtc = formatInt(data[key].errtc, 1);
                     tmpdata.tc = formatInt(data[key].tc, 1);
 
                     if(data[key].tplh){
@@ -174,7 +176,6 @@ function getStoreStatisticsByDate() {
 
                     // 평균 값
                     orderPickupSum += formatFloat(data[key].orderPickup, 1);
-                    riderStayTimeSum += parseFloat(data[key].stayTime);     // 20.07.15 Stay Time
                     pickupCompleteSum += formatFloat(data[key].pickupComplete, 1);
                     orderCompleteSum += formatFloat(data[key].orderComplete, 1);
 
@@ -207,7 +208,7 @@ function getStoreStatisticsByDate() {
                     } else{
                         chkDistanceCnt++;
                     }
-
+                    minD7BelowSum += formatFloat(data[key].minD7Below, 1);
                     min30BelowSum += formatFloat(data[key].min30Below, 1);
                     min30To40Sum += formatFloat(data[key].min30To40, 1);
                     min40To50Sum += formatFloat(data[key].min40To50, 1);
@@ -215,7 +216,10 @@ function getStoreStatisticsByDate() {
                     min60To90Sum += formatFloat(data[key].min60To90, 1);
                     min90UnderSum += formatFloat(data[key].min90Under, 1);
                     totalSalesSum += formatFloat(data[key].totalSales, 1);
+                    // D7 성공 개수
+                    totalD7Success += formatFloat(data[key].d7Success, 1);
 
+                    errtcSum += formatFloat(data[key].errtc, 1);
                     tcSum += formatFloat(data[key].tc, 1);
 
                     mydata.push(tmpdata);
@@ -239,27 +243,24 @@ function getStoreStatisticsByDate() {
             avgData.group_name = "";
             avgData.subGroup_name = "";
 
-            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/rowCnt);
-            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/rowCnt);
-            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/rowCnt);
-            avgData.riderStayTime = totalTimeSet((riderStayTimeSum*1000)/rowCnt); // 20.07.15 stay time
+            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/tcRowCnt);
+            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/tcRowCnt);
+            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/tcRowCnt);
             avgData.completeReturn = totalTimeSet((completeReturnSum*1000)/rowReduceCnt);
             avgData.pickupReturn =  totalTimeSet((pickupReturnSum*1000)/rowReduceCnt);
             avgData.orderReturn =   totalTimeSet((orderReturnSum*1000)/rowReduceCnt);
-            avgData.min30Below = formatInt((min30BelowSum/rowCnt), 1) +"%";
-            avgData.min30To40 =formatInt((min30To40Sum/rowCnt), 1) +"%";
-            avgData.min40To50 = formatInt((min40To50Sum/rowCnt), 1) +"%";
-            avgData.min50To60 = formatInt((min50To60Sum/rowCnt), 1) +"%";
-            avgData.min60To90 = formatInt((min60To90Sum/rowCnt), 1) +"%";
-            avgData.min90Under = formatInt((min90UnderSum/rowCnt), 1) +"%";
-            avgData.totalSales = formatInt((totalSalesSum/rowCnt), 1);
+            avgData.minD7Below = formatInt((minD7BelowSum/tcRowCnt), 1) + "%";
+            avgData.min30Below = formatInt((min30BelowSum/tcRowCnt), 1) +"%";
+            avgData.min30To40 =formatInt((min30To40Sum/tcRowCnt), 1) +"%";
+            avgData.min40To50 = formatInt((min40To50Sum/tcRowCnt), 1) +"%";
+            avgData.min50To60 = formatInt((min50To60Sum/tcRowCnt), 1) +"%";
+            avgData.min60To90 = formatInt((min60To90Sum/tcRowCnt), 1) +"%";
+            avgData.min90Under = formatInt((min90UnderSum/tcRowCnt), 1) +"%";
+            avgData.totalSales = formatInt((totalSalesSum/tcRowCnt), 1);
+            avgData.errtc = formatInt((errtcSum/rowCnt), 1);
+            avgData.tc = formatInt((tcSum/tcRowCnt), 1);
 
-            if (errtcSum != 0){
-                avgData.errtc = formatInt((errtcSum/rowCnt), 1);
-            } else {
-                avgData.errtc = "-";
-            }
-            avgData.tc = formatInt((tcSum/rowCnt), 1);
+            //avgData.d7Success = (totalD7Success / tcSum) * 100;
 
             if(tpSpCnt!=0){
                 avgData.tplh = formatInt((tplhSum/tpSpCnt), 1);
@@ -305,10 +306,10 @@ function getStoreStatisticsByDate() {
                     {label: label_in_store_time, name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
                     {label: label_delivery_time, name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},
                     {label: label_completed_time, name: 'orderComplete', index: 'orderComplete', width: 80, align: 'center'},
-                    {label: label_stay_time, name: 'riderStayTime', index: 'riderStayTime', width: 80, align: 'center'},
                     {label: label_return_time, name: 'completeReturn', index: 'completeReturn', width: 80, align: 'center'},
                     {label: label_out_time, name: 'pickupReturn', index: 'pickupReturn', width: 80, align: 'center'},
                     {label: label_total_delivery_time, name: 'orderReturn', index: 'orderReturn', width: 80, align: 'center'},
+                    {label: '< D7 MINS %', name: 'minD7Below', index: 'minD7Below', width: 80, align: 'center'},
                     {label: '<=30 MINS %', name: 'min30Below', index: 'min30Below', width: 80, align: 'center'},
                     {label: '<=40 MINS %', name: 'min30To40', index: 'min30To40', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: '<=50 MINS %', name: 'min40To50', index: 'min40To50', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
@@ -336,6 +337,7 @@ function getStoreStatisticsByDate() {
                 useColSpanStyle: true,
                 groupHeaders:[
                     {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: label_average_time},
+                    {startColumnName: 'minD7Below', numberOfColumns: 7, titleText: label_percent_completed},
                     {startColumnName: 'totalSales', numberOfColumns: 7, titleText: label_productivity}
                 ]
             });
@@ -369,7 +371,6 @@ function dateGraph(avgData){
                 "category" : "",
                 "orderPickup": convertToMinute(avgData.orderPickup),
                 "pickupComplete": convertToMinute(avgData.pickupComplete),
-                "riderStayTime": convertToMinute(avgData.riderStayTime),
                 "completeReturn": convertToMinute(avgData.completeReturn)
             }];
 
@@ -422,7 +423,6 @@ function dateGraph(avgData){
 
             createSeries('orderPickup', label_in_store_time);
             createSeries('pickupComplete', label_delivery_time);
-            createSeries('riderStayTime', label_stay_time);
             createSeries('completeReturn', label_return_time);
         });
     }
@@ -456,15 +456,15 @@ function dateInfo(avgData){
     let orderPickup = avgData.orderPickup;
     let pickupComplete = avgData.pickupComplete;
     let orderComplete = avgData.orderComplete;
-    let stayTime = avgData.riderStayTime;
     let completeReturn = avgData.completeReturn;
     let pickupReturn = avgData.pickupReturn;
     let orderReturn = avgData.orderReturn;
+    let d7SuccessRate = avgData.minD7Below;
 
+    $('#d7Timer.box').append(colName.clone().html(label_in_d7_completed)).append(colVal.clone().html(d7SuccessRate));
     $('#orderPickup.box').append(colName.clone().html(label_in_store_time)).append(colVal.clone().html(convertToHms(orderPickup)));
     $('#pickupComplete.box').append(colName.clone().html(label_delivery_time)).append(colVal.clone().html(convertToHms(pickupComplete)));
     $('#orderComplete.box').append(colName.clone().html(label_completed_time)).append(colVal.clone().html(convertToHms(orderComplete)));
-    $('#stayTime.box').append(colName.clone().html(label_stay_time)).append(colVal.clone().html(convertToHms(stayTime)));
     $('#completeReturn.box').append(colName.clone().html(label_return_time)).append(colVal.clone().html(convertToHms(completeReturn)));
     $('#pickupReturn.box').append(colName.clone().html(label_out_time)).append(colVal.clone().html(convertToHms(pickupReturn)));
     $('#orderReturn.box').append(colName.clone().html(label_total_delivery_time)).append(colVal.clone().html(convertToHms(orderReturn)));
@@ -486,7 +486,7 @@ function excelDownloadByDate(){
     // console.log(storeName);
 
     loading.show();
-    $.fileDownload("/excelDownloadByDate",{
+    $.fileDownload("/excelDownloadByDateAtTWKFC",{
         httpMethod:"GET",
         data : {
             startDate : startDate,

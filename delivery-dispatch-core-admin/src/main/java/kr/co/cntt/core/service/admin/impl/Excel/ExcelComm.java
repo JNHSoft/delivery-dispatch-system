@@ -149,7 +149,8 @@ public class ExcelComm extends AbstractView {
                 }catch (NumberFormatException e){
                     Double doubleValue = 0d;
 
-                    doubleValue = Double.parseDouble(changeType(Double.class, value)) + 0.5d;       // 반올림 적용
+                    //doubleValue = Double.parseDouble(changeType(Double.class, value)) + 0.5d;       // 반올림 적용
+                    doubleValue = Double.parseDouble(changeType(Double.class, value));
                     intValue = doubleValue.intValue();
 
                 }catch (NullPointerException e){
@@ -194,7 +195,8 @@ public class ExcelComm extends AbstractView {
                 }catch (NumberFormatException e){
                     Double doubleValue = 0d;
 
-                    doubleValue = Double.parseDouble(changeType(Double.class, value)) + 0.5d;       // 반올림 적용
+                    //doubleValue = Double.parseDouble(changeType(Double.class, value)) + 0.5d;       // 반올림 적용
+                    doubleValue = Double.parseDouble(changeType(Double.class, value));       // 반올림 적용
 
                     longValue = doubleValue.longValue();
                 }catch (NullPointerException e){

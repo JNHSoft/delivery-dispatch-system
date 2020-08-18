@@ -177,7 +177,7 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statisticsOrder.js}" layout:fragment="script2"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statisticsOrder_tw_kfc.js}" layout:fragment="script2"></script>
     <script layout:fragment="script3" type="text/javascript" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyAD8JKaMSAUG-TwI8dYTPfmwMbxYiVQelU,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}"></script>
 </section>
 <!-- //컨텐츠 영역 -->
@@ -188,11 +188,13 @@
     var label_order_in_store_time = /*[[#{statistics.1st.label.order.in.store.time}]]*/ 'label_order_in_store_time';
     var label_order_delivery_time = /*[[#{statistics.1st.label.order.delivery.time}]]*/ 'label_order_delivery_time';
     var label_order_completed_time = /*[[#{statistics.1st.label.order.completed.time}]]*/ 'label_order_completed_time';
-    var label_order_stay_time = /*[[#{statistics.1st.label.order.stay.time}]]*/ 'label_order_stay_time';        // 머물고 있던 시간
     var label_order_return_time = /*[[#{statistics.1st.label.order.return.time}]]*/ 'label_order_return_time';
     var label_order_out_time = /*[[#{statistics.1st.label.order.out.time}]]*/ 'label_order_out_time';
     var label_order_total_time = /*[[#{statistics.1st.label.order.total.time}]]*/ 'label_order_total_time';
     var label_order_distance = /*[[#{statistics.1st.label.order.distance}]]*/ 'label_order_distance';
+    var label_order_assign = /*[[#{statistics.1st.label.order.assign}]]*/ 'label_order_assign';
+    var label_order_qt = /*[[#{statistics.1st.label.order.QT}]]*/ 'label_order_qt';
+    var label_order_d7 = /*[[#{statistics.1st.label.order.D7}]]*/ 'label_order_d7';
 
     var status_new = /*[[#{status.new}]]*/ 'status_new';
     var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';

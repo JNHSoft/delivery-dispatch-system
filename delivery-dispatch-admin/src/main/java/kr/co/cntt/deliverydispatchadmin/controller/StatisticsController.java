@@ -86,22 +86,11 @@ public class StatisticsController {
      */
     @GetMapping("/statistics")
     public String statistics(Order order,@RequestParam(required=false) String frag, Model model) {
-    log.info("statistics");
-
+        log.info("statistics");
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-
         order.setToken(adminInfo.getAdminAccessToken());
-
-//        List<Order> statisticsList = statisticsAdminService.selectAdminStatistics(order);
-
-//        model.addAttribute("statisticsList", statisticsList);
-//        model.addAttribute("jsonList", new Gson().toJson(statisticsList));
-
-//        log.info("json : {}", new Gson().toJson(statisticsList));
-
 
         return "/statistics/statement"; }
 
@@ -375,13 +364,18 @@ public class StatisticsController {
     @GetMapping("/statisticsByOrder")
     public String statisticsByOrder(Order order,@RequestParam(required=false) String frag, Model model) {
         log.info("adminStatisticsByOrder");
+        String viewPath = "/statistics";
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(adminInfo.getAdminAccessToken());
 
-        // Todo: 주문별 통계 내용 시 필요한 정보 넘기기
+        if (adminInfo.getAdminBrandCode().trim().equals("1")){
+            viewPath = viewPath.concat("/orderStatement_tw_kfc");
+        }else{
+            viewPath = viewPath.concat("/orderStatement");
+        }
 
-        return "/statistics/orderStatement";
+        return viewPath;
     }
 
     @ResponseBody
@@ -419,26 +413,16 @@ public class StatisticsController {
         return statistByOrder.stream().filter(a -> {
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null) {
                 if (a.getReservationStatus().equals("1")) {
-                    // 2020.05.18 예약시간 - 30분 시간이 실제 주문 시간보다 큰 경우에만 적용
-                    LocalDateTime createDatetime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                    LocalDateTime bookingDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-
-                    if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
-                        LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                        a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
-                    }
+                    LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                    a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
                 }
 
                 LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
                 LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
                 LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
-                // 19.08.26 데이터 격차가 음수로 나오는지 여부 체크
-                //LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
 
-                // 19.08.26 페이지에서 음수가 나오는 오류 사항 변경
-                //if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)) {
-                if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(completeTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)) {
+                if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)) {
                     return true;
                 } else {
                     return false;
@@ -482,46 +466,7 @@ public class StatisticsController {
         order.setToken(adminInfo.getAdminAccessToken());
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminOrderBuilderServiceImpl");
         List<Order> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
-
-        List<Order> filterStoreOrderListByAdmin =
-                storeOrderListByAdmin.stream().filter(a -> {
-                    // 다음 4가지의 모든 시간이 NULL 이 아닌 경우만 가져온다
-                    if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null){
-                        // 예약 주문인 경우 30분을 제외한다.
-                        if (a.getReservationStatus().equals("1")){
-                            // 2020.05.18 예약시간 - 30분 시간이 실제 주문 시간보다 큰 경우에만 적용
-                            LocalDateTime createDatetime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                            LocalDateTime bookingDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-
-                            if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
-                                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                                a.setCreatedDatetime((reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S"))));
-                            }
-                        }
-
-                        // 픽업 시간
-                        LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
-                        // 배달 완료 시간
-                        LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
-                        // 기사 복귀 시간
-                        LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
-
-                        // 주문 등록 시간
-                        // LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                        LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
-                        // 다음 조건에 부합한 경우만 표기되도록 적용
-                        //if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
-                        if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(completeTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
-                            return  true;
-                        }else {
-                            return  false;
-                        }
-                    }else{
-                        return  false;
-                    }
-                }).collect(Collectors.toList());
-
-        modelAndView.addObject("selectStoreStatisticsByOrderForAdmin", filterStoreOrderListByAdmin);
+        modelAndView.addObject("selectStoreStatisticsByOrderForAdmin", storeOrderListByAdmin);
 
         return modelAndView;
     }
@@ -535,10 +480,23 @@ public class StatisticsController {
      * */
     @GetMapping("/statisticsByDate")
     public String statisticsByDate(Order order, @RequestParam(required = false) String frag, Model model){
+        log.info("adminstatisticsByDate");
+
+        String viewPath = "/statistics";
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        order.setToken(adminInfo.getAdminAccessToken());
+
+        if (adminInfo.getAdminBrandCode().trim().equals("1")){
+            viewPath = viewPath.concat("/dateStatement_tw_kfc");
+        }else{
+            viewPath = viewPath.concat("/dateStatement");
+        }
 
         model.addAttribute("regionLocale", regionLocale);
 
-        return "/statistics/dateStatement";
+
+        return viewPath;
     }
 
     @ResponseBody
@@ -625,7 +583,23 @@ public class StatisticsController {
      * */
     @GetMapping("/statisticsByInterval")
     public String statisticsByInterval(Order order, @RequestParam(required = false) String frag, Model model){
-        return "/statistics/interval";
+        log.info("adminstatisticsByDate");
+
+        String viewPath = "/statistics";
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        order.setToken(adminInfo.getAdminAccessToken());
+
+        if (adminInfo.getAdminBrandCode().trim().equals("1")){
+            viewPath = viewPath.concat("/interval_tw_kfc");
+        }else{
+            viewPath = viewPath.concat("/interval");
+        }
+
+//        model.addAttribute("regionLocale", regionLocale);
+
+
+        return viewPath;
     }
 
     @ResponseBody
@@ -660,7 +634,7 @@ public class StatisticsController {
         order.setToken(adminInfo.getAdminAccessToken());
 
 
-        IntervalAtTWKFC statisticsInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
+        Interval statisticsInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
         //구간별 통계 리스트 조회페이지에 추가된 그래프 정보
         List<Map> statisticsMin30Below = statisticsAdminService.selectAdminStatisticsMin30BelowByDate(order);
 
@@ -702,7 +676,7 @@ public class StatisticsController {
         order.setToken(adminInfo.getAdminAccessToken());
 
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminByIntervalExcelBuilderServiceImpl");
-        IntervalAtTWKFC storeStatisticsByInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
+        Interval storeStatisticsByInterval = statisticsAdminService.selectAdminStatisticsByInterval(order);
         modelAndView.addObject("getAdminStatisticsByIntervalExcel", storeStatisticsByInterval);
 
         return modelAndView;

@@ -15,10 +15,10 @@
     <div class="date_graph_layer" style="border-bottom: 1px solid #2f528f">
         <div class="date_graph_inner">
             <div class="date_graph_content">
+                <div id="d7Timer" class="box"></div>
                 <div id="orderPickup" class="box"></div>
                 <div id="pickupComplete" class="box"></div>
                 <div id="orderComplete" class="box"></div>
-                <div id="stayTime" class="box"></div>
                 <div id="completeReturn" class="box"></div>
                 <div id="pickupReturn" class="box"></div>
                 <div id="orderReturn" class="box"></div>
@@ -71,16 +71,16 @@
     <script type="text/javascript" th:src="@{/resources/js/lib/chart/core.js}"></script>
     <script type="text/javascript" th:src="@{/resources/js/lib/chart/charts.js}"></script>
     <script type="text/javascript" th:src="@{/resources/js/lib/chart/animated.js}"></script>
-    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statisticsDate.js}" layout:fragment="script2"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/statisticsDate_tw_kfc.js}" layout:fragment="script2"></script>
 </section>
 <!-- //컨텐츠 영역 -->
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
     var label_store = /*[[#{statistics.2nd.label.store}]]*/ 'label_store';
     var label_date = /*[[#{statistics.2nd.label.date}]]*/ 'label_date';
+    var label_in_d7_completed = /*[[#{statistics.2nd.label.in.d7}]]*/ 'label_in_d7_completed';
     var label_in_store_time = /*[[#{statistics.2nd.label.in.store.time}]]*/ 'label_in_store_time';
     var label_delivery_time = /*[[#{statistics.2nd.label.delivery.time}]]*/ 'label_delivery_time';
-    var label_stay_time = /*[[#{statistics.2nd.label.stay.time}]]*/ 'label_stay_time';
     var label_completed_time = /*[[#{statistics.2nd.label.completed.time}]]*/ 'label_completed_time';
     var label_return_time = /*[[#{statistics.2nd.label.return.time}]]*/ 'label_return_time';
     var label_out_time = /*[[#{statistics.2nd.label.out.time}]]*/ 'label_out_time';
