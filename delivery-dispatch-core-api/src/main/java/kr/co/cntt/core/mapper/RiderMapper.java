@@ -259,4 +259,9 @@ public interface RiderMapper {
      * 라이더 승인 정보
      * */
     public RiderApprovalInfo selectApprovalRiderInfo(Common common);
+
+    /**
+     * 라이더 승인 정보 변경
+     * */
+    public int updateApprovalRiderInfo(RiderApprovalInfo riderInfo);
 }

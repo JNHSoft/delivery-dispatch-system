@@ -1275,4 +1275,8 @@
 			</otherwise>
 		</choose>
 	</select>
+
+	<update id="updateApprovalRiderInfo" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo" >
+
+	</update>
 </mapper>

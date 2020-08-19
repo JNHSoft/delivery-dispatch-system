@@ -110,8 +110,6 @@ public class RiderController {
         model.addAttribute("store", myStore);
         model.addAttribute("regionLocale", regionLocale);
 
-        System.out.println("@!#@!$#%@#$^$#%$#!$@#$#!@$");
-
         return "/rider/rider_approval";
     }
 
@@ -147,7 +145,6 @@ public class RiderController {
         if (chkRiderInfo == null){
             return false;
         }
-
 
         // 승인을 요청하는 경우
         if (!(riderInfo.getApprovalStatus().trim().equals("1") && chkRiderInfo.getApprovalStatus().equals("0"))){
@@ -195,13 +192,7 @@ public class RiderController {
     @CnttMethodDescription("라이더 유효기간 설정")
     public Boolean setRiderExpDate(RiderApprovalInfo riderInfo){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        //store.setToken(storeInfo.getStoreAccessToken());
         riderInfo.setToken(storeInfo.getStoreAccessToken());
-
-        System.out.println("################### 라이더 유효기간 설정 ###################");
-        System.out.println(riderInfo.getId());
-        System.out.println(riderInfo.getSession().getExpiryDatetime());
-        System.out.println("################### 라이더 유효기간 설정 ###################");
 
         return true;
     }
@@ -212,12 +203,7 @@ public class RiderController {
     @CnttMethodDescription("라이더 상세 정보 변경")
     public Boolean changeRiderInfo(RiderApprovalInfo riderInfo){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        //store.setToken(storeInfo.getStoreAccessToken());
         riderInfo.setToken(storeInfo.getStoreAccessToken());
-
-        System.out.println("################### 라이더 상세 정보 변경 ###################");
-        System.out.println(riderInfo);
-        System.out.println("################### 라이더 상세 정보 변경 ###################");
 
         return true;
     }

@@ -69,4 +69,10 @@ public interface StoreRiderService {
      * <p> getRiderApprovalInfo
      * */
     public RiderApprovalInfo getRiderApprovalInfo(Common common);
+
+    /**
+     * <p> setRiderInfo
+     * 라이더 승인과 관련한 정보 변경 건
+     * */
+    public int setRiderInfo(RiderApprovalInfo riderInfo);
 }

@@ -313,4 +313,12 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
 
         return info;
     }
+
+    /**
+     * 라이더 정보 변경
+     * */
+    public int setRiderInfo(RiderApprovalInfo riderInfo){
+        return 0;
+    }
+
 }

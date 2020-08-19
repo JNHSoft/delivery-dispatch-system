@@ -75,6 +75,15 @@ function makeGrid(data){
         rowNum: 20,
         pager: "#jqGridPager",
         loadComplete: function (data) {
+            let ids = $("#jqGrid").getDataIDs();
+
+            $.each(ids, function (idx, rowId) {
+                let objRowData = $("#jqGrid").getRowData(rowId);
+
+                if (objRowData.approvalStatus == "2" || objRowData.approvalStatus == "3"){
+                    $("#jqGrid").setRowData(rowId, false, {background: '#FFAA55'});
+                }
+            });
         }
     });
 
