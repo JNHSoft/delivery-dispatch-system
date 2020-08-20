@@ -318,6 +318,9 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
      * 라이더 정보 변경
      * */
     public int setRiderInfo(RiderApprovalInfo riderInfo){
+
+        riderMapper.updateApprovalRiderInfo(riderInfo);
+
         return 0;
     }
 

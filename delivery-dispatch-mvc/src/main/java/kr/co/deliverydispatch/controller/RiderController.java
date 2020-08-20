@@ -9,12 +9,15 @@ import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
 import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +26,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -147,28 +153,27 @@ public class RiderController {
         }
 
         // 승인을 요청하는 경우
-        if (!(riderInfo.getApprovalStatus().trim().equals("1") && chkRiderInfo.getApprovalStatus().equals("0"))){
+        if (riderInfo.getApprovalStatus().trim().equals("1") && !chkRiderInfo.getApprovalStatus().equals("0")){
+            System.out.println("return false one #################");
             return false;
         }
 
         // 승인을 거부하는 경우
-        if (!(riderInfo.getApprovalStatus().trim().equals("2") &&
-                (chkRiderInfo.getApprovalStatus().trim().equals("0") || chkRiderInfo.getApprovalStatus().trim().equals("1")))){
+        if (riderInfo.getApprovalStatus().trim().equals("2") &&
+                !((chkRiderInfo.getApprovalStatus().trim().equals("0") || chkRiderInfo.getApprovalStatus().trim().equals("1")))){
+            System.out.println("return false two #################");
             return false;
         }
 
         // 승인이 된 상태에서 취소하는 경우
-        if (!(riderInfo.getApprovalStatus().trim().equals("3") &&
-                (chkRiderInfo.getApprovalStatus().trim().equals("2")))){
+        if (riderInfo.getApprovalStatus().trim().equals("3") &&
+                !(chkRiderInfo.getApprovalStatus().trim().equals("2"))){
+            System.out.println("return false three #################");
             return false;
         }
 
         // 상태 변경 관련 UPDATE 문 실행
-
-        System.out.println("############################# Change Approval Staus #############################");
-        System.out.println(riderInfo.getId());
-        System.out.println(chkRiderInfo.getId());
-        System.out.println("############################# Change Approval Staus #############################");
+        storeRiderService.setRiderInfo(riderInfo);
 
         return true;
     }
@@ -190,9 +195,54 @@ public class RiderController {
     @ResponseBody
     @PostMapping("/setRiderExpDate")
     @CnttMethodDescription("라이더 유효기간 설정")
-    public Boolean setRiderExpDate(RiderApprovalInfo riderInfo){
+    public Boolean setRiderExpDate(RiderApprovalInfo riderInfo, String expiryDatetime, String datePattern){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         riderInfo.setToken(storeInfo.getStoreAccessToken());
+
+        // 선택한 일자가 금일보다 작을 수 없도록 적용
+        SimpleDateFormat format = new SimpleDateFormat(datePattern);
+        try{
+            Date expDate = format.parse(expiryDatetime);
+            Date nowDate = format.parse(DateTime.now().toString());
+            long diffDate = expDate.getTime() - nowDate.getTime();
+
+            if (diffDate < 0){
+                System.out.println();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
+        RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
+
+        // 만료날짜가 초과된 경우, 변경되지 않도록 작업
+        if (chkRiderInfo.getSession() != null && chkRiderInfo.getSession().getExpiryDatetime() != null){
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date sdfStartDate = formatter.parse(chkRiderInfo.getSession().getExpiryDatetime());
+                Date sdfEndDate = formatter.parse(DateTime.now().toString());
+                long diff = sdfStartDate.getTime() - sdfEndDate.getTime();
+
+                if (diff < 0){
+                    System.out.println("diff = " + diff);
+                    return false;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 날짜에 대한 예외처리가 완료된 후 적용
+        riderInfo.setSession(new RiderSession());
+        riderInfo.getSession().setExpiryDatetime(expiryDatetime);
+
+        if (chkRiderInfo.getApprovalStatus() == "0"){                       // 상태 값이 신규 요청이 경우, 임시 테이블에서 정보가 변경이 되어야함.
+
+        }else if (chkRiderInfo.getApprovalStatus() == "1"){                 // 상태 값이 1인 경우, 라이더 정보에서 값이 변경 되어야 한다.
+
+        }
 
         return true;
     }
@@ -205,6 +255,12 @@ public class RiderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         riderInfo.setToken(storeInfo.getStoreAccessToken());
 
+        System.out.println("#############################################");
+        System.out.println(riderInfo.getId());
+        System.out.println(riderInfo.getSession().getExpiryDatetime());
+        System.out.println("#############################################");
+
         return true;
     }
+
 }

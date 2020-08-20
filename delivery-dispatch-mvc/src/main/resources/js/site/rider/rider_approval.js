@@ -22,8 +22,6 @@ function getApprovalRiderList(){
                 if (data.hasOwnProperty(key)){
                     let tmpObj = new Object();
 
-                    console.log(data[key]);
-
                     tmpObj.No = data[key].id == undefined ? "" : data[key].id;
                     tmpObj.riderID = data[key].loginId == undefined ? "" : data[key].loginId;
                     tmpObj.riderName = data[key].name == undefined ? "" : data[key].name;
@@ -102,7 +100,7 @@ function makeRowButton(obj){
 
     switch (obj.approvalStatus){
         case "0":           // 요청
-            btn_approval = "<button class='button btn_pale_green h30 w110 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ")'> Approval</button>";
+            btn_approval = "<button class='button btn_pale_green h30 w110 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'> Approval</button>";
             btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' class='input picker' />" +
                         "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'>Validity period Setting</button>"
             btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
@@ -125,14 +123,15 @@ function makeRowButton(obj){
 }
 
 // 상태 변경
-function riderApprovalStatus(rowID){
+function riderApprovalStatus(rowID, status){
     //changeApprovalStatus
     loading.show();
     $.ajax({
         url: "/changeApprovalStatus",
         type: "post",
         data:{
-            id: rowID
+            id: rowID,
+            approvalStatus: status
         },
         dataType: "json",
         success: function (data){
@@ -181,22 +180,31 @@ function searchRiderApprovalDetail(rowID){
 function checkExpDate(selectedDate, obj){
     var date = obj.lastVal;
 
+    console.log(obj);
+
     if (date == "" || date != selectedDate){
         // 알림을 띄운 후 저장 프로세스 생성
         if (confirm("변경하신 날짜로 저장하시겠습니까?")){
-            date = selectedDate;
+            testDate = $("#" + obj.id).val();
+            return true;
         }
-        $("#" + obj.id).val(date);
     }
+    $("#" + obj.id).val(date);
 
-    // 저장 프로세스 만들기
+    return false;
 }
 
+let testDate;
 // 유효기간 달력 OPEN
 function showExpDateCalendar(rowID){
+    //let date = $.datepicker.formatDate('yyyy-mm-dd', new Date);
+
     $("#expDate" + rowID).datepicker({
+        minDate: new Date,
         onSelect: function (selectDate, obj){
-            checkExpDate(selectDate, obj);
+            if(checkExpDate(selectDate, obj)){
+                updateExpDate(selectDate, rowID);
+            }
         }
     });
 
@@ -211,5 +219,34 @@ function dateFormat(date){
         return "-";
     }
 }
+
+/**
+ * 유효기간 변경
+ * */
+function updateExpDate(date, rowid){
+    loading.show();
+
+    $.ajax({
+        url: "/setRiderExpDate",
+        type: "post",
+        data:{
+            id: rowid,
+            expiryDatetime: date
+        },
+        dataType: "json",
+        success: function (data){
+            console.log("updateExpDate S");
+            console.log(data);
+            console.log("updateExpDate F");
+        },
+        error: function (error){
+            console.log(error);
+        },
+        complete: function (data){
+            loading.hide();
+        }
+    });
+}
+
 
 /*]]>*/

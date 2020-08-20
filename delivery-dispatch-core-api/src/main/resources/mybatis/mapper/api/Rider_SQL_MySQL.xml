@@ -157,11 +157,10 @@
 		<result property="phone" column="phone" />
 		<result property="gender" column="gender" />
 		<result property="vehicleNumber" column="vehicle_number" />
-		<result property="status" column="req_status" />
+		<result property="approvalStatus" column="req_status" />
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
-		<result property="approvalStatus" column="req_status" />
-		
+
 		<association property="riderDetail" resultMap="selectRiderNowResult"/>
 
 		<association property="session" javaType="kr.co.cntt.core.model.rider.RiderSession">
@@ -1277,6 +1276,20 @@
 	</select>
 
 	<update id="updateApprovalRiderInfo" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo" >
-
+		update	 TB_REQ_REGIST_RIDER
+		set		 modified_datetime = now()
+		<if test="code != null and code != ''">
+				,code = #{code}
+		</if>
+		<if test="session != null and session.expiryDatetime != ''">
+				,exp_datetime = #{expiryDatetime}
+		</if>
+		<if test="approvalStatus != null and approvalStatus != ''">
+				,req_status = #{approvalStatus}
+		</if>
+		<if test="riderId != null and riderId != ''">
+				,rider_id = #{riderId}
+		</if>
+		where	 id = #{id}
 	</update>
 </mapper>
