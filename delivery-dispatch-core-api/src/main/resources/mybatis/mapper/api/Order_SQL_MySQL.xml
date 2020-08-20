@@ -243,8 +243,8 @@
 		left join TB_STORE	C
 			on	 A.store_id = C.id
 			and	 C.deleted is null
-		where	 reservation_datetime > '2020-08-10'
-<!--		and		 date_format(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > date_format(ifnull(reservation_datetime, now()), '%Y-%m-%d %H:%i')-->
+		where	 reservation_datetime > current_date()
+		and		 date_format(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > date_format(ifnull(reservation_datetime, now()), '%Y-%m-%d %H:%i')
 		<if test="status != null and status != ''">
 			AND A.status IN
 			<foreach collection="statusArray" item="statusItem" index="index" separator="," open="(" close=")">
