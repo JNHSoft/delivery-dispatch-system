@@ -224,17 +224,7 @@ function getStoreStatistics() {
         },
         dataType: 'json',
         success: function (data) {
-            let chkReturnTimeCnt = 0;
-            let chkDistanceCnt = 0;
             let rowNum = 0;
-            let orderPickupSum = 0;
-            let pickupCompleteSum = 0;
-            let riderStayTimeSum = 0;
-            let orderCompleteSum = 0;
-            let completeReturnSum = 0;
-            let pickupReturnSum = 0;
-            let orderReturnSum = 0;
-            let distanceSum = 0;
 
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -249,16 +239,11 @@ function getStoreStatistics() {
 
                     if (data[key].arrivedDatetime){
                         tmpData.riderStayTime = minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime);
-                        riderStayTimeSum += minusTime(data[key].arrivedDatetime, data[key].completedDatetime);
                     }else{
                         tmpData.riderStayTime = "-";
                     }
 
                     tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].arrivedDatetime);
-
-                    orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
-                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
-                    orderCompleteSum += minusTime(data[key].createdDatetime, data[key].arrivedDatetime);
 
                     // 검색 조건을 위한 데이터 입력
                     tmpData.store_name = data[key].store.storeName;
@@ -280,68 +265,15 @@ function getStoreStatistics() {
                         tmpData.completeReturn1 = minusTimeSet2(data[key].arrivedDatetime, data[key].returnDatetime);
                         tmpData.pickupReturn1 = minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime);
                         tmpData.orderReturn1 = minusTimeSet2(data[key].createdDatetime, data[key].returnDatetime);
-                        completeReturnSum += minusTime(data[key].arrivedDatetime, data[key].returnDatetime);
-                        pickupReturnSum += minusTime(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        orderReturnSum += minusTime(data[key].createdDatetime, data[key].returnDatetime);
-                    }else{
-                        chkReturnTimeCnt++;
                     }
 
                     if(data[key].distance){
                         tmpData.distance = parseFloat(data[key].distance).toFixed(2) + 'km';
-                        distanceSum += parseFloat(data[key].distance);
-                    }else{
-                        chkDistanceCnt++;
                     }
 
                     myData.push(tmpData);
                 }
             }
-            let totalData = new Object();
-            totalData.No = rowNum+1;
-            totalData.reg_order_id = "TOTAL";
-            totalData.id = "";
-            totalData.origin_reg_order_id = "";
-            totalData.orderDate = "";
-            totalData.orderPickup1 = totalTimeSet(orderPickupSum);
-            totalData.pickupComplete1 = totalTimeSet(pickupCompleteSum);
-            totalData.orderComplete1 = totalTimeSet(orderCompleteSum);
-            totalData.riderStayTime = totalTimeSet(riderStayTimeSum);
-            totalData.completeReturn1 = totalTimeSet(completeReturnSum);
-            totalData.pickupReturn1 = totalTimeSet(pickupReturnSum);
-            totalData.orderReturn1 = totalTimeSet(orderReturnSum);
-            totalData.distance = (distanceSum ==0?0:parseFloat(distanceSum).toFixed(2)) + 'km';
-
-            // 검색 조건을 위한 데이터 입력
-            totalData.store_name = "";
-            totalData.rider_name = "";
-            totalData.group_name = "";
-            totalData.subGroup_name = "";
-
-            myData.push(totalData);
-
-            let averageData = new Object();
-            averageData.No = rowNum+2;
-            averageData.reg_order_id = "AVERAGE";
-            averageData.id = "";
-            averageData.origin_reg_order_id = "";
-            averageData.orderDate = "";
-            averageData.orderPickup1 = averageTimeSet(orderPickupSum,rowNum);
-            averageData.pickupComplete1 = averageTimeSet(pickupCompleteSum,rowNum);
-            averageData.orderComplete1 = averageTimeSet(orderCompleteSum,rowNum);
-            averageData.riderStayTime = averageTimeSet(riderStayTimeSum,rowNum);
-            averageData.completeReturn1 = averageTimeSet(completeReturnSum,rowNum - chkReturnTimeCnt);
-            averageData.pickupReturn1 = averageTimeSet(pickupReturnSum,rowNum - chkReturnTimeCnt);
-            averageData.orderReturn1 = averageTimeSet(orderReturnSum,rowNum - chkReturnTimeCnt);
-            averageData.distance = (distanceSum == 0?0:parseFloat(distanceSum/(rowNum - chkDistanceCnt)).toFixed(2)) + 'km';
-
-            // 검색 조건을 위한 데이터 입력
-            averageData.store_name = "";
-            averageData.rider_name = "";
-            averageData.group_name = "";
-            averageData.subGroup_name = "";
-
-            myData.push(averageData);
 
             if (myData != null) {
                 jQuery('#jqGrid').jqGrid('clearGridData');
@@ -390,6 +322,112 @@ function getStoreStatistics() {
                             $(window).trigger('resize');
                         }, 300)//그리드 리사이즈
                     }
+                },
+                loadComplete: function (data){
+                    let lastRowID = $("#jqGrid").getGridParam("records");
+                    let ids = $("#jqGrid").getDataIDs();
+
+                    let totalRowID = 0;
+                    let averageRowID = 0;
+
+                    let orderPickupTotal = 0;
+                    let pickupCompleteTotal = 0;
+                    let orderCompleteTotal = 0;
+                    let riderStayTimeTotal = 0;
+                    let completeReturnTotal = 0;
+                    let pickupReturnTotal = 0;
+                    let orderReturnTotal = 0;
+                    let distanceTotal = 0;
+
+                    // division 용 변수
+                    let division = 0;
+                    let returnTimeNan = 0;
+
+                    $.each(ids, function (idx, rowId) {
+                        var rowData = $("#jqGrid").getRowData(rowId);
+                        if (rowData.reg_order_id == "TOTAL"){
+                            totalRowID = rowId;
+                        }else if (rowData.reg_order_id == "AVERAGE"){
+                            averageRowID = rowId;
+                        }else{
+                            division++;
+                            orderPickupTotal = sumTimeValue(orderPickupTotal, rowData.orderPickup1);
+                            pickupCompleteTotal = sumTimeValue(pickupCompleteTotal, rowData.pickupComplete1);
+                            orderCompleteTotal = sumTimeValue(orderCompleteTotal, rowData.orderComplete1);
+                            riderStayTimeTotal = sumTimeValue(riderStayTimeTotal, rowData.riderStayTime);
+                            completeReturnTotal = sumTimeValue(completeReturnTotal, rowData.completeReturn1);
+                            pickupReturnTotal = sumTimeValue(pickupReturnTotal, rowData.pickupReturn1);
+                            orderReturnTotal = sumTimeValue(orderReturnTotal, rowData.orderReturn1);
+                            distanceTotal = Number(distanceTotal) + Number(rowData.distance.replace('km', ''));
+
+                            if (changeTimeStringToSecond(rowData.completeReturn1) == 0 && changeTimeStringToSecond(rowData.pickupReturn1) == 0 && changeTimeStringToSecond(rowData.orderReturn1) == 0){
+                                returnTimeNan++;
+                            }
+
+                        }
+                    });
+
+                    // Total 및 Average 행을 지운다
+                    if (totalRowID != 0){
+                        console.log("totalRowID = " + totalRowID);
+                        $("#jqGrid").delRowData(totalRowID);
+                    }
+
+                    if (averageRowID != 0){
+                        console.log("averageRowID = " + averageRowID);
+                        $("#jqGrid").delRowData(averageRowID);
+                    }
+
+                    lastRowID = $("#jqGrid").getGridParam("records");
+
+                    let totalData = new Object();
+                    totalData.No = lastRowID + 1;
+                    totalData.reg_order_id = "TOTAL";
+                    totalData.id = "";
+                    totalData.origin_reg_order_id = "";
+                    totalData.orderDate = "";
+                    totalData.orderPickup1 = orderPickupTotal;
+                    totalData.pickupComplete1 = pickupCompleteTotal;
+                    totalData.orderComplete1 = orderCompleteTotal;
+                    totalData.riderStayTime = riderStayTimeTotal;
+                    totalData.completeReturn1 = completeReturnTotal;
+                    totalData.pickupReturn1 = pickupReturnTotal;
+                    totalData.orderReturn1 = orderReturnTotal;
+                    totalData.distance = (distanceTotal ==0?0:parseFloat(distanceTotal).toFixed(2)) + 'km';
+
+                    // 검색 조건을 위한 데이터 입력
+                    totalData.store_name = "";
+                    totalData.rider_name = "";
+                    totalData.group_name = "";
+                    totalData.subGroup_name = "";
+
+                    $("#jqGrid").addRowData(lastRowID + 1, totalData);
+
+                    let averageData = new Object();
+                    averageData.No = lastRowID + 2;
+                    averageData.reg_order_id = "AVERAGE";
+                    averageData.id = "";
+                    averageData.origin_reg_order_id = "";
+                    averageData.orderDate = "";
+                    averageData.orderPickup1 = divisionTimeValue(orderPickupTotal, division);
+                    averageData.pickupComplete1 = divisionTimeValue(pickupCompleteTotal, division);
+                    averageData.orderComplete1 = divisionTimeValue(orderCompleteTotal, division);
+                    averageData.riderStayTime = divisionTimeValue(riderStayTimeTotal, division);
+                    averageData.completeReturn1 = divisionTimeValue(completeReturnTotal, (division - returnTimeNan));
+                    averageData.pickupReturn1 = divisionTimeValue(pickupReturnTotal, (division - returnTimeNan));
+                    averageData.orderReturn1 = divisionTimeValue(orderReturnTotal, (division - returnTimeNan));
+                    averageData.distance = (distanceTotal ==0?0:parseFloat(distanceTotal / division).toFixed(2)) + 'km';
+
+                    // 검색 조건을 위한 데이터 입력
+                    averageData.store_name = "";
+                    averageData.rider_name = "";
+                    averageData.group_name = "";
+                    averageData.subGroup_name = "";
+
+                    $("#jqGrid").addRowData(lastRowID + 2, averageData);
+
+                    // myData.push(totalData);
+
                 }
             });
 
@@ -534,29 +572,11 @@ function searchList(selectId, selectIdOption) {
         }
     }
 
-    var filter3 = {
-        groupOp: "OR",
-        rules: [],
-        groups : [filter]
-    };
-
-    filter3.rules.push({
-        field : 'reg_order_id',
-        op : "eq",
-        data : 'TOTAL'
-    });
-
-    filter3.rules.push({
-        field: "reg_order_id",
-        op : "eq",
-        data : "AVERAGE"
-    });
-
     var grid = jQuery('#jqGrid');
-    if(filter.rules.length > 0 || filter2.rules.length > 0 || filter3.rules.length > 0){
+    if(filter.rules.length > 0 || filter2.rules.length > 0){
         grid[0].p.search = true;
     }
-    $.extend(grid[0].p.postData, { filters: filter3 });
+    $.extend(grid[0].p.postData, { filters: filter });
     grid.trigger("reloadGrid", [{ page: 1 }]);
 }
 
@@ -659,4 +679,55 @@ function getStatisticsStoreList(subId, gId) {
             }
         }
     });
+}
+
+/**
+ * jqGrid Time Sum
+ * */
+function sumTimeValue(sumTime, addTime){
+    if (sumTime == undefined || addTime == undefined){
+        return sumTime == undefined ? 0 : sumTime;
+    }
+
+    let sumTimeSecond = sumTime.toString().split(':').reduce((sum, time) =>  (60 * Number(sum)) + Number(time));
+    let addTimeSecond = addTime.toString().split(':').reduce((sum, time) =>  (60 * Number(sum)) + Number(time));
+
+    sumTimeSecond = Number(sumTimeSecond) + Number(addTimeSecond);
+    var modSecond = sumTimeSecond % 60;
+    var modMinute = parseInt(sumTimeSecond / 60) % 60;
+    var modHourse = parseInt(sumTimeSecond / (60*60)) % 60;
+
+    return ("00" + modHourse).slice(-2) + ":" + ("00" + modMinute).slice(-2) + ":" + ("00" + modSecond).slice(-2);
+}
+
+/**
+ * Time Division
+ * */
+function divisionTimeValue(totalTime, divistionValue){
+    let totalTimeSecond = totalTime.toString().split(':').reduce((sum, time) =>  (60 * Number(sum)) + Number(time));
+
+    if (isNaN(Number(totalTimeSecond)) || isNaN(Number(divistionValue))){
+        return 0;
+    }else if (totalTimeSecond == 0 || divistionValue == 0){
+        return 0;
+    }
+
+    var returnSecond = parseInt(totalTimeSecond / divistionValue);
+
+    var modSecond = returnSecond % 60;
+    var modMinute = parseInt(returnSecond / 60) % 60;
+    var modHourse = parseInt(returnSecond / (60*60)) % 60;
+
+    return ("00" + modHourse).slice(-2) + ":" + ("00" + modMinute).slice(-2) + ":" + ("00" + modSecond).slice(-2);
+}
+
+/**
+ * 시 분 초의 값을 초로 변경
+ * */
+function changeTimeStringToSecond(time){
+    if (time == undefined){
+        return 0;
+    }
+
+    return time.toString().split(':').reduce((sum, time) =>  (60 * Number(sum)) + Number(time));
 }
