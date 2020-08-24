@@ -28,8 +28,8 @@ $(function () {
     $(".select").change(function(){
         selectId = $(this);
         selectIdOption = $('option:selected', this);
-        getStoreStatisticsByDate();
         searchList(selectId, selectIdOption);
+        getStoreStatisticsByDate();
     });     //select box의 change 이벤트
 });
 
@@ -64,7 +64,10 @@ function getStoreStatisticsByDate() {
         type: 'get',
         data: {
             startDate: $('#startDate').val(),
-            endDate: $('#endDate').val()
+            endDate: $('#endDate').val(),
+            groupID: $("#statisticsGroupList").val(),
+            subGroupID: $("#statisticsSubGroupList").val(),
+            storeID: $("#statisticsStoreList").val(),
         },
         dataType: 'json',
         success: function (data) {
@@ -228,12 +231,58 @@ function getStoreStatisticsByDate() {
 
                 }
             }
+            // 평균 값
+            let avgData = new Object();
+            avgData.store = "Average" ;
+            avgData.day = "";
+
+            avgData.group_name = "";
+            avgData.subGroup_name = "";
+
+            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/tcRowCnt);
+            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/tcRowCnt);
+            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/tcRowCnt);
+            avgData.completeReturn = totalTimeSet((completeReturnSum*1000)/rowReduceCnt);
+            avgData.pickupReturn =  totalTimeSet((pickupReturnSum*1000)/rowReduceCnt);
+            avgData.orderReturn =   totalTimeSet((orderReturnSum*1000)/rowReduceCnt);
+            avgData.minD7Below = formatInt((minD7BelowSum/tcRowCnt), 1) + "%";
+            avgData.min30Below = formatInt((min30BelowSum/tcRowCnt), 1) +"%";
+            avgData.min30To40 =formatInt((min30To40Sum/tcRowCnt), 1) +"%";
+            avgData.min40To50 = formatInt((min40To50Sum/tcRowCnt), 1) +"%";
+            avgData.min50To60 = formatInt((min50To60Sum/tcRowCnt), 1) +"%";
+            avgData.min60To90 = formatInt((min60To90Sum/tcRowCnt), 1) +"%";
+            avgData.min90Under = formatInt((min90UnderSum/tcRowCnt), 1) +"%";
+            avgData.totalSales = formatInt((totalSalesSum/tcRowCnt), 1);
+            avgData.errtc = formatInt((errtcSum/rowCnt), 1);
+            avgData.tc = formatInt((tcSum/tcRowCnt), 1);
+
+            //avgData.d7Success = (totalD7Success / tcSum) * 100;
+
+            if(tpSpCnt!=0){
+                avgData.tplh = formatInt((tplhSum/tpSpCnt), 1);
+                avgData.spmh = formatInt((spmhSum/tpSpCnt), 1);
+            }else{
+                avgData.tplh = "-";
+                avgData.spmh = "-";
+            }
+
+            avgData.totalPickupReturn = totalTimeSet((totalPickupReturnSum*1000)/rowReduceCnt);
+            avgData.avgDistance = formatFloat((avgDistanceSum/distanceCnt), 1) +'km';
+
+            // 날짜 조회시 avg 노출
+            if(rowCnt!=0){
+                mydata.push(avgData);
+            }
 
             if (mydata.length > 0) {
+                dateGraph(avgData);
+                dateInfo(avgData);
                 jQuery('#jqGrid').jqGrid('clearGridData');
                 jQuery('#jqGrid').jqGrid('setGridParam', {data: mydata, page: 1});
                 jQuery('#jqGrid').trigger('reloadGrid');
             } else {
+                dateGraph();
+                dateInfo(avgData);
                 jQuery('#jqGrid').jqGrid('clearGridData');
                 jQuery('#jqGrid').trigger('reloadGrid');
             }
@@ -276,146 +325,15 @@ function getStoreStatisticsByDate() {
                 autowidth: true,
                 rowNum: 20,
                 pager: "#jqGridPager",
-                loadComplete: function (data) {
-                    let lastRowID = $("#jqGrid").getGridParam("records");
-
-                    let ids = $("#jqGrid").getDataIDs();
-
-                    let averageRowID = 0;
-                    let rowCount = 0;
-                    let tcRowCnt = 0;
-                    let returnTimeNan = 0;
-                    let distanceNan = 0;
-                    let tpSpNan = 0;
-
-                    let orderPickupTotal = 0;
-                    let pickupCompleteTotal = 0;
-                    let orderCompleteTotal = 0;
-                    let completeReturnTotal = 0;
-                    let pickupReturnTotal = 0;
-                    let orderReturnTotal = 0;
-                    let minD7BelowTotal = 0;
-                    let min30BelowTotal = 0;
-                    let min30To40Total = 0;
-                    let min40To50Total = 0;
-                    let min50To60Total = 0;
-                    let min60To90Total = 0;
-                    let min90UnderTotal = 0;
-                    let totalSalesTotal = 0;
-                    let errTcTotal = 0;
-                    let tcTotal = 0;
-                    let tplhTotal = 0;
-                    let spmhTotal = 0;
-                    let totalPickupReturnTotal = 0;
-                    let avgDistanceTotal = 0;
-
-                    $.each(ids, function (idx, rowId){
-                        var rowData = $("#jqGrid").getRowData(rowId);
-                        if (rowData.store == "Average"){
-                            averageRowID = rowId;
-                        }else{
-                            rowCount++;
-
-                            orderPickupTotal = sumTimeValue(orderPickupTotal, rowData.orderPickup);
-                            pickupCompleteTotal = sumTimeValue(pickupCompleteTotal, rowData.pickupComplete);
-                            orderCompleteTotal = sumTimeValue(orderCompleteTotal, rowData.orderComplete);
-                            completeReturnTotal = sumTimeValue(completeReturnTotal, rowData.completeReturn);
-                            pickupReturnTotal = sumTimeValue(pickupReturnTotal, rowData.pickupReturn);
-                            orderReturnTotal = sumTimeValue(orderReturnTotal, rowData.orderReturn);
-                            minD7BelowTotal = Number(minD7BelowTotal) + Number(rowData.minD7Below.replace('%', ''));
-                            min30BelowTotal = Number(min30BelowTotal) + Number(rowData.min30Below.replace('%', ''));
-                            min30To40Total = Number(min30To40Total) + Number(rowData.min30To40.replace('%', ''));
-                            min40To50Total = Number(min40To50Total) + Number(rowData.min40To50.replace('%', ''));
-                            min50To60Total = Number(min50To60Total) + Number(rowData.min50To60.replace('%', ''));
-                            min60To90Total = Number(min60To90Total) + Number(rowData.min60To90.replace('%', ''));
-                            min90UnderTotal = Number(min90UnderTotal) + Number(rowData.min90Under.replace('%', ''));
-                            totalSalesTotal += Number(rowData.totalSales);
-                            errTcTotal += Number(rowData.errtc);
-                            tcTotal += Number(rowData.tc);
-                            tplhTotal += Number(rowData.tplh);
-                            spmhTotal += Number(rowData.spmh);
-                            totalPickupReturnTotal = sumTimeValue(totalPickupReturnTotal, rowData.totalPickupReturn);
-                            avgDistanceTotal = Number(avgDistanceTotal) + Number(rowData.avgDistance.replace('km', ''));
-
-                            if (Number(rowData.tc) > 0){
-                                tcRowCnt++;
-                            }
-
-                            if (rowData.completeReturn == "-" || rowData.pickupReturn == "-" || rowData.orderReturn == "-" || rowData.totalPickupReturn == "-"){
-                                completeReturn++;
-                            }
-
-                            if (rowData.distance == "-"){
-                                distanceNan++;
-                            }
-
-                            if (rowData.tplh == "-" || rowData.spmh == "-"){
-                                tpSpNan++;
-                            }
-
-                        }
-                    });
-
-                    if (averageRowID != 0){
-                        $("#jqGrid").delRowData(averageRowID);
-                    }
-
-                    lastRowID = $("#jqGrid").getGridParam("records");
-
-
-                    // 평균 값
-                    let avgData = new Object();
-                    avgData.store = "Average" ;
-                    avgData.day = "";
-
-                    avgData.group_name = "";
-                    avgData.subGroup_name = "";
-
-                    avgData.orderPickup = divisionTimeValue(orderPickupTotal, tcRowCnt);
-                    avgData.pickupComplete = divisionTimeValue(pickupCompleteTotal, tcRowCnt);
-                    avgData.orderComplete  = divisionTimeValue(orderCompleteTotal, tcRowCnt);
-                    avgData.completeReturn = divisionTimeValue(completeReturnTotal, (rowCount - returnTimeNan));
-                    avgData.pickupReturn =  divisionTimeValue(pickupReturnTotal, (rowCount - returnTimeNan));
-                    avgData.orderReturn =   divisionTimeValue(orderReturnTotal, (rowCount - returnTimeNan));
-                    avgData.minD7Below = formatInt((minD7BelowTotal/tcRowCnt), 1) + "%";
-                    avgData.min30Below = formatInt((min30BelowTotal/tcRowCnt), 1) +"%";
-                    avgData.min30To40 =formatInt((min30To40Total/tcRowCnt), 1) +"%";
-                    avgData.min40To50 = formatInt((min40To50Total/tcRowCnt), 1) +"%";
-                    avgData.min50To60 = formatInt((min50To60Total/tcRowCnt), 1) +"%";
-                    avgData.min60To90 = formatInt((min60To90Total/tcRowCnt), 1) +"%";
-                    avgData.min90Under = formatInt((min90UnderTotal/tcRowCnt), 1) +"%";
-                    avgData.totalSales = formatInt((totalSalesTotal/tcRowCnt), 1);
-                    avgData.errtc = formatInt((errTcTotal/rowCount), 1);
-                    avgData.tc = formatInt((tcTotal/tcRowCnt), 1);
-
-                    if (rowCount - tpSpNan != 0){
-                        avgData.tplh = formatInt((tplhTotal / (rowCount - tpSpNan)), 1);
-                        avgData.spmh = formatInt((spmhTotal / (rowCount - tpSpNan)), 1);
-                    }else{
-                        avgData.tplh = "-";
-                        avgData.spmh = "-";
-                    }
-
-                    avgData.totalPickupReturn = divisionTimeValue(totalPickupReturnTotal, (rowCount - returnTimeNan));
-                    avgData.avgDistance = formatFloat((avgDistanceTotal / tcRowCnt), 1) + 'km';
-
-
-                    dateGraph(lastRowID == 0 ? null : avgData);
-                    dateInfo(lastRowID == 0 ? null : avgData);
-
-                    if (lastRowID != 0){
-                        $("#jqGrid").addRowData(lastRowID + 1, avgData);
-                    }
-                }
             });
 
             $("#jqGrid").jqGrid('destroyGroupHeader');
             $("#jqGrid").jqGrid('setGroupHeaders', {
                 useColSpanStyle: true,
                 groupHeaders:[
-                    {startColumnName: 'orderPickup', numberOfColumns: regionLocale.country == "TW" ? 2 : 6, titleText: label_average_time},
+                    {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: label_average_time},
                     {startColumnName: 'minD7Below', numberOfColumns: 7, titleText: label_percent_completed},
-                    {startColumnName: regionLocale.country == "TW" ? 'errtc' : 'totalSales', numberOfColumns: regionLocale.country == "TW" ? 6 : 7, titleText: label_productivity}
+                    {startColumnName: 'totalSales', numberOfColumns: 7, titleText: label_productivity}
                 ]
             });
             //$("#jqGrid").jqGrid('destroyGroupHeader', false);
@@ -499,11 +417,11 @@ function dateGraph(avgData){
 }
 
 function convertToMinute(time){
-    return (time == '-' || time == '0')? null : (time.split(':').reduce((acc,time) => (60 * acc) + +time) / 60).toFixed(2)
+    return (time == '-')? null : (time.split(':').reduce((acc,time) => (60 * acc) + +time) / 60).toFixed(2)
 }
 
 function convertToHms(time){
-    let arr = time.toString().split(':');
+    let arr = time.split(':');
 
     if(arr.length == 3){
         let result = '';
@@ -523,13 +441,13 @@ function dateInfo(avgData){
     var colName = $("<div></div>").addClass('col_name');
     var colVal = $("<div></div>").addClass('col_val');
 
-    let orderPickup = avgData == null || avgData == undefined ? "-" : avgData.orderPickup;
-    let pickupComplete = avgData == null || avgData == undefined ? "-" : avgData.pickupComplete;
-    let orderComplete = avgData == null || avgData == undefined ? "-" : avgData.orderComplete;
-    let completeReturn = avgData == null || avgData == undefined ? "-" : avgData.completeReturn;
-    let pickupReturn = avgData == null || avgData == undefined ? "-" : avgData.pickupReturn;
-    let orderReturn = avgData == null || avgData == undefined ? "-" : avgData.orderReturn;
-    let d7SuccessRate = avgData == null || avgData == undefined ? "-" : avgData.minD7Below;
+    let orderPickup = avgData.orderPickup;
+    let pickupComplete = avgData.pickupComplete;
+    let orderComplete = avgData.orderComplete;
+    let completeReturn = avgData.completeReturn;
+    let pickupReturn = avgData.pickupReturn;
+    let orderReturn = avgData.orderReturn;
+    let d7SuccessRate = avgData.minD7Below;
 
     $('#d7Timer.box').append(colName.clone().html(label_in_d7_completed)).append(colVal.clone().html(d7SuccessRate));
     $('#orderPickup.box').append(colName.clone().html(label_in_store_time)).append(colVal.clone().html(convertToHms(orderPickup)));
@@ -583,6 +501,7 @@ function formatFloat(sender, pointer) {
 
 /**
  * 2020.04.29 통계 검색 조건 관련 함수들 추가
+ *
  * */
 
 /**
@@ -673,13 +592,13 @@ function getStatisticsStoreList(subId, gId) {
             if(data) {
                 var statisticsStoreListHtml = "<option value='reset'>" + list_search_all_store + "</option>";
                 for (var i in data){
-                    statisticsStoreListHtml += "<option value='" + data[i].id  + "'>" + data[i].storeName + "</option>";
+                    statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
 
-                $("#statisticsStoreList").on("change", function () {
-                    getStoreStatisticsByDate();
-                });
+                // $("#statisticsStoreList").on("change", function () {
+                //     getStoreStatisticsByDate();
+                // });
 
             }
         }
@@ -706,98 +625,61 @@ function searchList(selectId, selectIdOption) {
         }
     }
 
-    var searchText1= $("#statisticsGroupList option:selected").text();
-    var searchTextVal1= $("#statisticsGroupList option:selected").val();
-    var searchText2= $("#statisticsSubGroupList option:selected").text();
-    var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
-    var searchText3= $("#statisticsStoreList option:selected").text();
-    var searchTextVal3= $("#statisticsStoreList option:selected").val();
-
-    var filter = {
-        groupOp: "AND",
-        rules: []
-    };
-
-    if(searchTextVal1 != "reset"){
-        filter.rules.push({
-            field : 'group_name',
-            op : "eq",
-            data : searchText1
-        });
-        if(searchTextVal2 != "reset"){
-            filter.rules.push({
-                field : 'subGroup_name',
-                op : "eq",
-                data : searchText2
-            });
-            if(searchTextVal3 != "reset"){
-                filter.rules.push({
-                    field : 'store',
-                    op : "eq",
-                    data : searchText3
-                });
-            }
-        }
-    }
-
-    var grid = jQuery('#jqGrid');
-
-    if(filter.rules.length > 0){
-        grid[0].p.search = true;
-    }
-
-    $.extend(grid[0].p.postData, { filters: filter });
-    grid.trigger("reloadGrid", [{ page: 1 }]);
-}
-
-
-/**
- * jqGrid Time Sum
- * */
-function sumTimeValue(sumTime, addTime){
-    if (sumTime == undefined || addTime == undefined || addTime == "-"){
-        return sumTime == undefined ? 0 : sumTime;
-    }
-
-    let sumTimeSecond = sumTime.toString().split(':').reduce((sum, time) =>  (60 * Number(sum)) + Number(time));
-    let addTimeSecond = addTime.toString().split(':').reduce((sum, time) =>  (60 * Number(sum)) + Number(time));
-
-    sumTimeSecond = Number(sumTimeSecond) + Number(addTimeSecond);
-    var modSecond = sumTimeSecond % 60;
-    var modMinute = parseInt(sumTimeSecond / 60) % 60;
-    var modHourse = parseInt(sumTimeSecond / (60*60)) % 60;
-
-    return ("00" + modHourse).slice(-2) + ":" + ("00" + modMinute).slice(-2) + ":" + ("00" + modSecond).slice(-2);
-}
-
-/**
- * Time Division
- * */
-function divisionTimeValue(totalTime, divistionValue){
-    let totalTimeSecond = totalTime.toString().split(':').reduce((sum, time) =>  (60 * Number(sum)) + Number(time));
-
-    if (isNaN(Number(totalTimeSecond)) || isNaN(Number(divistionValue))){
-        return 0;
-    }else if (totalTimeSecond == 0 || divistionValue == 0){
-        return 0;
-    }
-
-    var returnSecond = parseInt(totalTimeSecond / divistionValue);
-
-    var modSecond = returnSecond % 60;
-    var modMinute = parseInt(returnSecond / 60) % 60;
-    var modHourse = parseInt(returnSecond / (60*60)) % 60;
-
-    return ("00" + modHourse).slice(-2) + ":" + ("00" + modMinute).slice(-2) + ":" + ("00" + modSecond).slice(-2);
-}
-
-/**
- * 시 분 초의 값을 초로 변경
- * */
-function changeTimeStringToSecond(time){
-    if (time == undefined || time == "-"){
-        return 0;
-    }
-
-    return time.toString().split(':').reduce((sum, time) =>  (60 * Number(sum)) + Number(time));
+    // var searchText1= $("#statisticsGroupList option:selected").text();
+    // var searchTextVal1= $("#statisticsGroupList option:selected").val();
+    // var searchText2= $("#statisticsSubGroupList option:selected").text();
+    // var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
+    // var searchText3= $("#statisticsStoreList option:selected").text();
+    // var searchTextVal3= $("#statisticsStoreList option:selected").val();
+    //
+    // var filter = {
+    //     groupOp: "AND",
+    //     rules: []
+    // };
+    //
+    // if(searchTextVal1 != "reset"){
+    //     filter.rules.push({
+    //         field : 'group_name',
+    //         op : "eq",
+    //         data : searchText1
+    //     });
+    //     if(searchTextVal2 != "reset"){
+    //         filter.rules.push({
+    //             field : 'subGroup_name',
+    //             op : "eq",
+    //             data : searchText2
+    //         });
+    //         if(searchTextVal3 != "reset"){
+    //             filter.rules.push({
+    //                 field : 'store',
+    //                 op : "eq",
+    //                 data : searchText3
+    //             });
+    //         }
+    //     }
+    // }
+    //
+    // var filter3 = {
+    //     groupOp: "OR",
+    //     rules: [],
+    //     groups:[filter]
+    // };
+    //
+    // if (filter.rules.length > 0){
+    //     filter3.rules.push({
+    //         field: "store",
+    //         op : "eq",
+    //         data : "Average"
+    //     });
+    // }
+    //
+    // var grid = jQuery('#jqGrid');
+    //
+    // if(filter.rules.length > 0 || filter3.rules.length > 0 ){
+    //     grid[0].p.search = true;
+    // }
+    //
+    // $.extend(grid[0].p.postData, { filters: filter3 });
+    // grid.trigger("reloadGrid", [{ page: 1 }]);
+    // console.log("grid trigger");
 }

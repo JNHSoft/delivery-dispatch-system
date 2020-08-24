@@ -1,6 +1,8 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
@@ -76,7 +78,10 @@ public class StatisticsKFCController {
     @GetMapping("/getStoreStatisticsByOrderAtTWKFC")
     @CnttMethodDescription("관리자 주문별 통계 리스트 조회 TW KFC")
     public List<Order> getStoreStatisticsByOrderAtTWKFC(@RequestParam(value = "startDate") String startDate
-            , @RequestParam(value = "endDate") String endDate) {
+            , @RequestParam(value = "endDate") String endDate
+            , @RequestParam(value = "groupID", required = false) String groupId
+            , @RequestParam(value = "subGroupID", required = false) String subGroupId
+            , @RequestParam(value = "storeID", required = false) String storeId) {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -102,6 +107,22 @@ public class StatisticsKFCController {
         }
 
         order.setToken(adminInfo.getAdminAccessToken());
+
+        if (groupId.trim() != "" && !groupId.toLowerCase().equals("reset")){
+            order.setGroup(new Group());
+            order.getGroup().setId(groupId);
+        }
+
+        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+            order.setSubGroup(new SubGroup());
+            order.getSubGroup().setId(subGroupId);
+        }
+
+        if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
+            order.setStoreId(storeId);
+        }
+
+
         List<Order> statistByOrder = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
 
         return statistByOrder.stream().filter(a -> {
@@ -225,7 +246,10 @@ public class StatisticsKFCController {
     @GetMapping("/getStoreStatisticsByDateAtTWKFC")
     @CnttMethodDescription("날짜별 통계 리스트 조회 TW KFC")
     public List<AdminByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
-            , @RequestParam("endDate") String endDate){
+            , @RequestParam("endDate") String endDate
+            , @RequestParam(value = "groupID", required = false) String groupId
+            , @RequestParam(value = "subGroupID", required = false) String subGroupId
+            , @RequestParam(value = "storeID", required = false) String storeId){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -250,6 +274,20 @@ public class StatisticsKFCController {
         }
 
         order.setToken(adminInfo.getAdminAccessToken());
+
+        if (groupId.trim() != "" && !groupId.toLowerCase().equals("reset")){
+            order.setGroup(new Group());
+            order.getGroup().setId(groupId);
+        }
+
+        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+            order.setSubGroup(new SubGroup());
+            order.getSubGroup().setId(subGroupId);
+        }
+
+        if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
+            order.setStoreId(storeId);
+        }
 
         List<AdminByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdminAtTWKFC(order);
 
