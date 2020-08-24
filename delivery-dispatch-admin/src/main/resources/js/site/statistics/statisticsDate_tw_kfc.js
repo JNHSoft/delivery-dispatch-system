@@ -28,8 +28,8 @@ $(function () {
     $(".select").change(function(){
         selectId = $(this);
         selectIdOption = $('option:selected', this);
-        getStoreStatisticsByDate();
         searchList(selectId, selectIdOption);
+        getStoreStatisticsByDate();
     });     //select box의 change 이벤트
 });
 
@@ -64,13 +64,13 @@ function getStoreStatisticsByDate() {
         type: 'get',
         data: {
             startDate: $('#startDate').val(),
-            endDate: $('#endDate').val()
+            endDate: $('#endDate').val(),
+            groupID: $("#statisticsGroupList").val(),
+            subGroupID: $("#statisticsSubGroupList").val(),
+            storeID: $("#statisticsStoreList").val(),
         },
         dataType: 'json',
         success: function (data) {
-
-            console.log("데이터 조회 시작");
-
             // 평균 값
             let orderPickupSum = 0;
             let pickupCompleteSum = 0;
@@ -86,7 +86,6 @@ function getStoreStatisticsByDate() {
             let min60To90Sum = 0;
             let min90UnderSum = 0;
             let totalSalesSum = 0;
-            let totalD7Success = 0;
 
             let errtcSum = 0;
             let tcSum = 0;
@@ -106,7 +105,6 @@ function getStoreStatisticsByDate() {
             let tpSpCnt = 0;
 
             for (let key in data) {
-                console.log(data);
                 if (data.hasOwnProperty(key)) {
                     // 빈값 여부를 위해 chkcount
                     let chkCnt = 0;
@@ -216,8 +214,6 @@ function getStoreStatisticsByDate() {
                     min60To90Sum += formatFloat(data[key].min60To90, 1);
                     min90UnderSum += formatFloat(data[key].min90Under, 1);
                     totalSalesSum += formatFloat(data[key].totalSales, 1);
-                    // D7 성공 개수
-                    totalD7Success += formatFloat(data[key].d7Success, 1);
 
                     errtcSum += formatFloat(data[key].errtc, 1);
                     tcSum += formatFloat(data[key].tc, 1);
@@ -328,7 +324,6 @@ function getStoreStatisticsByDate() {
                 height: 660,
                 autowidth: true,
                 rowNum: 20,
-                // footerrow: true,
                 pager: "#jqGridPager",
             });
 
@@ -341,24 +336,17 @@ function getStoreStatisticsByDate() {
                     {startColumnName: 'totalSales', numberOfColumns: 7, titleText: label_productivity}
                 ]
             });
+            //$("#jqGrid").jqGrid('destroyGroupHeader', false);
 
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
             loading.hide();
-
-            // $('.state_wrap .btn_close').click(function (e) {
-            //     e.preventDefault();
-            //     $('.state_wrap').removeClass('on'); //상세보기 닫기
-            //     setTimeout(function () {
-            //         $(window).trigger('resize');
-            //     }, 300)//그리드 리사이즈
-            // });
         }
     });
 }
 
+
 function dateGraph(avgData){
     $('#chart_content').html('');
-
     if(avgData == null || avgData == 'undefined'){
         $('#chart_content').html(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
     } else {
@@ -479,12 +467,6 @@ function excelDownloadByDate(){
         return;
     }
 
-    // let storeName = $('#myStoreName').text();
-    //
-    //
-    // console.log("!!!!!!!!!!!!");
-    // console.log(storeName);
-
     loading.show();
     $.fileDownload("/excelDownloadByDateAtTWKFC",{
         httpMethod:"GET",
@@ -496,7 +478,6 @@ function excelDownloadByDate(){
             loading.hide();
         },
         failCallback: function(responseHtml,url){
-            // console.log(responseHtml);
             loading.hide();
         }
     })
@@ -520,6 +501,7 @@ function formatFloat(sender, pointer) {
 
 /**
  * 2020.04.29 통계 검색 조건 관련 함수들 추가
+ *
  * */
 
 /**
@@ -546,7 +528,6 @@ function getGroupList() {
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
                 $("#statisticsGroupList").on("change", function () {
-                    console.log("Group Change");
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                 });
             }
@@ -559,9 +540,6 @@ function getGroupList() {
  */
 function getStatisticsSubGroupList(gId, subGroup) {
     var selectGroupId = null;
-
-    console.log("getStatisticsSubGroupList");
-    console.log(gId);
 
     if (gId == null) {
         selectGroupId = '1';
@@ -614,13 +592,13 @@ function getStatisticsStoreList(subId, gId) {
             if(data) {
                 var statisticsStoreListHtml = "<option value='reset'>" + list_search_all_store + "</option>";
                 for (var i in data){
-                    statisticsStoreListHtml += "<option value='" + data[i].id  + "'>" + data[i].storeName + "</option>";
+                    statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
 
-                $("#statisticsStoreList").on("change", function () {
-                    getStoreStatisticsByDate();
-                });
+                // $("#statisticsStoreList").on("change", function () {
+                //     getStoreStatisticsByDate();
+                // });
 
             }
         }
@@ -647,61 +625,61 @@ function searchList(selectId, selectIdOption) {
         }
     }
 
-    var searchText1= $("#statisticsGroupList option:selected").text();
-    var searchTextVal1= $("#statisticsGroupList option:selected").val();
-    var searchText2= $("#statisticsSubGroupList option:selected").text();
-    var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
-    var searchText3= $("#statisticsStoreList option:selected").text();
-    var searchTextVal3= $("#statisticsStoreList option:selected").val();
-
-    var filter = {
-        groupOp: "AND",
-        rules: []
-    };
-
-    if(searchTextVal1 != "reset"){
-        filter.rules.push({
-            field : 'group_name',
-            op : "eq",
-            data : searchText1
-        });
-        if(searchTextVal2 != "reset"){
-            filter.rules.push({
-                field : 'subGroup_name',
-                op : "eq",
-                data : searchText2
-            });
-            if(searchTextVal3 != "reset"){
-                filter.rules.push({
-                    field : 'store',
-                    op : "eq",
-                    data : searchText3
-                });
-            }
-        }
-    }
-
-    var filter3 = {
-        groupOp: "OR",
-        rules: [],
-        groups:[filter]
-    };
-
-    if (filter.rules.length > 0){
-        filter3.rules.push({
-            field: "store",
-            op : "eq",
-            data : "Average"
-        });
-    }
-
-    var grid = jQuery('#jqGrid');
-
-    if(filter.rules.length > 0 || filter3.rules.length > 0 ){
-        grid[0].p.search = true;
-    }
-
-    $.extend(grid[0].p.postData, { filters: filter3 });
-    grid.trigger("reloadGrid", [{ page: 1 }]);
-    console.log("grid trigger");
+    // var searchText1= $("#statisticsGroupList option:selected").text();
+    // var searchTextVal1= $("#statisticsGroupList option:selected").val();
+    // var searchText2= $("#statisticsSubGroupList option:selected").text();
+    // var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
+    // var searchText3= $("#statisticsStoreList option:selected").text();
+    // var searchTextVal3= $("#statisticsStoreList option:selected").val();
+    //
+    // var filter = {
+    //     groupOp: "AND",
+    //     rules: []
+    // };
+    //
+    // if(searchTextVal1 != "reset"){
+    //     filter.rules.push({
+    //         field : 'group_name',
+    //         op : "eq",
+    //         data : searchText1
+    //     });
+    //     if(searchTextVal2 != "reset"){
+    //         filter.rules.push({
+    //             field : 'subGroup_name',
+    //             op : "eq",
+    //             data : searchText2
+    //         });
+    //         if(searchTextVal3 != "reset"){
+    //             filter.rules.push({
+    //                 field : 'store',
+    //                 op : "eq",
+    //                 data : searchText3
+    //             });
+    //         }
+    //     }
+    // }
+    //
+    // var filter3 = {
+    //     groupOp: "OR",
+    //     rules: [],
+    //     groups:[filter]
+    // };
+    //
+    // if (filter.rules.length > 0){
+    //     filter3.rules.push({
+    //         field: "store",
+    //         op : "eq",
+    //         data : "Average"
+    //     });
+    // }
+    //
+    // var grid = jQuery('#jqGrid');
+    //
+    // if(filter.rules.length > 0 || filter3.rules.length > 0 ){
+    //     grid[0].p.search = true;
+    // }
+    //
+    // $.extend(grid[0].p.postData, { filters: filter3 });
+    // grid.trigger("reloadGrid", [{ page: 1 }]);
+    // console.log("grid trigger");
 }

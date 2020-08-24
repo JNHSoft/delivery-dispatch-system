@@ -31,8 +31,8 @@ $(function () {
     $(".select").change(function(){
         selectId = $(this);
         selectIdOption = $('option:selected', this);
-        getStoreStatistics();
         searchList(selectId, selectIdOption);
+        getStoreStatistics();
     });     //select box의 change 이벤트
 
     $('#searchButton').click(function () {
@@ -220,10 +220,14 @@ function getStoreStatistics() {
         type: 'get',
         data: {
             startDate: $('#startDate').val(),
-            endDate: $('#endDate').val()
+            endDate: $('#endDate').val(),
+            groupID: $("#statisticsGroupList").val(),
+            subGroupID: $("#statisticsSubGroupList").val(),
+            storeID: $("#statisticsStoreList").val(),
         },
         dataType: 'json',
         success: function (data) {
+            console.log("ajax success");
             let chkReturnTimeCnt = 0;
             let chkDistanceCnt = 0;
             let rowNum = 0;
@@ -249,7 +253,6 @@ function getStoreStatistics() {
                     tmpData.orderDate = timeSetDate(data[key].createdDatetime);
 
                     tmpData.assignedDate = timeSet(data[key].assignedDatetime);
-                    // tmpData.qtTimes = data[key].cookingTime > 30 ? 30 : data[key].cookingTime;
                     tmpData.qtTimes = data[key].cookingTime;
 
                     tmpData.orderPickup1 = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);
@@ -399,7 +402,7 @@ function getStoreStatistics() {
             });
 
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
-            loading.hide();
+            // loading.hide();
 
             $('.state_wrap .btn_close').click(function (e) {
                 e.preventDefault();
@@ -408,6 +411,10 @@ function getStoreStatistics() {
                     $(window).trigger('resize');
                 }, 300)//그리드 리사이즈
             });
+        },
+        complete: function (data){
+            console.log("ajax complete");
+            loading.hide();
         }
     });
 }
@@ -504,45 +511,45 @@ function searchList(selectId, selectIdOption) {
         });
     }
 
-    var searchText1= $("#statisticsGroupList option:selected").text();
-    var searchTextVal1= $("#statisticsGroupList option:selected").val();
-    var searchText2= $("#statisticsSubGroupList option:selected").text();
-    var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
-    var searchText3= $("#statisticsStoreList option:selected").text();
-    var searchTextVal3= $("#statisticsStoreList option:selected").val();
+    // var searchText1= $("#statisticsGroupList option:selected").text();
+    // var searchTextVal1= $("#statisticsGroupList option:selected").val();
+    // var searchText2= $("#statisticsSubGroupList option:selected").text();
+    // var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
+    // var searchText3= $("#statisticsStoreList option:selected").text();
+    // var searchTextVal3= $("#statisticsStoreList option:selected").val();
 
-    var filter = {
-        groupOp: "AND",
-        rules: [],
-        groups : [filter2]
-    };
-
-    if(searchTextVal1 != "reset"){
-        filter.rules.push({
-            field : 'group_name',
-            op : "eq",
-            data : searchText1
-        });
-        if(searchTextVal2 != "reset"){
-            filter.rules.push({
-                field : 'subGroup_name',
-                op : "eq",
-                data : searchText2
-            });
-            if(searchTextVal3 != "reset"){
-                filter.rules.push({
-                    field : 'store_name',
-                    op : "eq",
-                    data : searchText3
-                });
-            }
-        }
-    }
+    // var filter = {
+    //     groupOp: "AND",
+    //     rules: [],
+    //     // groups : [filter2]
+    // };
+    //
+    // if(searchTextVal1 != "reset"){
+    //     filter.rules.push({
+    //         field : 'group_name',
+    //         op : "eq",
+    //         data : searchText1
+    //     });
+    //     if(searchTextVal2 != "reset"){
+    //         filter.rules.push({
+    //             field : 'subGroup_name',
+    //             op : "eq",
+    //             data : searchText2
+    //         });
+    //         if(searchTextVal3 != "reset"){
+    //             filter.rules.push({
+    //                 field : 'store_name',
+    //                 op : "eq",
+    //                 data : searchText3
+    //             });
+    //         }
+    //     }
+    // }
 
     var filter3 = {
         groupOp: "OR",
         rules: [],
-        groups : [filter]
+        groups : [filter2]
     };
 
     filter3.rules.push({
@@ -558,9 +565,10 @@ function searchList(selectId, selectIdOption) {
     });
 
     var grid = jQuery('#jqGrid');
-    if(filter.rules.length > 0 || filter2.rules.length > 0 || filter3.rules.length > 0){
+    if(filter2.rules.length > 0 || filter3.rules.length > 0){
         grid[0].p.search = true;
     }
+
     $.extend(grid[0].p.postData, { filters: filter3 });
     grid.trigger("reloadGrid", [{ page: 1 }]);
 }
@@ -653,13 +661,15 @@ function getStatisticsStoreList(subId, gId) {
             if(data) {
                 var statisticsStoreListHtml = "<option value='reset'>" + list_search_all_store + "</option>";
                 for (var i in data){
-                    statisticsStoreListHtml += "<option value='" + data[i].id  + "'>" + data[i].storeName + "</option>";
+                    statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
 
-                $("#statisticsStoreList").on("change", function () {
-                    getStoreStatistics();
-                });
+                // $("#statisticsStoreList").on("change", function () {
+                //     console.log("chagne store 11111");
+                //     getStoreStatistics();
+                //     console.log("chagne store 222222222");
+                // });
 
             }
         }

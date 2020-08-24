@@ -1528,6 +1528,15 @@
 		AND		 ORD.third_party_id IS NULL
 		AND		 ORD.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 		AND		 ORD.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
+		<if test="group != null and group.id != null and group.id != ''">
+			AND	 sbStore.group_id = #{group.id}
+		</if>
+		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">
+			AND	 sbStore.subgroup_id = #{subGroup.id}
+		</if>
+		<if test="storeId != null and storeId != ''">
+			AND	 sbStore.store_id = #{storeId}
+		</if>
 	</select>
 
 	<!--
@@ -1588,9 +1597,19 @@
 		AND		 A.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 		AND		 third_party_id IS NULL
-		group by day_to_day, A.store_id, B.group_id, B.subgroup_id;
-
 		]]>
+		-- 검색 조건 추가
+		<if test="group != null and group.id != null and group.id != ''">
+			AND	 B.group_id = #{group.id}
+		</if>
+		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">
+			AND	 B.subgroup_id = #{subGroup.id}
+		</if>
+		<if test="storeId != null and storeId != ''">
+			AND	 B.store_id = #{storeId}
+		</if>
+
+		group by day_to_day, A.store_id, B.group_id, B.subgroup_id;
 	</select>
 	<select id="selectStoreStatisticsByDateForAdminAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
 		<![CDATA[
@@ -2060,8 +2079,20 @@
 		AND		 A.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 		AND		 third_party_id IS NULL
-		group by day_to_day, A.store_id, B.group_id, B.subgroup_id;
 		]]>
+
+		-- 검색 조건 추가
+		<if test="group != null and group.id != null and group.id != ''">
+			AND	 B.group_id = #{group.id}
+		</if>
+		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">
+			AND	 B.subgroup_id = #{subGroup.id}
+		</if>
+		<if test="storeId != null and storeId != ''">
+			AND	 B.store_id = #{storeId}
+		</if>
+
+		group by day_to_day, A.store_id, B.group_id, B.subgroup_id;
 	</select>
 
 

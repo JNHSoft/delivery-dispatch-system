@@ -382,7 +382,10 @@ public class StatisticsController {
     @GetMapping("/getStoreStatisticsByOrder")
     @CnttMethodDescription("관리자 주문별 통계 리스트 조회")
     public List<Order> getStoreStatisticsByOrder(@RequestParam(value = "startDate") String startDate
-                                                ,@RequestParam(value = "endDate") String endDate) {
+                                                ,@RequestParam(value = "endDate") String endDate
+                                                ,@RequestParam(value = "groupID", required = false) String groupId
+                                                ,@RequestParam(value = "subGroupID", required = false) String subGroupId
+                                                ,@RequestParam(value = "storeID", required = false) String storeId) {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -408,6 +411,22 @@ public class StatisticsController {
         }
 
         order.setToken(adminInfo.getAdminAccessToken());
+
+        // 2020-08-24 검색조건
+        if (groupId.trim() != "" && !groupId.toLowerCase().equals("reset")){
+            order.setGroup(new Group());
+            order.getGroup().setId(groupId);
+        }
+
+        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+            order.setSubGroup(new SubGroup());
+            order.getSubGroup().setId(subGroupId);
+        }
+
+        if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
+            order.setStoreId(storeId);
+        }
+        
         List<Order> statistByOrder = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
 
         return statistByOrder.stream().filter(a -> {
@@ -503,7 +522,10 @@ public class StatisticsController {
     @GetMapping("/getStoreStatisticsByDate")
     @CnttMethodDescription("날짜별 통계 리스트 조회")
     public List<AdminByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
-                                                ,@RequestParam("endDate") String endDate){
+                                                ,@RequestParam("endDate") String endDate
+                                                ,@RequestParam(value = "groupID", required = false) String groupId
+                                                ,@RequestParam(value = "subGroupID", required = false) String subGroupId
+                                                ,@RequestParam(value = "storeID", required = false) String storeId){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -528,6 +550,22 @@ public class StatisticsController {
         }
 
         order.setToken(adminInfo.getAdminAccessToken());
+
+        // 2020-08-24 검색조건
+        if (groupId.trim() != "" && !groupId.toLowerCase().equals("reset")){
+            order.setGroup(new Group());
+            order.getGroup().setId(groupId);
+        }
+
+        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+            order.setSubGroup(new SubGroup());
+            order.getSubGroup().setId(subGroupId);
+        }
+
+        if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
+            order.setStoreId(storeId);
+        }
+
 
         List<AdminByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
 
