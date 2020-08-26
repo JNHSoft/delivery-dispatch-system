@@ -110,6 +110,9 @@ function formStyle(){
 
 	//datepicker
 	if($('.picker').length > 0){
+
+		console.log("ui - picker Count = " + $('.picker').length);
+
         $.datepicker.setDefaults({
 			closeText: '닫기',
 			prevText: datepicker_prev_month,

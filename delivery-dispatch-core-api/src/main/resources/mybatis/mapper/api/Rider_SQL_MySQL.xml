@@ -1282,7 +1282,7 @@
 				,code = #{code}
 		</if>
 		<if test="session != null and session.expiryDatetime != ''">
-				,exp_datetime = #{expiryDatetime}
+				,exp_datetime = #{session.expiryDatetime}
 		</if>
 		<if test="approvalStatus != null and approvalStatus != ''">
 				,req_status = #{approvalStatus}

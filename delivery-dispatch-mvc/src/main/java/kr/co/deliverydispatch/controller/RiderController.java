@@ -1,22 +1,15 @@
 package kr.co.deliverydispatch.controller;
 
-import com.google.gson.Gson;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.notice.Notice;
-import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
-import kr.co.deliverydispatch.service.StoreNoticeService;
-import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,14 +17,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -195,53 +186,62 @@ public class RiderController {
     @ResponseBody
     @PostMapping("/setRiderExpDate")
     @CnttMethodDescription("라이더 유효기간 설정")
-    public Boolean setRiderExpDate(RiderApprovalInfo riderInfo, String expiryDatetime, String datePattern){
+    public Boolean setRiderExpDate(RiderApprovalInfo riderInfo, String expiryDate){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         riderInfo.setToken(storeInfo.getStoreAccessToken());
 
         // 선택한 일자가 금일보다 작을 수 없도록 적용
-        SimpleDateFormat format = new SimpleDateFormat(datePattern);
-        try{
-            Date expDate = format.parse(expiryDatetime);
-            Date nowDate = format.parse(DateTime.now().toString());
-            long diffDate = expDate.getTime() - nowDate.getTime();
-
-            if (diffDate < 0){
-                System.out.println();
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
+        SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd");
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
         RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
 
-        // 만료날짜가 초과된 경우, 변경되지 않도록 작업
-        if (chkRiderInfo.getSession() != null && chkRiderInfo.getSession().getExpiryDatetime() != null){
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                Date sdfStartDate = formatter.parse(chkRiderInfo.getSession().getExpiryDatetime());
-                Date sdfEndDate = formatter.parse(DateTime.now().toString());
-                long diff = sdfStartDate.getTime() - sdfEndDate.getTime();
+        // 비교를 위한 날짜들을 가져온다.
+        Date nowDate = null;            // 현재 날짜
+        Date regDate = null;            // 변경 전 날짜
+        Date changeDate = null;          // 변경 요청 날짜
+        
 
-                if (diff < 0){
-                    System.out.println("diff = " + diff);
-                    return false;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
+        try{
+            nowDate = defaultFormat.parse(DateTime.now().toString());
+            regDate = chkRiderInfo.getSession() != null && chkRiderInfo.getSession().getExpiryDatetime() != null ? defaultFormat.parse(chkRiderInfo.getSession().getExpiryDatetime()) : null;
+            changeDate = defaultFormat.parse(expiryDate);
+
+            System.out.println("Date Type ###################################################");
+            System.out.println(nowDate);
+            System.out.println(regDate);
+            System.out.println(changeDate);
+            System.out.println("Date Type ###################################################");
+
+
+            long changeDiff = changeDate.getTime() - nowDate.getTime();
+            long orgDiff = 0;
+
+            if (regDate != null){
+                orgDiff = regDate.getTime() - nowDate.getTime();
             }
+
+            System.out.println("changeDiff = " + changeDiff + " #### orgDiff = " + orgDiff);
+
+            if (!(changeDiff >= 0 && orgDiff >= 0)){
+                return false;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
+        
+        System.out.println("################ 들어왔어요 = " + chkRiderInfo.getApprovalStatus());
+
 
         // 날짜에 대한 예외처리가 완료된 후 적용
         riderInfo.setSession(new RiderSession());
-        riderInfo.getSession().setExpiryDatetime(expiryDatetime);
+        riderInfo.getSession().setExpiryDatetime(defaultFormat.format(changeDate));
 
-        if (chkRiderInfo.getApprovalStatus() == "0"){                       // 상태 값이 신규 요청이 경우, 임시 테이블에서 정보가 변경이 되어야함.
-
-        }else if (chkRiderInfo.getApprovalStatus() == "1"){                 // 상태 값이 1인 경우, 라이더 정보에서 값이 변경 되어야 한다.
-
+        if (chkRiderInfo.getApprovalStatus().equals("0")){                       // 상태 값이 신규 요청이 경우, 임시 테이블에서 정보가 변경이 되어야함.
+            System.out.println("################ 들어왔어요222222222222222 = ");
+            storeRiderService.setRiderInfo(riderInfo);
+        }else if (chkRiderInfo.getApprovalStatus().equals("1")){                 // 상태 값이 1인 경우, 라이더 정보에서 값이 변경 되어야 한다.
+            System.out.println("################ 들어왔어요33333333333333 = ");
         }
 
         return true;
