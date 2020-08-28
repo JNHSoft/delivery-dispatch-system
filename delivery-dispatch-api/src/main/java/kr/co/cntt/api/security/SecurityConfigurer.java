@@ -75,6 +75,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.antMatchers("/API/getToken.do").permitAll()
 			.antMatchers("/API/putToken.do").permitAll()
 			.antMatchers("/API/versionCheck.do").permitAll()
+			.antMatchers("/API/getSignUpDefaultInfo.do").permitAll()
+			.antMatchers("/API/postRiderApproval.do").permitAll()
+			.antMatchers("/API/getCheckRiderApproval.do").permitAll()
 			.antMatchers("/POS/*").permitAll()
 //			.antMatchers("/API/*").permitAll()
 			.anyRequest().authenticated();

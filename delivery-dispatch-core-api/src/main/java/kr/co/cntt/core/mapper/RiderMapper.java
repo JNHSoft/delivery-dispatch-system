@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.store.Store;
 
 import java.util.HashMap;
 import java.util.List;
@@ -264,4 +265,9 @@ public interface RiderMapper {
      * 라이더 승인 정보 변경
      * */
     public int updateApprovalRiderInfo(RiderApprovalInfo riderInfo);
+
+    /**
+     * 라이더 요청 등록 페이지에서 필요로 하는 기본 정보
+     * */
+    public List<Store> selectAllStore();
 }

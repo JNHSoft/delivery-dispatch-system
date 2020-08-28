@@ -2,12 +2,15 @@ package kr.co.cntt.api.exporter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import kr.co.cntt.api.security.Actor;
 import kr.co.cntt.api.security.ActorDetails;
 import kr.co.cntt.api.security.CustomAuthentificateService;
 import kr.co.cntt.api.security.TokenManager;
 import kr.co.cntt.api.service.ApiServiceRouter;
 import kr.co.cntt.core.api.model.CommonBody;
+import kr.co.cntt.core.api.model.GenericResponse;
+import kr.co.cntt.core.api.model.ResponseHeader;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
@@ -18,6 +21,7 @@ import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.service.api.*;
 import kr.co.cntt.core.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
@@ -28,8 +32,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static kr.co.cntt.api.exporter.Api.Path;
 
@@ -110,9 +115,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
             } else if (level.equals("1")) {
                 adminInfo.setLoginId(loginId);
                 adminInfo.setLoginPw(loginPw);
-                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@5");
                 userSelectLoginMap = adminService.selectLoginAdmin(adminInfo);
-                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@6 // " + userSelectLoginMap);
             } else if (level.equals("4")) {
                 trackerInfo.setLoginId(loginId);
                 trackerInfo.setLoginPw(loginPw);
@@ -122,18 +125,15 @@ public class ApiExporter extends ExporterSupportor implements Api {
             log.info("===> [createAuthenticate RequestParam][loginId : {}]", loginId);
             log.info("===> [createAuthenticate RequestParam][loginPw : {}]", loginPw);
             log.info("===> [createAuthenticate RequestParam][userLoginId : {}]", userSelectLoginMap.get("loginId"));
-            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@4");
 
             if (!loginId.equals(userSelectLoginMap.get("loginId"))) {
                 // 로그인 정보가 다르다.
                 //throw new AppTrException(getMessage(ErrorCodeEnum.S0001), ErrorCodeEnum.S0001.name());
-                log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@3");
                 throw new AppTrException("로그인정보가 다릅니다.", "LOERR");
             }
 
 //            Actor actor = customAuthentificateService.createActor(loginId, loginPw);
             Actor actor = customAuthentificateService.createActor(loginId, loginPw, level);
-            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
             if (actor == null) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.A0003), ErrorCodeEnum.A0003.name());
@@ -142,7 +142,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
                     .authenticate(new UsernamePasswordAuthenticationToken(actor.getLoginId(), actor.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             final ActorDetails actorDetails = customAuthentificateService.loadUserByUsername(actor.getLoginId());
-            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1");
+
             String token = null;
             if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                 token = tokenManager.generateCustomToken(actorDetails, device);
@@ -176,11 +176,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
             response.put("result", CODE_SUCCESS);
             response.put("token", token);
 
-//            response.add(result);
-//            response.add(data);
-            //response.add(new R_TR_A0002(CODE_SUCCESS, token));
-            // Return the token
-
             // Token을 Insert
             if (level.equals("3")) {
                 if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
@@ -192,21 +187,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
                     storeInfo.setAccessToken(token);
                     int getTokenResult = storeService.insertStoreSession(storeInfo);
                 }
-
-//                if (getTokenResult == 1) {
-//                    Order order = new Order();
-//
-//                    order.setRole("ROLE_STORE");
-//                    order.setToken(token);
-//                    order.setStatus("[0,5]");
-//
-//                    String tmpString = order.getStatus().replaceAll("[\\D]", "");
-//                    char[] tmpStatus = tmpString.toCharArray();
-//
-//                    order.setStatusArray(tmpStatus);
-//
-//                    orderService.assignOrder(order);
-//                }
             } else if (level.equals("1")) {
                 if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                     adminInfo.setAccessToken(token);
@@ -227,8 +207,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
             response.put("result", CODE_ERROR);
             response.put("token", "");
             response.put("msg", e.getLocalizedMessage());
-//            response.add(result);
-//            response.add(data);
             return ResponseEntity.ok(new Gson().toJson(response).toString());
         }
     }
@@ -280,6 +258,30 @@ public class ApiExporter extends ExporterSupportor implements Api {
     }
 
     /**
+     * 가입 페이지 기본 정보
+     * getSignUpDefaultInfo.do
+     * */
+//    @RequestMapping(value = SIGN_UP_DEFAULT_INFO)
+//    public ResponseEntity<?> getSignUpDefaultInfo(HttpServletRequest request) throws Exception{
+//
+////        try {
+////            List<Store> store = riderService.selectAllStore();
+////            List<Store> kfcStore = store.parallelStream()
+////                    .filter(x -> x.getBrandCode().equals("1"))
+////                    .collect(Collectors.toList());
+////            List<Store> pzhStore = store.parallelStream()
+////                    .filter(x -> x.getBrandCode().equals("0"))
+////                    .collect(Collectors.toList());
+////
+////            return ResponseEntity.ok(new Gson().toJson(response, response.getClass()).toString());
+////        } catch(Exception e) {
+////            return ResponseEntity.ok(new Gson().toJson(response).toString());
+////        }
+//
+//
+//    }
+
+    /**
      * Generic api controller 모든 request 를 서비스로 구분하여 generic하게 처리한다. 모든 response
      * type을 지원한다.
      *
@@ -304,6 +306,10 @@ public class ApiExporter extends ExporterSupportor implements Api {
 //    @PostMapping(value = {"/{service}", "/admin/{service}"})
     @PostMapping(value = "/{service}")
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
+
+        System.out.println("execute Service = " + service);
+
+
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
         } catch (Exception e) {

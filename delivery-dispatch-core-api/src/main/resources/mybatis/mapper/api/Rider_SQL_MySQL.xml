@@ -1292,4 +1292,15 @@
 		</if>
 		where	 id = #{id}
 	</update>
+
+<!--	라이더 등록 요청 페이지에서 필요로 하는 기본 데이터-->
+	<select id="selectAllStore" resultType="kr.co.cntt.core.model.store.Store">
+		select	 admin_id	as adminId
+				,id			as id
+				,ifnull(brand_code, ( select brand_code from TB_ADMIN where id = admin_id ))	as brandCode
+				,(select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = ifnull(brand_code, ( select brand_code from TB_ADMIN where id = admin_id )))	as brandName
+				,store_name	as storeName
+		from	 TB_STORE
+		where	 deleted is null;
+	</select>
 </mapper>

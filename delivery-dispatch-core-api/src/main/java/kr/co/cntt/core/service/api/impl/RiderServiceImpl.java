@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
@@ -372,6 +373,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return riderMapper.selectMobileVersion(device);
     }
 
+    /** 라이더 등록 페이지에서 필요로 하는 기본 정보 */
+    public List<Store> selectAllStore(){
+        return riderMapper.selectAllStore();
+    }
 
 }
 

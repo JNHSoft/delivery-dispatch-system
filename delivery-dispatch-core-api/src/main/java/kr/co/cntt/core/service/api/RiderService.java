@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import java.util.List;
 import java.util.Map;
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.store.Store;
 
 public interface RiderService {
     /**
@@ -150,4 +151,8 @@ public interface RiderService {
      */
     public String getMobileVersion(String device);
 
+    /**
+     * 라이더 가입 승인 전 정상 등록된 모든 스토어 정보 가져오기
+     * */
+    public List<Store> selectAllStore();
 }
