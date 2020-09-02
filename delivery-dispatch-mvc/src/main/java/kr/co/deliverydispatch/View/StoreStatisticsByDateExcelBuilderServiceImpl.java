@@ -88,21 +88,15 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             Row titleRow = sheet.createRow(rowNum++);
 
             sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
-            sheet.addMergedRegion(new CellRangeAddress(0,1,1,1));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,2,8));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,1,7));
 
-            sheet.addMergedRegion(new CellRangeAddress(0,0,9,defaultLocale.toString().equals("zh_TW")?9:14));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,defaultLocale.toString().equals("zh_TW")?10:15,defaultLocale.toString().equals("zh_TW")?14:21));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,8,defaultLocale.toString().equals("zh_TW")?8:13));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,defaultLocale.toString().equals("zh_TW")?9:14,defaultLocale.toString().equals("zh_TW")?13:20));
 
 
             sheet.setColumnWidth(colNum, 15*256);
             Cell addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.store",null, locale));
-            addTitle.setCellStyle(titleCellStyle);
-
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.date",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 6개
@@ -176,7 +170,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
 
             titleRow = sheet.createRow(rowNum++);
-            colNum = 2;
+            colNum = 1;
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
@@ -392,10 +386,6 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(storeStatisticsByDateList.get(i).getDayToDay());
-                cell.setCellStyle(dataCellStyle);
-
-                cell = addListRow.createCell(colNum++);
                 cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getOrderPickup()));
                 cell.setCellStyle(dataCellStyle);
 
@@ -502,10 +492,6 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
                     Cell cell2 = addListRow.createCell(colNum++);
                     cell2.setCellValue("Average");
-                    cell2.setCellStyle(dataCellStyle);
-
-                    cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue("");
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);

@@ -1545,7 +1545,6 @@
 	<select id="selectStoreStatisticsByDateForAdmin" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
 		<![CDATA[
 		SELECT	 (SELECT store_name FROM TB_STORE WHERE id = A.store_id) AS store_name
-				,DATE_FORMAT(A.created_datetime,'%Y-%m-%d') AS day_to_day
 
 				,B.group_id
 				,B.subgroup_id
@@ -1609,12 +1608,11 @@
 			AND	 B.store_id = #{storeId}
 		</if>
 
-		group by day_to_day, A.store_id, B.group_id, B.subgroup_id;
+		group by A.store_id, B.group_id, B.subgroup_id;
 	</select>
 	<select id="selectStoreStatisticsByDateForAdminAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
 		<![CDATA[
 		SELECT	 (SELECT store_name FROM TB_STORE WHERE id = A.store_id) AS store_name
-				,DATE_FORMAT(A.created_datetime,'%Y-%m-%d') AS day_to_day
 
 				,B.group_id
 				,B.subgroup_id
@@ -2092,7 +2090,7 @@
 			AND	 B.store_id = #{storeId}
 		</if>
 
-		group by day_to_day, A.store_id, B.group_id, B.subgroup_id;
+		group by A.store_id, B.group_id, B.subgroup_id;
 	</select>
 
 

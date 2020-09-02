@@ -772,8 +772,6 @@
         SELECT
         (SELECT store_name FROM TB_STORE WHERE id =(SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})) AS store_name
 
-        , DATE_FORMAT(A.created_datetime,'%Y-%m-%d') AS day_to_day
-
         , avg(time_to_sec(timediff(A.picked_up_datetime, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE))))) AS order_pickup
 
         , avg(time_to_sec(timediff(A.arrived_datetime, A.picked_up_datetime))) AS pickup_complete
@@ -842,15 +840,13 @@
         AND A.status in (3)
         AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > A.created_datetime
         AND A.created_datetime > #{currentDatetime}
-        AND third_party_id IS NULL
-        group by day_to_day;
+        AND third_party_id IS NULL;
     </select>
 
     <!-- 20.06.04 대만 KFC 요청으로 인하여 분리 작업 -->
     <select id="selectStoreStatisticsByDateAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.ByDate">
         <![CDATA[
         SELECT	 (SELECT store_name FROM TB_STORE WHERE id = A.store_id) AS store_name
-                ,DATE_FORMAT(created_datetime,'%Y-%m-%d') AS day_to_day
 
                 ,sum( case when timestampdiff(MINUTE, assigned_datetime, picked_up_datetime) < 7 then
                         case
@@ -1307,7 +1303,7 @@
         AND		 A.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
         AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
         AND		 third_party_id IS NULL
-        group by day_to_day, A.store_id
+        group by A.store_id
         ]]>
     </select>
 

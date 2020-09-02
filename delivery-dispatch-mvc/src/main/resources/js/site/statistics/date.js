@@ -103,7 +103,6 @@ function getStoreStatisticsByDate() {
                     distanceCnt++;
                     tpSpCnt++;
                     tmpdata.store = my_store.storeName;
-                    tmpdata.day = data[key].dayToDay;
                     tmpdata.orderPickup = totalTimeSet(data[key].orderPickup*1000);
                     tmpdata.pickupComplete = totalTimeSet(data[key].pickupComplete*1000);
                     tmpdata.orderComplete = totalTimeSet(data[key].orderComplete*1000);
@@ -208,7 +207,6 @@ function getStoreStatisticsByDate() {
             // 평균 값
             let avgData = new Object();
             avgData.store = "Average" ;
-            avgData.day = "";
             avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/rowCnt);
             avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/rowCnt);
             avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/rowCnt);
@@ -264,7 +262,6 @@ function getStoreStatisticsByDate() {
                 data: mydata,
                 colModel: [
                     {label: label_store, name: 'store', width: 80, align: 'center'},
-                    {label: label_date, name: 'day', width: 80, align: 'center'},
                     {label: label_in_store_time, name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
                     {label: label_delivery_time, name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},
                     {label: label_completed_time, name: 'orderComplete', index: 'orderComplete', width: 80, align: 'center'},

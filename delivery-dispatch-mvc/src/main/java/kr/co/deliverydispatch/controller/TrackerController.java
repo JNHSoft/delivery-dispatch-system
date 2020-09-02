@@ -153,10 +153,6 @@ public class TrackerController {
                 model.addAttribute("encParam", encParam);
                 model.addAttribute("tracker", trackerResult);
 
-                System.out.println("########################################################");
-                System.out.println(trackerResult.getBrandCode());
-                System.out.println("########################################################");
-
                 /// KFC 와 Pzh로 변경
                 if (trackerResult.getBrandCode().equals("1")){
                     return "/tracker/tracker_kfc";
