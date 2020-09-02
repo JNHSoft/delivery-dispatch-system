@@ -73,12 +73,14 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             // 제목 부분
             Row titleRow = sheet.createRow(rowNum++);
 
+            // 상점
             sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
-            sheet.addMergedRegion(new CellRangeAddress(0,1,1,1));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,2,7));
 
-            sheet.addMergedRegion(new CellRangeAddress(0,0,8,locale.toString().equals("zh_TW")?9:14));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?10:15,locale.toString().equals("zh_TW")?14:21));
+            // 평균 시간
+            sheet.addMergedRegion(new CellRangeAddress(0,0,1,6));
+
+            sheet.addMergedRegion(new CellRangeAddress(0,0,7,locale.toString().equals("zh_TW")?8:13));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?13:20));
 
 
             sheet.setColumnWidth(colNum, 15*256);
@@ -86,16 +88,11 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.store",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.date",null, locale));
-            addTitle.setCellStyle(titleCellStyle);
-
-            // 6개
-            sheet.setColumnWidth(colNum, 17*256);
-            addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.average.time",null, locale));
-            addTitle.setCellStyle(titleCellStyle);
+//            // 6개
+//            sheet.setColumnWidth(colNum, 17*256);
+//            addTitle = titleRow.createCell(colNum++);
+//            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.average.time",null, locale));
+//            addTitle.setCellStyle(titleCellStyle);
             //
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellStyle(titleCellStyle);
@@ -161,7 +158,7 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
 
             titleRow = sheet.createRow(rowNum++);
-            colNum = 2;
+            colNum = 1;
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
@@ -307,10 +304,6 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             int chkTpSpCnt = 0;
             int chkDistanceCnt = 0;
 
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            System.out.println(storeStatisticsByDateList.get(i).getPickupComplete());
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
             pickupCompleteTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getPickupComplete())) * 1000;
             orderPickupTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderPickup())) * 1000;
             riderStayTimeSum += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getStayTime())) * 1000;
@@ -378,9 +371,6 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             cell.setCellValue(storeStatisticsByDateList.get(i).getStoreName());
             cell.setCellStyle(dataCellStyle);
 
-            cell = addListRow.createCell(colNum++);
-            cell.setCellValue(storeStatisticsByDateList.get(i).getDayToDay());
-            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(minusChkFilter(storeStatisticsByDateList.get(i).getOrderPickup()));
@@ -450,12 +440,12 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(changeType(Float.class, storeStatisticsByDateList.get(i).getTplh()));
+            cell.setCellValue(Math.floor(Double.parseDouble(changeType(Float.class, storeStatisticsByDateList.get(i).getTplh())) * 100) / 100);
             cell.setCellStyle(dataCellStyle);
 
             if(!locale.toString().equals("zh_TW")) {
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(changeType(Float.class, storeStatisticsByDateList.get(i).getSpmh()));
+                cell.setCellValue(Math.floor(Double.parseDouble(changeType(Float.class, storeStatisticsByDateList.get(i).getSpmh())) * 100) / 100);
                 cell.setCellStyle(dataCellStyle);
             }
 
@@ -491,15 +481,8 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                cell2.setCellValue("");
-                cell2.setCellStyle(dataCellStyle);
-
-                cell2 = addListRow.createCell(colNum++);
                 if (orderPickupTime > 0 && rowCnt > 0){
                     cell2.setCellValue(avgChkFilter(orderPickupTime/rowCnt));
-                    System.out.println("########################################");
-                    System.out.println("rowCnt = " + rowCnt + " #  orderPickupTime" + orderPickupTime);
-                    System.out.println("########################################");
                 }else{
                     cell2.setCellValue("0");
                 }

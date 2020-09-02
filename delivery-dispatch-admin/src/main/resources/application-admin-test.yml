@@ -3,7 +3,7 @@ spring:
   profiles: admin-test
   profiles.include: admin
   mvc:
-    locale: zh_HK
+    locale: zh_TW
 
 # was
 server:

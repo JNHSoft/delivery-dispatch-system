@@ -117,7 +117,6 @@ function getStoreStatisticsByDate() {
                     tpSpCnt++;
 
                     tmpdata.store = data[key].storeName;
-                    tmpdata.day = data[key].dayToDay;
 
                     if (data[key].groupName == ''){
                         tmpdata.group_name = group_none;
@@ -158,16 +157,16 @@ function getStoreStatisticsByDate() {
                     tmpdata.tc = formatInt(data[key].tc, 1);
 
                     if(data[key].tplh){
-                        tmpdata.tplh = formatFloat(data[key].tplh, 1);
-                        tplhSum += formatFloat(data[key].tplh, 1);
+                        tmpdata.tplh = formatFloat(data[key].tplh, 2);
+                        tplhSum += formatFloat(data[key].tplh, 2);
                     } else{
                         tmpdata.tplh = "-";
                         chkTpSpCnt++;
                     }
 
                     if(data[key].spmh){
-                        tmpdata.spmh = formatFloat(data[key].spmh, 1);
-                        spmhSum += formatFloat(data[key].spmh, 1);
+                        tmpdata.spmh = formatFloat(data[key].spmh, 2);
+                        spmhSum += formatFloat(data[key].spmh, 2);
                     } else{
                         tmpdata.spmh = "-";
                         chkTpSpCnt++;
@@ -237,7 +236,6 @@ function getStoreStatisticsByDate() {
             // 평균 값
             let avgData = new Object();
             avgData.store = "Average" ;
-            avgData.day = "";
 
             avgData.group_name = "";
             avgData.subGroup_name = "";
@@ -265,8 +263,8 @@ function getStoreStatisticsByDate() {
             avgData.tc = formatInt((tcSum/rowCnt), 1);
 
             if(tpSpCnt!=0){
-                avgData.tplh = formatInt((tplhSum/tpSpCnt), 1);
-                avgData.spmh = formatInt((spmhSum/tpSpCnt), 1);
+                avgData.tplh = formatInt((tplhSum/tpSpCnt), 2);
+                avgData.spmh = formatInt((spmhSum/tpSpCnt), 2);
             }else{
                 avgData.tplh = "-";
                 avgData.spmh = "-";
@@ -303,7 +301,6 @@ function getStoreStatisticsByDate() {
                     {label: subGroup_name, name: 'subGroup_name', width: 80, align: 'center', hidden: true},
 
                     {label: label_store, name: 'store', width: 80, align: 'center'},
-                    {label: label_date, name: 'day', width: 80, align: 'center'},
 
                     {label: label_in_store_time, name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
                     {label: label_delivery_time, name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},

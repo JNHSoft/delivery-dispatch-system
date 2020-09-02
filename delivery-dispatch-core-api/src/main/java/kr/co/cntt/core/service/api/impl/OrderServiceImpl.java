@@ -22,6 +22,7 @@ import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.OrderService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
+import kr.co.cntt.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -151,8 +153,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 // 라이더 범위에서 제외가 되어야될 아이들을 추출한다.
                 List<Rider> removeRider = riderList.stream().filter(x ->{
                     // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
-                    //if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
-                    if (x.getMinOrderStatus() == null){
+                    // 20.07.23 대만 요청으로 배달 제한 수 추가
+                    if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
+                    //if (x.getMinOrderStatus() == null){
                         return true;
                     }else{
                         switch (x.getMinOrderStatus()){
@@ -212,22 +215,23 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
                     // 거리 계산과 별도의 공식
-                    try{
-                        if (!StringUtils.isNullOrEmpty(r.getAssignCount()) && Integer.parseInt(r.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) && firstAssignedRider.size() > 0 &&
-                                firstAssignedRider.stream()
-                                        .filter(x -> {
-                                            if(x.getRiderId().equals(r.getId())){
-                                                return true;
-                                            }else{
-                                                return false;
-                                            }
-                                        })
-                                        .count() > 0){
-                            r.setAssignCount(String.valueOf(Integer.parseInt(r.getAssignCount()) % Integer.parseInt(order.getStore().getAssignmentLimit())));
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    // 20.07.23 대만 요청으로 라이더 배정 수량이 맥시멈인 경우 배정되지 않도록 적용
+//                    try{
+//                        if (!StringUtils.isNullOrEmpty(r.getAssignCount()) && Integer.parseInt(r.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) && firstAssignedRider.size() > 0 &&
+//                                firstAssignedRider.stream()
+//                                        .filter(x -> {
+//                                            if(x.getRiderId().equals(r.getId())){
+//                                                return true;
+//                                            }else{
+//                                                return false;
+//                                            }
+//                                        })
+//                                        .count() > 0){
+//                            r.setAssignCount(String.valueOf(Integer.parseInt(r.getAssignCount()) % Integer.parseInt(order.getStore().getAssignmentLimit())));
+//                        }
+//                    }catch (Exception e){
+//                        e.printStackTrace();
+//                    }
 
                 } else {
                     riderList.remove(r);//위치정보가 없는 라이더 제거
@@ -560,7 +564,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setId(order.getRegOrderId());
             order.setRiderId(rider.getId());
             order.setStatus("1");
-            order.setAssignedDatetime(LocalDateTime.now().toString());
+//            order.setAssignedDatetime(LocalDateTime.now().toString());
+            order.setAssignedDatetime("-2");
             if (rider.getLatitude() != null && !rider.getLatitude().equals("")) {
                 order.setAssignXy(rider.getLatitude() + "|" + rider.getLongitude());
             } else {
@@ -984,21 +989,47 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         // 20.07.01 주문 예약 시간 변동 시, 라이더 배정 취소 프로세스 추가
         Order orgOrd = getOrderInfo(order);     // 변경 전 주문 정보 추출
         try {
-
             // 예약 시간이 입력이 되었는지 유무가 기준이 된다.
             if (!StringUtils.isNullOrEmpty(order.getReservationDatetime()) && !StringUtils.isNullOrEmpty(orgOrd.getRiderId())){
                 Date changeDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());             // 변경될 예약 시간의 형식 변경
-                //Date orgDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orgOrd.getReservationDatetime());          // 기존에 적용된 예약 시간
+                Date orgDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orgOrd.getReservationDatetime());          // 기존에 적용된 예약 시간
 
                 Locale regionLocale = LocaleContextHolder.getLocale();
 
-                int iTimer = regionLocale.toString().equals("zh_TW") ? 31 : 51;     // 국가별 배정 타임이 다르므로
+                //int iTimer = regionLocale.toString().equals("zh_TW") ? 31 : 51;     // 국가별 배정 타임이 다르므로
 
                 // 변경된 예약 시간이 현재 시간보다 30분을 초과하는 경우 (넉넉하게 31분 기준)
-                if ((changeDate.getTime() - new Date().getTime()) / 1000 > (iTimer * 60)){
+                //if ((changeDate.getTime() - new Date().getTime()) / 1000 > (iTimer * 60)){
+                // 20.08.19 배정 시간이 변동된 경우 및 주문 상태가 신규 또는 배정인 경우에 한하여 취소
+                if (!(changeDate.getTime() == orgDate.getTime()) && (orgOrd.getStatus().equals("0") || orgOrd.getStatus().equals("1") || orgOrd.getStatus().equals("5"))){
                     // 변경되어야 될 내용 적용 ex. 배정취소
                     // 20.08.03 배정 취소 사라지게 하기
-                    order.setAssignedDatetime("-1");
+                    // 20.08.28 배정 시간을 임의로 조정
+                    /**
+                     * 배정시간 조건
+                     * 예약 시간 마이너스 QT 타임을 비교하여, QT 타임보다 낮은 경우에 한하여, 예약시간 - QT 타임 시간을 적용한다.
+                     * */
+                    int orgQT = 0;
+
+                    try {
+                        orgQT = Integer.parseInt(orgOrd.getCookingTime());
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }finally {
+                        if (orgQT == 0){
+                            orgQT = 30;
+                        }
+                    }
+
+                    Date qtDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(LocalDateTime.parse(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(changeDate)).minusMinutes(orgQT).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+
+                    // 시간 비교
+                    if (new Date().getTime() < qtDate.getTime()){
+                        order.setAssignedDatetime("-1");
+                    }else{
+                        order.setAssignedDatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(qtDate));
+                    }
+
                     putOrderAssignCanceled(order);
                     order.setAssignedDatetime(null);
                     log.info("########### Order Updated # Order Cancel Completed #############");
@@ -1006,6 +1037,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     log.info(changeDate.toString());
                     log.info(orgOrd.getReservationDatetime());
                     log.info(orgOrd.getRiderId());
+                    log.info("changeDate [변경 요청 시간] = " + changeDate);
+                    log.info("orgDate [오리지널 시간] = " + orgDate);
+                    log.info("qtDate [QT 적용 후 배정 세팅 시간] = " + qtDate);
+                    log.info("order.getAssignedDatetime [배정 적용 시간] = " + order.getAssignedDatetime());
                     log.info("########### Order Updated # Order Cancel Completed #############");
                 }
             }
@@ -1161,7 +1196,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssigned.setId(order.getId());
         orderAssigned.setRiderId(order.getRiderId());
         orderAssigned.setStatus("1");
-        orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+//        orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+        orderAssigned.setAssignedDatetime("-2");
 //        orderAssigned.setCombinedOrderId(order.getCombinedOrderId());
         if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
             orderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
@@ -1570,6 +1606,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
         if(order.getAssignedDatetime() != null && order.getAssignedDatetime() == "-1"){
             orderAssignCanceled.setAssignedDatetime("-1");
+        }else{
+            orderAssignCanceled.setAssignedDatetime(order.getAssignedDatetime());
         }
 
 
@@ -1587,6 +1625,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
             if (order.getAssignedDatetime() != null && order.getAssignedDatetime() == "-1"){
                 combinedOrderAssignCanceled.setAssignedDatetime("-1");
+            }else{
+                combinedOrderAssignCanceled.setAssignedDatetime(order.getAssignedDatetime());
             }
 
             combinedOrderAssignCanceled.setPickedUpDatetime("-1");

@@ -433,9 +433,9 @@
 		<if test="status != null and status != ''">
 			, status = #{status}
 		</if>
-		<if test="cookingTime != null and cookingTime != ''">
-			, cooking_time = #{cookingTime}
-		</if>
+<!--		<if test="cookingTime != null and cookingTime != ''">-->
+<!--			, cooking_time = #{cookingTime}-->
+<!--		</if>-->
 		<if test="menuName != null and menuName != ''">
 			, menu_name = #{menuName}
 		</if>
@@ -460,8 +460,11 @@
 		<if test="reservationDatetime != null and reservationDatetime != ''">
 			, reservation_datetime = #{reservationDatetime}
 		</if>
-		<if test="assignedDatetime != null and assignedDatetime != '' and assignedDatetime != '-1'">
-			, assigned_datetime = now()
+		<if test="assignedDatetime != null and assignedDatetime != '' and assignedDatetime != '-1' and assignedDatetime != '-2'">
+			, assigned_datetime = #{assignedDatetime}
+		</if>
+		<if test="assignedDatetime == '-2'">
+			, assigned_datetime = ifnull(assigned_datetime, now())
 		</if>
 		<if test="assignedDatetime == '-1'">
 			, assigned_datetime = NULL
