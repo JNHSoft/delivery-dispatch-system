@@ -22,10 +22,10 @@ public interface Api {
     String SIGN_UP_DEFAULT_INFO = "/getSignUpDefaultInfo.do";
 
     /** 라이더 승인 요청 등록 */
-    String REG_RIDER_APPROVAL = "/postRiderApproval.do";
+    String REG_RIDER_APPROVAL = "/postRiderApproval.json";
 
     /** 라이더 승인 진행 현황 조회 */
-    String APPROVAL_CHECK = "/getCheckRiderApproval.do";
+    String APPROVAL_CHECK = "/getCheckRiderApproval.json";
 
     //////// 2020.08.27 라이더 승인 요청 프로세 관련 항목 ///////////////////////
 

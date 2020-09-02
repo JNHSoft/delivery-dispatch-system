@@ -5,10 +5,10 @@ import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -20,11 +20,10 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @Service("riderService")
@@ -121,7 +120,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
     public int updateRiderInfo(Rider rider) throws AppTrException {
-//        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
@@ -134,8 +132,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             ShaEncoder sha = new ShaEncoder(512);
             rider.setCurrentPw(sha.encode(rider.getCurrentPw()));
             Rider tempRider = riderMapper.getRiderInfo(rider);
-//            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+riderMapper.getRiderInfo(rider));
-//            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+rider.getCurrentPw());
             if(tempRider.getLoginPw().equals(rider.getCurrentPw())){
                 rider.setLoginPw(sha.encode(rider.getNewPw()));
             } else{
@@ -144,7 +140,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         } else if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             rider.setCode(null);
-//            rider.setSubGroupRiderRel(null);
         } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             rider.setAccessToken(null);
             rider.setId(null);
@@ -378,5 +373,95 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return riderMapper.selectAllStore();
     }
 
+    /** 라이더 등록 요청 */
+    @Override
+    public Map postRiderApproval(RiderApprovalInfo approvalInfo) throws AppTrException{
+        Map<String, Object> returnMap = new HashMap<>();
+
+        // 기본 정보 확인
+        if (StringUtils.isEmpty(approvalInfo.getAdminId()) || StringUtils.isEmpty(approvalInfo.getLoginId()) || StringUtils.isEmpty(approvalInfo.getLoginPw()) ||
+                StringUtils.isEmpty(approvalInfo.getName()) || StringUtils.isEmpty(approvalInfo.getPhone()) || StringUtils.isEmpty(approvalInfo.getStore().getId()) ||
+                StringUtils.isEmpty(approvalInfo.getLatitude()) || StringUtils.isEmpty(approvalInfo.getLongitude())){
+            throw new AppTrException("정보가 누락되었습니다.", "303");
+        }
+
+
+        return returnMap;
+    }
+    
+    /** 라이더 승인 조회 체크 */
+    @Override
+    public Map getCheckRiderApproval(RiderApprovalInfo approvalInfo) throws AppTrException{
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("status", "OK");
+
+        // 정보 확인
+        if (StringUtils.isEmpty(approvalInfo.getLoginId()) || StringUtils.isEmpty(approvalInfo.getLoginPw())){
+            throw new AppTrException("필수 정보가 입력되지 않았습니다.", "404");
+        }
+
+        if (approvalInfo.getLevel().equals("3")){
+            approvalInfo.setRole("ROLE_RIDER");
+        }
+
+        // RiderApprovalInfo 값 가져오기
+        RiderApprovalInfo riderApprovalInfo = riderMapper.selectApprovalRiderInfo(approvalInfo);
+
+        if (riderApprovalInfo == null){
+            throw new AppTrException("등록된 계정이 없습니다.", "405");
+        }
+
+        // 유효 기간 체크
+        if (riderApprovalInfo.getSession() != null && !StringUtils.isEmpty(riderApprovalInfo.getSession().getExpiryDatetime())){
+            SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date expDate = dateFormat.parse(dateFormat.format(timeFormat.parse(riderApprovalInfo.getSession().getExpiryDatetime())));
+                Date nowDate = dateFormat.parse(dateFormat.format(new Date()));
+
+                if (expDate.getTime() < nowDate.getTime()){
+                    throw new AppTrException("사용 기간이 만료되었습니다.", "411");
+                }
+            } catch(AppTrException e){
+                throw e;
+            } catch(Exception e){
+                e.printStackTrace();
+                throw new AppTrException("API 제공 업체에 문의하십시오.", "505");
+            }
+        }
+
+        switch (riderApprovalInfo.getApprovalStatus()){
+            case "0":
+                // 관리자가 확인 진행 중
+                throw new AppTrException("등록 요청을 확인하는 중입니다.", "413");
+            case "1":
+                // 승인이 되었으며, 정상적인 계정인지 확인
+                if (StringUtils.isEmpty(riderApprovalInfo.getRiderId())){
+                    throw new AppTrException("담당자에게 확인하시길 바랍니다.", "505");
+                }
+
+                // 라이더 정보를 확인 후 값을 전달한다.
+                Map riderMap = riderMapper.selectLoginRider(approvalInfo);
+
+                approvalInfo.setToken(riderMap.get("accessToken").toString());
+
+                Rider riderInfo = riderMapper.getRiderInfo(approvalInfo);
+
+                if (riderInfo == null || !riderInfo.getId().equals(riderApprovalInfo.getRiderId())){
+                    throw new AppTrException("요청한 사원과 등록된 사원이 일치하지 않습니다.", "1234");
+                }
+                returnMap.put("riderId", riderApprovalInfo.getRiderId());
+
+                break;
+            case "2":
+            case "3":
+                // 승인 거절
+                throw new AppTrException("등록 요청이 거절되었습니다.", "412");
+            default:
+                throw new AppTrException("등록 상태를 확인할 수 없습니다.", "412");
+        }
+
+        return returnMap;
+    }
 }
 

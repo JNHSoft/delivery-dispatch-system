@@ -63,8 +63,7 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
         User userInfo = null;
 
         if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do")) && !(requestUri.contains("putToken.do"))
-                && !(requestUri.contains("versionCheck.do")) && !requestUri.contains("getTracker.do")
-                && !(requestUri.contains("getSignUpDefaultInfo.do")) && !requestUri.contains("postRiderApproval.do") && !requestUri.contains("getCheckRiderApproval.do")) {
+                && !(requestUri.contains("versionCheck.do")) && !requestUri.contains("getTracker.do") && !(requestUri.contains("getSignUpDefaultInfo.do"))) {
             try {
                 //log.debug("======= try");
                 request = new RequestWrapper(servletRequest);

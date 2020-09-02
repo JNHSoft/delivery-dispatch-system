@@ -160,6 +160,7 @@
 		<result property="approvalStatus" column="req_status" />
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
+		<result property="riderId" column="rider_id" />
 
 		<association property="riderDetail" resultMap="selectRiderNowResult"/>
 
@@ -1258,6 +1259,7 @@
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,IFNULL(R.code, REQ.code)						as code
 				,REQ.req_status
+				,REQ.rider_id
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1268,6 +1270,12 @@
 			<when test="role != null and role == 'ROLE_STORE'">
 				AND REQ.store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token})
 				AND REQ.id = #{id}
+			</when>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				AND REQ.login_id = #{loginId}
+				AND ifnull(R.login_pw, REQ.login_pw) = #{loginPw}
+				AND R.deleted is null
+				AND REQ.deleted_datetime is null
 			</when>
 			<otherwise>
 				AND REQ.id is null
@@ -1301,6 +1309,6 @@
 				,(select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = ifnull(brand_code, ( select brand_code from TB_ADMIN where id = admin_id )))	as brandName
 				,store_name	as storeName
 		from	 TB_STORE
-		where	 deleted is null;
+		where	 deleted is null
 	</select>
 </mapper>

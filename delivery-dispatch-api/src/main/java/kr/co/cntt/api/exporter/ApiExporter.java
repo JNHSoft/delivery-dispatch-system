@@ -3,6 +3,7 @@ package kr.co.cntt.api.exporter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import kr.co.cntt.api.security.Actor;
 import kr.co.cntt.api.security.ActorDetails;
 import kr.co.cntt.api.security.CustomAuthentificateService;
@@ -23,6 +24,7 @@ import kr.co.cntt.core.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.config.TypeFilterParser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -261,25 +263,42 @@ public class ApiExporter extends ExporterSupportor implements Api {
      * 가입 페이지 기본 정보
      * getSignUpDefaultInfo.do
      * */
-//    @RequestMapping(value = SIGN_UP_DEFAULT_INFO)
-//    public ResponseEntity<?> getSignUpDefaultInfo(HttpServletRequest request) throws Exception{
-//
-////        try {
-////            List<Store> store = riderService.selectAllStore();
-////            List<Store> kfcStore = store.parallelStream()
-////                    .filter(x -> x.getBrandCode().equals("1"))
-////                    .collect(Collectors.toList());
-////            List<Store> pzhStore = store.parallelStream()
-////                    .filter(x -> x.getBrandCode().equals("0"))
-////                    .collect(Collectors.toList());
-////
-////            return ResponseEntity.ok(new Gson().toJson(response, response.getClass()).toString());
-////        } catch(Exception e) {
-////            return ResponseEntity.ok(new Gson().toJson(response).toString());
-////        }
-//
-//
-//    }
+    @RequestMapping(value = SIGN_UP_DEFAULT_INFO)
+    public ResponseEntity<?> getSignUpDefaultInfo(HttpServletRequest request) throws Exception{
+        CommonBody<Map<String, List<Store>>> response = new CommonBody<>(CODE_SUCCESS);
+
+        Map<String, List<Store>> data = new HashMap<>();
+
+        try {
+            List<Store> store = riderService.selectAllStore();
+            List<Store> kfcStore = store.parallelStream()
+                    .filter(x -> x.getBrandCode().equals("1"))
+                    .collect(Collectors.toList());
+            List<Store> pzhStore = store.parallelStream()
+                    .filter(x -> x.getBrandCode().equals("0"))
+                    .collect(Collectors.toList());
+
+            data.clear();
+            data.put("kfcStore", kfcStore);
+            data.put("pzhStore", pzhStore);
+
+            response.setCode(data);
+
+
+            return ResponseEntity.ok(new Gson().toJson(response, response.getClass()).toString());
+        } catch(Exception e) {
+            Map<String, String> errDescription = new HashMap<>();
+
+
+            errDescription.put("error_code", CODE_SYSTEM_ERROR);
+            errDescription.put("error", e.getLocalizedMessage());
+
+            response = new CommonBody<>(CODE_ERROR);
+            response.setError_desc(errDescription);
+
+            return ResponseEntity.ok(new Gson().toJson(response).toString());
+        }
+    }
 
     /**
      * Generic api controller 모든 request 를 서비스로 구분하여 generic하게 처리한다. 모든 response
