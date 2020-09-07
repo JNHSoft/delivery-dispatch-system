@@ -252,14 +252,17 @@
 
 
 	<!-- updateRiderSession -->
-	<update id="updateRiderSession" parameterType="String">
-		UPDATE TB_RIDER AS A
-		LEFT JOIN TB_RIDER_SESSION AS B
-		ON A.id = B.rider_id
-		SET A.working = 0
-			, A.last_access = now()
---			, B.expiry_datetime = now()
-		WHERE B.access_token = #{token}
+	<update id="updateRiderSession" parameterType="kr.co.cntt.core.model.rider.RiderSession">
+		update	 TB_REQ_REGIST_RIDER	RRR
+				,TB_RIDER				R
+				,TB_RIDER_SESSION		RS
+		set		 RS.expiry_datetime = #{expiryDatetime}
+				,RS.modified_datetime = now()
+		WHERE	 RRR.rider_id = R.id
+		and		 R.id = RS.rider_id
+		and		 date_format(ifnull(ifnull(RS.expiry_datetime, RRR.exp_datetime), now()), '%y-%m-%d') >= date_format(now(), '%y-%m-%d')
+		and		 RRR.req_status = 1
+		and		 R.id = #{rider_id}
 	</update>
 
 
@@ -1224,8 +1227,6 @@
 				,REQ.longitude
 				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
-
-				,REQ.req_status
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1236,12 +1237,18 @@
 			<when test="role != null and role == 'ROLE_STORE'">
 				AND REQ.store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token})
 			</when>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				AND ifnull(R.login_id, REQ.login_id) = #{loginId}
+			</when>
 			<otherwise>
 				AND REQ.id is null
 			</otherwise>
 		</choose>
+		order by case when REQ.req_status in ('2', '3') then 999 else 0 end, ISNULL(IFNULL(RS.expiry_datetime, REQ.exp_datetime)) desc, IFNULL(RS.expiry_datetime, REQ.exp_datetime) desc, REQ.req_status
 	</select>
 
+	<!-- 정렬은 요청이 등록된 순이며, 최상위 1개의 정보를 기준으로 가입 내용을 가져온다. -->
+	<!-- 단, 최종 암호가 서로 다른 계정인 경우 정보가 다르게 표기 될 수 있음. -->
 	<select id="selectApprovalRiderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderApprovalResult">
 		select	 REQ.id											as approval_id
 				,REQ.created_datetime
@@ -1258,7 +1265,6 @@
 				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,IFNULL(R.code, REQ.code)						as code
-				,REQ.req_status
 				,REQ.rider_id
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
@@ -1281,6 +1287,8 @@
 				AND REQ.id is null
 			</otherwise>
 		</choose>
+		order by REQ.id desc
+		limit 1
 	</select>
 
 	<update id="updateApprovalRiderInfo" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo" >
@@ -1311,4 +1319,12 @@
 		from	 TB_STORE
 		where	 deleted is null
 	</select>
+
+	<insert id="insertApprovalInfo" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo">
+		insert into TB_REQ_REGIST_RIDER(admin_id, store_id, rider_name, login_id, login_pw, phone, gender, vehicle_number, latitude, longitude)
+		values(#{adminId}, #{store.id}, #{name}, #{loginId}, #{loginPw}, #{phone}, #{gender}, #{vehicleNumber}, #{latitude}, #{longitude})
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
 </mapper>

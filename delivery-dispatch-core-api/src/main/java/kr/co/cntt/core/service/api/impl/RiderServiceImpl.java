@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -69,8 +70,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
     @Override
-    public int updateRiderSession(String token) {
-        return riderMapper.updateRiderSession(token);
+    public int updateRiderSession(RiderSession session) {
+        return riderMapper.updateRiderSession(session);
     }
 
     // rider 정보 조회
@@ -384,6 +385,69 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 StringUtils.isEmpty(approvalInfo.getLatitude()) || StringUtils.isEmpty(approvalInfo.getLongitude())){
             throw new AppTrException("정보가 누락되었습니다.", "303");
         }
+
+        approvalInfo.setRole("ROLE_RIDER");
+
+        List<RiderApprovalInfo> searchRiders = riderMapper.selectApprovalRiderList(approvalInfo);
+
+        // 라이더 ID 중복 확인
+        for (RiderApprovalInfo rider:searchRiders
+             ) {
+            // 등록이 수락된 경우 유효기간을 체크합니다.
+            switch (rider.getApprovalStatus()){
+                case "1":
+                    if (rider.getSession() != null){
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            Date expDate = dateFormat.parse(dateFormat.format(timeFormat.parse(rider.getSession().getExpiryDatetime())));
+                            Date nowDate = dateFormat.parse(dateFormat.format(new Date()));
+
+                            if (expDate.getTime() > nowDate.getTime()){
+                                throw new AppTrException("등록 실패! 사용 중인 계정입니다.", "402");
+                            }
+                        } catch(AppTrException e){
+                            throw e;
+                        } catch(Exception e){
+                            e.printStackTrace();
+                            throw new AppTrException("등록 실패! API 제공 업체에 문의하십시오.", "505");
+                        }
+                    }else if (rider.getSession() == null){
+                        throw new AppTrException("등록 실패! 사용 중인 계정입니다.", "402");
+                    }
+
+                    break;
+                case "0":
+                    if (rider.getSession() != null){
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            Date expDate = dateFormat.parse(dateFormat.format(timeFormat.parse(rider.getSession().getExpiryDatetime())));
+                            Date nowDate = dateFormat.parse(dateFormat.format(new Date()));
+
+                            if (expDate.getTime() > nowDate.getTime()){
+                                throw new AppTrException("등록 실패! 등록 요청이 진행 중입니다.", "403");
+                            }
+                        } catch(AppTrException e){
+                            throw e;
+                        } catch(Exception e){
+                            e.printStackTrace();
+                            throw new AppTrException("등록 실패! API 제공 업체에 문의하십시오.", "505");
+                        }
+                    }else if (rider.getSession() == null){
+                        throw new AppTrException("등록 실패! 등록 요청이 진행 중입니다.", "403");
+                    }
+                    break;
+                default:
+            }
+        }
+
+
+        // 정보 등록
+        riderMapper.insertApprovalInfo(approvalInfo);
+
+        returnMap.put("status", "success");
+        returnMap.put("id", approvalInfo.getId());
 
 
         return returnMap;

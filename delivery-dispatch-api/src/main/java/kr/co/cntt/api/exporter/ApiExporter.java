@@ -225,39 +225,40 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
     }
 
-    @RequestMapping(value = PUT_TOKEN)
-    public ResponseEntity<?> expiryToken(HttpServletRequest request, @RequestParam String level, @RequestParam String token) throws Exception {
-//        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
-        Map<String, Object> response = new HashMap<String, Object>();
-        Map<String, Object> result = new HashMap<String, Object>();
-        Map<String, Object> data = new HashMap<String, Object>();
-
-        try {
-
-            if (level.equals("3")) {
-                riderService.updateRiderSession(token);
-            } else if (level.equals("2")) {
-                storeService.updateStoreSession(token);
-            } else if (level.equals("1")) {
-                adminService.updateAdminSession(token);
-            }
-
-            result.put("result", CODE_SUCCESS);
-            response.put("result", CODE_SUCCESS);
-
-            return ResponseEntity.ok(new Gson().toJson(response).toString());
-        } catch(Exception e) {
-            result.put("result", CODE_ERROR);
-            data.put("token", token);
-            data.put("msg", e.getLocalizedMessage());
-            response.put("result", CODE_ERROR);
-            response.put("token", token);
-            response.put("msg", e.getLocalizedMessage());
-//            response.add(result);
-//            response.add(data);
-            return ResponseEntity.ok(new Gson().toJson(response).toString());
-        }
-    }
+    /** Token 만료일 설정은 관리자 및 스토어 페이지에서 가능 */
+//    @RequestMapping(value = PUT_TOKEN)
+//    public ResponseEntity<?> expiryToken(HttpServletRequest request, @RequestParam String level, @RequestParam String token) throws Exception {
+////        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
+//        Map<String, Object> response = new HashMap<String, Object>();
+//        Map<String, Object> result = new HashMap<String, Object>();
+//        Map<String, Object> data = new HashMap<String, Object>();
+//
+//        try {
+//
+//            if (level.equals("3")) {
+//                riderService.updateRiderSession(token);
+//            } else if (level.equals("2")) {
+//                storeService.updateStoreSession(token);
+//            } else if (level.equals("1")) {
+//                adminService.updateAdminSession(token);
+//            }
+//
+//            result.put("result", CODE_SUCCESS);
+//            response.put("result", CODE_SUCCESS);
+//
+//            return ResponseEntity.ok(new Gson().toJson(response).toString());
+//        } catch(Exception e) {
+//            result.put("result", CODE_ERROR);
+//            data.put("token", token);
+//            data.put("msg", e.getLocalizedMessage());
+//            response.put("result", CODE_ERROR);
+//            response.put("token", token);
+//            response.put("msg", e.getLocalizedMessage());
+////            response.add(result);
+////            response.add(data);
+//            return ResponseEntity.ok(new Gson().toJson(response).toString());
+//        }
+//    }
 
     /**
      * 가입 페이지 기본 정보

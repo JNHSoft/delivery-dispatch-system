@@ -13,6 +13,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -279,15 +280,10 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
             common.setRole("ROLE_STORE");
         }
 
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1");
         List<RiderApprovalInfo> approvalRider = riderMapper.selectApprovalRiderList(common);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2");
         if (approvalRider.size() == 0) {
             return Collections.<RiderApprovalInfo>emptyList();
         }
-
-
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
         return approvalRider;
 
@@ -304,13 +300,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
         if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
             common.setRole("ROLE_STORE");
         }
-
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println(common.getId());
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
         RiderApprovalInfo info = riderMapper.selectApprovalRiderInfo(common);
-
         return info;
     }
 
@@ -318,10 +308,14 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
      * 라이더 정보 변경
      * */
     public int setRiderInfo(RiderApprovalInfo riderInfo){
+        return riderMapper.updateApprovalRiderInfo(riderInfo);
+    }
 
-        riderMapper.updateApprovalRiderInfo(riderInfo);
-
-        return 0;
+    /**
+     * 라이더 세션 변경
+     * */
+    public int updateRiderSession(RiderSession session){
+        return riderMapper.updateRiderSession(session);
     }
 
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 
 public interface RiderService {
@@ -48,7 +49,7 @@ public interface RiderService {
      * @param token
      * @return
      */
-    public int updateRiderSession(String token);
+    public int updateRiderSession(RiderSession session);
 
     /**
      * <p> selectRiderInfo

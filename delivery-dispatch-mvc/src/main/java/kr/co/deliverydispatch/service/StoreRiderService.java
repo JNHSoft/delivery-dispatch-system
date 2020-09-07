@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
@@ -75,4 +76,9 @@ public interface StoreRiderService {
      * 라이더 승인과 관련한 정보 변경 건
      * */
     public int setRiderInfo(RiderApprovalInfo riderInfo);
+
+    /**
+     * <p> update ExpiryDatetime for Rider Session
+     * */
+    public int updateRiderSession(RiderSession session);
 }

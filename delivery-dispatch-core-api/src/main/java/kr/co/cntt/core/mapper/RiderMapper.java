@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.HashMap;
@@ -66,12 +67,12 @@ public interface RiderMapper {
 
 
     /**
-     * <p> Rider 토큰 만료일, last_access, working update
+     * <p> 라이더 세션 관련 변경
      *
-     * @param token
+     * @param session
      * @return
      */
-    public int updateRiderSession(String token);
+    public int updateRiderSession(RiderSession session);
 
     /**
      * <p> Rider 정보 조회
@@ -270,4 +271,9 @@ public interface RiderMapper {
      * 라이더 요청 등록 페이지에서 필요로 하는 기본 정보
      * */
     public List<Store> selectAllStore();
+
+    /**
+     * 라이더 가입 요청
+     * */
+    public int insertApprovalInfo(RiderApprovalInfo riderInfo);
 }

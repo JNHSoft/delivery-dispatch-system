@@ -18,17 +18,20 @@ function getApprovalRiderList(){
         },
         dataType: "json",
         success: function (data, status){
+            let i = 0;
+
             for (var key in data){
                 if (data.hasOwnProperty(key)){
                     let tmpObj = new Object();
 
-                    tmpObj.No = data[key].id == undefined ? "" : data[key].id;
+                    tmpObj.id = data[key].id == undefined ? "" : data[key].id;
+                    tmpObj.No = ++i;
                     tmpObj.riderID = data[key].loginId == undefined ? "" : data[key].loginId;
                     tmpObj.riderName = data[key].name == undefined ? "" : data[key].name;
                     tmpObj.contactNum = data[key].phone;
-                    tmpObj.createdDate = data[key].createdDatetime == undefined ? "" : dateFormat(data[key].createdDatetime);
+                    tmpObj.createdDate = data[key].createdDatetime == undefined ? "-" : dateFormat(data[key].createdDatetime);
 
-                    tmpObj.expirationDate = data[key].session == undefined ? "" : dateFormat(data[key].session.expiryDatetime);
+                    tmpObj.expirationDate = data[key].session == undefined ? "-" : dateFormat(data[key].session.expiryDatetime);
                     tmpObj.setting = makeRowButton(data[key]);
 
                     tmpObj.approvalStatus = data[key].approvalStatus;
@@ -59,7 +62,8 @@ function makeGrid(data){
         datatype: "local",
         data: data,
         colModel:[
-            {label: 'No', name: 'No', width: 25, key: true, align: 'center'},
+            {label: 'No', name: 'id', width: 25, key: true, align: 'center', hidden: true},
+            {label: 'No', name: 'No', width: 25, align: 'center'},
             {label: 'Rider ID', name: 'riderID', width: 80, align: 'center'},
             {label: 'Rider Name', name: 'riderName', width: 80, align: 'center'},
             {label: 'Contact No.', name: 'contactNum', width: 80, align: 'center'},
@@ -101,13 +105,13 @@ function makeRowButton(obj){
     switch (obj.approvalStatus){
         case "0":           // 요청
             btn_approval = "<button class='button btn_pale_green h30 w110 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'> Approval</button>";
-            btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormt2(obj.session.expiryDatetime)) + "' class='input picker' />" +
+            btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker' />" +
                         "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'>Validity period Setting</button>"
             btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             break;
         case "1":           // 수락
             btn_approval = "<button class='button btn_onahau h30 w110 mr10' style='font-size: 12px;'><i class='fa fa-check mr5' />Approval</button>";
-            btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormt2(obj.session.expiryDatetime)) + "' class='input picker' />" +
+            btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker' />" +
                         "<button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'><i class='fa fa-check mr5 t_pink' />Validity period Setting</button>"
             btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             break;
@@ -125,6 +129,14 @@ function makeRowButton(obj){
 // 상태 변경
 function riderApprovalStatus(rowID, status){
     //changeApprovalStatus
+    // console.log($('#jqGrid').getRowData($('#jqGrid').getGridParam('selrow')).expirationDate);
+    let current = dateFormat(new Date());
+    let exp = dateFormat($("#expDate" + rowID).val());
+
+    if (exp != "-" && exp < current){
+        return false;
+    }
+
     loading.show();
     $.ajax({
         url: "/changeApprovalStatus",
@@ -184,15 +196,12 @@ function checkExpDate(selectedDate, obj){
     selectedDate = dateFormat(selectedDate);
 
     if ((date == "-" || date != selectedDate) && !(expDate != "-" && expDate < nowDate)){
-
-        console.log("data 1 = " + (date == "" || date != selectedDate));
-        console.log("data 2 = " + !(expDate != "-" && expDate < nowDate));
         // 알림을 띄운 후 저장 프로세스 생성
         if (confirm("변경하신 날짜로 저장하시겠습니까?")){
             return true;
         }
     }
-    $("#" + obj.id).val(dateFormt2(date));
+    $("#" + obj.id).val(dateFormat2(date));
 
     return false;
 }
@@ -222,7 +231,7 @@ function dateFormat(date){
     }
 }
 
-function dateFormt2(date){
+function dateFormat2(date){
     if (date) {
         let d = new Date(date);
         return $.datepicker.formatDate('mm/dd/yy', d);
@@ -258,5 +267,27 @@ function updateExpDate(date, rowid){
     });
 }
 
+// 엑셀 다운로드
+function excelDownload(){
+    loading.show();
+
+    // ajax 통신
+    $.fileDownload("/excelDownloadApprovalRiderList", {
+        httpMethod: "get",
+        data:{
+
+        },
+        successCallback:function (url){
+
+        },
+        failCallback: function (responseHtml, url){
+
+        },
+        complete: function (){
+            loading.hide();
+        }
+    });
+
+}
 
 /*]]>*/

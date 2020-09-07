@@ -17,7 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -126,6 +128,21 @@ public class RiderController {
         return approvalRider;
     }
 
+    // 승인 리스트 항목 Excel Download
+    @GetMapping("/excelDownloadApprovalRiderList")
+    public ModelAndView approvalRiderListforExcel(HttpServletResponse response){
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Store store = new Store();
+        store.setToken(storeInfo.getStoreAccessToken());
+
+        ModelAndView modelAndView = new ModelAndView("ApprovalRiderListforExcelServiceImpl");
+        List<RiderApprovalInfo> approvalInfos = storeRiderService.getRiderApprovalList(store);
+        modelAndView.addObject("getApprovalRiderList", approvalInfos);
+
+        return modelAndView;
+    }
+
     // 라이더 승인 상태 변경 요청
     @ResponseBody
     @PostMapping("/changeApprovalStatus")
@@ -199,19 +216,11 @@ public class RiderController {
         Date nowDate = null;            // 현재 날짜
         Date regDate = null;            // 변경 전 날짜
         Date changeDate = null;          // 변경 요청 날짜
-        
 
         try{
             nowDate = defaultFormat.parse(DateTime.now().toString());
             regDate = chkRiderInfo.getSession() != null && chkRiderInfo.getSession().getExpiryDatetime() != null ? defaultFormat.parse(chkRiderInfo.getSession().getExpiryDatetime()) : null;
             changeDate = defaultFormat.parse(expiryDate);
-
-            System.out.println("Date Type ###################################################");
-            System.out.println(nowDate);
-            System.out.println(regDate);
-            System.out.println(changeDate);
-            System.out.println("Date Type ###################################################");
-
 
             long changeDiff = changeDate.getTime() - nowDate.getTime();
             long orgDiff = 0;
@@ -219,8 +228,6 @@ public class RiderController {
             if (regDate != null){
                 orgDiff = regDate.getTime() - nowDate.getTime();
             }
-
-            System.out.println("changeDiff = " + changeDiff + " #### orgDiff = " + orgDiff);
 
             if (!(changeDiff >= 0 && orgDiff >= 0)){
                 return false;
@@ -230,18 +237,15 @@ public class RiderController {
             return false;
         }
         
-        System.out.println("################ 들어왔어요 = " + chkRiderInfo.getApprovalStatus());
-
-
         // 날짜에 대한 예외처리가 완료된 후 적용
         riderInfo.setSession(new RiderSession());
         riderInfo.getSession().setExpiryDatetime(defaultFormat.format(changeDate));
 
         if (chkRiderInfo.getApprovalStatus().equals("0")){                       // 상태 값이 신규 요청이 경우, 임시 테이블에서 정보가 변경이 되어야함.
-            System.out.println("################ 들어왔어요222222222222222 = ");
             storeRiderService.setRiderInfo(riderInfo);
         }else if (chkRiderInfo.getApprovalStatus().equals("1")){                 // 상태 값이 1인 경우, 라이더 정보에서 값이 변경 되어야 한다.
-            System.out.println("################ 들어왔어요33333333333333 = ");
+            riderInfo.getSession().setRider_id(chkRiderInfo.getRiderId());
+            storeRiderService.updateRiderSession(riderInfo.getSession());
         }
 
         return true;

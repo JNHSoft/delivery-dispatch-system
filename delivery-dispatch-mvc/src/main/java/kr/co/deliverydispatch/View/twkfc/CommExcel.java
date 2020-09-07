@@ -13,6 +13,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
@@ -211,5 +213,39 @@ public class CommExcel extends AbstractView {
         }
 
         return strReturn;
+    }
+
+    /**
+     * 날짜 형식 변환
+     * Date to String
+     * */
+    public String changeDateToString(Date date, String formatStyle){
+        SimpleDateFormat format = new SimpleDateFormat(formatStyle, locale);
+        String returnDate = "";
+
+        try{
+            returnDate = format.format(date);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return returnDate;
+    }
+
+    /**
+     * 날짜 형식 변환
+     * String to Date
+     * */
+    public Date changeStringToDate(String date, String formatStyle){
+        SimpleDateFormat format = new SimpleDateFormat(formatStyle, locale);
+        Date returnDate = null;
+
+        try{
+            returnDate = format.parse(date);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return returnDate;
     }
 }
