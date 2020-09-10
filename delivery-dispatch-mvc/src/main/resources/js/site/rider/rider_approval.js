@@ -3,6 +3,10 @@ let loading = $('<div id="loading"><div><p style="background-color: #838d96"></p
 // Start Function after page loading completed.
 $(function (){
     getApprovalRiderList();
+    // let date = $.datepicker.formatDate('yy-mm-dd', new Date);
+
+    // $("#riderExpDate").val(date);
+
 });
 
 function getApprovalRiderList(){
@@ -46,6 +50,7 @@ function getApprovalRiderList(){
         complete: function (data){
             makeGrid(gridData);
             // resizeJqGrid('#jqGrid');
+            formStyle();
             loading.hide();
         }
     });
@@ -104,14 +109,14 @@ function makeRowButton(obj){
 
     switch (obj.approvalStatus){
         case "0":           // 요청
-            btn_approval = "<button class='button btn_pale_green h30 w110 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'> Approval</button>";
-            btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker' />" +
+            btn_approval = "<button class='button btn_pale_green h30 w110 mr20' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'> Approval</button>";
+            btn_setDate = "<input type='hidden' name='' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker'/>" +
                         "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'>Validity period Setting</button>"
-            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
+            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             break;
         case "1":           // 수락
-            btn_approval = "<button class='button btn_onahau h30 w110 mr10' style='font-size: 12px;'><i class='fa fa-check mr5' />Approval</button>";
-            btn_setDate = "<input type='hidden' name='datepicker' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker' />" +
+            btn_approval = "<button class='button btn_onahau h30 w110 mr20' style='font-size: 12px;'><i class='fa fa-check mr5' />Approval</button>";
+            btn_setDate = "<input type='hidden' name='' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker'/>" +
                         "<button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'><i class='fa fa-check mr5 t_pink' />Validity period Setting</button>"
             btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             break;
@@ -119,7 +124,7 @@ function makeRowButton(obj){
         case "3":           // 승인 후 거절
             btn_approval = "<button class='button btn_gray2 h30 w110 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />Disapproval</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />Validity period Setting</button>"
-            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px' disabled>Edit</button>"
+            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
             break;
     }
 
@@ -154,9 +159,30 @@ function riderApprovalStatus(rowID, status){
         },
         complete: function (data){
             getApprovalRiderList();
+            popClose("#popRiderInfo");
         }
     });
 
+}
+
+// popUp 상태 변경
+function popUpChangeStatus(){
+    let approvalID = $("#approvalID").val();
+    let approvalStatus = $("#approvalStatus").val();
+
+
+    if (approvalID == undefined || approvalID.trim() == ""){
+        return false;
+    }
+
+    let setStatus = "2";
+
+    if (approvalStatus == "1"){
+        // 승인 후 취소일 수도 있으므로,
+        setStatus = "3";
+    }
+
+    riderApprovalStatus(approvalID, setStatus);
 }
 
 // 라이더 승인 상세 조회
@@ -176,6 +202,12 @@ function searchRiderApprovalDetail(rowID){
             $("#riderCode").val(data.riderDetail.code);
             $("#riderVehicle").val(data.vehicleNumber);
             $("#riderExpDate").val(data.session == undefined ? "" : dateFormat(data.session.expiryDatetime));
+            $("#approvalID").val(data.id);
+            $("#approvalStatus").val(data.approvalStatus);
+
+            $("#riderExpDate").datepicker({
+                minDate: new Date
+            });
 
             popOpen("#popRiderInfo");
         },
@@ -234,7 +266,8 @@ function dateFormat(date){
 function dateFormat2(date){
     if (date) {
         let d = new Date(date);
-        return $.datepicker.formatDate('mm/dd/yy', d);
+        //return $.datepicker.formatDate('mm/dd/yy', d);
+        return $.datepicker.formatDate('yy-mm-dd', d);
     } else {
         return "-";
     }
@@ -278,12 +311,9 @@ function excelDownload(){
 
         },
         successCallback:function (url){
-
+            loading.hide();
         },
         failCallback: function (responseHtml, url){
-
-        },
-        complete: function (){
             loading.hide();
         }
     });

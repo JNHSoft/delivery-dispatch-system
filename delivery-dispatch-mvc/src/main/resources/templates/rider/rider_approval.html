@@ -41,6 +41,8 @@
             </div>
             <div class="pop_cont">
                 <div class="tbl_wrap">
+                    <input type="hidden" name="" id="approvalID" class="input" value="" readonly="true"/>
+                    <input type="hidden" name="" id="approvalStatus" class="input" value="" readonly="true"/>
                     <table class="table tbl_left">
                         <colgroup>
                             <col width="13%" />
@@ -82,7 +84,7 @@
                         <tr>
                             <th th:text="${#messages.msg('rider.approval.detail.expiry.datetime')}"/>
                             <td>
-                                <input type="text" name="" id="riderExpDate" class="input" value="" readonly="true"/>
+                                <input type="text" name="" id="riderExpDate" class="input picker" value="" readonly="true"/>
                             </td>
                         </tr>
                         </tbody>
@@ -92,7 +94,7 @@
             <div class="pop_foot">
                 <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
                 <div class="right">
-                    <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('rider.approval.button.disapproval')}"></a>
+                    <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('rider.approval.button.disapproval')}" onclick="popUpChangeStatus()"></a>
                     <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}"></a>
                 </div>
             </div>

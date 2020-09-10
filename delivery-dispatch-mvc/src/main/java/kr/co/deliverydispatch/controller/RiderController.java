@@ -3,11 +3,15 @@ package kr.co.deliverydispatch.controller;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.group.Group;
+import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreRiderRel;
 import kr.co.deliverydispatch.security.SecurityUser;
+import kr.co.deliverydispatch.service.CommInfoService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -20,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,12 +37,16 @@ public class RiderController {
      * 객체 주입
      */
     private StoreRiderService storeRiderService;
+    private CommInfoService commInfoService;
 
     @Value("${spring.mvc.locale}")
     private Locale regionLocale;
 
     @Autowired
-    public RiderController(StoreRiderService storeRiderService) { this.storeRiderService = storeRiderService; }
+    public RiderController(StoreRiderService storeRiderService, CommInfoService commInfoService) {
+        this.storeRiderService = storeRiderService;
+        this.commInfoService = commInfoService;
+    }
 
     /**
      * 기사현황 페이지
@@ -121,6 +128,7 @@ public class RiderController {
         //store.setToken(storeInfo.getStoreAccessToken());
         Store store = new Store();
         store.setToken(storeInfo.getStoreAccessToken());
+        store.setRole("ROLE_STORE");
 
         // 스토어 정보
         List<RiderApprovalInfo> approvalRider = storeRiderService.getRiderApprovalList(store);
@@ -135,6 +143,7 @@ public class RiderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Store store = new Store();
         store.setToken(storeInfo.getStoreAccessToken());
+        store.setRole("ROLE_STORE");
 
         ModelAndView modelAndView = new ModelAndView("ApprovalRiderListforExcelServiceImpl");
         List<RiderApprovalInfo> approvalInfos = storeRiderService.getRiderApprovalList(store);
@@ -149,6 +158,7 @@ public class RiderController {
     @CnttMethodDescription("라이더 승인 상태 변경")
     public Boolean changeApprovalStatus(RiderApprovalInfo riderInfo){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Store myStore = null;
         //store.setToken(storeInfo.getStoreAccessToken());
         riderInfo.setToken(storeInfo.getStoreAccessToken());
 
@@ -175,10 +185,61 @@ public class RiderController {
 
         // 승인이 된 상태에서 취소하는 경우
         if (riderInfo.getApprovalStatus().trim().equals("3") &&
-                !(chkRiderInfo.getApprovalStatus().trim().equals("2"))){
+                !(chkRiderInfo.getApprovalStatus().trim().equals("1"))){
             System.out.println("return false three #################");
             return false;
         }
+
+        // 관련 라이더 정보가 있는지 확인 LOGIN ID는 중복되면 안되므로
+        chkRiderInfo.setRole("ROLE_SEARCH");
+        System.out.println(chkRiderInfo.getRole());
+        List<RiderApprovalInfo> approvalInfos = storeRiderService.getRiderApprovalList(chkRiderInfo);
+
+        // 필터링 시작
+        if (!checkExpDate(approvalInfos)){
+            return false;
+        }
+
+        // 승인 허용 유무 절차 완료 # 승인 정보 등록
+        Rider rider = new Rider();
+
+        rider.setAdminId(chkRiderInfo.getAdminId());
+        rider.setType("3");
+        rider.setPhone(chkRiderInfo.getPhone());
+        rider.setGender(chkRiderInfo.getGender());
+        rider.setAddress(chkRiderInfo.getAddress());
+        rider.setWorking("0");
+        rider.setStatus("0");
+        rider.setLatitude(chkRiderInfo.getLatitude());
+        rider.setLongitude(chkRiderInfo.getLongitude());
+        rider.setVehicleNumber(chkRiderInfo.getVehicleNumber());
+        rider.setWorkingHours("0|0");
+        rider.setName(chkRiderInfo.getName());
+        rider.setLoginId(chkRiderInfo.getLoginId());
+        rider.setLoginPw(commInfoService.selectApprovalRiderPw(chkRiderInfo.getId()));
+
+        /** #### 그룹 정보 #### */
+        if (chkRiderInfo.getRiderDetail().getRiderStore() != null){
+            myStore = storeRiderService.getStoreInfo(chkRiderInfo.getRiderDetail().getRiderStore());
+
+            Group group = new Group();
+            group.setId(myStore.getGroup().getId());
+
+            SubGroup subGroup = new SubGroup();
+            subGroup.setGroupId(myStore.getSubGroup().getGroupId());
+            subGroup.setId(myStore.getSubGroup().getId());
+
+            rider.setGroup(group);
+            rider.setSubGroup(subGroup);
+            rider.setRiderStore(myStore);
+        }
+
+        // 채팅 User ID 등록
+        commInfoService.insertChatUser(rider);
+        rider.setRole("ROLE_ADD");
+        commInfoService.insertRiderInfo(rider);
+
+        riderInfo.setRiderId(rider.getId());
 
         // 상태 변경 관련 UPDATE 문 실행
         storeRiderService.setRiderInfo(riderInfo);
@@ -265,6 +326,51 @@ public class RiderController {
         System.out.println("#############################################");
 
         return true;
+    }
+
+    // 라이더 상태 및 유효기간을 체크한다
+    // 만약 사용 중인 내용이 있는 경우, 승인을 하지 못하도록 설정한다.
+    // True = 가입 허용 / false = 가입 불가
+    private Boolean checkExpDate(List<RiderApprovalInfo> approvalInfos){
+        if (approvalInfos == null){
+            return false;
+        }
+
+        // 유효기간이 안 지난 데이터를 가져온다.
+        long underExpDate = approvalInfos.stream().filter( x->{
+            SimpleDateFormat fullFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            if (x.getSession() != null){
+                Date nowDate;
+                Date expDate;
+                try {
+                    nowDate = dateFormat.parse(dateFormat.format(new Date()));
+                    expDate = dateFormat.parse(dateFormat.format(fullFormat.parse(x.getSession().getExpiryDatetime())));
+
+                    if (expDate.getTime() > nowDate.getTime()){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }catch (Exception e){
+                    return true;
+                }
+
+            }else{      // 유효기간이 없는 경우는 유효기간이 오버되지 않았으므로,
+                if (x.getApprovalStatus().equals("1")){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+                }).count();
+
+        if (underExpDate > 0){
+            return false;
+        }else{
+            return true;
+        }
     }
 
 }

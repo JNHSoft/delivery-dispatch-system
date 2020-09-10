@@ -929,10 +929,6 @@
 		AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token});
 	</select>
 
-
-
-
-
 	<!-- selectRiderAssignmentStatus -->
 	<select id="selectRiderAssignmentStatus" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="java.lang.String">
 		SELECT A.assignment_status
@@ -958,7 +954,6 @@
 		WHERE id = #{id}
 			AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 	</update>
-
 
 	<!-- selectForAssignRiders -->
 	<select id="selectForAssignRiders" parameterType="Map" resultMap="selectSubgroupRiderRelsResult">
@@ -1089,7 +1084,6 @@
 			DELIMITER ; -->
 	</select>
 
-
     <select id="selectRiderTokenByChatUserId" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="String">
         select TBRS.push_token
 		from TB_RIDER_SESSION AS TBRS
@@ -1134,7 +1128,6 @@
             </choose>
     </select>
 
-
 	<!-- selectMySubgroupRiderRels -->
 	<select id="selectMySubgroupRiderRels" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.group.SubGroupRiderRel">
 		SELECT id
@@ -1155,7 +1148,6 @@
 			</otherwise>
 		</choose>
 	</select>
-
 
 	<!-- selectMobileVersion -->
 	<select id="selectMobileVersion" parameterType="String" resultType="String">
@@ -1240,6 +1232,10 @@
 			<when test="role != null and role == 'ROLE_RIDER'">
 				AND ifnull(R.login_id, REQ.login_id) = #{loginId}
 			</when>
+			<when test="role != null and role == 'ROLE_SEARCH'">
+				AND ifnull(R.login_id, REQ.login_id) = #{loginId}
+				AND R.deleted is null
+			</when>
 			<otherwise>
 				AND REQ.id is null
 			</otherwise>
@@ -1254,6 +1250,7 @@
 				,REQ.created_datetime
 				,IFNULL(R.admin_id, REQ.admin_id)				as admin_id
 				,REQ.store_id									as rider_store_id
+				,(select store_name from TB_STORE where id = REQ.store_id ) as rider_store_name
 				,IFNULL(R.login_id, REQ.login_id)				as login_id
 				,IFNULL(R.name, REQ.rider_name)					as name
 				,IFNULL(R.phone, REQ.phone)						as phone
@@ -1265,7 +1262,6 @@
 				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,IFNULL(R.code, REQ.code)						as code
-				,REQ.rider_id
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1327,4 +1323,10 @@
 			SELECT LAST_INSERT_ID()
 		</selectKey>
 	</insert>
+
+	<select id="selectApprovalRiderPw" parameterType="String" resultType="String">
+		select	 login_pw
+		from	 TB_REQ_REGIST_RIDER
+		where	 id = #{id}
+	</select>
 </mapper>

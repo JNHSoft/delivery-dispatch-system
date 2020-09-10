@@ -276,4 +276,9 @@ public interface RiderMapper {
      * 라이더 가입 요청
      * */
     public int insertApprovalInfo(RiderApprovalInfo riderInfo);
+
+    /**
+     * 라이더 암호 가져오기
+     * */
+    public String selectApprovalRiderPw(String id);
 }

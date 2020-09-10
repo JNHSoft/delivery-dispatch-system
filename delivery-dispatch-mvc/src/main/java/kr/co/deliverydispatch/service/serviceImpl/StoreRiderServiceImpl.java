@@ -275,10 +275,10 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
      * */
     @Override
     public List<RiderApprovalInfo> getRiderApprovalList(Common common){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
-            common.setRole("ROLE_STORE");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+//            common.setRole("ROLE_STORE");
+//        }
 
         List<RiderApprovalInfo> approvalRider = riderMapper.selectApprovalRiderList(common);
         if (approvalRider.size() == 0) {

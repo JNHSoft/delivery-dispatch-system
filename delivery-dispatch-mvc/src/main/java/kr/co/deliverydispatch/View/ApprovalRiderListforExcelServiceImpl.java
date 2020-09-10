@@ -29,8 +29,8 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
         if (request.getRequestURI().matches("/excelDownloadApprovalRiderList")){
             List<RiderApprovalInfo> approvalInfos =(List<RiderApprovalInfo>) model.get("getApprovalRiderList");
             // 본문 내용 세팅
-
-            fileName += "RiderApprovalList.xlsx";
+            setApprovalRiderListforExcel(workbook, approvalInfos);
+            fileName += "_RiderApprovalList.xlsx";
         }
 
         String encFileName = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
@@ -119,8 +119,7 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
 
         // 본문 내용
         {
-
-            for (int i = 0; i < approvalList.size(); i++) {
+            for (int i = 0, r = approvalList.size(); i < r; i++) {
                 colNum = 0;
                 Row addListRow = sheet.createRow(rowNum);
 
@@ -131,40 +130,45 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
 
                 // 승인 ID
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(approvalList.get(i).getId());
+                cell.setCellValue(changeType(String.class, approvalList.get(i).getId()));
                 cell.setCellStyle(dataCellStyle);
 
                 // 라이더 ID
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(approvalList.get(i).getRiderId());
+                cell.setCellValue(changeType(String.class, approvalList.get(i).getRiderId()));
                 cell.setCellStyle(dataCellStyle);
 
                 // 라이더 이름
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(approvalList.get(i).getName());
+                cell.setCellValue(changeType(String.class, approvalList.get(i).getName()));
                 cell.setCellStyle(dataCellStyle);
 
                 // 라이더 휴대폰번호
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(approvalList.get(i).getPhone());
+                cell.setCellValue(changeType(String.class, approvalList.get(i).getPhone()));
                 cell.setCellStyle(dataCellStyle);
 
                 // 요청 날짜
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(approvalList.get(i).getCreatedDatetime());
+                cell.setCellValue(changeType(String.class, approvalList.get(i).getCreatedDatetime()));
                 cell.setCellStyle(dataCellStyle);
 
                 // 유효기간
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(approvalList.get(i).getSession().getExpiryDatetime());
+                if (approvalList.get(i).getSession() == null) {
+                    cell.setCellValue("-");
+                } else {
+                    cell.setCellValue(changeType(String.class, approvalList.get(i).getSession().getExpiryDatetime()));
+                }
                 cell.setCellStyle(dataCellStyle);
 
                 // 라이더 상태
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(approvalList.get(i).getApprovalStatus());
+                cell.setCellValue(changeType(String.class, approvalList.get(i).getApprovalStatus()));
                 cell.setCellStyle(dataCellStyle);
-            }
 
+                rowNum++;
+            }
         }
     }
 }

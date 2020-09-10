@@ -771,7 +771,13 @@
 		) VALUES (
 			now()
 			, #{chatUserId}
-			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			<if test="role != null and role == 'ROLE_ADD'">
+				, #{adminId}
+			</if>
+			<if test="role == null or role != 'ROLE_ADD'">
+				, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			</if>
+
 			, #{name}
 			, #{phone}
 			, #{loginId}
