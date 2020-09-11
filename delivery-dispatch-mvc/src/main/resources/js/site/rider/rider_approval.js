@@ -131,7 +131,7 @@ function makeRowButton(obj){
     return  btn_approval + btn_setDate + btn_edit;
 }
 
-// 상태 변경
+// 승인 허용
 function riderApprovalStatus(rowID, status){
     //changeApprovalStatus
     // console.log($('#jqGrid').getRowData($('#jqGrid').getGridParam('selrow')).expirationDate);
@@ -144,7 +144,7 @@ function riderApprovalStatus(rowID, status){
 
     loading.show();
     $.ajax({
-        url: "/changeApprovalStatus",
+        url: "/approvalAccept",
         type: "post",
         data:{
             id: rowID,
@@ -159,7 +159,6 @@ function riderApprovalStatus(rowID, status){
         },
         complete: function (data){
             getApprovalRiderList();
-            popClose("#popRiderInfo");
         }
     });
 
@@ -167,13 +166,17 @@ function riderApprovalStatus(rowID, status){
 
 // popUp 상태 변경
 function popUpChangeStatus(){
+
     let approvalID = $("#approvalID").val();
     let approvalStatus = $("#approvalStatus").val();
 
+    let current = dateFormat(new Date());
+    let exp = dateFormat($("#expDate" + approvalID).val());
 
-    if (approvalID == undefined || approvalID.trim() == ""){
+    if (approvalID == undefined || approvalID.trim() == "" || (exp != "-" && exp < current)){
         return false;
     }
+    loading.show();
 
     let setStatus = "2";
 
@@ -182,7 +185,25 @@ function popUpChangeStatus(){
         setStatus = "3";
     }
 
-    riderApprovalStatus(approvalID, setStatus);
+    $.ajax({
+        url: "/changeApprovalStatus",
+        type: "post",
+        data:{
+            id: approvalID,
+            approvalStatus: setStatus
+        },
+        dataType: "json",
+        success: function (data){
+            alert("상태 변경 완료");
+        },
+        error: function (error){
+            alert("상태 변경 오류");
+        },
+        complete: function (data){
+            getApprovalRiderList();
+            popClose("#popRiderInfo");
+        }
+    });
 }
 
 // 라이더 승인 상세 조회

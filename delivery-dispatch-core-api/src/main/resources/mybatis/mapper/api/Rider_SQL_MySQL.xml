@@ -328,6 +328,7 @@
 		AND TG.deleted is NULL
 
 		WHERE 1=1
+		and   TR.deleted is null
 		<choose>
 			<when test="id != null and id != ''">
 				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
@@ -339,11 +340,13 @@
 				AND TR.id = #{id}
 			</when>
 			<otherwise>
-				AND TR.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-				AND TR.id = (
-				SELECT rider_id
-				FROM TB_RIDER_SESSION
-				WHERE access_token=#{token}
+				AND TR.admin_id in (SELECT admin_id FROM TB_RIDER WHERE id in (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token} and date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d') AND rider_id = TR.id))
+				AND TR.id in (
+					SELECT rider_id
+					FROM TB_RIDER_SESSION
+					WHERE access_token=#{token}
+					AND   date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+					AND   rider_id = TR.id
 				)
 			</otherwise>
 		</choose>
@@ -579,7 +582,7 @@
 	</update>
 	<!-- rider 출/퇴근  -->
 	<update id="updateWorkingRider" parameterType="kr.co.cntt.core.model.rider.Rider">
-		UPDATE TB_RIDER
+		UPDATE TB_RIDER A
 		SET
 			modified_datetime = now()
 		<if test="working == 1">
@@ -590,7 +593,8 @@
 			, working=#{working}
 		</if>
 
-		WHERE
+		WHERE deleted is null
+		and
 			id = (
 		SELECT
 			rider_id
@@ -598,6 +602,8 @@
 			TB_RIDER_SESSION
 		WHERE
 			access_token = #{accessToken}
+		AND	 date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+		and   rider_id = A.id
 		)
 
 	</update>
@@ -1329,4 +1335,16 @@
 		from	 TB_REQ_REGIST_RIDER
 		where	 id = #{id}
 	</select>
+
+	<update id="deleteRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
+		update	 TB_RIDER		as R
+		left join TB_SUBGROUP_RIDER_REL	as RR
+			on	 R.id = RR.rider_id
+		set		 R.deleted = ifnull(R.deleted, now())
+				,R.modified_datetime = ifnull(R.modified_datetime, now())
+				,RR.deleted = ifnull(RR.deleted, now())
+				,RR.modified_datetime = ifnull(RR.modified_datetime, now())
+		where	 R.id = #{id}
+	</update>
+
 </mapper>

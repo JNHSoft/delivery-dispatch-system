@@ -54,13 +54,18 @@ public class CommInfoServiceImpl extends ServiceSupport implements CommInfoServi
     @Override
     public int insertSubGroupRiderRel(Rider rider) {
         // 라이더 그룹 정보 등록
-        return 0;
+        return adminMapper.insertSubGroupRiderRel(rider);
     }
 
     @Override
-    public int insertRiderSession(RiderSession session) {
-        // 라이더 세션 등록
-        return 0;
+    public int deleteRiderInfo(Rider rider) {
+        int result = riderMapper.deleteRiderInfo(rider);
+
+        if(result > 0){
+            result = adminMapper.deleteRiderToken(rider);
+        }
+
+        return result;
     }
 
     @Override

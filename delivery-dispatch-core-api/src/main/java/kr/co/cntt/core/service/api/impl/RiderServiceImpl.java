@@ -400,10 +400,15 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                         try {
+
+                            if (rider.getSession().getExpiryDatetime() == null){
+                                rider.getSession().setExpiryDatetime(timeFormat.format(new Date()));
+                            }
+
                             Date expDate = dateFormat.parse(dateFormat.format(timeFormat.parse(rider.getSession().getExpiryDatetime())));
                             Date nowDate = dateFormat.parse(dateFormat.format(new Date()));
 
-                            if (expDate.getTime() > nowDate.getTime()){
+                            if (expDate.getTime() >= nowDate.getTime()){
                                 throw new AppTrException("등록 실패! 사용 중인 계정입니다.", "402");
                             }
                         } catch(AppTrException e){

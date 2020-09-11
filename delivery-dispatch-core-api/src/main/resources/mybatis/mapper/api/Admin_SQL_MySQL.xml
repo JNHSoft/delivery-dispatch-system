@@ -642,7 +642,12 @@
 			, rider_id
 		) VALUES (
 			now()
-			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			<if test="role != null and role == 'ROLE_ADD'">
+				,#{adminId}
+			</if>
+			<if test="role == null or role != 'ROLE_ADD'">
+				, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			</if>
 			<if test="subGroupRiderRel.groupId != null and subGroupRiderRel.subGroupId != ''">
 			, #{subGroupRiderRel.groupId,jdbcType=VARCHAR}
 			, #{subGroupRiderRel.subGroupId,jdbcType=VARCHAR}

@@ -281,4 +281,9 @@ public interface RiderMapper {
      * 라이더 암호 가져오기
      * */
     public String selectApprovalRiderPw(String id);
+
+    /**
+     * 라이더 정보 삭제 ( 라이더 및 서브 그룹 )
+     * */
+    public int deleteRiderInfo(Rider rider);
 }

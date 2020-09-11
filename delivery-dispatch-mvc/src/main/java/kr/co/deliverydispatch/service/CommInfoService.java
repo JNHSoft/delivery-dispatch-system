@@ -20,10 +20,12 @@ public interface CommInfoService {
      * */
     int insertRiderInfo(Rider rider);
     int insertSubGroupRiderRel(Rider rider);
-    int insertRiderSession(RiderSession session);
+
+    // 라이더 정보 삭제
+    int deleteRiderInfo(Rider rider);
+
+
     String selectApprovalRiderPw(String id);
-
-
 
 
 }
