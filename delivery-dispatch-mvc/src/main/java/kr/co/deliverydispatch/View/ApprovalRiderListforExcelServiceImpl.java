@@ -76,43 +76,43 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
             // 승인 ID
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Approval ID");
+            addTitle.setCellValue(messageSource.getMessage("rider.approval.id",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 라이더 Login ID
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Rider ID");
+            addTitle.setCellValue(messageSource.getMessage("rider.approval.login.id",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 라이더 이름
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Rider Name");
+            addTitle.setCellValue(messageSource.getMessage("rider.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 라이더 휴대폰번호
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Contact No.");
+            addTitle.setCellValue(messageSource.getMessage("rider.phone",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 요청 날짜
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Request Date");
+            addTitle.setCellValue(messageSource.getMessage("rider.approval.request.date",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 유효기간
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Expiration Date");
+            addTitle.setCellValue(messageSource.getMessage("rider.approval.detail.expiry.datetime",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 라이더 상태
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue("Rider Status");
+            addTitle.setCellValue(messageSource.getMessage("rider.approval.status",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
         }
@@ -167,17 +167,17 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
 
                 switch (approvalList.get(i).getApprovalStatus()){
                     case "0":
-                        cell.setCellValue("승인 대기");
+                        cell.setCellValue(messageSource.getMessage("rider.approval.status.wait",null, locale));
                         break;
                     case "1":
-                        cell.setCellValue("승인 완료");
+                        cell.setCellValue(messageSource.getMessage("rider.approval.approval",null, locale));
                         break;
                     case "2":
                     case "3":
-                        cell.setCellValue("승인 거절");
+                        cell.setCellValue(messageSource.getMessage("rider.approval.disapproval",null, locale));
                         break;
                     case "4":
-                        cell.setCellValue("일자 초과");
+                        cell.setCellValue(messageSource.getMessage("rider.approval.status.expiry",null, locale));
                         break;
                     default:
                         cell.setCellValue("");
