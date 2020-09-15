@@ -383,7 +383,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         if (StringUtils.isEmpty(approvalInfo.getAdminId()) || StringUtils.isEmpty(approvalInfo.getLoginId()) || StringUtils.isEmpty(approvalInfo.getLoginPw()) ||
                 StringUtils.isEmpty(approvalInfo.getName()) || StringUtils.isEmpty(approvalInfo.getPhone()) || StringUtils.isEmpty(approvalInfo.getStore().getId()) ||
                 StringUtils.isEmpty(approvalInfo.getLatitude()) || StringUtils.isEmpty(approvalInfo.getLongitude())){
-            throw new AppTrException("정보가 누락되었습니다.", "303");
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
         approvalInfo.setRole("ROLE_RIDER");
@@ -409,16 +409,16 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             Date nowDate = dateFormat.parse(dateFormat.format(new Date()));
 
                             if (expDate.getTime() >= nowDate.getTime()){
-                                throw new AppTrException("등록 실패! 사용 중인 계정입니다.", "402");
+                                throw new AppTrException(getMessage(ErrorCodeEnum.E00041), ErrorCodeEnum.E00041.name());
                             }
                         } catch(AppTrException e){
                             throw e;
                         } catch(Exception e){
                             e.printStackTrace();
-                            throw new AppTrException("등록 실패! API 제공 업체에 문의하십시오.", "505");
+                            throw new AppTrException(getMessage(ErrorCodeEnum.E00045), ErrorCodeEnum.E00045.name());
                         }
                     }else if (rider.getSession() == null){
-                        throw new AppTrException("등록 실패! 사용 중인 계정입니다.", "402");
+                        throw new AppTrException(getMessage(ErrorCodeEnum.E00041), ErrorCodeEnum.E00041.name());
                     }
 
                     break;
@@ -431,16 +431,16 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             Date nowDate = dateFormat.parse(dateFormat.format(new Date()));
 
                             if (expDate.getTime() > nowDate.getTime()){
-                                throw new AppTrException("등록 실패! 등록 요청이 진행 중입니다.", "403");
+                                throw new AppTrException(getMessage(ErrorCodeEnum.E00042), ErrorCodeEnum.E00042.name());
                             }
                         } catch(AppTrException e){
                             throw e;
                         } catch(Exception e){
                             e.printStackTrace();
-                            throw new AppTrException("등록 실패! API 제공 업체에 문의하십시오.", "505");
+                            throw new AppTrException(getMessage(ErrorCodeEnum.E00045), ErrorCodeEnum.E00045.name());
                         }
                     }else if (rider.getSession() == null){
-                        throw new AppTrException("등록 실패! 등록 요청이 진행 중입니다.", "403");
+                        throw new AppTrException(getMessage(ErrorCodeEnum.E00042), ErrorCodeEnum.E00042.name());
                     }
                     break;
                 default:
@@ -466,7 +466,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         // 정보 확인
         if (StringUtils.isEmpty(approvalInfo.getLoginId()) || StringUtils.isEmpty(approvalInfo.getLoginPw())){
-            throw new AppTrException("필수 정보가 입력되지 않았습니다.", "404");
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
         if (approvalInfo.getLevel().equals("3")){
@@ -477,7 +477,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         RiderApprovalInfo riderApprovalInfo = riderMapper.selectApprovalRiderInfo(approvalInfo);
 
         if (riderApprovalInfo == null){
-            throw new AppTrException("등록된 계정이 없습니다.", "405");
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00049), ErrorCodeEnum.E00049.name());
         }
 
         // 유효 기간 체크
@@ -489,24 +489,24 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 Date nowDate = dateFormat.parse(dateFormat.format(new Date()));
 
                 if (expDate.getTime() < nowDate.getTime()){
-                    throw new AppTrException("사용 기간이 만료되었습니다.", "411");
+                    throw new AppTrException(getMessage(ErrorCodeEnum.E00050), ErrorCodeEnum.E00050.name());
                 }
             } catch(AppTrException e){
                 throw e;
             } catch(Exception e){
                 e.printStackTrace();
-                throw new AppTrException("API 제공 업체에 문의하십시오.", "505");
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00053), ErrorCodeEnum.E00053.name());
             }
         }
 
         switch (riderApprovalInfo.getApprovalStatus()){
             case "0":
                 // 관리자가 확인 진행 중
-                throw new AppTrException("등록 요청을 확인하는 중입니다.", "413");
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00046), ErrorCodeEnum.E00046.name());
             case "1":
                 // 승인이 되었으며, 정상적인 계정인지 확인
                 if (StringUtils.isEmpty(riderApprovalInfo.getRiderId())){
-                    throw new AppTrException("담당자에게 확인하시길 바랍니다.", "505");
+                    throw new AppTrException(getMessage(ErrorCodeEnum.E00051), ErrorCodeEnum.E00051.name());
                 }
 
                 // 라이더 정보를 확인 후 값을 전달한다.
@@ -517,7 +517,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 Rider riderInfo = riderMapper.getRiderInfo(approvalInfo);
 
                 if (riderInfo == null || !riderInfo.getId().equals(riderApprovalInfo.getRiderId())){
-                    throw new AppTrException("요청한 사원과 등록된 사원이 일치하지 않습니다.", "1234");
+                    throw new AppTrException(getMessage(ErrorCodeEnum.E00052), ErrorCodeEnum.E00052.name());
                 }
                 returnMap.put("riderId", riderApprovalInfo.getRiderId());
 
@@ -525,9 +525,9 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             case "2":
             case "3":
                 // 승인 거절
-                throw new AppTrException("등록 요청이 거절되었습니다.", "412");
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00047), ErrorCodeEnum.E00047.name());
             default:
-                throw new AppTrException("등록 상태를 확인할 수 없습니다.", "412");
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00048), ErrorCodeEnum.E00048.name());
         }
 
         return returnMap;
