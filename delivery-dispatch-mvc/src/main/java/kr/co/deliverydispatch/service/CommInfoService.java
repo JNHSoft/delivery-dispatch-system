@@ -21,11 +21,10 @@ public interface CommInfoService {
     int insertRiderInfo(Rider rider);
     int insertSubGroupRiderRel(Rider rider);
 
+    int updateRiderInfo(Rider rider);
+
     // 라이더 정보 삭제
     int deleteRiderInfo(Rider rider);
 
-
     String selectApprovalRiderPw(String id);
-
-
 }

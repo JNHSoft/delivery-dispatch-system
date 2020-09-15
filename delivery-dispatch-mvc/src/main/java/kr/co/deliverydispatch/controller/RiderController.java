@@ -1,7 +1,6 @@
 package kr.co.deliverydispatch.controller;
 
 import com.google.gson.Gson;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
@@ -12,13 +11,11 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.store.StoreRiderRel;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.CommInfoService;
 import kr.co.deliverydispatch.service.CommunityService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.mapper.Mapper;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -308,15 +305,33 @@ public class RiderController {
 
             Map<String, String> result = new Gson().fromJson(resultJson, Map.class);
 
-            System.out.println("#################################################################");
-            System.out.println(rider);
-            System.out.println("#################################################################");
-            System.out.println(chkRiderInfo.getSession());
-            System.out.println(result.get("result").equals("1") && chkRiderInfo.getSession() != null && chkRiderInfo.getSession().getExpiryDatetime() != null);
-            System.out.println(result.get("result"));
-            System.out.println(chkRiderInfo.getSession());
-            System.out.println(chkRiderInfo.getSession().getExpiryDatetime());
-            System.out.println("#################################################################");
+            // 상태 변경 관련 UPDATE 문 실행
+            storeRiderService.setRiderInfo(riderInfo);
+
+            // 만료 기간이 없는 경우 강제로 현재 일자롤부터 180일을 추가한다.
+            if (chkRiderInfo.getSession() == null || chkRiderInfo.getSession().getExpiryDatetime() == ""){
+                System.out.println("유효기간 입력");
+                if (chkRiderInfo.getSession() == null){
+                    chkRiderInfo.setSession(new RiderSession());
+                }
+
+                try {
+                    SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+                    calendar.add(Calendar.DATE, 180);
+
+                    System.out.println("############ 유효기간 설정 #################");
+//                    System.out.println(calendar.getTime());
+                    System.out.println(defaultFormat.format(calendar.getTime()));
+                    System.out.println("############ 유효기간 설정 #################");
+
+                    chkRiderInfo.getSession().setExpiryDatetime(defaultFormat.format(calendar.getTime()));
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
 
             // Token 발행이 성공적이고, 유효기간이 있는 경우, 유효기간을 업데이트한다.
             if (result.get("result").equals("1") && chkRiderInfo.getSession() != null && chkRiderInfo.getSession().getExpiryDatetime() != null){
@@ -325,19 +340,11 @@ public class RiderController {
                 session.setRider_id(rider.getId());
                 session.setExpiryDatetime(chkRiderInfo.getSession().getExpiryDatetime());
 
-                System.out.println("###################");
-                System.out.println(result);
-                System.out.println("###################");
-
                 storeRiderService.updateRiderSession(session);
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
-        // 상태 변경 관련 UPDATE 문 실행
-        storeRiderService.setRiderInfo(riderInfo);
 
         return true;
     }
@@ -414,13 +421,46 @@ public class RiderController {
     public Boolean changeRiderInfo(RiderApprovalInfo riderInfo){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         riderInfo.setToken(storeInfo.getStoreAccessToken());
+        boolean bExpDate = false;
 
-        System.out.println("#############################################");
-        System.out.println(riderInfo.getId());
-        System.out.println(riderInfo.getSession().getExpiryDatetime());
-        System.out.println("#############################################");
+        // 라이더의 원본 데이터를 가져온다.
+        RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
 
-        return true;
+        if (chkRiderInfo.getSession() == null){
+            chkRiderInfo.setSession(new RiderSession());
+        }
+
+        // 직원코드가 다른 경우
+        if (riderInfo.getCode() != null && !riderInfo.getCode().equals(chkRiderInfo.getCode())){
+            chkRiderInfo.setCode(riderInfo.getCode());
+            bExpDate = true;
+        }
+
+        // 번호판이 다른 경우 변경한다.
+        if (riderInfo.getVehicleNumber() != null && !riderInfo.getVehicleNumber().equals(chkRiderInfo.getVehicleNumber())){
+            chkRiderInfo.setVehicleNumber(riderInfo.getVehicleNumber());
+            bExpDate = true;
+        }
+
+        if (chkRiderInfo.getApprovalStatus().equals("1")){
+            // 라이더가 승인이 된 경우 TB_RIDER에서 정보를 변경한다.
+            Rider changeRider = new Rider();
+
+            changeRider.setId(chkRiderInfo.getRiderId());
+            changeRider.setVehicleNumber(riderInfo.getVehicleNumber());
+            changeRider.setCode(riderInfo.getCode());
+
+            commInfoService.updateRiderInfo(changeRider);
+        }else{
+            // 승인 이외의 정보는 Rider Approval Info에서 적용한다.
+
+            System.out.println("###########");
+            System.out.println(chkRiderInfo.getCode());
+
+            storeRiderService.setRiderInfo(chkRiderInfo);
+        }
+
+       return true;
     }
 
     // 라이더 상태 및 유효기간을 체크한다

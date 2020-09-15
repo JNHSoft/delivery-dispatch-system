@@ -257,11 +257,12 @@
 				,TB_RIDER				R
 				,TB_RIDER_SESSION		RS
 		set		 RS.expiry_datetime = #{expiryDatetime}
+				,RRR.exp_datetime = #{expiryDatetime}
 				,RS.modified_datetime = now()
 		WHERE	 RRR.rider_id = R.id
 		and		 R.id = RS.rider_id
 		and		 date_format(ifnull(ifnull(RS.expiry_datetime, RRR.exp_datetime), now()), '%y-%m-%d') >= date_format(now(), '%y-%m-%d')
-		and		 RRR.req_status = 1
+		and		 RRR.req_status in (0, 1)
 		and		 R.id = #{rider_id}
 	</update>
 
@@ -1298,6 +1299,9 @@
 		set		 modified_datetime = now()
 		<if test="code != null and code != ''">
 				,code = #{code}
+		</if>
+		<if test="vehicleNumber != null and vehicleNumber != ''">
+				,vehicle_number = #{vehicleNumber}
 		</if>
 		<if test="session != null and session.expiryDatetime != ''">
 				,exp_datetime = #{session.expiryDatetime}

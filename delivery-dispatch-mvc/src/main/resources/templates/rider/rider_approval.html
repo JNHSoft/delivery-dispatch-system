@@ -54,37 +54,37 @@
                         <tr>
                             <th th:text="${#messages.msg('login.id')}"/>
                             <td>
-                                <input type="text" name="" id="riderLoginID" class="input" value="" readonly="true"/>
+                                <input type="text" name="" id="riderLoginID" class="input" value="" readonly="true" style="background: darkgray"/>
                             </td>
                             <th th:text="${#messages.msg('rider.belong.store')}"/>
                             <td>
-                                <input type="text" name="" id="riderStore" class="input" value="" readonly="true" />
+                                <input type="text" name="" id="riderStore" class="input" value="" readonly="true" style="background: darkgray"/>
                             </td>
                         </tr>
                         <tr>
                             <th th:text="${#messages.msg('rider.name')}"/>
                             <td>
-                                <input type="text" name="" id="riderName" class="input" value="" readonly="true"/>
+                                <input type="text" name="" id="riderName" class="input" value="" readonly="true" style="background: darkgray"/>
                             </td>
                             <th th:text="${#messages.msg('rider.phone')}"/>
                             <td>
-                                <input type="text" name="" id="riderPhone" class="input" value="" readonly="true" />
+                                <input type="text" name="" id="riderPhone" class="input" value="" readonly="true" style="background: darkgray"/>
                             </td>
                         </tr>
                         <tr>
                             <th th:text="${#messages.msg('rider.code')}"/>
                             <td>
-                                <input type="text" name="" id="riderCode" class="input" value="" readonly="true"/>
+                                <input type="text" name="" id="riderCode" class="input" value="" />
                             </td>
                             <th th:text="${#messages.msg('rider.vehicle.number')}"/>
                             <td>
-                                <input type="text" name="" id="riderVehicle" class="input" value="" readonly="true" />
+                                <input type="text" name="" id="riderVehicle" class="input" value="" />
                             </td>
                         </tr>
                         <tr>
                             <th th:text="${#messages.msg('rider.approval.detail.expiry.datetime')}"/>
                             <td>
-                                <input type="text" name="" id="riderExpDate" class="input picker" value="" readonly="true"/>
+                                <input type="text" name="" id="riderExpDate" class="input picker" value="" readonly="true" />
                             </td>
                         </tr>
                         </tbody>
@@ -95,7 +95,7 @@
                 <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
                 <div class="right">
                     <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('rider.approval.button.disapproval')}" onclick="popUpChangeStatus()"></a>
-                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}"></a>
+                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}" onclick="popUpSaveData()"></a>
                 </div>
             </div>
             <a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>

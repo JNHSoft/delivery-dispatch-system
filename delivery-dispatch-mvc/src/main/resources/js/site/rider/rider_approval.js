@@ -107,24 +107,39 @@ function makeRowButton(obj){
     var btn_setDate = "";
     var btn_edit = "";
 
+    let expDate = obj.session == undefined ? "-" : dateFormat(obj.session.expiryDatetime);
+    let nowDate = dateFormat(new Date);
+    let bExpDate = !(expDate != "-" && expDate < nowDate);
+
+    if (bExpDate){
+        btn_setDate = "<input type='hidden' name='' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "-" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker'/>" +
+            "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'>Validity period Setting</button>"
+    }else{
+        btn_setDate ="<button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5 t_pink' />Validity period Setting</button>"
+    }
+
     switch (obj.approvalStatus){
         case "0":           // 요청
             btn_approval = "<button class='button btn_pale_green h30 w110 mr20' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'> Approval</button>";
-            btn_setDate = "<input type='hidden' name='' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker'/>" +
-                        "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'>Validity period Setting</button>"
-            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
+            if (bExpDate){
+                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
+            }else{
+                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
+            }
             break;
         case "1":           // 수락
             btn_approval = "<button class='button btn_onahau h30 w110 mr20' style='font-size: 12px;'><i class='fa fa-check mr5' />Approval</button>";
-            btn_setDate = "<input type='hidden' name='' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker'/>" +
-                        "<button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'><i class='fa fa-check mr5 t_pink' />Validity period Setting</button>"
-            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
+            if (bExpDate){
+                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
+            }else{
+                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
+            }
             break;
         case "2":           // 거절
         case "3":           // 승인 후 거절
             btn_approval = "<button class='button btn_gray2 h30 w110 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />Disapproval</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />Validity period Setting</button>"
-            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_edit = "<button class='button btn_blue h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
             break;
     }
 
@@ -176,6 +191,11 @@ function popUpChangeStatus(){
     if (approvalID == undefined || approvalID.trim() == "" || (exp != "-" && exp < current)){
         return false;
     }
+
+    if (!confirm("Are you sure to Disapproval?")){
+        return false;
+    }
+
     loading.show();
 
     let setStatus = "2";
@@ -206,6 +226,48 @@ function popUpChangeStatus(){
     });
 }
 
+// popUp 데이터 저장
+function popUpSaveData(){
+    let approvalID = $("#approvalID").val();
+    let approvalStatus = $("#approvalStatus").val();
+
+    let current = dateFormat(new Date());
+    let exp = dateFormat($("#expDate" + approvalID).val());
+
+    if (approvalID == undefined || approvalID.trim() == "" || (exp != "-" && exp < current)){
+        return false;
+    }
+
+    if (!confirm("Are you sure to the changes?")){
+        return false;
+    }
+
+    let riderCode = $("#riderCode").val();
+    let riderVehicle = $("#riderVehicle").val();
+    let approvalId =  $("#approvalID").val();
+
+    $.ajax({
+        url: "/changeRiderInfo",
+        type: "post",
+        data:{
+            id: approvalId,
+            vehicleNumber: riderVehicle,
+            code: riderCode
+        },
+        dataType: "json",
+        success: function (data){
+            alert("상태 변경 완료");
+        },
+        error: function (error){
+            alert("상태 변경 오류");
+        },
+        complete: function (data){
+            getApprovalRiderList();
+            popClose("#popRiderInfo");
+        }
+    });
+}
+
 // 라이더 승인 상세 조회
 function searchRiderApprovalDetail(rowID){
     $.ajax({
@@ -217,7 +279,7 @@ function searchRiderApprovalDetail(rowID){
         dataType: "json",
         success: function (data){
             $("#riderLoginID").val(data.loginId);
-            $("#riderStore").val(data.riderDetail.riderStore.id);
+            $("#riderStore").val(data.riderDetail.riderStore.storeName);
             $("#riderName").val(data.name);
             $("#riderPhone").val(data.phone);
             $("#riderCode").val(data.riderDetail.code);
@@ -227,7 +289,12 @@ function searchRiderApprovalDetail(rowID){
             $("#approvalStatus").val(data.approvalStatus);
 
             $("#riderExpDate").datepicker({
-                minDate: new Date
+                minDate: new Date,
+                onSelect: function (selectDate, obj){
+                    if(checkExpDate(selectDate, obj)){
+                        updateExpDate(selectDate, rowID);
+                    }
+                }
             });
 
             popOpen("#popRiderInfo");

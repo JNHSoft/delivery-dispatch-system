@@ -58,6 +58,11 @@ public class CommInfoServiceImpl extends ServiceSupport implements CommInfoServi
     }
 
     @Override
+    public int updateRiderInfo(Rider rider){
+        return riderMapper.updateRiderInfo(rider);
+    }
+
+    @Override
     public int deleteRiderInfo(Rider rider) {
         int result = riderMapper.deleteRiderInfo(rider);
 

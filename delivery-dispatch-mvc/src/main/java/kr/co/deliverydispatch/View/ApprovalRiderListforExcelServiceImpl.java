@@ -79,7 +79,7 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
             addTitle.setCellValue("Approval ID");
             addTitle.setCellStyle(titleCellStyle);
 
-            // 라이더 ID
+            // 라이더 Login ID
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue("Rider ID");
@@ -133,9 +133,9 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
                 cell.setCellValue(changeType(String.class, approvalList.get(i).getId()));
                 cell.setCellStyle(dataCellStyle);
 
-                // 라이더 ID
+                // 라이더 Login ID
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(changeType(String.class, approvalList.get(i).getRiderId()));
+                cell.setCellValue(changeType(String.class, approvalList.get(i).getLoginId()));
                 cell.setCellStyle(dataCellStyle);
 
                 // 라이더 이름
@@ -164,7 +164,26 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
 
                 // 라이더 상태
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(changeType(String.class, approvalList.get(i).getApprovalStatus()));
+
+                switch (approvalList.get(i).getApprovalStatus()){
+                    case "0":
+                        cell.setCellValue("승인 대기");
+                        break;
+                    case "1":
+                        cell.setCellValue("승인 완료");
+                        break;
+                    case "2":
+                    case "3":
+                        cell.setCellValue("승인 거절");
+                        break;
+                    case "4":
+                        cell.setCellValue("일자 초과");
+                        break;
+                    default:
+                        cell.setCellValue("");
+                        break;
+                }
+
                 cell.setCellStyle(dataCellStyle);
 
                 rowNum++;
