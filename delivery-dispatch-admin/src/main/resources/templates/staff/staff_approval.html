@@ -1,18 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="/layout">
 
 <!-- 컨텐츠 영역 -->
 <section id="container" layout:fragment="content">
-
-    <div th:object="${store}" style="display:none">
-        <input type="hidden" id="storeId" th:value="*{id}"/>
-        <input type="hidden" id="statusArray"/>
-        <input type="hidden" id="assignmentStatus" th:value="*{assignmentStatus}"/>
-        <input type="hidden" id="adminId" th:value="*{adminId}" />
-    </div>
-
-    <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}"/>
+    <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.staff')}"/>
     <div class="search_box">
         <div class="left">
             <span class="lbl" th:text="${#messages.msg('rider.approval.title')}" style="font-size: 15px; font-weight: bold; color:black" />
@@ -84,7 +76,7 @@
                         <tr>
                             <th th:text="${#messages.msg('rider.approval.detail.expiry.datetime')}"/>
                             <td>
-                                <input type="text" name="" id="riderExpDate" class="input picker" value="" readonly="true" />
+                                <input type="text" name="" id="riderExpDate" class="input datepicker" value="" readonly="true" />
                             </td>
                         </tr>
                         </tbody>
@@ -103,8 +95,7 @@
     </div>
     <!-- POPUP 관련 F -->
 
-    <script type="text/javascript" th:src="@{/resources/js/site/staff/staff_approval.js}" layout:fragment="script2">
-    </script>
+    <script type="text/javascript" th:src="@{/resources/js/site/staff/staff_approval.js}" layout:fragment="script2"></script>
 </section>
 <!-- //컨텐츠 영역 -->
 <script layout:fragment="script" th:inline="javascript">

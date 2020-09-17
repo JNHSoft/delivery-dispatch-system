@@ -112,7 +112,7 @@ function makeRowButton(obj){
     let bExpDate = !(expDate != "-" && expDate < nowDate);
 
     if (bExpDate){
-        btn_setDate = "<input type='hidden' name='' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "-" : dateFormat2(obj.session.expiryDatetime)) + "' class='input picker'/>" +
+        btn_setDate = "<input type='hidden' name='' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "-" : dateFormat2(obj.session.expiryDatetime)) + "' class='input datepicker'/>" +
             "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'>" + expDateSetting + "</button>"
     }else{
         btn_setDate ="<button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5 t_pink' />" + expDateSetting + "</button>"
@@ -393,7 +393,7 @@ function excelDownload(){
     loading.show();
 
     // ajax 통신
-    $.fileDownload("/excelDownloadApprovalRiderList", {
+    $.fileDownload("/excelDownloadApprovalRiderListforAdmin", {
         httpMethod: "get",
         data:{
 

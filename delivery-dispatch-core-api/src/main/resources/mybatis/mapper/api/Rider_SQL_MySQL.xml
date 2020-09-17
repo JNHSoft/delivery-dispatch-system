@@ -1240,6 +1240,9 @@
 			on	 REQ.rider_id = RS.rider_id
 		where	 1=1
 		<choose>
+			<when test="role != null and role == 'ROLE_ADMIN'">
+				AND REQ.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
+			</when>
 			<when test="role != null and role == 'ROLE_STORE'">
 				AND REQ.store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token})
 			</when>
@@ -1283,6 +1286,10 @@
 			on	 REQ.rider_id = RS.rider_id
 		where	 1=1
 		<choose>
+			<when test="role != null and role == 'ROLE_ADMIN'">
+				AND REQ.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
+				AND REQ.id = #{id}
+			</when>
 			<when test="role != null and role == 'ROLE_STORE'">
 				AND REQ.store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token})
 				AND REQ.id = #{id}
@@ -1318,6 +1325,11 @@
 		</if>
 		<if test="riderId != null and riderId != ''">
 				,rider_id = #{riderId}
+		</if>
+		<if test="role != null and role == 'ROLE_ADMIN'">
+			<if test="store != null and store.id != ''">
+				,store_id = #{store.id}
+			</if>
 		</if>
 		where	 id = #{id}
 	</update>

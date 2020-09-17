@@ -1,0 +1,45 @@
+package kr.co.cntt.core.service.admin;
+
+import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.store.Store;
+
+import java.util.List;
+
+public interface StaffApprovalAdminService {
+    /** 라이더 승인 리스트 가져오기 */
+    public List<RiderApprovalInfo> getRiderApprovalList(Common common);
+
+    /** 라이더 개별 정보 */
+    public RiderApprovalInfo getRiderApprovalInfo(Common common);
+
+    /** 라이더 정보 삭제 */
+    int deleteRiderInfo(Rider rider);
+
+    /**
+     * <p> setRiderInfo
+     * 라이더 승인과 관련한 정보 변경 건
+     * */
+    int setRiderInfo(RiderApprovalInfo riderInfo);
+
+    /**
+     * <p> update ExpiryDatetime for Rider Session
+     * */
+    int updateRiderSession(RiderSession session);
+
+    String selectApprovalRiderPw(String id);
+
+    Store selectStoreInfo(Store store);
+
+    int insertChatUser(Rider rider);
+
+    int insertRider(Rider rider);
+
+    int insertSubGroupRiderRel(Rider rider);
+
+    int insertAdminRiderSession(Rider rider);
+
+    int updateRiderInfo(Rider rider);
+}
