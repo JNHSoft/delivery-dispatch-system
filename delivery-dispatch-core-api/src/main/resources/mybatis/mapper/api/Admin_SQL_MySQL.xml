@@ -182,15 +182,18 @@
 
 	<!-- selectLoginAdmin -->
 	<select id="selectLoginAdmin" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="Map">
-		SELECT A.login_id AS loginId
-		    , B.access_token AS accessToken
-		FROM TB_ADMIN AS A
-		LEFT JOIN TB_ADMIN_SESSION AS B
-		ON A.id = B.admin_id
-		WHERE 1=1
-		AND login_id = #{loginId}
-			AND login_pw = #{loginPw}
-		limit 1
+		SELECT	 A.login_id			AS loginId
+				,B.access_token		AS accessToken
+				,A.brand_code		as brandCode
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = A.brand_code )		as brandName
+		FROM	 TB_ADMIN			AS A
+		LEFT JOIN TB_ADMIN_SESSION	AS B
+			ON	 A.id = B.admin_id
+		WHERE	 1=1
+		AND		 A.deleted is null
+		AND		 login_id = #{loginId}
+		AND		 login_pw = #{loginPw}
+		limit	 1
 	</select>
 
 

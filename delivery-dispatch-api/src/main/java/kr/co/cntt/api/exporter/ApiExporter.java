@@ -177,6 +177,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
             response.put("result", CODE_SUCCESS);
             response.put("token", token);
+            response.put("brandCode", userSelectLoginMap.get("brandCode"));
+            response.put("brandName", userSelectLoginMap.get("brandName"));
 
             // Token을 Insert
             if (level.equals("3")) {

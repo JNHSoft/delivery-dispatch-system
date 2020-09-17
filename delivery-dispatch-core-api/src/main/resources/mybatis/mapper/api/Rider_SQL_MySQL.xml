@@ -170,17 +170,24 @@
 		</association>
 
 	</resultMap>
-	
+
+	<!-- 2020.09.17 라이더가 소속된 매장의 브랜드 정보를 가져온다. -->
 	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="Map">
-		SELECT A.login_id AS loginId
-		    , B.access_token AS accessToken
-		FROM TB_RIDER AS A
-		LEFT JOIN TB_RIDER_SESSION AS B
-		ON A.id = B.rider_id
-		WHERE 1=1
-		AND login_id = #{loginId}
-			 AND login_pw = #{loginPw}
-		limit 1
+		select	 A.login_id			as loginId
+				,B.access_token		as accessToken
+				,( select brand_code from TB_STORE where id = C.store_id )		as brandCode
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = ( select brand_code from TB_STORE where id = C.store_id ) )	as brandName
+		from	 TB_RIDER			as A
+		left join TB_RIDER_SESSION	as B
+		on	 A.id = B.rider_id
+		left join TB_SUBGROUP_RIDER_REL	as C
+		on	 A.id = C.rider_id
+		where	 A.deleted is null
+		and		 C.deleted is null
+		and		 date_format(ifnull(B.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
+		and		 A.login_id = #{loginId}
+		and		 A.login_pw = #{loginPw}
+		limit	 1
 	</select>
 
 
@@ -197,7 +204,7 @@
 		WHERE 1=1
 			AND A.login_id = #{loginId}
 			AND B.access_token = #{accessToken}
-			AND (expiry_datetime IS NULL OR expiry_datetime > now())
+			AND date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
 		]]>
 	</select>
 
