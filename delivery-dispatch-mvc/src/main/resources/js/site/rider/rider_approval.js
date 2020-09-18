@@ -89,6 +89,8 @@ function makeGrid(data){
 
                 if (objRowData.approvalStatus == "2" || objRowData.approvalStatus == "3"){
                     $("#jqGrid").setRowData(rowId, false, {background: '#FFAA55'});
+                }else if (objRowData.approvalStatus == "4"){
+                    $("#jqGrid").setRowData(rowId, false, {background: '#f5c717'});
                 }
             });
         }
@@ -103,9 +105,10 @@ function makeRowButton(obj){
         return "";
     }
 
-    var btn_approval = "";
-    var btn_setDate = "";
-    var btn_edit = "";
+    let btn_approval = "";
+    let btn_setDate = "";
+    let btn_edit = "";
+    let btn_disapproval = "";
 
     let expDate = obj.session == undefined ? "-" : dateFormat(obj.session.expiryDatetime);
     let nowDate = dateFormat(new Date);
@@ -120,30 +123,34 @@ function makeRowButton(obj){
 
     switch (obj.approvalStatus){
         case "0":           // 요청
-            btn_approval = "<button class='button btn_pale_green h30 w110 mr20' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
-            if (bExpDate){
-                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
-            }else{
-                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
-            }
+            btn_approval = "<button class='button btn_pale_green h30 w100 mr20' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
+            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_disapproval = "<a href='#' class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</a>"
+            //
             break;
         case "1":           // 수락
-            btn_approval = "<button class='button btn_onahau h30 w110 mr20' style='font-size: 12px;'><i class='fa fa-check mr5' />" + approval + "</button>";
+            btn_approval = "<button class='button btn_onahau h30 w100 mr20' style='font-size: 12px;'><i class='fa fa-check mr5' />" + approval + "</button>";
             if (bExpDate){
                 btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             }else{
                 btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
             }
+            btn_disapproval = "<a href='#' class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</a>"
             break;
         case "2":           // 거절
         case "3":           // 승인 후 거절
-            btn_approval = "<button class='button btn_gray2 h30 w110 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + disapproval + "</button>";
+            btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + disapproval + "</button>";
+            btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
+            btn_edit = "<button class='button btn_blue h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
+            break;
+        case "4":           // 유효기간 만료
+            btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + approval + "</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
             btn_edit = "<button class='button btn_blue h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
             break;
     }
 
-    return  btn_approval + btn_setDate + btn_edit;
+    return  btn_approval + btn_disapproval + btn_setDate + btn_edit;
 }
 
 // 승인 허용
@@ -174,6 +181,7 @@ function riderApprovalStatus(rowID, status){
         },
         complete: function (data){
             getApprovalRiderList();
+            console.log("승인 성공");
         }
     });
 
@@ -181,14 +189,18 @@ function riderApprovalStatus(rowID, status){
 
 // popUp 상태 변경
 function popUpChangeStatus(){
-
     let approvalID = $("#approvalID").val();
     let approvalStatus = $("#approvalStatus").val();
 
+    statusDisapproval(approvalID, approvalStatus);
+}
+
+
+function statusDisapproval(approvalID, approvalStatus){
     let current = dateFormat(new Date());
     let exp = dateFormat($("#expDate" + approvalID).val());
 
-    if (approvalID == undefined || approvalID.trim() == "" || (exp != "-" && exp < current)){
+    if (approvalID == undefined || approvalID == "" || (exp != "-" && exp < current)){
         return false;
     }
 
@@ -367,6 +379,8 @@ function dateFormat2(date){
 function updateExpDate(date, rowid){
     loading.show();
 
+    let status = $('#jqGrid').getRowData($('#jqGrid').getGridParam('selrow')).approvalStatus;
+
     $.ajax({
         url: "/setRiderExpDate",
         type: "post",
@@ -376,7 +390,11 @@ function updateExpDate(date, rowid){
         },
         dataType: "json",
         success: function (data){
-            alert(msgChangeSuccess);
+            if (status == "0"){
+                riderApprovalStatus(rowid, "1");
+            }else{
+                alert(msgChangeSuccess);
+            }
         },
         error: function (error){
             alert(msgChangeFailed);
