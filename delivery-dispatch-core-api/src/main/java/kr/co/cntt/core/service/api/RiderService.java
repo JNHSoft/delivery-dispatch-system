@@ -161,4 +161,9 @@ public interface RiderService {
     public Map postRiderApproval(RiderApprovalInfo approvalInfo) throws AppTrException;
 
     public Map getCheckRiderApproval(RiderApprovalInfo approvalInfo) throws AppTrException;
+
+    /**
+     * 라이더 유효기간 체크 후 정보 변경
+     * */
+    int updateOverExpDate() throws AppTrException;
 }

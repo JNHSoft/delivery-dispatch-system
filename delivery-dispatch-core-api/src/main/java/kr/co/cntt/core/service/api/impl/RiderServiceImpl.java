@@ -532,5 +532,21 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         return returnMap;
     }
+
+    @Override
+    public int updateOverExpDate() throws AppTrException {
+        log.info("updateOverExpDate 실행");
+
+        int iresult = riderMapper.updateOverExpDate();            // 유효기간 만료 계정 상태 변경
+        log.info("updateOverExpDate 변경");
+
+        if (iresult > 0){
+            iresult = riderMapper.deleteOverExpDateToken();      // 유효기간 만료 계정의 토큰 삭제
+            log.info("deleteOverExpDateToken 변경");
+        }
+
+        log.info("updateOverExpDate 실행완료 [" + iresult + "]");
+        return iresult;
+    }
 }
 

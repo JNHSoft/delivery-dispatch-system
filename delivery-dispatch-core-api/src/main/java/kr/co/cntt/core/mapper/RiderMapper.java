@@ -286,4 +286,14 @@ public interface RiderMapper {
      * 라이더 정보 삭제 ( 라이더 및 서브 그룹 )
      * */
     public int deleteRiderInfo(Rider rider);
+
+    /**
+     * 유효기간 만료 계정 체크
+     * */
+    int updateOverExpDate();
+
+    /**
+     * 유효기간 만료 계정 Token 삭제
+     * */
+    int deleteOverExpDateToken();
 }

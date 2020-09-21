@@ -1370,4 +1370,24 @@
 		where	 R.id = #{id}
 	</update>
 
+	<update id="updateOverExpDate">
+		update TB_REQ_REGIST_RIDER		as	RR
+		left join TB_RIDER				as	R
+			on	 RR.rider_id = R.id
+		left join TB_RIDER_SESSION		as RS
+			on	 RR.rider_id = RS.rider_id
+		left join TB_SUBGROUP_RIDER_REL	as SR
+			on	 RR.rider_id = SR.rider_id
+		set		 RR.req_status = 4
+				,RR.modified_datetime = now()
+				,R.deleted = now()
+				,SR.deleted = now()
+		where	 RR.req_status in (0, 1)
+		and		 date_format(ifnull(ifnull(RS.expiry_datetime, RR.exp_datetime), now()), '%Y-%m-%d') <![CDATA[<]]> date_format(now(), '%Y-%m-%d');
+	</update>
+
+	<delete id="deleteOverExpDateToken">
+		delete from TB_RIDER_SESSION where rider_id in ( select rider_id from TB_REQ_REGIST_RIDER where req_status = 4 );
+	</delete>
+
 </mapper>
