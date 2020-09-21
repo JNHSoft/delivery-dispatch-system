@@ -124,8 +124,8 @@ function makeRowButton(obj){
     switch (obj.approvalStatus){
         case "0":           // 요청
             btn_approval = "<button class='button btn_pale_green h30 w100 mr20' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
-            btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
-            btn_disapproval = "<a href='#' class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</a>"
+            btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_disapproval = "<button class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</button>"
             //
             break;
         case "1":           // 수락
@@ -133,20 +133,20 @@ function makeRowButton(obj){
             if (bExpDate){
                 btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
             }else{
-                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' disabled>Edit</button>"
+                btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>Edit</button>"
             }
-            btn_disapproval = "<a href='#' class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</a>"
+            btn_disapproval = "<button class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</button>"
             break;
         case "2":           // 거절
         case "3":           // 승인 후 거절
             btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + disapproval + "</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
-            btn_edit = "<button class='button btn_blue h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_edit = "<button class='button btn_gray2 h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
             break;
         case "4":           // 유효기간 만료
             btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + approval + "</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
-            btn_edit = "<button class='button btn_blue h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_edit = "<button class='button btn_gray2 h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
             break;
     }
 
