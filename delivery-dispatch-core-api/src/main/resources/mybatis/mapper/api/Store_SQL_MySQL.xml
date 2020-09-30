@@ -786,36 +786,36 @@
 
         , avg(timediff(A.return_datetime,IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)))) AS order_return
         <![CDATA[
-        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) <= 35 THEN 1 END)
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) <= 30 THEN 1 END)
         / count(A.id) *100 AS min_30below
 
         , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) <= 40
-        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) > 30 THEN 1 END)
+        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) > 30 THEN 1 END)
         / count(A.id) *100 AS min_30to40
 
         , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) <= 50
-        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) > 40 THEN 1 END)
+        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) > 40 THEN 1 END)
         / count(A.id) *100 AS min_40to50
 
         , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) <= 60
-        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) > 50 THEN 1 END)
+        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) > 50 THEN 1 END)
         / count(A.id) *100 AS min_50to60
 
         , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) <= 90
-        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) > 60 THEN 1 END)
+        AND timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) > 60 THEN 1 END)
         / count(A.id) *100 AS min_60to90
 
-        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) < 90 THEN 1 END)
+        , count(CASE WHEN timestampdiff(MINUTE, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), arrived_datetime) > 90 THEN 1 END)
         / count(A.id) *100 AS min_90under
 
         ,ifnull(count(
             case
                 when	 assigned_datetime is not null
                     and	 picked_up_datetime is not null
-                    and	 completed_datetime is not null
+                    and	 ifnull(arrived_datetime, completed_datetime) is not null
                     and	 return_datetime is not null
-                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                    and	 timestampdiff(SECOND, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), completed_datetime) >= 0
+                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and	 timestampdiff(SECOND, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), ifnull(arrived_datetime, completed_datetime)) >= 0
                     and	 timestampdiff(SECOND, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), picked_up_datetime) >= 0
                     and	 timestampdiff(SECOND, IF(A.reservation_status = 0, A.created_datetime, DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE)), return_datetime) >= 0
                 then NULL
@@ -852,10 +852,10 @@
                         case
                             when	 assigned_datetime is not null
                                 and	 picked_up_datetime is not null
-                                and	 completed_datetime is not null
+                                and	 ifnull(arrived_datetime, completed_datetime) is not null
                                 and	 return_datetime is not null
-                                and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                 and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                 and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                             then 1
@@ -869,10 +869,10 @@
                         case
                             when	 assigned_datetime is not null
                                 and	 picked_up_datetime is not null
-                                and	 completed_datetime is not null
+                                and	 ifnull(arrived_datetime, completed_datetime) is not null
                                 and	 return_datetime is not null
-                                and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                 and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                 and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                             then time_to_sec(timediff(picked_up_datetime, assigned_datetime))
@@ -883,10 +883,10 @@
                         case
                             when	 assigned_datetime is not null
                                 and	 picked_up_datetime is not null
-                                and	 completed_datetime is not null
+                                and	 ifnull(arrived_datetime, completed_datetime) is not null
                                 and	 return_datetime is not null
-                                and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                 and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                 and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                             then time_to_sec(timediff(arrived_datetime, picked_up_datetime))
@@ -897,10 +897,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then time_to_sec(timediff(arrived_datetime, assigned_datetime))
@@ -911,10 +911,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then time_to_sec(timediff(return_datetime, arrived_datetime))
@@ -925,10 +925,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then time_to_sec(timediff(return_datetime, picked_up_datetime))
@@ -939,10 +939,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then time_to_sec(timediff(return_datetime, assigned_datetime))
@@ -956,10 +956,10 @@
                             case
                                 when	 assigned_datetime is not null
                                     and	 picked_up_datetime is not null
-                                    and	 completed_datetime is not null
+                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
                                     and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                                 then 1
@@ -972,10 +972,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -988,10 +988,10 @@
                             case
                                 when	 assigned_datetime is not null
                                     and	 picked_up_datetime is not null
-                                    and	 completed_datetime is not null
+                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
                                     and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                                 then 1
@@ -1004,10 +1004,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -1020,10 +1020,10 @@
                             case
                                 when	 assigned_datetime is not null
                                     and	 picked_up_datetime is not null
-                                    and	 completed_datetime is not null
+                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
                                     and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                                 then 1
@@ -1036,10 +1036,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -1052,10 +1052,10 @@
                             case
                                 when	 assigned_datetime is not null
                                     and	 picked_up_datetime is not null
-                                    and	 completed_datetime is not null
+                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
                                     and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                                 then 1
@@ -1068,10 +1068,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -1084,10 +1084,10 @@
                             case
                                 when	 assigned_datetime is not null
                                     and	 picked_up_datetime is not null
-                                    and	 completed_datetime is not null
+                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
                                     and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                                 then 1
@@ -1100,10 +1100,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -1116,10 +1116,10 @@
                             case
                                 when	 assigned_datetime is not null
                                     and	 picked_up_datetime is not null
-                                    and	 completed_datetime is not null
+                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
                                     and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                                 then 1
@@ -1132,10 +1132,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -1148,10 +1148,10 @@
                             case
                                 when	 assigned_datetime is not null
                                     and	 picked_up_datetime is not null
-                                    and	 completed_datetime is not null
+                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
                                     and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                                     and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                                 then 1
@@ -1164,10 +1164,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -1179,10 +1179,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then NULL
@@ -1193,10 +1193,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -1207,10 +1207,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then total_price
@@ -1221,10 +1221,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then 1
@@ -1235,10 +1235,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then timestampdiff(MINUTE, picked_up_datetime, return_datetime)
@@ -1248,10 +1248,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then total_price
@@ -1261,10 +1261,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then timestampdiff(MINUTE, picked_up_datetime, return_datetime)
@@ -1274,10 +1274,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then time_to_sec(timediff(return_datetime, picked_up_datetime))
@@ -1288,10 +1288,10 @@
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
-                            and	 completed_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
                             and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then distance
@@ -1310,7 +1310,7 @@
 
     <!-- 통계 조회 List3 -->
     <select id="selectStoreStatisticsByInterval" parameterType="kr.co.cntt.core.model.order.Order" resultType="Integer">
-        SELECT TIMESTAMPDIFF(MINUTE, (CASE WHEN reservation_status THEN DATE_ADD(reservation_datetime, INTERVAL -30 MINUTE) ELSE created_datetime END), arrived_datetime) AS interval_minute
+        SELECT ifnull(TIMESTAMPDIFF(MINUTE, (CASE WHEN reservation_status THEN DATE_ADD(reservation_datetime, INTERVAL -30 MINUTE) ELSE created_datetime END), arrived_datetime), 0) AS interval_minute
         FROM TB_ORDER
         WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
         AND status in (3)
@@ -1322,8 +1322,8 @@
     <!-- 20.06.04 대만 요청 KFC용 -->
     <!-- 통계 조회 List3 -->
     <select id="selectStoreStatisticsByIntervalAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
-        SELECT   TIMESTAMPDIFF(MINUTE, assigned_datetime, arrived_datetime) AS interval_minute
-                ,TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime) AS d7_minute
+        SELECT   ifnull(TIMESTAMPDIFF(MINUTE, assigned_datetime, arrived_datetime), 0) AS interval_minute
+                ,ifnull(TIMESTAMPDIFF(MINUTE, assigned_datetime, picked_up_datetime), 0) AS d7_minute
         FROM     TB_ORDER
         WHERE    store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
         AND      status in (3)
@@ -1331,10 +1331,10 @@
         -- 시간대별 통계에 대한 조건 추가
         AND		 assigned_datetime is not null
         AND		 picked_up_datetime is not null
-        AND		 completed_datetime is not null
+        AND		 ifnull(arrived_datetime, completed_datetime) is not null
         AND		 return_datetime is not null
-        AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-        AND		 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+        AND		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+        AND		 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
         AND		 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
         AND		 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
         AND      third_party_id IS NULL
@@ -1356,7 +1356,7 @@
                 DATE_FORMAT(O.CREATED_DATETIME,'%y-%m-%d') AS day_to_day,
             <![CDATA[
                 COUNT(
-                    CASE WHEN TIMESTAMPDIFF(MINUTE, IF(O.RESERVATION_STATUS = 0, O.CREATED_DATETIME, DATE_SUB(O.RESERVATION_DATETIME, INTERVAL 30 MINUTE)), arrived_datetime) <= 35 THEN 1 END
+                    CASE WHEN TIMESTAMPDIFF(MINUTE, IF(O.RESERVATION_STATUS = 0, O.CREATED_DATETIME, DATE_SUB(O.RESERVATION_DATETIME, INTERVAL 30 MINUTE)), arrived_datetime) <= 30 THEN 1 END
                 ) / COUNT(O.ID) *100 AS min_30below
             ]]>
             FROM
@@ -1478,10 +1478,10 @@
                 -- 시간대별 통계에 대한 조건 추가
                 AND		 assigned_datetime is not null
                 AND		 picked_up_datetime is not null
-                AND		 completed_datetime is not null
+                AND		 ifnull(arrived_datetime, completed_datetime) is not null
                 AND		 return_datetime is not null
-                AND		 timestampdiff(SECOND, completed_datetime, return_datetime) >= 60
-                AND		 timestampdiff(SECOND, assigned_datetime, completed_datetime) >= 0
+                AND		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                AND		 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                 AND		 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                 AND		 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                 GROUP BY day_to_day

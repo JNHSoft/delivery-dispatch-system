@@ -119,14 +119,14 @@ function getStoreStatisticsByDate() {
                     tmpdata.orderReturn = totalTimeSet(data[key].orderReturn*1000);
                     tmpdata.minD7Below = formatFloat(data[key].minD7Below, 1) + "%";
                     tmpdata.min30Below = formatFloat(data[key].min30Below, 1) + "%";
-                    tmpdata.min30To40 = formatInt(data[key].min30To40, 1) + "%";
-                    tmpdata.min40To50 = formatInt(data[key].min40To50, 1) + "%";
-                    tmpdata.min50To60 = formatInt(data[key].min50To60, 1) + "%";
+                    tmpdata.min30To40 = formatFloat(data[key].min30To40, 1) + "%";
+                    tmpdata.min40To50 = formatFloat(data[key].min40To50, 1) + "%";
+                    tmpdata.min50To60 = formatFloat(data[key].min50To60, 1) + "%";
                     tmpdata.min60To90 = formatInt(data[key].min60To90, 1) + "%";
-                    tmpdata.min90Under = formatInt(data[key].min90Under, 1) + "%";
+                    tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
                     tmpdata.totalSales = formatInt(data[key].totalSales, 1);
-                    tmpdata.errtc = formatInt(data[key].errtc, 1);
-                    tmpdata.tc = formatInt(data[key].tc, 1);
+                    tmpdata.errtc = formatInt(data[key].errtc);
+                    tmpdata.tc = formatInt(data[key].tc);
 
                     if(data[key].tplh){
                         tmpdata.tplh = formatFloat(data[key].tplh, 2);
@@ -190,10 +190,10 @@ function getStoreStatisticsByDate() {
                     min90UnderSum += formatFloat(data[key].min90Under, 1);
                     totalSalesSum += formatFloat(data[key].totalSales, 1);
                     // D7 성공 개수
-                    totalD7Success += formatFloat(data[key].d7Success, 1);
+                    totalD7Success += formatInt(data[key].d7Success, 1);
 
-                    errtcSum += formatFloat(data[key].errtc, 1);
-                    tcSum += formatFloat(data[key].tc, 1);
+                    errtcSum += formatInt(data[key].errtc, 1);
+                    tcSum += formatInt(data[key].tc, 1);
 
                     mydata.push(tmpdata);
                     if(chkCnt !=0){
@@ -218,20 +218,20 @@ function getStoreStatisticsByDate() {
             avgData.completeReturn = totalTimeSet((completeReturnSum*1000)/rowReduceCnt);
             avgData.pickupReturn =  totalTimeSet((pickupReturnSum*1000)/rowReduceCnt);
             avgData.orderReturn =   totalTimeSet((orderReturnSum*1000)/rowReduceCnt);
-            avgData.minD7Below = formatInt((minD7BelowSum/tcRowCnt), 1) + "%";
-            avgData.min30Below = formatInt((min30BelowSum/tcRowCnt), 1) +"%";
-            avgData.min30To40 =formatInt((min30To40Sum/tcRowCnt), 1) +"%";
-            avgData.min40To50 = formatInt((min40To50Sum/tcRowCnt), 1) +"%";
-            avgData.min50To60 = formatInt((min50To60Sum/tcRowCnt), 1) +"%";
-            avgData.min60To90 = formatInt((min60To90Sum/tcRowCnt), 1) +"%";
-            avgData.min90Under = formatInt((min90UnderSum/tcRowCnt), 1) +"%";
+            avgData.minD7Below = formatFloat((minD7BelowSum/tcRowCnt), 1) + "%";
+            avgData.min30Below = formatFloat((min30BelowSum/tcRowCnt), 1) +"%";
+            avgData.min30To40 =formatFloat((min30To40Sum/tcRowCnt), 1) +"%";
+            avgData.min40To50 = formatFloat((min40To50Sum/tcRowCnt), 1) +"%";
+            avgData.min50To60 = formatFloat((min50To60Sum/tcRowCnt), 1) +"%";
+            avgData.min60To90 = formatFloat((min60To90Sum/tcRowCnt), 1) +"%";
+            avgData.min90Under = formatFloat((min90UnderSum/tcRowCnt), 1) +"%";
             avgData.totalSales = formatInt((totalSalesSum/tcRowCnt), 1);
             avgData.errtc = formatInt((errtcSum/rowCnt), 1);
             avgData.tc = formatInt((tcSum/tcRowCnt), 1);
 
             if(tpSpCnt!=0){
-                avgData.tplh = formatInt((tplhSum/tpSpCnt), 2);
-                avgData.spmh = formatInt((spmhSum/tpSpCnt), 2);
+                avgData.tplh = formatFloat((tplhSum/tpSpCnt), 2);
+                avgData.spmh = formatFloat((spmhSum/tpSpCnt), 2);
             }else{
                 avgData.tplh = "-";
                 avgData.spmh = "-";

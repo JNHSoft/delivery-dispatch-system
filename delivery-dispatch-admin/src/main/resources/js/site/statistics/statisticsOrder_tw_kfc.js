@@ -227,7 +227,6 @@ function getStoreStatistics() {
         },
         dataType: 'json',
         success: function (data) {
-            console.log("ajax success");
             let chkReturnTimeCnt = 0;
             let chkDistanceCnt = 0;
             let rowNum = 0;
@@ -413,7 +412,6 @@ function getStoreStatistics() {
             });
         },
         complete: function (data){
-            console.log("ajax complete");
             loading.hide();
         }
     });

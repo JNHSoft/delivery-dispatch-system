@@ -128,6 +128,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
+
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.productivity",null, locale));
@@ -150,6 +151,8 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellStyle(titleCellStyle);
 
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellStyle(titleCellStyle);
 
 
             titleRow = sheet.createRow(rowNum++);
@@ -399,32 +402,32 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(String.format("%.2f",Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMinD7Below())))+"%");
+            cell.setCellValue(String.format("%.1f",Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMinD7Below())))+"%");
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(String.format("%.2f",Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30Below())))+"%");
+            cell.setCellValue(String.format("%.1f",Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30Below())))+"%");
             cell.setCellStyle(dataCellStyle);
 
             if(!locale.toString().equals("zh_TW")) {
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30To40()))) + "%");
+                cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30To40()))) + "%");
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin40To50()))) + "%");
+                cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin40To50()))) + "%");
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin50To60()))) + "%");
+                cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin50To60()))) + "%");
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin60To90()))) + "%");
+                cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin60To90()))) + "%");
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin90Under()))) + "%");
+                cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin90Under()))) + "%");
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
@@ -433,20 +436,20 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
             }
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
+            cell.setCellValue(changeType(Integer.class, storeStatisticsByDateList.get(i).getErrtc()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(changeType(Float.class, storeStatisticsByDateList.get(i).getTc()));
+            cell.setCellValue(changeType(Integer.class, storeStatisticsByDateList.get(i).getTc()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(Math.floor(Double.parseDouble(changeType(Float.class, storeStatisticsByDateList.get(i).getTplh()))));
+            cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTplh()))));
             cell.setCellStyle(dataCellStyle);
 
             if(!locale.toString().equals("zh_TW")) {
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(Math.floor(Double.parseDouble(changeType(Float.class, storeStatisticsByDateList.get(i).getSpmh()))));
+                cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getSpmh()))));
                 cell.setCellStyle(dataCellStyle);
             }
 
@@ -455,7 +458,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(String.format("%.2f",Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getAvgDistance())))+"km");
+            cell.setCellValue(String.format("%.1f",Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getAvgDistance())))+"km");
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
@@ -532,7 +535,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                 cell2 = addListRow.createCell(colNum++);
                 if (minD7Below > 0 && tcRowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f",minD7Below/tcRowCnt) +"%");
+                    cell2.setCellValue(String.format("%.1f",minD7Below/tcRowCnt) +"%");
                 }else{
                     cell2.setCellValue("0%");
                 }
@@ -540,7 +543,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                 cell2 = addListRow.createCell(colNum++);
                 if (min30Below > 0 && tcRowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f",min30Below/tcRowCnt) +"%");
+                    cell2.setCellValue(String.format("%.1f",min30Below/tcRowCnt) +"%");
                 }else{
                     cell2.setCellValue("0%");
                 }
@@ -549,7 +552,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
                 if(!locale.toString().equals("zh_TW")) {
                     cell2 = addListRow.createCell(colNum++);
                     if (min30To40 > 0 && tcRowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min30To40 / tcRowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min30To40 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
@@ -557,7 +560,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                     cell2 = addListRow.createCell(colNum++);
                     if (min40To50 > 0 && tcRowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min40To50 / tcRowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min40To50 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
@@ -565,7 +568,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                     cell2 = addListRow.createCell(colNum++);
                     if (min50To60 > 0 && tcRowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min50To60 / tcRowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min50To60 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
@@ -573,7 +576,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                     cell2 = addListRow.createCell(colNum++);
                     if (min60To90 > 0 && tcRowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min60To90 / tcRowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min60To90 / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
@@ -581,7 +584,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                     cell2 = addListRow.createCell(colNum++);
                     if (min90Under > 0 && tcRowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", min90Under / tcRowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min90Under / tcRowCnt) + "%");
                     }else{
                         cell2.setCellValue("0%");
                     }
@@ -589,7 +592,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                     cell2 = addListRow.createCell(colNum++);
                     if (totalSales > 0 && tcRowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f", totalSales / tcRowCnt));
+                        cell2.setCellValue(String.format("%.1f", totalSales / tcRowCnt));
                     }else{
                         cell2.setCellValue("0");
                     }
@@ -598,7 +601,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                 cell2 = addListRow.createCell(colNum++);
                 if (errtc > 0 && rowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f",errtc/rowCnt));
+                    cell2.setCellValue(String.format("%.0f",errtc/rowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
@@ -606,7 +609,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                 cell2 = addListRow.createCell(colNum++);
                 if (tc > 0 && tcRowCnt > 0){
-                    cell2.setCellValue(String.format("%.2f", tc/tcRowCnt));
+                    cell2.setCellValue(String.format("%.0f", tc/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
@@ -644,7 +647,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                 cell2 = addListRow.createCell(colNum++);
                 if (totalDistance > 0 && distanceNullCnt > 0){
-                    cell2.setCellValue(String.format("%.2f",totalDistance/distanceNullCnt)+"km");
+                    cell2.setCellValue(String.format("%.1f",totalDistance/distanceNullCnt)+"km");
                 }else{
                     cell2.setCellValue("0km");
                 }

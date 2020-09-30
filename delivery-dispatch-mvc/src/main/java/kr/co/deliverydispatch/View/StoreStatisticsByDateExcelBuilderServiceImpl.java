@@ -1,6 +1,7 @@
 package kr.co.deliverydispatch.View;
 
 import kr.co.cntt.core.model.statistic.ByDate;
+import kr.co.deliverydispatch.View.twkfc.CommExcel;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -23,23 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 
 @Component("StoreStatisticsByDateExcelBuilderServiceImpl")
-public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
-    @Resource
-    private MessageSource messageSource;
-
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-
-    private String nullCheck(String str){
-        return str!=null?str:"";
-    }
-
-    @Value("${spring.mvc.locale}")
-    private Locale defaultLocale;
-
-    private Locale locale;
-
+public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         locale = LocaleContextHolder.getLocale();
@@ -66,6 +51,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
         if(fs != null) fs.close();
         workbook.dispose();
     }
+
     // 내용 셋팅 하는 부분
     public void setStoreStatisticsByDateExcel(SXSSFWorkbook wb, List<ByDate> storeStatisticsByDateList) {
         int rowNum = 0;
@@ -90,8 +76,8 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
             sheet.addMergedRegion(new CellRangeAddress(0,0,1,7));
 
-            sheet.addMergedRegion(new CellRangeAddress(0,0,8,defaultLocale.toString().equals("zh_TW")?8:13));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,defaultLocale.toString().equals("zh_TW")?9:14,defaultLocale.toString().equals("zh_TW")?13:20));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,8,locale.toString().equals("zh_TW")?8:13));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?13:20));
 
 
             sheet.setColumnWidth(colNum, 15*256);
@@ -128,7 +114,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.percent.completed",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            if(!defaultLocale.toString().equals("zh_TW")) {
+            if(!locale.toString().equals("zh_TW")) {
                 addTitle = titleRow.createCell(colNum++);
                 addTitle.setCellStyle(titleCellStyle);
                 //
@@ -150,7 +136,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.productivity",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            if(!defaultLocale.toString().equals("zh_TW")) {
+            if(!locale.toString().equals("zh_TW")) {
                 addTitle = titleRow.createCell(colNum++);
                 addTitle.setCellStyle(titleCellStyle);
                 //
@@ -214,7 +200,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue("<=30 MINS %");
             addTitle.setCellStyle(titleCellStyle);
 
-            if(!defaultLocale.toString().equals("zh_TW")){
+            if(!locale.toString().equals("zh_TW")){
                 sheet.setColumnWidth(colNum, 17*256);
                 addTitle = titleRow.createCell(colNum++);
                 addTitle.setCellValue("<=40 MINS %");
@@ -262,7 +248,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.tplh",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
-            if(!defaultLocale.toString().equals("zh_TW")) {
+            if(!locale.toString().equals("zh_TW")) {
                 sheet.setColumnWidth(colNum, 17 * 256);
                 addTitle = titleRow.createCell(colNum++);
                 addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.spmh", null, locale));
@@ -317,61 +303,61 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                 int chkTpSpCnt = 0;
                 int chkDistanceCnt = 0;
 
-                orderPickupTime += Long.parseLong(storeStatisticsByDateList.get(i).getOrderPickup().substring(0,storeStatisticsByDateList.get(i).getOrderPickup().length()-1).replace(".",""));
-                pickupCompleteTime += Long.parseLong(storeStatisticsByDateList.get(i).getPickupComplete().substring(0,storeStatisticsByDateList.get(i).getPickupComplete().length()-1).replace(".",""));
-                riderStayTimeSum += Long.parseLong(storeStatisticsByDateList.get(i).getStayTime().substring(0, storeStatisticsByDateList.get(i).getStayTime().length()-1).replace(".", ""));
-                orderCompleteTime += Long.parseLong(storeStatisticsByDateList.get(i).getOrderComplete().substring(0,storeStatisticsByDateList.get(i).getOrderComplete().length()-1).replace(".",""));
+                orderPickupTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderPickup())) * 1000;
+                pickupCompleteTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getPickupComplete())) * 1000;
+                riderStayTimeSum += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getStayTime())) * 1000;
+                orderCompleteTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderComplete())) * 1000;
                 // 빈값 가능
                 if(storeStatisticsByDateList.get(i).getCompleteReturn() !=null){
-                    completeReturnTime += Long.parseLong(storeStatisticsByDateList.get(i).getCompleteReturn().substring(0,storeStatisticsByDateList.get(i).getCompleteReturn().length()-1).replace(".",""));
+                    completeReturnTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getCompleteReturn())) * 1000;
                 } else {
                     chkCnt++;
                 }
 
                 if(storeStatisticsByDateList.get(i).getPickupReturn() !=null){
-                    pickupReturnTime += Long.parseLong(storeStatisticsByDateList.get(i).getPickupReturn().substring(0,storeStatisticsByDateList.get(i).getPickupReturn().length()-1).replace(".",""));
+                    pickupReturnTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getPickupReturn())) * 1000;
                 } else {
                     chkCnt++;
                 }
 
                 if(storeStatisticsByDateList.get(i).getOrderReturn() !=null){
-                    orderReturnTime += Long.parseLong(storeStatisticsByDateList.get(i).getOrderReturn().substring(0,storeStatisticsByDateList.get(i).getOrderReturn().length()-1).replace(".",""));
+                    orderReturnTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderReturn())) * 1000;
                 } else {
                     chkCnt++;
                 }
 
-                min30Below += Float.parseFloat(storeStatisticsByDateList.get(i).getMin30Below());
-                min30To40 += Float.parseFloat(storeStatisticsByDateList.get(i).getMin30To40());
-                min40To50 += Float.parseFloat(storeStatisticsByDateList.get(i).getMin40To50());
-                min50To60 += Float.parseFloat(storeStatisticsByDateList.get(i).getMin50To60());
-                min60To90 += Float.parseFloat(storeStatisticsByDateList.get(i).getMin60To90());
-                min90Under += Float.parseFloat(storeStatisticsByDateList.get(i).getMin90Under());
+                min30Below += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30Below()));
+                min30To40 += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30To40()));
+                min40To50 += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin40To50()));
+                min50To60 += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin50To60()));
+                min60To90 += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin60To90()));
+                min90Under += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin90Under()));
 
-                totalSales += Float.parseFloat(storeStatisticsByDateList.get(i).getTotalSales());
+                totalSales += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTotalSales()));
 
-                errtc += Float.parseFloat(storeStatisticsByDateList.get(i).getErrtc());
-                tc += Float.parseFloat(storeStatisticsByDateList.get(i).getTc());
+                errtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
+                tc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTc()));
 
                 if(storeStatisticsByDateList.get(i).getTplh() !=null){
-                    tplh += Float.parseFloat(storeStatisticsByDateList.get(i).getTplh());
+                    tplh += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTplh()));
                 } else {
                     chkTpSpCnt++;
                 }
 
                 if(storeStatisticsByDateList.get(i).getSpmh() !=null){
-                    spmh += Float.parseFloat(storeStatisticsByDateList.get(i).getSpmh());
+                    spmh += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getSpmh()));
                 } else {
                     chkTpSpCnt++;
                 }
 
                 if(storeStatisticsByDateList.get(i).getTotalPickupReturn() !=null){
-                    totalPickupReturnTime += Long.parseLong(storeStatisticsByDateList.get(i).getTotalPickupReturn());
+                    totalPickupReturnTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getTotalPickupReturn()));
                 } else {
                     chkCnt++;
                 }
 
                 if(storeStatisticsByDateList.get(i).getAvgDistance() !=null){
-                    totalDistance += Float.parseFloat(storeStatisticsByDateList.get(i).getAvgDistance());
+                    totalDistance += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getAvgDistance()));
                 } else {
                     chkDistanceCnt++;
                 }
@@ -416,50 +402,50 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(String.format("%.2f",Float.parseFloat(nullCheck(storeStatisticsByDateList.get(i).getMin30Below())))+"%");
+                cell.setCellValue(String.format("%.1f",Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30Below()))) +"%");
                 cell.setCellStyle(dataCellStyle);
 
-                if(!defaultLocale.toString().equals("zh_TW")) {
+                if(!locale.toString().equals("zh_TW")) {
                     cell = addListRow.createCell(colNum++);
-                    cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(storeStatisticsByDateList.get(i).getMin30To40()))) + "%");
+                    cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin30To40()))) + "%");
                     cell.setCellStyle(dataCellStyle);
 
                     cell = addListRow.createCell(colNum++);
-                    cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(storeStatisticsByDateList.get(i).getMin40To50()))) + "%");
+                    cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin40To50()))) + "%");
                     cell.setCellStyle(dataCellStyle);
 
                     cell = addListRow.createCell(colNum++);
-                    cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(storeStatisticsByDateList.get(i).getMin50To60()))) + "%");
+                    cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin50To60()))) + "%");
                     cell.setCellStyle(dataCellStyle);
 
                     cell = addListRow.createCell(colNum++);
-                    cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(storeStatisticsByDateList.get(i).getMin60To90()))) + "%");
+                    cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin60To90()))) + "%");
                     cell.setCellStyle(dataCellStyle);
 
                     cell = addListRow.createCell(colNum++);
-                    cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(storeStatisticsByDateList.get(i).getMin90Under()))) + "%");
+                    cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin90Under()))) + "%");
                     cell.setCellStyle(dataCellStyle);
 
                     cell = addListRow.createCell(colNum++);
-                    cell.setCellValue(nullCheck(storeStatisticsByDateList.get(i).getTotalSales()));
+                    cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTotalSales()))));
                     cell.setCellStyle(dataCellStyle);
                 }
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(storeStatisticsByDateList.get(i).getErrtc());
+                cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()))));
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(nullCheck(storeStatisticsByDateList.get(i).getTc()));
+                cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTc()))));
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(nullCheck(storeStatisticsByDateList.get(i).getTplh()));
+                cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTplh()))));
                 cell.setCellStyle(dataCellStyle);
 
-                if(!defaultLocale.toString().equals("zh_TW")) {
+                if(!locale.toString().equals("zh_TW")) {
                     cell = addListRow.createCell(colNum++);
-                    cell.setCellValue(nullCheck(storeStatisticsByDateList.get(i).getSpmh()));
+                    cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getSpmh()))));
                     cell.setCellStyle(dataCellStyle);
                 }
 
@@ -468,7 +454,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(String.format("%.2f",Float.parseFloat(nullCheck(storeStatisticsByDateList.get(i).getAvgDistance())))+"km");
+                cell.setCellValue(String.format("%.1f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getAvgDistance())))+"km");
                 cell.setCellStyle(dataCellStyle);
 
                 rowNum ++;
@@ -495,69 +481,73 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(avgChkFilter(orderPickupTime/rowCnt));
+                    cell2.setCellValue(minusChkFilter(orderPickupTime/rowCnt));
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(avgChkFilter(pickupCompleteTime/rowCnt));
+                    cell2.setCellValue(minusChkFilter(pickupCompleteTime/rowCnt));
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(avgChkFilter(orderCompleteTime/rowCnt));
+                    cell2.setCellValue(minusChkFilter(orderCompleteTime/rowCnt));
                     cell2.setCellStyle(dataCellStyle);
 
                     // 20.07.15 도착
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(avgChkFilter(riderStayTimeSum/rowCnt));
+                    cell2.setCellValue(minusChkFilter(riderStayTimeSum/rowCnt));
                     cell2.setCellStyle(dataCellStyle);
 
 
                     // 빈값 가능
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(avgChkFilter(completeReturnTime/returnNullCnt));
+                    cell2.setCellValue(minusChkFilter(completeReturnTime/returnNullCnt));
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(avgChkFilter(pickupReturnTime/returnNullCnt));
+                    cell2.setCellValue(minusChkFilter(pickupReturnTime/returnNullCnt));
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(avgChkFilter(orderReturnTime/returnNullCnt));
+                    cell2.setCellValue(minusChkFilter(orderReturnTime/returnNullCnt));
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(String.format("%.2f",min30Below/rowCnt) +"%");
+                    cell2.setCellValue(String.format("%.1f",min30Below/rowCnt) +"%");
                     cell2.setCellStyle(dataCellStyle);
 
-                    if(!defaultLocale.toString().equals("zh_TW")) {
+                    if(!locale.toString().equals("zh_TW")) {
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.2f", min30To40 / rowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min30To40 / rowCnt) + "%");
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.2f", min40To50 / rowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min40To50 / rowCnt) + "%");
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.2f", min50To60 / rowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min50To60 / rowCnt) + "%");
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.2f", min60To90 / rowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min60To90 / rowCnt) + "%");
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.2f", min90Under / rowCnt) + "%");
+                        cell2.setCellValue(String.format("%.1f", min90Under / rowCnt) + "%");
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.2f", totalSales / rowCnt));
+                        if (totalSales > 0 && rowCnt > 0){
+                            cell2.setCellValue(String.format("%.1f", totalSales / rowCnt));
+                        }else{
+                            cell2.setCellValue("0");
+                        }
                         cell2.setCellStyle(dataCellStyle);
                     }
 
                     cell2 = addListRow.createCell(colNum++);
                     if (errtc > 0 && rowCnt > 0){
-                        cell2.setCellValue(String.format("%.2f",errtc/rowCnt));
+                        cell2.setCellValue(String.format("%.0f",errtc/rowCnt));
                     }else{
                         cell2.setCellValue("0");
                     }
@@ -565,135 +555,41 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends AbstractView {
 
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(String.format("%.2f",tc/rowCnt));
+                    if (tc > 0 && rowCnt > 0){
+                        cell2.setCellValue(String.format("%.0f",tc/rowCnt));
+                    }else{
+                        cell2.setCellValue("0");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(String.format("%.2f",tplh/tpSpNullCnt));
+                    if (Float.isNaN(tplh/tpSpNullCnt) || Float.isInfinite(tplh/tpSpNullCnt)){
+                        cell2.setCellValue("0");
+                    }else{
+                        cell2.setCellValue(String.format("%.2f",tplh/tpSpNullCnt));
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
-                    if(!defaultLocale.toString().equals("zh_TW")) {
+                    if(!locale.toString().equals("zh_TW")) {
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.2f", spmh / tpSpNullCnt));
+                        if (Float.isNaN(spmh / tpSpNullCnt) || Float.isInfinite(spmh / tpSpNullCnt)){
+                            cell2.setCellValue("0");
+                        }else{
+                            cell2.setCellValue(String.format("%.2f", spmh / tpSpNullCnt));
+                        }
                         cell2.setCellStyle(dataCellStyle);
                     }
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(avgChkFilter((totalPickupReturnTime*1000)/returnNullCnt));
+                    cell2.setCellValue(minusChkFilter((totalPickupReturnTime*1000)/returnNullCnt));
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(String.format("%.2f",totalDistance/distanceNullCnt)+"km");
+                    cell2.setCellValue(String.format("%.1f",totalDistance/distanceNullCnt)+"km");
                     cell2.setCellStyle(dataCellStyle);
 
                 }
 
         }
-    }
-    // 일반 값
-    public String minusChkFilter(String millsData){
-        if(millsData !=null){
-            long mills = Long.parseLong(Math.round(Double.parseDouble(millsData)*1000)+"");
-            return mills>=0?DurationFormatUtils.formatDuration(mills,"HH:mm:ss"):"-"+DurationFormatUtils.formatDuration(Math.abs(mills),"HH:mm:ss");
-        } else{
-            return "-";
-        }
-
-    }
-    // 평균 값 추가
-    public String avgChkFilter(long mills){
-        return mills>=0?DurationFormatUtils.formatDuration(mills,"HH:mm:ss"):"-"+DurationFormatUtils.formatDuration(Math.abs(mills),"HH:mm:ss");
-    }
-
-
-
-    public Font setTotalCellFont(SXSSFWorkbook wb) {
-        Font dataCellFont = wb.createFont();
-        dataCellFont.setFontHeightInPoints((short) 10);
-        dataCellFont.setBoldweight(Font.BOLDWEIGHT_NORMAL);
-        dataCellFont.setFontName("맑은 고딕");
-
-        return dataCellFont;
-    }
-
-    public CellStyle setTotalCell(SXSSFWorkbook wb){
-        // 합계 셀 스타일
-        CellStyle TotalRowStyle = wb.createCellStyle();
-        TotalRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
-        TotalRowStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
-        TotalRowStyle.setFillForegroundColor(IndexedColors.YELLOW.index);
-        TotalRowStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        TotalRowStyle.setBorderBottom(CellStyle.BORDER_THIN);
-        TotalRowStyle.setBottomBorderColor(IndexedColors.BLACK.index);
-        TotalRowStyle.setBorderLeft(CellStyle.BORDER_THIN);
-        TotalRowStyle.setLeftBorderColor(IndexedColors.BLACK.index);
-        TotalRowStyle.setBorderRight(CellStyle.BORDER_THIN);
-        TotalRowStyle.setRightBorderColor(IndexedColors.BLACK.index);
-        TotalRowStyle.setBorderTop(CellStyle.BORDER_THIN);
-        TotalRowStyle.setTopBorderColor(IndexedColors.BLACK.index);
-        TotalRowStyle.setWrapText(true);
-        Font TotalRowFont = wb.createFont();
-        TotalRowFont.setFontHeightInPoints((short) 10);
-        TotalRowFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
-        TotalRowFont.setFontName("맑은 고딕");
-        TotalRowStyle.setFont(TotalRowFont);
-
-        return TotalRowStyle;
-    }
-
-
-    public Font setDataCellFont(SXSSFWorkbook wb) {
-        Font dataCellFont = wb.createFont();
-        dataCellFont.setFontHeightInPoints((short) 10);
-        dataCellFont.setBoldweight(Font.BOLDWEIGHT_NORMAL);
-        dataCellFont.setFontName("맑은 고딕");
-
-        return dataCellFont;
-    }
-
-    public CellStyle setDataCell(SXSSFWorkbook wb) {
-
-        CellStyle dataCellStyle = wb.createCellStyle();
-        dataCellStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        dataCellStyle.setVerticalAlignment(CellStyle.ALIGN_CENTER);
-        dataCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
-        dataCellStyle.setBottomBorderColor(IndexedColors.BLACK.index);
-        dataCellStyle.setBorderLeft(CellStyle.BORDER_THIN);
-        dataCellStyle.setLeftBorderColor(IndexedColors.BLACK.index);
-        dataCellStyle.setBorderRight(CellStyle.BORDER_THIN);
-        dataCellStyle.setRightBorderColor(IndexedColors.BLACK.index);
-        dataCellStyle.setBorderTop(CellStyle.BORDER_THIN);
-        dataCellStyle.setTopBorderColor(IndexedColors.BLACK.index);
-
-        return dataCellStyle;
-    }
-
-    public CellStyle settTitleCell(SXSSFWorkbook wb) {
-
-        CellStyle titleCellStyle = wb.createCellStyle();
-        titleCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
-        titleCellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
-        titleCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-        titleCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        titleCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
-        titleCellStyle.setBottomBorderColor(IndexedColors.BLACK.index);
-        titleCellStyle.setBorderLeft(CellStyle.BORDER_THIN);
-        titleCellStyle.setLeftBorderColor(IndexedColors.BLACK.index);
-        titleCellStyle.setBorderRight(CellStyle.BORDER_THIN);
-        titleCellStyle.setRightBorderColor(IndexedColors.BLACK.index);
-        titleCellStyle.setBorderTop(CellStyle.BORDER_THIN);
-        titleCellStyle.setTopBorderColor(IndexedColors.BLACK.index);
-        titleCellStyle.setWrapText(true);
-        return titleCellStyle;
-    }
-
-    public Font setTitleCellFont(SXSSFWorkbook wb) {
-
-        Font titleCellFont = wb.createFont();
-        titleCellFont.setFontHeightInPoints((short) 10);
-        titleCellFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
-        titleCellFont.setFontName("맑은 고딕");
-
-        return titleCellFont;
     }
 }
