@@ -319,7 +319,7 @@ public class RiderController {
                     SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd");
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(new Date());
-                    calendar.add(Calendar.DATE, 180);
+                    calendar.add(Calendar.YEAR, 1);
 
                     System.out.println("############ 유효기간 설정 #################");
 //                    System.out.println(calendar.getTime());
