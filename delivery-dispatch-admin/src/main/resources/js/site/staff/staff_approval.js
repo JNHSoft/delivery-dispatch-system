@@ -109,6 +109,7 @@ function makeRowButton(obj){
     let btn_setDate = "";
     let btn_edit = "";
     let btn_disapproval = "";
+    let btn_deleteRowData = "";
 
     let expDate = obj.session == undefined ? "-" : dateFormat(obj.session.expiryDatetime);
     let nowDate = dateFormat(new Date);
@@ -140,16 +141,18 @@ function makeRowButton(obj){
         case "3":           // 승인 후 거절
             btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + disapproval + "</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
-            btn_edit = "<button class='button btn_gray2 h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_edit = "<button class='button btn_gray2 h30 w60 w80 mr10' style='font-size: 14px;' disabled>Edit</button>"
+            btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>DEL</button>"
             break;
         case "4":
             btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + approval + "</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
-            btn_edit = "<button class='button btn_gray2 h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_edit = "<button class='button btn_gray2 h30 w60 w80 mr10' style='font-size: 14px;' disabled>Edit</button>"
+            btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>DEL</button>"
             break;
     }
 
-    return  btn_approval + btn_disapproval + btn_setDate + btn_edit;
+    return  btn_approval + btn_disapproval + btn_setDate + btn_edit + btn_deleteRowData;
 }
 
 // 승인 허용
@@ -392,6 +395,30 @@ function updateExpDate(date, rowid){
             }else{
                 alert(msgChangeSuccess);
             }
+        },
+        error: function (error){
+            alert(msgChangeFailed);
+        },
+        complete: function (data){
+            getApprovalRiderList();
+            loading.hide();
+        }
+    });
+}
+
+// 라이더 Approval Row 삭제
+function deleteApprovalRiderRow(rowid){
+    loading.show();
+
+    $.ajax({
+        url: "/deleteApprovalRiderRowData",
+        type: "post",
+        data:{
+            id: rowid
+        },
+        dataType: "json",
+        success: function (data){
+            alert(msgChangeSuccess);
         },
         error: function (error){
             alert(msgChangeFailed);

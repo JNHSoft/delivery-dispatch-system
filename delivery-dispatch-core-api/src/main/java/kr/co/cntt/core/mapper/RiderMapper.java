@@ -296,4 +296,9 @@ public interface RiderMapper {
      * 유효기간 만료 계정 Token 삭제
      * */
     int deleteOverExpDateToken();
+
+    /**
+     * Approval Rider Row data 삭제
+     * */
+    int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo);
 }

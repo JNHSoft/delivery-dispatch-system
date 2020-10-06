@@ -119,5 +119,11 @@ public class StaffApprovalAdminServiceImpl implements StaffApprovalAdminService 
         return riderMapper.updateRiderInfo(rider);
     }
 
+    // 라이더 Row Data 삭제
+    @Override
+    public int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo) {
+        return riderMapper.deleteApprovalRiderRowData(riderInfo);
+    }
+
 
 }

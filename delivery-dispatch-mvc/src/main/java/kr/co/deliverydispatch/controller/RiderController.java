@@ -296,21 +296,53 @@ public class RiderController {
         // Token 발급을 위한 메소드 호출
         try {
             Map<String, String> resultMap = new HashMap<>();
+            Map<String, String> result = new HashMap<>();
+            int iCount = 0;
+            boolean bToken = false;
 
             resultMap.put("level", "3");
             resultMap.put("loginId", rider.getLoginId());
             resultMap.put("loginPw", rider.getLoginPw());
 
-            String resultJson = communityService.sendPostApiServer("http://localhost:8091/API/getToken.do", resultMap);
+            while (iCount < 3){
+                log.info("TOKEN 발급 API 호출 시작 횟수 : [" + iCount + "]");
+                try{
+                    String resultJson = communityService.sendPostApiServer("http://localhost:8091/API/getToken.do", resultMap);
+                    result = new Gson().fromJson(resultJson, Map.class);
 
-            Map<String, String> result = new Gson().fromJson(resultJson, Map.class);
+                    log.info("resultJson = [" + resultJson + "]");
+
+                    if (result.get("result").equals("1")){
+                        if (result.containsKey("result")){
+                            bToken = true;
+                            log.info("TOKEN 발급 API 호출 완료 : TOKEN VALUE [" + result.get("token") + "] # iCount = [" + iCount + "]");
+                        }else{
+                            bToken = false;
+                            log.info("TOKEN 발급 API 호출 완료 : TOKEN 없음 # iCount = [" + iCount + "]");
+                        }
+
+                        break;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                log.info("TOKEN 발급 API 호출 완료 : 비정상");
+                iCount++;
+            }
+
+            if (!bToken){
+                System.out.println("return token null false 4 #################");
+                return false;
+            }
+
 
             // 상태 변경 관련 UPDATE 문 실행
             storeRiderService.setRiderInfo(riderInfo);
 
             // 만료 기간이 없는 경우 강제로 현재 일자롤부터 180일을 추가한다.
             if (chkRiderInfo.getSession() == null || chkRiderInfo.getSession().getExpiryDatetime() == ""){
-                System.out.println("유효기간 입력");
+                log.info("유효기간 입력");
                 if (chkRiderInfo.getSession() == null){
                     chkRiderInfo.setSession(new RiderSession());
                 }
@@ -321,10 +353,9 @@ public class RiderController {
                     calendar.setTime(new Date());
                     calendar.add(Calendar.YEAR, 1);
 
-                    System.out.println("############ 유효기간 설정 #################");
-//                    System.out.println(calendar.getTime());
-                    System.out.println(defaultFormat.format(calendar.getTime()));
-                    System.out.println("############ 유효기간 설정 #################");
+                    log.info("############ 유효기간 설정 #################");
+                    log.info(defaultFormat.format(calendar.getTime()));
+                    log.info("############ 유효기간 설정 #################");
 
                     chkRiderInfo.getSession().setExpiryDatetime(defaultFormat.format(calendar.getTime()));
 
@@ -334,7 +365,7 @@ public class RiderController {
             }
 
             // Token 발행이 성공적이고, 유효기간이 있는 경우, 유효기간을 업데이트한다.
-            if (result.get("result").equals("1") && chkRiderInfo.getSession() != null && chkRiderInfo.getSession().getExpiryDatetime() != null){
+            if (chkRiderInfo.getSession() != null && chkRiderInfo.getSession().getExpiryDatetime() != null){
                 // 라이더 Session 유효기간 변경
                 RiderSession session = new RiderSession();
                 session.setRider_id(rider.getId());
@@ -454,14 +485,29 @@ public class RiderController {
         }else{
             // 승인 이외의 정보는 Rider Approval Info에서 적용한다.
 
-            System.out.println("###########");
-            System.out.println(chkRiderInfo.getCode());
+            log.info("###########");
+            log.info(chkRiderInfo.getCode());
 
             storeRiderService.setRiderInfo(chkRiderInfo);
         }
 
        return true;
     }
+
+    // 라이더 Approval Row 삭제
+    @ResponseBody
+    @PostMapping("/deleteApprovalRiderRowData")
+    @CnttMethodDescription("라이더 Approval Row 데이터 삭제")
+    public Boolean deleteApprovalRiderRowData(RiderApprovalInfo riderInfo){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        riderInfo.setToken(storeInfo.getStoreAccessToken());
+
+        int iCount = storeRiderService.deleteApprovalRiderRowData(riderInfo);
+        log.info("라이더 Approval Row 데이터 삭제 완료 # id = [" + riderInfo.getId() + "] # [" + iCount + "]");
+
+        return true;
+    }
+
 
     // 라이더 상태 및 유효기간을 체크한다
     // true = 가입 가능

@@ -34,6 +34,9 @@
 		<result property="orderStandbyDatetime" column="order_standby_datetime" />
 		<result property="orderStandbyStatus" column="order_standby_status" />
 
+		<result property="brandCode" column="brandCode" />
+		<result property="brandName" column="brandName" />
+
 		<!-- 20.01.13 Shared Rider Info -->
 		<result property="shared_admin_id" column="allow_admin_id" />
 		<result property="shared_group_id" column="allow_group_id" />
@@ -313,6 +316,9 @@
 		, SRR.subgroup_id AS subGroupRiderRel_subgroup_id
 		, SRR.store_id AS subGroupRiderRel_store_id
 		, SRR.rider_id AS subGroupRiderRel_rider_id
+
+		,ifnull(TS.brand_code, ( select brand_code from TB_ADMIN where id = TS.admin_id ))	as brandCode
+		,(select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = ifnull(TS.brand_code, ( select brand_code from TB_ADMIN where id = TS.admin_id )))	as brandName
 
 		FROM TB_RIDER TR
 
@@ -1246,6 +1252,7 @@
 		left join TB_RIDER_SESSION		RS
 			on	 REQ.rider_id = RS.rider_id
 		where	 1=1
+		AND      REQ.deleted_datetime is null
 		<choose>
 			<when test="role != null and role == 'ROLE_ADMIN'">
 				AND REQ.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
@@ -1292,6 +1299,7 @@
 		left join TB_RIDER_SESSION		RS
 			on	 REQ.rider_id = RS.rider_id
 		where	 1=1
+		and      REQ.deleted_datetime is null
 		<choose>
 			<when test="role != null and role == 'ROLE_ADMIN'">
 				AND REQ.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
@@ -1364,6 +1372,7 @@
 		select	 login_pw
 		from	 TB_REQ_REGIST_RIDER
 		where	 id = #{id}
+		and      deleted_datetime is null
 	</select>
 
 	<update id="deleteRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
@@ -1394,7 +1403,14 @@
 	</update>
 
 	<delete id="deleteOverExpDateToken">
-		delete from TB_RIDER_SESSION where rider_id in ( select rider_id from TB_REQ_REGIST_RIDER where req_status = 4 );
+		delete from TB_RIDER_SESSION where rider_id in ( select rider_id from TB_REQ_REGIST_RIDER where req_status = 4 and deleted_datetime is null );
 	</delete>
+
+	<update id="deleteApprovalRiderRowData" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo">
+		update	 TB_REQ_REGIST_RIDER
+		set      deleted_datetime = now()
+		where    req_status in (2, 3, 4)
+		and      id = #{id};
+	</update>
 
 </mapper>

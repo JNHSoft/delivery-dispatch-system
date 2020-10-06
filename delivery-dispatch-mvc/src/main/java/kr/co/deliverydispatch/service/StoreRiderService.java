@@ -81,4 +81,9 @@ public interface StoreRiderService {
      * <p> update ExpiryDatetime for Rider Session
      * */
     public int updateRiderSession(RiderSession session);
+
+    /**
+     * deleteApprovalRiderRowData
+     * */
+    int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo);
 }

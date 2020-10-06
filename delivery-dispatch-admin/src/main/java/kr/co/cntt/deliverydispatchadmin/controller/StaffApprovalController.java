@@ -1,6 +1,7 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 import com.google.gson.Gson;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
@@ -257,7 +258,6 @@ public class StaffApprovalController {
                     calendar.add(Calendar.YEAR, 1);
 
                     System.out.println("############ 유효기간 설정 #################");
-//                    System.out.println(calendar.getTime());
                     System.out.println(defaultFormat.format(calendar.getTime()));
                     System.out.println("############ 유효기간 설정 #################");
 
@@ -394,6 +394,20 @@ public class StaffApprovalController {
 
             staffApprovalAdminService.setRiderInfo(chkRiderInfo);
         }
+
+        return true;
+    }
+
+    // 라이더 Approval Row 삭제
+    @ResponseBody
+    @PostMapping("/deleteApprovalRiderRowData")
+    @CnttMethodDescription("라이더 Approval Row 데이터 삭제")
+    public Boolean deleteApprovalRiderRowData(RiderApprovalInfo riderInfo){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
+
+        int iCount = staffApprovalAdminService.deleteApprovalRiderRowData(riderInfo);
+        log.info("라이더 Approval Row 데이터 삭제 완료 # id = [" + riderInfo.getId() + "] # [" + iCount + "]");
 
         return true;
     }

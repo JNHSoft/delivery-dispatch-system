@@ -1345,6 +1345,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Override
     public int putOrderArrived(Order order) throws AppTrException{
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+        String newRider = order.getStatus();
+
+        System.out.println("############ --> " + newRider);
+
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
 
         if (selectOrderIsApprovalCompleted != 0) {
@@ -1408,6 +1412,21 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 redisService.setPublisher(Content.builder().type("order_arrived").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
             } else {
                 redisService.setPublisher(Content.builder().type("order_arrived").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
+            }
+
+            log.info("newRider = [" + newRider + "]");
+
+            if (newRider.equals("7")){
+                try{
+                    log.info("newRider Put Arrived Button goto Completed");
+                    int iResult = putOrderCompleted(order);
+                    log.info("newRider Put Arrived Button gotoCompleted result = [" + iResult + "]");
+                }catch (Exception e){
+                    e.printStackTrace();
+                    log.info("newRider Put Error");
+                    log.info(e.getMessage());
+                }
+
             }
         }
 

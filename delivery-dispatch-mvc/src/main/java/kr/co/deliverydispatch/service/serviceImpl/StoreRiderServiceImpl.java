@@ -318,4 +318,9 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
         return riderMapper.updateRiderSession(session);
     }
 
+    /**
+     * deleteApprovalRiderRowData
+     * */
+    public int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo){ return riderMapper.deleteApprovalRiderRowData(riderInfo); }
+
 }

@@ -42,4 +42,7 @@ public interface StaffApprovalAdminService {
     int insertAdminRiderSession(Rider rider);
 
     int updateRiderInfo(Rider rider);
+
+    // 라이더 Approval Row Data 삭제
+    int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo);
 }
