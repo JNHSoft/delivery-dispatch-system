@@ -776,6 +776,7 @@
 			, vehicle_number
 			, working_hours
 			, rest_hours
+			, app_type
 		) VALUES (
 			now()
 			, #{chatUserId}
@@ -813,6 +814,12 @@
 				, #{restHours}
 			</if>
 			<if test="restHours == null or restHours == ''">
+				, NULL
+			</if>
+			<if test="appType != null and appType != ''">
+				, #{restHours}
+			</if>
+			<if test="appType == null or appType == ''">
 				, NULL
 			</if>
 		)

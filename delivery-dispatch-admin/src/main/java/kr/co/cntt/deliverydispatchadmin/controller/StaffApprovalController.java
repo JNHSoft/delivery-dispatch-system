@@ -1,7 +1,5 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
-import com.google.gson.Gson;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
@@ -11,7 +9,6 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.service.admin.StaffAdminService;
 import kr.co.cntt.core.service.admin.StaffApprovalAdminService;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
@@ -197,6 +194,7 @@ public class StaffApprovalController {
         rider.setName(chkRiderInfo.getName());
         rider.setLoginId(chkRiderInfo.getLoginId());
         rider.setLoginPw(staffApprovalAdminService.selectApprovalRiderPw(chkRiderInfo.getId()));
+        rider.setAppType("1");
 
         /** #### 그룹 정보 #### */
         if (chkRiderInfo.getRiderDetail().getRiderStore() != null){

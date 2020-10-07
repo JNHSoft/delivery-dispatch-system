@@ -27,5 +27,7 @@ public class Common implements Dto {
     private String days;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String lang;
+    // 20.10.07 app 사용 구분
+    private String appType;
 
 }

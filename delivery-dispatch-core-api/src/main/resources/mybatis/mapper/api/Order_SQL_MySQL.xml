@@ -54,6 +54,7 @@
 			<result property="radius" column="radius" />
 			<result property="assignmentLimit" column="assignment_limit" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
+			<result property="brandCode" column="brand_code" />
 		</association>
 
 		<association property="thirdParty" column="thirdParty" javaType="kr.co.cntt.core.model.thirdParty.ThirdParty">
@@ -94,6 +95,7 @@
 		<result property="combinedOrderId" column="combined_order_id" />
 		<result property="device_os" column="device_os" />
 		<result property="distance" column="distance" />
+		<result property="appType" column="app_type" />
 
 		<association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
 			<result property="id" column="rider_id" />
@@ -110,6 +112,7 @@
 			<result property="address" column="store_address" />
 			<result property="detailAddress" column="store_detail_address" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
+			<result property="brandCode" column="brand_code" />
 		</association>
 
 
@@ -318,6 +321,9 @@
 
 			, E.id AS third_party_id
 			, E.name AS third_party_name
+
+			, B.app_type
+			, D.brand_code
 
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_RIDER AS B

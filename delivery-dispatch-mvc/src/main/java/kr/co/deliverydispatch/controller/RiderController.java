@@ -256,6 +256,7 @@ public class RiderController {
         rider.setName(chkRiderInfo.getName());
         rider.setLoginId(chkRiderInfo.getLoginId());
         rider.setLoginPw(commInfoService.selectApprovalRiderPw(chkRiderInfo.getId()));
+        rider.setAppType("1");
 
         /** #### 그룹 정보 #### */
         if (chkRiderInfo.getRiderDetail().getRiderStore() != null){

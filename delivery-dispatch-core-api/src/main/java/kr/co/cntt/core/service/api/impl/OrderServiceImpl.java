@@ -1345,9 +1345,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Override
     public int putOrderArrived(Order order) throws AppTrException{
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        String newRider = order.getStatus();
-
-        System.out.println("############ --> " + newRider);
+//        String newRider = order.getStatus();
+//
+//        System.out.println("############ --> " + newRider);
 
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
 
@@ -1414,9 +1414,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 redisService.setPublisher(Content.builder().type("order_arrived").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
             }
 
-            log.info("newRider = [" + newRider + "]");
+            log.info("rier AppType = [" + S_Order.getAppType() + "]");
 
-            if (newRider.equals("7")){
+            if (S_Order.getAppType() != null && S_Order.getAppType().equals("1") && S_Order.getStore() != null && S_Order.getStore().getBrandCode().equals("1")){
                 try{
                     log.info("newRider Put Arrived Button goto Completed");
                     int iResult = putOrderCompleted(order);
