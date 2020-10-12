@@ -142,13 +142,13 @@ function makeRowButton(obj){
         case "3":           // 승인 후 거절
             btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + disapproval + "</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
-            btn_edit = "<button class='button btn_gray2 h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_edit = "<button class='button btn_gray2 h30 w60 w80 mr10' style='font-size: 14px;' disabled>Edit</button>"
             btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>DEL</button>"
             break;
         case "4":           // 유효기간 만료
             btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + approval + "</button>";
             btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
-            btn_edit = "<button class='button btn_gray2 h30 w60 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_edit = "<button class='button btn_gray2 h30 w60 w80 mr10' style='font-size: 14px;' disabled>Edit</button>"
             btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>DEL</button>"
             break;
     }

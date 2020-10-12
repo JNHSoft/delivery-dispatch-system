@@ -5,7 +5,6 @@ import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.deliverydispatch.service.CommInfoService;
 import lombok.extern.slf4j.Slf4j;

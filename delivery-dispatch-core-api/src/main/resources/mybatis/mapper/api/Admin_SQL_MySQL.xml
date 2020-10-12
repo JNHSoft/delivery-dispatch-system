@@ -817,7 +817,7 @@
 				, NULL
 			</if>
 			<if test="appType != null and appType != ''">
-				, #{restHours}
+				, #{appType}
 			</if>
 			<if test="appType == null or appType == ''">
 				, NULL

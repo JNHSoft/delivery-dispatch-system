@@ -22,7 +22,6 @@ import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.OrderService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
-import kr.co.cntt.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1922,6 +1921,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Order combinedOrder = new Order();
 
             combinedOrder.setReturnDatetime(LocalDateTime.now().toString());
+
+            // 완료 처리로 변경 되지 않은 경우 변경한다
+            combinedOrder.setStatus("3");
+
             combinedOrder.setToken(order.getToken());
             combinedOrder.setId(order.getCombinedOrderId());
 
@@ -1929,6 +1932,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         order.setReturnDatetime(LocalDateTime.now().toString());
+        order.setStatus("3");
 
         int ret = this.putOrder(order);
 
