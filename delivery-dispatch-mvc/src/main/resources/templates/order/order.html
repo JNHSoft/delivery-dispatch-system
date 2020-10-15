@@ -26,7 +26,7 @@
 				<label class="checkbox"><input name="srchChk" type="checkbox" value="6" id="orderArrivedChk" checked="checked" disabled="true"/><i></i>
 					<span class="lbl" th:text="${#messages.msg('status.arrived')}"/>
 				</label>
-				<label class="checkbox"><input name="srchChk" type="checkbox" value="3" id="orderCompleChk" checked="checked" disabled="true"/><i></i>
+				<label th:unless="${store.brandCode.toString().equals('1')}" class="checkbox"><input name="srchChk" type="checkbox" value="3" id="orderCompleChk" checked="checked" disabled="true"/><i></i>
 					<span class="lbl" th:text="${#messages.msg('status.completed')}"/>
 				</label>
 				<label class="checkbox"><input name="srchChk" type="checkbox" value="4" id="orderCancelChk" checked="checked" disabled="true"/><i></i>
