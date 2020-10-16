@@ -35,14 +35,11 @@
 						<ul>
 							<li><a href="/order"><img src="../resources/images/common/gnb_order.png" alt="" /><strong th:text="${#messages.msg('gnb.order')}" /></a></li>
 
-							<li>
-								<a href="/rider" class="1depth"><img src="../resources/images/common/gnb_rider.png" alt="" /><strong th:text="${#messages.msg('gnb.rider')}" /></a>
-								<dl>
-									<dt>하위메뉴</dt>
-									<dd><a href="/rider" th:text="${#messages.msg('gnb.rider')}" /></dd>
-									<dd><a href="/riderApproval" th:text="${#messages.msg('rider.approval.title')}" /></dd>
-								</dl>
-							</li>
+							<!--라이더 상태 확인-->
+							<li><a href="/rider"><img src="../resources/images/common/gnb_rider.png" alt="" /><strong th:text="${#messages.msg('gnb.rider')}"/></a></li>
+							<!--라이더 승인 확인-->
+							<li><a href="/riderApproval"><img src="../resources/images/common/gnb_rider.png" alt="" /><strong th:text="${#messages.msg('rider.approval.title')}"/></a></li>
+
 							<li>
 								<a href="/statisticsByOrder" class="1depth"><img src="../resources/images/common/gnb_statement.png" alt="" /><strong th:text="${#messages.msg('gnb.statistics')}" /></a>
 								<dl>
