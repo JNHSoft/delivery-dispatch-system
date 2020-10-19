@@ -56,7 +56,7 @@
                         <tr>
                             <th th:text="${#messages.msg('rider.name')}"/>
                             <td>
-                                <input type="text" name="" id="riderName" class="input" value="" readonly="true" style="background: darkgray"/>
+                                <input type="text" name="" id="riderName" class="input" value="" />
                             </td>
                             <th th:text="${#messages.msg('rider.phone')}"/>
                             <td>
@@ -111,6 +111,15 @@
     let approval = /*[[#{rider.approval.approval}]]*/ 'approval';
     let disapproval = /*[[#{rider.approval.disapproval}]]*/ 'approval';
     let expDateSetting = /*[[#{rider.approval.expiry.setting}]]*/ 'expDateSetting';
+    let approvalStatus = /*[[#{rider.approval.status}]]*/ 'approvalStatus';
+    let waitApproval = /*[[#{rider.approval.status.wait}]]*/ 'waitApproval';
+    let expiryApproval = /*[[#{rider.approval.status.expiry}]]*/ 'expiryApproval';
+    let successApproval = /*[[#{rider.approval.status.success}]]*/ 'successApproval';
+    let pauseApproval = /*[[#{rider.approval.status.pause}]]*/'pauseApproval';
+    let disApproval = /*[[#{rider.approval.status.disapproval}]]*/ 'disApproval';
+
+    let btnEdit = /*[[#{rider.approval.edit}]]*/ 'btnEdit';
+    let btnDelete = /*[[#{rider.approval.delete}]]*/ 'btnDelete';
 
     let msgDisapproval = /*[[#{rider.message.confirm.disapproval}]]*/ 'msgDisapproval';
     let msgDetailInfoSave = /*[[#{rider.message.confirm.detailinfo.save}]]*/ 'msgDetailInfoSave';

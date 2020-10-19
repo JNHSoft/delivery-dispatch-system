@@ -199,6 +199,7 @@ public class RiderController {
             commInfoService.deleteRiderInfo(rider);     // 라이더 및 라이더 소속 그룹에 대한 정보를 삭제
         }
 
+        riderInfo.setName(chkRiderInfo.getName());
         // 상태 변경 관련 UPDATE 문 실행
         storeRiderService.setRiderInfo(riderInfo);
 
@@ -474,6 +475,14 @@ public class RiderController {
             bExpDate = true;
         }
 
+        if (riderInfo.getName() != null && !riderInfo.getName().equals(chkRiderInfo.getName())){
+            chkRiderInfo.setName(riderInfo.getName());
+        }
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println(riderInfo.getName());
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
         if (chkRiderInfo.getApprovalStatus().equals("1")){
             // 라이더가 승인이 된 경우 TB_RIDER에서 정보를 변경한다.
             Rider changeRider = new Rider();
@@ -481,6 +490,7 @@ public class RiderController {
             changeRider.setId(chkRiderInfo.getRiderId());
             changeRider.setVehicleNumber(riderInfo.getVehicleNumber());
             changeRider.setCode(riderInfo.getCode());
+            changeRider.setName(chkRiderInfo.getName());
 
             commInfoService.updateRiderInfo(changeRider);
         }else{

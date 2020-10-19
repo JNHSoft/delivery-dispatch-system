@@ -170,14 +170,17 @@ public class ApprovalRiderListAtAdminforExcelServiceImpl extends ExcelComm {
                         cell.setCellValue(messageSource.getMessage("rider.approval.status.wait",null, locale));
                         break;
                     case "1":
-                        cell.setCellValue(messageSource.getMessage("rider.approval.approval",null, locale));
+                        cell.setCellValue(messageSource.getMessage("rider.approval.status.success",null, locale));
                         break;
                     case "2":
                     case "3":
-                        cell.setCellValue(messageSource.getMessage("rider.approval.disapproval",null, locale));
+                        cell.setCellValue(messageSource.getMessage("rider.approval.status.disapproval",null, locale));
                         break;
                     case "4":
                         cell.setCellValue(messageSource.getMessage("rider.approval.status.expiry",null, locale));
+                        break;
+                    case "5":
+                        cell.setCellValue(messageSource.getMessage("rider.approval.status.pause",null, locale));
                         break;
                     default:
                         cell.setCellValue("");

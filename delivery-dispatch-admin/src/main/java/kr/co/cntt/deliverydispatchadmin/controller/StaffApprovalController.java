@@ -375,6 +375,10 @@ public class StaffApprovalController {
             bExpDate = true;
         }
 
+        if (riderInfo.getName() != null && !riderInfo.getName().equals(chkRiderInfo.getName())){
+            chkRiderInfo.setName(riderInfo.getName());
+        }
+
         if (chkRiderInfo.getApprovalStatus().equals("1")){
             // 라이더가 승인이 된 경우 TB_RIDER에서 정보를 변경한다.
             Rider changeRider = new Rider();
@@ -382,6 +386,7 @@ public class StaffApprovalController {
             changeRider.setId(chkRiderInfo.getRiderId());
             changeRider.setVehicleNumber(riderInfo.getVehicleNumber());
             changeRider.setCode(riderInfo.getCode());
+            changeRider.setName(riderInfo.getName());
 
             staffApprovalAdminService.updateRiderInfo(changeRider);
         }else{
