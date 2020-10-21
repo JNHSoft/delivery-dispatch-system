@@ -50,11 +50,6 @@ public class StaffApprovalController {
     @CnttMethodDescription("직원 승인 목록")
     public String staffApproval(RiderApprovalInfo approvalInfo, Model model){
 
-        System.out.println("#####################################");
-        System.out.println(approvalInfo);
-        System.out.println("#####################################");
-
-
         return "/staff/staff_approval";
     }
 
@@ -94,7 +89,7 @@ public class StaffApprovalController {
     // 라이더 승인 상태 변경 요청
     @ResponseBody
     @PostMapping("/changeApprovalStatus")
-    @CnttMethodDescription("라이더 승인 상태 변경")
+    @CnttMethodDescription("라이더 승인 거절 상태 변경")
     public Boolean changeApprovalStatus(RiderApprovalInfo riderInfo){
 
         // 승인 요청인 경우는 거절한다
@@ -278,6 +273,46 @@ public class StaffApprovalController {
         }catch (Exception e){
             e.printStackTrace();
         }
+
+        return true;
+    }
+
+    // 라이더 승인 상태 변경
+    @ResponseBody
+    @PostMapping("/changeStatus")
+    @CnttMethodDescription("라이더 상태 변경 전용")
+    public Boolean onlyChangeStatus(RiderApprovalInfo riderInfo){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
+        riderInfo.setRole("ROLE_ADMIN");
+
+        // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
+        RiderApprovalInfo chkRiderInfo = staffApprovalAdminService.getRiderApprovalInfo(riderInfo);
+
+        // 값이 없는 경우
+        if (chkRiderInfo == null){
+            return false;
+        }
+
+        switch (riderInfo.getApprovalStatus()){
+            case "1":
+                if (!chkRiderInfo.getApprovalStatus().equals("5")){
+                    return false;
+                }
+
+                break;
+            case "5":
+                if (!chkRiderInfo.getApprovalStatus().equals("1")){
+                    return false;
+                }
+
+                break;
+            default:
+                return false;
+        }
+
+        // 상태 변경 관련 UPDATE 문 실행
+        staffApprovalAdminService.setRiderInfo(riderInfo);
 
         return true;
     }

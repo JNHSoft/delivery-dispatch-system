@@ -382,6 +382,46 @@ public class RiderController {
         return true;
     }
 
+    // 라이더 승인 상태 변경
+    @ResponseBody
+    @PostMapping("/changeStatus")
+    @CnttMethodDescription("라이더 상태 변경 전용")
+    public Boolean onlyChangeStatus(RiderApprovalInfo riderInfo){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        riderInfo.setToken(storeInfo.getStoreAccessToken());
+        riderInfo.setRole("ROLE_STORE");
+
+        // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
+        RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
+
+        // 값이 없는 경우
+        if (chkRiderInfo == null){
+            return false;
+        }
+
+        switch (riderInfo.getApprovalStatus()){
+            case "1":
+                if (!chkRiderInfo.getApprovalStatus().equals("5")){
+                    return false;
+                }
+
+                break;
+            case "5":
+                if (!chkRiderInfo.getApprovalStatus().equals("1")){
+                    return false;
+                }
+
+                break;
+            default:
+                return false;
+        }
+
+        // 상태 변경 관련 UPDATE 문 실행
+        storeRiderService.setRiderInfo(riderInfo);
+
+        return true;
+    }
+
     // 라이더 상세 정보 가져오기
     @ResponseBody
     @PostMapping("/getRiderApprovalInfo")
@@ -478,10 +518,6 @@ public class RiderController {
         if (riderInfo.getName() != null && !riderInfo.getName().equals(chkRiderInfo.getName())){
             chkRiderInfo.setName(riderInfo.getName());
         }
-
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println(riderInfo.getName());
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
         if (chkRiderInfo.getApprovalStatus().equals("1")){
             // 라이더가 승인이 된 경우 TB_RIDER에서 정보를 변경한다.

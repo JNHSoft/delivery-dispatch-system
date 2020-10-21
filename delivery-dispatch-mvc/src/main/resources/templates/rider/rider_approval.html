@@ -94,6 +94,7 @@
             <div class="pop_foot">
                 <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
                 <div class="right">
+                    <a href="#" id="changePause" class="button h30 btn_red"></a>
                     <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('rider.approval.disapproval')}" onclick="popUpChangeStatus()"></a>
                     <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}" onclick="popUpSaveData()"></a>
                 </div>
@@ -114,7 +115,7 @@
     let riderLoginID = /*[[#{rider.approval.login.id}]]*/ 'riderLoginID';
     let riderName = /*[[#{rider.name}]]*/ 'riderName';
     let riderPhone = /*[[#{rider.phone}]]*/ 'riderPhone';
-    let requestDate = /*[[#{rider.approval.request.date}]]*/ 'requestDate';
+    let responseDate = /*[[#{rider.approval.response.date}]]*/ 'responseDate';
     let expDate = /*[[#{rider.approval.detail.expiry.datetime}]]*/ 'expDate';
     let setting = /*[[#{gnb.setting}]]*/ 'setting';
     let approval = /*[[#{rider.approval.approval}]]*/ 'approval';

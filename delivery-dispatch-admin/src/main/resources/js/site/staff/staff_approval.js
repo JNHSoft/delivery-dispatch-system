@@ -33,7 +33,15 @@ function getApprovalRiderList(){
                     tmpObj.riderID = data[key].loginId == undefined ? "" : data[key].loginId;
                     tmpObj.riderName = data[key].name == undefined ? "" : data[key].name;
                     tmpObj.contactNum = data[key].phone;
-                    tmpObj.createdDate = data[key].createdDatetime == undefined ? "-" : dateFormat(data[key].createdDatetime);
+                    //tmpObj.createdDate = data[key].createdDatetime == undefined ? "-" : dateFormat(data[key].createdDatetime);
+                    if (data[key].approvalStatus == "1" || data[key].approvalStatus == "5" || data[key].approvalStatus == "4"){
+                        tmpObj.statusDate = data[key].acceptDatetime == undefined ? "-" : dateFormat(data[key].acceptDatetime);
+                    }else if (data[key].approvalStatus == "2" || data[key].approvalStatus == "3"){
+                        tmpObj.statusDate = data[key].rejectDatetime == undefined ? "-" : dateFormat(data[key].rejectDatetime);
+                    }else{
+                        tmpObj.statusDate = data[key].createdDatetime == undefined ? "-" : dateFormat(data[key].createdDatetime);
+                    }
+
 
                     tmpObj.expirationDate = data[key].session == undefined ? "-" : dateFormat(data[key].session.expiryDatetime);
                     tmpObj.setting = makeRowButton(data[key]);
@@ -73,7 +81,7 @@ function makeGrid(data){
             {label: riderLoginID, name: 'riderID', width: 80, align: 'center'},
             {label: riderName, name: 'riderName', width: 80, align: 'center'},
             {label: riderPhone, name: 'contactNum', width: 80, align: 'center'},
-            {label: requestDate, name: 'createdDate', width: 80, align: 'center'},
+            {label: responseDate, name: 'statusDate', width: 80, align: 'center'},
             {label: expDate, name: 'expirationDate', width: 80, align: 'center'},
             {label: setting, name: 'setting', width: 300, align: 'center'},
             {label: approvalStatus, name: 'status', width: 80, align: 'center'},
@@ -123,6 +131,7 @@ function makeRowButton(obj){
             btn_disapproval = "<button class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</button>"
             break;
         case "1":           // 수락
+        case "5":
             btn_approval = "<button class='button btn_onahau h30 w100 mr10' style='font-size: 12px;'><i class='fa fa-check mr5' />" + approval + "</button>";
             if (bExpDate){
                 btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit + "</button>"
@@ -187,6 +196,7 @@ function popUpChangeStatus(){
     statusDisapproval(approvalID, approvalStatus);
 }
 
+// 상태값 변경 함수
 function statusDisapproval(approvalID, approvalStatus){
     let current = dateFormat(new Date());
     let exp = dateFormat($("#expDate" + approvalID).val());
@@ -305,6 +315,18 @@ function searchRiderApprovalDetail(rowID){
                     }
                 }
             });
+
+            if (data.approvalStatus == "5"){
+                $("#changePause").text(approval);
+                $("#changePause").off().on("click", function (){
+                    changeStatus(data.id, "1");
+                });
+            }else{
+                $("#changePause").text(pauseApproval);
+                $("#changePause").off().on("click", function (){
+                    changeStatus(data.id, "5");
+                });
+            }
 
             popOpen("#popRiderInfo");
         },
@@ -471,4 +493,63 @@ function getStatusValue(status){
 
     return statusValue;
 }
+
+// 일시 정지 / 재가동 상태로 적용
+function changeStatus(id, status){
+    if (id == undefined || status == undefined){
+        return;
+    }
+
+    if (id == "" || status == ""){
+        return;
+    }
+
+    // 기본 데이터 추출
+    let orgStatus = $("#approvalStatus").val();
+
+    // 허용으로 변경하기 위해서
+    if (status == "1"){
+        if (orgStatus != "5"){
+            return;
+        }
+    }
+    // 일시정지로 변경하기
+    else if(status == "5"){
+        if (orgStatus != "1"){
+            return;
+        }
+    }else{
+        return;
+    }
+
+    loading.show();
+
+    $.ajax({
+        url: "/changeStatus",
+        type: "post",
+        data:{
+            id: id,
+            approvalStatus: status
+        },
+        dataType: "json",
+        success: function (data){
+            if (data){
+                alert(msgChangeSuccess);
+                popClose("#popRiderInfo");
+            }else {
+                alert(msgChangeFailed);
+            }
+        },
+        error: function (error){
+            alert(msgChangeFailed);
+            console.log(error);
+        },
+        complete: function (data){
+            getApprovalRiderList();
+            loading.hide();
+        }
+    });
+
+}
+
 /*]]>*/

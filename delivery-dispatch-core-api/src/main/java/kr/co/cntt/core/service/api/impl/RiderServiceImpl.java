@@ -443,6 +443,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         throw new AppTrException(getMessage(ErrorCodeEnum.E00042), ErrorCodeEnum.E00042.name());
                     }
                     break;
+                case "5":       // 일시정지는 유효기간 체크하지 않음
+                    throw new AppTrException(getMessage(ErrorCodeEnum.E00054), ErrorCodeEnum.E00054.name());
                 default:
             }
         }
@@ -522,6 +524,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 returnMap.put("riderId", riderApprovalInfo.getRiderId());
 
                 break;
+            case "5":
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00055), ErrorCodeEnum.E00055.name());
             case "2":
             case "3":
                 // 승인 거절

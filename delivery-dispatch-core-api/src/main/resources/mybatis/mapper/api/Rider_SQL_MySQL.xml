@@ -164,6 +164,8 @@
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
 		<result property="riderId" column="rider_id" />
+		<result property="acceptDatetime" column="accept_datetime" />
+		<result property="rejectDatetime" column="reject_datetime" />
 
 		<association property="riderDetail" resultMap="selectRiderNowResult"/>
 
@@ -273,7 +275,7 @@
 		WHERE	 RRR.rider_id = R.id
 		and		 R.id = RS.rider_id
 		and		 date_format(ifnull(ifnull(RS.expiry_datetime, RRR.exp_datetime), now()), '%y-%m-%d') >= date_format(now(), '%y-%m-%d')
-		and		 RRR.req_status in (0, 1)
+		and		 RRR.req_status in (0, 1, 5)
 		and		 R.id = #{rider_id}
 	</update>
 
@@ -1246,6 +1248,8 @@
 				,REQ.longitude
 				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
+				,REQ.accept_datetime
+				,REQ.reject_datetime
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1350,6 +1354,12 @@
 			<if test="store != null and store.id != ''">
 				,store_id = #{store.id}
 			</if>
+		</if>
+		<if test="approvalStatus != null and approvalStatus eq '1'.toString()">
+			,accept_datetime = ifnull(accept_datetime, now())
+		</if>
+		<if test="approvalStatus != null and (approvalStatus eq '2'.toString() or approvalStatus eq '3'.toString())">
+			,reject_datetime = ifnull(reject_datetime, now())
 		</if>
 		where	 id = #{id}
 	</update>
