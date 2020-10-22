@@ -8,6 +8,9 @@ import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.store.Store;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,12 +67,12 @@ public interface RiderMapper {
 
 
     /**
-     * <p> Rider 토큰 만료일, last_access, working update
+     * <p> 라이더 세션 관련 변경
      *
-     * @param token
+     * @param session
      * @return
      */
-    public int updateRiderSession(String token);
+    public int updateRiderSession(RiderSession session);
 
     /**
      * <p> Rider 정보 조회
@@ -248,4 +251,54 @@ public interface RiderMapper {
      */
     public int updateRiderOrderStandbyStatus(Common common);
 
+    /**
+     * 20.08.07
+     * 라이더 승인 관련
+     * */
+    public List<RiderApprovalInfo> selectApprovalRiderList(Common common);
+
+    /**
+     * 라이더 승인 정보
+     * */
+    public RiderApprovalInfo selectApprovalRiderInfo(Common common);
+
+    /**
+     * 라이더 승인 정보 변경
+     * */
+    public int updateApprovalRiderInfo(RiderApprovalInfo riderInfo);
+
+    /**
+     * 라이더 요청 등록 페이지에서 필요로 하는 기본 정보
+     * */
+    public List<Store> selectAllStore();
+
+    /**
+     * 라이더 가입 요청
+     * */
+    public int insertApprovalInfo(RiderApprovalInfo riderInfo);
+
+    /**
+     * 라이더 암호 가져오기
+     * */
+    public String selectApprovalRiderPw(String id);
+
+    /**
+     * 라이더 정보 삭제 ( 라이더 및 서브 그룹 )
+     * */
+    public int deleteRiderInfo(Rider rider);
+
+    /**
+     * 유효기간 만료 계정 체크
+     * */
+    int updateOverExpDate();
+
+    /**
+     * 유효기간 만료 계정 Token 삭제
+     * */
+    int deleteOverExpDateToken();
+
+    /**
+     * Approval Rider Row data 삭제
+     * */
+    int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo);
 }

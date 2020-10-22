@@ -3,15 +3,18 @@
 
 	<!-- selectLoginTracker -->
 	<select id="selectLoginTracker" parameterType="kr.co.cntt.core.model.login.User" resultType="Map">
-		SELECT A.login_id AS loginId
-		, B.access_token AS accessToken
-		FROM TB_TRACKER AS A
-		LEFT JOIN TB_TRACKER_SESSION AS B
-		ON A.id = B.tracker_id
-		WHERE 1=1
-		AND login_id = #{loginId}
-		AND login_pw = #{loginPw}
-		limit 1
+		SELECT	 A.login_id				AS loginId
+				,B.access_token			AS accessToken
+				,null					as brandCode
+				,null					as brandName
+		FROM	 TB_TRACKER				AS A
+		LEFT JOIN TB_TRACKER_SESSION	AS B
+		ON	 A.id = B.tracker_id
+		WHERE	 1=1
+		AND		 deleted is null
+		AND		 login_id = #{loginId}
+		AND		 login_pw = #{loginPw}
+		limit	 1
 	</select>
 
 

@@ -720,7 +720,8 @@ function diffTime(time1, time2) {
         var time1 = new Date(time1);
         var time2 = new Date(time2);
 
-        if (time2.getTime() - time1.getTime() < 120000) {
+        // 20.08.07 대만 측 요청으로 1분으로 변경
+        if (time2.getTime() - time1.getTime() < 60000) {
             return 1;
         }
     }

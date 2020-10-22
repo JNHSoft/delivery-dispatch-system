@@ -182,15 +182,18 @@
 
 	<!-- selectLoginAdmin -->
 	<select id="selectLoginAdmin" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="Map">
-		SELECT A.login_id AS loginId
-		    , B.access_token AS accessToken
-		FROM TB_ADMIN AS A
-		LEFT JOIN TB_ADMIN_SESSION AS B
-		ON A.id = B.admin_id
-		WHERE 1=1
-		AND login_id = #{loginId}
-			AND login_pw = #{loginPw}
-		limit 1
+		SELECT	 A.login_id			AS loginId
+				,B.access_token		AS accessToken
+				,A.brand_code		as brandCode
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = A.brand_code )		as brandName
+		FROM	 TB_ADMIN			AS A
+		LEFT JOIN TB_ADMIN_SESSION	AS B
+			ON	 A.id = B.admin_id
+		WHERE	 1=1
+		AND		 A.deleted is null
+		AND		 login_id = #{loginId}
+		AND		 login_pw = #{loginPw}
+		limit	 1
 	</select>
 
 
@@ -642,7 +645,12 @@
 			, rider_id
 		) VALUES (
 			now()
-			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			<if test="role != null and role == 'ROLE_ADD'">
+				,#{adminId}
+			</if>
+			<if test="role == null or role != 'ROLE_ADD'">
+				, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			</if>
 			<if test="subGroupRiderRel.groupId != null and subGroupRiderRel.subGroupId != ''">
 			, #{subGroupRiderRel.groupId,jdbcType=VARCHAR}
 			, #{subGroupRiderRel.subGroupId,jdbcType=VARCHAR}
@@ -768,10 +776,17 @@
 			, vehicle_number
 			, working_hours
 			, rest_hours
+			, app_type
 		) VALUES (
 			now()
 			, #{chatUserId}
-			, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			<if test="role != null and role == 'ROLE_ADD'">
+				, #{adminId}
+			</if>
+			<if test="role == null or role != 'ROLE_ADD'">
+				, (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+			</if>
+
 			, #{name}
 			, #{phone}
 			, #{loginId}
@@ -799,6 +814,12 @@
 				, #{restHours}
 			</if>
 			<if test="restHours == null or restHours == ''">
+				, NULL
+			</if>
+			<if test="appType != null and appType != ''">
+				, #{appType}
+			</if>
+			<if test="appType == null or appType == ''">
 				, NULL
 			</if>
 		)
@@ -1559,12 +1580,12 @@
 				,avg(time_to_sec(timediff(A.return_datetime, A.picked_up_datetime))) AS pickup_return
 				,avg(timediff(A.return_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END)) AS order_return
 
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) <= 30 THEN 1 END) / count(A.id) *100 AS min_30below
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) <= 35 THEN 1 END) / count(A.id) *100 AS min_30below
 				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 31 and 41 THEN 1 END) / count(A.id) *100 AS min_30to40
 				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 41 and 51 THEN 1 END) / count(A.id) *100 AS min_40to50
 				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 51 and 61 THEN 1 END) / count(A.id) *100 AS min_50to60
 				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 61 and 91 THEN 1 END) / count(A.id) *100 AS min_60to90
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) > 90 THEN 1 END) / count(A.id) *100 AS min_90under
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) < 90 THEN 1 END) / count(A.id) *100 AS min_90under
 
 				,ifnull(count(
 					case

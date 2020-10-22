@@ -10,6 +10,9 @@ import kr.co.cntt.core.model.rider.Rider;
 import java.util.List;
 import java.util.Map;
 import kr.co.cntt.core.model.login.User;
+import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.store.Store;
 
 public interface RiderService {
     /**
@@ -46,7 +49,7 @@ public interface RiderService {
      * @param token
      * @return
      */
-    public int updateRiderSession(String token);
+    public int updateRiderSession(RiderSession session);
 
     /**
      * <p> selectRiderInfo
@@ -150,4 +153,17 @@ public interface RiderService {
      */
     public String getMobileVersion(String device);
 
+    /**
+     * 라이더 가입 승인 전 정상 등록된 모든 스토어 정보 가져오기
+     * */
+    public List<Store> selectAllStore();
+
+    public Map postRiderApproval(RiderApprovalInfo approvalInfo) throws AppTrException;
+
+    public Map getCheckRiderApproval(RiderApprovalInfo approvalInfo) throws AppTrException;
+
+    /**
+     * 라이더 유효기간 체크 후 정보 변경
+     * */
+    int updateOverExpDate() throws AppTrException;
 }

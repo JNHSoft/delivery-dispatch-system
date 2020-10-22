@@ -12,6 +12,8 @@ import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
+import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -266,4 +268,59 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
 
         return S_Chat;
     }
+
+    /**
+     * 20.08.07
+     * 라이더 승인 리스트
+     * */
+    @Override
+    public List<RiderApprovalInfo> getRiderApprovalList(Common common){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+//            common.setRole("ROLE_STORE");
+//        }
+
+        List<RiderApprovalInfo> approvalRider = riderMapper.selectApprovalRiderList(common);
+        if (approvalRider.size() == 0) {
+            return Collections.<RiderApprovalInfo>emptyList();
+        }
+
+        return approvalRider;
+
+
+        //common.setRole("ROLE_STORE");
+    }
+
+    /**
+     * 라이더 승인 개별 정보
+     * */
+    @Override
+    public RiderApprovalInfo getRiderApprovalInfo(Common common){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().matches(".*ROLE_STORE.*")) {
+            common.setRole("ROLE_STORE");
+        }
+        RiderApprovalInfo info = riderMapper.selectApprovalRiderInfo(common);
+        return info;
+    }
+
+    /**
+     * 라이더 정보 변경
+     * */
+    public int setRiderInfo(RiderApprovalInfo riderInfo){
+        return riderMapper.updateApprovalRiderInfo(riderInfo);
+    }
+
+    /**
+     * 라이더 세션 변경
+     * */
+    public int updateRiderSession(RiderSession session){
+        return riderMapper.updateRiderSession(session);
+    }
+
+    /**
+     * deleteApprovalRiderRowData
+     * */
+    public int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo){ return riderMapper.deleteApprovalRiderRowData(riderInfo); }
+
 }

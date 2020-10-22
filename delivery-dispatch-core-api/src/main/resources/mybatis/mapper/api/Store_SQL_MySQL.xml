@@ -152,15 +152,17 @@
 
     <!--로그인 ID 확인 -->
 	<select id="selectLoginStore" parameterType="kr.co.cntt.core.model.store.Store" resultType="Map">
-		SELECT A.login_id AS loginId
-		    , B.access_token AS accessToken
-		FROM TB_STORE AS A
-		LEFT JOIN TB_STORE_SESSION AS B
-		ON A.id = B.store_id
-		WHERE 1=1
-		AND login_id = #{loginId}
-			AND login_pw = #{loginPw}
-		limit 1
+        SELECT	 A.login_id			AS loginId
+                ,B.access_token		AS accessToken
+                ,A.brand_code		as brandCode
+                ,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = A.brand_code )		as brandName
+        FROM	 TB_STORE			AS A
+        LEFT JOIN TB_STORE_SESSION	AS B
+            ON	 A.id = B.store_id
+        WHERE	 1=1
+        AND		 login_id = #{loginId}
+        AND		 login_pw = #{loginPw}
+        limit	 1
 	</select>
 
 

@@ -1,9 +1,7 @@
-package kr.co.deliverydispatch.controller;
+package kr.co.cntt.deliverydispatchadmin.controller;
 
-import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
-import kr.co.cntt.core.model.chat.Chat;
-import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
@@ -11,18 +9,18 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.deliverydispatch.security.SecurityUser;
-import kr.co.deliverydispatch.service.CommInfoService;
-import kr.co.deliverydispatch.service.CommunityService;
-import kr.co.deliverydispatch.service.StoreRiderService;
+import kr.co.cntt.core.service.admin.StaffApprovalAdminService;
+import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
+import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,94 +29,33 @@ import java.util.*;
 
 @Slf4j
 @Controller
-public class RiderController {
+public class StaffApprovalController {
+    @Autowired
+    private TokenManager tokenManager;
 
     /**
      * 객체 주입
      */
-    private StoreRiderService storeRiderService;
-    private CommInfoService commInfoService;
-    private CommunityService communityService;
-
-    @Value("${spring.mvc.locale}")
-    private Locale regionLocale;
+    StaffApprovalAdminService staffApprovalAdminService;
 
     @Autowired
-    public RiderController(StoreRiderService storeRiderService, CommInfoService commInfoService, CommunityService communityService) {
-        this.storeRiderService = storeRiderService;
-        this.commInfoService = commInfoService;
-        this.communityService = communityService;
+    public StaffApprovalController(StaffApprovalAdminService staffApprovalAdminService){
+        this.staffApprovalAdminService = staffApprovalAdminService;
     }
 
     /**
-     * 기사현황 페이지
-     *
-     * @return
-     */
-    @GetMapping("/rider")
-    public String rider(Store store, @RequestParam(required = false) String frag, Model model) {
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        store.setToken(storeInfo.getStoreAccessToken());
-        Store myStore = storeRiderService.getStoreInfo(store);
-        model.addAttribute("store", myStore);
-        model.addAttribute("regionLocale", regionLocale);
-        return "/rider/rider";
-    }
-
-    @ResponseBody
-    @GetMapping("/getRiderList")
-    @CnttMethodDescription("그룹소속 기사목록")
-    public List<Rider> getMyRiderList(Common common){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        common.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> riderList = storeRiderService.getRiderNow(common);
-        return riderList;
-    }
-
-    @ResponseBody
-    @PutMapping("/putRiderReturnTime")
-    @CnttMethodDescription("라이더 재배치")
-    public Boolean putRiderReturnTime(Rider rider){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        rider.setToken(storeInfo.getStoreAccessToken());
-        storeRiderService.putRiderReturnTime(rider);
-        return true;
-    }
-
-    @ResponseBody
-    @GetMapping("/getChatList")
-    @CnttMethodDescription("채팅목록")
-    public List<Chat> getChatList(Chat chat){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        chat.setToken(storeInfo.getStoreAccessToken());
-        List<Chat> chatList = storeRiderService.getChat(chat);
-        return chatList;
-    }
-
-    @ResponseBody
-    @PostMapping("/postChat")
-    @CnttMethodDescription("채팅보내기")
-    public Boolean postChat(Chat chat){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        chat.setToken(storeInfo.getStoreAccessToken());
-        storeRiderService.postChat(chat);
-        return true;
-    }
-
-    /**
-     * 20.08.07 대만 개발 요청 사항
-     * # 라이더 앱에서 회원가입 프로세스
+     * Staff Approval 목록 호출
      * */
-    @GetMapping("/riderApproval")
-    public String riderApprovalView(Store store, @RequestParam(required = false) String frag, Model model){
+    @GetMapping("/staffApproval")
+    @CnttMethodDescription("직원 승인 목록")
+    public String staffApproval(RiderApprovalInfo approvalInfo, Model model){
 
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        store.setToken(storeInfo.getStoreAccessToken());
-        Store myStore = storeRiderService.getStoreInfo(store);
-        model.addAttribute("store", myStore);
-        model.addAttribute("regionLocale", regionLocale);
+        System.out.println("#####################################");
+        System.out.println(approvalInfo);
+        System.out.println("#####################################");
 
-        return "/rider/rider_approval";
+
+        return "/staff/staff_approval";
     }
 
     // 라이더 승인 요청에 대한 리스트 가져오기
@@ -126,29 +63,29 @@ public class RiderController {
     @ResponseBody
     @CnttMethodDescription("라이더 승인 리스트")
     public List<RiderApprovalInfo> getApprovalRiderList(Model model){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        //store.setToken(storeInfo.getStoreAccessToken());
-        Store store = new Store();
-        store.setToken(storeInfo.getStoreAccessToken());
-        store.setRole("ROLE_STORE");
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        Admin admin = new Admin();
+        admin.setToken(adminInfo.getAdminAccessToken());
+        admin.setRole("ROLE_ADMIN");
 
         // 스토어 정보
-        List<RiderApprovalInfo> approvalRider = storeRiderService.getRiderApprovalList(store);
+        List<RiderApprovalInfo> approvalRider = staffApprovalAdminService.getRiderApprovalList(admin);
 
         return approvalRider;
     }
 
     // 승인 리스트 항목 Excel Download
-    @GetMapping("/excelDownloadApprovalRiderList")
+    @GetMapping("/excelDownloadApprovalRiderListforAdmin")
     public ModelAndView approvalRiderListforExcel(HttpServletResponse response){
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Store store = new Store();
-        store.setToken(storeInfo.getStoreAccessToken());
-        store.setRole("ROLE_STORE");
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Admin admin = new Admin();
+        admin.setToken(adminInfo.getAdminAccessToken());
+        admin.setRole("ROLE_ADMIN");
 
-        ModelAndView modelAndView = new ModelAndView("ApprovalRiderListforExcelServiceImpl");
-        List<RiderApprovalInfo> approvalInfos = storeRiderService.getRiderApprovalList(store);
+        ModelAndView modelAndView = new ModelAndView("ApprovalRiderListAtAdminforExcelServiceImpl");
+        List<RiderApprovalInfo> approvalInfos = staffApprovalAdminService.getRiderApprovalList(admin);
         modelAndView.addObject("getApprovalRiderList", approvalInfos);
 
         return modelAndView;
@@ -165,13 +102,13 @@ public class RiderController {
             return false;
         }
 
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Store myStore = null;
         //store.setToken(storeInfo.getStoreAccessToken());
-        riderInfo.setToken(storeInfo.getStoreAccessToken());
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
 
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
-        RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
+        RiderApprovalInfo chkRiderInfo = staffApprovalAdminService.getRiderApprovalInfo(riderInfo);
 
         // 값이 없는 경우
         if (chkRiderInfo == null){
@@ -196,11 +133,11 @@ public class RiderController {
         if (chkRiderInfo.getApprovalStatus().equals("1")){
             Rider rider = new Rider();
             rider.setId(chkRiderInfo.getRiderId());
-            commInfoService.deleteRiderInfo(rider);     // 라이더 및 라이더 소속 그룹에 대한 정보를 삭제
+            staffApprovalAdminService.deleteRiderInfo(rider);     // 라이더 및 라이더 소속 그룹에 대한 정보를 삭제
         }
 
         // 상태 변경 관련 UPDATE 문 실행
-        storeRiderService.setRiderInfo(riderInfo);
+        staffApprovalAdminService.setRiderInfo(riderInfo);
 
         return true;
     }
@@ -210,13 +147,14 @@ public class RiderController {
     @PostMapping("/approvalAccept")
     @CnttMethodDescription("라이더 승인 허용")
     public Boolean approvalAccept(RiderApprovalInfo riderInfo){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Store myStore = null;
         //store.setToken(storeInfo.getStoreAccessToken());
-        riderInfo.setToken(storeInfo.getStoreAccessToken());
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
+        riderInfo.setRole("ROLE_ADMIN");
 
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
-        RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
+        RiderApprovalInfo chkRiderInfo = staffApprovalAdminService.getRiderApprovalInfo(riderInfo);
 
         // 값이 없는 경우
         if (chkRiderInfo == null){
@@ -232,7 +170,7 @@ public class RiderController {
         // 관련 라이더 정보가 있는지 확인 LOGIN ID는 중복되면 안되므로
         chkRiderInfo.setRole("ROLE_SEARCH");
         System.out.println(chkRiderInfo.getRole());
-        List<RiderApprovalInfo> approvalInfos = storeRiderService.getRiderApprovalList(chkRiderInfo);
+        List<RiderApprovalInfo> approvalInfos = staffApprovalAdminService.getRiderApprovalList(chkRiderInfo);
 
         // 필터링 시작
         if (!checkExpDate(approvalInfos)){
@@ -255,12 +193,12 @@ public class RiderController {
         rider.setWorkingHours("0|0");
         rider.setName(chkRiderInfo.getName());
         rider.setLoginId(chkRiderInfo.getLoginId());
-        rider.setLoginPw(commInfoService.selectApprovalRiderPw(chkRiderInfo.getId()));
+        rider.setLoginPw(staffApprovalAdminService.selectApprovalRiderPw(chkRiderInfo.getId()));
         rider.setAppType("1");
 
         /** #### 그룹 정보 #### */
         if (chkRiderInfo.getRiderDetail().getRiderStore() != null){
-            myStore = storeRiderService.getStoreInfo(chkRiderInfo.getRiderDetail().getRiderStore());
+            myStore = staffApprovalAdminService.selectStoreInfo(chkRiderInfo.getRiderDetail().getRiderStore());
 
             Group group = new Group();
             group.setId(myStore.getGroup().getId());
@@ -275,9 +213,9 @@ public class RiderController {
         }
 
         // 채팅 User ID 등록
-        commInfoService.insertChatUser(rider);
+        staffApprovalAdminService.insertChatUser(rider);
         rider.setRole("ROLE_ADD");
-        commInfoService.insertRiderInfo(rider);
+        staffApprovalAdminService.insertRider(rider);
 
         riderInfo.setRiderId(rider.getId());
 
@@ -291,59 +229,22 @@ public class RiderController {
 
             rider.setSubGroupRiderRel(subGroupRiderRel);
 
-            commInfoService.insertSubGroupRiderRel(rider);
+            staffApprovalAdminService.insertSubGroupRiderRel(rider);
         }
 
         // Token 발급을 위한 메소드 호출
         try {
-            Map<String, String> resultMap = new HashMap<>();
-            Map<String, String> result = new HashMap<>();
-            int iCount = 0;
-            boolean bToken = false;
+            String riderSessionToken = tokenManager.getToken("3", rider.getLoginId(), rider.getLoginPw());
+            rider.setAccessToken(riderSessionToken);
 
-            resultMap.put("level", "3");
-            resultMap.put("loginId", rider.getLoginId());
-            resultMap.put("loginPw", rider.getLoginPw());
-
-            while (iCount < 3){
-                log.info("TOKEN 발급 API 호출 시작 횟수 : [" + iCount + "]");
-                try{
-                    String resultJson = communityService.sendPostApiServer("http://localhost:8091/API/getToken.do", resultMap);
-                    result = new Gson().fromJson(resultJson, Map.class);
-
-                    log.info("resultJson = [" + resultJson + "]");
-
-                    if (result.get("result").equals("1")){
-                        if (result.containsKey("result")){
-                            bToken = true;
-                            log.info("TOKEN 발급 API 호출 완료 : TOKEN VALUE [" + result.get("token") + "] # iCount = [" + iCount + "]");
-                        }else{
-                            bToken = false;
-                            log.info("TOKEN 발급 API 호출 완료 : TOKEN 없음 # iCount = [" + iCount + "]");
-                        }
-
-                        break;
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-                log.info("TOKEN 발급 API 호출 완료 : 비정상");
-                iCount++;
-            }
-
-            if (!bToken){
-                System.out.println("return token null false 4 #################");
-                return false;
-            }
-
+            staffApprovalAdminService.insertAdminRiderSession(rider);
 
             // 상태 변경 관련 UPDATE 문 실행
-            storeRiderService.setRiderInfo(riderInfo);
+            staffApprovalAdminService.setRiderInfo(riderInfo);
 
             // 만료 기간이 없는 경우 강제로 현재 일자롤부터 180일을 추가한다.
             if (chkRiderInfo.getSession() == null || chkRiderInfo.getSession().getExpiryDatetime() == ""){
-                log.info("유효기간 입력");
+                System.out.println("유효기간 입력");
                 if (chkRiderInfo.getSession() == null){
                     chkRiderInfo.setSession(new RiderSession());
                 }
@@ -354,9 +255,9 @@ public class RiderController {
                     calendar.setTime(new Date());
                     calendar.add(Calendar.YEAR, 1);
 
-                    log.info("############ 유효기간 설정 #################");
-                    log.info(defaultFormat.format(calendar.getTime()));
-                    log.info("############ 유효기간 설정 #################");
+                    System.out.println("############ 유효기간 설정 #################");
+                    System.out.println(defaultFormat.format(calendar.getTime()));
+                    System.out.println("############ 유효기간 설정 #################");
 
                     chkRiderInfo.getSession().setExpiryDatetime(defaultFormat.format(calendar.getTime()));
 
@@ -372,7 +273,7 @@ public class RiderController {
                 session.setRider_id(rider.getId());
                 session.setExpiryDatetime(chkRiderInfo.getSession().getExpiryDatetime());
 
-                storeRiderService.updateRiderSession(session);
+                staffApprovalAdminService.updateRiderSession(session);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -386,12 +287,12 @@ public class RiderController {
     @PostMapping("/getRiderApprovalInfo")
     @CnttMethodDescription("라이더 상세 정보")
     public RiderApprovalInfo getRiderApprovalInfo(RiderApprovalInfo riderInfo){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         //store.setToken(storeInfo.getStoreAccessToken());
-        riderInfo.setToken(storeInfo.getStoreAccessToken());
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
 
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
-        return storeRiderService.getRiderApprovalInfo(riderInfo);
+        return staffApprovalAdminService.getRiderApprovalInfo(riderInfo);
     }
 
     // 라이더 유효기간 설정
@@ -399,13 +300,13 @@ public class RiderController {
     @PostMapping("/setRiderExpDate")
     @CnttMethodDescription("라이더 유효기간 설정")
     public Boolean setRiderExpDate(RiderApprovalInfo riderInfo, String expiryDate){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        riderInfo.setToken(storeInfo.getStoreAccessToken());
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
 
         // 선택한 일자가 금일보다 작을 수 없도록 적용
         SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd");
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
-        RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
+        RiderApprovalInfo chkRiderInfo = staffApprovalAdminService.getRiderApprovalInfo(riderInfo);
 
         // 비교를 위한 날짜들을 가져온다.
         Date nowDate = null;            // 현재 날짜
@@ -437,10 +338,10 @@ public class RiderController {
         riderInfo.getSession().setExpiryDatetime(defaultFormat.format(changeDate));
 
         if (chkRiderInfo.getApprovalStatus().equals("0")){                       // 상태 값이 신규 요청이 경우, 임시 테이블에서 정보가 변경이 되어야함.
-            storeRiderService.setRiderInfo(riderInfo);
+            staffApprovalAdminService.setRiderInfo(riderInfo);
         }else if (chkRiderInfo.getApprovalStatus().equals("1")){                 // 상태 값이 1인 경우, 라이더 정보에서 값이 변경 되어야 한다.
             riderInfo.getSession().setRider_id(chkRiderInfo.getRiderId());
-            storeRiderService.updateRiderSession(riderInfo.getSession());
+            staffApprovalAdminService.updateRiderSession(riderInfo.getSession());
         }
 
         return true;
@@ -451,12 +352,12 @@ public class RiderController {
     @PostMapping("/changeRiderInfo")
     @CnttMethodDescription("라이더 상세 정보 변경")
     public Boolean changeRiderInfo(RiderApprovalInfo riderInfo){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        riderInfo.setToken(storeInfo.getStoreAccessToken());
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
         boolean bExpDate = false;
 
         // 라이더의 원본 데이터를 가져온다.
-        RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
+        RiderApprovalInfo chkRiderInfo = staffApprovalAdminService.getRiderApprovalInfo(riderInfo);
 
         if (chkRiderInfo.getSession() == null){
             chkRiderInfo.setSession(new RiderSession());
@@ -482,17 +383,17 @@ public class RiderController {
             changeRider.setVehicleNumber(riderInfo.getVehicleNumber());
             changeRider.setCode(riderInfo.getCode());
 
-            commInfoService.updateRiderInfo(changeRider);
+            staffApprovalAdminService.updateRiderInfo(changeRider);
         }else{
             // 승인 이외의 정보는 Rider Approval Info에서 적용한다.
 
-            log.info("###########");
-            log.info(chkRiderInfo.getCode());
+            System.out.println("###########");
+            System.out.println(chkRiderInfo.getCode());
 
-            storeRiderService.setRiderInfo(chkRiderInfo);
+            staffApprovalAdminService.setRiderInfo(chkRiderInfo);
         }
 
-       return true;
+        return true;
     }
 
     // 라이더 Approval Row 삭제
@@ -500,15 +401,14 @@ public class RiderController {
     @PostMapping("/deleteApprovalRiderRowData")
     @CnttMethodDescription("라이더 Approval Row 데이터 삭제")
     public Boolean deleteApprovalRiderRowData(RiderApprovalInfo riderInfo){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        riderInfo.setToken(storeInfo.getStoreAccessToken());
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
 
-        int iCount = storeRiderService.deleteApprovalRiderRowData(riderInfo);
+        int iCount = staffApprovalAdminService.deleteApprovalRiderRowData(riderInfo);
         log.info("라이더 Approval Row 데이터 삭제 완료 # id = [" + riderInfo.getId() + "] # [" + iCount + "]");
 
         return true;
     }
-
 
     // 라이더 상태 및 유효기간을 체크한다
     // true = 가입 가능
@@ -549,7 +449,7 @@ public class RiderController {
                     return false;
                 }
             }
-                }).count();
+        }).count();
 
         if (underExpDate > 0){
             return false;
@@ -557,5 +457,4 @@ public class RiderController {
             return true;
         }
     }
-
 }

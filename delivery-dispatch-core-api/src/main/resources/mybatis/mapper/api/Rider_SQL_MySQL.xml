@@ -34,6 +34,9 @@
 		<result property="orderStandbyDatetime" column="order_standby_datetime" />
 		<result property="orderStandbyStatus" column="order_standby_status" />
 
+		<result property="brandCode" column="brandCode" />
+		<result property="brandName" column="brandName" />
+
 		<!-- 20.01.13 Shared Rider Info -->
 		<result property="shared_admin_id" column="allow_admin_id" />
 		<result property="shared_group_id" column="allow_group_id" />
@@ -147,16 +150,47 @@
 		</association>
 	</resultMap>
 
+	<!-- Approval Result -->
+	<resultMap id="selectRiderApprovalResult" type="kr.co.cntt.core.model.rider.RiderApprovalInfo">
+		<result property="createdDatetime" column="created_datetime" />
+		<result property="id" column="approval_id" />
+		<result property="adminId" column="admin_id" />
+		<result property="loginId" column="login_id" />
+		<result property="name" column="name" />
+		<result property="phone" column="phone" />
+		<result property="gender" column="gender" />
+		<result property="vehicleNumber" column="vehicle_number" />
+		<result property="approvalStatus" column="req_status" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="riderId" column="rider_id" />
+
+		<association property="riderDetail" resultMap="selectRiderNowResult"/>
+
+		<association property="session" javaType="kr.co.cntt.core.model.rider.RiderSession">
+			<result property="expiryDatetime" column="expiry_datetime" />
+			<result property="rider_id" column="rider_id" />
+		</association>
+
+	</resultMap>
+
+	<!-- 2020.09.17 라이더가 소속된 매장의 브랜드 정보를 가져온다. -->
 	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="Map">
-		SELECT A.login_id AS loginId
-		    , B.access_token AS accessToken
-		FROM TB_RIDER AS A
-		LEFT JOIN TB_RIDER_SESSION AS B
-		ON A.id = B.rider_id
-		WHERE 1=1
-		AND login_id = #{loginId}
-			 AND login_pw = #{loginPw}
-		limit 1
+		select	 A.login_id			as loginId
+				,B.access_token		as accessToken
+				,( select brand_code from TB_STORE where id = C.store_id )		as brandCode
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = ( select brand_code from TB_STORE where id = C.store_id ) )	as brandName
+		from	 TB_RIDER			as A
+		left join TB_RIDER_SESSION	as B
+		on	 A.id = B.rider_id
+		left join TB_SUBGROUP_RIDER_REL	as C
+		on	 A.id = C.rider_id
+		where	 A.deleted is null
+		and		 C.deleted is null
+		and		 date_format(ifnull(B.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
+		and		 A.login_id = #{loginId}
+		and		 A.login_pw = #{loginPw}
+		limit	 1
 	</select>
 
 
@@ -173,7 +207,7 @@
 		WHERE 1=1
 			AND A.login_id = #{loginId}
 			AND B.access_token = #{accessToken}
-			AND (expiry_datetime IS NULL OR expiry_datetime > now())
+			AND date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
 		]]>
 	</select>
 
@@ -190,7 +224,8 @@
 		WHERE 1=1
 			AND A.login_id = #{loginId}
 			AND B.access_token = #{accessToken}
-			AND (expiry_datetime IS NULL OR expiry_datetime > now())
+			-- AND (expiry_datetime IS NULL OR expiry_datetime > now())
+			AND date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
 		LIMIT 1
 		]]>
 	</select>
@@ -228,14 +263,18 @@
 
 
 	<!-- updateRiderSession -->
-	<update id="updateRiderSession" parameterType="String">
-		UPDATE TB_RIDER AS A
-		LEFT JOIN TB_RIDER_SESSION AS B
-		ON A.id = B.rider_id
-		SET A.working = 0
-			, A.last_access = now()
---			, B.expiry_datetime = now()
-		WHERE B.access_token = #{token}
+	<update id="updateRiderSession" parameterType="kr.co.cntt.core.model.rider.RiderSession">
+		update	 TB_REQ_REGIST_RIDER	RRR
+				,TB_RIDER				R
+				,TB_RIDER_SESSION		RS
+		set		 RS.expiry_datetime = #{expiryDatetime}
+				,RRR.exp_datetime = #{expiryDatetime}
+				,RS.modified_datetime = now()
+		WHERE	 RRR.rider_id = R.id
+		and		 R.id = RS.rider_id
+		and		 date_format(ifnull(ifnull(RS.expiry_datetime, RRR.exp_datetime), now()), '%y-%m-%d') >= date_format(now(), '%y-%m-%d')
+		and		 RRR.req_status in (0, 1)
+		and		 R.id = #{rider_id}
 	</update>
 
 
@@ -278,6 +317,9 @@
 		, SRR.store_id AS subGroupRiderRel_store_id
 		, SRR.rider_id AS subGroupRiderRel_rider_id
 
+		,ifnull(TS.brand_code, ( select brand_code from TB_ADMIN where id = TS.admin_id ))	as brandCode
+		,(select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = ifnull(TS.brand_code, ( select brand_code from TB_ADMIN where id = TS.admin_id )))	as brandName
+
 		FROM TB_RIDER TR
 
 		left join
@@ -301,6 +343,7 @@
 		AND TG.deleted is NULL
 
 		WHERE 1=1
+		and   TR.deleted is null
 		<choose>
 			<when test="id != null and id != ''">
 				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
@@ -312,11 +355,13 @@
 				AND TR.id = #{id}
 			</when>
 			<otherwise>
-				AND TR.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-				AND TR.id = (
-				SELECT rider_id
-				FROM TB_RIDER_SESSION
-				WHERE access_token=#{token}
+				AND TR.admin_id in (SELECT admin_id FROM TB_RIDER WHERE id in (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token} and date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d') AND rider_id = TR.id))
+				AND TR.id in (
+					SELECT rider_id
+					FROM TB_RIDER_SESSION
+					WHERE access_token=#{token}
+					AND   date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+					AND   rider_id = TR.id
 				)
 			</otherwise>
 		</choose>
@@ -552,7 +597,7 @@
 	</update>
 	<!-- rider 출/퇴근  -->
 	<update id="updateWorkingRider" parameterType="kr.co.cntt.core.model.rider.Rider">
-		UPDATE TB_RIDER
+		UPDATE TB_RIDER A
 		SET
 			modified_datetime = now()
 		<if test="working == 1">
@@ -563,7 +608,8 @@
 			, working=#{working}
 		</if>
 
-		WHERE
+		WHERE deleted is null
+		and
 			id = (
 		SELECT
 			rider_id
@@ -571,6 +617,8 @@
 			TB_RIDER_SESSION
 		WHERE
 			access_token = #{accessToken}
+		AND	 date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+		and   rider_id = A.id
 		)
 
 	</update>
@@ -719,62 +767,6 @@
 
 	<!-- selectRiderNow -->
 	<select id="selectRiderNow" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderNowResult">
-<!--		SELECT A.id-->
-<!--		, A.name-->
-<!--		, A.phone-->
-<!--		, A.status-->
-<!--		, A.working-->
-<!--		, I.store_name AS rider_store_name-->
-<!--		, E.store_name AS order_store_name-->
-<!--		, A.chat_user_id-->
-<!--		, A.latitude-->
-<!--		, A.longitude-->
-<!--		, A.location_updated-->
-<!--		, A.return_time-->
-<!--		, I.latitude AS store_latitude-->
-<!--		, I.longitude AS store_longitude-->
-<!--		, B.store_id AS rider_store_id-->
-<!--		, E.id AS order_id-->
-<!--		, E.store_id AS order_store_id-->
-<!--		, K.order_count-->
-<!--		FROM TB_RIDER AS A-->
-<!--		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B-->
-<!--		ON A.id = B.rider_id-->
-<!--		AND B.deleted IS NULL-->
-<!--		LEFT JOIN TB_SUBGROUP AS C-->
-<!--		ON B.subgroup_id = C.id-->
-<!--		LEFT JOIN TB_GROUP AS D-->
-<!--		ON B.group_id = D.id-->
-<!--		AND C.deleted IS NULL-->
-<!--		AND D.deleted IS NULL-->
-<!--		LEFT JOIN (-->
-<!--		SELECT F.id, F.rider_id, F.assigned_datetime, F.store_id, G.store_name from TB_ORDER as F-->
-<!--			LEFT JOIN TB_STORE as G-->
-<!--    		ON F.store_id = G.id-->
-<!--			where F.created_datetime > CURRENT_DATE()-->
-<!--			and F.status in(1,2)-->
-<!--        	and F.id in(select SUBSTRING_INDEX(group_concat(id order by assigned_datetime asc),',',1) from TB_ORDER where assigned_datetime is not null and created_datetime > CURRENT_DATE() and status in(1,2) group by rider_id )) AS E-->
-<!--		ON E.rider_id = A.id-->
-<!--		LEFT JOIN TB_STORE AS I-->
-<!--		ON B.store_id = I.id-->
-
-<!--		LEFT JOIN-->
-<!--		(select count(J.rider_id) as order_count-->
-<!--		, J.rider_id-->
-<!--		from TB_ORDER as J-->
-<!--		where J.assigned_datetime is not null-->
-<!--		and J.created_datetime > CURRENT_DATE() and J.status in(1,2) group by J.rider_id) AS K-->
-<!--		ON A.id = K.rider_id-->
-
-<!--		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
-<!--		AND (-->
-<!--			(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)-->
-<!--			OR B.store_id is null-->
-<!--			OR (B.subgroup_id is null AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
-<!--			OR (select B.created_datetime where B.deleted is not null group by B.rider_id desc)-->
-<!--		)-->
-<!--		AND A.deleted IS NULL AND A.status = 0;-->
-
 		SELECT	 A.id
 				,A.name
 				,A.phone
@@ -859,38 +851,6 @@
 
 	<!-- selectSubgroupRiderRels -->
 	<select id="selectSubgroupRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
-<!--		SELECT A.id-->
-<!--			, A.name-->
-<!--			, A.phone-->
-<!--			, A.status-->
-<!--			, A.working-->
-<!--			, A.chat_user_id-->
-<!--			, A.latitude-->
-<!--			, A.longitude-->
-<!--			, A.location_updated-->
-<!--			, A.return_time-->
-<!--			, B.store_id AS subGroupRiderRel_store_id-->
-<!--			, C.id AS subgroup_id-->
-<!--			, C.group_id AS subgroup_group_id-->
-<!--			, C.name AS subgroup_name-->
-<!--			, C.admin_id AS subgroup_admin_id-->
-<!--			, D.id AS group_id-->
-<!--			, D.name AS group_name-->
-<!--			, D.admin_id AS group_admin_id-->
-<!--		FROM TB_RIDER AS A-->
-<!--		LEFT JOIN TB_SUBGROUP_RIDER_REL AS B-->
-<!--		ON A.id = B.rider_id-->
-<!--			AND B.deleted IS NULL-->
-<!--		LEFT JOIN TB_SUBGROUP AS C-->
-<!--		ON B.subgroup_id = C.id-->
-<!--		LEFT JOIN TB_GROUP AS D-->
-<!--		ON B.group_id = D.id-->
-<!--			AND C.deleted IS NULL-->
-<!--			AND D.deleted IS NULL-->
-<!--		WHERE A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
-<!--			AND (B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) OR B.subgroup_id is null)-->
-<!--			AND A.deleted IS NULL;-->
-
 		select	 A.id
 				,A.name
 				,A.phone
@@ -990,10 +950,6 @@
 		AND B.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token});
 	</select>
 
-
-
-
-
 	<!-- selectRiderAssignmentStatus -->
 	<select id="selectRiderAssignmentStatus" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="java.lang.String">
 		SELECT A.assignment_status
@@ -1020,47 +976,8 @@
 			AND admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 	</update>
 
-
 	<!-- selectForAssignRiders -->
 	<select id="selectForAssignRiders" parameterType="Map" resultMap="selectSubgroupRiderRelsResult">
-		<!--SELECT A.id-->
-			<!--, A.status-->
-			<!--, A.working-->
-			<!--, A.working_hours-->
-			<!--, A.rest_hours-->
-			<!--, A.latitude-->
-			<!--, A.longitude-->
-			<!--, A.return_time-->
-			<!--, A.order_standby_datetime-->
-			<!--, A.order_standby_status-->
-			<!--, ANY_VALUE(B.subgroup_id) AS subGroupRiderRel_subgroup_id-->
-			<!--, ANY_VALUE(B.store_id) AS subGroupRiderRel_store_id-->
-			<!--, (SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND (status = 1 OR status = 2) AND created_datetime > CURRENT_DATE()) AS assign_count-->
-   			<!--, (SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime-->
-			<!--, (SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime-->
-			<!--, (SELECT status FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status-->
-			<!--, max(C.denied_datetime) as denied_datetime-->
-			<!--, C.order_id as deny_order_id-->
-		<!--FROM TB_RIDER AS A-->
-		<!--LEFT JOIN TB_SUBGROUP_RIDER_REL AS B-->
-		<!--ON A.id = B.rider_id-->
-		<!--LEFT JOIN TB_ORDER_DENY_ASSIGNMENT AS C-->
-		<!--ON A.id = C.rider_id-->
-		<!--<![CDATA[-->
-		<!--AND timestampdiff(minute, C.denied_datetime, now()) <= 5-->
-		<!--]]>-->
-		<!--AND C.order_id = #{orderId}-->
-		<!--WHERE A.deleted IS NULL-->
-			<!--AND B.deleted IS NULL-->
-			<!--AND (-->
-				<!--(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = #{storeId} and deleted is null ORDER BY created_datetime DESC LIMIT 1) AND B.subgroup_id is not null)-->
-				<!--OR B.store_id is null-->
-				<!--OR (B.subgroup_id is null AND B.store_id = #{storeId})-->
-				<!--OR (select max(B.created_datetime) where B.deleted is not null group by B.rider_id)-->
-			<!--)-->
-			<!--AND A.working = 1-->
-		<!--group by A.id-->
-		<!--ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;-->
 		select	 A.id
 				,A.status
 				,A.working
@@ -1117,80 +1034,6 @@
 
 	<!-- selectForAssignRidersAssistant -->
 	<select id="selectForAssignRidersAssistant" parameterType="Map" resultMap="selectSubgroupRiderRelsResult">
-<!--		select	 a.id-->
-<!--				,a.status-->
-<!--				,a.working-->
-<!--				,a.working_hours-->
-<!--				,a.rest_hours-->
-<!--				,a.latitude-->
-<!--				,a.longitude-->
-<!--				,a.return_time-->
-<!--				,a.order_standby_datetime-->
-<!--				,a.order_standby_status-->
-<!--				,c.req_subgroup_id							as subGroupRiderRel_subgroup_id-->
-<!--				,ifnull(c.req_store_id, #{storeId})					as subGroupRiderRel_store_id-->
-<!--				,(SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = a.id AND status in (1,2) AND created_datetime > CURRENT_DATE()) AS assign_count-->
-<!--				,(SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = a.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime-->
-<!--				,(SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime-->
-<!--				,(SELECT status FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2) AND created_datetime > CURRENT_DATE() ORDER BY assigned_datetime asc limit 1) AS min_order_status-->
-<!--				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime-->
-<!--				,(select order_id from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as deny_order_id-->
-<!--				,c.allow_admin_id-->
-<!--				,c.allow_group_id-->
-<!--				,c.allow_subgroup_id-->
-<!--				,c.allow_store_id-->
-<!--				,c.allow_flag-->
-<!--				,c.allow_sort-->
-<!--		from	(-->
-<!--					select	 id-->
-<!--							,status-->
-<!--							,working-->
-<!--							,working_hours-->
-<!--							,rest_hours-->
-<!--							,latitude-->
-<!--							,longitude-->
-<!--							,return_time-->
-<!--							,order_standby_datetime-->
-<!--							,order_standby_status-->
-<!--					from	 TB_RIDER-->
-<!--					where	 deleted is null-->
-<!--					and		 working = 1-->
-<!--				)	as a-->
-<!--			,	(-->
-<!--					select	 admin_id-->
-<!--							,group_id-->
-<!--							,subgroup_id-->
-<!--							,store_id-->
-<!--							,rider_id-->
-<!--					from	 TB_SUBGROUP_RIDER_REL-->
-<!--					where	 deleted is null-->
-<!--				)	as b-->
-<!--			,	(-->
-<!--					select	 admin_id				as req_admin_id-->
-<!--							,group_id				as req_group_id-->
-<!--							,subgroup_id			as req_subgroup_id-->
-<!--							,store_id				as req_store_id-->
-<!--							,allow_admin_id-->
-<!--							,allow_group_id-->
-<!--							,allow_subgroup_id-->
-<!--							,allow_store_id-->
-<!--							,allow_flag-->
-<!--							,allow_sort-->
-<!--					from	 TB_SHARED_INFO-->
-<!--					where	 deleted_datetime is null-->
-<!--					and		 admin_id = #{adminId}-->
-<!--					and		 allow_admin_id in ( select allow_admin_id from TB_SHARED_ADMIN where admin_id = #{adminId} and allow_flag = 1 and allow_sort = 0)-->
-<!--				)	as c-->
-<!--		where	 b.admin_id = c.req_admin_id-->
-<!--		and		 b.group_id = ifnull(c.req_group_id, b.group_id)-->
-<!--		and	     b.subgroup_id = ifnull(c.req_subgroup_id, b.subgroup_id)-->
-<!--		and	     b.store_id = ifnull(c.req_store_id, b.store_id)-->
-<!--		and		 b.rider_id = a.id-->
-<!--		and	(	 c.req_store_id = #{storeId}-->
-<!--		or		(c.req_subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} ))-->
-<!--			)-->
-<!--		order by c.allow_sort, min_assigned_datetime is null desc, assign_count asc, min_assigned_datetime asc;-->
-
 		select	 a.id
 				,a.status
 				,a.working
@@ -1262,27 +1105,32 @@
 			DELIMITER ; -->
 	</select>
 
-
     <select id="selectRiderTokenByChatUserId" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="String">
-        select TBRS.push_token
-		from TB_RIDER_SESSION AS TBRS
+        select	 TBRS.push_token
+		from	 TB_RIDER_SESSION AS TBRS
         LEFT JOIN TB_RIDER AS B
-        ON B.chat_user_id = #{chatUserId}
-		where TBRS.rider_id = B.id and TBRS.push_token is not null and TBRS.expiry_datetime is null
+        	ON	 B.chat_user_id = #{chatUserId}
+		where	 TBRS.rider_id = B.id
+		and		 TBRS.push_token is not null
+		and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
     </select>
 
 	<select id="selectRiderToken" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
-		select TBRS.push_token
-		from TB_RIDER_SESSION AS TBRS
-		where TBRS.rider_id = #{riderId} and TBRS.push_token is not null and TBRS.expiry_datetime is null
+		select	 TBRS.push_token
+		from	 TB_RIDER_SESSION AS TBRS
+		where	 TBRS.rider_id = #{riderId}
+		and		 TBRS.push_token is not null
+		and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
 	</select>
 
 	<select id="selectRiderTokenByOrderId" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
-		select TBRS.push_token
-		from TB_RIDER_SESSION AS TBRS
+		select	 TBRS.push_token
+		from	 TB_RIDER_SESSION AS TBRS
         left join TB_ORDER AS TBO
-        on TBO.reg_order_id = #{id}
-		where TBRS.rider_id = TBO.rider_id and TBRS.push_token is not null and TBRS.expiry_datetime is null
+        	on	 TBO.reg_order_id = #{id}
+		where	 TBRS.rider_id = TBO.rider_id
+		and		 TBRS.push_token is not null
+		and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
 	</select>
 
 	<select id="selectRejectReason" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.reason.Reason">
@@ -1307,7 +1155,6 @@
             </choose>
     </select>
 
-
 	<!-- selectMySubgroupRiderRels -->
 	<select id="selectMySubgroupRiderRels" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.group.SubGroupRiderRel">
 		SELECT id
@@ -1328,7 +1175,6 @@
 			</otherwise>
 		</choose>
 	</select>
-
 
 	<!-- selectMobileVersion -->
 	<select id="selectMobileVersion" parameterType="String" resultType="String">
@@ -1383,4 +1229,188 @@
 			</otherwise>
 		</choose>
 	</update>
+
+<!--	Rider Approval-->
+	<select id="selectApprovalRiderList" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderApprovalResult">
+		select	 REQ.id											as approval_id
+				,REQ.created_datetime
+				,IFNULL(R.admin_id, REQ.admin_id)				as admin_id
+				,REQ.store_id									as rider_store_id
+				,IFNULL(R.login_id, REQ.login_id)				as login_id
+				,IFNULL(R.name, REQ.rider_name)					as name
+				,IFNULL(R.phone, REQ.phone)						as phone
+				,IFNULL(R.gender, REQ.gender)					as gender
+				,IFNULL(R.vehicle_number, REQ.vehicle_number)	as vehicle_number
+				,REQ.req_status
+				,REQ.latitude
+				,REQ.longitude
+				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
+				,IFNULL(R.id, REQ.rider_id)						as rider_id
+		from	 TB_REQ_REGIST_RIDER	REQ
+		left join TB_RIDER				R
+			on	 REQ.rider_id = R.id
+		left join TB_RIDER_SESSION		RS
+			on	 REQ.rider_id = RS.rider_id
+		where	 1=1
+		AND      REQ.deleted_datetime is null
+		<choose>
+			<when test="role != null and role == 'ROLE_ADMIN'">
+				AND REQ.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
+			</when>
+			<when test="role != null and role == 'ROLE_STORE'">
+				AND REQ.store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token})
+			</when>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				AND ifnull(R.login_id, REQ.login_id) = #{loginId}
+			</when>
+			<when test="role != null and role == 'ROLE_SEARCH'">
+				AND ifnull(R.login_id, REQ.login_id) = #{loginId}
+				AND R.deleted is null
+			</when>
+			<otherwise>
+				AND REQ.id is null
+			</otherwise>
+		</choose>
+		order by case when REQ.req_status in ('2', '3') then 999 else 0 end, ISNULL(IFNULL(RS.expiry_datetime, REQ.exp_datetime)) desc, IFNULL(RS.expiry_datetime, REQ.exp_datetime) desc, REQ.req_status
+	</select>
+
+	<!-- 정렬은 요청이 등록된 순이며, 최상위 1개의 정보를 기준으로 가입 내용을 가져온다. -->
+	<!-- 단, 최종 암호가 서로 다른 계정인 경우 정보가 다르게 표기 될 수 있음. -->
+	<select id="selectApprovalRiderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderApprovalResult">
+		select	 REQ.id											as approval_id
+				,REQ.created_datetime
+				,IFNULL(R.admin_id, REQ.admin_id)				as admin_id
+				,REQ.store_id									as rider_store_id
+				,(select store_name from TB_STORE where id = REQ.store_id ) as rider_store_name
+				,IFNULL(R.login_id, REQ.login_id)				as login_id
+				,IFNULL(R.name, REQ.rider_name)					as name
+				,IFNULL(R.phone, REQ.phone)						as phone
+				,IFNULL(R.gender, REQ.gender)					as gender
+				,IFNULL(R.vehicle_number, REQ.vehicle_number)	as vehicle_number
+				,REQ.req_status
+				,REQ.latitude
+				,REQ.longitude
+				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
+				,IFNULL(R.id, REQ.rider_id)						as rider_id
+				,IFNULL(R.code, REQ.code)						as code
+		from	 TB_REQ_REGIST_RIDER	REQ
+		left join TB_RIDER				R
+			on	 REQ.rider_id = R.id
+		left join TB_RIDER_SESSION		RS
+			on	 REQ.rider_id = RS.rider_id
+		where	 1=1
+		and      REQ.deleted_datetime is null
+		<choose>
+			<when test="role != null and role == 'ROLE_ADMIN'">
+				AND REQ.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
+				AND REQ.id = #{id}
+			</when>
+			<when test="role != null and role == 'ROLE_STORE'">
+				AND REQ.store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token})
+				AND REQ.id = #{id}
+			</when>
+			<when test="role != null and role == 'ROLE_RIDER'">
+				AND REQ.login_id = #{loginId}
+				AND ifnull(R.login_pw, REQ.login_pw) = #{loginPw}
+				AND R.deleted is null
+				AND REQ.deleted_datetime is null
+			</when>
+			<otherwise>
+				AND REQ.id is null
+			</otherwise>
+		</choose>
+		order by REQ.id desc
+		limit 1
+	</select>
+
+	<update id="updateApprovalRiderInfo" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo" >
+		update	 TB_REQ_REGIST_RIDER
+		set		 modified_datetime = now()
+		<if test="code != null and code != ''">
+				,code = #{code}
+		</if>
+		<if test="vehicleNumber != null and vehicleNumber != ''">
+				,vehicle_number = #{vehicleNumber}
+		</if>
+		<if test="session != null and session.expiryDatetime != ''">
+				,exp_datetime = #{session.expiryDatetime}
+		</if>
+		<if test="approvalStatus != null and approvalStatus != ''">
+				,req_status = #{approvalStatus}
+		</if>
+		<if test="riderId != null and riderId != ''">
+				,rider_id = #{riderId}
+		</if>
+		<if test="role != null and role == 'ROLE_ADMIN'">
+			<if test="store != null and store.id != ''">
+				,store_id = #{store.id}
+			</if>
+		</if>
+		where	 id = #{id}
+	</update>
+
+<!--	라이더 등록 요청 페이지에서 필요로 하는 기본 데이터-->
+	<select id="selectAllStore" resultType="kr.co.cntt.core.model.store.Store">
+		select	 admin_id	as adminId
+				,id			as id
+				,ifnull(brand_code, ( select brand_code from TB_ADMIN where id = admin_id ))	as brandCode
+				,(select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = ifnull(brand_code, ( select brand_code from TB_ADMIN where id = admin_id )))	as brandName
+				,store_name	as storeName
+		from	 TB_STORE
+		where	 deleted is null
+	</select>
+
+	<insert id="insertApprovalInfo" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo">
+		insert into TB_REQ_REGIST_RIDER(admin_id, store_id, rider_name, login_id, login_pw, phone, gender, vehicle_number, latitude, longitude)
+		values(#{adminId}, #{store.id}, #{name}, #{loginId}, #{loginPw}, #{phone}, #{gender}, #{vehicleNumber}, #{latitude}, #{longitude})
+		<selectKey keyProperty="id" resultType="String">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectApprovalRiderPw" parameterType="String" resultType="String">
+		select	 login_pw
+		from	 TB_REQ_REGIST_RIDER
+		where	 id = #{id}
+		and      deleted_datetime is null
+	</select>
+
+	<update id="deleteRiderInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
+		update	 TB_RIDER		as R
+		left join TB_SUBGROUP_RIDER_REL	as RR
+			on	 R.id = RR.rider_id
+		set		 R.deleted = ifnull(R.deleted, now())
+				,R.modified_datetime = ifnull(R.modified_datetime, now())
+				,RR.deleted = ifnull(RR.deleted, now())
+				,RR.modified_datetime = ifnull(RR.modified_datetime, now())
+		where	 R.id = #{id}
+	</update>
+
+	<update id="updateOverExpDate">
+		update TB_REQ_REGIST_RIDER		as	RR
+		left join TB_RIDER				as	R
+			on	 RR.rider_id = R.id
+		left join TB_RIDER_SESSION		as RS
+			on	 RR.rider_id = RS.rider_id
+		left join TB_SUBGROUP_RIDER_REL	as SR
+			on	 RR.rider_id = SR.rider_id
+		set		 RR.req_status = 4
+				,RR.modified_datetime = now()
+				,R.deleted = now()
+				,SR.deleted = now()
+		where	 RR.req_status in (0, 1)
+		and		 date_format(ifnull(ifnull(RS.expiry_datetime, RR.exp_datetime), now()), '%Y-%m-%d') <![CDATA[<]]> date_format(now(), '%Y-%m-%d');
+	</update>
+
+	<delete id="deleteOverExpDateToken">
+		delete from TB_RIDER_SESSION where rider_id in ( select rider_id from TB_REQ_REGIST_RIDER where req_status = 4 and deleted_datetime is null );
+	</delete>
+
+	<update id="deleteApprovalRiderRowData" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo">
+		update	 TB_REQ_REGIST_RIDER
+		set      deleted_datetime = now()
+		where    req_status in (2, 3, 4)
+		and      id = #{id};
+	</update>
+
 </mapper>

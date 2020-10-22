@@ -2,12 +2,16 @@ package kr.co.cntt.api.exporter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import kr.co.cntt.api.security.Actor;
 import kr.co.cntt.api.security.ActorDetails;
 import kr.co.cntt.api.security.CustomAuthentificateService;
 import kr.co.cntt.api.security.TokenManager;
 import kr.co.cntt.api.service.ApiServiceRouter;
 import kr.co.cntt.core.api.model.CommonBody;
+import kr.co.cntt.core.api.model.GenericResponse;
+import kr.co.cntt.core.api.model.ResponseHeader;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.model.admin.Admin;
@@ -18,7 +22,9 @@ import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.service.api.*;
 import kr.co.cntt.core.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.config.TypeFilterParser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,8 +34,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static kr.co.cntt.api.exporter.Api.Path;
 
@@ -170,11 +177,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
             response.put("result", CODE_SUCCESS);
             response.put("token", token);
-
-//            response.add(result);
-//            response.add(data);
-            //response.add(new R_TR_A0002(CODE_SUCCESS, token));
-            // Return the token
+            response.put("brandCode", userSelectLoginMap.get("brandCode"));
+            response.put("brandName", userSelectLoginMap.get("brandName"));
 
             // Token을 Insert
             if (level.equals("3")) {
@@ -187,21 +191,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
                     storeInfo.setAccessToken(token);
                     int getTokenResult = storeService.insertStoreSession(storeInfo);
                 }
-
-//                if (getTokenResult == 1) {
-//                    Order order = new Order();
-//
-//                    order.setRole("ROLE_STORE");
-//                    order.setToken(token);
-//                    order.setStatus("[0,5]");
-//
-//                    String tmpString = order.getStatus().replaceAll("[\\D]", "");
-//                    char[] tmpStatus = tmpString.toCharArray();
-//
-//                    order.setStatusArray(tmpStatus);
-//
-//                    orderService.assignOrder(order);
-//                }
             } else if (level.equals("1")) {
                 if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                     adminInfo.setAccessToken(token);
@@ -222,8 +211,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
             response.put("result", CODE_ERROR);
             response.put("token", "");
             response.put("msg", e.getLocalizedMessage());
-//            response.add(result);
-//            response.add(data);
             return ResponseEntity.ok(new Gson().toJson(response).toString());
         }
     }
@@ -240,36 +227,78 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
     }
 
-    @RequestMapping(value = PUT_TOKEN)
-    public ResponseEntity<?> expiryToken(HttpServletRequest request, @RequestParam String level, @RequestParam String token) throws Exception {
-//        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
-        Map<String, Object> response = new HashMap<String, Object>();
-        Map<String, Object> result = new HashMap<String, Object>();
-        Map<String, Object> data = new HashMap<String, Object>();
+    /** Token 만료일 설정은 관리자 및 스토어 페이지에서 가능 */
+//    @RequestMapping(value = PUT_TOKEN)
+//    public ResponseEntity<?> expiryToken(HttpServletRequest request, @RequestParam String level, @RequestParam String token) throws Exception {
+////        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
+//        Map<String, Object> response = new HashMap<String, Object>();
+//        Map<String, Object> result = new HashMap<String, Object>();
+//        Map<String, Object> data = new HashMap<String, Object>();
+//
+//        try {
+//
+//            if (level.equals("3")) {
+//                riderService.updateRiderSession(token);
+//            } else if (level.equals("2")) {
+//                storeService.updateStoreSession(token);
+//            } else if (level.equals("1")) {
+//                adminService.updateAdminSession(token);
+//            }
+//
+//            result.put("result", CODE_SUCCESS);
+//            response.put("result", CODE_SUCCESS);
+//
+//            return ResponseEntity.ok(new Gson().toJson(response).toString());
+//        } catch(Exception e) {
+//            result.put("result", CODE_ERROR);
+//            data.put("token", token);
+//            data.put("msg", e.getLocalizedMessage());
+//            response.put("result", CODE_ERROR);
+//            response.put("token", token);
+//            response.put("msg", e.getLocalizedMessage());
+////            response.add(result);
+////            response.add(data);
+//            return ResponseEntity.ok(new Gson().toJson(response).toString());
+//        }
+//    }
+
+    /**
+     * 가입 페이지 기본 정보
+     * getSignUpDefaultInfo.do
+     * */
+    @RequestMapping(value = SIGN_UP_DEFAULT_INFO)
+    public ResponseEntity<?> getSignUpDefaultInfo(HttpServletRequest request) throws Exception{
+        CommonBody<Map<String, List<Store>>> response = new CommonBody<>(CODE_SUCCESS);
+
+        Map<String, List<Store>> data = new HashMap<>();
 
         try {
+            List<Store> store = riderService.selectAllStore();
+            List<Store> kfcStore = store.parallelStream()
+                    .filter(x -> x.getBrandCode().equals("1"))
+                    .collect(Collectors.toList());
+            List<Store> pzhStore = store.parallelStream()
+                    .filter(x -> x.getBrandCode().equals("0"))
+                    .collect(Collectors.toList());
 
-            if (level.equals("3")) {
-                riderService.updateRiderSession(token);
-            } else if (level.equals("2")) {
-                storeService.updateStoreSession(token);
-            } else if (level.equals("1")) {
-                adminService.updateAdminSession(token);
-            }
+            data.clear();
+            data.put("kfcStore", kfcStore);
+            data.put("pzhStore", pzhStore);
 
-            result.put("result", CODE_SUCCESS);
-            response.put("result", CODE_SUCCESS);
+            response.setCode(data);
 
-            return ResponseEntity.ok(new Gson().toJson(response).toString());
+
+            return ResponseEntity.ok(new Gson().toJson(response, response.getClass()).toString());
         } catch(Exception e) {
-            result.put("result", CODE_ERROR);
-            data.put("token", token);
-            data.put("msg", e.getLocalizedMessage());
-            response.put("result", CODE_ERROR);
-            response.put("token", token);
-            response.put("msg", e.getLocalizedMessage());
-//            response.add(result);
-//            response.add(data);
+            Map<String, String> errDescription = new HashMap<>();
+
+
+            errDescription.put("error_code", CODE_SYSTEM_ERROR);
+            errDescription.put("error", e.getLocalizedMessage());
+
+            response = new CommonBody<>(CODE_ERROR);
+            response.setError_desc(errDescription);
+
             return ResponseEntity.ok(new Gson().toJson(response).toString());
         }
     }
@@ -299,6 +328,10 @@ public class ApiExporter extends ExporterSupportor implements Api {
 //    @PostMapping(value = {"/{service}", "/admin/{service}"})
     @PostMapping(value = "/{service}")
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
+
+        System.out.println("execute Service = " + service);
+
+
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
         } catch (Exception e) {

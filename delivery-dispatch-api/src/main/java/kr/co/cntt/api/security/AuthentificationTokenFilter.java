@@ -62,7 +62,8 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
 
         User userInfo = null;
 
-        if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do")) && !(requestUri.contains("putToken.do")) && !(requestUri.contains("versionCheck.do")) && !requestUri.contains("getTracker.do")) {
+        if (requestUri.startsWith("/API") && !(requestUri.contains("getToken.do")) && !(requestUri.contains("putToken.do"))
+                && !(requestUri.contains("versionCheck.do")) && !requestUri.contains("getTracker.do") && !(requestUri.contains("getSignUpDefaultInfo.do"))) {
             try {
                 //log.debug("======= try");
                 request = new RequestWrapper(servletRequest);
@@ -71,10 +72,6 @@ public class AuthentificationTokenFilter extends OncePerRequestFilter {
                 String authToken = extractJbody.get("token").getAsString();
                 String authLevel = extractJbody.get("level").getAsString();
 
-//                String authToken = extractToken(request.getJsonBody());
-//                String authToken = getHeadersToken(servletRequest);
-//				String authToken = request.getHeader("token");
-//                String authLevel = request.getHeader("level");
                 log.debug("======= authToken : {}", authToken);
                 log.debug("======= authLevel : {}", authLevel);
 

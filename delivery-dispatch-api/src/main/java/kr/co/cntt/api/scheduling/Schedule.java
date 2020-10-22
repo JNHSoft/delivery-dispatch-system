@@ -45,4 +45,11 @@ public class Schedule {
         riderService.autoRiderWorking();
         log.info("기사 휴식 시간 스케줄링 - 1분");
     }
+
+    // 라이더 유효기간 Over Check
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void overExpDate() throws InterruptedException, AppTrException{
+        riderService.updateOverExpDate();
+        log.info("유효기간 만료 체크 스케쥴링 - 매일 A.M 1");
+    }
 }

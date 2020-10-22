@@ -9,13 +9,25 @@ public interface Api {
     String GET_TOKEN = "/getToken.do";
 
     /** 토큰만료 */
-    String PUT_TOKEN = "/putToken.do";
+//    String PUT_TOKEN = "/putToken.do";
 
     /** APP Version Check */
     String VERSION_CHECK = "/versionCheck.do";
 
     /** pushToken 등록   */
     String SET_PUSH_TOKEN = "/updatePushToken.json";
+
+    //////// 2020.08.27 라이더 승인 요청 프로세 관련 항목 ///////////////////////
+    /** 가입 페이지 기본 정보 */
+    String SIGN_UP_DEFAULT_INFO = "/getSignUpDefaultInfo.do";
+
+    /** 라이더 승인 요청 등록 */
+    String REG_RIDER_APPROVAL = "/postRiderApproval.json";
+
+    /** 라이더 승인 진행 현황 조회 */
+    String APPROVAL_CHECK = "/getCheckRiderApproval.json";
+
+    //////// 2020.08.27 라이더 승인 요청 프로세 관련 항목 ///////////////////////
 
     // ############################################################################################ //
 
