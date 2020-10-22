@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -23,6 +24,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -117,6 +125,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         return S_Rider;
     }
+
     // rider 정보 수정
     @Secured({"ROLE_ADMIN", "ROLE_STORE" , "ROLE_RIDER"})
     @Override
@@ -268,8 +277,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         map.put("storeRider", S_Rider);
         return map;
     }
-
-
 
     @Secured("ROLE_STORE")
     @Override
@@ -551,6 +558,185 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         log.info("updateOverExpDate 실행완료 [" + iresult + "]");
         return iresult;
+    }
+
+    /**
+     * 라이더 휴대폰 인증
+     * */
+    @Override
+    public Map sendApplySMS(SmsApplyInfo smsApplyInfo) throws AppTrException{
+
+        // 정보 확인 [휴대폰번호 / 브랜드코드 / 로그인할 ID]
+        if (StringUtils.isEmpty(smsApplyInfo.getPhone()) || StringUtils.isEmpty(smsApplyInfo.getBrandCode()) || StringUtils.isEmpty(smsApplyInfo.getLoginId())){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
+        }
+
+        // DB에 등록이 되어 있는지 데이터 확인 단 65초 이하인 경우 조회되지 않는다.
+        SmsApplyInfo orgSMSData = riderMapper.selectRiderApplySMS(smsApplyInfo);
+
+        System.out.println(orgSMSData);
+
+        // 등록되어 있는 경우 시간을 비교한다.
+        // 1분이 초과되지 않은 경우, SMS 재전송을 할 수 없다. 오류 메세지 전달
+        if (orgSMSData != null){
+            throw new AppTrException(getMessage(ErrorCodeEnum.SM00001), ErrorCodeEnum.SM00001.name());
+        }
+
+        // 등록되지 않았거나 시간이 초과된 경우 신규 프로세스를 적용한다.
+        Map<String, String> map = new HashMap<>();
+        String strApplyNo = getRndNumber(6);        // 인증번호 추출
+        smsApplyInfo.setApplyNo(strApplyNo);
+
+        // 인증번호를 등록한다 (Insert)
+        int iResult = riderMapper.insertRiderApplySMS(smsApplyInfo);
+
+        if (iResult < 1){
+            throw new AppTrException(getMessage(ErrorCodeEnum.S0002), ErrorCodeEnum.S0002.name());
+        }
+
+        // 문자 발송 API 실행
+        Map<String, String> smsParaMap = new HashMap<>();
+        String strUrl = "https://smsapi.mitake.com.tw/api/mtk/SmSend";
+
+        if (smsApplyInfo.getBrandCode().equals("1")){
+            smsParaMap.put("smbody", getMessage("M00001", strApplyNo));     // 문구 내용
+            smsParaMap.put("username", "dmsK");                                  // 로그인 ID
+//            String userid, String userpwd, String phone, String msgBody
+        }else {
+            smsParaMap.put("smbody", getMessage("M00000", strApplyNo));     // 문구 내용
+            smsParaMap.put("userid", "dmsP");                                    // 로그인 ID
+        }
+        smsParaMap.put("password", "97161500");                                  // 로그인 PW
+        smsParaMap.put("dstaddr", smsApplyInfo.getPhone().toString());                      // 수신자 휴대폰 번호
+        //smsParaMap.put("dstaddr", "0905757978");                      // 수신자 휴대폰 번호
+
+
+        log.debug("smsParameter Map = " + smsParaMap);
+        String smsResult = sendSMSAPI(strUrl, smsParaMap);
+
+        log.debug("############# API 결과 ###############");
+        log.debug(smsResult);
+        log.debug("############# API 결과 ###############");
+
+        String[] arrResult = smsResult.split("\n");
+
+        if(arrResult[2].split("=")[1].toString() == "1"){
+            log.debug("API 발송 완료 ### => " + smsApplyInfo);
+            map.put("message", "OK");
+            map.put("smsResult", smsResult);
+        }else{
+            throw new AppTrException(getMessage(ErrorCodeEnum.SM00003, arrResult[2].split("=")[1]), ErrorCodeEnum.SM00003.name());
+        }
+
+        return map;
+    }
+
+    /**
+     * 라이더 휴대폰 인증번호 체크
+     * */
+    @Override
+    public Map checkApplySMS(SmsApplyInfo smsApplyInfo) throws AppTrException{
+        // 정보 확인 [휴대폰번호 / 브랜드코드 / 로그인할 ID / 인증번호]
+        if (StringUtils.isEmpty(smsApplyInfo.getPhone()) || StringUtils.isEmpty(smsApplyInfo.getBrandCode())
+                || StringUtils.isEmpty(smsApplyInfo.getLoginId()) || StringUtils.isEmpty(smsApplyInfo.getApplyNo())){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
+        }
+
+        // DB에 등록이 되어 있는지 데이터 확인 단 65초 이하인 경우 조회되지 않는다.
+        SmsApplyInfo orgSMSData = riderMapper.selectRiderApplySMS(smsApplyInfo);
+
+        if (orgSMSData == null){
+            throw new AppTrException(getMessage(ErrorCodeEnum.SM00002), ErrorCodeEnum.SM00002.name());
+        }
+
+        // 인증번호 체크
+        if (!orgSMSData.getApplyNo().equals(smsApplyInfo.getApplyNo().toUpperCase())){
+            throw new AppTrException(getMessage(ErrorCodeEnum.SM00003), ErrorCodeEnum.SM00003.name());
+        }
+
+        smsApplyInfo.setApplyStatus("1");
+        riderMapper.updateRiderApplySMS(smsApplyInfo);
+
+        log.debug("인증성공 => " + smsApplyInfo);
+        Map<String, String> map = new HashMap<>();
+        map.put("message", "OK");
+        return map;
+    }
+
+    private String getRndNumber(int rndLang){
+        // 랜덤함수를 이용하여 추출할 문자 집합소
+        StringBuilder sbRndString = new StringBuilder();
+        StringBuilder sbReturn = new StringBuilder(rndLang);
+        SecureRandom random = new SecureRandom();
+
+//        sbRndString.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ".toUpperCase());
+        sbRndString.append("0123456789");
+
+        for (int i = 0; i < rndLang; i++) {
+            sbReturn.append(sbRndString.charAt(
+                    random.nextInt(sbRndString.length())
+            ));
+        }
+
+        return sbReturn.toString();
+    }
+
+    private String sendSMSAPI(String sendUrl, Map<String, String> map){
+
+        String inputLine = null;
+        StringBuffer outResult = new StringBuffer();
+
+        try {
+            log.debug("REST API START");
+
+            URL url = new URL(sendUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//            conn.setRequestProperty("Accept-Charset", "UTF-8");
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
+
+            StringBuffer buffer = new StringBuffer();
+
+            // form Data 정렬
+            if (map != null){
+                Set key = map.keySet();
+
+                for (Iterator iterator = key.iterator(); iterator.hasNext();){
+                    String keyName = (String) iterator.next();
+                    String valueName = map.get(keyName);
+
+                    buffer.append(keyName).append("=").append(valueName).append("&");
+                }
+            }
+
+
+            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
+            PrintWriter writer = new PrintWriter(os);
+            writer.write(buffer.toString());
+            writer.flush();
+
+            // 결과값을 리턴을 받는다.
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            while ((inputLine = in.readLine()) != null){
+                outResult.append(inputLine + "\n");
+            }
+
+            conn.disconnect();
+
+            System.out.println(outResult);
+
+            log.debug("REST API END");
+        }catch (Exception e){
+            log.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+
+        return outResult.toString();
+
     }
 }
 
