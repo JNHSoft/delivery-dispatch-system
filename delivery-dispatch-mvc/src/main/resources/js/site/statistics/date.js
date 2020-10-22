@@ -111,18 +111,18 @@ function getStoreStatisticsByDate() {
                     tmpdata.completeReturn = totalTimeSet(data[key].completeReturn*1000);
                     tmpdata.pickupReturn = totalTimeSet(data[key].pickupReturn*1000);
                     tmpdata.orderReturn = totalTimeSet(data[key].orderReturn*1000);
-                    tmpdata.min30Below = parseInt(data[key].min30Below) + "%";
-                    tmpdata.min30To40 = parseInt(data[key].min30To40) + "%";
-                    tmpdata.min40To50 = parseInt(data[key].min40To50) + "%";
-                    tmpdata.min50To60 = parseInt(data[key].min50To60) + "%";
-                    tmpdata.min60To90 = parseInt(data[key].min60To90) + "%";
-                    tmpdata.min90Under = parseInt(data[key].min90Under) + "%";
-                    tmpdata.totalSales = data[key].totalSales;
+                    tmpdata.min30Below = formatFloat(data[key].min30Below, 1) + "%";
+                    tmpdata.min30To40 = formatFloat(data[key].min30To40, 1) + "%";
+                    tmpdata.min40To50 = formatFloat(data[key].min40To50, 1) + "%";
+                    tmpdata.min50To60 = formatFloat(data[key].min50To60, 1) + "%";
+                    tmpdata.min60To90 = formatFloat(data[key].min60To90, 1) + "%";
+                    tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
+                    tmpdata.totalSales = formatFloat(data[key].totalSales, 1);
 
                     if (data[key].errtc){
                         tmpdata.errtc = data[key].errtc;
                         //20.07.15 err tc 추가
-                        errtcSum += parseFloat(data[key].errtc, 1).toFixed(0);
+                        errtcSum += formatInt(data[key].errtc);
                     }else{
                         tmpdata.errtc = "-";
                     }
@@ -130,67 +130,67 @@ function getStoreStatisticsByDate() {
                     tmpdata.tc = data[key].tc;
 
                     if(data[key].tplh){
-                        tmpdata.tplh = parseFloat(data[key].tplh).toFixed(2);
-                        tplhSum += parseFloat(data[key].tplh);
+                        tmpdata.tplh = formatFloat(data[key].tplh, 2);
+                        tplhSum += formatFloat(data[key].tplh, 2);
                     } else{
                         tmpdata.tplh = "-";
                         chkTpSpCnt++;
                     }
 
                     if(data[key].spmh){
-                        tmpdata.spmh = parseFloat(data[key].spmh).toFixed(2);
-                        spmhSum += parseFloat(data[key].spmh);
+                        tmpdata.spmh = formatFloat(data[key].spmh, 2);
+                        spmhSum += formatFloat(data[key].spmh, 2);
                     } else{
                         tmpdata.spmh = "-";
                         chkTpSpCnt++;
                     }
                     tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn*1000);
-                    tmpdata.avgDistance = (data[key].avgDistance?parseFloat(data[key].avgDistance).toFixed(2):0) +'km';
+                    tmpdata.avgDistance = (data[key].avgDistance?formatFloat(data[key].avgDistance, 1):0) +'km';
 
                     // 평균 값
-                    orderPickupSum += parseFloat(data[key].orderPickup);
-                    riderStayTimeSum += parseFloat(data[key].stayTime);     // 20.07.15 Stay Time
-                    pickupCompleteSum += parseFloat(data[key].pickupComplete);
-                    orderCompleteSum += parseFloat(data[key].orderComplete);
+                    orderPickupSum += formatFloat(data[key].orderPickup, 1);
+                    riderStayTimeSum += formatFloat(data[key].stayTime, 1);     // 20.07.15 Stay Time
+                    pickupCompleteSum += formatFloat(data[key].pickupComplete, 1);
+                    orderCompleteSum += formatFloat(data[key].orderComplete, 1);
 
                     if(tmpdata.completeReturn != "-"){
-                        completeReturnSum += parseFloat(data[key].completeReturn);
+                        completeReturnSum += formatFloat(data[key].completeReturn, 1);
                     } else{
                         chkCnt++;
                     }
 
                     if(tmpdata.pickupReturn != "-"){
-                        pickupReturnSum += parseFloat(data[key].pickupReturn);
+                        pickupReturnSum += formatFloat(data[key].pickupReturn, 1);
                     } else{
                         chkCnt++;
                     }
 
                     if(tmpdata.orderReturn != "-"){
-                        orderReturnSum += parseFloat(data[key].orderReturn);
+                        orderReturnSum += formatFloat(data[key].orderReturn,1);
                     } else{
                         chkCnt++;
                     }
 
                     if(tmpdata.totalPickupReturn != "-"){
-                        totalPickupReturnSum += parseFloat(data[key].totalPickupReturn);
+                        totalPickupReturnSum += formatFloat(data[key].totalPickupReturn, 1);
                     } else{
                         chkCnt++;
                     }
 
                     if(tmpdata.avgDistance != "-"){
-                        avgDistanceSum += parseFloat(data[key].avgDistance?data[key].avgDistance:0);
+                        avgDistanceSum += formatFloat(data[key].avgDistance?data[key].avgDistance:0, 1);
                     } else{
                         chkDistanceCnt++;
                     }
-                    min30BelowSum += parseInt(data[key].min30Below);
-                    min30To40Sum += parseInt(data[key].min30To40);
-                    min40To50Sum += parseInt(data[key].min40To50);
-                    min50To60Sum += parseInt(data[key].min50To60);
-                    min60To90Sum += parseInt(data[key].min60To90);
-                    min90UnderSum += parseInt(data[key].min90Under);
-                    totalSalesSum += parseInt(data[key].totalSales);
+                    min30BelowSum += formatFloat(data[key].min30Below, 1);
+                    min30To40Sum += formatFloat(data[key].min30To40, 1);
+                    min40To50Sum += formatFloat(data[key].min40To50, 1);
+                    min50To60Sum += formatFloat(data[key].min50To60, 1);
+                    min60To90Sum += formatFloat(data[key].min60To90, 1);
+                    min90UnderSum += formatFloat(data[key].min90Under, 1);
+                    totalSalesSum += formatFloat(data[key].totalSales, 1);
 
-                    tcSum += parseInt(data[key].tc);
+                    tcSum += formatInt(data[key].tc);
                     mydata.push(tmpdata);
                     if(chkCnt !=0){
                         rowReduceCnt--;
@@ -214,32 +214,32 @@ function getStoreStatisticsByDate() {
             avgData.completeReturn = totalTimeSet((completeReturnSum*1000)/rowReduceCnt);
             avgData.pickupReturn =  totalTimeSet((pickupReturnSum*1000)/rowReduceCnt);
             avgData.orderReturn =   totalTimeSet((orderReturnSum*1000)/rowReduceCnt);
-            avgData.min30Below = (min30BelowSum/rowCnt).toFixed(2) +"%";
-            avgData.min30To40 = (min30To40Sum/rowCnt).toFixed(2) +"%";
-            avgData.min40To50 = (min40To50Sum/rowCnt).toFixed(2) +"%";
-            avgData.min50To60 = (min50To60Sum/rowCnt).toFixed(2) +"%";
-            avgData.min60To90 = (min60To90Sum/rowCnt).toFixed(2) +"%";
-            avgData.min90Under = (min90UnderSum/rowCnt).toFixed(2) +"%";
-            avgData.totalSales = (totalSalesSum/rowCnt).toFixed(2);
+            avgData.min30Below = formatFloat((min30BelowSum/rowCnt), 1) +"%";
+            avgData.min30To40 = formatFloat((min30To40Sum/rowCnt), 1) +"%";
+            avgData.min40To50 = formatFloat((min40To50Sum/rowCnt), 1) +"%";
+            avgData.min50To60 = formatFloat((min50To60Sum/rowCnt), 1) +"%";
+            avgData.min60To90 = formatFloat((min60To90Sum/rowCnt), 1) +"%";
+            avgData.min90Under = formatFloat((min90UnderSum/rowCnt), 1) +"%";
+            avgData.totalSales = formatFloat((totalSalesSum/rowCnt), 1);
             // 20.07.15
             if (errtcSum != 0){
                 console.log(errtcSum);
-                avgData.errtc = (errtcSum/rowCnt).toFixed(2);
+                avgData.errtc = formatInt((errtcSum/rowCnt));
             }else{
                 console.log(errtcSum);
                 avgData.errtc = "-";
             }
-            avgData.tc = (tcSum/rowCnt).toFixed(2);
+            avgData.tc = parseInt((tcSum/rowCnt));
             if(tpSpCnt!=0){
-                avgData.tplh = (tplhSum/tpSpCnt).toFixed(2);
-                avgData.spmh = (spmhSum/tpSpCnt).toFixed(2);
+                avgData.tplh = formatFloat((tplhSum/tpSpCnt), 2);
+                avgData.spmh = formatFloat((spmhSum/tpSpCnt), 2);
             }else{
                 avgData.tplh = "-";
                 avgData.spmh = "-";
             }
 
             avgData.totalPickupReturn = totalTimeSet((totalPickupReturnSum*1000)/rowReduceCnt);
-            avgData.avgDistance = (avgDistanceSum/distanceCnt).toFixed(2) +'km';
+            avgData.avgDistance = formatFloat((avgDistanceSum/distanceCnt), 1) +'km';
 
             // 날짜 조회시 avg 노출
             if(rowCnt!=0){
@@ -456,4 +456,19 @@ function excelDownloadByDate(){
             loading.hide();
         }
     })
+}
+
+function formatInt(sender, pointer) {
+    if (sender == null || isNaN(sender)){
+        return 0;
+    }
+    return parseFloat(parseInt(sender).toFixed(pointer));
+}
+
+function formatFloat(sender, pointer) {
+    if (sender == null || isNaN(sender)){
+        return 0;
+    }
+
+    return parseFloat(parseFloat(sender).toFixed(pointer));
 }
