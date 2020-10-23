@@ -623,6 +623,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         if(arrResult[2].split("=")[1].toString() == "1"){
             log.debug("API 발송 완료 ### => " + smsApplyInfo);
             map.put("message", "OK");
+            map.put("applyNo", strApplyNo);
             map.put("smsResult", smsResult);
         }else{
             throw new AppTrException(getMessage(ErrorCodeEnum.SM00003, arrResult[2].split("=")[1]), ErrorCodeEnum.SM00003.name());
