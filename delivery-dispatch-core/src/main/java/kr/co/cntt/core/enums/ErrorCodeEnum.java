@@ -164,5 +164,6 @@ public enum ErrorCodeEnum {
 	SM00001,
 	SM00002,
 	SM00003,
+	SM00004,
 	;
 }

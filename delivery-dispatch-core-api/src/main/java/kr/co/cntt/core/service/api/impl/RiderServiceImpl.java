@@ -620,14 +620,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         String[] arrResult = smsResult.split("\n");
 
-        if(arrResult[2].split("=")[1].toString() == "1"){
-            log.debug("API 발송 완료 ### => " + smsApplyInfo);
-            map.put("message", "OK");
-            map.put("applyNo", strApplyNo);
-            map.put("smsResult", smsResult);
-        }else{
-            throw new AppTrException(getMessage(ErrorCodeEnum.SM00003, arrResult[2].split("=")[1]), ErrorCodeEnum.SM00003.name());
-        }
+        log.debug("API 발송 완료 ### => " + smsApplyInfo);
+        map.put("message", "OK");
+        map.put("applyNo", strApplyNo);
+        map.put("smsResult", smsResult);
 
         return map;
     }
@@ -715,7 +711,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             }
 
 
-            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
+            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream(), "BIG5");
             PrintWriter writer = new PrintWriter(os);
             writer.write(buffer.toString());
             writer.flush();
