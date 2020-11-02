@@ -2,6 +2,7 @@ package kr.co.cntt.core.fcm;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import kr.co.cntt.core.model.order.Order;
 import org.apache.poi.ss.formula.functions.T;
@@ -19,13 +20,18 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class AndroidPushNotificationsService {
 
-    private static final String FIREBASE_SERVER_KEY = "AAAA5gnPZyk:APA91bEloN3gdZW1GF1FWaFQY5NvQOSSnbjaxEPmxOMiEP3jMjyp_T5G4wBP241C7EACkS-kGYUbo3a8KxDePSWY2nB8umGZSVRaqLjojeu7RrqFT-H_kQ5iTYJQBERO9ZpEXQf_FL69";
+    // 구 API 인증 키
+//    private static final String FIREBASE_SERVER_KEY = "AAAA5gnPZyk:APA91bEloN3gdZW1GF1FWaFQY5NvQOSSnbjaxEPmxOMiEP3jMjyp_T5G4wBP241C7EACkS-kGYUbo3a8KxDePSWY2nB8umGZSVRaqLjojeu7RrqFT-H_kQ5iTYJQBERO9ZpEXQf_FL69";
+    // 신 API 인증 키
+    private static final String FIREBASE_SERVER_KEY = "AAAAKIBRSaU:APA91bE0n8Uy5TTe6DVCgTtF1vwFq5nNAtCXshVz9o9FSGsJhybDrrFmkNXMPaBP6__5NOFYHSpNGgvqu8Iof52ahDOHJBT-Iqy8U1ohcA-uUUQgHnnzRjdOwugY4kFChQ2_ew6oNBvZ";
 
     @Async
     public CompletableFuture<FirebaseResponse> send(String token, Object obj) {
@@ -56,8 +62,23 @@ public class AndroidPushNotificationsService {
 
             // IOS 개발자 추가
             body.put("content_available", true);
+            // 20.11.02 iOS Silent PUSH 관련 내용 추가
+            body.put("apns-push-type", "background");
+            body.put("apns-priority", 5);
 
-//            System.out.println("body" + body.toString());
+            // iOS 알림 내용
+            JSONObject alert = new JSONObject();
+            alert.put("title", ((JSONObject) data.get("obj")).get("title"));
+            alert.put("body", ((JSONObject) data.get("obj")).get("message"));
+
+            JSONObject aps = new JSONObject();
+            aps.put("alert", alert);
+
+            body.put("aps", aps);
+
+            body.put("sound", "default");
+
+            System.out.println("body # [" + body.toString() + "]");
 
             request = new HttpEntity<>(body.toString());
 
@@ -114,7 +135,23 @@ public class AndroidPushNotificationsService {
             body.put("content_available",true);
 
 
-//            System.out.println("body" + body.toString());
+            // 20.11.02 iOS Silent PUSH 관련 내용 추가
+            body.put("apns-push-type", "background");
+            body.put("apns-priority", 5);
+
+            // iOS 알림 내용
+            JSONObject alert = new JSONObject();
+            alert.put("title", ((JSONObject) data.get("obj")).get("title"));
+            alert.put("body", ((JSONObject) data.get("obj")).get("message"));
+
+            JSONObject aps = new JSONObject();
+            aps.put("alert", alert);
+
+            body.put("aps", aps);
+
+            body.put("sound", "default");
+
+            System.out.println("body ### [" + body.toString() + "]");
 
 
 
