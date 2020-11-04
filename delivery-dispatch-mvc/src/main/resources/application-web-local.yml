@@ -29,6 +29,10 @@ datasource:
     username: devuser
     password: devuserpw!
 
+#    url: jdbc:mysql://104.199.200.242:3306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+#    username: devuser
+#    password: devuserpw!
+
 ---
 spring:
   profiles: local
