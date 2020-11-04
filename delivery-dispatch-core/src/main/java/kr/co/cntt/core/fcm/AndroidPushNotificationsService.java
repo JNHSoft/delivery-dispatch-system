@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import kr.co.cntt.core.model.fcm.FcmBody;
 import kr.co.cntt.core.model.order.Order;
 import org.apache.poi.ss.formula.functions.T;
 import org.json.JSONArray;
@@ -170,6 +171,37 @@ public class AndroidPushNotificationsService {
 
 
 
+
+            FirebaseResponse firebaseResponse = restTemplate.postForObject("https://fcm.googleapis.com/fcm/send", request, FirebaseResponse.class);
+
+//            System.out.println(request.toString());
+
+            return CompletableFuture.completedFuture(firebaseResponse);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Async
+    public CompletableFuture<FirebaseResponse> sendGroup(FcmBody fcmBody) {
+        HttpEntity<String> request = null;
+        try {
+
+            System.out.println("body ### [" + new Gson().toJson(fcmBody) + "]");
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+            request = new HttpEntity<>(new Gson().toJson(fcmBody), headers);
+
+            RestTemplate restTemplate = new RestTemplate();
+
+            ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+            interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + FIREBASE_SERVER_KEY));
+//            interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json;charset=utf-8"));
+            restTemplate.setInterceptors(interceptors);
 
             FirebaseResponse firebaseResponse = restTemplate.postForObject("https://fcm.googleapis.com/fcm/send", request, FirebaseResponse.class);
 
