@@ -32,6 +32,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -590,6 +591,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
 
         Order S_Order = orderMapper.selectOrderInfo(common);
+
+        try {
+            float menuPrice = Float.parseFloat(S_Order.getMenuPrice());
+            float deliveryPrice = Float.parseFloat(S_Order.getDeliveryPrice());
+            float totalPrice = Float.parseFloat(S_Order.getTotalPrice());
+
+            DecimalFormat numberFormat = new DecimalFormat("#0.##");
+
+            S_Order.setMenuPrice(numberFormat.format(menuPrice));
+            S_Order.setDeliveryPrice(numberFormat.format(deliveryPrice));
+            S_Order.setTotalPrice(numberFormat.format(totalPrice));
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         if (S_Order == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00016), ErrorCodeEnum.E00016.name());
