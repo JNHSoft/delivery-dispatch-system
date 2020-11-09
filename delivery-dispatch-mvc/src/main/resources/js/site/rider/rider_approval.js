@@ -133,7 +133,6 @@ function makeRowButton(obj){
             break;
         case "1":           // 수락
         case "5":
-            btn_approval = "<button class='button btn_onahau h30 w100 mr10' style='font-size: 12px;'><i class='fa fa-check mr5' />" + approval + "</button>";
             if (bExpDate){
                 btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit +  "</button>"
             }else{
@@ -142,13 +141,9 @@ function makeRowButton(obj){
             break;
         case "2":           // 거절
         case "3":           // 승인 후 거절
-            btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + disapproval + "</button>";
-            btn_edit = "<button class='button btn_gray2 h30 w60 w80 mr10' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>" + btnDelete + "</button>"
             break;
         case "4":           // 유효기간 만료
-            btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + approval + "</button>";
-            btn_edit = "<button class='button btn_gray2 h30 w60 w80 mr10' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>" + btnDelete + "</button>"
             break;
     }
