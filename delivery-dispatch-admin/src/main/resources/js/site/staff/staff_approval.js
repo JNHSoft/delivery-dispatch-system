@@ -39,7 +39,7 @@ function getApprovalRiderList(){
                     }else if (data[key].approvalStatus == "2" || data[key].approvalStatus == "3"){
                         tmpObj.statusDate = data[key].rejectDatetime == undefined ? "-" : dateFormat(data[key].rejectDatetime);
                     }else{
-                        tmpObj.statusDate = data[key].createdDatetime == undefined ? "-" : dateFormat(data[key].createdDatetime);
+                        tmpObj.statusDate = "-";
                     }
 
 
@@ -347,7 +347,7 @@ function checkExpDate(selectedDate, obj){
             return true;
         }
     }
-    $("#" + obj.id).val(dateFormat2(date));
+    $("#" + obj.id).val(dateFormat(date));
 
     return false;
 }

@@ -1258,7 +1258,8 @@
 				,REQ.req_status
 				,REQ.latitude
 				,REQ.longitude
-				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
+				-- ,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
+				,case when REQ.req_status in ('1', '5') and date_format(date_add(REQ.accept_datetime, interval 1 year), '%Y-%m-%d') = date_format(IFNULL(RS.expiry_datetime, REQ.exp_datetime), '%Y-%m-%d')  then null else IFNULL(RS.expiry_datetime, REQ.exp_datetime) end	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,REQ.accept_datetime
 				,REQ.reject_datetime
@@ -1288,7 +1289,6 @@
 			</otherwise>
 		</choose>
 		AND      date_format(IFNULL(IFNULL(IFNULL(RS.expiry_datetime, REQ.exp_datetime), REQ.accept_datetime), REQ.created_datetime), '%Y-%m-%d') >= date_format(date_sub(now(), interval 1 year), '%Y-%m-%d')
-		-- order by case when REQ.req_status in ('2', '3') then 999 else 0 end, ISNULL(IFNULL(RS.expiry_datetime, REQ.exp_datetime)) desc, IFNULL(RS.expiry_datetime, REQ.exp_datetime) desc, REQ.req_status
 		order by case when REQ.req_status in ('2', '3', '4') then 999 when REQ.req_status = '0' then 1 when REQ.req_status = '1' then 2 when REQ.req_status = '5' then 3 else 998 end
 	</select>
 
