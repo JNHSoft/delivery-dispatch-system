@@ -317,4 +317,9 @@ public interface RiderMapper {
      * 라이더 인증번호 체크
      * */
     SmsApplyInfo selectRiderApplySMS(SmsApplyInfo smsApplyInfo);
+
+    /**
+     * 라이더 세션 변경 (os 정보 포함)
+     * */
+    int updatePushToken(Rider rider);
 }

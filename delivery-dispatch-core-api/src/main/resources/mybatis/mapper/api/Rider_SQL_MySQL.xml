@@ -485,10 +485,6 @@
 			<if test="changePhone eq '1'.toString() ">
 				, C.push_token = null
 			</if>
-
-			<if test="platform != null and platform != ''">
-				, C.os = #{platform}
-			</if>
 			<!--<choose>
 				<when test="subGroupRiderRel != null and subGroupRiderRel != ''" >
 					<if test="subGroupRiderRel.storeId == null or subGroupRiderRel.storeId == ''" >
@@ -519,7 +515,7 @@
 				AND A.id = #{id}
 			</when>
 			<otherwise>
-                AND A.admin_id = (SELECT * FROM (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})) AS D)
+                AND A.admin_id = (SELECT admin_id FROM (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token})) AS D)
 				AND A.id = (
                     SELECT rider_id
                     FROM TB_RIDER_SESSION
@@ -748,6 +744,12 @@
 
 		<if test="pushToken != null and pushToken != ''">
 			, push_token=#{pushToken}
+		</if>
+		<if test="platform == null">
+			, os = null
+		</if>
+		<if test="platform != null and platform != ''">
+			, os=#{platform}
 		</if>
 
 		WHERE
