@@ -1,6 +1,7 @@
 package kr.co.cntt.api.exporter;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import kr.co.cntt.api.config.IServiceRouter;
@@ -74,6 +75,10 @@ public abstract class ExporterSupportor extends ControllerSupport implements App
 
                     JsonObject json = new JsonParser().parse(requestWrapper.getJsonBody()).getAsJsonObject();
                     JsonObject jbody = json.getAsJsonObject("body").getAsJsonObject();
+
+                    // platform에 대한 정보를 추가한다.
+                    //jbody.add("platform", (JsonElement) servletRequest.getHeader("platform"));
+                    jbody.addProperty("platform", servletRequest.getHeader("platform"));
 
                     String token = jbody.get("token").getAsString();
 

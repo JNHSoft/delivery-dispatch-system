@@ -334,7 +334,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
         System.out.println("execute Service = " + service);
         System.out.println("#######platform => [" + request.getHeader("platform") + "]");
 
-
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
         } catch (Exception e) {
