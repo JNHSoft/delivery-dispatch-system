@@ -280,10 +280,9 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
                 ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
 
                 iosMap.addAll(tokens.stream().filter(x -> {
-                    if (x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")){
+                    if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
                         return true;
                     }
-
                     return false;
                 }).collect(Collectors.toList()));
 
@@ -304,7 +303,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
 
 
                 android.addAll(tokens.stream().filter(x -> {
-                    if (x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")){
+                    if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
                         return true;
                     }
 
@@ -314,6 +313,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
                 // new android push
                 if (android.size() > 0){
                     try {
+                        System.out.println("############# 안드로이드 푸쉬");
                         ArrayList<String> androidTokenValue = new ArrayList<>();
 
                         android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
@@ -331,7 +331,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
 
 
                 oldMap.addAll(tokens.stream().filter(x->{
-                    if (x.getOrDefault("appType", "").equals("")){
+                    if (x.getOrDefault("appType", "").toString().equals("")){
                         return true;
                     }
 
@@ -339,8 +339,9 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
                 }).collect(Collectors.toList()));
 
                 // old android push
-                if (iosMap.size() > 0){
+                if (oldMap.size() > 0){
                     try {
+                        System.out.println("############# 구버젼 푸쉬");
                         ArrayList<String> oldTokenValue = new ArrayList<>();
 
                         oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));

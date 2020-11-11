@@ -1130,9 +1130,9 @@
 			DELIMITER ; -->
 	</select>
 
-    <select id="selectRiderTokenByChatUserId" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="String">
+    <select id="selectRiderTokenByChatUserId" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="Map">
         select	 TBRS.push_token
-				,B.os				as platform
+				,TBRS.os				as platform
 				,B.app_type			as appType
 		from	 TB_RIDER_SESSION AS TBRS
         LEFT JOIN TB_RIDER AS B
