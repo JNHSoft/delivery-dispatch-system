@@ -277,7 +277,7 @@
 		</choose>
 		<choose>
 			<when test="role != null and role == 'ROLE_RIDER'">
-				ORDER BY A.reservationDatetime
+				ORDER BY A.reservation_datetime
 			</when>
 			<otherwise>
 				ORDER BY CASE WHEN A.status in (0,5) THEN A.assigned_first END DESC, CASE WHEN A.status in (0,5) THEN A.reservation_datetime END DESC, A.status in (0,5) desc, A.status ASC,  A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime DESC

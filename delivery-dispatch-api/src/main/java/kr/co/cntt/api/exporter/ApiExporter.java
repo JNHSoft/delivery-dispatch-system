@@ -105,6 +105,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Admin adminInfo = new Admin();
         User trackerInfo = new User();
 
+        System.out.println("#######platform => [" + request.getHeader("platform") + "]");
+
         try {
             if (level.equals("3")) {
                 riderInfo.setLoginId(loginId);
@@ -330,6 +332,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
 
         System.out.println("execute Service = " + service);
+        System.out.println("#######platform => [" + request.getHeader("platform") + "]");
 
 
         try {
