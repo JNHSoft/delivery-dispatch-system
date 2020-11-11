@@ -188,6 +188,16 @@ public class ApiExporter extends ExporterSupportor implements Api {
                     riderInfo.setAccessToken(token);
                     riderService.insertRiderSession(riderInfo);
                 }
+
+                // 20.11.11 OS 정보 업데이트
+                if (request.getHeader("platform") != null && request.getHeader("platform") != ""){
+                    Rider riderSession = new Rider();
+
+                    riderSession.setPlatform(request.getHeader("platform"));
+                    riderSession.setToken(riderInfo.getToken());
+                    riderSession.setAccessToken(riderInfo.getToken());
+                    riderService.updateRiderInfo(riderInfo);
+                }
             } else if (level.equals("2")) {
                 if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                     storeInfo.setAccessToken(token);
