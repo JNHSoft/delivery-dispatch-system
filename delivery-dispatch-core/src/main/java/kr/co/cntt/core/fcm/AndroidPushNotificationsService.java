@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 public class AndroidPushNotificationsService {
 
     // 구 API 인증 키
-//    private static final String FIREBASE_SERVER_KEY = "AAAA5gnPZyk:APA91bEloN3gdZW1GF1FWaFQY5NvQOSSnbjaxEPmxOMiEP3jMjyp_T5G4wBP241C7EACkS-kGYUbo3a8KxDePSWY2nB8umGZSVRaqLjojeu7RrqFT-H_kQ5iTYJQBERO9ZpEXQf_FL69";
+    private static final String FIREBASE_SERVER_KEY_OLD = "AAAA5gnPZyk:APA91bEloN3gdZW1GF1FWaFQY5NvQOSSnbjaxEPmxOMiEP3jMjyp_T5G4wBP241C7EACkS-kGYUbo3a8KxDePSWY2nB8umGZSVRaqLjojeu7RrqFT-H_kQ5iTYJQBERO9ZpEXQf_FL69";
     // 신 API 인증 키
     private static final String FIREBASE_SERVER_KEY = "AAAAKIBRSaU:APA91bE0n8Uy5TTe6DVCgTtF1vwFq5nNAtCXshVz9o9FSGsJhybDrrFmkNXMPaBP6__5NOFYHSpNGgvqu8Iof52ahDOHJBT-Iqy8U1ohcA-uUUQgHnnzRjdOwugY4kFChQ2_ew6oNBvZ";
 
@@ -185,7 +185,7 @@ public class AndroidPushNotificationsService {
     }
 
     @Async
-    public CompletableFuture<FirebaseResponse> sendGroup(FcmBody fcmBody) {
+    public CompletableFuture<FirebaseResponse> sendGroup(FcmBody fcmBody, String strPlatform) {
         HttpEntity<String> request = null;
         try {
 
@@ -199,7 +199,11 @@ public class AndroidPushNotificationsService {
             RestTemplate restTemplate = new RestTemplate();
 
             ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-            interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + FIREBASE_SERVER_KEY));
+            if (strPlatform.equals("old")){
+                interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + FIREBASE_SERVER_KEY_OLD));
+            }else{
+                interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + FIREBASE_SERVER_KEY));
+            }
 //            interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json;charset=utf-8"));
             restTemplate.setInterceptors(interceptors);
 

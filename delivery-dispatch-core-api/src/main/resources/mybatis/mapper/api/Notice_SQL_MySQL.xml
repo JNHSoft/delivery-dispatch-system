@@ -420,11 +420,16 @@
         ORDER BY A.id DESC
     </select>
 
-    <select id="selectAllToken" resultType="String">
-        select TBRS.push_token
-        from TB_RIDER_SESSION AS TBRS
-        where TBRS.push_token is not null
-        AND date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+    <select id="selectAllToken" resultType="Map">
+        select	 TBRS.push_token
+                ,TBRS.os			as platform
+                ,R.app_type			as appType
+        from	 TB_RIDER			as R
+        left join TB_RIDER_SESSION	AS TBRS
+            on	 R.id = TBRS.rider_id
+        where	 TBRS.push_token is not null
+        and		 R.deleted is null
+        and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
     </select>
 
 

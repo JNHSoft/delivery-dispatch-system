@@ -25,7 +25,7 @@ public class FcmBody implements Dto {
     private Boolean mutable_content;            //
     private Integer time_to_live;               // 메세지 주기
     private String restricted_package_name;     // 안드로이드 전용
-    private Boolean dry_run = false;            // 테스트
+    private Boolean dry_run;            // 테스트
 
     private Object data;                                            // 선택 데이터 옵션
     private FcmNotification notification = new FcmNotification();   // Notices 내용

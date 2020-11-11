@@ -1132,6 +1132,8 @@
 
     <select id="selectRiderTokenByChatUserId" parameterType="kr.co.cntt.core.model.chat.Chat" resultType="String">
         select	 TBRS.push_token
+				,B.os				as platform
+				,B.app_type			as appType
 		from	 TB_RIDER_SESSION AS TBRS
         LEFT JOIN TB_RIDER AS B
         	ON	 B.chat_user_id = #{chatUserId}
@@ -1140,20 +1142,29 @@
 		and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
     </select>
 
-	<select id="selectRiderToken" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
+	<select id="selectRiderToken" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
 		select	 TBRS.push_token
-		from	 TB_RIDER_SESSION AS TBRS
+				,TBRS.os			as platform
+				,R.app_type			as appType
+		from	 TB_RIDER			as R
+		left join TB_RIDER_SESSION	AS TBRS
+			on	 R.id = TBRS.rider_id
 		where	 TBRS.rider_id = #{riderId}
 		and		 TBRS.push_token is not null
+		and		 R.deleted is null
 		and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
 	</select>
 
-	<select id="selectRiderTokenByOrderId" parameterType="kr.co.cntt.core.model.order.Order" resultType="String">
+	<select id="selectRiderTokenByOrderId" parameterType="kr.co.cntt.core.model.order.Order" resultType="Map">
 		select	 TBRS.push_token
-		from	 TB_RIDER_SESSION AS TBRS
-        left join TB_ORDER AS TBO
-        	on	 TBO.reg_order_id = #{id}
-		where	 TBRS.rider_id = TBO.rider_id
+				,TBRS.os			as platform
+				,R.app_type			as appType
+		from	 TB_RIDER			as R
+		left join TB_RIDER_SESSION	as TBRS
+			on	 R.id = TBRS.rider_id
+		left join TB_ORDER			as TBO
+			on	 TBRS.rider_id = TBO.rider_id
+		where	 TBO.reg_order_id = #{id}
 		and		 TBRS.push_token is not null
 		and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
 	</select>

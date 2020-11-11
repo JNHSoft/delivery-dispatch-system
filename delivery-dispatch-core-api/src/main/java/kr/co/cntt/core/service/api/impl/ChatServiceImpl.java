@@ -8,6 +8,7 @@ import kr.co.cntt.core.mapper.ChatMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.chat.Chat;
+import kr.co.cntt.core.model.fcm.FcmBody;
 import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
@@ -23,8 +24,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("chatService")
@@ -124,7 +128,7 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
         }
 
         if(authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-            ArrayList<String> tokens = (ArrayList)riderMapper.selectRiderTokenByChatUserId(chat);
+            ArrayList<Map> tokens = (ArrayList)riderMapper.selectRiderTokenByChatUserId(chat);
 
             if(tokens.size() > 0){
                 Notification noti = new Notification();
@@ -132,8 +136,100 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
                 noti.setTitle(resultStore.getStoreName());
                 noti.setMessage(chat.getMessage());
                 noti.setChat_user_id(resultStore.getChatUserId());
-                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                checkFcmResponse(pushNotification);
+
+                // PUSH 객체로 변환 후 전달
+                FcmBody fcmBody = new FcmBody();
+
+                Map<String, Object> obj = new HashMap<>();
+                obj.put("obj", noti);
+
+                fcmBody.setData(obj);
+                fcmBody.setPriority("high");
+
+                fcmBody.getNotification().setTitle(noti.getTitle());
+                fcmBody.getNotification().setBody(noti.getMessage());
+
+                // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                iosMap.addAll(tokens.stream().filter(x -> {
+                    if (x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")){
+                        return true;
+                    }
+
+                    return false;
+                }).collect(Collectors.toList()));
+
+                // iOS push
+                if (iosMap.size() > 0){
+                    try {
+                        ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                        iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                        fcmBody.setRegistration_ids(iosTokenValue);
+
+                        CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                        checkFcmResponse(iosPushNotification);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+
+                android.addAll(tokens.stream().filter(x -> {
+                    if (x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")){
+                        return true;
+                    }
+
+                    return false;
+                }).collect(Collectors.toList()));
+
+                // new android push
+                if (android.size() > 0){
+                    try {
+                        ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                        android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                        fcmBody.setRegistration_ids(androidTokenValue);
+
+                        // noti 전문 삭제
+                        fcmBody.setNotification(null);
+
+                        CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                        checkFcmResponse(androidPushNotification);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+
+                oldMap.addAll(tokens.stream().filter(x->{
+                    if (x.getOrDefault("appType", "").equals("")){
+                        return true;
+                    }
+
+                    return false;
+                }).collect(Collectors.toList()));
+
+                // old android push
+                if (iosMap.size() > 0){
+                    try {
+                        ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                        oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                        fcmBody.setRegistration_ids(oldTokenValue);
+
+                        // noti 전문 삭제
+                        fcmBody.setNotification(null);
+
+                        CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                        checkFcmResponse(oldPushNotification);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 

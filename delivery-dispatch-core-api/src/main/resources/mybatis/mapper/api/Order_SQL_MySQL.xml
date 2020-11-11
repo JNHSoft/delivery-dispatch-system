@@ -823,14 +823,18 @@
 	</select>
 
 
-	<select id="selectPushToken" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">
-		select TBRS.push_token
-		from TB_RIDER_SESSION AS TBRS
-		   left join TB_SUBGROUP_RIDER_REL AS TSRR
-		       on TSRR.subgroup_id = #{groupId}
-		and TBRS.rider_id = TSRR.rider_id
-		where TBRS.push_token is not null
-		AND date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+	<select id="selectPushToken" parameterType="kr.co.cntt.core.model.store.Store" resultType="Map">
+		select	 TBRS.push_token
+		,TBRS.os			as platform
+		,R.app_type			as appType
+		from	 TB_RIDER				as R
+		left join TB_RIDER_SESSION		as TBRS
+		on	 R.id = TBRS.rider_id
+		left join TB_SUBGROUP_RIDER_REL	as TSRR
+		on	 TBRS.rider_id = TSRR.rider_id
+		where	 TSRR.subgroup_id = #{groupId}
+		and		 TBRS.push_token is not null
+		and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
 	</select>
 
 
