@@ -164,6 +164,8 @@
 		<result property="latitude" column="latitude" />
 		<result property="longitude" column="longitude" />
 		<result property="riderId" column="rider_id" />
+		<result property="acceptDatetime" column="accept_datetime" />
+		<result property="rejectDatetime" column="reject_datetime" />
 
 		<association property="riderDetail" resultMap="selectRiderNowResult"/>
 
@@ -172,6 +174,18 @@
 			<result property="rider_id" column="rider_id" />
 		</association>
 
+	</resultMap>
+
+	<!-- SMS Request Map -->
+	<resultMap id="smsApplyResult" type="kr.co.cntt.core.model.sms.SmsApplyInfo">
+		<result property="createdDatetime" column="login_id" />
+		<result property="brandCode" column="brand_code" />
+		<result property="loginId" column="login_id" />
+		<result property="phone" column="phone" />
+		<result property="applyNo" column="apply_no" />
+		<result property="applyStatus" column="apply_status" />
+		<result property="applyDatetime" column="apply_datetime" />
+		<result property="deleted" column="deleted_datetime" />
 	</resultMap>
 
 	<!-- 2020.09.17 라이더가 소속된 매장의 브랜드 정보를 가져온다. -->
@@ -273,7 +287,7 @@
 		WHERE	 RRR.rider_id = R.id
 		and		 R.id = RS.rider_id
 		and		 date_format(ifnull(ifnull(RS.expiry_datetime, RRR.exp_datetime), now()), '%y-%m-%d') >= date_format(now(), '%y-%m-%d')
-		and		 RRR.req_status in (0, 1)
+		and		 RRR.req_status in (0, 1, 5)
 		and		 R.id = #{rider_id}
 	</update>
 
@@ -1246,6 +1260,8 @@
 				,REQ.longitude
 				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
+				,REQ.accept_datetime
+				,REQ.reject_datetime
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1412,5 +1428,46 @@
 		where    req_status in (2, 3, 4)
 		and      id = #{id};
 	</update>
+
+	<!-- 라이더 인증정보 저장 -->
+	<insert id="insertRiderApplySMS" parameterType="kr.co.cntt.core.model.sms.SmsApplyInfo">
+		insert into TB_APPLY_SMS(brand_code, login_id, phone, apply_no)
+		values(#{brandCode}, #{loginId}, #{phone}, #{applyNo});
+	</insert>
+
+	<!-- 라이더 인증정보 업데이트 -->
+	<insert id="updateRiderApplySMS" parameterType="kr.co.cntt.core.model.sms.SmsApplyInfo">
+		update	 TB_APPLY_SMS
+		set		 apply_status = #{applyStatus}
+		<if test="applyStatus != null and applyStatus == 1">
+				,apply_datetime = now()
+		</if>
+		where    brand_code = #{brandCode}
+		and      phone = #{phone}
+		and      apply_no = #{applyNo}
+		and      apply_status = 0
+		and      login_id = #{loginId}
+		and      deleted_datetime is null
+		-- and      date_add(created_datetime, interval 60 second) <![CDATA[>=]]> now();
+	</insert>
+
+	<!-- 라이더 인증정보 조회 -->
+	<select id="selectRiderApplySMS" parameterType="kr.co.cntt.core.model.sms.SmsApplyInfo" resultMap="smsApplyResult">
+		select	 created_datetime
+				,brand_code
+				,login_id
+				,phone
+				,apply_no
+				,apply_status
+				,apply_datetime
+		from	 TB_APPLY_SMS
+		where	 apply_status = 0
+		and		 date_add(created_datetime, interval 60 second) <![CDATA[>=]]> now()
+		and		 brand_code = #{brandCode}
+		and		 phone = #{phone}
+		and		 login_id = #{loginId}
+		and		 deleted_datetime is null
+	</select>
+
 
 </mapper>

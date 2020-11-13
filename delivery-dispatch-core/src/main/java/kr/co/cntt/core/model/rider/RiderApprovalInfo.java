@@ -14,6 +14,9 @@ public class RiderApprovalInfo extends Rider implements Dto {
     private String approvalStatus;
     private String riderId;
 
+    private String acceptDatetime;
+    private String rejectDatetime;
+
     private Rider riderDetail;
     private RiderSession session;
 }

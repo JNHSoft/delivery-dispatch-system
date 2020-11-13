@@ -145,6 +145,8 @@ public enum ErrorCodeEnum {
 	E00051,
 	E00052,
 	E00053,
+	E00054,
+	E00055,
 
 	/* 관리자 */
 	F0001,
@@ -157,5 +159,11 @@ public enum ErrorCodeEnum {
 	M0007,
 	M0008,
 	M0009,
+
+	/* 라이더 SMS 인증 관련 */
+	SM00001,
+	SM00002,
+	SM00003,
+	SM00004,
 	;
 }

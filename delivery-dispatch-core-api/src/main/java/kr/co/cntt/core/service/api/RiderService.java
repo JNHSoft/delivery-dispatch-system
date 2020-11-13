@@ -9,9 +9,10 @@ import kr.co.cntt.core.model.rider.Rider;
 
 import java.util.List;
 import java.util.Map;
-import kr.co.cntt.core.model.login.User;
+
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
 
 public interface RiderService {
@@ -166,4 +167,14 @@ public interface RiderService {
      * 라이더 유효기간 체크 후 정보 변경
      * */
     int updateOverExpDate() throws AppTrException;
+
+    /**
+     * 라이더 SMS 인증번호 발송
+     * */
+    Map sendApplySMS(SmsApplyInfo smsApplyInfo) throws AppTrException;
+
+    /**
+     * 인증번호 체크
+     * */
+    Map checkApplySMS(SmsApplyInfo smsApplyInfo) throws AppTrException;
 }

@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.HashMap;
@@ -301,4 +302,19 @@ public interface RiderMapper {
      * Approval Rider Row data 삭제
      * */
     int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo);
+
+    /**
+     * 라이더 인증번호 저장
+     * */
+    int insertRiderApplySMS(SmsApplyInfo smsApplyInfo);
+
+    /**
+     * 라이더 정보 업데이트
+     * */
+    int updateRiderApplySMS(SmsApplyInfo smsApplyInfo);
+
+    /**
+     * 라이더 인증번호 체크
+     * */
+    SmsApplyInfo selectRiderApplySMS(SmsApplyInfo smsApplyInfo);
 }

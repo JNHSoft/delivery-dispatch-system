@@ -27,6 +27,12 @@ public interface Api {
     /** 라이더 승인 진행 현황 조회 */
     String APPROVAL_CHECK = "/getCheckRiderApproval.json";
 
+    /** 라이더 인증번호 문자 발송 */
+    String SEND_APPLY_SMS = "/sendApplySMS.json";
+
+    /** 라이더 인증번호 확인 */
+    String CHECK_APPLY_SMS = "/checkApplySMS.json";
+
     //////// 2020.08.27 라이더 승인 요청 프로세 관련 항목 ///////////////////////
 
     // ############################################################################################ //

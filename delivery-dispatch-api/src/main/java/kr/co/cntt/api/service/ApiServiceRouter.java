@@ -15,6 +15,7 @@ import kr.co.cntt.core.model.payment.Payment;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.model.tracker.Tracker;
@@ -213,6 +214,12 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** 라이더 가입 승인 상태 확인 */
 	APPROVAL_CHECK("riderService", "getCheckRiderApproval", RiderApprovalInfo.class),
+
+	/** 라이더 인증번호 문자 발송 */
+	SEND_APPLY_SMS("riderService", "sendApplySMS", SmsApplyInfo.class),
+
+	/** 라이더 인증번호 확인 */
+	CHECK_APPLY_SMS("riderService", "checkApplySMS", SmsApplyInfo.class),
 
 	/** Order 등록 */
 	ORDER_POST("orderService", "postOrder", Order.class),
