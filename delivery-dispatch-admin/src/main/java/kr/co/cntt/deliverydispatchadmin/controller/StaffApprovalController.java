@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StaffApprovalAdminService;
+import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -495,6 +497,30 @@ public class StaffApprovalController {
             return false;
         }else{
             return true;
+        }
+    }
+
+    /**
+     * 라이더 비밀번호 초기화
+     *
+     * @return
+     */
+    @ResponseBody
+    @PutMapping("putRiderPwReset")
+    @CnttMethodDescription("라이더 비밀번호 초기화")
+    public String resetRiderPw(Rider rider){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        rider.setToken(adminInfo.getAdminAccessToken());
+
+        ShaEncoder sha = new ShaEncoder(512);
+        rider.setLoginPw(sha.encode("1111"));
+
+        int iResetPwd = staffApprovalAdminService.resetRiderPassword(rider);
+
+        if (iResetPwd == 0) {
+            return "err";
+        } else {
+            return "ok";
         }
     }
 }

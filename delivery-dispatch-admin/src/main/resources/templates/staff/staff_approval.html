@@ -78,6 +78,10 @@
                             <td>
                                 <input type="text" name="" id="riderExpDate" class="input datepicker" value="" readonly="true" />
                             </td>
+                            <th th:text="${#messages.msg('login.password')}"/>
+                            <td>
+                                <a class="button btn_blue2" th:text="${#messages.msg('reset.password')}" onclick="javascript:resetRiderPw()"/>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

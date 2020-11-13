@@ -125,5 +125,11 @@ public class StaffApprovalAdminServiceImpl implements StaffApprovalAdminService 
         return riderMapper.deleteApprovalRiderRowData(riderInfo);
     }
 
+    // 기사 비밀번호 초기화
+    @Override
+    public int resetRiderPassword(Rider rider) {
+        return riderMapper.resetRiderPassword(rider);
+    }
+
 
 }

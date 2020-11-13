@@ -400,6 +400,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
     /**
      * 라이더 정보 변경
      * */
+    @Override
     public int setRiderInfo(RiderApprovalInfo riderInfo){
         return riderMapper.updateApprovalRiderInfo(riderInfo);
     }
@@ -407,6 +408,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
     /**
      * 라이더 세션 변경
      * */
+    @Override
     public int updateRiderSession(RiderSession session){
         return riderMapper.updateRiderSession(session);
     }
@@ -414,6 +416,15 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
     /**
      * deleteApprovalRiderRowData
      * */
+    @Override
     public int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo){ return riderMapper.deleteApprovalRiderRowData(riderInfo); }
 
+    /**
+     * 라이더 패스워드 초기화
+     * */
+    @Override
+    public int resetRiderPassword(Rider rider) {
+        riderMapper.resetRiderPasswordforStore(rider);
+        return 0;
+    }
 }

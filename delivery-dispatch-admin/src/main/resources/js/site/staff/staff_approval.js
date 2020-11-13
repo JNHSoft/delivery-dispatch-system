@@ -547,4 +547,25 @@ function changeStatus(id, status){
 
 }
 
+/**
+ * resetPassword 클릭 시 비밀번호 초기화
+ */
+function resetRiderPw() {
+    $.ajax({
+        url : "/putRiderPwReset",
+        type : 'put',
+        dataType : 'text',
+        data : {
+            id	: $("#selectedRiderId").val()
+        },
+        success : function(data){
+            if (data == 'geo_err') {
+                alert(alert_address_error);
+                return false;
+            } else {
+                alert(alert_confirm_mod_success);
+            }
+        }
+    });
+}
 /*]]>*/

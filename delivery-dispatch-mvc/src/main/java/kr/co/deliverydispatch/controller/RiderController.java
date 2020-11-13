@@ -11,6 +11,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.CommInfoService;
 import kr.co.deliverydispatch.service.CommunityService;
@@ -555,6 +556,26 @@ public class RiderController {
         return true;
     }
 
+    // 라이더 비밀번호 초기화
+    @ResponseBody
+    @PutMapping("putRiderPwReset")
+    @CnttMethodDescription("라이더 비밀번호 초기화")
+    public String resetRiderPwd(Rider rider){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        rider.setToken(storeInfo.getStoreAccessToken());
+
+        ShaEncoder sha = new ShaEncoder(512);
+        rider.setLoginPw(sha.encode("1111"));
+
+        int iResetPwd = storeRiderService.resetRiderPassword(rider);
+
+        if (iResetPwd == 0) {
+            return "err";
+        } else {
+            return "ok";
+        }
+
+    }
 
     // 라이더 상태 및 유효기간을 체크한다
     // true = 가입 가능
@@ -603,5 +624,4 @@ public class RiderController {
             return true;
         }
     }
-
 }
