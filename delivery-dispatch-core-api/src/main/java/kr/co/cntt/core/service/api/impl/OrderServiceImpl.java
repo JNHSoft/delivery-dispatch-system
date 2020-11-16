@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.api.impl;
 
+import com.github.pagehelper.util.StringUtil;
 import com.mysql.cj.util.StringUtils;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
@@ -1432,15 +1433,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_RIDER")
     @Override
     public int putOrderPickedUp(Order order) throws AppTrException {
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+        order.setRole("ROLE_RIDER");
+        Order orderInfo = orderMapper.selectOrderInfo(order);
 
-        if (selectOrderIsApprovalCompleted != 0) {
+
+        if (orderInfo.getStatus().toString().equals("0")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
-        }
-
-        if (selectOrderIsCompletedIsCanceled != 0) {
+        }else if (orderInfo.getStatus().toString().equals("3") || orderInfo.getStatus().toString().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }else if (!(orderInfo.getStatus().toString().equals("1"))){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00056), ErrorCodeEnum.E00056.name());
         }
 
         Order orderPickedUp = new Order();
@@ -1505,19 +1507,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_RIDER")
     @Override
     public int putOrderArrived(Order order) throws AppTrException{
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-//        String newRider = order.getStatus();
-//
-//        System.out.println("############ --> " + newRider);
+        order.setRole("ROLE_RIDER");
+        Order orderInfo = orderMapper.selectOrderInfo(order);
 
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
-        if (selectOrderIsApprovalCompleted != 0) {
+        if (orderInfo.getStatus().toString().equals("0")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
-        }
-
-        if (selectOrderIsCompletedIsCanceled != 0) {
+        }else if (orderInfo.getStatus().toString().equals("3") || orderInfo.getStatus().toString().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }else if (!(orderInfo.getStatus().toString().equals("2"))){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00057), ErrorCodeEnum.E00057.name());
         }
 
         Order orderArrived = new Order();
@@ -1526,7 +1524,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderArrived.setId(order.getId());
         orderArrived.setStatus("6");
         orderArrived.setArrivedDatetime(LocalDateTime.now().toString());
-//        orderArrived.setPickupXy(order.getLatitude() + "|" + order.getLongitude());
 
         Order combinedOrderArrived = new Order();
 
@@ -1535,8 +1532,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderArrived.setStatus("6");
             combinedOrderArrived.setArrivedDatetime(LocalDateTime.now().toString());
             combinedOrderArrived.setToken(order.getToken());
-//            combinedOrderArrived.setPickupXy(order.getPickupXy());
-//            combinedOrderArrived.setPickupXy(order.getLatitude() + "|" + order.getLongitude());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
@@ -1597,6 +1592,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public int putOrderCompleted(Order order) throws AppTrException {
+        order.setRole("ROLE_RIDER");
+        Order orderInfo = orderMapper.selectOrderInfo(order);
+
+        if (orderInfo.getStatus().toString().equals("0")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+        }else if (orderInfo.getStatus().toString().equals("4")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }else if (!(orderInfo.getStatus().toString().equals("6"))){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00058), ErrorCodeEnum.E00058.name());
+        }
+
         Order orderCompleted = new Order();
 
         orderCompleted.setToken(order.getToken());
@@ -1612,7 +1618,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderCompleted.setStatus("3");
             combinedOrderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
             combinedOrderCompleted.setToken(order.getToken());
-//            combinedOrderCompleted.setCompleteXy(order.getCompleteXy());
             combinedOrderCompleted.setCompleteXy(order.getLatitude() + "|" + order.getLongitude());
 
             this.putOrder(combinedOrderCompleted);
@@ -2508,6 +2513,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_RIDER")
     @Override
     public int putOrderReturn(Order order) throws AppTrException {
+        order.setRole("ROLE_RIDER");
+        Order orderInfo = orderMapper.selectOrderInfo(order);
+
+        if (orderInfo.getStatus().toString().equals("0")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+        }else if (orderInfo.getStatus().toString().equals("4")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }else if (StringUtil.isEmpty(order.getPickedUpDatetime()) || StringUtil.isEmpty(order.getArrivedDatetime()) || StringUtil.isEmpty(order.getCompletedDatetime())){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00059), ErrorCodeEnum.E00059.name());
+        }
+
         order.setRole("ROLE_RIDER");
         Order needOrderId = orderMapper.selectOrderInfo(order);
 
