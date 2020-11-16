@@ -26,7 +26,7 @@ management:
 
 # was
 server:
-  port: 8181
+  port: 8182
   tomcat:
     uri-encoding: UTF-8
   jsp-servlet:

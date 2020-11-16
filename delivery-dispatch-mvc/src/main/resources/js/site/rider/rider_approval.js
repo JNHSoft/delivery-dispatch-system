@@ -133,12 +133,12 @@ function makeRowButton(obj){
             break;
         case "1":           // 수락
         case "5":
-            btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit +  "</button>"
-            // if (bExpDate){
-            //     btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit +  "</button>"
-            // }else{
-            //     btn_edit = "<button class='button btn_gray2 h30 w80 mr10' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
-            // }
+            // btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit +  "</button>"
+            if (bExpDate){
+                btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit +  "</button>"
+            }else{
+                btn_edit = "<button class='button btn_gray2 h30 w80 mr10' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
+            }
             break;
         case "2":           // 거절
         case "3":           // 승인 후 거절

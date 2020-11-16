@@ -1592,7 +1592,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public int putOrderCompleted(Order order) throws AppTrException {
-        order.setRole("ROLE_RIDER");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            order.setRole("ROLE_STORE");
+        } else {
+            order.setRole("ROLE_RIDER");
+        }
         Order orderInfo = orderMapper.selectOrderInfo(order);
 
         if (orderInfo.getStatus().toString().equals("0")){
@@ -1628,8 +1633,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         String tmpOrderId = orderCompleted.getId();
 
         orderCompleted.setId(order.getId());
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             orderCompleted.setRole("ROLE_STORE");

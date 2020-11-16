@@ -161,7 +161,7 @@ public class ApprovalRiderListforExcelServiceImpl extends CommExcel {
                         cell.setCellValue(changeType(String.class, approvalList.get(i).getRejectDatetime()));
                         break;
                     default:
-                        cell.setCellValue(changeType(String.class, approvalList.get(i).getCreatedDatetime()));
+                        cell.setCellValue("");
                 }
                 cell.setCellStyle(dataCellStyle);
 
