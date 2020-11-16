@@ -33,10 +33,19 @@ function getApprovalRiderList(){
                     tmpObj.riderID = data[key].loginId == undefined ? "" : data[key].loginId;
                     tmpObj.riderName = data[key].name == undefined ? "" : data[key].name;
                     tmpObj.contactNum = data[key].phone;
-                    tmpObj.createdDate = data[key].createdDatetime == undefined ? "-" : dateFormat(data[key].createdDatetime);
+                    //tmpObj.createdDate = data[key].createdDatetime == undefined ? "-" : dateFormat(data[key].createdDatetime);
+                    if (data[key].approvalStatus == "1" || data[key].approvalStatus == "5" || data[key].approvalStatus == "4"){
+                        tmpObj.statusDate = data[key].acceptDatetime == undefined ? "-" : dateFormat(data[key].acceptDatetime);
+                    }else if (data[key].approvalStatus == "2" || data[key].approvalStatus == "3"){
+                        tmpObj.statusDate = data[key].rejectDatetime == undefined ? "-" : dateFormat(data[key].rejectDatetime);
+                    }else{
+                        tmpObj.statusDate = "-";
+                    }
+
 
                     tmpObj.expirationDate = data[key].session == undefined ? "-" : dateFormat(data[key].session.expiryDatetime);
                     tmpObj.setting = makeRowButton(data[key]);
+                    tmpObj.status = getStatusValue(data[key].approvalStatus);
 
                     tmpObj.approvalStatus = data[key].approvalStatus;
 
@@ -72,9 +81,10 @@ function makeGrid(data){
             {label: riderLoginID, name: 'riderID', width: 80, align: 'center'},
             {label: riderName, name: 'riderName', width: 80, align: 'center'},
             {label: riderPhone, name: 'contactNum', width: 80, align: 'center'},
-            {label: requestDate, name: 'createdDate', width: 80, align: 'center'},
+            {label: responseDate, name: 'statusDate', width: 80, align: 'center'},
             {label: expDate, name: 'expirationDate', width: 80, align: 'center'},
             {label: setting, name: 'setting', width: 300, align: 'center'},
+            {label: approvalStatus, name: 'status', width: 80, align: 'center'},
             {label: '', name: 'approvalStatus', width: 80, align: 'center', hidden:true},
         ],
         height: 660,
@@ -106,7 +116,6 @@ function makeRowButton(obj){
     }
 
     let btn_approval = "";
-    let btn_setDate = "";
     let btn_edit = "";
     let btn_disapproval = "";
     let btn_deleteRowData = "";
@@ -115,44 +124,30 @@ function makeRowButton(obj){
     let nowDate = dateFormat(new Date);
     let bExpDate = !(expDate != "-" && expDate < nowDate);
 
-    if (bExpDate){
-        btn_setDate = "<input type='hidden' name='' id='expDate" + obj.id + "' value='" + (obj.session == undefined ? "-" : dateFormat2(obj.session.expiryDatetime)) + "' class='input datepicker'/>" +
-            "<button class='button btn_pink h30 w180 mr10' style='font-size: 14px;' onclick='javascript:showExpDateCalendar(" + obj.id + ")'>" + expDateSetting + "</button>"
-    }else{
-        btn_setDate ="<button class='button btn_weppep h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5 t_pink' />" + expDateSetting + "</button>"
-    }
-
     switch (obj.approvalStatus){
         case "0":           // 요청
-            btn_approval = "<button class='button btn_pale_green h30 w100 mr20' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
-            btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>Edit</button>"
+            btn_approval = "<button class='button btn_pale_green h30 w100 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
+            btn_edit = "<button class='button btn_gray2 h30 w80 mr10' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             btn_disapproval = "<button class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</button>"
             break;
         case "1":           // 수락
-            btn_approval = "<button class='button btn_onahau h30 w100 mr20' style='font-size: 12px;'><i class='fa fa-check mr5' />" + approval + "</button>";
+        case "5":
             if (bExpDate){
-                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>Edit</button>"
+                btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit + "</button>"
             }else{
-                btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>Edit</button>"
+                btn_edit = "<button class='button btn_gray2 h30 w80 mr10' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             }
-            btn_disapproval = "<button class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</button>"
             break;
         case "2":           // 거절
         case "3":           // 승인 후 거절
-            btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + disapproval + "</button>";
-            btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
-            btn_edit = "<button class='button btn_gray2 h30 w60 w80 mr10' style='font-size: 14px;' disabled>Edit</button>"
-            btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>DEL</button>"
+            btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>" + btnDelete + "</button>"
             break;
         case "4":
-            btn_approval = "<button class='button btn_gray2 h30 w100 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + approval + "</button>";
-            btn_setDate = "<button class='button btn_gray2 h30 w180 mr10' style='font-size: 12px;' disabled><i class='fa fa-check mr5' />" + expDateSetting + "</button>"
-            btn_edit = "<button class='button btn_gray2 h30 w60 w80 mr10' style='font-size: 14px;' disabled>Edit</button>"
-            btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>DEL</button>"
+            btn_deleteRowData = "<button class='button btn_red h30 w80' style='font-size: 14px;' onclick='deleteApprovalRiderRow(" + obj.id + ")'>" + btnDelete + "</button>"
             break;
     }
 
-    return  btn_approval + btn_disapproval + btn_setDate + btn_edit + btn_deleteRowData;
+    return  btn_approval + btn_disapproval + btn_edit + btn_deleteRowData;
 }
 
 // 승인 허용
@@ -196,6 +191,7 @@ function popUpChangeStatus(){
     statusDisapproval(approvalID, approvalStatus);
 }
 
+// 상태값 변경 함수
 function statusDisapproval(approvalID, approvalStatus){
     let current = dateFormat(new Date());
     let exp = dateFormat($("#expDate" + approvalID).val());
@@ -243,11 +239,16 @@ function statusDisapproval(approvalID, approvalStatus){
 function popUpSaveData(){
     let approvalID = $("#approvalID").val();
     let approvalStatus = $("#approvalStatus").val();
+    let riderName = $("#riderName").val();
 
     let current = dateFormat(new Date());
     let exp = dateFormat($("#expDate" + approvalID).val());
 
     if (approvalID == undefined || approvalID.trim() == "" || (exp != "-" && exp < current)){
+        return false;
+    }
+
+    if (riderName == undefined || riderName.trim() == ""){
         return false;
     }
 
@@ -257,15 +258,15 @@ function popUpSaveData(){
 
     let riderCode = $("#riderCode").val();
     let riderVehicle = $("#riderVehicle").val();
-    let approvalId =  $("#approvalID").val();
 
     $.ajax({
         url: "/changeRiderInfo",
         type: "post",
         data:{
-            id: approvalId,
+            id: approvalID,
             vehicleNumber: riderVehicle,
-            code: riderCode
+            code: riderCode,
+            name: riderName
         },
         dataType: "json",
         success: function (data){
@@ -310,6 +311,18 @@ function searchRiderApprovalDetail(rowID){
                 }
             });
 
+            if (data.approvalStatus == "5"){
+                $("#changePause").text(approval);
+                $("#changePause").off().on("click", function (){
+                    changeStatus(data.id, "1");
+                });
+            }else{
+                $("#changePause").text(pauseApproval);
+                $("#changePause").off().on("click", function (){
+                    changeStatus(data.id, "5");
+                });
+            }
+
             popOpen("#popRiderInfo");
         },
         error: function (error){
@@ -334,7 +347,7 @@ function checkExpDate(selectedDate, obj){
             return true;
         }
     }
-    $("#" + obj.id).val(dateFormat2(date));
+    $("#" + obj.id).val(dateFormat(date));
 
     return false;
 }
@@ -450,4 +463,109 @@ function excelDownload(){
 
 }
 
+// status value check
+function getStatusValue(status){
+    let statusValue = "";
+
+    switch (status){
+        case "0":
+            statusValue = waitApproval;
+            break;
+        case "1":
+            statusValue = successApproval;
+            break;
+        case "2":
+        case "3":
+            statusValue = disApproval;
+            break;
+        case "4":
+            statusValue = expiryApproval;
+            break;
+        case "5":
+            statusValue = pauseApproval;
+            break;
+    }
+
+    return statusValue;
+}
+
+// 일시 정지 / 재가동 상태로 적용
+function changeStatus(id, status){
+    if (id == undefined || status == undefined){
+        return;
+    }
+
+    if (id == "" || status == ""){
+        return;
+    }
+
+    // 기본 데이터 추출
+    let orgStatus = $("#approvalStatus").val();
+
+    // 허용으로 변경하기 위해서
+    if (status == "1"){
+        if (orgStatus != "5"){
+            return;
+        }
+    }
+    // 일시정지로 변경하기
+    else if(status == "5"){
+        if (orgStatus != "1"){
+            return;
+        }
+    }else{
+        return;
+    }
+
+    loading.show();
+
+    $.ajax({
+        url: "/changeStatus",
+        type: "post",
+        data:{
+            id: id,
+            approvalStatus: status
+        },
+        dataType: "json",
+        success: function (data){
+            if (data){
+                alert(msgChangeSuccess);
+                popClose("#popRiderInfo");
+            }else {
+                alert(msgChangeFailed);
+            }
+        },
+        error: function (error){
+            alert(msgChangeFailed);
+            console.log(error);
+        },
+        complete: function (data){
+            getApprovalRiderList();
+            loading.hide();
+        }
+    });
+
+}
+
+/**
+ * resetPassword 클릭 시 비밀번호 초기화
+ */
+function resetRiderPw() {
+    $.ajax({
+        url : "/putRiderPwReset",
+        type : 'put',
+        dataType : 'text',
+        data : {
+            id	: $("#selectedRiderId").val()
+        },
+        success : function(data){
+            if (data == 'geo_err') {
+                alert(alert_address_error);
+                return false;
+            } else {
+                alert(alert_confirm_mod_success);
+            }
+        }
+    });
+}
 /*]]>*/

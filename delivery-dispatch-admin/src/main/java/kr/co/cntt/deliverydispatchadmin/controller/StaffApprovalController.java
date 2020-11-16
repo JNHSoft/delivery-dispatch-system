@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StaffApprovalAdminService;
+import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -49,11 +51,6 @@ public class StaffApprovalController {
     @GetMapping("/staffApproval")
     @CnttMethodDescription("직원 승인 목록")
     public String staffApproval(RiderApprovalInfo approvalInfo, Model model){
-
-        System.out.println("#####################################");
-        System.out.println(approvalInfo);
-        System.out.println("#####################################");
-
 
         return "/staff/staff_approval";
     }
@@ -94,7 +91,7 @@ public class StaffApprovalController {
     // 라이더 승인 상태 변경 요청
     @ResponseBody
     @PostMapping("/changeApprovalStatus")
-    @CnttMethodDescription("라이더 승인 상태 변경")
+    @CnttMethodDescription("라이더 승인 거절 상태 변경")
     public Boolean changeApprovalStatus(RiderApprovalInfo riderInfo){
 
         // 승인 요청인 경우는 거절한다
@@ -282,6 +279,46 @@ public class StaffApprovalController {
         return true;
     }
 
+    // 라이더 승인 상태 변경
+    @ResponseBody
+    @PostMapping("/changeStatus")
+    @CnttMethodDescription("라이더 상태 변경 전용")
+    public Boolean onlyChangeStatus(RiderApprovalInfo riderInfo){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        riderInfo.setToken(adminInfo.getAdminAccessToken());
+        riderInfo.setRole("ROLE_ADMIN");
+
+        // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
+        RiderApprovalInfo chkRiderInfo = staffApprovalAdminService.getRiderApprovalInfo(riderInfo);
+
+        // 값이 없는 경우
+        if (chkRiderInfo == null){
+            return false;
+        }
+
+        switch (riderInfo.getApprovalStatus()){
+            case "1":
+                if (!chkRiderInfo.getApprovalStatus().equals("5")){
+                    return false;
+                }
+
+                break;
+            case "5":
+                if (!chkRiderInfo.getApprovalStatus().equals("1")){
+                    return false;
+                }
+
+                break;
+            default:
+                return false;
+        }
+
+        // 상태 변경 관련 UPDATE 문 실행
+        staffApprovalAdminService.setRiderInfo(riderInfo);
+
+        return true;
+    }
+
     // 라이더 상세 정보 가져오기
     @ResponseBody
     @PostMapping("/getRiderApprovalInfo")
@@ -375,6 +412,10 @@ public class StaffApprovalController {
             bExpDate = true;
         }
 
+        if (riderInfo.getName() != null && !riderInfo.getName().equals(chkRiderInfo.getName())){
+            chkRiderInfo.setName(riderInfo.getName());
+        }
+
         if (chkRiderInfo.getApprovalStatus().equals("1")){
             // 라이더가 승인이 된 경우 TB_RIDER에서 정보를 변경한다.
             Rider changeRider = new Rider();
@@ -382,6 +423,7 @@ public class StaffApprovalController {
             changeRider.setId(chkRiderInfo.getRiderId());
             changeRider.setVehicleNumber(riderInfo.getVehicleNumber());
             changeRider.setCode(riderInfo.getCode());
+            changeRider.setName(riderInfo.getName());
 
             staffApprovalAdminService.updateRiderInfo(changeRider);
         }else{
@@ -455,6 +497,30 @@ public class StaffApprovalController {
             return false;
         }else{
             return true;
+        }
+    }
+
+    /**
+     * 라이더 비밀번호 초기화
+     *
+     * @return
+     */
+    @ResponseBody
+    @PutMapping("putRiderPwReset")
+    @CnttMethodDescription("라이더 비밀번호 초기화")
+    public String resetRiderPw(Rider rider){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        rider.setToken(adminInfo.getAdminAccessToken());
+
+        ShaEncoder sha = new ShaEncoder(512);
+        rider.setLoginPw(sha.encode("1111"));
+
+        int iResetPwd = staffApprovalAdminService.resetRiderPassword(rider);
+
+        if (iResetPwd == 0) {
+            return "err";
+        } else {
+            return "ok";
         }
     }
 }

@@ -86,4 +86,9 @@ public interface StoreRiderService {
      * deleteApprovalRiderRowData
      * */
     int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo);
+
+    /**
+     * 라이더 패스워드 초기화
+     * */
+    int resetRiderPassword(Rider rider);
 }

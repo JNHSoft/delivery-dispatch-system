@@ -100,7 +100,7 @@ public class ApprovalRiderListAtAdminforExcelServiceImpl extends ExcelComm {
             // 요청 날짜
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("rider.approval.request.date",null, locale));
+            addTitle.setCellValue(messageSource.getMessage("rider.approval.response.date",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             // 유효기간
@@ -150,7 +150,19 @@ public class ApprovalRiderListAtAdminforExcelServiceImpl extends ExcelComm {
 
                 // 요청 날짜
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(changeType(String.class, approvalList.get(i).getCreatedDatetime()));
+                switch (approvalList.get(i).getApprovalStatus()) {
+                    case "1":
+                    case "4":
+                    case "5":
+                        cell.setCellValue(changeType(String.class, approvalList.get(i).getAcceptDatetime()));
+                        break;
+                    case "2":
+                    case "3":
+                        cell.setCellValue(changeType(String.class, approvalList.get(i).getRejectDatetime()));
+                        break;
+                    default:
+                        cell.setCellValue(changeType(String.class, approvalList.get(i).getCreatedDatetime()));
+                }
                 cell.setCellStyle(dataCellStyle);
 
                 // 유효기간
@@ -170,14 +182,17 @@ public class ApprovalRiderListAtAdminforExcelServiceImpl extends ExcelComm {
                         cell.setCellValue(messageSource.getMessage("rider.approval.status.wait",null, locale));
                         break;
                     case "1":
-                        cell.setCellValue(messageSource.getMessage("rider.approval.approval",null, locale));
+                        cell.setCellValue(messageSource.getMessage("rider.approval.status.success",null, locale));
                         break;
                     case "2":
                     case "3":
-                        cell.setCellValue(messageSource.getMessage("rider.approval.disapproval",null, locale));
+                        cell.setCellValue(messageSource.getMessage("rider.approval.status.disapproval",null, locale));
                         break;
                     case "4":
                         cell.setCellValue(messageSource.getMessage("rider.approval.status.expiry",null, locale));
+                        break;
+                    case "5":
+                        cell.setCellValue(messageSource.getMessage("rider.approval.status.pause",null, locale));
                         break;
                     default:
                         cell.setCellValue("");

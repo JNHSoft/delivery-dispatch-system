@@ -1580,12 +1580,12 @@
 				,avg(time_to_sec(timediff(A.return_datetime, A.picked_up_datetime))) AS pickup_return
 				,avg(timediff(A.return_datetime, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END)) AS order_return
 
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) <= 35 THEN 1 END) / count(A.id) *100 AS min_30below
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) <= 30 THEN 1 END) / count(A.id) *100 AS min_30below
 				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 31 and 41 THEN 1 END) / count(A.id) *100 AS min_30to40
 				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 41 and 51 THEN 1 END) / count(A.id) *100 AS min_40to50
 				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 51 and 61 THEN 1 END) / count(A.id) *100 AS min_50to60
 				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) between 61 and 91 THEN 1 END) / count(A.id) *100 AS min_60to90
-				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) < 90 THEN 1 END) / count(A.id) *100 AS min_90under
+				,count(CASE WHEN timestampdiff(MINUTE, CASE WHEN A.reservation_status = 0 THEN A.created_datetime ELSE DATE_SUB(A.reservation_datetime, INTERVAL 30 MINUTE) END, arrived_datetime) > 90 THEN 1 END) / count(A.id) *100 AS min_90under
 
 				,ifnull(count(
 					case

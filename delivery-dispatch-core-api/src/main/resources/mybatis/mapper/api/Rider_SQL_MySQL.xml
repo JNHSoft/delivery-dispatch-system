@@ -1207,6 +1207,15 @@
 		WHERE id = #{id} AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</update>
 
+	<!-- resetRiderPassword for Store -->
+	<update id="resetRiderPasswordforStore" parameterType="kr.co.cntt.core.model.rider.Rider">
+		UPDATE	 TB_RIDER
+		SET		 login_pw = #{loginPw}
+				,modified_datetime = now()
+		WHERE	 id = ( select rider_id from TB_REQ_REGIST_RIDER where id = #{id} )
+		AND		 admin_id = (SELECT admin_id FROM TB_STORE WHERE id = ( SELECT store_id from TB_STORE_SESSION WHERE access_token = #{token} limit 1) )
+	</update>
+
 	<!-- updateRiderOrderStandbyDateTime -->
 	<update id="updateRiderOrderStandbyDateTime" parameterType="kr.co.cntt.core.model.common.Common">
 		UPDATE TB_RIDER
@@ -1258,7 +1267,8 @@
 				,REQ.req_status
 				,REQ.latitude
 				,REQ.longitude
-				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
+				-- ,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
+				,case when REQ.req_status in ('1', '5') and date_format(date_add(REQ.accept_datetime, interval 1 year), '%Y-%m-%d') = date_format(IFNULL(RS.expiry_datetime, REQ.exp_datetime), '%Y-%m-%d')  then null else IFNULL(RS.expiry_datetime, REQ.exp_datetime) end	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,REQ.accept_datetime
 				,REQ.reject_datetime
@@ -1287,7 +1297,8 @@
 				AND REQ.id is null
 			</otherwise>
 		</choose>
-		order by case when REQ.req_status in ('2', '3') then 999 else 0 end, ISNULL(IFNULL(RS.expiry_datetime, REQ.exp_datetime)) desc, IFNULL(RS.expiry_datetime, REQ.exp_datetime) desc, REQ.req_status
+		AND      date_format(IFNULL(IFNULL(IFNULL(RS.expiry_datetime, REQ.exp_datetime), REQ.accept_datetime), REQ.created_datetime), '%Y-%m-%d') >= date_format(date_sub(now(), interval 1 year), '%Y-%m-%d')
+		order by case when REQ.req_status in ('2', '3', '4') then 999 when REQ.req_status = '0' then 1 when REQ.req_status = '1' then 2 when REQ.req_status = '5' then 3 else 998 end
 	</select>
 
 	<!-- 정렬은 요청이 등록된 순이며, 최상위 1개의 정보를 기준으로 가입 내용을 가져온다. -->
@@ -1351,6 +1362,9 @@
 		<if test="session != null and session.expiryDatetime != ''">
 				,exp_datetime = #{session.expiryDatetime}
 		</if>
+		<if test="name != null and name != ''">
+				,rider_name = #{name}
+		</if>
 		<if test="approvalStatus != null and approvalStatus != ''">
 				,req_status = #{approvalStatus}
 		</if>
@@ -1361,6 +1375,12 @@
 			<if test="store != null and store.id != ''">
 				,store_id = #{store.id}
 			</if>
+		</if>
+		<if test="approvalStatus != null and approvalStatus eq '1'.toString()">
+			,accept_datetime = ifnull(accept_datetime, now())
+		</if>
+		<if test="approvalStatus != null and (approvalStatus eq '2'.toString() or approvalStatus eq '3'.toString())">
+			,reject_datetime = ifnull(reject_datetime, now())
 		</if>
 		where	 id = #{id}
 	</update>

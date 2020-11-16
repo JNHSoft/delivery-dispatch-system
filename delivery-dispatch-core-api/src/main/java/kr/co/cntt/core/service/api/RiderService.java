@@ -177,4 +177,9 @@ public interface RiderService {
      * 인증번호 체크
      * */
     Map checkApplySMS(SmsApplyInfo smsApplyInfo) throws AppTrException;
+
+    /**
+     * 라이더 OS 등록
+     * */
+    boolean updateRiderOSInfo(Rider rider) throws AppTrException;
 }

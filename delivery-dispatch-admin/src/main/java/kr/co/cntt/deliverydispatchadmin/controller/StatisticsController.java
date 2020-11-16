@@ -348,6 +348,7 @@ public class StatisticsController {
         List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(order);
 
         modelAndView.addObject("selectAdminStatisticsExcel", orderStatisticsByAdminList);
+        modelAndView.addObject("brandCode", adminInfo.getAdminBrandCode());
 
         return modelAndView;
     }

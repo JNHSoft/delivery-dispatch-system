@@ -660,6 +660,18 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         return map;
     }
 
+    @Override
+    public boolean updateRiderOSInfo(Rider rider) throws AppTrException {
+
+        int iResult = riderMapper.updatePushToken(rider);
+
+        if (iResult > 0){
+            return true;
+        }
+
+        return false;
+    }
+
     private String getRndNumber(int rndLang){
         // 랜덤함수를 이용하여 추출할 문자 집합소
         StringBuilder sbRndString = new StringBuilder();

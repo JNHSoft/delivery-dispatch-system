@@ -200,6 +200,11 @@ DDELib.Orders.prototype = {
                 if($(this).val() == "0") {
                     arr.push("5");
                 }
+
+                // KFC 브랜드이면서 도착을 선택 시 완료 값이 보이게
+                if (my_store.brandCode == "1" && $(this).val() == "6"){
+                    arr.push("3");
+                }
             }
         });
         return arr;
@@ -326,7 +331,7 @@ DDELib.Orders.prototype = {
                 {label: order_assigned, name: 'time3', width: 80, align: 'center'},
                 {label: order_pickedup, name: 'time4', width: 80, align: 'center'},
                 {label: order_arrived, name: 'time8', width: 80, align: 'center'},
-                {label: order_completed, name: 'time5', width: 80, align: 'center'},
+                {label: order_completed, name: 'time5', width: 80, align: 'center', hidden:my_store.brandCode == "1"?true:false},
                 {label: order_return, name: 'time6', width: 80, align: 'center'},
                 {label: order_reserved, name: 'time7', width: 80, align: 'center'},
                 {label: rider_name, name: 'rider', width: 80, align: 'center'},

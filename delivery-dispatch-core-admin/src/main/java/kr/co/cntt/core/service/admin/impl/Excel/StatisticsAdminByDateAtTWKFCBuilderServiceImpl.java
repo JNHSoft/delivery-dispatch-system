@@ -647,7 +647,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                 cell2 = addListRow.createCell(colNum++);
                 if (totalDistance > 0 && distanceNullCnt > 0){
-                    cell2.setCellValue(String.format("%.2f",totalDistance/distanceNullCnt)+"km");
+                    cell2.setCellValue(String.format("%.1f",totalDistance/distanceNullCnt)+"km");
                 }else{
                     cell2.setCellValue("0km");
                 }

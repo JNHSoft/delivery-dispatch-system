@@ -22,7 +22,6 @@ import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.OrderService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
-import kr.co.cntt.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -214,33 +214,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         e.printStackTrace();
                     }
 
-                    // 거리 계산과 별도의 공식
-                    // 20.07.23 대만 요청으로 라이더 배정 수량이 맥시멈인 경우 배정되지 않도록 적용
-//                    try{
-//                        if (!StringUtils.isNullOrEmpty(r.getAssignCount()) && Integer.parseInt(r.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) && firstAssignedRider.size() > 0 &&
-//                                firstAssignedRider.stream()
-//                                        .filter(x -> {
-//                                            if(x.getRiderId().equals(r.getId())){
-//                                                return true;
-//                                            }else{
-//                                                return false;
-//                                            }
-//                                        })
-//                                        .count() > 0){
-//                            r.setAssignCount(String.valueOf(Integer.parseInt(r.getAssignCount()) % Integer.parseInt(order.getStore().getAssignmentLimit())));
-//                        }
-//                    }catch (Exception e){
-//                        e.printStackTrace();
-//                    }
-
                 } else {
                     riderList.remove(r);//위치정보가 없는 라이더 제거
                 }
-//                log.info(r+"!!!!!!!!!!원본!!!!!!!!!!!"+r.getId());//test
             }
             log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList);
 
-//            Rider assginRider = riderList.stream() //첫번째 라이더로 바로 받을지 고려, optional 고려
             riderList = riderList.stream()
                     .filter(a -> Integer.parseInt(a.getAssignCount()) < Integer.parseInt(order.getStore().getAssignmentLimit()))//해당 주문의 상점 기준 최대 오더 개수 안넘는 라이더만 ***** 해당 라이더 상점의 최대 주문개수가 아님(바꿔야하나)
 //                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius())*1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
@@ -598,20 +577,25 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         Order S_Order = orderMapper.selectOrderInfo(common);
 
+        try {
+            float menuPrice = Float.parseFloat(S_Order.getMenuPrice());
+            float deliveryPrice = Float.parseFloat(S_Order.getDeliveryPrice());
+            float totalPrice = Float.parseFloat(S_Order.getTotalPrice());
+
+            DecimalFormat numberFormat = new DecimalFormat("#0.##");
+
+            S_Order.setMenuPrice(numberFormat.format(menuPrice));
+            S_Order.setDeliveryPrice(numberFormat.format(deliveryPrice));
+            S_Order.setTotalPrice(numberFormat.format(totalPrice));
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
         if (S_Order == null) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00016), ErrorCodeEnum.E00016.name());
         }
-
-        /*Misc misc = new Misc();
-        if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
-            Store storeInfo = storeMapper.selectStoreLocation(S_Order.getStoreId());
-
-            try {
-                S_Order.setDistance(Double.toString(misc.getHaversine(storeInfo.getLatitude(), storeInfo.getLongitude(), S_Order.getLatitude(), S_Order.getLongitude()) / (double) 1000));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
 
         return S_Order;
     }
@@ -644,6 +628,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_STORE")
     @Override
     public int putOrderInfo(Order order) throws AppTrException {
+
+        System.out.println("#@### putOrderInfo 들어왔음 ");
+
         /*int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         if (selectOrderIsApprovalCompleted != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00021), ErrorCodeEnum.E00021.name());

@@ -56,13 +56,6 @@ public class StaffController {
 //
 //        rider.setToken(adminInfo.getAdminAccessToken());
 //
-//        List<Rider> riderList = staffAdminService.selectRiderList(rider);
-//
-////        model.addAttribute("riderList", riderList);
-////        model.addAttribute("jsonList", new Gson().toJson(riderList));
-////
-////        log.info("json : {}", new Gson().toJson(riderList));
-//
 //        return "/staff/staff";
 //    }
 //
@@ -127,15 +120,10 @@ public class StaffController {
 //        // storeList
 //        List<Store> storeList = staffAdminService.selectStoreList(store);
 //
-////        List<Rider> riderGroup = staffAdminService.selectSubgroupRiderRels(rider);
-//
-//
-//
 //        // map 으로 값 전달
 //        Map<String, Object> map = new HashMap<>();
 //        map.put("A_Rider", A_Rider);
 //        map.put("storeList", storeList);
-////        map.put("riderGroup", riderGroup);
 //
 //        return map;
 //    }
@@ -149,13 +137,7 @@ public class StaffController {
 //            @RequestParam("storeId") String storeId,
 //            @RequestParam("code") String code,
 //            @RequestParam("name") String name,
-//            // @RequestParam("gender") String gender,
-//            //@RequestParam("groupId") String groupId,
-//            //@RequestParam("subGroupId") String subGroupId,
 //            @RequestParam("phone") String phone,
-//            // @RequestParam("emergencyPhone") String emergencyPhone,
-//            // @RequestParam("address") String address,
-//            // @RequestParam("teenager") String teenager,
 //            @RequestParam("workingHours") String workingHours,
 //            @RequestParam("restHours") String restHours,
 //            @RequestParam("vehicleNumber") String vehicleNumber,
@@ -175,23 +157,13 @@ public class StaffController {
 //        }
 //
 //        rider.setId(riderId);
-////        rider.setIsAdmin("1");
 //        rider.setCode(code);
 //        rider.setName(name);
-////        rider.setGender(gender);
-////        rider.setEmergencyPhone(emergencyPhone);
 //        rider.setPhone(phone);
-////        rider.setAddress(address);
-////        rider.setTeenager(teenager);
 //        rider.setWorkingHours(workingHours);
 //        rider.setRestHours(restHours);
 //        rider.setVehicleNumber(vehicleNumber);
 //
-//        // group model 생성
-////        Group group = new Group();
-////        group.setId(groupId);
-////
-////        rider.setGroup(group);
 //        // subgroup model 생성
 //        SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
 //        if(!storeId.equals("")){
@@ -239,13 +211,7 @@ public class StaffController {
 //                             @RequestParam("storeId") String storeId,
 //                             @RequestParam("code") String code,
 //                             @RequestParam("name") String name,
-//                             // @RequestParam("gender") String gender,
-//                             //@RequestParam("groupId") String groupId,
-//                             //@RequestParam("subGroupId") String subGroupId,
 //                             @RequestParam("phone") String phone,
-//                             // @RequestParam("emergencyPhone") String emergencyPhone,
-//                             // @RequestParam("address") String address,
-//                             // @RequestParam("teenager") String teenager,
 //                             @RequestParam("workingHours") String workingHours,
 //                             @RequestParam("restHours") String restHours,
 //                             @RequestParam("vehicleNumber") String vehicleNumber)
@@ -273,12 +239,7 @@ public class StaffController {
 //
 //        rider.setCode(code);
 //        rider.setName(name);
-////        rider.setGender(gender);
-//
-////        rider.setEmergencyPhone(emergencyPhone);
 //        rider.setPhone(phone);
-////        rider.setAddress(address);
-////        rider.setTeenager(teenager);
 //        rider.setWorkingHours(workingHours);
 //        rider.setRestHours(restHours);
 //        rider.setVehicleNumber(vehicleNumber);
@@ -323,51 +284,6 @@ public class StaffController {
 //        } else {
 //            return "ok";
 //        }
-//
-//        /*staffAdminService.insertChatRoom(rider);
-//        if (rider.getChatUserId() != null && rider.getChatRoomId() != null) {
-//            staffAdminService.insertChatUserChatRoomRel(rider);
-//
-//            int A_Rider = staffAdminService.insertRider(rider);
-//            if(!storeId.equals("")){
-//                Store store = new Store();
-//                store.setToken(adminInfo.getAdminAccessToken());
-//                store.setId(storeId);
-//                Store storeInfo = staffAdminService.selectStoreInfo(store);
-//                if (storeInfo.getGroup() != null){
-//                    Group group = new Group();
-//                    group.setId(storeInfo.getGroup().getId());
-//                    rider.setGroup(group);
-//                }
-//
-//                // subgroup model 생성
-//                SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
-//                if (storeInfo.getSubGroup() != null){
-//                    subGroupRiderRel.setSubGroupId(storeInfo.getSubGroup().getId());
-//                    subGroupRiderRel.setGroupId(storeInfo.getGroup().getId());
-//                }
-//                subGroupRiderRel.setStoreId(storeId);
-//
-//                rider.setSubGroupRiderRel(subGroupRiderRel);
-//
-//                int A_Group = staffAdminService.insertSubGroupRiderRel(rider);
-//            }
-//
-//            String riderSessionToken = tokenManager.getToken("3",loginId , loginPw);
-//            riderSession.setAccessToken(riderSessionToken);
-//            riderSession.setId(rider.getId());
-//            riderSession.setLoginId(loginId);
-//
-//            staffAdminService.insertAdminRiderSession(riderSession);
-//
-//            if (A_Rider == 0) {
-//                return "err";
-//            } else {
-//                return "ok";
-//            }
-//        } else {
-//            return "err";
-//        }*/
 //    }
 //
 //    // 기사 등록시 매장 리스트 불러오기
@@ -387,17 +303,7 @@ public class StaffController {
 //        // storeList
 //        List<Store> storeList = staffAdminService.selectStoreList(store);
 //
-//
-//        // 리스트 확인
-//        /*if (storeList.size() == 0) {
-//            log.info("0000000000000000000000");
-//        } else {
-//            for (Store s : storeList) {
-//                log.info("@@" + s.getName());
-//            }
-//        }*/
 //        return storeList;
-//
 //    }
 //
 //    // 매장 선택시 매장 정보 불러오기
@@ -416,10 +322,8 @@ public class StaffController {
 //
 //        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 //
-//
 //        store.setId(storeId);
 //        store.setIsAdmin("1");
-//
 //
 //        // storeList
 //        Store A_Store = staffAdminService.selectStoreInfo(store);
@@ -427,7 +331,6 @@ public class StaffController {
 //        log.info("상점 리스트 아이디 그룹 불러와"+A_Store);
 //
 //        return A_Store;
-//
 //    }
 //
 //    @ResponseBody
@@ -446,14 +349,10 @@ public class StaffController {
 //        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 //        rider.setId(riderId);
 //
-////        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-//
-//
 //        if(staffAdminService.deleteRider(rider) == 0) {
 //            return false;
 //        }
 //        return true;
-//
 //    }
 //
 //    /**

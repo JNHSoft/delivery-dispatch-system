@@ -12,15 +12,15 @@
         <input type="hidden" id="adminId" th:value="*{adminId}" />
     </div>
 
-    <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.rider')}"/>
-    <div class="search_box">
-        <div class="left">
-            <span class="lbl" th:text="${#messages.msg('rider.approval.title')}" style="font-size: 15px; font-weight: bold; color:black" />
+        <h2 id="pageTit" class="blind" th:text="${#messages.msg('rider.approval.title')}"/>
+        <div class="search_box">
+            <div class="left">
+                <span class="lbl" th:text="${#messages.msg('rider.approval.title')}" style="font-size: 15px; font-weight: bold; color:black" />
+            </div>
+            <div class="right">
+                <button type="button" class="button btn_green" onclick="excelDownload()"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+            </div>
         </div>
-        <div class="right">
-            <button type="button" class="button btn_green" onclick="excelDownload()"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
-        </div>
-    </div>
 
     <div id="contents">
         <div class="jq_grid">
@@ -64,7 +64,7 @@
                         <tr>
                             <th th:text="${#messages.msg('rider.name')}"/>
                             <td>
-                                <input type="text" name="" id="riderName" class="input" value="" readonly="true" style="background: darkgray"/>
+                                <input type="text" name="" id="riderName" class="input" value="" />
                             </td>
                             <th th:text="${#messages.msg('rider.phone')}"/>
                             <td>
@@ -86,6 +86,10 @@
                             <td>
                                 <input type="text" name="" id="riderExpDate" class="input picker" value="" readonly="true" />
                             </td>
+                            <th th:text="${#messages.msg('login.password')}"/>
+                            <td>
+                                <a class="button btn_blue2" th:text="${#messages.msg('reset.password')}" onclick="javascript:resetRiderPw()"/>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -94,6 +98,7 @@
             <div class="pop_foot">
                 <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
                 <div class="right">
+                    <a href="#" id="changePause" class="button h30 btn_red"></a>
                     <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('rider.approval.disapproval')}" onclick="popUpChangeStatus()"></a>
                     <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}" onclick="popUpSaveData()"></a>
                 </div>
@@ -114,12 +119,21 @@
     let riderLoginID = /*[[#{rider.approval.login.id}]]*/ 'riderLoginID';
     let riderName = /*[[#{rider.name}]]*/ 'riderName';
     let riderPhone = /*[[#{rider.phone}]]*/ 'riderPhone';
-    let requestDate = /*[[#{rider.approval.request.date}]]*/ 'requestDate';
+    let responseDate = /*[[#{rider.approval.response.date}]]*/ 'responseDate';
     let expDate = /*[[#{rider.approval.detail.expiry.datetime}]]*/ 'expDate';
     let setting = /*[[#{gnb.setting}]]*/ 'setting';
     let approval = /*[[#{rider.approval.approval}]]*/ 'approval';
     let disapproval = /*[[#{rider.approval.disapproval}]]*/ 'approval';
     let expDateSetting = /*[[#{rider.approval.expiry.setting}]]*/ 'expDateSetting';
+    let approvalStatus = /*[[#{rider.approval.status}]]*/ 'approvalStatus';
+    let waitApproval = /*[[#{rider.approval.status.wait}]]*/ 'waitApproval';
+    let expiryApproval = /*[[#{rider.approval.status.expiry}]]*/ 'expiryApproval';
+    let successApproval = /*[[#{rider.approval.status.success}]]*/ 'successApproval';
+    let pauseApproval = /*[[#{rider.approval.status.pause}]]*/'pauseApproval';
+    let disApproval = /*[[#{rider.approval.status.disapproval}]]*/ 'disApproval';
+
+    let btnEdit = /*[[#{rider.approval.edit}]]*/ 'btnEdit';
+    let btnDelete = /*[[#{rider.approval.delete}]]*/ 'btnDelete';
 
     let msgDisapproval = /*[[#{rider.message.confirm.disapproval}]]*/ 'msgDisapproval';
     let msgDetailInfoSave = /*[[#{rider.message.confirm.detailinfo.save}]]*/ 'msgDetailInfoSave';

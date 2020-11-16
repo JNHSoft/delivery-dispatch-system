@@ -45,4 +45,8 @@ public interface StaffApprovalAdminService {
 
     // 라이더 Approval Row Data 삭제
     int deleteApprovalRiderRowData(RiderApprovalInfo riderInfo);
+
+    // 라이더 비밀번호 초기화
+    int resetRiderPassword(Rider rider);
+
 }

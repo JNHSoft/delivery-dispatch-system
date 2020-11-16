@@ -56,7 +56,7 @@
                         <tr>
                             <th th:text="${#messages.msg('rider.name')}"/>
                             <td>
-                                <input type="text" name="" id="riderName" class="input" value="" readonly="true" style="background: darkgray"/>
+                                <input type="text" name="" id="riderName" class="input" value="" />
                             </td>
                             <th th:text="${#messages.msg('rider.phone')}"/>
                             <td>
@@ -78,6 +78,10 @@
                             <td>
                                 <input type="text" name="" id="riderExpDate" class="input datepicker" value="" readonly="true" />
                             </td>
+                            <th th:text="${#messages.msg('login.password')}"/>
+                            <td>
+                                <a class="button btn_blue2" th:text="${#messages.msg('reset.password')}" onclick="javascript:resetRiderPw()"/>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -86,7 +90,8 @@
             <div class="pop_foot">
                 <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
                 <div class="right">
-                    <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('rider.approval.disapproval')}" onclick="popUpChangeStatus()"></a>
+                    <a href="#" id="changePause" class="button h30 btn_red"></a>
+                    <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('rider.approval.leave.office')}" onclick="popUpChangeStatus()"></a>
                     <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}" onclick="popUpSaveData()"></a>
                 </div>
             </div>
@@ -105,12 +110,21 @@
     let riderLoginID = /*[[#{rider.approval.login.id}]]*/ 'riderLoginID';
     let riderName = /*[[#{rider.name}]]*/ 'riderName';
     let riderPhone = /*[[#{rider.phone}]]*/ 'riderPhone';
-    let requestDate = /*[[#{rider.approval.request.date}]]*/ 'requestDate';
+    let responseDate = /*[[#{rider.approval.response.date}]]*/ 'responseDate';
     let expDate = /*[[#{rider.approval.detail.expiry.datetime}]]*/ 'expDate';
     let setting = /*[[#{gnb.setting}]]*/ 'setting';
     let approval = /*[[#{rider.approval.approval}]]*/ 'approval';
     let disapproval = /*[[#{rider.approval.disapproval}]]*/ 'approval';
     let expDateSetting = /*[[#{rider.approval.expiry.setting}]]*/ 'expDateSetting';
+    let approvalStatus = /*[[#{rider.approval.status}]]*/ 'approvalStatus';
+    let waitApproval = /*[[#{rider.approval.status.wait}]]*/ 'waitApproval';
+    let expiryApproval = /*[[#{rider.approval.status.expiry}]]*/ 'expiryApproval';
+    let successApproval = /*[[#{rider.approval.status.success}]]*/ 'successApproval';
+    let pauseApproval = /*[[#{rider.approval.status.pause}]]*/'pauseApproval';
+    let disApproval = /*[[#{rider.approval.status.disapproval}]]*/ 'disApproval';
+
+    let btnEdit = /*[[#{rider.approval.edit}]]*/ 'btnEdit';
+    let btnDelete = /*[[#{rider.approval.delete}]]*/ 'btnDelete';
 
     let msgDisapproval = /*[[#{rider.message.confirm.disapproval}]]*/ 'msgDisapproval';
     let msgDetailInfoSave = /*[[#{rider.message.confirm.detailinfo.save}]]*/ 'msgDetailInfoSave';

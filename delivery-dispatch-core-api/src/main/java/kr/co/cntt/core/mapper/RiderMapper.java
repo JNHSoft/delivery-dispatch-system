@@ -237,6 +237,14 @@ public interface RiderMapper {
     public int resetRiderPassword(Rider rider);
 
     /**
+     * Rider 비밀번호 초기화 (매장 요청 시)
+     *
+     * @param rider
+     * @return
+     */
+    public int resetRiderPasswordforStore(Rider rider);
+
+    /**
      * Rider 주문대기푸시시간설정
      *
      * @param common
@@ -317,4 +325,9 @@ public interface RiderMapper {
      * 라이더 인증번호 체크
      * */
     SmsApplyInfo selectRiderApplySMS(SmsApplyInfo smsApplyInfo);
+
+    /**
+     * 라이더 세션 변경 (os 정보 포함)
+     * */
+    int updatePushToken(Rider rider);
 }
