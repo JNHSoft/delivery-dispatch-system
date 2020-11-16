@@ -2523,7 +2523,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
         }else if (orderInfo.getStatus().toString().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
-        }else if (StringUtil.isEmpty(order.getPickedUpDatetime()) || StringUtil.isEmpty(order.getArrivedDatetime()) || StringUtil.isEmpty(order.getCompletedDatetime())){
+        }else if (StringUtil.isEmpty(orderInfo.getPickedUpDatetime()) || StringUtil.isEmpty(orderInfo.getArrivedDatetime()) || StringUtil.isEmpty(orderInfo.getCompletedDatetime())){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00059), ErrorCodeEnum.E00059.name());
         }
 
