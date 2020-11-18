@@ -1281,6 +1281,7 @@
 				,REQ.created_datetime
 				,IFNULL(R.admin_id, REQ.admin_id)				as admin_id
 				,REQ.store_id									as rider_store_id
+				,( select store_name from TB_STORE where id = REQ.store_id and deleted is null ) as rider_store_name
 				,IFNULL(R.login_id, REQ.login_id)				as login_id
 				,IFNULL(R.name, REQ.rider_name)					as name
 				,IFNULL(R.phone, REQ.phone)						as phone

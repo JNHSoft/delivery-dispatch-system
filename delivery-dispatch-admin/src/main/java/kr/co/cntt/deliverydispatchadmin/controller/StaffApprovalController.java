@@ -100,8 +100,6 @@ public class StaffApprovalController {
         }
 
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Store myStore = null;
-        //store.setToken(storeInfo.getStoreAccessToken());
         riderInfo.setToken(adminInfo.getAdminAccessToken());
 
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.

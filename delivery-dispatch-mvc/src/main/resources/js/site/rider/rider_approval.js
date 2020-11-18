@@ -37,7 +37,7 @@ function getApprovalRiderList(){
 
                     tmpObj.expirationDate = data[key].session == undefined ? "-" : dateFormat(data[key].session.expiryDatetime);
                     tmpObj.setting = makeRowButton(data[key]);
-                    tmpObj.status = getStatusValue(data[key].approvalStatus);
+                    tmpObj.status = getStatusValue(data[key].approvalStatus, data[key].id);
 
                     if (data[key].approvalStatus =="1" || data[key].approvalStatus == "5" || data[key].approvalStatus == "4"){
                         tmpObj.statusDate = data[key].acceptDatetime == undefined ? "-" : dateFormat(data[key].acceptDatetime);
@@ -127,17 +127,16 @@ function makeRowButton(obj){
     switch (obj.approvalStatus){
         case "0":           // 요청
             btn_approval = "<button class='button btn_pale_green h30 w100 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
-            btn_edit = "<button class='button btn_gray2 h30 w80 mr10' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             btn_disapproval = "<button class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</button>"
-            //
+            btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             break;
         case "1":           // 수락
         case "5":
             // btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit +  "</button>"
             if (bExpDate){
-                btn_edit = "<button class='button btn_blue h30 w80 mr10' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit +  "</button>"
+                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit +  "</button>"
             }else{
-                btn_edit = "<button class='button btn_gray2 h30 w80 mr10' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
+                btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             }
             break;
         case "2":           // 거절
@@ -245,7 +244,6 @@ function statusDisapproval(approvalID, approvalStatus){
 // popUp 데이터 저장
 function popUpSaveData(){
     let approvalID = $("#approvalID").val();
-    let approvalStatus = $("#approvalStatus").val();
     let riderName = $("#riderName").val();
 
     let current = dateFormat(new Date());
@@ -472,15 +470,19 @@ function excelDownload(){
 }
 
 // status value check
-function getStatusValue(status){
+function getStatusValue(status, rowid){
     let statusValue = "";
+
+    let selectHtml = "<select onchange='javascript:changeStatusForselectBox(" + rowid + ", this)'>"
 
     switch (status){
         case "0":
             statusValue = waitApproval;
             break;
         case "1":
-            statusValue = successApproval;
+            selectHtml += "<option value='1' selected>" +  successApproval + "</option>"
+            selectHtml += "<option value='5'>" + pauseApproval + "</option>"
+            selectHtml += "<option value='3'>" + disApproval + "</option>"
             break;
         case "2":
         case "3":
@@ -490,11 +492,33 @@ function getStatusValue(status){
             statusValue = expiryApproval;
             break;
         case "5":
-            statusValue = pauseApproval;
+            selectHtml += "<option value='1'>" +  successApproval + "</option>"
+            selectHtml += "<option value='5' selected>" + pauseApproval + "</option>"
+            selectHtml += "<option value='3'>" + disApproval + "</option>"
             break;
     }
 
+    selectHtml += "</select>";
+
+    if (status == "1" || status == "5"){
+        statusValue = selectHtml;
+    }
+
     return statusValue;
+}
+
+function changeStatusForselectBox(rowid, selData){
+    switch (selData.value){
+        case "1":           // 정상 승인을 선택 시
+            changeStatus(rowid, 1);
+            break;
+        case "5":           // 일시 정지를 선택 시
+            changeStatus(rowid, 5);
+            break;
+        case "3":           // 사용 중 취소를 선택 시
+            statusDisapproval(rowid, 1)
+            break;
+    }
 }
 
 // 일시 정지 / 재가동 상태로 적용
@@ -504,24 +528,6 @@ function changeStatus(id, status){
     }
 
     if (id == "" || status == ""){
-        return;
-    }
-
-    // 기본 데이터 추출
-    let orgStatus = $("#approvalStatus").val();
-
-    // 허용으로 변경하기 위해서
-    if (status == "1"){
-        if (orgStatus != "5"){
-            return;
-        }
-    }
-    // 일시정지로 변경하기
-    else if(status == "5"){
-        if (orgStatus != "1"){
-            return;
-        }
-    }else{
         return;
     }
 
