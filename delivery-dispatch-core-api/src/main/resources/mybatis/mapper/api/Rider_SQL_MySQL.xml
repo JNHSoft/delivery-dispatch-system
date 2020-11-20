@@ -231,20 +231,28 @@
 	<!--
 		- login ID  및 Aceess 토근 값체크
 		- expiry_datetime 이 NULL 이거나 금일 datetime 보다 큰 값
+		- 20.11.19 라이더 로그인 체크 방식 변경
 	-->
 	<select id="selectRiderTokenLoginCheck" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.login.User">
-		<![CDATA[
-		SELECT
-			A.login_id, A.login_pw
-		FROM TB_RIDER A JOIN TB_RIDER_SESSION B
-		ON A.id = B.rider_id
-		WHERE 1=1
-			AND A.login_id = #{loginId}
-			AND B.access_token = #{accessToken}
-			-- AND (expiry_datetime IS NULL OR expiry_datetime > now())
-			AND date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
-		LIMIT 1
-		]]>
+		select	 A.login_id
+				,A.login_pw
+		from	 TB_RIDER				A
+		left join TB_RIDER_SESSION		B
+			on	 A.id = B.rider_id
+		left join TB_REQ_REGIST_RIDER	C
+			on	 A.id = C.rider_id
+		where	 1=1
+		and		 A.deleted is null
+		and		 C.deleted_datetime is null
+		AND		 date_format(ifnull(B.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
+		and		 ifnull(C.req_status, 1) = 1
+		and	(	(A.app_type is null)
+			or	(A.app_type = 1 and C.req_status = 1)
+			)
+		and		 A.login_id = #{loginId}
+		and		 B.access_token = #{accessToken}
+		limit	 1
+
 	</select>
 
 
@@ -862,11 +870,18 @@
 			and	 B.group_id = ifnull(D.allow_group_id, B.group_id)
 			and	 B.subgroup_id = ifnull(D.allow_subgroup_id, B.subgroup_id)
 			and	 B.store_id = ifnull(D.allow_store_id, B.store_id)
+		left join TB_REQ_REGIST_RIDER		as F
+			on	 B.rider_id = F.rider_id
 		WHERE	 A.admin_id = B.admin_id
 		AND		 A.id = B.rider_id
 		AND		 A.deleted IS NULL
 		AND		 B.deleted IS NULL
 		AND		 A.status = 0
+		AND		 F.deleted_datetime is null
+		and		 ifnull(F.req_status, 1) = 1
+		AND	(	(A.app_type is null)
+			or	(A.app_type = 1 and F.req_status = 1)
+			)
 		and		 ifnull(D.admin_id, A.admin_id) = ( SELECT admin_id FROM TB_STORE WHERE id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} ) )
 		and	(	 ifnull(D.store_id, B.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
 			or	 ifnull(D.subgroup_id, B.subgroup_id) = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null)
@@ -932,8 +947,15 @@
 			and	 B.subgroup_id = ifnull(C.allow_subgroup_id, B.subgroup_id)
 			and	 B.store_id = ifnull(C.allow_store_id, B.store_id)
 			and	 C.admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null and admin_id = (select admin_id from TB_SHARED_ADMIN where allow_sort = 0 and allow_flag = 1 and deleted_datetime is null) )
+		left join TB_REQ_REGIST_RIDER	as D
+			on	 A.id = D.rider_id
 		where	 1=1
 		and		 A.deleted is null
+		AND		 D.deleted_datetime is null
+		and		 ifnull(D.req_status, 1) = 1
+		AND	(	(A.app_type is null)
+			or	(A.app_type = 1 and D.req_status = 1)
+			)
 		and		 ifnull(C.admin_id, A.admin_id) = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) )
 		and		 ifnull(C.subgroup_id, B.subgroup_id) = ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null )
 	</select>
@@ -1022,20 +1044,27 @@
 				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = A.id and admin_id = #{adminId} and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime
 				,(select order_id from TB_ORDER_DENY_ASSIGNMENT where rider_id = A.id and admin_id = #{adminId} and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as deny_order_id
 		from	(
-					select	 id
-							,status
-							,working
-							,working_hours
-							,rest_hours
-							,latitude
-							,longitude
-							,return_time
-							,order_standby_datetime
-							,order_standby_status
-					from	 TB_RIDER
-					where	 deleted is null
-					and		 working = 1
-					and		 admin_id = #{adminId}
+					select	 R.id
+							,R.status
+							,R.working
+							,R.working_hours
+							,R.rest_hours
+							,R.latitude
+							,R.longitude
+							,R.return_time
+							,R.order_standby_datetime
+							,R.order_standby_status
+					from	 TB_RIDER				as R
+					left join TB_REQ_REGIST_RIDER	as RR
+						on	 R.id = RR.rider_id
+					where	 R.deleted is null
+					and	 	 RR.deleted_datetime is null
+					and		 ifnull(RR.req_status, 1) = 1
+					AND	(	(R.app_type is null)
+						or	(R.app_type = 1 and RR.req_status = 1)
+						)
+					and		 R.working = 1
+					and		 R.admin_id = #{adminId}
 				)	A
 		left join
 				(
@@ -1084,6 +1113,8 @@
 				,c.allow_flag
 				,c.allow_sort
 		from	 TB_RIDER				as	a
+		left join TB_REQ_REGIST_RIDER	as	e
+			on	 a.id = e.rider_id
 				,TB_SUBGROUP_RIDER_REL	as	b
 				,TB_SHARED_INFO 		as	c
 				,TB_SUBGROUP_STORE_REL	as	d
@@ -1091,6 +1122,11 @@
 		and		 a.id = b.rider_id
 		and		 a.deleted is null
 		and		 b.deleted is null
+		AND		 e.deleted_datetime is null
+		and		 ifnull(e.req_status, 1) = 1
+		AND	(	(a.app_type is null)
+			or	(a.app_type = 1 and e.req_status = 1)
+			)
 		and		 a.working = 1
 		and		 c.admin_id = d.admin_id
 		and		 ifnull(c.group_id, d.group_id) = d.group_id
@@ -1374,38 +1410,44 @@
 	</select>
 
 	<update id="updateApprovalRiderInfo" parameterType="kr.co.cntt.core.model.rider.RiderApprovalInfo" >
-		update	 TB_REQ_REGIST_RIDER
-		set		 modified_datetime = now()
+		update	 TB_REQ_REGIST_RIDER	as A
+		left join TB_RIDER				as B
+			on	 A.rider_id = B.id
+		set		 A.modified_datetime = now()
 		<if test="code != null and code != ''">
-				,code = #{code}
+				,A.code = #{code}
 		</if>
 		<if test="vehicleNumber != null and vehicleNumber != ''">
-				,vehicle_number = #{vehicleNumber}
+				,A.vehicle_number = #{vehicleNumber}
 		</if>
 		<if test="session != null and session.expiryDatetime != ''">
-				,exp_datetime = #{session.expiryDatetime}
+				,A.exp_datetime = #{session.expiryDatetime}
 		</if>
 		<if test="name != null and name != ''">
-				,rider_name = #{name}
+				,A.rider_name = #{name}
 		</if>
 		<if test="approvalStatus != null and approvalStatus != ''">
-				,req_status = #{approvalStatus}
+				,A.req_status = #{approvalStatus}
 		</if>
 		<if test="riderId != null and riderId != ''">
-				,rider_id = #{riderId}
+				,A.rider_id = #{riderId}
 		</if>
 		<if test="role != null and role == 'ROLE_ADMIN'">
 			<if test="store != null and store.id != ''">
-				,store_id = #{store.id}
+				,A.store_id = #{store.id}
 			</if>
 		</if>
 		<if test="approvalStatus != null and approvalStatus eq '1'.toString()">
-			,accept_datetime = ifnull(accept_datetime, now())
+			,A.accept_datetime = ifnull(accept_datetime, now())
 		</if>
 		<if test="approvalStatus != null and (approvalStatus eq '2'.toString() or approvalStatus eq '3'.toString())">
-			,reject_datetime = ifnull(reject_datetime, now())
+			,A.reject_datetime = ifnull(reject_datetime, now())
 		</if>
-		where	 id = #{id}
+		<if test="working != null and working eq '0'.toString()">
+			,B.modified_datetime = now()
+			,B.working = #{working}
+		</if>
+		where	 A.id = #{id}
 	</update>
 
 <!--	라이더 등록 요청 페이지에서 필요로 하는 기본 데이터-->

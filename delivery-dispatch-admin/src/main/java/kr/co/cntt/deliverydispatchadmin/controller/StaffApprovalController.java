@@ -311,6 +311,11 @@ public class StaffApprovalController {
                 return false;
         }
 
+        // 일시정지 상태가 된 경우 라이더 강제 OFF 시키기
+        if (riderInfo.getApprovalStatus().equals("5")){
+            riderInfo.setWorking("0");
+        }
+
         // 상태 변경 관련 UPDATE 문 실행
         staffApprovalAdminService.setRiderInfo(riderInfo);
 
