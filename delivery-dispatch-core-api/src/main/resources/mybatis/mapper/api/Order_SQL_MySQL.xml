@@ -705,55 +705,6 @@
 
 	<!-- selectForAssignOrders -->
 	<select id="selectForAssignOrders" parameterType="java.util.HashMap" resultMap="selectOrdersResult">
-
-		<!--SELECT A.id-->
-			<!--, A.reg_order_id-->
-		    <!--, A.created_datetime-->
-		    <!--, A.reservation_datetime-->
-		    <!--, A.latitude-->
-		    <!--, A.longitude-->
-		    <!--, A.store_id-->
-		    <!--, B.latitude AS store_latitude-->
-		    <!--, B.longitude AS store_longitude-->
-		    <!--, B.assignment_limit-->
-		    <!--, B.store_distance_sort-->
-		    <!--, B.admin_id-->
-		    <!--, B.store_name-->
-		    <!--, A.address-->
-			<!--, ANY_VALUE(C.subgroup_id) AS subgroup_id-->
-		<!--FROM TB_ORDER AS A-->
-        <!--LEFT JOIN TB_STORE AS B-->
-        <!--ON A.store_id = B.id-->
-        <!--LEFT JOIN TB_SUBGROUP_STORE_REL AS C-->
-        <!--ON B.id = C.store_id-->
-        <!--WHERE B.deleted IS NULL-->
-            <!--&lt;!&ndash;AND C.deleted IS NULL&ndash;&gt;-->
-            <!--AND B.assignment_status=1-->
-            <!--AND (A.status = 0 OR A.status =5)-->
-            <!--AND A.created_datetime > CURRENT_DATE()-->
-			<!--&lt;!&ndash;자동배정 오류 설정  group by 추가 Nick&ndash;&gt;-->
-			<!--AND IF( C.subgroup_id IS NULL OR C.deleted IS NOT NULL,-->
-					<!--C.store_id = (SELECT store_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = A.store_id ORDER BY created_datetime DESC LIMIT 1) ,-->
-					<!--C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE store_id = A.store_id ORDER BY created_datetime DESC LIMIT 1)-->
-					<!--)-->
-			<!--<choose>-->
-				<!--<when test="locale eq 'zh_TW'">-->
-					<!--<![CDATA[-->
-						<!--AND timestampdiff(minute, now(), A.reservation_datetime) <= 30-->
-					<!--]]>-->
-				<!--</when>-->
-				<!--<otherwise>-->
-					<!--<![CDATA[-->
-						<!--AND timestampdiff(minute, now(), A.reservation_datetime) <= 50-->
-					<!--]]>-->
-				<!--</otherwise>-->
-			<!--</choose>-->
-   			<!--&lt;!&ndash;AND (A.reservation_datetime IS NULL-->
-			<!--OR (date_add(now(), interval 2 hour) > A.reservation_datetime))-->
-            <!--AND C.subgroup_id IS NOT NULL&ndash;&gt;-->
-		<!--GROUP BY A.id-->
-		<!--ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC-->
-
 		select	 A.id
 				,A.reg_order_id
 				,A.created_datetime
@@ -823,14 +774,18 @@
 	</select>
 
 
-	<select id="selectPushToken" parameterType="kr.co.cntt.core.model.store.Store" resultType="String">
-		select TBRS.push_token
-		from TB_RIDER_SESSION AS TBRS
-		   left join TB_SUBGROUP_RIDER_REL AS TSRR
-		       on TSRR.subgroup_id = #{groupId}
-		and TBRS.rider_id = TSRR.rider_id
-		where TBRS.push_token is not null
-		AND date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+	<select id="selectPushToken" parameterType="kr.co.cntt.core.model.store.Store" resultType="Map">
+		select	 TBRS.push_token
+		,TBRS.os			as platform
+		,R.app_type			as appType
+		from	 TB_RIDER				as R
+		left join TB_RIDER_SESSION		as TBRS
+		on	 R.id = TBRS.rider_id
+		left join TB_SUBGROUP_RIDER_REL	as TSRR
+		on	 TBRS.rider_id = TSRR.rider_id
+		where	 TSRR.subgroup_id = #{groupId}
+		and		 TBRS.push_token is not null
+		and		 date_format(ifnull(TBRS.expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
 	</select>
 
 

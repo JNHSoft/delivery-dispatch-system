@@ -4,6 +4,7 @@ import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.notice.Notice;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <per>
@@ -82,7 +83,7 @@ public interface NoticeMapper {
     // admin 공지사항
     public List<Notice> getAdminNoticeList(Notice notice);
 
-    public List<String> selectAllToken();
+    public List<Map> selectAllToken();
 
     public List<Notice> selectNoticeConfirm(Notice notice);
 

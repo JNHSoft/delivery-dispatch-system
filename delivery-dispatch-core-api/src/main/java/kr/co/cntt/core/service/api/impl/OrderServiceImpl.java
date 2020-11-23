@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.api.impl;
 
+import com.github.pagehelper.util.StringUtil;
 import com.mysql.cj.util.StringUtils;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
@@ -9,6 +10,7 @@ import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.fcm.FcmBody;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
@@ -281,7 +283,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 order.setAssignXy("none");
             }
 
-            ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderToken(order);
+            ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(order);
             int result = orderMapper.updateOrder(order);
 
             Store storeDTO = new Store();
@@ -310,9 +312,100 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     noti.setStoreName(order.getStore().getStoreName());
                     noti.setAddr(order.getAddress());
 
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
+                    // PUSH 객체로 변환 후 전달
+                    FcmBody fcmBody = new FcmBody();
 
-                    checkFcmResponse(pushNotification);
+                    Map<String, Object> obj = new HashMap<>();
+                    obj.put("obj", noti);
+
+                    fcmBody.setData(obj);
+                    fcmBody.setPriority("high");
+
+                    fcmBody.getNotification().setTitle(getMessage("ASSIGN.ORDER"));
+                    fcmBody.getNotification().setBody(getMessage("ASSIGN.ORDER"));
+
+                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                    iosMap.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // iOS push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(iosTokenValue);
+
+                            CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                            checkFcmResponse(iosPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    android.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // new android push
+                    if (android.size() > 0){
+                        try {
+                            ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(androidTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                            checkFcmResponse(androidPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    oldMap.addAll(tokens.stream().filter(x->{
+                        if (x.getOrDefault("appType", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // old android push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(oldTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                            checkFcmResponse(oldPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             }
 
@@ -798,25 +891,207 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Order curOrder = getOrderInfo(order);
             if (curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")) {
                 // 해당 라이더한테만 푸쉬
-                ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);
+                ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_CHANGE);
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
+
+                    // PUSH 객체로 변환 후 전달
+                    FcmBody fcmBody = new FcmBody();
+
+                    Map<String, Object> obj = new HashMap<>();
+                    obj.put("obj", noti);
+
+                    fcmBody.setData(obj);
+                    //fcmBody.setRegistration_ids(tokens);
+                    fcmBody.setPriority("high");
+
+                    fcmBody.getNotification().setTitle(getMessage("CHANGE.ORDER"));
+                    fcmBody.getNotification().setBody(getMessage("CHANGE.ORDER"));
+
+                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                    iosMap.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // iOS push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(iosTokenValue);
+
+                            CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                            checkFcmResponse(iosPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    android.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // new android push
+                    if (android.size() > 0){
+                        try {
+                            ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(androidTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                            checkFcmResponse(androidPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    oldMap.addAll(tokens.stream().filter(x->{
+                        if (x.getOrDefault("appType", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // old android push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(oldTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                            checkFcmResponse(oldPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
                 }
             } else {
                 // 상점 관련 라이더한테 푸쉬
                 if (storeDTO.getAssignmentStatus().equals("2")) {
-                    ArrayList<String> tokens = (ArrayList) orderMapper.selectPushToken(storeDTO.getSubGroup());
+                    ArrayList<Map> tokens = (ArrayList) orderMapper.selectPushToken(storeDTO.getSubGroup());
                     if (tokens.size() > 0) {
                         Notification noti = new Notification();
                         noti.setType(Notification.NOTI.ORDER_CHANGE);
-                    /*noti.setId(291);
-                    noti.setStoreName(order.getMenuName());
-                    noti.setAddr(order.getAreaAddress());*/
-                        CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                        checkFcmResponse(pushNotification);
+
+                        // PUSH 객체로 변환 후 전달
+                        FcmBody fcmBody = new FcmBody();
+
+                        Map<String, Object> obj = new HashMap<>();
+                        obj.put("obj", noti);
+
+                        fcmBody.setData(obj);
+                        fcmBody.setPriority("high");
+
+                        fcmBody.getNotification().setTitle(getMessage("CHANGE.ORDER"));
+                        fcmBody.getNotification().setBody(getMessage("CHANGE.ORDER"));
+
+                        // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                        ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                        ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                        ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                        iosMap.addAll(tokens.stream().filter(x -> {
+                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                                return true;
+                            }
+
+                            return false;
+                        }).collect(Collectors.toList()));
+
+                        // iOS push
+                        if (iosMap.size() > 0){
+                            try {
+                                ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                                iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                                fcmBody.setRegistration_ids(iosTokenValue);
+
+                                CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                                checkFcmResponse(iosPushNotification);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                        android.addAll(tokens.stream().filter(x -> {
+                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                                return true;
+                            }
+
+                            return false;
+                        }).collect(Collectors.toList()));
+
+                        // new android push
+                        if (android.size() > 0){
+                            try {
+                                ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                                android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                                fcmBody.setRegistration_ids(androidTokenValue);
+
+                                // noti 전문 삭제
+                                fcmBody.setNotification(null);
+
+                                CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                                checkFcmResponse(androidPushNotification);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                        oldMap.addAll(tokens.stream().filter(x->{
+                            if (x.getOrDefault("appType", "").toString().equals("")){
+                                return true;
+                            }
+
+                            return false;
+                        }).collect(Collectors.toList()));
+
+                        // old android push
+                        if (iosMap.size() > 0){
+                            try {
+                                ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                                oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                                fcmBody.setRegistration_ids(oldTokenValue);
+
+                                // noti 전문 삭제
+                                fcmBody.setNotification(null);
+
+                                CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                                checkFcmResponse(oldPushNotification);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
             }
@@ -948,21 +1223,206 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-                ArrayList<String> tokens = (ArrayList) orderMapper.selectPushToken(S_Store.getSubGroup());
+                ArrayList<Map> tokens = (ArrayList) orderMapper.selectPushToken(S_Store.getSubGroup());
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN);
                     noti.setRider_id(Integer.valueOf(orderAssigned.getRiderId()));
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
+
+                    // PUSH 객체로 변환 후 전달
+                    FcmBody fcmBody = new FcmBody();
+
+                    Map<String, Object> obj = new HashMap<>();
+                    obj.put("obj", noti);
+
+                    fcmBody.setData(obj);
+                    fcmBody.setPriority("high");
+
+                    fcmBody.getNotification().setTitle(getMessage("ASSIGN.ORDER"));
+                    fcmBody.getNotification().setBody(getMessage("ASSIGN.ORDER"));
+
+                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                    iosMap.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // iOS push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(iosTokenValue);
+
+                            CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                            checkFcmResponse(iosPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    android.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // new android push
+                    if (android.size() > 0){
+                        try {
+                            ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(androidTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                            checkFcmResponse(androidPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    oldMap.addAll(tokens.stream().filter(x->{
+                        if (x.getOrDefault("appType", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // old android push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(oldTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                            checkFcmResponse(oldPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             } else {
-                ArrayList<String> tokens = (ArrayList) orderMapper.selectPushToken(S_Store.getSubGroup());
+                ArrayList<Map> tokens = (ArrayList) orderMapper.selectPushToken(S_Store.getSubGroup());
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN);
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
+
+                    // PUSH 객체로 변환 후 전달
+                    FcmBody fcmBody = new FcmBody();
+
+                    Map<String, Object> obj = new HashMap<>();
+                    obj.put("obj", noti);
+
+                    fcmBody.setData(obj);
+                    fcmBody.setPriority("high");
+
+                    fcmBody.getNotification().setTitle(getMessage("ASSIGN.ORDER"));
+                    fcmBody.getNotification().setBody(getMessage("ASSIGN.ORDER"));
+                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                    iosMap.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // iOS push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(iosTokenValue);
+
+                            CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                            checkFcmResponse(iosPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    android.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // new android push
+                    if (android.size() > 0){
+                        try {
+                            ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(androidTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                            checkFcmResponse(androidPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    oldMap.addAll(tokens.stream().filter(x->{
+                        if (x.getOrDefault("appType", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // old android push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(oldTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                            checkFcmResponse(oldPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             }
         }
@@ -973,15 +1433,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_RIDER")
     @Override
     public int putOrderPickedUp(Order order) throws AppTrException {
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+        order.setRole("ROLE_RIDER");
+        Order orderInfo = orderMapper.selectOrderInfo(order);
 
-        if (selectOrderIsApprovalCompleted != 0) {
+
+        if (orderInfo.getStatus().toString().equals("0")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
-        }
-
-        if (selectOrderIsCompletedIsCanceled != 0) {
+        }else if (orderInfo.getStatus().toString().equals("3") || orderInfo.getStatus().toString().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }else if (!(orderInfo.getStatus().toString().equals("1"))){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00056), ErrorCodeEnum.E00056.name());
         }
 
         Order orderPickedUp = new Order();
@@ -1046,19 +1507,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_RIDER")
     @Override
     public int putOrderArrived(Order order) throws AppTrException{
-        int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-//        String newRider = order.getStatus();
-//
-//        System.out.println("############ --> " + newRider);
+        order.setRole("ROLE_RIDER");
+        Order orderInfo = orderMapper.selectOrderInfo(order);
 
-        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-
-        if (selectOrderIsApprovalCompleted != 0) {
+        if (orderInfo.getStatus().toString().equals("0")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
-        }
-
-        if (selectOrderIsCompletedIsCanceled != 0) {
+        }else if (orderInfo.getStatus().toString().equals("3") || orderInfo.getStatus().toString().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }else if (!(orderInfo.getStatus().toString().equals("2"))){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00057), ErrorCodeEnum.E00057.name());
         }
 
         Order orderArrived = new Order();
@@ -1067,7 +1524,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderArrived.setId(order.getId());
         orderArrived.setStatus("6");
         orderArrived.setArrivedDatetime(LocalDateTime.now().toString());
-//        orderArrived.setPickupXy(order.getLatitude() + "|" + order.getLongitude());
 
         Order combinedOrderArrived = new Order();
 
@@ -1076,8 +1532,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderArrived.setStatus("6");
             combinedOrderArrived.setArrivedDatetime(LocalDateTime.now().toString());
             combinedOrderArrived.setToken(order.getToken());
-//            combinedOrderArrived.setPickupXy(order.getPickupXy());
-//            combinedOrderArrived.setPickupXy(order.getLatitude() + "|" + order.getLongitude());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
@@ -1138,6 +1592,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public int putOrderCompleted(Order order) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            order.setRole("ROLE_STORE");
+        } else {
+            order.setRole("ROLE_RIDER");
+        }
+        Order orderInfo = orderMapper.selectOrderInfo(order);
+
+        if (orderInfo.getStatus().toString().equals("0")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+        }else if (orderInfo.getStatus().toString().equals("4")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }else if (!(orderInfo.getStatus().toString().equals("6"))){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00058), ErrorCodeEnum.E00058.name());
+        }
+
         Order orderCompleted = new Order();
 
         orderCompleted.setToken(order.getToken());
@@ -1153,7 +1623,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderCompleted.setStatus("3");
             combinedOrderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
             combinedOrderCompleted.setToken(order.getToken());
-//            combinedOrderCompleted.setCompleteXy(order.getCompleteXy());
             combinedOrderCompleted.setCompleteXy(order.getLatitude() + "|" + order.getLongitude());
 
             this.putOrder(combinedOrderCompleted);
@@ -1164,8 +1633,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         String tmpOrderId = orderCompleted.getId();
 
         orderCompleted.setId(order.getId());
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             orderCompleted.setRole("ROLE_STORE");
@@ -1201,12 +1668,104 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-                ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderToken(S_Order);
+                ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(S_Order);
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_COMPLET);
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
+
+                    // PUSH 객체로 변환 후 전달
+                    FcmBody fcmBody = new FcmBody();
+
+                    Map<String, Object> obj = new HashMap<>();
+                    obj.put("obj", noti);
+
+                    fcmBody.setData(obj);
+                    fcmBody.setPriority("high");
+
+                    fcmBody.getNotification().setTitle(getMessage("COMPLETED.ORDER"));
+                    fcmBody.getNotification().setBody(getMessage("COMPLETED.ORDER"));
+
+                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                    iosMap.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // iOS push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(iosTokenValue);
+
+                            CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                            checkFcmResponse(iosPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    android.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // new android push
+                    if (android.size() > 0){
+                        try {
+                            ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(androidTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                            checkFcmResponse(androidPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    oldMap.addAll(tokens.stream().filter(x->{
+                        if (x.getOrDefault("appType", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // old android push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(oldTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                            checkFcmResponse(oldPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
@@ -1271,22 +1830,206 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Order curOrder = getOrderInfo(order);
             if (curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")) {
                 // 해당 라이더한테만 푸쉬
-                ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);
+                ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_CANCEL);
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
+
+                    // PUSH 객체로 변환 후 전달
+                    FcmBody fcmBody = new FcmBody();
+
+                    Map<String, Object> obj = new HashMap<>();
+                    obj.put("obj", noti);
+
+                    fcmBody.setData(obj);
+                    fcmBody.setPriority("high");
+
+                    fcmBody.getNotification().setTitle(getMessage("CANCEL.ORDER"));
+                    fcmBody.getNotification().setBody(getMessage("CANCEL.ORDER"));
+
+                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                    iosMap.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // iOS push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(iosTokenValue);
+
+                            CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                            checkFcmResponse(iosPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    android.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // new android push
+                    if (android.size() > 0){
+                        try {
+                            ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(androidTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                            checkFcmResponse(androidPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    oldMap.addAll(tokens.stream().filter(x->{
+                        if (x.getOrDefault("appType", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // old android push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(oldTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                            checkFcmResponse(oldPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
                 }
             } else {
                 // 상점 관련 라이더한테 푸쉬
                 if (storeDTO.getAssignmentStatus().equals("2")) {
-                    ArrayList<String> tokens = (ArrayList) orderMapper.selectPushToken(storeDTO.getSubGroup());
+                    ArrayList<Map> tokens = (ArrayList) orderMapper.selectPushToken(storeDTO.getSubGroup());
                     if (tokens.size() > 0) {
                         Notification noti = new Notification();
                         noti.setType(Notification.NOTI.ORDER_CANCEL);
-                        CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                        checkFcmResponse(pushNotification);
+
+                        // PUSH 객체로 변환 후 전달
+                        FcmBody fcmBody = new FcmBody();
+
+                        Map<String, Object> obj = new HashMap<>();
+                        obj.put("obj", noti);
+
+                        fcmBody.setData(obj);
+                        fcmBody.setPriority("high");
+
+                        fcmBody.getNotification().setTitle(getMessage("CANCEL.ORDER"));
+                        fcmBody.getNotification().setBody(getMessage("CANCEL.ORDER"));
+
+                        // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                        ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                        ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                        ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                        iosMap.addAll(tokens.stream().filter(x -> {
+                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                                return true;
+                            }
+
+                            return false;
+                        }).collect(Collectors.toList()));
+
+                        // iOS push
+                        if (iosMap.size() > 0){
+                            try {
+                                ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                                iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                                fcmBody.setRegistration_ids(iosTokenValue);
+
+                                CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                                checkFcmResponse(iosPushNotification);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                        android.addAll(tokens.stream().filter(x -> {
+                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                                return true;
+                            }
+
+                            return false;
+                        }).collect(Collectors.toList()));
+
+                        // new android push
+                        if (android.size() > 0){
+                            try {
+                                ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                                android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                                fcmBody.setRegistration_ids(androidTokenValue);
+
+                                // noti 전문 삭제
+                                fcmBody.setNotification(null);
+
+                                CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                                checkFcmResponse(androidPushNotification);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                        oldMap.addAll(tokens.stream().filter(x->{
+                            if (x.getOrDefault("appType", "").toString().equals("")){
+                                return true;
+                            }
+
+                            return false;
+                        }).collect(Collectors.toList()));
+
+                        // old android push
+                        if (iosMap.size() > 0){
+                            try {
+                                ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                                oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                                fcmBody.setRegistration_ids(oldTokenValue);
+
+                                // noti 전문 삭제
+                                fcmBody.setNotification(null);
+
+                                CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                                checkFcmResponse(oldPushNotification);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
             }
@@ -1308,7 +2051,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     public int putOrderAssignCanceled(Order order) throws AppTrException {
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-        ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);      // 위치변경 20.07.16 주문이 취소되기 전에 구해놓은다.
+        ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);      // 위치변경 20.07.16 주문이 취소되기 전에 구해놓은다.
 
         if (selectOrderIsApprovalCompleted != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00017), ErrorCodeEnum.E00017.name());
@@ -1407,8 +2150,100 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN_CANCEL);
-                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                    checkFcmResponse(pushNotification);
+
+                    // PUSH 객체로 변환 후 전달
+                    FcmBody fcmBody = new FcmBody();
+
+                    Map<String, Object> obj = new HashMap<>();
+                    obj.put("obj", noti);
+
+                    fcmBody.setData(obj);
+                    fcmBody.setPriority("high");
+
+                    fcmBody.getNotification().setTitle(getMessage("ASSIGN.CANCEL.ORDER"));
+                    fcmBody.getNotification().setBody(getMessage("ASSIGN.CANCEL.ORDER"));
+
+                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                    iosMap.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // iOS push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(iosTokenValue);
+
+                            CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                            checkFcmResponse(iosPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    android.addAll(tokens.stream().filter(x -> {
+                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // new android push
+                    if (android.size() > 0){
+                        try {
+                            ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(androidTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                            checkFcmResponse(androidPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    oldMap.addAll(tokens.stream().filter(x->{
+                        if (x.getOrDefault("appType", "").toString().equals("")){
+                            return true;
+                        }
+
+                        return false;
+                    }).collect(Collectors.toList()));
+
+                    // old android push
+                    if (iosMap.size() > 0){
+                        try {
+                            ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            fcmBody.setRegistration_ids(oldTokenValue);
+
+                            // noti 전문 삭제
+                            fcmBody.setNotification(null);
+
+                            CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                            checkFcmResponse(oldPushNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
@@ -1523,12 +2358,104 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 해당 라이더한테만 푸쉬
             Order pushOrder = new Order();
             pushOrder.setRiderId(S_Rider.getId());
-            ArrayList<String> tokens = (ArrayList) riderMapper.selectRiderToken(pushOrder);
+            ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(pushOrder);
             if (tokens.size() > 0) {
                 Notification noti = new Notification();
                 noti.setType(Notification.NOTI.RIDER_WORKING_OFF);
-                CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(tokens, noti);
-                checkFcmResponse(pushNotification);
+
+                // PUSH 객체로 변환 후 전달
+                FcmBody fcmBody = new FcmBody();
+
+                Map<String, Object> obj = new HashMap<>();
+                obj.put("obj", noti);
+
+                fcmBody.setData(obj);
+                fcmBody.setPriority("high");
+
+                fcmBody.getNotification().setTitle(getMessage("RIDER.WORKING.OFF"));
+                fcmBody.getNotification().setBody(getMessage("RIDER.WORKING.OFF"));
+
+                // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
+                ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
+                ArrayList<Map> android = new ArrayList<>();     // 신규 android
+                ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
+
+                iosMap.addAll(tokens.stream().filter(x -> {
+                    if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                        return true;
+                    }
+
+                    return false;
+                }).collect(Collectors.toList()));
+
+                // iOS push
+                if (iosMap.size() > 0){
+                    try {
+                        ArrayList<String> iosTokenValue = new ArrayList<>();
+
+                        iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                        fcmBody.setRegistration_ids(iosTokenValue);
+
+                        CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
+                        checkFcmResponse(iosPushNotification);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+
+                android.addAll(tokens.stream().filter(x -> {
+                    if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
+                        return true;
+                    }
+
+                    return false;
+                }).collect(Collectors.toList()));
+
+                // new android push
+                if (android.size() > 0){
+                    try {
+                        ArrayList<String> androidTokenValue = new ArrayList<>();
+
+                        android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                        fcmBody.setRegistration_ids(androidTokenValue);
+
+                        // noti 전문 삭제
+                        fcmBody.setNotification(null);
+
+                        CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
+                        checkFcmResponse(androidPushNotification);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+
+                oldMap.addAll(tokens.stream().filter(x->{
+                    if (x.getOrDefault("appType", "").toString().equals("")){
+                        return true;
+                    }
+
+                    return false;
+                }).collect(Collectors.toList()));
+
+                // old android push
+                if (iosMap.size() > 0){
+                    try {
+                        ArrayList<String> oldTokenValue = new ArrayList<>();
+
+                        oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                        fcmBody.setRegistration_ids(oldTokenValue);
+
+                        // noti 전문 삭제
+                        fcmBody.setNotification(null);
+
+                        CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
+                        checkFcmResponse(oldPushNotification);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 //        }
@@ -1589,6 +2516,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_RIDER")
     @Override
     public int putOrderReturn(Order order) throws AppTrException {
+        order.setRole("ROLE_RIDER");
+        Order orderInfo = orderMapper.selectOrderInfo(order);
+
+        if (orderInfo.getStatus().toString().equals("0")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+        }else if (orderInfo.getStatus().toString().equals("4")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }else if (StringUtil.isEmpty(orderInfo.getPickedUpDatetime()) || StringUtil.isEmpty(orderInfo.getArrivedDatetime()) || StringUtil.isEmpty(orderInfo.getCompletedDatetime())){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00059), ErrorCodeEnum.E00059.name());
+        }
+
         order.setRole("ROLE_RIDER");
         Order needOrderId = orderMapper.selectOrderInfo(order);
 

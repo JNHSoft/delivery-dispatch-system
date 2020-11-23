@@ -100,8 +100,6 @@ public class StaffApprovalController {
         }
 
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Store myStore = null;
-        //store.setToken(storeInfo.getStoreAccessToken());
         riderInfo.setToken(adminInfo.getAdminAccessToken());
 
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
@@ -311,6 +309,11 @@ public class StaffApprovalController {
                 break;
             default:
                 return false;
+        }
+
+        // 일시정지 상태가 된 경우 라이더 강제 OFF 시키기
+        if (riderInfo.getApprovalStatus().equals("5")){
+            riderInfo.setWorking("0");
         }
 
         // 상태 변경 관련 UPDATE 문 실행

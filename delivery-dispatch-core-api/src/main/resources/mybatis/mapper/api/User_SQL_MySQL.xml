@@ -11,6 +11,9 @@
 		<if test="pushToken != null and pushToken != ''">
 			, push_token=#{pushToken}
 		</if>
+		<if test="platform != null and platform != ''">
+			, os=#{platform}
+		</if>
 
 		WHERE
 			access_token = #{accessToken}

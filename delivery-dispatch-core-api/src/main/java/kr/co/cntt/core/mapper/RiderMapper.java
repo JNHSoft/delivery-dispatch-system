@@ -200,13 +200,13 @@ public interface RiderMapper {
      */
     public int updateRiderWorkingAuto(HashMap map);
 
-    public List<String> selectRiderToken(Order order);
+    public List<Map> selectRiderToken(Order order);
 
-    public List<String> selectRiderTokenByOrderId(Order order);
+    public List<Map> selectRiderTokenByOrderId(Order order);
 
     public List<Reason> selectRejectReason(Common common);
 
-    public List<String> selectRiderTokenByChatUserId(Chat chat);
+    public List<Map> selectRiderTokenByChatUserId(Chat chat);
 
     public SubGroupRiderRel selectMySubgroupRiderRels(Rider rider);
 

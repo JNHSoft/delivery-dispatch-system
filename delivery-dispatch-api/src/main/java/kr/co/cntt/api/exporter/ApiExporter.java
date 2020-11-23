@@ -27,10 +27,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.config.TypeFilterParser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
+import org.springframework.security.access.method.P;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -104,6 +106,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Store storeInfo = new Store();
         Admin adminInfo = new Admin();
         User trackerInfo = new User();
+
+        System.out.println("#######platform ### createAuthenticate => [" + request.getHeader("platform") + "]");
 
         try {
             if (level.equals("3")) {
@@ -185,6 +189,21 @@ public class ApiExporter extends ExporterSupportor implements Api {
                 if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
                     riderInfo.setAccessToken(token);
                     riderService.insertRiderSession(riderInfo);
+                }
+
+                // 20.11.11 OS 정보 업데이트
+                try {
+                    Rider riderSession = new Rider();
+
+                    riderSession.setPlatform(request.getHeader("platform"));
+                    riderSession.setToken(token);
+                    riderSession.setAccessToken(token);
+                    riderService.updateRiderOSInfo(riderSession);
+
+
+                    System.out.println("Rider OS info Update");
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             } else if (level.equals("2")) {
                 if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {
@@ -330,7 +349,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
 
         System.out.println("execute Service = " + service);
-
+        System.out.println("#######platform => [" + request.getHeader("platform") + "]");
 
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
