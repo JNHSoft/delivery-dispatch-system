@@ -1608,11 +1608,34 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00058), ErrorCodeEnum.E00058.name());
         }
 
+        boolean bUpdateAndroid = false;
+
+        log.info("rier AppType = [" + orderInfo.getAppType() + "]");
+
+        if (orderInfo.getAppType() != null && orderInfo.getAppType().equals("1") && orderInfo.getStore() != null && orderInfo.getStore().getBrandCode().equals("1")
+                && orderInfo.getPlatform() != null && orderInfo.getPlatform().equals("android")){
+            try{
+                log.info("new Rider Android Check OK");
+                bUpdateAndroid = true;
+            }catch (Exception e){
+                e.printStackTrace();
+                log.info("newRider Android Check Error");
+                log.info(e.getMessage());
+            }
+
+        }
+
+
         Order orderCompleted = new Order();
 
         orderCompleted.setToken(order.getToken());
         orderCompleted.setId(order.getId());
-        orderCompleted.setStatus("3");
+        if (bUpdateAndroid){
+            orderCompleted.setStatus("6");
+        }else {
+            orderCompleted.setStatus("3");
+        }
+
         orderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
         orderCompleted.setCompleteXy(order.getLatitude() + "|" + order.getLongitude());
 
@@ -1620,7 +1643,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             combinedOrderCompleted.setId(order.getCombinedOrderId());
-            combinedOrderCompleted.setStatus("3");
+            if (bUpdateAndroid){
+                combinedOrderCompleted.setStatus("6");
+            }else{
+                combinedOrderCompleted.setStatus("3");
+            }
+
             combinedOrderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
             combinedOrderCompleted.setToken(order.getToken());
             combinedOrderCompleted.setCompleteXy(order.getLatitude() + "|" + order.getLongitude());

@@ -96,6 +96,7 @@
 		<result property="device_os" column="device_os" />
 		<result property="distance" column="distance" />
 		<result property="appType" column="app_type" />
+		<result property="platform" column="os" />
 
 		<association property="rider" column="rider" javaType="kr.co.cntt.core.model.rider.Rider">
 			<result property="id" column="rider_id" />
@@ -331,7 +332,7 @@
 
 			, B.app_type
 			, D.brand_code
-
+			, ( select os from TB_RIDER_SESSION where rider_id = B.id limit 1 )			as os
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_RIDER AS B
 		ON A.rider_id = B.id

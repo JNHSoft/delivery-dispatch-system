@@ -416,12 +416,12 @@ public class RiderController {
             default:
                 return false;
         }
-        
+
         // 일시정지 상태가 된 경우 라이더 강제 OFF 시키기
         if (riderInfo.getApprovalStatus().equals("5")){
             riderInfo.setWorking("0");
         }
-        
+
         // 상태 변경 관련 UPDATE 문 실행
         storeRiderService.setRiderInfo(riderInfo);
 
@@ -478,7 +478,7 @@ public class RiderController {
             e.printStackTrace();
             return false;
         }
-        
+
         // 날짜에 대한 예외처리가 완료된 후 적용
         riderInfo.setSession(new RiderSession());
         riderInfo.getSession().setExpiryDatetime(defaultFormat.format(changeDate));
