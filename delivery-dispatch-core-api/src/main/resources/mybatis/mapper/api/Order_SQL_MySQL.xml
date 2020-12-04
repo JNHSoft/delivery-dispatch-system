@@ -731,10 +731,10 @@
 		and		 assignment_status = 1
 		<choose>
 			<when test="locale eq 'zh_TW'">
-				and		 timestampdiff(minute, now(), A.reservation_datetime) <![CDATA[<=]]> case when reservation_status = 1 and cooking_time <![CDATA[<]]> 30 then cooking_time else 30 end
+				and		 timestampdiff(second, now(), A.reservation_datetime) <![CDATA[<=]]> (case when reservation_status = 1 and cooking_time <![CDATA[<]]> 30 then cooking_time else 30 end) * 60
 			</when>
 			<otherwise>
-				and		 timestampdiff(minute, now(), A.reservation_datetime) <![CDATA[<=]]> case when reservation_status = 1 and cooking_time <![CDATA[<]]> 50 then cooking_time else 50 end
+				and		 timestampdiff(second, now(), A.reservation_datetime) <![CDATA[<=]]> (case when reservation_status = 1 and cooking_time <![CDATA[<]]> 50 then cooking_time else 50 end) * 60
 			</otherwise>
 		</choose>
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC;
