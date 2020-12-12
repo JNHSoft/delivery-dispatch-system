@@ -147,7 +147,12 @@ DDELib.Riders.prototype = {
                     this.removeMarker(ev);
                 } else {
                     this.removeMarker(ev);
-                    this.setMarker(ev);
+
+                    // 활동 중인 라이더만 표기
+                    if (ev.working == "1"){
+                        this.setMarker(ev);
+                    }
+
                     // this.makeSelectChat(ev);
                     this.htLayer.list.append(trdata);
                 }
@@ -287,8 +292,9 @@ DDELib.Riders.prototype = {
         var name =  ev.name + rider_chat_title;
         $('#chatRider').text(name);
         $('#workingStatus').html(this.getStatusInfo(ev));
-        moveMap(ev);
-
+        if (ev.working == "1"){
+            moveMap(ev);
+        }
     },
     onCheckBoxClick : function (e) {
         this.log("onCheckBoxChange:"+e.which);
