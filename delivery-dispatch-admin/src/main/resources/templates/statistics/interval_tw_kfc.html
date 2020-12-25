@@ -13,9 +13,15 @@
             <div class="right">
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
+                <label onclick="javascript:showTimePicker()">
+                    시간 선택&nbsp;
+                    <input type="checkbox" id="chkTime" />&nbsp;
+                </label>
                 <input type="text" name="datepicker" id="startDate" class="input datepicker"/>
+                <input type="text" name="timepicker" id="startTime" class="input timepicker"/>
                 ~
                 <input type="text" name="datepicker" id="endDate" class="input datepicker"/>
+                <input type="text" name="timepicker" id="endTime" class="input timepicker"/>
                 <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByInterval();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>

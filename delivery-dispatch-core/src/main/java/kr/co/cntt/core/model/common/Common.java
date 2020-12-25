@@ -31,4 +31,7 @@ public class Common implements Dto {
     private String appType;
     // 사용자가 사용하는 OS 정보
     private String platform;
+    // 20.12.24 데이터 조회 시, 날짜 형태 구분
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean chkTime;
 }

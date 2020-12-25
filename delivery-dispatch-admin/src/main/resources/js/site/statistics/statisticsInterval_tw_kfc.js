@@ -3,24 +3,53 @@ $(function () {
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
     $('#startDate, #endDate').val(date);
 
-    $('#startDate').datepicker({
-        maxDate : date,
+    /**
+     * 20.12.24 DateTime Picker
+     * */
+    $('#startDate').datetimepicker({
+        altField: '#startTime',
+        controlType: 'select',
+        oneLine: true,
+        timeInput: true,
+        timeText: 'time',
+        stepMinute: 10,
+        maxDate : $('#startDate').val(),
         onClose: function(selectedDate) {
-            $('#endDate').datepicker('option', 'minDate', selectedDate);
+            $('#endDate').datetimepicker('option', 'minDate', $('#startDate').datetimepicker('getDate'));
             getStoreStatisticsByInterval();
         }
     });
 
-    $('#endDate').datepicker({
-        minDate : date,
+    $('#endDate').datetimepicker({
+        altField: "#endTime",
+        controlType: 'select',
+        oneLine: true,
+        timeInput: true,
+        stepMinute: 10,
+        minDate : $('#endDate').val(),
         onClose: function( selectedDate ) {
-            $('#startDate').datepicker('option', 'maxDate', selectedDate);
+            $('#startDate').datetimepicker('option', 'maxDate', $('#endDate').datetimepicker('getDate'));
             getStoreStatisticsByInterval();
         }
     });
 
-    getStoreStatisticsByInterval();
+    showTimePicker();
 });
+
+// 20.12.24 시간을 선택할 수 있는 항목 노출
+function showTimePicker(){
+    let chkTime = $('#chkTime').is(":checked");
+
+    if (chkTime){
+        $('#startTime').show();
+        $('#endTime').show();
+    }else{
+        $('#startTime').css('display', 'none');
+        $('#endTime').css('display', 'none');
+
+        getStoreStatisticsByInterval();
+    }
+}
 
 function timeSet(time) {
     if (time != null) {
@@ -82,16 +111,37 @@ function getStoreStatisticsByInterval() {
         return;
     }
 
+    // 20.12.24 시간 범위도 포함 유무 체크 후 값 보내기
+    let chkTime = $('#chkTime').is(":checked");
+    if (chkTime){       // 체크가 되어 있다면 날짜 범위 체크
+        let startDT = $('#startDate').datetimepicker('getDate');
+        let endDT = $('#endDate').datetimepicker('getDate');
+
+        if (startDT.getTime() > endDT.getTime()){
+            return;
+        }
+    }
+
     var tcData = [];
 
     loading.show();
+
+    let sDate = $('#startDate').val();
+    let eDate = $('#endDate').val();
+
+    if (chkTime){
+        sDate = sDate + " " + $('#startTime').val();
+        eDate = eDate + " " + $('#endTime').val();
+    }
+
 
     $.ajax({
         url: "/getStoreStatisticsByIntervalAtTWKFC",
         type: 'get',
         data: {
-            startDate: $('#startDate').val(),
-            endDate: $('#endDate').val()
+            startDate: sDate,
+            endDate: eDate,
+            timeCheck: chkTime
         },
         dataType: 'json',
         success: function (data) {
@@ -413,13 +463,30 @@ function excelDownloadByInterval(){
         return;
     }
 
+    // 20.12.24 시간 범위도 포함 유무 체크 후 값 보내기
+    let chkTime = $('#chkTime').is(":checked");
+    if (chkTime){       // 체크가 되어 있다면 날짜 범위 체크
+        let startDT = $('#startDate').datetimepicker('getDate');
+        let endDT = $('#endDate').datetimepicker('getDate');
+
+        if (startDT.getTime() > endDT.getTime()){
+            return;
+        }
+    }
+
     loading.show();
+
+    if (chkTime){
+        startDate = startDate + " " + $('#startTime').val();
+        endDate = endDate + " " + $('#endTime').val();
+    }
 
     $.fileDownload("/excelDownloadByIntervalAtTWKFC",{
         httpMethod:"GET",
         data : {
             startDate : startDate,
-            endDate : endDate
+            endDate : endDate,
+            timeCheck: chkTime
         },
         successCallback: function(url){
             loading.hide();
