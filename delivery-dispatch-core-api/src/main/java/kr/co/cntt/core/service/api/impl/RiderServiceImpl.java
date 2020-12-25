@@ -604,7 +604,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 //            String userid, String userpwd, String phone, String msgBody
         }else {
             smsParaMap.put("smbody", getMessage("M00000", strApplyNo));     // 문구 내용
-            smsParaMap.put("userid", "dmsP");                                    // 로그인 ID
+            smsParaMap.put("username", "dmsP");                                  // 로그인 ID
         }
         smsParaMap.put("password", "97161500");                                  // 로그인 PW
         smsParaMap.put("dstaddr", smsApplyInfo.getPhone().toString());                      // 수신자 휴대폰 번호
