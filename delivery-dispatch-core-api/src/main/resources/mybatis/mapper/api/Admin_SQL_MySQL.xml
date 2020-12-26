@@ -2096,10 +2096,16 @@
 			AND	 B.deleted is null
 		WHERE	 A.status in (3)
 		AND		 A.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
-		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 		AND		 third_party_id IS NULL
 		]]>
-
+		-- AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+		<if test="chkTime != null and chkTime == true">
+			AND	  A.reservation_datetime >= #{currentDatetime}
+			AND	  A.reservation_datetime <![CDATA[<]]> #{endDate}
+		</if>
+		<if test="chkTime == null or chkTime != true ">
+			AND	  A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+		</if>
 		-- 검색 조건 추가
 		<if test="group != null and group.id != null and group.id != ''">
 			AND	 B.group_id = #{group.id}

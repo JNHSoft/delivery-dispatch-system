@@ -46,9 +46,15 @@
             <div class="left" style="display: inline-flex">
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
+                <label onclick="javascript:showTimePicker()">
+                    시간 선택&nbsp;
+                    <input type="checkbox" id="chkTime" />&nbsp;
+                </label>
                 <input type="text" name="datepicker" id="startDate" class="input datepicker"/>
+                <input type="text" name="timepicker" id="startTime" class="input timepicker"/>
                 <span style="padding: 5px;">~</span>
                 <input type="text" name="datepicker" id="endDate" class="input datepicker"/>
+                <input type="text" name="timepicker" id="endTime" class="input timepicker"/>
             </div>
 
             <div class="right">

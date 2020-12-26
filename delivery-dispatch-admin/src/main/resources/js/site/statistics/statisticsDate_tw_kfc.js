@@ -9,18 +9,32 @@ $(function () {
     getGroupList();                 // 그룹 정보 조회
     getStoreStatisticsByDate();
 
-    $('#startDate').datepicker({
-        maxDate : date,
+    /**
+     * 20.12.24 DateTime Picker
+     * */
+    $('#startDate').datetimepicker({
+        altField: '#startTime',
+        controlType: 'select',
+        oneLine: true,
+        timeInput: true,
+        timeText: 'time',
+        stepMinute: 10,
+        maxDate : $('#startDate').val(),
         onClose: function(selectedDate) {
-            $('#endDate').datepicker('option', 'minDate', selectedDate);
+            $('#endDate').datetimepicker('option', 'minDate', $('#startDate').datetimepicker('getDate'));
             getStoreStatisticsByDate();
         }
     });
 
-    $('#endDate').datepicker({
-        minDate : date,
+    $('#endDate').datetimepicker({
+        altField: "#endTime",
+        controlType: 'select',
+        oneLine: true,
+        timeInput: true,
+        stepMinute: 10,
+        minDate : $('#endDate').val(),
         onClose: function( selectedDate ) {
-            $('#startDate').datepicker('option', 'maxDate', selectedDate);
+            $('#startDate').datetimepicker('option', 'maxDate', $('#endDate').datetimepicker('getDate'));
             getStoreStatisticsByDate();
         }
     });
@@ -32,6 +46,21 @@ $(function () {
         getStoreStatisticsByDate();
     });     //select box의 change 이벤트
 });
+
+// 20.12.24 시간을 선택할 수 있는 항목 노출
+function showTimePicker(){
+    let chkTime = $('#chkTime').is(":checked");
+
+    if (chkTime){
+        $('#startTime').show();
+        $('#endTime').show();
+    }else{
+        $('#startTime').css('display', 'none');
+        $('#endTime').css('display', 'none');
+
+        getStoreStatisticsByDate();
+    }
+}
 
 function totalTimeSet(time) {
     if (time) {
@@ -56,6 +85,23 @@ function getStoreStatisticsByDate() {
         return;
     }
 
+    // 20.12.24 시간 범위도 포함 유무 체크 후 값 보내기
+    let chkTime = $('#chkTime').is(":checked");
+    if (chkTime){       // 체크가 되어 있다면 날짜 범위 체크
+        let startDT = $('#startDate').datetimepicker('getDate');
+        let endDT = $('#endDate').datetimepicker('getDate');
+
+        if (startDT.getTime() > endDT.getTime()){
+            return;
+        }
+    }
+    let sDate = $('#startDate').val();
+    let eDate = $('#endDate').val();
+
+    if (chkTime){
+        sDate = sDate + " " + $('#startTime').val();
+        eDate = eDate + " " + $('#endTime').val();
+    }
 
     let mydata = [];
     loading.show();
@@ -63,8 +109,9 @@ function getStoreStatisticsByDate() {
         url: "/getStoreStatisticsByDateAtTWKFC",
         type: 'get',
         data: {
-            startDate: $('#startDate').val(),
-            endDate: $('#endDate').val(),
+            startDate: sDate,
+            endDate: eDate,
+            timeCheck: chkTime,
             groupID: $("#statisticsGroupList").val(),
             subGroupID: $("#statisticsSubGroupList").val(),
             storeID: $("#statisticsStoreList").val(),
@@ -464,12 +511,30 @@ function excelDownloadByDate(){
         return;
     }
 
+    // 20.12.24 시간 범위도 포함 유무 체크 후 값 보내기
+    let chkTime = $('#chkTime').is(":checked");
+    if (chkTime){       // 체크가 되어 있다면 날짜 범위 체크
+        let startDT = $('#startDate').datetimepicker('getDate');
+        let endDT = $('#endDate').datetimepicker('getDate');
+
+        if (startDT.getTime() > endDT.getTime()){
+            return;
+        }
+    }
+
     loading.show();
+
+    if (chkTime){
+        startDate = startDate + " " + $('#startTime').val();
+        endDate = endDate + " " + $('#endTime').val();
+    }
+
     $.fileDownload("/excelDownloadByDateAtTWKFC",{
         httpMethod:"GET",
         data : {
             startDate : startDate,
-            endDate : endDate
+            endDate : endDate,
+            timeCheck: chkTime
         },
         successCallback: function(url){
             loading.hide();
@@ -620,62 +685,4 @@ function searchList(selectId, selectIdOption) {
             $("#statisticsStoreList").val("reset").prop("selected", true);
         }
     }
-
-    // var searchText1= $("#statisticsGroupList option:selected").text();
-    // var searchTextVal1= $("#statisticsGroupList option:selected").val();
-    // var searchText2= $("#statisticsSubGroupList option:selected").text();
-    // var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
-    // var searchText3= $("#statisticsStoreList option:selected").text();
-    // var searchTextVal3= $("#statisticsStoreList option:selected").val();
-    //
-    // var filter = {
-    //     groupOp: "AND",
-    //     rules: []
-    // };
-    //
-    // if(searchTextVal1 != "reset"){
-    //     filter.rules.push({
-    //         field : 'group_name',
-    //         op : "eq",
-    //         data : searchText1
-    //     });
-    //     if(searchTextVal2 != "reset"){
-    //         filter.rules.push({
-    //             field : 'subGroup_name',
-    //             op : "eq",
-    //             data : searchText2
-    //         });
-    //         if(searchTextVal3 != "reset"){
-    //             filter.rules.push({
-    //                 field : 'store',
-    //                 op : "eq",
-    //                 data : searchText3
-    //             });
-    //         }
-    //     }
-    // }
-    //
-    // var filter3 = {
-    //     groupOp: "OR",
-    //     rules: [],
-    //     groups:[filter]
-    // };
-    //
-    // if (filter.rules.length > 0){
-    //     filter3.rules.push({
-    //         field: "store",
-    //         op : "eq",
-    //         data : "Average"
-    //     });
-    // }
-    //
-    // var grid = jQuery('#jqGrid');
-    //
-    // if(filter.rules.length > 0 || filter3.rules.length > 0 ){
-    //     grid[0].p.search = true;
-    // }
-    //
-    // $.extend(grid[0].p.postData, { filters: filter3 });
-    // grid.trigger("reloadGrid", [{ page: 1 }]);
-    // console.log("grid trigger");
 }
