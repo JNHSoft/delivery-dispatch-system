@@ -1303,10 +1303,17 @@
         FROM	 TB_ORDER AS A
         WHERE	 A.status in (3)
         AND		 A.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-        AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+        ]]>
+        <!--        AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
+        <if test="chkTime != null and chkTime == true">
+            AND	  A.reservation_datetime >= #{currentDatetime}
+            AND	  A.reservation_datetime <![CDATA[<]]> #{endDate}
+        </if>
+        <if test="chkTime == null or chkTime != true ">
+            AND	  A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+        </if>
         AND		 third_party_id IS NULL
         group by A.store_id
-        ]]>
     </select>
 
 
@@ -1329,7 +1336,14 @@
         FROM     TB_ORDER
         WHERE    store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
         AND      status in (3)
-        AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+<!--        AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
+        <if test="chkTime != null and chkTime == true">
+            AND	  reservation_datetime >= #{currentDatetime}
+            AND	  reservation_datetime <![CDATA[<]]> #{endDate}
+        </if>
+        <if test="chkTime == null or chkTime != true ">
+            AND	  created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+        </if>
         -- 시간대별 통계에 대한 조건 추가
         AND		 assigned_datetime is not null
         AND		 picked_up_datetime is not null
@@ -1475,7 +1489,14 @@
                 FROM	 TB_ORDER AS O
                 WHERE	 O.STORE_ID = (SELECT STORE_ID FROM TB_STORE_SESSION WHERE ACCESS_TOKEN = #{token})
                 AND		 O.STATUS IN (3)
-                AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
+<!--                AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)-->
+                <if test="chkTime != null and chkTime == true">
+                    AND	  O.reservation_datetime >= #{currentDatetime}
+                    AND	  O.reservation_datetime <![CDATA[<]]> #{endDate}
+                </if>
+                <if test="chkTime == null or chkTime != true">
+                    AND	  O.created_datetime between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
+                </if>
                 AND		 THIRD_PARTY_ID IS NULL
                 -- 시간대별 통계에 대한 조건 추가
                 AND		 assigned_datetime is not null
@@ -1489,7 +1510,14 @@
                 GROUP BY day_to_day
             )	B
             ON	 A.DATE = B.day_to_day
-        WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}
+<!--        WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}-->
+        WHERE   1=1
+        <if test="chkTime != null and chkTime == true">
+            AND	  date_format(A.DATE, '%Y-%m-%d') between date_format(#{currentDatetime}, '%Y-%m-%d') and date_format(#{endDate}, '%Y-%m-%d')
+        </if>
+        <if test="chkTime == null or chkTime != true">
+            AND	  A.DATE between #{currentDatetime} and #{endDate}
+        </if>
         ORDER BY A.DATE
     </select>
 

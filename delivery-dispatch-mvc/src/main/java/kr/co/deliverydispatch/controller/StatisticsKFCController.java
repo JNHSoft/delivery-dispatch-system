@@ -188,13 +188,27 @@ public class StatisticsKFCController {
     @ResponseBody
     @GetMapping("/getStoreStatisticsByDateAtTWKFC")
     @CnttMethodDescription("날짜별 통계 리스트 조회 TW KFC")
-    public List<ByDate> getStoreStatisticsByDate(@RequestParam(value = "startDate") String startDate
-            , @RequestParam(value = "endDate") String endDate){
+    public List<ByDate> getStoreStatisticsByDate(@RequestParam(value = "startDate") String startDate,
+                                                 @RequestParam(value = "endDate") String endDate,
+                                                 @RequestParam(value = "timeCheck") Boolean chkTime){
         // 날짜
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        order.setEndDate(endDate);
+        order.setChkTime(chkTime);
+
+        /**
+         * 20.12.26 데이터 구하는 방식 변경
+         * */
+        SimpleDateFormat formatter;
+
+        if (chkTime){
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else{
+            formatter = new SimpleDateFormat("yyyy-MM-dd");
+        }
+
         try {
             Date sdfStartDate = formatter.parse(startDate);
             Date sdfEndDate = formatter.parse(endDate);
@@ -203,6 +217,10 @@ public class StatisticsKFCController {
 
             //31일까지만 조회가능
             if (diffDays > 31){
+                return new ArrayList<>();
+            }
+
+            if (sdfStartDate.getTime() > sdfEndDate.getTime()){
                 return new ArrayList<>();
             }
 
@@ -219,15 +237,29 @@ public class StatisticsKFCController {
 
     // 날짜별 통계 리스트 엑셀 다운
     @GetMapping("/excelDownloadByDateAtTWKFC")
-    public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+    public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response,
+                                                      @RequestParam(value = "startDate") String startDate,
+                                                      @RequestParam(value = "endDate") String endDate,
+                                                      @RequestParam(value = "timeCheck") Boolean chkTime) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setToken(storeInfo.getStoreAccessToken());
         order.setCurrentDatetime(startDate);
+        order.setEndDate(endDate);
+        order.setChkTime(chkTime);
 
+        /**
+         * 20.12.24 데이터 구하는 방식 변경
+         * */
+        SimpleDateFormat formatter;
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        if (chkTime){
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else{
+            formatter = new SimpleDateFormat("yyyy-MM-dd");
+        }
+
         try {
             Date sdfStartDate = formatter.parse(startDate);
             Date sdfEndDate = formatter.parse(endDate);
@@ -236,6 +268,10 @@ public class StatisticsKFCController {
 
             //31일까지만 가능
             if (diffDays>31){
+                return null;
+            }
+
+            if (sdfStartDate.getTime() > sdfEndDate.getTime()){
                 return null;
             }
 
@@ -256,13 +292,26 @@ public class StatisticsKFCController {
     @ResponseBody
     @GetMapping("/getStoreStatisticsByIntervalAtTWKFC")
     @CnttMethodDescription("구간별 통계 리스트 조회 TW KFC")
-    public Map getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate
-            , @RequestParam(value = "endDate") String endDate){
+    public Map getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate,
+                                            @RequestParam(value = "endDate") String endDate,
+                                            @RequestParam(value = "timeCheck") Boolean chkTime){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
         order.setEndDate(endDate);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        order.setChkTime(chkTime);
+
+        /**
+         * 20.12.24 데이터 구하는 방식 변경
+         * */
+        SimpleDateFormat formatter;
+
+        if (chkTime){
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else{
+            formatter = new SimpleDateFormat("yyyy-MM-dd");
+        }
+
         try {
             Date sdfStartDate = formatter.parse(startDate);
             Date sdfEndDate = formatter.parse(endDate);
@@ -271,6 +320,10 @@ public class StatisticsKFCController {
 
             //31일까지만 조회가능
             if (diffDays > 31){
+                return new HashMap();
+            }
+
+            if (sdfStartDate.getTime() > sdfEndDate.getTime()){
                 return new HashMap();
             }
 
@@ -292,14 +345,29 @@ public class StatisticsKFCController {
     }
 
     @GetMapping("/excelDownloadByIntervalAtTWKFC")
-    public ModelAndView statisticsByIntervalExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+    public ModelAndView statisticsByIntervalExcelDownload(HttpServletResponse response,
+                                                          @RequestParam(value = "startDate") String startDate,
+                                                          @RequestParam(value = "endDate") String endDate,
+                                                          @RequestParam(value = "timeCheck") Boolean chkTime) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setToken(storeInfo.getStoreAccessToken());
         order.setCurrentDatetime(startDate);
+        order.setEndDate(endDate);
+        order.setChkTime(chkTime);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        /**
+         * 20.12.24 데이터 구하는 방식 변경
+         * */
+        SimpleDateFormat formatter;
+
+        if (chkTime){
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else{
+            formatter = new SimpleDateFormat("yyyy-MM-dd");
+        }
+
         try {
             Date sdfStartDate = formatter.parse(startDate);
             Date sdfEndDate = formatter.parse(endDate);
@@ -308,6 +376,10 @@ public class StatisticsKFCController {
 
             //31일까지만 가능
             if (diffDays > 31){
+                return null;
+            }
+
+            if (sdfStartDate.getTime() > sdfEndDate.getTime()){
                 return null;
             }
 

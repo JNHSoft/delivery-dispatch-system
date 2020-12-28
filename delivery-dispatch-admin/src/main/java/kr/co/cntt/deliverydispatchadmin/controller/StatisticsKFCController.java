@@ -396,8 +396,6 @@ public class StatisticsKFCController {
             formatter = new SimpleDateFormat("yyyy-MM-dd");
         }
 
-
-
         try {
             Date sdfStartDate = formatter.parse(startDate);
             Date sdfEndDate = formatter.parse(endDate);

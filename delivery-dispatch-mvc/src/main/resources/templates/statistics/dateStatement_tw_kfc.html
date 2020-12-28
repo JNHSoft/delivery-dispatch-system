@@ -34,9 +34,15 @@
             <div class="right">
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
+                <label>
+                    <span class="lbl" th:text="${#messages.msg('statistics.check.time')}" style="font-size: 12px; font-weight: bold; color:black" />&nbsp;
+                    <input type="checkbox" id="chkTime" onclick="javascript:showTimePicker()"/>&nbsp;
+                </label>
                 <input type="text" name="datepicker" id="day1" class="input picker"/>
+                <input type="text" name="timepicker" id="startTime" class="input timepicker"/>
                 ~
                 <input type="text" name="datepicker" id="day2" class="input picker"/>
+                <input type="text" name="timepicker" id="endTime" class="input timepicker"/>
                 <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByDate();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
             </div>
         </div>
@@ -107,6 +113,9 @@
     var regionLocale = /*[[${regionLocale}]]*/ 'regionLocale';
 
     var result_none = /*[[#{result.none}]]*/ 'result_none';
+
+    var set_time = /*[[#{statistics.set.time}]]*/ 'set_time';
+    var btn_confirm = /*[[#{btn.confirm}]]*/ 'btn_confirm';
 
     $(document).ready(function () {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;

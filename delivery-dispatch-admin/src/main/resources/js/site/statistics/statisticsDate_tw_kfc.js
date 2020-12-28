@@ -7,7 +7,6 @@ $(function () {
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
     $('#startDate, #endDate').val(date);
     getGroupList();                 // 그룹 정보 조회
-    getStoreStatisticsByDate();
 
     /**
      * 20.12.24 DateTime Picker
@@ -50,6 +49,8 @@ $(function () {
         searchList(selectId, selectIdOption);
         getStoreStatisticsByDate();
     });     //select box의 change 이벤트
+
+    showTimePicker();
 });
 
 // 20.12.24 시간을 선택할 수 있는 항목 노출
