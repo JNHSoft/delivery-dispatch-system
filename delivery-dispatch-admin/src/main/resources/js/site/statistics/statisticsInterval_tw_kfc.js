@@ -11,10 +11,12 @@ $(function () {
         controlType: 'select',
         oneLine: true,
         timeInput: true,
-        timeText: 'time',
+        timeText: set_time,
+        closeText: btn_confirm,
         stepMinute: 10,
         maxDate : $('#startDate').val(),
         onClose: function(selectedDate) {
+            $('#startDate').datetimepicker('option', 'maxDate', $('#endDate').datetimepicker('getDate'));
             $('#endDate').datetimepicker('option', 'minDate', $('#startDate').datetimepicker('getDate'));
             getStoreStatisticsByInterval();
         }
@@ -25,10 +27,13 @@ $(function () {
         controlType: 'select',
         oneLine: true,
         timeInput: true,
+        timeText: set_time,
+        closeText: btn_confirm,
         stepMinute: 10,
         minDate : $('#endDate').val(),
         onClose: function( selectedDate ) {
             $('#startDate').datetimepicker('option', 'maxDate', $('#endDate').datetimepicker('getDate'));
+            $('#endDate').datetimepicker('option', 'minDate', $('#startDate').datetimepicker('getDate'));
             getStoreStatisticsByInterval();
         }
     });
@@ -116,6 +121,10 @@ function getStoreStatisticsByInterval() {
     if (chkTime){       // 체크가 되어 있다면 날짜 범위 체크
         let startDT = $('#startDate').datetimepicker('getDate');
         let endDT = $('#endDate').datetimepicker('getDate');
+
+        if ($('#startTime').val() == undefined || $('#startTime').val() == "" || $('#endTime').val() == undefined || $('#endTime').val() == ""){
+            return;
+        }
 
         if (startDT.getTime() > endDT.getTime()){
             return;
@@ -468,6 +477,10 @@ function excelDownloadByInterval(){
     if (chkTime){       // 체크가 되어 있다면 날짜 범위 체크
         let startDT = $('#startDate').datetimepicker('getDate');
         let endDT = $('#endDate').datetimepicker('getDate');
+
+        if ($('#startTime').val() == undefined || $('#startTime').val() == "" || $('#endTime').val() == undefined || $('#endTime').val() == ""){
+            return;
+        }
 
         if (startDT.getTime() > endDT.getTime()){
             return;

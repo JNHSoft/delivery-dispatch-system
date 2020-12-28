@@ -14,7 +14,7 @@
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
                 <label onclick="javascript:showTimePicker()">
-                    시간 선택&nbsp;
+                    <span class="lbl" th:text="${#messages.msg('statistics.check.time')}" style="font-size: 12px; font-weight: bold; color:black" />&nbsp;
                     <input type="checkbox" id="chkTime" />&nbsp;
                 </label>
                 <input type="text" name="datepicker" id="startDate" class="input datepicker"/>
@@ -72,6 +72,9 @@
 
     var my_store = /*[[${store}]]*/ 'my_store';
     var result_none = /*[[#{result.none}]]*/ 'result_none';
+
+    var set_time = /*[[#{statistics.set.time}]]*/ 'set_time';
+    var btn_confirm = /*[[#{btn.confirm}]]*/ 'btn_confirm';
     /*]]>*/
 </script>
 </html>

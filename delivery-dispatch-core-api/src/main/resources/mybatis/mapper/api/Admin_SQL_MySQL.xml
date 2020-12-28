@@ -2098,7 +2098,7 @@
 		AND		 A.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND		 third_party_id IS NULL
 		]]>
-		-- AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+<!--		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
 		<if test="chkTime != null and chkTime == true">
 			AND	  A.reservation_datetime >= #{currentDatetime}
 			AND	  A.reservation_datetime <![CDATA[<]]> #{endDate}
