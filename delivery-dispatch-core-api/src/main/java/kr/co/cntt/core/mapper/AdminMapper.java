@@ -495,4 +495,9 @@ public interface AdminMapper {
     List<Map> selectStatisticsMin30BelowByDate(Order order);
     List<Map> selectStatisticsMin30BelowByDateAtTWKFC(Order order);
 
+    /**
+     * 20.12.30
+     * 누적 시간 오버된 매장 개수 구하기
+     * */
+    Map selectOverTimeByStore(Store store);
 }

@@ -5,6 +5,8 @@ import kr.co.cntt.core.service.admin.AccountAdminService;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class MainController {
 
     private AccountAdminService accountAdminService;
+    @Value("${websocket.localhost}")
+    private String websocketHost;
 
     @Autowired
     public MainController(AccountAdminService accountAdminService){
@@ -56,5 +60,14 @@ public class MainController {
         admin.setToken(adminInfo.getAdminAccessToken());
 
         return accountAdminService.getAdminAccount(admin);
+    }
+
+    /**
+     * 20.12.31 웹소켓 오픈을 위한 URL 정보 가져오기
+     * */
+    @RequestMapping("/websocketHost")
+    @ResponseBody
+    public String getWebsocketHost() {
+        return websocketHost;
     }
 }

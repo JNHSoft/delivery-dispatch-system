@@ -1,4 +1,7 @@
 /*<![CDATA[*/
+let countMap = new Object();
+let timerID;
+
 $(document).ready(function () {
     getStoreList();
     // 검색버튼을 누를시에
@@ -71,7 +74,11 @@ $(document).ready(function () {
         grid.trigger("reloadGrid", [{ page: 1 }]);
     });
     getGroupList();
+    countOverTime();
+    timerID = setInterval("realOverTime()", 1000);        // 1초 간격
 
+    // 웹 소켓 통신을 위한 소켓 생성
+    makeWebSocket();
 });
 
 /**
@@ -120,6 +127,10 @@ function getStoreList() {
                         $tmpData.th11 = order_assign_mode_rider
                     }
 
+                    // 20.12.30 마지막 주문으로부터 오버된 시간
+                    $tmpData.th14 = totalTimeSet(data[key].orderDiff*1000)
+                    $tmpData.th15 = data[key].order != undefined ? data[key].order.createdDatetime : "-";
+
                     $mydata.push($tmpData);
                 }
             }
@@ -146,8 +157,10 @@ function getStoreList() {
                     {label:store_address_detail, name:'th9', width:200},
                     {label:login_id, name:'th10', width:60, align:'center'},
                     {label:order_assign_mode, name:'th11', width:60, align:'center'},
+                    {label: order_diff, name: 'th14', width : 50, align: 'center'},
                     {label:'그룹ID', name:'th12', width:60, hidden:'hidden'},
-                    {label:'서브그룹ID', name:'th13', width:60, hidden:'hidden'}
+                    {label:'서브그룹ID', name:'th13', width:60, hidden:'hidden'},
+                    {label: '주문 시간', name: 'th15', width : 50, align: 'center', hidden: 'hidden'},
         ],
                 height:680,
                 autowidth:true,
@@ -501,7 +514,6 @@ function postStore() {
     });
 }
 
-
 /**
  * 상점 삭제
  */
@@ -585,4 +597,180 @@ function resetStorePw() {
         }
     });
 }
+
+function totalTimeSet(time) {
+    if (time) {
+        if(time>=0){
+            let d = new Date(time);
+            return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+        }else{
+            time = Math.abs(time);
+            let d = new Date(time);
+            return "-"+('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+        }
+
+    } else {
+        return "-";
+    }
+}
+
+/**
+ * 20.12.30 초과 된 주문이 있는지 확인
+ * */
+function countOverTime(){
+    $.ajax({
+        url : "/countOverTime",
+        type : 'post',
+        dataType : 'json',
+        success : function(data){
+
+            let bChanged = false;
+
+            console.log(data);
+
+            if (!data.hasOwnProperty("over30")){
+                bChanged = true;
+                data.over30 = "0"
+            }
+            if (!data.hasOwnProperty("over60")){
+                bChanged = true;
+                data.over60 = "0"
+            }
+
+            if (data["over30"] != countMap.over30){
+                countMap.over30 = data["over30"]
+                bChanged = true;
+            }
+
+            if (data["over60"] != countMap.over60){
+                countMap.over60 = data["over60"]
+                bChanged = true;
+            }
+
+            if(bChanged){
+                // 데이터 리플레쉬
+                getStoreList()
+            }
+            // 30개 개수 및 60개 개수 넣기
+            $("#overTime30").val(countMap.over30);
+            $("#overTime60").val(countMap.over60);
+        }
+    });
+}
+
+/**
+ * 20.12.31 경과 시간의 실시간 확인을 위함
+ * */
+function realOverTime(){
+    let ids = $("#jqGrid").getDataIDs();
+
+    $.each(ids, function (idx, rowId) {
+        let objRowData = $("#jqGrid").getRowData(rowId);
+        let diffTime = new Date().getTime() - new Date(objRowData.th15.replace(' ', 'T')).getTime();
+
+        $("#jqGrid").jqGrid('setCell', rowId, "th14", totalTimeSet(diffTime));
+    });
+}
+
+/**
+ * 20.12.31 마지막 주문 시간 값 변경하기
+ * */
+function changeLastOrderTime(storeID, nowDate){
+    let ids = $("#jqGrid").getDataIDs();
+    let bChanged = false;
+
+    $.each(ids, function (idx, rowId) {
+        let objRowData = $("#jqGrid").getRowData(rowId);
+
+        if (objRowData.th0 == storeID){
+            let diffTime = new Date().getTime() - new Date(objRowData.th15.replace(' ', 'T')).getTime();
+
+            if (diffTime >= 1800000){
+                bChanged = true;
+            }else{
+                $("#jqGrid").jqGrid('setCell', rowId, "th15", nowDate);
+            }
+        }
+    });
+
+    if (bChanged){
+        countOverTime();
+    }
+}
+
+/**
+ * 소켓 통신을 위한 소켓 오픈
+ * */
+function makeWebSocket() {
+    var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
+    var self = this;
+    $.ajax({
+        url : "/websocketHost",
+        success : function (websocketHost) {
+            if (supportsWebSockets) {
+                var socket = io(websocketHost, {
+                    path: '/socket.io', // 서버 사이드의 path 설정과 동일해야 한다
+                    transports: ['websocket'], // websocket만을 사용하도록 설정
+                    secure: true
+                });
+                socket.on('message', function(data){
+                    //data.match를 type 으로 바꿔야 합니다
+                    noticeProcess(data);
+                });
+            } else {
+                alert('It is a browser that does not support Websocket');
+            }
+        }
+    });
+}
+
+/**
+ * socket 메세지 처리를 위한 함수
+ * */
+function noticeProcess(data){
+    var objData = JSON.parse(data);
+
+    if (objData.type === "order_new"){
+        // 신규 주문인 경우
+        changeLastOrderTime(objData.storeId, new Date().format('yyyy-MM-dd HH:mm:ss'));
+    }else if (objData.type === "check_overTimeStore"){
+        countOverTime();
+    }
+
+}
+
+Date.prototype.format = function (f) {
+
+    if (!this.valueOf()) return " ";
+
+    var weekKorName = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+    var weekKorShortName = ["일", "월", "화", "수", "목", "금", "토"];
+    var weekEngName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var weekEngShortName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    var d = this;
+
+    return f.replace(/(yyyy|yy|MM|dd|KS|KL|ES|EL|HH|hh|mm|ss|a\/p)/gi, function ($1) {
+        switch ($1) {
+            case "yyyy": return d.getFullYear(); // 년 (4자리)
+            case "yy": return (d.getFullYear() % 1000).zf(2); // 년 (2자리)
+            case "MM": return (d.getMonth() + 1).zf(2); // 월 (2자리)
+            case "dd": return d.getDate().zf(2); // 일 (2자리)
+            case "KS": return weekKorShortName[d.getDay()]; // 요일 (짧은 한글)
+            case "KL": return weekKorName[d.getDay()]; // 요일 (긴 한글)
+            case "ES": return weekEngShortName[d.getDay()]; // 요일 (짧은 영어)
+            case "EL": return weekEngName[d.getDay()]; // 요일 (긴 영어)
+            case "HH": return d.getHours().zf(2); // 시간 (24시간 기준, 2자리)
+            case "hh": return ((h = d.getHours() % 12) ? h : 12).zf(2); // 시간 (12시간 기준, 2자리)
+            case "mm": return d.getMinutes().zf(2); // 분 (2자리)
+            case "ss": return d.getSeconds().zf(2); // 초 (2자리)
+            case "a/p": return d.getHours() < 12 ? "오전" : "오후"; // 오전/오후 구분
+            default: return $1;
+        }
+
+    });
+};
+
+String.prototype.string = function (len) { var s = '', i = 0; while (i++ < len) { s += this; } return s; };
+String.prototype.zf = function (len) { return "0".string(len - this.length) + this; };
+Number.prototype.zf = function (len) { return this.toString().zf(len); };
 /*]]>*/

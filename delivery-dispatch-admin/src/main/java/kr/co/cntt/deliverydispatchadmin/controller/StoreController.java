@@ -4,7 +4,9 @@ import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
+import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.admin.StoreAdminService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.MD5Encoder;
@@ -13,6 +15,8 @@ import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,6 +38,14 @@ public class StoreController {
 
     @Autowired
     private TokenManager tokenManager;
+    /**
+     * RedisService
+     */
+    @Autowired
+    private RedisService redisService;
+
+    // 자동 데이터 관리 시스템
+    private static Map<String, Object> autoCheckOverTimeStore = new HashMap<>();
 
     @Autowired
     public StoreController(StoreAdminService storeAdminService){
@@ -52,15 +64,7 @@ public class StoreController {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-
         store.setToken(adminInfo.getAdminAccessToken());
-
-//        List<Store> storeList = storeAdminService.selectStoreList(store);
-//
-//        model.addAttribute("storeList", storeList);
-//        model.addAttribute("jsonList", new Gson().toJson(storeList));
-//
-//        log.info("json : {}", new Gson().toJson(storeList));
 
         return "/store/store";
     }
@@ -203,8 +207,6 @@ public class StoreController {
             @RequestParam("assignmentStatus") String assignmentStatus,
             @RequestParam("groupId") String groupId,
             @RequestParam("subGroupId") String subGroupId,
-            //@RequestParam("name") String name,
-            //@RequestParam("phone") String phone,
             @RequestParam("address") String address,
             @RequestParam("detailAddress") String detailAddress,
             @RequestParam("hasGroup") String hasGroup
@@ -300,8 +302,6 @@ public class StoreController {
                              @RequestParam("assignmentStatus") String assignmentStatus,
                              @RequestParam("groupId") String groupId,
                              @RequestParam("subGroupId") String subGroupId,
-                             // @RequestParam("name") String name,
-                             // @RequestParam("phone") String phone,
                              @RequestParam("address") String address,
                              @RequestParam("detailAddress") String detailAddress
 
@@ -399,38 +399,6 @@ public class StoreController {
         } else {
             return "ok";
         }
-
-        /*storeAdminService.insertChatRoom(store);
-        if (store.getChatUserId() != null && store.getChatRoomId() != null) {
-            storeAdminService.insertChatUserChatRoomRel(store);
-            int A_Store = storeAdminService.insertStore(store);
-
-            int A_Group = 0;
-            int A_Assign_Status = 0;
-
-            String storeSessionToken = tokenManager.getToken("2",loginId , loginPw);
-            storeSession.setAccessToken(storeSessionToken);
-            storeSession.setId(store.getId());
-            storeSession.setLoginId(loginId);
-
-            storeAdminService.insertAdminStoreSession(storeSession);
-
-            if(subGroupId !=""){
-                A_Group = storeAdminService.insertSubGroupStoreRel(store);
-            }
-
-            if (assignmentStatus != null) {
-                A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
-            }
-            if (A_Store == 0 && A_Group == 0 && A_Assign_Status == 0) {
-                return "err";
-            } else {
-                return "ok";
-            }
-        } else {
-            return "err";
-        }*/
-
     }
 
     @ResponseBody
@@ -503,6 +471,89 @@ public class StoreController {
             return "err";
         } else {
             return "ok";
+        }
+    }
+
+    /**
+     * 20.12.30 Over Time 주문매장 확인
+     * */
+    @ResponseBody
+    @PostMapping("/countOverTime")
+    @CnttMethodDescription("마지막 주문 시간 체크")
+    public Map<String, Object> countOverTime(){
+        Store store = new Store();
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
+
+        store.setToken(adminInfo.getAdminAccessToken());
+
+        Map storeCount = storeAdminService.storeOverTimeCount(store);
+
+        return storeCount;
+    }
+
+    /**
+     * 20.12.31 초과된 주문이 있는지 확인 후 관련 정보 전달
+     * 5분 단위로 실행
+     * */
+    @Scheduled(fixedDelayString = "300000")
+    public void overTimeStore(){
+        log.info("마지막 주문으로부터 30분이 초과된 주문 확인");
+        Boolean bNotice = false;
+        Store store = new Store();
+        store.setRole("ROLE_ADMIN_AUTO");
+
+        Map storeCount = storeAdminService.storeOverTimeCount(store);
+
+        try{
+            // 30분의 개수를 저장 후 비교
+            if (storeCount.containsKey("over30") && Integer.parseInt(storeCount.get("over30").toString()) > 0){
+                if (!autoCheckOverTimeStore.containsKey("over30")){
+                    autoCheckOverTimeStore.put("over30", storeCount.get("over30"));
+                    bNotice = true;
+                }
+
+                // 값을 비교한다
+                if (Integer.parseInt(autoCheckOverTimeStore.get("over30").toString()) < Integer.parseInt(storeCount.get("over30").toString())){
+                    bNotice = true;
+                }
+
+                if (Integer.parseInt(autoCheckOverTimeStore.get("over30").toString()) != Integer.parseInt(storeCount.get("over30").toString())){
+                    autoCheckOverTimeStore.put("over30", storeCount.get("over30"));
+                }
+            }
+
+            // 60분의 개수를 저장 후 비교
+            if (storeCount.containsKey("over60") && Integer.parseInt(storeCount.get("over60").toString()) > 0){
+                if (!autoCheckOverTimeStore.containsKey("over60")){
+                    autoCheckOverTimeStore.put("over60", storeCount.get("over60"));
+                    bNotice = true;
+                }
+                // 값을 비교한다
+                if (Integer.parseInt(autoCheckOverTimeStore.get("over60").toString()) < Integer.parseInt(storeCount.get("over60").toString())){
+                    bNotice = true;
+                }
+
+                if (Integer.parseInt(autoCheckOverTimeStore.get("over60").toString()) != Integer.parseInt(storeCount.get("over60").toString())){
+                    autoCheckOverTimeStore.put("over60", storeCount.get("over60"));
+                }
+            }
+
+            // Notice 발생 시, 데이터 체크 전송
+            if (bNotice){
+                // 웹소켓 데이터 전송
+                redisService.setPublisher(Content.builder().type("check_overTimeStore").build());
+                log.info("check Over Time Store 발생!");
+            }
+
+            System.out.println("################## autoCheckOverTimeStore S");
+            System.out.println(bNotice);
+            System.out.println(storeCount);
+            System.out.println(autoCheckOverTimeStore);
+            System.out.println("################## autoCheckOverTimeStore E");
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

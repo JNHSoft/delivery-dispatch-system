@@ -7,6 +7,7 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StoreAdminService {
     /**
@@ -158,4 +159,9 @@ public interface StoreAdminService {
      */
     public int resetStorePassword(Store store);
 
+    /**
+     * 마지막 주문 시간에서 초과된 매장 구하기
+     * 20.12.30
+     * */
+    Map<String, Object> storeOverTimeCount(Store store);
 }

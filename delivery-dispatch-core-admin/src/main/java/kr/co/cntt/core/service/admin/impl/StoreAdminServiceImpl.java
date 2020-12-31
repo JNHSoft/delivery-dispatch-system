@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service("storeAdminService")
@@ -129,4 +130,8 @@ public class StoreAdminServiceImpl implements StoreAdminService {
         return storeMapper.resetStorePassword(store);
     }
 
+    @Override
+    public Map<String, Object> storeOverTimeCount(Store store){
+        return adminMapper.selectOverTimeByStore(store);
+    }
 }

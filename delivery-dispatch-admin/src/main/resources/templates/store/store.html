@@ -49,6 +49,8 @@
     var alert_detailAddress_check = /*[[#{alert.detailAddress.check}]]*/ 'alert_detailAddress_check';
     var alert_delstore_check = /*[[#{alert.delstore.check}]]*/ 'alert_delstore_check';
 
+    var order_diff = /*[[#{order.diff.time}]]*/ 'order_diff';
+
     /*]]>*/
 </script>
 
@@ -81,6 +83,20 @@
 				</select>
 				<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
 				<button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" ></i></button>
+				<div style="float: right; margin: -3px 0px 0px 13px;">
+					<div>
+						<p>
+							<span th:text="${#messages.msg('store.over.time30')}" style="margin-right: 10px;"></span>
+							<input type="text" id="overTime30" style="width: 25px; border: 0px; text-align: right;" readonly="true"/>
+							<span th:text="${#messages.msg('store.over.count')}"></span>
+						</p>
+					</div>
+					<div>
+						<span th:text="${#messages.msg('store.over.time60')}" style="margin-right: 10px;"></span>
+						<input type="text" id="overTime60" style="width: 25px; border: 0px; text-align: right;" readonly="true"/>
+						<span th:text="${#messages.msg('store.over.count')}"></span>
+					</div>
+				</div>
 			</div>
 			<div class="right">
 				<a href="#popStore" class="button btn_blue pop_open"><i class="fa fa-plus" aria-hidden="true" onClick="javascript:getGroupList()" th:text="${#messages.msg('btn.store')}"></i></a>
