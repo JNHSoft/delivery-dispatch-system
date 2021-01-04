@@ -2057,13 +2057,22 @@
 		AND		 third_party_id IS NULL
 		]]>
 <!--		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
-		<if test="chkTime != null and chkTime == true">
-			AND	  A.reservation_datetime >= #{currentDatetime}
-			AND	  A.reservation_datetime <![CDATA[<]]> #{endDate}
-		</if>
-		<if test="chkTime == null or chkTime != true ">
-			AND	  A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-		</if>
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  A.reservation_datetime >= #{currentDatetime}
+				AND	  A.reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  A.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				AND (  (date_format(A.reservation_datetime, "%H:%i:%s) between '11:30' and '13:30')
+					OR (date_format(A.reservation_datetime, "%H:%i:%s) between '17:30' and '19:30')
+					)
+			</when>
+			<otherwise>
+				AND	  A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+			</otherwise>
+		</choose>
+
 		-- 검색 조건 추가
 		<if test="group != null and group.id != null and group.id != ''">
 			AND	 B.group_id = #{group.id}
@@ -2094,13 +2103,21 @@
 		WHERE    admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND      status in (3)
 <!--		AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
-		<if test="chkTime != null and chkTime == true">
-			AND	  reservation_datetime >= #{currentDatetime}
-			AND	  reservation_datetime <![CDATA[<]]> #{endDate}
-		</if>
-		<if test="chkTime == null or chkTime != true ">
-			AND	  created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-		</if>
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  reservation_datetime >= #{currentDatetime}
+				AND	  reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				AND (  (date_format(reservation_datetime, "%H:%i:%s) between '11:30' and '13:30')
+					OR (date_format(reservation_datetime, "%H:%i:%s) between '17:30' and '19:30')
+					)
+			</when>
+			<otherwise>
+				AND	  created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+			</otherwise>
+		</choose>
 		-- 시간대별 통계에 대한 조건 추가
 		AND		 assigned_datetime is not null
 		AND		 picked_up_datetime is not null
@@ -2318,13 +2335,21 @@
 		WHERE	 O.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND		 O.STATUS IN (3)
 <!--		AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)-->
-		<if test="chkTime != null and chkTime == true">
-			AND	  O.reservation_datetime >= #{currentDatetime}
-			AND	  O.reservation_datetime <![CDATA[<]]> #{endDate}
-		</if>
-		<if test="chkTime == null or chkTime != true">
-			AND	  O.created_datetime between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
-		</if>
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  O.reservation_datetime >= #{currentDatetime}
+				AND	  O.reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  O.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				AND (  (date_format(O.reservation_datetime, "%H:%i:%s) between '11:30' and '13:30')
+					OR (date_format(O.reservation_datetime, "%H:%i:%s) between '17:30' and '19:30')
+					)
+			</when>
+			<otherwise>
+				AND	  O.created_datetime between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
+			</otherwise>
+		</choose>
 		AND		 THIRD_PARTY_ID IS NULL
 		-- 시간대별 통계에 대한 조건 추가
 		AND		 assigned_datetime is not null
@@ -2340,12 +2365,7 @@
 		ON	 A.DATE = B.day_to_day
 <!--		WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}-->
 		WHERE 1=1
-		<if test="chkTime != null and chkTime == true">
-			AND	  date_format(A.DATE, '%Y-%m-%d') between date_format(#{currentDatetime}, '%Y-%m-%d') and date_format(#{endDate}, '%Y-%m-%d')
-		</if>
-		<if test="chkTime == null or chkTime != true">
-			AND	  A.DATE between #{currentDatetime} and #{endDate}
-		</if>
+		AND	  A.DATE between #{currentDatetime} and #{endDate}
 		ORDER BY A.DATE
 	</select>
 

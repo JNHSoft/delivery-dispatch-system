@@ -34,6 +34,9 @@ public class Common implements Dto {
     // 20.12.24 데이터 조회 시, 날짜 형태 구분
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Boolean chkTime;
+    // 20.12.24 데이터 조회 시, 피크 타임 구분
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean chkPeakTime;
 
     // 20.12.30 마지막 주문으로 부터 경과된 시간
     private String orderDiff;
