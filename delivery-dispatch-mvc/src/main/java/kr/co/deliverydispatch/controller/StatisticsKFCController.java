@@ -190,20 +190,22 @@ public class StatisticsKFCController {
     @CnttMethodDescription("날짜별 통계 리스트 조회 TW KFC")
     public List<ByDate> getStoreStatisticsByDate(@RequestParam(value = "startDate") String startDate,
                                                  @RequestParam(value = "endDate") String endDate,
-                                                 @RequestParam(value = "timeCheck") Boolean chkTime){
+                                                 @RequestParam(value = "timeCheck") Boolean chkTime,
+                                                 @RequestParam(value = "peakCheck") Boolean peakTime){
         // 날짜
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
         order.setEndDate(endDate);
         order.setChkTime(chkTime);
+        order.setChkPeakTime(peakTime);
 
         /**
          * 20.12.26 데이터 구하는 방식 변경
          * */
         SimpleDateFormat formatter;
 
-        if (chkTime){
+        if (chkTime && !peakTime){
             formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }else{
             formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -240,7 +242,8 @@ public class StatisticsKFCController {
     public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response,
                                                       @RequestParam(value = "startDate") String startDate,
                                                       @RequestParam(value = "endDate") String endDate,
-                                                      @RequestParam(value = "timeCheck") Boolean chkTime) {
+                                                      @RequestParam(value = "timeCheck") Boolean chkTime,
+                                                      @RequestParam(value = "peakCheck") Boolean peakTime) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -248,13 +251,14 @@ public class StatisticsKFCController {
         order.setCurrentDatetime(startDate);
         order.setEndDate(endDate);
         order.setChkTime(chkTime);
+        order.setChkPeakTime(peakTime);
 
         /**
          * 20.12.24 데이터 구하는 방식 변경
          * */
         SimpleDateFormat formatter;
 
-        if (chkTime){
+        if (chkTime && !peakTime){
             formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }else{
             formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -294,19 +298,21 @@ public class StatisticsKFCController {
     @CnttMethodDescription("구간별 통계 리스트 조회 TW KFC")
     public Map getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate,
                                             @RequestParam(value = "endDate") String endDate,
-                                            @RequestParam(value = "timeCheck") Boolean chkTime){
+                                            @RequestParam(value = "timeCheck") Boolean chkTime,
+                                            @RequestParam(value = "peakCheck") Boolean peakTime){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
         order.setEndDate(endDate);
         order.setChkTime(chkTime);
+        order.setChkPeakTime(peakTime);
 
         /**
          * 20.12.24 데이터 구하는 방식 변경
          * */
         SimpleDateFormat formatter;
 
-        if (chkTime){
+        if (chkTime && !peakTime){
             formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }else{
             formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -348,7 +354,8 @@ public class StatisticsKFCController {
     public ModelAndView statisticsByIntervalExcelDownload(HttpServletResponse response,
                                                           @RequestParam(value = "startDate") String startDate,
                                                           @RequestParam(value = "endDate") String endDate,
-                                                          @RequestParam(value = "timeCheck") Boolean chkTime) {
+                                                          @RequestParam(value = "timeCheck") Boolean chkTime,
+                                                          @RequestParam(value = "peakCheck") Boolean peakTime) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -356,13 +363,14 @@ public class StatisticsKFCController {
         order.setCurrentDatetime(startDate);
         order.setEndDate(endDate);
         order.setChkTime(chkTime);
+        order.setChkPeakTime(peakTime);
 
         /**
          * 20.12.24 데이터 구하는 방식 변경
          * */
         SimpleDateFormat formatter;
 
-        if (chkTime){
+        if (chkTime && !peakTime){
             formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }else{
             formatter = new SimpleDateFormat("yyyy-MM-dd");

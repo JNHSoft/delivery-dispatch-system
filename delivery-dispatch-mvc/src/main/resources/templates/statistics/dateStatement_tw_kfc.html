@@ -34,10 +34,20 @@
             <div class="right">
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
-                <label>
-                    <span class="lbl" th:text="${#messages.msg('statistics.check.time')}" style="font-size: 12px; font-weight: bold; color:black" />&nbsp;
-                    <input type="checkbox" id="chkTime" onclick="javascript:showTimePicker()"/>&nbsp;
-                </label>
+                <div style="float: left;">
+                    <div style="margin-top: -4px; margin-bottom: 5px;">
+                        <label>
+                            <span class="lbl" th:text="${#messages.msg('statistics.check.time')}" style="font-size: 12px; font-weight: bold; color:black" />&nbsp;
+                            <input type="checkbox" id="chkTime" onclick="javascript:showTimePicker()"/>&nbsp;
+                        </label>
+                    </div>
+                    <div style="margin-top: 5px;">
+                        <label>
+                            <span class="lbl" th:text="${#messages.msg('statistics.check.peaktime')}" style="font-size: 12px; font-weight: bold; color:black" />&nbsp;
+                            <input type="checkbox" id="chkPeakTime" onclick="javascript:showPeakTime()"/>&nbsp;
+                        </label>
+                    </div>
+                </div>
                 <input type="text" name="datepicker" id="day1" class="input picker"/>
                 <input type="text" name="timepicker" id="startTime" class="input timepicker"/>
                 ~

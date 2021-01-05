@@ -2064,8 +2064,8 @@
 			</when>
 			<when test="chkPeakTime != null and chkPeakTime == true">
 				AND	  A.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-				AND (  (date_format(A.reservation_datetime, "%H:%i:%s) between '11:30' and '13:30')
-					OR (date_format(A.reservation_datetime, "%H:%i:%s) between '17:30' and '19:30')
+				AND (  (date_format(A.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+					OR (date_format(A.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
 					)
 			</when>
 			<otherwise>
@@ -2110,8 +2110,8 @@
 			</when>
 			<when test="chkPeakTime != null and chkPeakTime == true">
 				AND	  reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-				AND (  (date_format(reservation_datetime, "%H:%i:%s) between '11:30' and '13:30')
-					OR (date_format(reservation_datetime, "%H:%i:%s) between '17:30' and '19:30')
+				AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+					OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
 					)
 			</when>
 			<otherwise>
@@ -2342,8 +2342,8 @@
 			</when>
 			<when test="chkPeakTime != null and chkPeakTime == true">
 				AND	  O.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-				AND (  (date_format(O.reservation_datetime, "%H:%i:%s) between '11:30' and '13:30')
-					OR (date_format(O.reservation_datetime, "%H:%i:%s) between '17:30' and '19:30')
+				AND (  (date_format(O.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+					OR (date_format(O.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
 					)
 			</when>
 			<otherwise>

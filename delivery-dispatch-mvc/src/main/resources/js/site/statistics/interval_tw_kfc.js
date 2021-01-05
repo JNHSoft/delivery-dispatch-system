@@ -44,16 +44,35 @@ $(function () {
 // 20.12.24 시간을 선택할 수 있는 항목 노출
 function showTimePicker(){
     let chkTime = $('#chkTime').is(":checked");
+    let peakTime = $('#chkPeakTime').is(":checked");
 
     if (chkTime){
         $('#startTime').show();
         $('#endTime').show();
+
+        if (peakTime){
+            $('#chkPeakTime').prop("checked", false);
+        }
     }else{
         $('#startTime').css('display', 'none');
         $('#endTime').css('display', 'none');
 
-        getStoreStatisticsByInterval();
+        if (!peakTime){
+            getStoreStatisticsByInterval();
+        }
     }
+}
+
+// 21.01.05 피크(Peak) 타임 조회
+function showPeakTime(){
+    let peakTime = $('#chkPeakTime').is(":checked");
+
+    if (peakTime){
+        $('#chkTime').prop("checked", false);
+        showTimePicker();
+    }
+
+    getStoreStatisticsByInterval();
 }
 
 function timeSet(time) {
@@ -118,8 +137,9 @@ function getStoreStatisticsByInterval() {
 
     // 20.12.24 시간 범위도 포함 유무 체크 후 값 보내기
     let chkTime = $('#chkTime').is(":checked");
-    console.log("chkTime = " + chkTime);
-    if (chkTime){       // 체크가 되어 있다면 날짜 범위 체크
+    let peakTime = $('#chkPeakTime').is(":checked");
+
+    if (chkTime && !peakTime){       // 체크가 되어 있다면 날짜 범위 체크
         let startDT = $('#day1').datetimepicker('getDate');
         let endDT = $('#day2').datetimepicker('getDate');
 
@@ -139,7 +159,7 @@ function getStoreStatisticsByInterval() {
     let sDate = $('#day1').val();
     let eDate = $('#day2').val();
 
-    if (chkTime){
+    if (chkTime && !peakTime){
         sDate = sDate + " " + $('#startTime').val();
         eDate = eDate + " " + $('#endTime').val();
     }
@@ -150,7 +170,8 @@ function getStoreStatisticsByInterval() {
         data: {
             startDate: sDate,
             endDate: eDate,
-            timeCheck: chkTime
+            timeCheck: chkTime,
+            peakCheck: peakTime
         },
         dataType: 'json',
         success: function (data) {
@@ -474,7 +495,9 @@ function excelDownloadByInterval(){
 
     // 20.12.24 시간 범위도 포함 유무 체크 후 값 보내기
     let chkTime = $('#chkTime').is(":checked");
-    if (chkTime){       // 체크가 되어 있다면 날짜 범위 체크
+    let peakTime = $('#chkPeakTime').is(":checked");
+
+    if (chkTime && !peakTime){       // 체크가 되어 있다면 날짜 범위 체크
         let startDT = $('#day1').datetimepicker('getDate');
         let endDT = $('#day2').datetimepicker('getDate');
 
@@ -489,7 +512,7 @@ function excelDownloadByInterval(){
 
     loading.show();
 
-    if (chkTime){
+    if (chkTime && !peakTime){
         startDate = startDate + " " + $('#startTime').val();
         endDate = endDate + " " + $('#endTime').val();
     }
@@ -499,7 +522,8 @@ function excelDownloadByInterval(){
         data : {
             startDate : startDate,
             endDate : endDate,
-            timeCheck: chkTime
+            timeCheck: chkTime,
+            peakCheck: peakTime
         },
         successCallback: function(url){
             loading.hide();

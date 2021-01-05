@@ -44,18 +44,19 @@ $(function () {
 // 20.12.24 시간을 선택할 수 있는 항목 노출
 function showTimePicker(){
     let chkTime = $('#chkTime').is(":checked");
+    let peakTime = $('#chkPeakTime').is(":checked");
 
     if (chkTime){
         $('#startTime').show();
         $('#endTime').show();
-        if ($('#chkPeakTime').is(":checked")){
+        if (peakTime){
             $('#chkPeakTime').prop("checked", false);
         }
     }else{
         $('#startTime').css('display', 'none');
         $('#endTime').css('display', 'none');
 
-        if (!$('#chkPeakTime').is(":checked")){
+        if (!peakTime){
             getStoreStatisticsByInterval();
         }
     }
@@ -63,8 +64,11 @@ function showTimePicker(){
 
 // 21.01.04 피크(Peak) 타임 조회
 function showPeakTime(){
-    if ($('#chkPeakTime').is(":checked")){
+    let peakTime = $('#chkPeakTime').is(":checked");
+
+    if (peakTime){
         $('#chkTime').prop("checked", false);
+        showTimePicker();
     }
 
     getStoreStatisticsByInterval();
