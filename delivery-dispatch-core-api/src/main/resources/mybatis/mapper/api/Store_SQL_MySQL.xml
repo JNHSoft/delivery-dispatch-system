@@ -1312,9 +1312,19 @@
             </when>
             <when test="chkPeakTime != null and chkPeakTime == true">
                 AND	  A.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-                AND (  (date_format(A.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                    OR (date_format(A.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
-                    )
+                <choose>
+                    <when test="peakType != null and peakType == 1">
+                        AND   date_format(A.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                    </when>
+                    <when test="peakType != null and peakType == 2">
+                        AND   date_format(A.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                    </when>
+                    <otherwise>
+                        AND (  (date_format(A.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                            OR (date_format(A.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            )
+                    </otherwise>
+                </choose>
             </when>
             <otherwise>
                 AND	  A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
@@ -1352,9 +1362,19 @@
             </when>
             <when test="chkPeakTime != null and chkPeakTime == true">
                 AND	  reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-                AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                    OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
-                    )
+                <choose>
+                    <when test="peakType != null and peakType == 1">
+                        AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                    </when>
+                    <when test="peakType != null and peakType == 2">
+                        AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                    </when>
+                    <otherwise>
+                        AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                            OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            )
+                    </otherwise>
+                </choose>
             </when>
             <otherwise>
                 AND	  created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
@@ -1513,9 +1533,19 @@
                     </when>
                     <when test="chkPeakTime != null and chkPeakTime == true">
                         AND	  O.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-                        AND (  (date_format(O.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                            OR (date_format(O.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
-                            )
+                        <choose>
+                            <when test="peakType != null and peakType == 1">
+                                AND   date_format(O.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            </when>
+                            <when test="peakType != null and peakType == 2">
+                                AND   date_format(O.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            </when>
+                            <otherwise>
+                                AND (  (date_format(O.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                    OR (date_format(O.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                    )
+                            </otherwise>
+                        </choose>
                     </when>
                     <otherwise>
                         AND	  O.created_datetime between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)

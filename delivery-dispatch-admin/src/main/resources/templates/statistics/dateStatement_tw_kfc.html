@@ -65,6 +65,11 @@
                 <span style="padding: 5px;">~</span>
                 <input type="text" name="datepicker" id="endDate" class="input datepicker"/>
                 <input type="text" name="timepicker" id="endTime" class="input timepicker"/>
+                <select id="sel_peak_time" style="display: none; margin-left: 5px;" onchange="javascript:changePeakType();">
+                    <option value="0" th:label="${#messages.msg('peaktime.option.all')}"/>
+                    <option value="1" th:label="${#messages.msg('peaktime.option.launch')}"/>
+                    <option value="2" th:label="${#messages.msg('peaktime.option.dinner')}"/>
+                </select>
             </div>
 
             <div class="right">

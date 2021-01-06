@@ -54,6 +54,11 @@
                 <input type="text" name="datepicker" id="day2" class="input picker"/>
                 <input type="text" name="timepicker" id="endTime" class="input timepicker"/>
                 <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByDate();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+                <select id="sel_peak_time" style="display: none;" onchange="javascript:changePeakType();">
+                    <option value="0" th:label="${#messages.msg('peaktime.option.all')}"/>
+                    <option value="1" th:label="${#messages.msg('peaktime.option.launch')}"/>
+                    <option value="2" th:label="${#messages.msg('peaktime.option.dinner')}"/>
+                </select>
             </div>
         </div>
     </form>

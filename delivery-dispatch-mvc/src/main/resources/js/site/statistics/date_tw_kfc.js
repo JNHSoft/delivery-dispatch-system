@@ -1,4 +1,6 @@
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
+let beforePeakType = 0;
+
 $(function () {
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
     $('#day1, #day2').val(date);
@@ -53,6 +55,7 @@ function showTimePicker(){
         $('#endTime').show();
         if (peakTime){
             $('#chkPeakTime').prop("checked", false);
+            $('#sel_peak_time').css('display', 'none');
         }
     }else{
         $('#startTime').css('display', 'none');
@@ -70,12 +73,23 @@ function showPeakTime(){
 
     if (peakTime){
         $('#chkTime').prop("checked", false);
+        $('#sel_peak_time').show();
         showTimePicker();
+    }else{
+        $('#sel_peak_time').css('display', 'none');
     }
 
     getStoreStatisticsByDate();
 }
 
+// 21.01.06 피크 Type 종류 변경 시, 데이터 리플레쉬
+function changePeakType(){
+    // 변경 전 값과 다른 경우에 한하여 데이터 리플레쉬를 한다.
+    if (beforePeakType.toString() != $('#sel_peak_time').val().toString()){
+        beforePeakType = $('#sel_peak_time').val();
+        getStoreStatisticsByDate();
+    }
+}
 
 function totalTimeSet(time) {
     if (time) {
@@ -135,6 +149,7 @@ function getStoreStatisticsByDate() {
             endDate: eDate,
             timeCheck: chkTime,
             peakCheck: peakTime,
+            peakType: $('#sel_peak_time').val()
         },
         dataType: 'json',
         success: function (data) {
@@ -540,7 +555,8 @@ function excelDownloadByDate(){
             startDate : startDate,
             endDate : endDate,
             timeCheck: chkTime,
-            peakCheck: peakTime
+            peakCheck: peakTime,
+            peakType: $('#sel_peak_time').val()
         },
         successCallback: function(url){
             loading.hide();

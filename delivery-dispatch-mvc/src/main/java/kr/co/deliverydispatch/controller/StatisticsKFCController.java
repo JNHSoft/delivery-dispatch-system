@@ -191,7 +191,8 @@ public class StatisticsKFCController {
     public List<ByDate> getStoreStatisticsByDate(@RequestParam(value = "startDate") String startDate,
                                                  @RequestParam(value = "endDate") String endDate,
                                                  @RequestParam(value = "timeCheck") Boolean chkTime,
-                                                 @RequestParam(value = "peakCheck") Boolean peakTime){
+                                                 @RequestParam(value = "peakCheck") Boolean peakTime,
+                                                 @RequestParam(value = "peakType") String peakType){
         // 날짜
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -199,6 +200,7 @@ public class StatisticsKFCController {
         order.setEndDate(endDate);
         order.setChkTime(chkTime);
         order.setChkPeakTime(peakTime);
+        order.setPeakType(peakType);
 
         /**
          * 20.12.26 데이터 구하는 방식 변경
@@ -243,7 +245,8 @@ public class StatisticsKFCController {
                                                       @RequestParam(value = "startDate") String startDate,
                                                       @RequestParam(value = "endDate") String endDate,
                                                       @RequestParam(value = "timeCheck") Boolean chkTime,
-                                                      @RequestParam(value = "peakCheck") Boolean peakTime) {
+                                                      @RequestParam(value = "peakCheck") Boolean peakTime,
+                                                      @RequestParam(value = "peakType") String peakType) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -252,6 +255,7 @@ public class StatisticsKFCController {
         order.setEndDate(endDate);
         order.setChkTime(chkTime);
         order.setChkPeakTime(peakTime);
+        order.setPeakType(peakType);
 
         /**
          * 20.12.24 데이터 구하는 방식 변경
@@ -299,13 +303,15 @@ public class StatisticsKFCController {
     public Map getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate,
                                             @RequestParam(value = "endDate") String endDate,
                                             @RequestParam(value = "timeCheck") Boolean chkTime,
-                                            @RequestParam(value = "peakCheck") Boolean peakTime){
+                                            @RequestParam(value = "peakCheck") Boolean peakTime,
+                                            @RequestParam(value = "peakType") String peakType){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
         order.setEndDate(endDate);
         order.setChkTime(chkTime);
         order.setChkPeakTime(peakTime);
+        order.setPeakType(peakType);
 
         /**
          * 20.12.24 데이터 구하는 방식 변경
@@ -355,7 +361,8 @@ public class StatisticsKFCController {
                                                           @RequestParam(value = "startDate") String startDate,
                                                           @RequestParam(value = "endDate") String endDate,
                                                           @RequestParam(value = "timeCheck") Boolean chkTime,
-                                                          @RequestParam(value = "peakCheck") Boolean peakTime) {
+                                                          @RequestParam(value = "peakCheck") Boolean peakTime,
+                                                          @RequestParam(value = "peakType") String peakType) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -364,6 +371,7 @@ public class StatisticsKFCController {
         order.setEndDate(endDate);
         order.setChkTime(chkTime);
         order.setChkPeakTime(peakTime);
+        order.setPeakType(peakType);
 
         /**
          * 20.12.24 데이터 구하는 방식 변경
