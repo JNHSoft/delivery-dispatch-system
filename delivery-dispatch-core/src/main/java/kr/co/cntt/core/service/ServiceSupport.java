@@ -69,9 +69,7 @@ public class ServiceSupport extends LocaleContextHolder implements MessageSource
                 logger.info("firebaseResponse.getSuccess() = " + firebaseResponse.getSuccess());
                 logger.info("firebaseResponse.getResults() = " + firebaseResponse.getResults());
                 logger.info("firebaseResponse = " + firebaseResponse);
-                System.out.println(firebaseResponse.getResults());
                 logger.info("############# PUSH LOGGER ################");
-
 
                 if (firebaseResponse.getSuccess() == 1) {
                     logger.info("push notification sent ok!");
@@ -79,9 +77,11 @@ public class ServiceSupport extends LocaleContextHolder implements MessageSource
                     logger.error("error sending push notifications: " + firebaseResponse.toString());
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                logger.error(e.getMessage());
             } catch (ExecutionException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
     }

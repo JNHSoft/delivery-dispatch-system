@@ -427,7 +427,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
                 store.setLatitude(geo.get("lat"));
                 store.setLongitude(geo.get("lng"));
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
 
@@ -454,7 +455,8 @@ public class AdminServiceImpl extends ServiceSupport implements AdminService {
                     try {
                         storeHaversineMap.put(s.getId(), misc.getHaversine(store.getLatitude(), store.getLongitude(), s.getLatitude(), s.getLongitude()));
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
 

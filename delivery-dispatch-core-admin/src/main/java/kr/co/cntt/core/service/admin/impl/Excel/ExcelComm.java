@@ -156,7 +156,8 @@ public class ExcelComm extends AbstractView {
                 }catch (NullPointerException e){
                     logger.debug("changeType Data NullPoint = " + value);
                 }catch (Exception e){
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
 
                 strReturn = intValue.toString();
@@ -168,7 +169,8 @@ public class ExcelComm extends AbstractView {
                 }catch (NullPointerException e){
                     logger.debug("changeType Data NullPoint = " + value);
                 }catch (Exception e){
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
 
                 strReturn = floatValue.toString();
@@ -180,7 +182,8 @@ public class ExcelComm extends AbstractView {
                 }catch (NullPointerException e){
                     logger.debug("changeType Data NullPoint = " + value);
                 }catch (Exception e){
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 strReturn = doubleValue.toString();
             }else if (type.equals(String.class)){
@@ -202,14 +205,16 @@ public class ExcelComm extends AbstractView {
                 }catch (NullPointerException e){
                     logger.debug("changeType Data NullPoint = " + value);
                 }catch (Exception e){
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
 
                 strReturn = longValue.toString();
 
             }
         }catch (Exception e){
-            e.printStackTrace();
+//            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         return strReturn;

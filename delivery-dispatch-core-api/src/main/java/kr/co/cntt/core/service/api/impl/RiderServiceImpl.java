@@ -421,7 +421,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         } catch(AppTrException e){
                             throw e;
                         } catch(Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                             throw new AppTrException(getMessage(ErrorCodeEnum.E00045), ErrorCodeEnum.E00045.name());
                         }
                     }else if (rider.getSession() == null){
@@ -443,7 +444,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         } catch(AppTrException e){
                             throw e;
                         } catch(Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                             throw new AppTrException(getMessage(ErrorCodeEnum.E00045), ErrorCodeEnum.E00045.name());
                         }
                     }else if (rider.getSession() == null){
@@ -503,7 +505,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             } catch(AppTrException e){
                 throw e;
             } catch(Exception e){
-                e.printStackTrace();
+//                e.printStackTrace();
+                log.error(e.getMessage());
                 throw new AppTrException(getMessage(ErrorCodeEnum.E00053), ErrorCodeEnum.E00053.name());
             }
         }
@@ -574,7 +577,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         // DB에 등록이 되어 있는지 데이터 확인 단 65초 이하인 경우 조회되지 않는다.
         SmsApplyInfo orgSMSData = riderMapper.selectRiderApplySMS(smsApplyInfo);
 
-        System.out.println(orgSMSData);
+        log.info("sendApplySMS Data => " + orgSMSData);
 
         // 등록되어 있는 경우 시간을 비교한다.
         // 1분이 초과되지 않은 경우, SMS 재전송을 할 수 없다. 오류 메세지 전달
@@ -736,12 +739,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
             conn.disconnect();
 
-            System.out.println(outResult);
+            log.debug("sendApplySMS Result => " + outResult);
 
             log.debug("REST API END");
         }catch (Exception e){
             log.error(e.getMessage(), e);
-            e.printStackTrace();
         }
 
         return outResult.toString();

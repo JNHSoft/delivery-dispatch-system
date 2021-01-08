@@ -231,7 +231,7 @@ public class StoreController {
 //        store.setPhone(phone);
         store.setAddress(address);
         store.setDetailAddress(detailAddress);
-//        System.out.println("!!!!"+groupId);
+
         // 위도 경도
         if (store.getAddress() != null && !store.getAddress().equals("")) {
             Geocoder geocoder = new Geocoder();
@@ -521,6 +521,7 @@ public class StoreController {
 
                 if (Integer.parseInt(autoCheckOverTimeStore.get("over30").toString()) != Integer.parseInt(storeCount.get("over30").toString())){
                     autoCheckOverTimeStore.put("over30", storeCount.get("over30"));
+                    log.info("over30 개수 발생 # " + storeCount.get("over30"));
                 }
             }
 
@@ -537,6 +538,7 @@ public class StoreController {
 
                 if (Integer.parseInt(autoCheckOverTimeStore.get("over60").toString()) != Integer.parseInt(storeCount.get("over60").toString())){
                     autoCheckOverTimeStore.put("over60", storeCount.get("over60"));
+                    log.info("over60 개수 발생 # " + storeCount.get("over60"));
                 }
             }
 
@@ -546,12 +548,6 @@ public class StoreController {
                 redisService.setPublisher(Content.builder().type("check_overTimeStore").build());
                 log.info("check Over Time Store 발생!");
             }
-
-            System.out.println("################## autoCheckOverTimeStore S");
-            System.out.println(bNotice);
-            System.out.println(storeCount);
-            System.out.println(autoCheckOverTimeStore);
-            System.out.println("################## autoCheckOverTimeStore E");
         } catch (Exception e){
             e.printStackTrace();
         }

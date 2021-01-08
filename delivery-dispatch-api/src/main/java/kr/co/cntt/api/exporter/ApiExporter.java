@@ -107,7 +107,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Admin adminInfo = new Admin();
         User trackerInfo = new User();
 
-        System.out.println("#######platform ### createAuthenticate => [" + request.getHeader("platform") + "]");
+        log.info("platform createAuthenticate value # " + request.getHeader("platform"));
 
         try {
             if (level.equals("3")) {
@@ -200,8 +200,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
                     riderSession.setAccessToken(token);
                     riderService.updateRiderOSInfo(riderSession);
 
-
-                    System.out.println("Rider OS info Update");
+                    log.info("Rider OS info Update => " + request.getHeader("platform"));
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -347,10 +346,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
 //    @PostMapping(value = {"/{service}", "/admin/{service}"})
     @PostMapping(value = "/{service}")
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
-
-        System.out.println("execute Service = " + service);
-        System.out.println("#######platform => [" + request.getHeader("platform") + "]");
-
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
         } catch (Exception e) {

@@ -79,8 +79,6 @@ public class AndroidPushNotificationsService {
 
             body.put("sound", "default");
 
-            System.out.println("body # [" + body.toString() + "]");
-
             request = new HttpEntity<>(body.toString());
 
             RestTemplate restTemplate = new RestTemplate();
@@ -152,9 +150,6 @@ public class AndroidPushNotificationsService {
 
             body.put("sound", "default");
 
-            System.out.println("body ### [" + body.toString() + "]");
-
-
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
@@ -169,12 +164,7 @@ public class AndroidPushNotificationsService {
 //            interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json;charset=utf-8"));
             restTemplate.setInterceptors(interceptors);
 
-
-
-
             FirebaseResponse firebaseResponse = restTemplate.postForObject("https://fcm.googleapis.com/fcm/send", request, FirebaseResponse.class);
-
-//            System.out.println(request.toString());
 
             return CompletableFuture.completedFuture(firebaseResponse);
         } catch (JSONException e) {
@@ -188,8 +178,6 @@ public class AndroidPushNotificationsService {
     public CompletableFuture<FirebaseResponse> sendGroup(FcmBody fcmBody, String strPlatform) {
         HttpEntity<String> request = null;
         try {
-
-            System.out.println("body ### [" + new Gson().toJson(fcmBody) + "]");
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
@@ -209,8 +197,6 @@ public class AndroidPushNotificationsService {
 
             FirebaseResponse firebaseResponse = restTemplate.postForObject("https://fcm.googleapis.com/fcm/send", request, FirebaseResponse.class);
 
-//            System.out.println(request.toString());
-
             return CompletableFuture.completedFuture(firebaseResponse);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -218,20 +204,5 @@ public class AndroidPushNotificationsService {
 
         return null;
     }
-
-    /*@Async
-    public CompletableFuture<GroupResponse> group(HttpEntity<String> entity) {
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-        interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + FIREBASE_SERVER_KEY));
-        interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json"));
-        restTemplate.setInterceptors(interceptors);
-
-        GroupResponse response = restTemplate.postForObject("https://fcm.googleapis.com/fcm/send", entity, GroupResponse.class);
-
-        return CompletableFuture.completedFuture(response);
-    }*/
 
 }
