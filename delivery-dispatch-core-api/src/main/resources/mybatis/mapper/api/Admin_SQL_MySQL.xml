@@ -354,25 +354,6 @@
 
 	<!-- deleteGroup -->
 	<update id="deleteGroup" parameterType="kr.co.cntt.core.model.group.Group">
-		<!--UPDATE TB_GROUP AS A-->
-		<!--LEFT JOIN TB_SUBGROUP AS B-->
-		<!--ON A.id = B.group_id-->
-		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS C-->
-		<!--ON B.id = C.group_id-->
-		<!--LEFT JOIN TB_SUBGROUP_RIDER_REL AS D-->
-		<!--ON B.id = D.group_id-->
-		<!--SET A.deleted = now()-->
-			<!--,B.deleted = now()-->
-			<!--,C.deleted = now()-->
-			<!--,D.group_id = null-->
-            <!--,D.subgroup_id = null-->
-		<!--WHERE A.id = #{id}-->
-			<!--AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
-			<!--AND A.deleted IS NULL-->
-			<!--AND B.deleted IS NULL-->
-			<!--AND C.deleted IS NULL-->
-			<!--AND D.deleted IS NULL-->
-
 		update	 TB_GROUP as A
 		left join TB_SUBGROUP as B
 			on	 A.id = B.group_id
@@ -401,24 +382,6 @@
 
 	<!-- selectSubGroups -->
 	<select id="selectSubGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.SubGroup">
-		<!--SELECT-->
-			<!--A.created_datetime-->
-			<!--, A.modified_datetime-->
-			<!--, A.id-->
-			<!--, A.name-->
-			<!--, A.group_id-->
-			<!--, A.admin_id-->
-			<!--, COUNT(B.id) AS subGroupStoreCount-->
-		<!--FROM TB_SUBGROUP AS A-->
-		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS B-->
-		<!--ON A.id = B.subgroup_id-->
-		<!--WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
-			<!--AND A.group_id = #{id}-->
-			<!--AND A.deleted IS NULL-->
-			<!--AND B.deleted IS NULL-->
-		<!--GROUP BY A.id-->
-		<!--ORDER BY A.name ASC-->
-
 		select	 A.created_datetime
 				,A.modified_datetime
 				,A.id
@@ -464,22 +427,6 @@
 
 	<!-- deleteSubGroup -->
 	<update id="deleteSubGroup" parameterType="kr.co.cntt.core.model.group.SubGroup">
-		<!--UPDATE TB_SUBGROUP AS A-->
-		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS B-->
-		<!--ON A.id = B.subgroup_id-->
-		<!--LEFT JOIN TB_SUBGROUP_RIDER_REL AS C-->
-		<!--ON A.id = C.subgroup_id-->
-		<!--SET A.deleted = now()-->
-			<!--,B.deleted = now()-->
-			<!--,C.group_id = null-->
-            <!--,C.subgroup_id = null-->
-		<!--WHERE A.id = #{id}-->
-		<!--AND A.group_id = #{groupId}-->
-		<!--AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
-		<!--AND A.deleted IS NULL-->
-		<!--AND B.deleted IS NULL-->
-		<!--AND C.deleted IS NULL-->
-
 		UPDATE	 TB_SUBGROUP AS A
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
 			ON	 A.id = B.subgroup_id
@@ -2075,9 +2022,34 @@
 			AND	 B.deleted is null
 		WHERE	 A.status in (3)
 		AND		 A.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
-		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 		AND		 third_party_id IS NULL
 		]]>
+<!--		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  A.reservation_datetime >= #{currentDatetime}
+				AND	  A.reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  A.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				<choose>
+					<when test="peakType != null and peakType == 1">
+						AND   date_format(A.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+					</when>
+					<when test="peakType != null and peakType == 2">
+						AND   date_format(A.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+					</when>
+					<otherwise>
+						AND (  (date_format(A.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+							OR (date_format(A.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+							)
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND	  A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+			</otherwise>
+		</choose>
 
 		-- 검색 조건 추가
 		<if test="group != null and group.id != null and group.id != ''">
@@ -2108,7 +2080,32 @@
 		FROM     TB_ORDER
 		WHERE    admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND      status in (3)
-		AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+<!--		AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  reservation_datetime >= #{currentDatetime}
+				AND	  reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				<choose>
+					<when test="peakType != null and peakType == 1">
+						AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+					</when>
+					<when test="peakType != null and peakType == 2">
+						AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+					</when>
+					<otherwise>
+						AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+							OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+							)
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND	  created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+			</otherwise>
+		</choose>
 		-- 시간대별 통계에 대한 조건 추가
 		AND		 assigned_datetime is not null
 		AND		 picked_up_datetime is not null
@@ -2325,7 +2322,32 @@
 		FROM	 TB_ORDER AS O
 		WHERE	 O.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND		 O.STATUS IN (3)
-		AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
+<!--		AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)-->
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  O.reservation_datetime >= #{currentDatetime}
+				AND	  O.reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  O.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				<choose>
+					<when test="peakType != null and peakType == 1">
+						AND   date_format(O.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+					</when>
+					<when test="peakType != null and peakType == 2">
+						AND   date_format(O.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+					</when>
+					<otherwise>
+						AND (  (date_format(O.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+							OR (date_format(O.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+							)
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND	  O.created_datetime between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
+			</otherwise>
+		</choose>
 		AND		 THIRD_PARTY_ID IS NULL
 		-- 시간대별 통계에 대한 조건 추가
 		AND		 assigned_datetime is not null
@@ -2339,7 +2361,9 @@
 		GROUP BY day_to_day
 		)	B
 		ON	 A.DATE = B.day_to_day
-		WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}
+<!--		WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}-->
+		WHERE 1=1
+		AND	  A.DATE between #{currentDatetime} and #{endDate}
 		ORDER BY A.DATE
 	</select>
 </mapper>

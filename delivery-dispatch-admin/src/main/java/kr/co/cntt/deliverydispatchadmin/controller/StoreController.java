@@ -52,15 +52,7 @@ public class StoreController {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-
         store.setToken(adminInfo.getAdminAccessToken());
-
-//        List<Store> storeList = storeAdminService.selectStoreList(store);
-//
-//        model.addAttribute("storeList", storeList);
-//        model.addAttribute("jsonList", new Gson().toJson(storeList));
-//
-//        log.info("json : {}", new Gson().toJson(storeList));
 
         return "/store/store";
     }
@@ -203,8 +195,6 @@ public class StoreController {
             @RequestParam("assignmentStatus") String assignmentStatus,
             @RequestParam("groupId") String groupId,
             @RequestParam("subGroupId") String subGroupId,
-            //@RequestParam("name") String name,
-            //@RequestParam("phone") String phone,
             @RequestParam("address") String address,
             @RequestParam("detailAddress") String detailAddress,
             @RequestParam("hasGroup") String hasGroup
@@ -300,8 +290,6 @@ public class StoreController {
                              @RequestParam("assignmentStatus") String assignmentStatus,
                              @RequestParam("groupId") String groupId,
                              @RequestParam("subGroupId") String subGroupId,
-                             // @RequestParam("name") String name,
-                             // @RequestParam("phone") String phone,
                              @RequestParam("address") String address,
                              @RequestParam("detailAddress") String detailAddress
 
@@ -399,38 +387,6 @@ public class StoreController {
         } else {
             return "ok";
         }
-
-        /*storeAdminService.insertChatRoom(store);
-        if (store.getChatUserId() != null && store.getChatRoomId() != null) {
-            storeAdminService.insertChatUserChatRoomRel(store);
-            int A_Store = storeAdminService.insertStore(store);
-
-            int A_Group = 0;
-            int A_Assign_Status = 0;
-
-            String storeSessionToken = tokenManager.getToken("2",loginId , loginPw);
-            storeSession.setAccessToken(storeSessionToken);
-            storeSession.setId(store.getId());
-            storeSession.setLoginId(loginId);
-
-            storeAdminService.insertAdminStoreSession(storeSession);
-
-            if(subGroupId !=""){
-                A_Group = storeAdminService.insertSubGroupStoreRel(store);
-            }
-
-            if (assignmentStatus != null) {
-                A_Assign_Status = storeAdminService.updateStoreAssignmentStatus(store);
-            }
-            if (A_Store == 0 && A_Group == 0 && A_Assign_Status == 0) {
-                return "err";
-            } else {
-                return "ok";
-            }
-        } else {
-            return "err";
-        }*/
-
     }
 
     @ResponseBody

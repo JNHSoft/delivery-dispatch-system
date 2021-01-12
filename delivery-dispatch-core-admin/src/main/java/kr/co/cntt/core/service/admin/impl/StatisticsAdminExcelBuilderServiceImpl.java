@@ -297,10 +297,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getReturnDatetime()));
             cell.setCellStyle(dataCellStyle);
 
-            /*cell = addListRow.createCell(colNum++);
-            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getMenuName());
-            cell.setCellStyle(dataCellStyle);*/
-
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getCookingTime()));
             cell.setCellStyle(dataCellStyle);
@@ -328,10 +324,6 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(orderStatisticsByAdminList.get(i).getTotalPrice());
             cell.setCellStyle(dataCellStyle);
-
-//            cell = addListRow.createCell(colNum++);
-//            cell.setCellValue((String) orderStatisticsByAdminList.get(i).getPayment().getType());
-//            cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getCombinedOrderId()));

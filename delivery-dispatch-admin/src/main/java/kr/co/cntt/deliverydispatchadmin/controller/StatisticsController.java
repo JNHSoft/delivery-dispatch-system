@@ -348,6 +348,7 @@ public class StatisticsController {
         List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(order);
 
         modelAndView.addObject("selectAdminStatisticsExcel", orderStatisticsByAdminList);
+        modelAndView.addObject("brandCode", adminInfo.getAdminBrandCode());
 
         return modelAndView;
     }
@@ -433,7 +434,7 @@ public class StatisticsController {
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null) {
                 if (a.getReservationStatus().equals("1")) {
                     LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                    a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
+                    a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
                 }
 
                 LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
