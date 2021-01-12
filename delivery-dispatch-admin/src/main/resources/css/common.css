@@ -17,6 +17,10 @@
 @import url(flipclock.min.css);
 @import url(ui.jqgrid.css);
 
+/*
+ * 20.12.24 날짜 및 시간
+ */
+@import url(lib/jquery-ui-timepicker-addon.css);
 
 /* ==============================
  * base
@@ -277,6 +281,9 @@ span.inp_file + span.inp_file{margin-top:0;margin-left:20px;}
 .input.datepicker + .ui-datepicker-trigger{margin-left:-24px;}
 .ui-datepicker-trigger{display:inline-block;padding:5px;font-size:0;text-indent:-999em;vertical-align:middle;text-align:center;}
 .ui-datepicker-trigger:before{content:'';display:inline-block;width:13px;height:13px;background:url(../images/common/spr.png) no-repeat -105px 0px;}
+
+/* 20.12.24 timePicker 넣기 */
+.input.timepicker{width:50px;text-align:center;display: none;}
 
 .inp_spinner{position:relative;display:inline-block;padding:0 30px;font-size:16px;}
 .inp_spinner span{position:relative;display:inline-block;}

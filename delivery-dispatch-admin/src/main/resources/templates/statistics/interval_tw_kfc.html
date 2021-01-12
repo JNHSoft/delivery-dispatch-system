@@ -13,10 +13,31 @@
             <div class="right">
                 <input type="hidden" name="startDate"/>
                 <input type="hidden" name="endDate"/>
+                <div style="float: left;">
+                    <div style="margin-top: -4px; margin-bottom: 5px;">
+                        <label>
+                            <span class="lbl" th:text="${#messages.msg('statistics.check.time')}" style="font-size: 12px; font-weight: bold; color:black" />&nbsp;
+                            <input type="checkbox" id="chkTime" onclick="javascript:showTimePicker()"/>&nbsp;
+                        </label>
+                    </div>
+                    <div style="margin-top: 5px;">
+                        <label>
+                            <span class="lbl" th:text="${#messages.msg('statistics.check.peaktime')}" style="font-size: 12px; font-weight: bold; color:black" />&nbsp;
+                            <input type="checkbox" id="chkPeakTime" onclick="javascript:showPeakTime()"/>&nbsp;
+                        </label>
+                    </div>
+                </div>
                 <input type="text" name="datepicker" id="startDate" class="input datepicker"/>
+                <input type="text" name="timepicker" id="startTime" class="input timepicker"/>
                 ~
                 <input type="text" name="datepicker" id="endDate" class="input datepicker"/>
+                <input type="text" name="timepicker" id="endTime" class="input timepicker"/>
                 <button type="button" class="button btn_green"><i class="fa fa-file-excel-o" aria-hidden="true" onclick="excelDownloadByInterval();" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+                <select id="sel_peak_time" style="display: none;" onchange="javascript:changePeakType();">
+                    <option value="0" th:label="${#messages.msg('peaktime.option.all')}"/>
+                    <option value="1" th:label="${#messages.msg('peaktime.option.launch')}"/>
+                    <option value="2" th:label="${#messages.msg('peaktime.option.dinner')}"/>
+                </select>
             </div>
         </div>
     </form>
@@ -66,6 +87,9 @@
 
     var my_store = /*[[${store}]]*/ 'my_store';
     var result_none = /*[[#{result.none}]]*/ 'result_none';
+
+    var set_time = /*[[#{statistics.set.time}]]*/ 'set_time';
+    var btn_confirm = /*[[#{btn.confirm}]]*/ 'btn_confirm';
     /*]]>*/
 </script>
 </html>

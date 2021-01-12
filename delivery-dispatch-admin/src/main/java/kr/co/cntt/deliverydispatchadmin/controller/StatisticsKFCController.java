@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -134,7 +133,7 @@ public class StatisticsKFCController {
 
                     if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
                         LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                        a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S")));
+                        a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
                     }
                 }
 
@@ -204,7 +203,7 @@ public class StatisticsKFCController {
 
                             if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
                                 LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                                a.setCreatedDatetime((reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.S"))));
+                                a.setCreatedDatetime((reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"))));
                             }
                         }
 
@@ -247,6 +246,9 @@ public class StatisticsKFCController {
     @CnttMethodDescription("날짜별 통계 리스트 조회 TW KFC")
     public List<AdminByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
             , @RequestParam("endDate") String endDate
+            , @RequestParam(value = "timeCheck") Boolean chkTime
+            , @RequestParam(value = "peakCheck") Boolean peakTime
+            , @RequestParam(value = "peakType") String peakType
             , @RequestParam(value = "groupID", required = false) String groupId
             , @RequestParam(value = "subGroupID", required = false) String subGroupId
             , @RequestParam(value = "storeID", required = false) String storeId){
@@ -254,8 +256,21 @@ public class StatisticsKFCController {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
+        order.setEndDate(endDate);
+        order.setChkTime(chkTime);
+        order.setChkPeakTime(peakTime);
+        order.setPeakType(peakType);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        /**
+         * 20.12.26 데이터 구하는 방식 변경
+         * */
+        SimpleDateFormat formatter;
+
+        if (chkTime && !peakTime){
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else{
+            formatter = new SimpleDateFormat("yyyy-MM-dd");
+        }
 
         try {
             Date sdfStartDate = formatter.parse(startDate);
@@ -265,6 +280,10 @@ public class StatisticsKFCController {
             long diffDays = diff / (24* 60 * 60 * 1000);
 
             if (diffDays > 31) {
+                return new ArrayList<>();
+            }
+
+            if (sdfStartDate.getTime() > sdfEndDate.getTime()){
                 return new ArrayList<>();
             }
 
@@ -298,15 +317,31 @@ public class StatisticsKFCController {
     @CnttMethodDescription("관리자 기간별 통계 리스트 엑셀 출력 TW KFC")
     public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response,
                                                       @RequestParam(value = "startDate") String startDate,
-                                                      @RequestParam(value = "endDate") String endDate){
+                                                      @RequestParam(value = "endDate") String endDate,
+                                                      @RequestParam(value = "timeCheck") Boolean chkTime,
+                                                      @RequestParam(value = "peakCheck") Boolean peakTime,
+                                                      @RequestParam(value = "peakType") String peakType){
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
+        order.setEndDate(endDate);
+        order.setChkTime(chkTime);
+        order.setChkPeakTime(peakTime);
+        order.setPeakType(peakType);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        /**
+         * 20.12.24 데이터 구하는 방식 변경
+         * */
+        SimpleDateFormat formatter;
+
+        if (chkTime && !peakTime){
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else{
+            formatter = new SimpleDateFormat("yyyy-MM-dd");
+        }
 
         try {
             Date sdfStartDate = formatter.parse(startDate);
@@ -315,6 +350,10 @@ public class StatisticsKFCController {
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
             if (diffDays > 31){
+                return null;
+            }
+
+            if (sdfStartDate.getTime() > sdfEndDate.getTime()){
                 return null;
             }
 
@@ -344,14 +383,29 @@ public class StatisticsKFCController {
     @GetMapping("/getStoreStatisticsByIntervalAtTWKFC")
     @CnttMethodDescription("구간별 통계 리스트 조회 TW KFC")
     public Map getStoreStatisticsByInterval(@RequestParam(value = "startDate") String startDate,
-                                            @RequestParam(value = "endDate") String endDate){
+                                            @RequestParam(value = "endDate") String endDate,
+                                            @RequestParam(value = "timeCheck") Boolean chkTime,
+                                            @RequestParam(value = "peakCheck") Boolean peakTime,
+                                            @RequestParam(value = "peakType") String peakType){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
         order.setEndDate(endDate);
+        order.setChkTime(chkTime);
+        order.setChkPeakTime(peakTime);
+        order.setPeakType(peakType);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        /**
+         * 20.12.24 데이터 구하는 방식 변경
+         * */
+        SimpleDateFormat formatter;
+
+        if (chkTime && !peakTime){
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else{
+            formatter = new SimpleDateFormat("yyyy-MM-dd");
+        }
 
         try {
             Date sdfStartDate = formatter.parse(startDate);
@@ -361,6 +415,10 @@ public class StatisticsKFCController {
             long diffDays = diff / (24* 60 * 60 * 1000);
 
             if (diffDays > 31) {
+                return new HashMap();
+            }
+
+            if (sdfStartDate.getTime() > sdfEndDate.getTime()){
                 return new HashMap();
             }
 
@@ -384,7 +442,12 @@ public class StatisticsKFCController {
     }
 
     @GetMapping("/excelDownloadByIntervalAtTWKFC")
-    public ModelAndView statisticsByIntervalExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
+    public ModelAndView statisticsByIntervalExcelDownload(HttpServletResponse response,
+                                                          @RequestParam(value = "startDate") String startDate,
+                                                          @RequestParam(value = "endDate") String endDate,
+                                                          @RequestParam(value = "timeCheck") Boolean chkTime,
+                                                          @RequestParam(value = "peakCheck") Boolean peakTime,
+                                                          @RequestParam(value = "peakType") String peakType) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 
         // ADMIN 정보
@@ -392,8 +455,20 @@ public class StatisticsKFCController {
         Order order = new Order();
         order.setCurrentDatetime(startDate);
         order.setEndDate(endDate);
+        order.setChkTime(chkTime);
+        order.setChkPeakTime(peakTime);
+        order.setPeakType(peakType);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        /**
+         * 20.12.24 데이터 구하는 방식 변경
+         * */
+        SimpleDateFormat formatter;
+
+        if (chkTime && !peakTime){
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else{
+            formatter = new SimpleDateFormat("yyyy-MM-dd");
+        }
 
         try {
             Date sdfStartDate = formatter.parse(startDate);
@@ -403,6 +478,10 @@ public class StatisticsKFCController {
             long diffDays = diff / (24* 60 * 60 * 1000);
 
             if (diffDays > 31) {
+                return null;
+            }
+
+            if (sdfStartDate.getTime() > sdfEndDate.getTime()){
                 return null;
             }
 

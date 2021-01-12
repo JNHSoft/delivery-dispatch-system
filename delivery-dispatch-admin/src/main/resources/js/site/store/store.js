@@ -1,4 +1,7 @@
 /*<![CDATA[*/
+let countMap = new Object();
+let timerID;
+
 $(document).ready(function () {
     getStoreList();
     // 검색버튼을 누를시에

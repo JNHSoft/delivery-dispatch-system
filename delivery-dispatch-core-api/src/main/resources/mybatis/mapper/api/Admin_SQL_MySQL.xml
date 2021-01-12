@@ -61,6 +61,7 @@
 		<result property="chAddress" column="ch_address" />
 		<result property="chDetailAddress" column="ch_detail_address" />
 		<result property="assignmentStatus" column="assignment_status" />
+		<result property="orderDiff" column="orderDiff" />
 
 		<association property="group" column="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -73,6 +74,10 @@
 			<result property="groupId" column="subgroup_group_id" />
 			<result property="name" column="subgroup_name" />
 			<result property="adminId" column="subgroup_admin_id" />
+		</association>
+
+		<association property="order" column="order" javaType="kr.co.cntt.core.model.order.Order">
+			<result property="createdDatetime" column="order_createdDatetime" />
 		</association>
 
 	</resultMap>
@@ -357,25 +362,6 @@
 
 	<!-- deleteGroup -->
 	<update id="deleteGroup" parameterType="kr.co.cntt.core.model.group.Group">
-		<!--UPDATE TB_GROUP AS A-->
-		<!--LEFT JOIN TB_SUBGROUP AS B-->
-		<!--ON A.id = B.group_id-->
-		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS C-->
-		<!--ON B.id = C.group_id-->
-		<!--LEFT JOIN TB_SUBGROUP_RIDER_REL AS D-->
-		<!--ON B.id = D.group_id-->
-		<!--SET A.deleted = now()-->
-			<!--,B.deleted = now()-->
-			<!--,C.deleted = now()-->
-			<!--,D.group_id = null-->
-            <!--,D.subgroup_id = null-->
-		<!--WHERE A.id = #{id}-->
-			<!--AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
-			<!--AND A.deleted IS NULL-->
-			<!--AND B.deleted IS NULL-->
-			<!--AND C.deleted IS NULL-->
-			<!--AND D.deleted IS NULL-->
-
 		update	 TB_GROUP as A
 		left join TB_SUBGROUP as B
 			on	 A.id = B.group_id
@@ -404,24 +390,6 @@
 
 	<!-- selectSubGroups -->
 	<select id="selectSubGroups" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.SubGroup">
-		<!--SELECT-->
-			<!--A.created_datetime-->
-			<!--, A.modified_datetime-->
-			<!--, A.id-->
-			<!--, A.name-->
-			<!--, A.group_id-->
-			<!--, A.admin_id-->
-			<!--, COUNT(B.id) AS subGroupStoreCount-->
-		<!--FROM TB_SUBGROUP AS A-->
-		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS B-->
-		<!--ON A.id = B.subgroup_id-->
-		<!--WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
-			<!--AND A.group_id = #{id}-->
-			<!--AND A.deleted IS NULL-->
-			<!--AND B.deleted IS NULL-->
-		<!--GROUP BY A.id-->
-		<!--ORDER BY A.name ASC-->
-
 		select	 A.created_datetime
 				,A.modified_datetime
 				,A.id
@@ -467,22 +435,6 @@
 
 	<!-- deleteSubGroup -->
 	<update id="deleteSubGroup" parameterType="kr.co.cntt.core.model.group.SubGroup">
-		<!--UPDATE TB_SUBGROUP AS A-->
-		<!--LEFT JOIN TB_SUBGROUP_STORE_REL AS B-->
-		<!--ON A.id = B.subgroup_id-->
-		<!--LEFT JOIN TB_SUBGROUP_RIDER_REL AS C-->
-		<!--ON A.id = C.subgroup_id-->
-		<!--SET A.deleted = now()-->
-			<!--,B.deleted = now()-->
-			<!--,C.group_id = null-->
-            <!--,C.subgroup_id = null-->
-		<!--WHERE A.id = #{id}-->
-		<!--AND A.group_id = #{groupId}-->
-		<!--AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
-		<!--AND A.deleted IS NULL-->
-		<!--AND B.deleted IS NULL-->
-		<!--AND C.deleted IS NULL-->
-
 		UPDATE	 TB_SUBGROUP AS A
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
 			ON	 A.id = B.subgroup_id
@@ -849,48 +801,54 @@
 		WHERE rider_id = #{id}
 	</delete>
 
-
-
-
 	<!-- selectStores -->
 	<select id="selectStores" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectStoresResult">
-		SELECT
-			A.id
-			, A.code
-			, A.name
-			, A.phone
-			, A.store_name
-			, A.ch_store_name
-			, A.store_phone
-			, A.login_id
-			, A.address
-			, A.detail_address
-			, A.ch_address
-			, A.ch_detail_address
-			, A.assignment_status
-			, C.id AS subgroup_id
-			, C.group_id AS subgroup_group_id
-			, C.name AS subgroup_name
-			, C.admin_id AS subgroup_admin_id
-			, D.id AS group_id
-			, D.name AS group_name
-			, D.admin_id AS group_admin_id
-		FROM TB_STORE AS A
+		SELECT	 A.id
+				,A.code
+				,A.name
+				,A.phone
+				,A.store_name
+				,A.ch_store_name
+				,A.store_phone
+				,A.login_id
+				,A.address
+				,A.detail_address
+				,A.ch_address
+				,A.ch_detail_address
+				,A.assignment_status
+				,C.id AS subgroup_id
+				,C.group_id AS subgroup_group_id
+				,C.name AS subgroup_name
+				,C.admin_id AS subgroup_admin_id
+				,D.id AS group_id
+				,D.name AS group_name
+				,D.admin_id AS group_admin_id
+				,E.store_id
+				-- ,time_to_sec(timediff(now(), ifnull(E.created_datetime, concat(current_date(), ' 09:00:00'))))		as orderDiff
+				,ifnull(E.created_datetime, concat(current_date(), ' 09:00:00'))			as order_createdDatetime
+		FROM	 TB_STORE AS A
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
-		ON A.id = B.store_id
-			AND B.deleted IS NULL
+			ON	 A.id = B.store_id
+			AND	 B.deleted IS NULL
 		LEFT JOIN TB_SUBGROUP AS C
-		ON B.group_id = C.group_id
-			AND B.subgroup_id = C.id
-			AND C.deleted IS NULL
-		LEFT JOIN  TB_GROUP AS D
-		ON B.group_id = D.id
-			AND D.deleted IS NULL
-		WHERE A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-			AND A.deleted IS NULL
-			ORDER BY A.name
+			ON	 B.group_id = C.group_id
+			AND	 B.subgroup_id = C.id
+			AND	 C.deleted IS NULL
+		LEFT JOIN TB_GROUP AS D
+			ON	 B.group_id = D.id
+			AND	 D.deleted IS NULL
+		LEFT JOIN (
+					select	 store_id
+					,max(created_datetime)		as created_datetime
+					from	 TB_ORDER
+					where	 created_datetime > current_date()
+					group by store_id
+				)	as E
+		on	 A.id = E.store_id
+		WHERE	 A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND		 A.deleted IS NULL
+		ORDER BY A.name
 	</select>
-
 
 	<!-- insertStore -->
 	<insert id="insertStore" parameterType="kr.co.cntt.core.model.store.Store">
@@ -2096,9 +2054,34 @@
 			AND	 B.deleted is null
 		WHERE	 A.status in (3)
 		AND		 A.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
-		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 		AND		 third_party_id IS NULL
 		]]>
+<!--		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  A.reservation_datetime >= #{currentDatetime}
+				AND	  A.reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  A.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				<choose>
+					<when test="peakType != null and peakType == 1">
+						AND   date_format(A.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+					</when>
+					<when test="peakType != null and peakType == 2">
+						AND   date_format(A.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+					</when>
+					<otherwise>
+						AND (  (date_format(A.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+							OR (date_format(A.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+							)
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND	  A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+			</otherwise>
+		</choose>
 
 		-- 검색 조건 추가
 		<if test="group != null and group.id != null and group.id != ''">
@@ -2129,7 +2112,32 @@
 		FROM     TB_ORDER
 		WHERE    admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND      status in (3)
-		AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+<!--		AND      created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  reservation_datetime >= #{currentDatetime}
+				AND	  reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				<choose>
+					<when test="peakType != null and peakType == 1">
+						AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+					</when>
+					<when test="peakType != null and peakType == 2">
+						AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+					</when>
+					<otherwise>
+						AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+							OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+							)
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND	  created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+			</otherwise>
+		</choose>
 		-- 시간대별 통계에 대한 조건 추가
 		AND		 assigned_datetime is not null
 		AND		 picked_up_datetime is not null
@@ -2346,7 +2354,32 @@
 		FROM	 TB_ORDER AS O
 		WHERE	 O.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND		 O.STATUS IN (3)
-		AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
+<!--		AND		 O.CREATED_DATETIME between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)-->
+		<choose>
+			<when test="chkTime != null and chkTime == true">
+				AND	  O.reservation_datetime >= #{currentDatetime}
+				AND	  O.reservation_datetime <![CDATA[<]]> #{endDate}
+			</when>
+			<when test="chkPeakTime != null and chkPeakTime == true">
+				AND	  O.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+				<choose>
+					<when test="peakType != null and peakType == 1">
+						AND   date_format(O.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+					</when>
+					<when test="peakType != null and peakType == 2">
+						AND   date_format(O.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+					</when>
+					<otherwise>
+						AND (  (date_format(O.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+							OR (date_format(O.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+							)
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND	  O.created_datetime between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
+			</otherwise>
+		</choose>
 		AND		 THIRD_PARTY_ID IS NULL
 		-- 시간대별 통계에 대한 조건 추가
 		AND		 assigned_datetime is not null
@@ -2360,7 +2393,9 @@
 		GROUP BY day_to_day
 		)	B
 		ON	 A.DATE = B.day_to_day
-		WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}
+<!--		WHERE	 A.DATE BETWEEN #{currentDatetime} AND #{endDate}-->
+		WHERE 1=1
+		AND	  A.DATE between #{currentDatetime} and #{endDate}
 		ORDER BY A.DATE
 	</select>
 </mapper>

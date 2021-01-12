@@ -1,27 +1,95 @@
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
+let beforePeakType = 0;
+
 $(function () {
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
     $('#day1, #day2').val(date);
 
-    $('#day1').datepicker({
-        maxDate : date,
+    /**
+     * 20.12.24 DateTime Picker
+     * */
+    $('#day1').datetimepicker({
+        altField: '#startTime',
+        controlType: 'select',
+        oneLine: true,
+        timeInput: true,
+        timeText: set_time,
+        closeText: btn_confirm,
+        stepMinute: 10,
+        maxDate : $('#day1').val(),
         onClose: function(selectedDate) {
-            $('#day2').datepicker('option', 'minDate', selectedDate);
+            console.log("onClose1");
+            $('#day1').datetimepicker('option', 'maxDate', $('#day2').datetimepicker('getDate'));
+            $('#day2').datetimepicker('option', 'minDate', $('#day1').datetimepicker('getDate'));
             getStoreStatisticsByDate();
         }
     });
 
-    $('#day2').datepicker({
-        minDate : date,
+    $('#day2').datetimepicker({
+        altField: "#endTime",
+        controlType: 'select',
+        oneLine: true,
+        timeInput: true,
+        timeText: set_time,
+        closeText: btn_confirm,
+        stepMinute: 10,
+        minDate : $('#endDate').val(),
         onClose: function( selectedDate ) {
-            $('#day1').datepicker('option', 'maxDate', selectedDate);
+            console.log("onClose2");
+            $('#day1').datetimepicker('option', 'maxDate', $('#day2').datetimepicker('getDate'));
+            $('#day2').datetimepicker('option', 'minDate', $('#day1').datetimepicker('getDate'));
             getStoreStatisticsByDate();
         }
     });
 
-    getStoreStatisticsByDate();
+    showTimePicker();
 });
 
+// 20.12.24 시간을 선택할 수 있는 항목 노출
+function showTimePicker(){
+    let chkTime = $('#chkTime').is(":checked");
+    let peakTime = $('#chkPeakTime').is(":checked");
+
+    if (chkTime){
+        $('#startTime').show();
+        $('#endTime').show();
+        if (peakTime){
+            $('#chkPeakTime').prop("checked", false);
+            $('#sel_peak_time').css('display', 'none');
+        }
+    }else{
+        $('#startTime').css('display', 'none');
+        $('#endTime').css('display', 'none');
+
+        if (!peakTime) {
+            getStoreStatisticsByDate();
+        }
+    }
+}
+
+// 21.01.05 피크(Peak) 타임 조회
+function showPeakTime(){
+    let peakTime = $('#chkPeakTime').is(":checked");
+
+    if (peakTime){
+        $('#chkTime').prop("checked", false);
+        $('#sel_peak_time').show();
+        showTimePicker();
+    }else{
+        $('#sel_peak_time').css('display', 'none');
+    }
+
+    getStoreStatisticsByDate();
+}
+
+// 21.01.06 피크 Type 종류 변경 시, 데이터 리플레쉬
+function changePeakType(){
+    // 변경 전 값과 다른 경우에 한하여 데이터 리플레쉬를 한다.
+    if (beforePeakType.toString() != $('#sel_peak_time').val().toString()){
+        beforePeakType = $('#sel_peak_time').val();
+        getStoreStatisticsByDate();
+    }
+}
 
 function totalTimeSet(time) {
     if (time) {
@@ -46,6 +114,30 @@ function getStoreStatisticsByDate() {
         return;
     }
 
+    // 20.12.24 시간 범위도 포함 유무 체크 후 값 보내기
+    let chkTime = $('#chkTime').is(":checked");
+    let peakTime = $('#chkPeakTime').is(":checked");
+
+    if (chkTime && !peakTime){       // 체크가 되어 있다면 날짜 범위 체크
+        let startDT = $('#day1').datetimepicker('getDate');
+        let endDT = $('#day2').datetimepicker('getDate');
+
+        if ($('#startTime').val() == undefined || $('#startTime').val() == "" || $('#endTime').val() == undefined || $('#endTime').val() == ""){
+            return;
+        }
+
+        if (startDT.getTime() > endDT.getTime()){
+            return;
+        }
+    }
+
+    let sDate = $('#day1').val();
+    let eDate = $('#day2').val();
+
+    if (chkTime && !peakTime){
+        sDate = sDate + " " + $('#startTime').val();
+        eDate = eDate + " " + $('#endTime').val();
+    }
 
     let mydata = [];
     loading.show();
@@ -53,8 +145,11 @@ function getStoreStatisticsByDate() {
         url: "/getStoreStatisticsByDateAtTWKFC",
         type: 'get',
         data: {
-            startDate: $('#day1').val(),
-            endDate: $('#day2').val()
+            startDate: sDate,
+            endDate: eDate,
+            timeCheck: chkTime,
+            peakCheck: peakTime,
+            peakType: $('#sel_peak_time').val()
         },
         dataType: 'json',
         success: function (data) {
@@ -430,12 +525,38 @@ function excelDownloadByDate(){
         return;
     }
 
+    // 20.12.24 시간 범위도 포함 유무 체크 후 값 보내기
+    let chkTime = $('#chkTime').is(":checked");
+    let peakTime = $('#chkPeakTime').is(":checked");
+
+    if (chkTime && !peakTime){       // 체크가 되어 있다면 날짜 범위 체크
+        let startDT = $('#day1').datetimepicker('getDate');
+        let endDT = $('#day2').datetimepicker('getDate');
+
+        if ($('#startTime').val() == undefined || $('#startTime').val() == "" || $('#endTime').val() == undefined || $('#endTime').val() == ""){
+            return;
+        }
+
+        if (startDT.getTime() > endDT.getTime()){
+            return;
+        }
+    }
+
     loading.show();
+
+    if (chkTime && !peakTime){
+        startDate = startDate + " " + $('#startTime').val();
+        endDate = endDate + " " + $('#endTime').val();
+    }
+
     $.fileDownload("/excelDownloadByDateAtTWKFC",{
         httpMethod:"GET",
         data : {
             startDate : startDate,
-            endDate : endDate
+            endDate : endDate,
+            timeCheck: chkTime,
+            peakCheck: peakTime,
+            peakType: $('#sel_peak_time').val()
         },
         successCallback: function(url){
             loading.hide();
