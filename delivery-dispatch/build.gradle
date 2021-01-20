@@ -116,6 +116,9 @@ subprojects {
 //        compile group: 'org.codehaus.janino', name: 'janino', version: '2.7.8'
         testCompileOnly 'org.projectlombok:lombok:1.16.16'
         testCompile 'org.springframework.boot:spring-boot-starter-test'
+
+        // 21.01.20 메일 발송 API 추가
+        compile 'javax.mail:mail:1.4.7'
     }
 }
 
