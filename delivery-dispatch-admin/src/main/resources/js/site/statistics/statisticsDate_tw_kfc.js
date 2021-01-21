@@ -159,7 +159,8 @@ function getStoreStatisticsByDate() {
             peakCheck: peakTime,
             peakType: $('#sel_peak_time').val(),
             groupID: $("#statisticsGroupList").val(),
-            subGroupID: $("#statisticsSubGroupList").val(),
+            //subGroupID: $("#statisticsSubGroupList").val(),
+            subGroupName: $("#statisticsSubGroupList").val(),
             storeID: $("#statisticsStoreList").val(),
         },
         dataType: 'json',
@@ -674,7 +675,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
             if(data) {
                 var pstatisticsSubGroupListHtml = "<option value='reset'>" + list_search_all_subgroup + "</option>";
                 for (var i in data){
-                    pstatisticsSubGroupListHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
+                    pstatisticsSubGroupListHtml += "<option value='" + data[i].name  + "'>" + data[i].name + "</option>";
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
@@ -699,7 +700,7 @@ function getStatisticsStoreList(subId, gId) {
         type : 'get',
         data : {
             groupId : selectGroupId,
-            subGroupId : selecSubGroupId
+            subGroupName : selecSubGroupId
         },
         async : false,
         dataType : 'json',

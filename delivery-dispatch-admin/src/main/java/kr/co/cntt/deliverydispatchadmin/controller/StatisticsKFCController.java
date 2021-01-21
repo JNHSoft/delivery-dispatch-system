@@ -79,7 +79,8 @@ public class StatisticsKFCController {
     public List<Order> getStoreStatisticsByOrderAtTWKFC(@RequestParam(value = "startDate") String startDate
             , @RequestParam(value = "endDate") String endDate
             , @RequestParam(value = "groupID", required = false) String groupId
-            , @RequestParam(value = "subGroupID", required = false) String subGroupId
+            //, @RequestParam(value = "subGroupID", required = false) String subGroupId
+            , @RequestParam(value = "subGroupName", required = false) String subGroupName
             , @RequestParam(value = "storeID", required = false) String storeId) {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -112,9 +113,10 @@ public class StatisticsKFCController {
             order.getGroup().setId(groupId);
         }
 
-        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+        // 21-01-21 서브그룹 그룹화
+        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
             order.setSubGroup(new SubGroup());
-            order.getSubGroup().setId(subGroupId);
+            order.getSubGroup().setGroupingName(subGroupName);
         }
 
         if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){

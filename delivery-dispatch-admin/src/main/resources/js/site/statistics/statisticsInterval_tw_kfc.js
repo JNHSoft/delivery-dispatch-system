@@ -318,19 +318,6 @@ function chart30minute(data){
     series1.tooltip.pointerOrientation = "vertical";
 
     series1.columns.template.width = am4core.percent(100);
-
-    /*var labelBullet = new am4charts.LabelBullet();
-    series.bullets.push(labelBullet);
-    labelBullet.strokeOpacity = 0;
-    labelBullet.stroke = am4core.color("#dadada");
-    labelBullet.dy = -20;
-    labelBullet.minWidth = 20;
-    labelBullet.label.text = "{valueY}";
-    labelBullet.label.fontSize = 10;
-    labelBullet.label.adapter.add("text", function(value, target) {
-        if(target.dataItem.valueY == 0) return '';
-        return value;
-    })*/
 }
 
 let testData;
@@ -396,10 +383,6 @@ function chartPercentage(data){
         pieSeries.slices.template.strokeOpacity = 1;
         pieSeries.slices.template.cursorOverStyle = [{"property": "cursor","value": "pointer"}];
 
-
-        //pieSeries.tooltip.getFillFromObject = false;
-        //pieSeries.tooltip.label.fill = am4core.color('#fff');
-
         pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
         pieSeries.labels.template.radius = am4core.percent(-30);
 
@@ -418,10 +401,8 @@ function chartPercentage(data){
         chart.legend = new am4charts.Legend();
         chart.legend.position = "right";
         chart.legend.width = 110;
-        //chart.legend.markers.template.disabled = true;
         chart.legend.labels.template.text = "[bold {color}]{name}";
         chart.legend.valueLabels.template.text = "{value.value}";
-        //chart.legend.itemContainers.template.tooltipText = "";
         chart.legend.itemContainers.template.hoverable = false;
     } else {
         $('#chart_percentage').html(`<div class="no_chart_wrap">${label_count}<br>${result_none}</div>`);
@@ -431,7 +412,6 @@ function chartPercentage(data){
 
 function chartTc(data){
     var chart = am4core.create("chart_tc", am4charts.XYChart);
-    //chart.scrollbarX = new am4core.Scrollbar();
 
     chart.data = data;
 
@@ -445,7 +425,6 @@ function chartTc(data){
     categoryAxis.renderer.labels.template.rotation = 270;
     categoryAxis.tooltip.disabled = true;
     categoryAxis.renderer.minHeight = 50;
-    //categoryAxis.renderer.grid.template.disabled = true;
 
     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.renderer.minWidth = 30;
@@ -470,9 +449,6 @@ function chartTc(data){
     series1.columns.template.fill = am4core.color("#a1d3f5");
     series1.tooltip.pointerOrientation = "vertical";
 
-    /*series.columns.template.column.cornerRadiusTopLeft = 5;
-    series.columns.template.column.cornerRadiusTopRight = 5;
-    series.columns.template.column.fillOpacity = 0.8;*/
     series.columns.template.width = am4core.percent(85);
     series1.columns.template.width = am4core.percent(85);
 

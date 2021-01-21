@@ -75,13 +75,16 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     // 서브 그룹 조회
     @Override
     public List<SubGroup> getSubGroupList(Order order) {
-        return adminMapper.selectSubGroups(order);
+        //return adminMapper.selectSubGroups(order);
+        return adminMapper.selectSubGroupGrouping(order);
     }
 
-    // 서브 그룹 조회
+    // 서브 그룹 매장 조회
     @Override
     public List<SubGroupStoreRel> selectSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel) {
-        return adminMapper.selectSubgroupStoreRels(subGroupStoreRel);
+        //return adminMapper.selectSubgroupStoreRels(subGroupStoreRel);
+        // 21.01.21 서브 그룹 그루핑으로 인한 수정 이름을 활용하여 가져오기
+        return adminMapper.selectSubgrouGroupingStoreRels(subGroupStoreRel);
     }
 
     // 통계 리스트 Excel

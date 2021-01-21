@@ -500,4 +500,11 @@ public interface AdminMapper {
      * 누적 시간 오버된 매장 개수 구하기
      * */
     Map selectOverTimeByStore(Store store);
+    
+    /**
+     * 21.01.21
+     * 서브 그룹 그룹핑 처리
+     * */
+    List<SubGroup> selectSubGroupGrouping(Common common);
+    List<SubGroupStoreRel> selectSubgrouGroupingStoreRels(SubGroupStoreRel subGroupStoreRel);
 }
