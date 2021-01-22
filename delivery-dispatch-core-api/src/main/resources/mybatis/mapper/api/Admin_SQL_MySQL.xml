@@ -1491,7 +1491,8 @@
 <!--			AND	 sbStore.subgroup_id = #{subGroup.id}-->
 <!--		</if>-->
 		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-			AND	 SUBSTRING_INDEX(sbStore.name, '-', 1) = #{subGroup.groupingName}
+<!--			AND	 SUBSTRING_INDEX(sbStore.name, '-', 1) = #{subGroup.groupingName}-->
+			AND		 sbStore.subgroup_id in ( select id from TB_SUBGROUP where admin_id = sbStore.admin_id and group_id = sbStore.group_id and id = sbStore.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 		</if>
 		<if test="storeId != null and storeId != ''">
 			AND	 sbStore.store_id = #{storeId}
@@ -1560,8 +1561,8 @@
 		<if test="group != null and group.id != null and group.id != ''">
 			AND	 B.group_id = #{group.id}
 		</if>
-		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">
-			AND	 B.subgroup_id = #{subGroup.id}
+		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
+			AND	 B.subgroup_id in ( select id from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 		</if>
 		<if test="storeId != null and storeId != ''">
 			AND	 B.store_id = #{storeId}
@@ -2067,8 +2068,11 @@
 		<if test="group != null and group.id != null and group.id != ''">
 			AND	 B.group_id = #{group.id}
 		</if>
-		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">
-			AND	 B.subgroup_id = #{subGroup.id}
+<!--		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">-->
+<!--			AND	 B.subgroup_id = #{subGroup.id}-->
+<!--		</if>-->
+		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
+			AND	 B.subgroup_id in ( select id from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 		</if>
 		<if test="storeId != null and storeId != ''">
 			AND	 B.store_id = #{storeId}
@@ -2433,7 +2437,7 @@
 				,B.ch_store_name as chStoreName
 		from	 TB_SUBGROUP_STORE_REL		as A
 		left join TB_STORE					as B
-			on	 A.id = B.id
+			on	 A.store_id = B.id
 		left join TB_SUBGROUP				as C
 			on	 A.admin_id = C.admin_id
 			and	 A.group_id = C.group_id

@@ -249,7 +249,7 @@ public class StatisticsController {
         // param storeId
         subGroupStoreRel.setGroupId(groupId);
         //subGroupStoreRel.setSubGroupId(subGroupId);
-        subGroupStoreRel.setName(subGroupName);
+        subGroupStoreRel.setGroupingName(subGroupName);
         subGroupStoreRel.setToken(adminInfo.getAdminAccessToken());
 
         admin.setToken(adminInfo.getAdminAccessToken());
@@ -482,7 +482,7 @@ public class StatisticsController {
     public List<AdminByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
                                                 ,@RequestParam("endDate") String endDate
                                                 ,@RequestParam(value = "groupID", required = false) String groupId
-                                                ,@RequestParam(value = "subGroupID", required = false) String subGroupId
+                                                ,@RequestParam(value = "subGroupName", required = false) String subGroupName
                                                 ,@RequestParam(value = "storeID", required = false) String storeId){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -515,9 +515,9 @@ public class StatisticsController {
             order.getGroup().setId(groupId);
         }
 
-        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
             order.setSubGroup(new SubGroup());
-            order.getSubGroup().setId(subGroupId);
+            order.getSubGroup().setGroupingName(subGroupName);
         }
 
         if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){

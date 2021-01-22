@@ -302,11 +302,6 @@ public class StatisticsKFCController {
             order.getGroup().setId(groupId);
         }
 
-//        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
-//            order.setSubGroup(new SubGroup());
-//            order.getSubGroup().setId(subGroupId);
-//        }
-
         if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
             order.setSubGroup(new SubGroup());
             order.getSubGroup().setGroupingName(subGroupName);
