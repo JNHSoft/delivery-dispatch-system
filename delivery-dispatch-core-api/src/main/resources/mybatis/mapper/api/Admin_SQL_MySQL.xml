@@ -2441,9 +2441,9 @@
 		where	 A.deleted is null
 		and		 B.deleted is null
 		and		 A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-		<if test="groupId != null and name != null">
+		<if test="groupId != null and groupingName != null">
 			and		 A.group_id = #{groupId}
-			and		 SUBSTRING_INDEX(C.name, '-', 1) = #{name}
+			and		 SUBSTRING_INDEX(C.name, '-', 1) = #{groupingName}
 		</if>
 		order by B.store_name;
 	</select>

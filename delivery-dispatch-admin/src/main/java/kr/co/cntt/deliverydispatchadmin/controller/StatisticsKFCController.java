@@ -252,7 +252,8 @@ public class StatisticsKFCController {
             , @RequestParam(value = "peakCheck") Boolean peakTime
             , @RequestParam(value = "peakType") String peakType
             , @RequestParam(value = "groupID", required = false) String groupId
-            , @RequestParam(value = "subGroupID", required = false) String subGroupId
+            //, @RequestParam(value = "subGroupID", required = false) String subGroupId
+            , @RequestParam(value = "subGroupName", required = false) String subGroupName
             , @RequestParam(value = "storeID", required = false) String storeId){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -301,9 +302,14 @@ public class StatisticsKFCController {
             order.getGroup().setId(groupId);
         }
 
-        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+//        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+//            order.setSubGroup(new SubGroup());
+//            order.getSubGroup().setId(subGroupId);
+//        }
+
+        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
             order.setSubGroup(new SubGroup());
-            order.getSubGroup().setId(subGroupId);
+            order.getSubGroup().setGroupingName(subGroupName);
         }
 
         if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
