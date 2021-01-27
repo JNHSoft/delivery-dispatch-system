@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -103,13 +105,20 @@ public class ScheduleController {
      * 21.01.20 일정 시간 단위로 이메일 발송
      * 월~금요일 9시부터 22시까지 1시간 단위로 매일 발송
      * */
-    //@Scheduled(cron = "0 0 9-22 * * MON-FRI")
-    @Scheduled(fixedDelayString = "10000")
+    @Scheduled(cron = "0 0 9-22 * * MON-FRI")
+    //@Scheduled(fixedDelayString = "10000")
     public void statisticsSendByMail(){
         //System.out.println("statisticsSendByMail 작동");
 
         scheduleAdminService.sendStatisticsByMail();
 
+    }
+
+    @ResponseBody
+    @GetMapping("/TextMail")
+    public String testMail(){
+        scheduleAdminService.sendStatisticsByMail();
+        return "OK";
     }
 
 }
