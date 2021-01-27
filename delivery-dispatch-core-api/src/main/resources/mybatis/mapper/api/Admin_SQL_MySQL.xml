@@ -147,6 +147,7 @@
 			<result property="groupId" column="subgroup_group_id" />
 			<result property="name" column="subgroup_name" />
 			<result property="adminId" column="subgroup_admin_id" />
+			<result property="groupingName" column="subgroup_grouping_name" />
 		</association>
 
 	</resultMap>
@@ -1048,83 +1049,59 @@
 
 	<!-- 통계 조회 List -->
 	<select id="selectAdminStatistics" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
-		SELECT
-		TG.name AS group_name
-	, TG.id AS group_id
-	, TG.admin_id AS group_admin_id
-	, TSG.id AS subgroup_id
-	, TSG.name AS subgroup_name
-	, TSG.admin_id AS subgroup_admin_id
-	, TSG.group_id AS subgroup_group_id
-	, SSR.store_id AS subGroupStoreRel_store_id
-	, IFNULL(TBS.store_name, concat('[DEL] ', (select ifnull(store_name, '') from TB_STORE where id = TBO.store_id and admin_id = TBO.admin_id)))		as store_name
-	, TBO.admin_id
-	, TBO.store_id
-	, TBO.rider_id
-	, TBO.status
-	, TBO.id
-	, TBO.created_datetime
-	, TBO.picked_up_datetime
-	, TBO.menu_name
-	, TBO.cooking_time
-	, TBP.type
-	, TBO.assigned_datetime
-	, TBO.picked_up_datetime
-	, TBO.arrived_datetime
-	, TBO.reservation_datetime
-	, TBO.reservation_status
-	, TBR.name AS rider_name
-	, TBO.address
-	, TBO.paid
-	, TBO.reg_order_id
-
-
-	FROM TB_ORDER AS TBO
-
-	LEFT JOIN
-	TB_RIDER AS TBR
-	on TBR.id = TBO.rider_id
-	AND TBR.deleted is NULL
-
-	LEFT JOIN
-	TB_STORE AS TBS
-	on TBS.id = TBO.store_id
-	AND TBS.deleted is NULL
-
-	LEFT JOIN
-	TB_PAYMENT AS TBP
-	on TBP.order_id = TBO.id
-	AND TBP.deleted is NULL
-
-	LEFT JOIN
-	TB_SUBGROUP_STORE_REL AS SSR
-	on TBO.store_id = SSR.store_id
-	AND SSR.deleted is NULL
-
-	LEFT JOIN
-	TB_SUBGROUP AS TSG
-	on SSR.subgroup_id = TSG.id
-	AND TSG.deleted is NULL
-
-	LEFT JOIN
-	TB_GROUP AS TG
-	on SSR.group_id = TG.id
-	AND TG.deleted is NULL
-
-	WHERE
-
-	TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-	AND TBO.status in (3,4)
- 	AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > TBO.created_datetime
-    AND TBO.created_datetime > #{currentDatetime}
-
-	ORDER BY TBO.created_datetime ASC
-	<!--<if test="startDate != null and startDate != ''">-->
-		<!--AND start_date = #{startDate}-->
-	<!--</if>-->
-	<!--<if test="endDate != null and endDate != ''">-->
-		<!--AND end_date = #{endDate}-->
-	<!--</if>-->
+		SELECT	 TG.name AS group_name
+				,TG.id AS group_id
+				,TG.admin_id AS group_admin_id
+				,TSG.id AS subgroup_id
+				,TSG.name AS subgroup_name
+				,SUBSTRING_INDEX(TSG.name, '-', 1) as subgroup_grouping_name
+				,TSG.admin_id AS subgroup_admin_id
+				,TSG.group_id AS subgroup_group_id
+				,SSR.store_id AS subGroupStoreRel_store_id
+				,IFNULL(TBS.store_name, concat('[DEL] ', (select ifnull(store_name, '') from TB_STORE where id = TBO.store_id and admin_id = TBO.admin_id)))		as store_name
+				,TBO.admin_id
+				,TBO.store_id
+				,TBO.rider_id
+				,TBO.status
+				,TBO.id
+				,TBO.created_datetime
+				,TBO.picked_up_datetime
+				,TBO.menu_name
+				,TBO.cooking_time
+				,TBP.type
+				,TBO.assigned_datetime
+				,TBO.picked_up_datetime
+				,TBO.arrived_datetime
+				,TBO.reservation_datetime
+				,TBO.reservation_status
+				,TBR.name AS rider_name
+				,TBO.address
+				,TBO.paid
+				,TBO.reg_order_id
+		FROM	 TB_ORDER AS TBO
+		LEFT JOIN  TB_RIDER AS TBR
+			on	 TBR.id = TBO.rider_id
+			AND	 TBR.deleted is NULL
+		LEFT JOIN TB_STORE AS TBS
+			on	 TBS.id = TBO.store_id
+			AND	 TBS.deleted is NULL
+		LEFT JOIN TB_PAYMENT AS TBP
+			on	 TBP.order_id = TBO.id
+			AND	 TBP.deleted is NULL
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS SSR
+			on	 TBO.store_id = SSR.store_id
+			AND	 SSR.deleted is NULL
+		LEFT JOIN TB_SUBGROUP AS TSG
+			on	 SSR.subgroup_id = TSG.id
+			AND	 TSG.deleted is NULL
+		LEFT JOIN TB_GROUP AS TG
+			on	 SSR.group_id = TG.id
+			AND	 TG.deleted is NULL
+		WHERE	 TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND		 TBO.status in (3,4)
+		AND		 date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > TBO.created_datetime
+		AND		 TBO.created_datetime > #{currentDatetime}
+		ORDER BY TBO.created_datetime ASC
 	</select>
 
 	<!-- 통계 조회 List  EXcel-->
@@ -1510,8 +1487,12 @@
 		<if test="group != null and group.id != null and group.id != ''">
 			AND	 sbStore.group_id = #{group.id}
 		</if>
-		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">
-			AND	 sbStore.subgroup_id = #{subGroup.id}
+<!--		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">-->
+<!--			AND	 sbStore.subgroup_id = #{subGroup.id}-->
+<!--		</if>-->
+		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
+<!--			AND	 SUBSTRING_INDEX(sbStore.name, '-', 1) = #{subGroup.groupingName}-->
+			AND		 sbStore.subgroup_id in ( select id from TB_SUBGROUP where admin_id = sbStore.admin_id and group_id = sbStore.group_id and id = sbStore.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 		</if>
 		<if test="storeId != null and storeId != ''">
 			AND	 sbStore.store_id = #{storeId}
@@ -1580,8 +1561,8 @@
 		<if test="group != null and group.id != null and group.id != ''">
 			AND	 B.group_id = #{group.id}
 		</if>
-		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">
-			AND	 B.subgroup_id = #{subGroup.id}
+		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
+			AND	 B.subgroup_id in ( select id from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 		</if>
 		<if test="storeId != null and storeId != ''">
 			AND	 B.store_id = #{storeId}
@@ -2087,8 +2068,11 @@
 		<if test="group != null and group.id != null and group.id != ''">
 			AND	 B.group_id = #{group.id}
 		</if>
-		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">
-			AND	 B.subgroup_id = #{subGroup.id}
+<!--		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">-->
+<!--			AND	 B.subgroup_id = #{subGroup.id}-->
+<!--		</if>-->
+		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
+			AND	 B.subgroup_id in ( select id from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 		</if>
 		<if test="storeId != null and storeId != ''">
 			AND	 B.store_id = #{storeId}
@@ -2420,4 +2404,52 @@
 			and		 S.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 		</if>
 	</select>
+
+	<!-- 21.01.21 서브 그룹의 이름 그룹화 -->
+	<select id="selectSubGroupGrouping" parameterType="kr.co.cntt.core.model.common.Common" resultType="kr.co.cntt.core.model.group.SubGroup">
+		select	 SUBSTRING_INDEX(A.name, '-', 1)		as name
+				,A.group_id
+				,A.admin_id
+				,count(B.id)							as subGroupStoreCount
+		from	 TB_SUBGROUP			A
+		left join TB_SUBGROUP_STORE_REL	B
+			on	 A.admin_id = B.admin_id
+			and	 A.group_id = B.group_id
+			and	 A.id = B.subgroup_id
+		where	 A.deleted is null
+		and		 B.deleted is null
+		and		 A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		and		 A.group_id = #{id}
+		group by SUBSTRING_INDEX(A.name, '-', 1), A.group_id, A.admin_id
+		order by 1;
+	</select>
+
+	<select id="selectSubgrouGroupingStoreRels" parameterType="kr.co.cntt.core.model.group.SubGroupStoreRel" resultType="kr.co.cntt.core.model.group.SubGroupStoreRel">
+		select	 A.created_datetime
+				,A.modified_datetime
+				,A.id
+				,A.admin_id
+				,A.group_id
+				,A.subgroup_id
+				,SUBSTRING_INDEX(C.name, '-', 1)		as name
+				,A.store_id
+				,B.store_name as storeName
+				,B.ch_store_name as chStoreName
+		from	 TB_SUBGROUP_STORE_REL		as A
+		left join TB_STORE					as B
+			on	 A.store_id = B.id
+		left join TB_SUBGROUP				as C
+			on	 A.admin_id = C.admin_id
+			and	 A.group_id = C.group_id
+			and	 A.subgroup_id = C.id
+		where	 A.deleted is null
+		and		 B.deleted is null
+		and		 A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		<if test="groupId != null and groupingName != null">
+			and		 A.group_id = #{groupId}
+			and		 SUBSTRING_INDEX(C.name, '-', 1) = #{groupingName}
+		</if>
+		order by B.store_name;
+	</select>
+
 </mapper>
