@@ -1,4 +1,4 @@
-package kr.co.cntt.deliverydispatchadmin.View;
+package kr.co.cntt.core.service.admin.impl.Excel;
 
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.service.admin.impl.Excel.ExcelComm;

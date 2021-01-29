@@ -3,6 +3,7 @@ package kr.co.cntt.core.service.admin.impl;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.service.admin.ScheduleAdminService;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
+import kr.co.cntt.core.service.admin.impl.Excel.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.joda.time.DateTime;
@@ -21,7 +22,11 @@ import javax.mail.util.ByteArrayDataSource;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("scheduleAdminService")
@@ -51,8 +56,28 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     @Resource
     private MessageSource messageSource;
 
+    /**
+     * PizzaHut 통계
+     * */
     @Autowired
-    StatisticsAdminExcelBuilderServiceImpl data;
+    StatisticsAdminExcelBuilderServiceImpl orderListStatisctics;            // 1페이지 통계
+    @Autowired
+    StatisticsAdminOrderBuilderServiceImpl orderStatisctics;                // 2페이지 통계
+    @Autowired
+    StatisticsAdminByDateBuilderServiceImpl dateStatisctics;                // 3페이지
+    @Autowired
+    StatisticsAdminByIntervalExcelBuilderServiceImpl intervalStatisctis;    // 4페이지
+
+    /**
+     * KFC 통계
+     * */
+    @Autowired
+    StatisticsAdminOrderAtTWKFCBuilderServiceImpl orderStatiscticsAtKFC;       // KFC 2페이지 통계
+    @Autowired
+    StatisticsAdminByDateAtTWKFCBuilderServiceImpl dateStatiscticsAtKFC;       // KFC 3페이지
+    @Autowired
+    StatisticsAdminByIntervalAtTWKFCExcelBuilderServiceImpl intervalStatisctisAtKFC;    // KFC 4페이지
+
 
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
@@ -72,17 +97,36 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     @Override
     public boolean sendStatisticsByMail() {
         // PizzaHut 통계 엑셀 가져오기
+        Dictionary<String, DataSource> excelList = new Hashtable<>();
 
+        // PizzaHut
+        excelList.put("0-1", getStatisticsByOrderList(pAdmin, "0"));
+        excelList.put("0-2", getStatisticsByOrder());
+
+        // KFC
+        excelList.put("1-1", getStatisticsByOrderList(kAdmin, "1"));
+        excelList.put("1-2", getStatisticsByOrder());
+
+        // 메일 발송
+        sendMail(excelList);
+
+        return false;
+    }
+
+    /**
+     * 1페이지 통계
+     * */
+    private DataSource getStatisticsByOrderList(String token, String brandCode){
         Order order = new Order();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         order.setCurrentDatetime(formatter.format(new Date()));
         order.setDays("1");
 
-        order.setToken(pAdmin);
+        order.setToken(token);
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
         List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(order);
-        data.setOrderStatisticsByAdminExcel(wb, orderStatisticsByAdminList, "0");
+        orderListStatisctics.setOrderStatisticsByAdminExcel(wb, orderStatisticsByAdminList, brandCode);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -93,26 +137,28 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
 
         }
 
-        DataSource excelData = new ByteArrayDataSource(bos.toByteArray(), "application/vnd.ms-excel");
+        return new ByteArrayDataSource(bos.toByteArray(), "application/vnd.ms-excel");
+    }
 
-        // 메일 발송
-        sendMail(excelData);
 
+    /**
+    * 2페이지 통계 추출 (Pzh)
+    * */
+    private DataSource getStatisticsByOrder() {
+        return null;
+    }
+
+    /**
+     * 3페이지 통계 추출 (Pzh)
+     * */
+    private boolean sendStatisticsByDateByMail() {
         return false;
     }
 
-    @Override
-    public boolean sendStatisticsByOrderByMail() {
-        return false;
-    }
-
-    @Override
-    public boolean sendStatisticsByDateByMail() {
-        return false;
-    }
-
-    @Override
-    public boolean sendStatisticsByIntervalByMail() {
+    /**
+     * 4페이지 통계 추출 (Pzh)
+     * */
+    private boolean sendStatisticsByIntervalByMail() {
         return false;
     }
 
@@ -121,26 +167,31 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
         return false;
     }
 
-    @Override
-    public boolean sendStatisticsByOrderByMailForKFC() {
+    /**
+     * 2페이지 통계 추출 (KFC)
+     * */
+    private DataSource getStatisticsByOrderAtKFC() {
+        return null;
+    }
+
+    /**
+     * 3페이지 통계 추출 (KFC)
+     * */
+    private boolean sendStatisticsByDateByMailAtKFC() {
         return false;
     }
 
-    @Override
-    public boolean sendStatisticsByDateByMailForKFC() {
+    /**
+     * 4페이지 통계 추출 (KFC)
+     * */
+    private boolean sendStatisticsByIntervalByMailAtKFC() {
         return false;
     }
 
-    @Override
-    public boolean sendStatisticsByIntervalByMailForKFC() {
-        return false;
-    }
-    
-    
     /**
      * 메일 발송 프로세스
      * */
-    private boolean sendMail(DataSource sendData){
+    private boolean sendMail(Dictionary<String, DataSource> sendData){
 
         Properties props = new Properties();
 
@@ -191,7 +242,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
 
                 // Excel 첨부해보자.
                 MimeBodyPart addExcel = new MimeBodyPart();
-                addExcel.setDataHandler(new DataHandler(sendData));
+                //addExcel.setDataHandler(new DataHandler());
                 addExcel.setFileName(MimeUtility.encodeText("엑셀 첨부.xlsx", "UTF-8", "Q"));
 
                 // 본문 내용
