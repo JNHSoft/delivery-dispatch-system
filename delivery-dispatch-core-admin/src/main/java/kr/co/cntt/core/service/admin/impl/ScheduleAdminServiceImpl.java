@@ -1,17 +1,19 @@
 package kr.co.cntt.core.service.admin.impl;
 
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.statistic.AdminByDate;
+import kr.co.cntt.core.model.statistic.Interval;
+import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.cntt.core.service.admin.ScheduleAdminService;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
 import kr.co.cntt.core.service.admin.impl.Excel.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -20,7 +22,6 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
 import java.io.ByteArrayOutputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,11 +51,8 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     @Value("${mail.enable}")
     private String enable;
 
-    private String kAdmin = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d19hZG1pbiIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6MTUyMzgzOTY0ODExNH0.pBItlg9PbpWHNONuld5AXMWag6YohnOFBwiQj3sPg8A";
-    private String pAdmin = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d19rZmNfYWRtaW4iLCJhdWRpZW5jZSI6IndlYiIsImNyZWF0ZWQiOjE1ODA4Nzc1NDEzMjZ9.mx9V4RuBrF1DErKk2T2ZzypdnF3SbKZNW5d8Sy3tS48";
-
-    @Resource
-    private MessageSource messageSource;
+    private String pAdmin = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d19hZG1pbiIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6MTUyMzgzOTY0ODExNH0.pBItlg9PbpWHNONuld5AXMWag6YohnOFBwiQj3sPg8A";
+    private String kAdmin = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0d19rZmNfYWRtaW4iLCJhdWRpZW5jZSI6IndlYiIsImNyZWF0ZWQiOjE1ODA4Nzc1NDEzMjZ9.mx9V4RuBrF1DErKk2T2ZzypdnF3SbKZNW5d8Sy3tS48";
 
     /**
      * PizzaHut 통계
@@ -78,11 +76,6 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     @Autowired
     StatisticsAdminByIntervalAtTWKFCExcelBuilderServiceImpl intervalStatisctisAtKFC;    // KFC 4페이지
 
-
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-
     /**
      * 객체 주입
      */
@@ -97,20 +90,17 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     @Override
     public boolean sendStatisticsByMail() {
         // PizzaHut 통계 엑셀 가져오기
-        Dictionary<String, DataSource> excelList = new Hashtable<>();
+        Map<String, DataSource> excelList = new HashMap<>();
+        List<String> mailList = statisticsAdminService.selectReceivedStatisticsMailUser("0");
 
         // PizzaHut
-        excelList.put("0-1", getStatisticsByOrderList(pAdmin, "0"));
-        excelList.put("0-2", getStatisticsByOrder());
-
-        // KFC
-        excelList.put("1-1", getStatisticsByOrderList(kAdmin, "1"));
-        excelList.put("1-2", getStatisticsByOrder());
+        excelList.put("1", getStatisticsByOrderList(pAdmin, "0"));
+        excelList.put("2", getStatisticsByOrder());
+        excelList.put("3", getStatisticsByDate());
+        excelList.put("4", getStatisticsByInterval());
 
         // 메일 발송
-        sendMail(excelList);
-
-        return false;
+        return sendMail(excelList, mailList);
     }
 
     /**
@@ -128,16 +118,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
         List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(order);
         orderListStatisctics.setOrderStatisticsByAdminExcel(wb, orderStatisticsByAdminList, brandCode);
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try{
-            wb.write(bos);
-            bos.close();
-        } catch (Exception e){
-
-        }
-
-        return new ByteArrayDataSource(bos.toByteArray(), "application/vnd.ms-excel");
+        return getDataSourceForExcel(wb);
     }
 
 
@@ -145,61 +126,178 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     * 2페이지 통계 추출 (Pzh)
     * */
     private DataSource getStatisticsByOrder() {
-        return null;
+        Order order  = new Order();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        order.setCurrentDatetime(formatter.format(new Date()));
+        order.setDays("1");
+
+        order.setToken(pAdmin);
+
+        SXSSFWorkbook wb = new SXSSFWorkbook(1000);
+        List<Order> orderList = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+        orderStatisctics.setOrderStatisticsByOrderExcel(wb, orderList);
+
+        return getDataSourceForExcel(wb);
     }
 
     /**
      * 3페이지 통계 추출 (Pzh)
      * */
-    private boolean sendStatisticsByDateByMail() {
-        return false;
+    private DataSource getStatisticsByDate() {
+        Order order  = new Order();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        order.setCurrentDatetime(formatter.format(new Date()));
+        order.setDays("1");
+
+        order.setToken(pAdmin);
+
+        SXSSFWorkbook wb = new SXSSFWorkbook(1000);
+        List<AdminByDate> dateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+        dateStatisctics.setStoreStatisticsByDateExcel(wb, dateList);
+
+        return getDataSourceForExcel(wb);
     }
 
     /**
      * 4페이지 통계 추출 (Pzh)
      * */
-    private boolean sendStatisticsByIntervalByMail() {
-        return false;
+    private DataSource getStatisticsByInterval() {
+        Order order  = new Order();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        order.setCurrentDatetime(formatter.format(new Date()));
+        order.setDays("1");
+
+        order.setToken(pAdmin);
+
+        SXSSFWorkbook wb = new SXSSFWorkbook(1000);
+        Interval interval = statisticsAdminService.selectAdminStatisticsByInterval(order);
+        intervalStatisctis.setStoreStatisticsByIntervalExcel(wb, interval);
+
+        return getDataSourceForExcel(wb);
     }
 
     @Override
     public boolean sendStatisticsByMailForKFC() {
-        return false;
+        // PizzaHut 통계 엑셀 가져오기
+        Map<String, DataSource> excelList = new HashMap<>();
+        List<String> mailList = statisticsAdminService.selectReceivedStatisticsMailUser("1");
+
+        // KFC
+        excelList.put("1", getStatisticsByOrderList(kAdmin, "1"));
+        excelList.put("2", getStatisticsByOrderAtKFC());
+        excelList.put("3", getStatisticsByDateAtKFC());
+        excelList.put("4", getStatisticsByIntervalAtKFC());
+
+        return sendMail(excelList, mailList);
     }
 
     /**
      * 2페이지 통계 추출 (KFC)
      * */
     private DataSource getStatisticsByOrderAtKFC() {
-        return null;
+        Order order  = new Order();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        order.setCurrentDatetime(formatter.format(new Date()));
+        order.setDays("1");
+
+        order.setToken(kAdmin);
+
+        SXSSFWorkbook wb = new SXSSFWorkbook(1000);
+        List<Order> orderList = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+
+        List<Order> filterOrderList =
+                orderList.stream().filter(a -> {
+                    // 다음 4가지의 모든 시간이 NULL 이 아닌 경우만 가져온다
+                    if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null){
+                        // 예약 주문인 경우 30분을 제외한다.
+                        if (a.getReservationStatus().equals("1")){
+                            // 2020.05.18 예약시간 - 30분 시간이 실제 주문 시간보다 큰 경우에만 적용
+                            LocalDateTime createDatetime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
+                            LocalDateTime bookingDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+
+                            if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
+                                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                                a.setCreatedDatetime((reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"))));
+                            }
+                        }
+
+                        // 픽업 시간
+                        LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+                        // 배달 완료 시간
+                        LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+                        // 기사 복귀 시간
+                        LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+
+                        // 주문 등록 시간
+                        // LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
+                        LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                        // 다음 조건에 부합한 경우만 표기되도록 적용
+                        //if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                        if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(completeTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                            return  true;
+                        }else {
+                            return  false;
+                        }
+                    }else{
+                        return  false;
+                    }
+                }).collect(Collectors.toList());
+
+
+        orderStatiscticsAtKFC.setOrderStatisticsByOrderExcel(wb, filterOrderList);
+
+        return getDataSourceForExcel(wb);
     }
 
     /**
      * 3페이지 통계 추출 (KFC)
      * */
-    private boolean sendStatisticsByDateByMailAtKFC() {
-        return false;
+    private DataSource getStatisticsByDateAtKFC() {
+        Order order  = new Order();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        order.setCurrentDatetime(formatter.format(new Date()));
+        order.setDays("1");
+
+        order.setToken(kAdmin);
+
+        SXSSFWorkbook wb = new SXSSFWorkbook(1000);
+        List<AdminByDate> dateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+        dateStatiscticsAtKFC.setStoreStatisticsByDateExcel(wb, dateList);
+
+        return getDataSourceForExcel(wb);
     }
 
     /**
      * 4페이지 통계 추출 (KFC)
      * */
-    private boolean sendStatisticsByIntervalByMailAtKFC() {
-        return false;
+    private DataSource getStatisticsByIntervalAtKFC() {
+        Order order  = new Order();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        order.setCurrentDatetime(formatter.format(new Date()));
+        order.setDays("1");
+
+        order.setToken(kAdmin);
+
+        SXSSFWorkbook wb = new SXSSFWorkbook(1000);
+        IntervalAtTWKFC interval = statisticsAdminService.selectAdminStatisticsByIntervalAtTWKFC(order);
+        intervalStatisctisAtKFC.setStoreStatisticsByIntervalExcel(wb, interval);
+
+        return getDataSourceForExcel(wb);
     }
 
     /**
      * 메일 발송 프로세스
      * */
-    private boolean sendMail(Dictionary<String, DataSource> sendData){
+    private boolean sendMail(Map<String, DataSource> sendData, List<String> mailList){
+
+        if (sendData.isEmpty() || mailList.size() < 1){
+            return false;
+        }
 
         Properties props = new Properties();
 
         // 메일 발송을 위한 계정들 가져오기
         List<InternetAddress> addressList = new ArrayList<>();
-        List<String> mailList = new ArrayList<>();          // DB에서 가져올 것
-
-        mailList.add("dlrmf3390@naver.com");
 
         for (String mail:mailList
         ) {
@@ -228,6 +326,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
             // 메일 발송 관련 내용 세팅
             try {
                 MimeMessage message = new MimeMessage(session);
+                Multipart mp = new MimeMultipart();
 
                 // 발신자 설정
                 message.setFrom(new InternetAddress(user, "System Manager"));
@@ -241,16 +340,37 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
                 message.setSubject("통계 자료 메일", "UTF-8");
 
                 // Excel 첨부해보자.
-                MimeBodyPart addExcel = new MimeBodyPart();
-                //addExcel.setDataHandler(new DataHandler());
-                addExcel.setFileName(MimeUtility.encodeText("엑셀 첨부.xlsx", "UTF-8", "Q"));
+                if (sendData.containsKey("1")){
+                    MimeBodyPart orderExcel = new MimeBodyPart();
+                    orderExcel.setDataHandler(new DataHandler(sendData.get("1")));
+                    orderExcel.setFileName(MimeUtility.encodeText("OrderInfo.xlsx", "UTF-8", "Q"));
+                    mp.addBodyPart(orderExcel);
+                }
+
+                if (sendData.containsKey("2")){
+                    MimeBodyPart orderListExcel = new MimeBodyPart();
+                    orderListExcel.setDataHandler(new DataHandler(sendData.get("2")));
+                    orderListExcel.setFileName(MimeUtility.encodeText("OrderList.xlsx", "UTF-8", "Q"));
+                    mp.addBodyPart(orderListExcel);
+                }
+
+                if (sendData.containsKey("3")){
+                    MimeBodyPart dateExcel = new MimeBodyPart();
+                    dateExcel.setDataHandler(new DataHandler(sendData.get("3")));
+                    dateExcel.setFileName(MimeUtility.encodeText("Date.xlsx", "UTF-8", "Q"));
+                    mp.addBodyPart(dateExcel);
+                }
+
+                if (sendData.containsKey("4")){
+                    MimeBodyPart intervalExcel = new MimeBodyPart();
+                    intervalExcel.setDataHandler(new DataHandler(sendData.get("4")));
+                    intervalExcel.setFileName(MimeUtility.encodeText("Interval.xlsx", "UTF-8", "Q"));
+                    mp.addBodyPart(intervalExcel);
+                }
 
                 // 본문 내용
                 MimeBodyPart bodyPart = new MimeBodyPart();
                 bodyPart.setText("본문내용", "UTF-8");
-
-                Multipart mp = new MimeMultipart();
-                mp.addBodyPart(addExcel);
                 mp.addBodyPart(bodyPart);
 
                 //
@@ -261,13 +381,34 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
                 Transport.send(message);
             } catch (Exception e){
                 e.printStackTrace();
+                log.debug("메일 발송 오류 : " + e.getMessage());
             }
 
         } catch (Exception ex){
             ex.printStackTrace();
+            log.debug("메일 발송 오류2 : " + ex.getMessage());
         }
 
 
         return true;
+    }
+
+
+    /**
+     * 공통 프로세스
+     * */
+    private DataSource getDataSourceForExcel(SXSSFWorkbook wb){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            wb.write(bos);
+            bos.close();
+        }catch (Exception e){
+
+        }finally {
+            wb.dispose();
+        }
+
+        return new ByteArrayDataSource(bos.toByteArray(), "application/vnd.ms-excel");
     }
 }

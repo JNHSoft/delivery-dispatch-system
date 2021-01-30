@@ -14,6 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,18 +110,62 @@ public class ScheduleController {
      * 월~금요일 9시부터 22시까지 1시간 단위로 매일 발송
      * */
     @Scheduled(cron = "0 0 9-22 * * MON-FRI")
-    //@Scheduled(fixedDelayString = "10000")
     public void statisticsSendByMail(){
-        //System.out.println("statisticsSendByMail 작동");
-
-        scheduleAdminService.sendStatisticsByMail();
-
+        log.info("통계 자료 메일 발송 시작 ## " + new Date());
+        log.info("피자헛 통계 전송 결과 : " + scheduleAdminService.sendStatisticsByMail());
+        log.info("KFC 통계 전송 결과 : " + scheduleAdminService.sendStatisticsByMailForKFC());
+        log.info("통계 자료 메일 발송 완료 ## " + new Date());
     }
 
     @ResponseBody
-    @GetMapping("/TextMail")
+    @GetMapping("/mailPizzaHut")
     public String testMail(){
-        scheduleAdminService.sendStatisticsByMail();
+        //scheduleAdminService.sendStatisticsByMail();
+
+        InetAddress ip = null;
+        String strIP = "";
+
+        // 리눅스의 IP 정보를 가져온다.
+        try{
+            boolean isLoopBack = true;
+            Enumeration<NetworkInterface> en;
+            en = NetworkInterface.getNetworkInterfaces();
+
+            // 네트워크 인터페이스 종류를 모두 추출한다.
+            while (en.hasMoreElements()){
+                NetworkInterface ni = en.nextElement();
+                if (ni.isLoopback())
+                    continue;
+
+                Enumeration<InetAddress> inetAddress = ni.getInetAddresses();
+
+                while (inetAddress.hasMoreElements()){
+                    InetAddress ia = inetAddress.nextElement();
+
+                    if (ia.getHostAddress() != null && ia.getHostAddress().indexOf(".") != -1){
+                        strIP = ia.getHostAddress();
+                        System.out.println("######### IP => " + strIP);
+                        isLoopBack = false;
+                        //break;
+                    }
+                }
+
+                if (!isLoopBack){
+                    break;
+                }
+            }
+
+        } catch (Exception e){
+
+        }
+
+        return "OK => " + strIP;
+    }
+
+    @ResponseBody
+    @GetMapping("/mailKFC")
+    public String testMailAtKFC(){
+        scheduleAdminService.sendStatisticsByMailForKFC();
         return "OK";
     }
 

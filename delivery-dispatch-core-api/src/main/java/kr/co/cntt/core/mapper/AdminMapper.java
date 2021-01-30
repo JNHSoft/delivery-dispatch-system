@@ -507,4 +507,9 @@ public interface AdminMapper {
      * */
     List<SubGroup> selectSubGroupGrouping(Common common);
     List<SubGroupStoreRel> selectSubgrouGroupingStoreRels(SubGroupStoreRel subGroupStoreRel);
+
+    /**
+     * 메일을 받을 계정
+     * */
+    List<String> selectReceivedMailAccount(String brandCode);
 }

@@ -2452,4 +2452,11 @@
 		order by B.store_name;
 	</select>
 
+	<select id="selectReceivedMailAccount" parameterType="String" resultType="String">
+		select	 addr_mail
+		from	 TB_MAIL_LIST
+		where	 acc_status = 1
+		and		 brand_code = #{brandCode};
+	</select>
+
 </mapper>

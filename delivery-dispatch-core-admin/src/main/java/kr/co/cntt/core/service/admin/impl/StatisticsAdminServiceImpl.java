@@ -91,18 +91,14 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     @Override
     public List<Order> selectAdminStatisticsExcel(Order order) {
         List<Order> statisticsList =  adminMapper.selectAdminStatisticsExcel(order);
-        /*Misc misc = new Misc();
-        for (Order statistics:statisticsList){
-            if (statistics.getLatitude() != null && statistics.getLongitude() != null){
-                Store storeLocation = storeMapper.selectStoreLocation(statistics.getStoreId());
-                try {
-                    statistics.setDistance(Double.toString(misc.getHaversine(storeLocation.getLatitude(), storeLocation.getLongitude(), statistics.getLatitude(), statistics.getLongitude()) / (double) 1000));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
+
         return statisticsList;
+    }
+
+    // 메일을 받을 계정 리스트 구하는 곳
+    @Override
+    public List<String> selectReceivedStatisticsMailUser(String brandCode){
+        return adminMapper.selectReceivedMailAccount(brandCode);
     }
 
     // 주문별 통계 페이지
@@ -136,7 +132,6 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return statistByDate;
     }
-
 
     // 매장 누적 통계
     public Interval selectAdminStatisticsByInterval(Order order) {
@@ -312,6 +307,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return interval;
     }
+
     // 매장 누적 통계
     public IntervalAtTWKFC selectAdminStatisticsByIntervalAtTWKFC(Order order) {
         IntervalAtTWKFC interval = new IntervalAtTWKFC();
@@ -397,6 +393,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return min30Below_Statistics;
     }
+
     // 매장 누적 통계 30분 미만 목록
     public List<Map> selectAdminStatisticsMin30BelowByDateAtTWKFC(Order order){
         List<Map> min30Below_Statistics = adminMapper.selectStatisticsMin30BelowByDateAtTWKFC(order);
@@ -406,6 +403,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return min30Below_Statistics;
     }
+
     //Default
     public double addInterval(List list, int intervalSize, long intervalCount, double sumIntervalCount) {
 
@@ -429,6 +427,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return sumIntervalCount;
     }
+
     // KFC
     public Map<String, Double> addInterval(List list, Map<String, Integer> intervalSize, Map<String, Long> intervalCount, Map<String, Double> sumIntervalCount) {
 

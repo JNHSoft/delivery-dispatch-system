@@ -111,5 +111,10 @@ public interface StatisticsAdminService {
      * 매장 누적 통계 페이지 - 30분 미만 목록 KFC
      * */
     List<Map> selectAdminStatisticsMin30BelowByDateAtTWKFC(Order order);
+    
+    /**
+     * 통계자료를 받을 메일 계정들 구하기
+     * */
+    List<String> selectReceivedStatisticsMailUser(String brandCode);
 
 }
