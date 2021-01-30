@@ -2456,7 +2456,7 @@
 		select	 addr_mail
 		from	 TB_MAIL_LIST
 		where	 acc_status = 1
-		and		 brand_code = #{brandCode};
+		and		 admin_id = #{adminID};
 	</select>
 
 </mapper>

@@ -511,5 +511,5 @@ public interface AdminMapper {
     /**
      * 메일을 받을 계정
      * */
-    List<String> selectReceivedMailAccount(String brandCode);
+    List<String> selectReceivedMailAccount(String adminID);
 }

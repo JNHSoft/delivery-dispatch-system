@@ -91,7 +91,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     public boolean sendStatisticsByMail() {
         // PizzaHut 통계 엑셀 가져오기
         Map<String, DataSource> excelList = new HashMap<>();
-        List<String> mailList = statisticsAdminService.selectReceivedStatisticsMailUser("0");
+        List<String> mailList = statisticsAdminService.selectReceivedStatisticsMailUser("1");
 
         // PizzaHut
         excelList.put("1", getStatisticsByOrderList(pAdmin, "0"));
@@ -180,7 +180,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     public boolean sendStatisticsByMailForKFC() {
         // PizzaHut 통계 엑셀 가져오기
         Map<String, DataSource> excelList = new HashMap<>();
-        List<String> mailList = statisticsAdminService.selectReceivedStatisticsMailUser("1");
+        List<String> mailList = statisticsAdminService.selectReceivedStatisticsMailUser("4");
 
         // KFC
         excelList.put("1", getStatisticsByOrderList(kAdmin, "1"));

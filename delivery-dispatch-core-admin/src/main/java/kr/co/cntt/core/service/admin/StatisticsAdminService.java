@@ -115,6 +115,6 @@ public interface StatisticsAdminService {
     /**
      * 통계자료를 받을 메일 계정들 구하기
      * */
-    List<String> selectReceivedStatisticsMailUser(String brandCode);
+    List<String> selectReceivedStatisticsMailUser(String adminID);
 
 }

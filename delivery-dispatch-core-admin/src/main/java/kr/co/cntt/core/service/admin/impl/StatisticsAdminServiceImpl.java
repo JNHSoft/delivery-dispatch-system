@@ -97,8 +97,8 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
     // 메일을 받을 계정 리스트 구하는 곳
     @Override
-    public List<String> selectReceivedStatisticsMailUser(String brandCode){
-        return adminMapper.selectReceivedMailAccount(brandCode);
+    public List<String> selectReceivedStatisticsMailUser(String adminID){
+        return adminMapper.selectReceivedMailAccount(adminID);
     }
 
     // 주문별 통계 페이지
