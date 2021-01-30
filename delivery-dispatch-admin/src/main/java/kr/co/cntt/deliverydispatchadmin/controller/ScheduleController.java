@@ -6,9 +6,9 @@ import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.admin.ScheduleAdminService;
 import kr.co.cntt.core.service.admin.StoreAdminService;
-import kr.co.cntt.deliverydispatchadmin.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -29,6 +26,9 @@ public class ScheduleController {
      */
     StoreAdminService storeAdminService;
     ScheduleAdminService scheduleAdminService;
+
+    @Value("${mail.sender}")
+    private String internalIP;
 
     // 자동 데이터 관리 시스템
     private static Map<String, Object> autoCheckOverTimeStore = new HashMap<>();
@@ -111,17 +111,45 @@ public class ScheduleController {
      * */
     @Scheduled(cron = "0 0 9-22 * * MON-FRI")
     public void statisticsSendByMail(){
-        log.info("통계 자료 메일 발송 시작 ## " + new Date());
-        log.info("피자헛 통계 전송 결과 : " + scheduleAdminService.sendStatisticsByMail());
-        log.info("KFC 통계 전송 결과 : " + scheduleAdminService.sendStatisticsByMailForKFC());
-        log.info("통계 자료 메일 발송 완료 ## " + new Date());
+        String strInternalIP = getInternalIP();
+
+        if (Arrays.stream(internalIP.split(",")).filter(x -> x.equals(strInternalIP)).count() > 0){
+            log.info("통계 자료 메일 발송 시작 ## " + new Date());
+            log.info("피자헛 통계 전송 결과 : " + scheduleAdminService.sendStatisticsByMail());
+            log.info("KFC 통계 전송 결과 : " + scheduleAdminService.sendStatisticsByMailForKFC());
+            log.info("통계 자료 메일 발송 완료 ## " + new Date());
+        }
     }
 
-    @ResponseBody
-    @GetMapping("/mailPizzaHut")
-    public String testMail(){
-        //scheduleAdminService.sendStatisticsByMail();
+//    @ResponseBody
+//    @GetMapping("/mailPizzaHut")
+//    public String testMail(){
+//        String strIP = getInternalIP();
+//
+//        System.out.println("########" + strIP + "####");
+//        for (String data: internalIP.split(",")) {
+//            System.out.println("#########" + data + "#######");
+//        }
+//
+//
+//        if (Arrays.stream(internalIP.split(",")).filter(x -> x.equals(strIP)).count() > 0){
+//            System.out.println("########################################## 성공");
+//            scheduleAdminService.sendStatisticsByMail();
+//        }else {
+//            System.out.println("########################################## 실패");
+//        }
+//
+//        return "OK";
+//    }
+//
+//    @ResponseBody
+//    @GetMapping("/mailKFC")
+//    public String testMailAtKFC(){
+//        scheduleAdminService.sendStatisticsByMailForKFC();
+//        return "OK";
+//    }
 
+    private String getInternalIP(){
         InetAddress ip = null;
         String strIP = "";
 
@@ -144,7 +172,6 @@ public class ScheduleController {
 
                     if (ia.getHostAddress() != null && ia.getHostAddress().indexOf(".") != -1){
                         strIP = ia.getHostAddress();
-                        System.out.println("######### IP => " + strIP);
                         isLoopBack = false;
                         //break;
                     }
@@ -159,14 +186,6 @@ public class ScheduleController {
 
         }
 
-        return "OK => " + strIP;
+        return strIP;
     }
-
-    @ResponseBody
-    @GetMapping("/mailKFC")
-    public String testMailAtKFC(){
-        scheduleAdminService.sendStatisticsByMailForKFC();
-        return "OK";
-    }
-
 }
