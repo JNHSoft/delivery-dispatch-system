@@ -295,6 +295,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
         }
 
         Properties props = new Properties();
+        String strDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
         // 메일 발송을 위한 계정들 가져오기
         List<InternetAddress> addressList = new ArrayList<>();
@@ -343,7 +344,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
                 if (sendData.containsKey("1")){
                     MimeBodyPart orderExcel = new MimeBodyPart();
                     orderExcel.setDataHandler(new DataHandler(sendData.get("1")));
-                    orderExcel.setFileName(MimeUtility.encodeText("OrderInfo.xlsx", "UTF-8", "Q"));
+                    orderExcel.setFileName(MimeUtility.encodeText("Order_Report.xlsx", "UTF-8", "Q"));
                     mp.addBodyPart(orderExcel);
                 }
 

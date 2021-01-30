@@ -112,7 +112,7 @@ public class StatisticsController {
 
         // 날짜 차이가 31일 이상인 경우 프로세스 종료
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date dateStart = format.parse(startDate);
             Date dateEnd = format.parse(endDate);
 
