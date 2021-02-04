@@ -75,30 +75,23 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     // 서브 그룹 조회
     @Override
     public List<SubGroup> getSubGroupList(Order order) {
-        return adminMapper.selectSubGroups(order);
+        //return adminMapper.selectSubGroups(order);
+        return adminMapper.selectSubGroupGrouping(order);
     }
 
-    // 서브 그룹 조회
+    // 서브 그룹 매장 조회
     @Override
     public List<SubGroupStoreRel> selectSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel) {
-        return adminMapper.selectSubgroupStoreRels(subGroupStoreRel);
+        //return adminMapper.selectSubgroupStoreRels(subGroupStoreRel);
+        // 21.01.21 서브 그룹 그루핑으로 인한 수정 이름을 활용하여 가져오기
+        return adminMapper.selectSubgrouGroupingStoreRels(subGroupStoreRel);
     }
 
     // 통계 리스트 Excel
     @Override
     public List<Order> selectAdminStatisticsExcel(Order order) {
         List<Order> statisticsList =  adminMapper.selectAdminStatisticsExcel(order);
-        /*Misc misc = new Misc();
-        for (Order statistics:statisticsList){
-            if (statistics.getLatitude() != null && statistics.getLongitude() != null){
-                Store storeLocation = storeMapper.selectStoreLocation(statistics.getStoreId());
-                try {
-                    statistics.setDistance(Double.toString(misc.getHaversine(storeLocation.getLatitude(), storeLocation.getLongitude(), statistics.getLatitude(), statistics.getLongitude()) / (double) 1000));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
+
         return statisticsList;
     }
 
@@ -133,7 +126,6 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return statistByDate;
     }
-
 
     // 매장 누적 통계
     public Interval selectAdminStatisticsByInterval(Order order) {
@@ -309,6 +301,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return interval;
     }
+
     // 매장 누적 통계
     public IntervalAtTWKFC selectAdminStatisticsByIntervalAtTWKFC(Order order) {
         IntervalAtTWKFC interval = new IntervalAtTWKFC();
@@ -319,10 +312,6 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
         Map<String, Integer> intervalSize = new HashMap<>();
         Map<String, Long> intervalCount = new HashMap<>();
         Map<String, Double> sumIntervalCount = new HashMap<>();
-
-//        interval.getIntervalMinute().forEach(x->{
-//            System.out.println(x);
-//        });
 
         List<Integer> d30List = new ArrayList<>();
         List<Integer> d7List = new ArrayList<>();
@@ -357,9 +346,6 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
         intervalSize.put("d30IntervalSize", d30List.size());
         intervalSize.put("d7IntervalSize", d7List.size());
 
-
-//        System.out.println(d30Result);
-//        System.out.println(d7Result);
 
         // 7분 미만 주문의 카운트
         intervalCount.put("d30IntervalCount", d30Result.entrySet().parallelStream().filter(x->x.getKey() < 7).mapToLong(x -> x.getValue()).sum());
@@ -401,6 +387,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return min30Below_Statistics;
     }
+
     // 매장 누적 통계 30분 미만 목록
     public List<Map> selectAdminStatisticsMin30BelowByDateAtTWKFC(Order order){
         List<Map> min30Below_Statistics = adminMapper.selectStatisticsMin30BelowByDateAtTWKFC(order);
@@ -410,6 +397,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return min30Below_Statistics;
     }
+
     //Default
     public double addInterval(List list, int intervalSize, long intervalCount, double sumIntervalCount) {
 
@@ -433,6 +421,7 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
         return sumIntervalCount;
     }
+
     // KFC
     public Map<String, Double> addInterval(List list, Map<String, Integer> intervalSize, Map<String, Long> intervalCount, Map<String, Double> sumIntervalCount) {
 

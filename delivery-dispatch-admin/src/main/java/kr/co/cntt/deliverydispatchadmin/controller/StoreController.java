@@ -219,7 +219,7 @@ public class StoreController {
 //        store.setPhone(phone);
         store.setAddress(address);
         store.setDetailAddress(detailAddress);
-//        System.out.println("!!!!"+groupId);
+
         // 위도 경도
         if (store.getAddress() != null && !store.getAddress().equals("")) {
             Geocoder geocoder = new Geocoder();

@@ -48,11 +48,9 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             AES256Util aesUtil = new AES256Util(tKey);
 
             String decParam = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(encParam));
-//            System.out.println(decParam);
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(decParam);
 
-//            String regOrderId = jsonObject.get("regOrderId").toString();
             String webOrderId = jsonObject.get("webOrderId").toString();
             String code = jsonObject.get("code").toString();
             String requestDate = jsonObject.get("reqDate").toString();

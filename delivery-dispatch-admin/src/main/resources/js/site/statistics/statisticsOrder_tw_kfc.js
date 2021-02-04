@@ -222,7 +222,7 @@ function getStoreStatistics() {
             startDate: $('#startDate').val(),
             endDate: $('#endDate').val(),
             groupID: $("#statisticsGroupList").val(),
-            subGroupID: $("#statisticsSubGroupList").val(),
+            subGroupName: $("#statisticsSubGroupList").val(),
             storeID: $("#statisticsStoreList").val(),
         },
         dataType: 'json',
@@ -485,64 +485,18 @@ function searchList(selectId, selectIdOption) {
             op : "eq",
             data : searchText
         });
-        // filter2.rules.push({
-        //     field : 'th10',
-        //     op : "cn",
-        //     data : searchText
-        // });
         filter2.rules.push({
             field : 'rider_name',
             op : "cn",
             data : searchText
         });
-    }/*else if (select == 'pay'){
-        // filter2.rules.push({
-        //     field : 'th10',
-        //     op : "cn",
-        //     data : searchText
-        // });
-    }*/else if (select == 'rider'){
+    }else if (select == 'rider'){
         filter2.rules.push({
             field : 'rider_name',
             op : "cn",
             data : searchText
         });
     }
-
-    // var searchText1= $("#statisticsGroupList option:selected").text();
-    // var searchTextVal1= $("#statisticsGroupList option:selected").val();
-    // var searchText2= $("#statisticsSubGroupList option:selected").text();
-    // var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
-    // var searchText3= $("#statisticsStoreList option:selected").text();
-    // var searchTextVal3= $("#statisticsStoreList option:selected").val();
-
-    // var filter = {
-    //     groupOp: "AND",
-    //     rules: [],
-    //     // groups : [filter2]
-    // };
-    //
-    // if(searchTextVal1 != "reset"){
-    //     filter.rules.push({
-    //         field : 'group_name',
-    //         op : "eq",
-    //         data : searchText1
-    //     });
-    //     if(searchTextVal2 != "reset"){
-    //         filter.rules.push({
-    //             field : 'subGroup_name',
-    //             op : "eq",
-    //             data : searchText2
-    //         });
-    //         if(searchTextVal3 != "reset"){
-    //             filter.rules.push({
-    //                 field : 'store_name',
-    //                 op : "eq",
-    //                 data : searchText3
-    //             });
-    //         }
-    //     }
-    // }
 
     var filter3 = {
         groupOp: "OR",
@@ -626,7 +580,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
             if(data) {
                 var pstatisticsSubGroupListHtml = "<option value='reset'>" + list_search_all_subgroup + "</option>";
                 for (var i in data){
-                    pstatisticsSubGroupListHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
+                    pstatisticsSubGroupListHtml += "<option value='" + data[i].name  + "'>" + data[i].name + "</option>";
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
@@ -651,7 +605,7 @@ function getStatisticsStoreList(subId, gId) {
         type : 'get',
         data : {
             groupId : selectGroupId,
-            subGroupId : selecSubGroupId
+            subGroupName : selecSubGroupId
         },
         async : false,
         dataType : 'json',
@@ -662,13 +616,6 @@ function getStatisticsStoreList(subId, gId) {
                     statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
-
-                // $("#statisticsStoreList").on("change", function () {
-                //     console.log("chagne store 11111");
-                //     getStoreStatistics();
-                //     console.log("chagne store 222222222");
-                // });
-
             }
         }
     });

@@ -182,7 +182,7 @@ public class RiderController {
         // 승인을 거부하는 경우
         if (riderInfo.getApprovalStatus().trim().equals("2") &&
                 !((chkRiderInfo.getApprovalStatus().trim().equals("0") || chkRiderInfo.getApprovalStatus().trim().equals("1")))){
-            System.out.println("return false two #################");
+            log.info("changeApprovalStatus return false # New Reject");
             return false;
         }
 

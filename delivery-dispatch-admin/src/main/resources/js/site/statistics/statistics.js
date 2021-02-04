@@ -119,9 +119,10 @@ function searchList(selectId, selectIdOption) {
             op : "eq",
             data : searchText1
         });
+
         if(searchTextVal2 != "reset"){
             filter.rules.push({
-                field : 'th2',
+                field : 'th19',
                 op : "eq",
                 data : searchText2
             });
@@ -197,7 +198,8 @@ function getStatisticsSubGroupList(gId, subGroup) {
             if(data) {
                 var pstatisticsSubGroupListHtml = "<option value='reset'>" + list_search_all_subgroup + "</option>";
                 for (var i in data){
-                    pstatisticsSubGroupListHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
+                    //pstatisticsSubGroupListHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
+                    pstatisticsSubGroupListHtml += "<option value='" + data[i].name  + "'>" + data[i].name + "</option>";
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
@@ -222,7 +224,8 @@ function getStatisticsStoreList(subId, gId) {
         type : 'get',
         data : {
             groupId : selectGroupId,
-            subGroupId : selecSubGroupId
+            //subGroupId : selecSubGroupId
+            subGroupName: selecSubGroupId
         },
         async : false,
         dataType : 'json',
@@ -372,8 +375,10 @@ function getStatisticsList() {
                         }
                         if(data[key].subGroup){
                             $tmpData.th2 = data[key].subGroup.name
+                            $tmpData.th19 = data[key].subGroup.groupingName
                         }else{
                             $tmpData.th2 = group_none;
+                            $tmpData.th19 = group_none;
                         }
                         $tmpData.th3 = data[key].store.storeName
                         if (data[key].status == "3") {
@@ -436,17 +441,6 @@ function getStatisticsList() {
 
                         $tmpData.th14 = data[key].rider.name
 
-                        /*if(data[key].group != null){
-                            $tmpData.th15 = data[key].group.id
-
-                        }
-                        if(data[key].subGroup != null) {
-                            $tmpData.th16 = data[key].subGroup.id
-                        }
-
-                        if(data[key].storeId != null) {
-                            $tmpData.th17 = data[key].storeId
-                        }*/
                         if($('#selectStatus option:selected').val()=="all"){
                             $mydata.push($tmpData);
                         }else if ($('#selectStatus option:selected').val()=="complete" && data[key].status =="3"){
@@ -473,6 +467,7 @@ function getStatisticsList() {
                     {label: order_reg_order_id, name: 'origin_reg_order_id', width: 80, align: 'center', hidden:true},
                     {label: group_name, name: 'th1', width: 80, align: 'center'},
                     {label: subGroup_name, name: 'th2', width: 80, align: 'center'},
+                    {label: 'subGroupGroupingName', name: 'th19', width: 80, align: 'center', hidden: true},
                     {label: store_name, name: 'th3', width: 120, align: 'center'},
                     {label: order_status, name: 'th4', width: 80, align: 'center'},
                     {label: order_created, name: 'th6', width: 80, align: 'center'},
@@ -484,10 +479,7 @@ function getStatisticsList() {
                     {label: order_pickedup, name: 'th12', width: 80, align: 'center'},
                     {label: order_arrived, name: 'th18', width: 80, align: 'center'},
                     {label: order_reserved, name: 'th13', width: 80, align: 'center'},
-                    {label: rider_name, name: 'th14', width: 80, align: 'center'}/*,
-                    {label:'그룹ID', name:'th15', width:60, hidden:'hidden'},
-                    {label:'서브그룹ID', name:'th16', width:60, hidden:'hidden'},
-                    {label:'매장ID', name:'th17', width:60, hidden:'hidden'}*/
+                    {label: rider_name, name: 'th14', width: 80, align: 'center'}
                 ],
                 height: 680,
                 autowidth: true,
@@ -569,18 +561,6 @@ function getStatisticsInfo(orderId) {
                 }
                 $('#paid').html($paid);
             }
-            /*if(data.payment) {
-                if (data.payment.type == "0") {
-                    $paid = "CARD";
-                } else if (data.payment.type == "1") {
-                    $paid = "CASH";
-                } else if (data.payment.type == "2") {
-                    $paid = "PREPAYMENT";
-                } else {
-                    $paid = "SERVICE";
-                }
-                $('#paid').html($paid);
-            }*/
 
             if(data.combinedOrderId != null){
                 $('#combinedOrder').html(data.combinedOrderId);
@@ -610,14 +590,6 @@ function getStatisticsInfo(orderId) {
 
 
 function excelDownload(){
-    // console.log("@@@@");
-    // $('input[name=startDate]').val($('#startDate').val());
-    // $('input[name=endDate]').val($('#endDate').val());
-
-    // document.searchForm.action="/excelDownload";
-    // document.searchForm.method="GET";
-    // document.searchForm.submit();
-
     let startDate = $('#startDate').val();
     let endDate = $('#endDate').val();
 
@@ -627,22 +599,7 @@ function excelDownload(){
         return;
     }
 
-
     loading.show();
-
-    /*jQuery('<form action="'+ "/excelDownload" +'" method="'+ 'get' +'">'
-        + '<input type="hidden" name="'+ 'startDate' +'" value="'+ startDate +'" />'
-        + '<input type="hidden" name="'+ 'endDate' +'" value="'+ endDate +'" />'
-        + '</form>').appendTo('body').submit().remove();
-
-    FILEDOWNLOAD_INTERVAL = setInterval(function() {
-            if ($.cookie("fileDownloadToken")) {
-                $.removeCookie('fileDownloadToken');
-                clearInterval(FILEDOWNLOAD_INTERVAL);
-                loading.hide();
-                console.log('hide');
-            }
-        }, 500);*/
 
     $.fileDownload("/excelDownload",{
         httpMethod:"GET",
@@ -657,29 +614,6 @@ function excelDownload(){
             loading.hide();
         }
     })
-
-    /*jQuery.download = function(url, data, method){
-        // url과 data를 입력받음
-        if( url && data ){
-            // data 는  string 또는 array/object 를 파라미터로 받는다.
-            data = typeof data == 'string' ? data : jQuery.param(data);
-            // 파라미터를 form의  input으로 만든다.
-            var inputs = '';
-            jQuery.each(data.split('&'), function(){
-                var pair = this.split('=');
-                inputs+='<input type="hidden" name="'+ pair[0] +'" value="'+ pair[1] +'" />';
-            });
-            // request를 보낸다.
-            jQuery('<form action="'+ url +'" method="'+ (method||'post') +'">'+inputs+'</form>')
-                .appendTo('body').submit().remove();
-        };
-    };
-
-    let url = '/excelDownload';
-    let params = {startDate: startDate, endDate: endDate};
-
-    $.download(url, params, 'get');*/
-
 }
 
 /*]]>*/

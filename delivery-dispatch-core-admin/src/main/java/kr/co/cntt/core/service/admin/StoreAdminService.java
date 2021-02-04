@@ -25,7 +25,6 @@ public interface StoreAdminService {
      */
     public Store selectStoreInfo(Store store);
 
-
     /**
      * <p> 그룹 목록 조회
      *

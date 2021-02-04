@@ -112,7 +112,7 @@ public class StatisticsController {
 
         // 날짜 차이가 31일 이상인 경우 프로세스 종료
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date dateStart = format.parse(startDate);
             Date dateEnd = format.parse(endDate);
 
@@ -130,8 +130,6 @@ public class StatisticsController {
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-
-//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
 
 
         order.setCurrentDatetime(startDate);
@@ -158,9 +156,6 @@ public class StatisticsController {
             statisticsList = new ArrayList<>();
         }
 
-
-//        log.info("@@@@@@@@@@@@@@@@@@@@@@"+statisticsList);
-
         return statisticsList;
     }
 
@@ -181,8 +176,6 @@ public class StatisticsController {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
-//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-
         order.setToken(adminInfo.getAdminAccessToken());
 
         order.setRegOrderId(regOrderId);
@@ -191,8 +184,6 @@ public class StatisticsController {
 
         return statisticsInfo;
     }
-
-
 
 
     // group list 불러오기
@@ -209,19 +200,9 @@ public class StatisticsController {
         // token 부여
         order.setToken(adminInfo.getAdminAccessToken());
 
-//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-
         // Group list
         List<Group> groupList = statisticsAdminService.getGroupList(order);
 
-        // 리스트 확인
-        /*if (groupList.size() == 0) {
-            log.info("0000000000000000000000");
-        } else {
-            for (Group s : groupList) {
-                log.info("@@" + s.getName());
-            }
-        }*/
         return groupList;
 
     }
@@ -231,30 +212,17 @@ public class StatisticsController {
     @GetMapping("/getStatisticsSubGroupList")
     @CnttMethodDescription("서브 그룹 리스트 불러오기")
     public List<SubGroup> getStatisticsSubGroupList(@RequestParam(value ="groupId", required=false) String groupId) {
-        log.info("getStatisticsSubGroupList");
-
         Order order = new Order();
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         // token 부여
         order.setToken(adminInfo.getAdminAccessToken());
-
-//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-        // param storeId
         order.setId(groupId);
 
         // subGroup list
         List<SubGroup> subGroupList = statisticsAdminService.getSubGroupList(order);
 
-        // 리스트 확인
-        /*if (subGroupList.size() == 0) {
-            log.info("0000000000000000000000");
-        } else {
-            for (SubGroup s : subGroupList) {
-                log.info("@@" + s.getName());
-            }
-        }*/
         return subGroupList;
     }
 
@@ -265,12 +233,11 @@ public class StatisticsController {
     @CnttMethodDescription("상점 리스트 불러오기")
     public List<SubGroupStoreRel> getStatisticsStoreList(
             @RequestParam(value ="groupId", required = false) String groupId,
-            @RequestParam(value ="subGroupId", required = false) String subGroupId
+            //@RequestParam(value ="subGroupId", required = false) String subGroupId
+            @RequestParam(value ="subGroupName", required = false) String subGroupName
     ) {
         log.info("getStatisticsStoreList");
 
-//        log.info("=>>>>>>>>>>>>>>>="+groupId);
-//        log.info("=>>>>>>>>>>>>="+subGroupId);
         SubGroupStoreRel subGroupStoreRel = new SubGroupStoreRel();
         Admin admin = new Admin();
 
@@ -279,28 +246,16 @@ public class StatisticsController {
         // token 부여
         subGroupStoreRel.setToken(adminInfo.getAdminAccessToken());
 
-//        log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
-
         // param storeId
         subGroupStoreRel.setGroupId(groupId);
-        subGroupStoreRel.setSubGroupId(subGroupId);
+        //subGroupStoreRel.setSubGroupId(subGroupId);
+        subGroupStoreRel.setGroupingName(subGroupName);
         subGroupStoreRel.setToken(adminInfo.getAdminAccessToken());
 
         admin.setToken(adminInfo.getAdminAccessToken());
-//        log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!"+subGroupStoreRel);
 
         // store list
         List<SubGroupStoreRel> storeList = statisticsAdminService.selectSubgroupStoreRels(subGroupStoreRel);
-//        log.info("@@@@@@@@@@@!@#!@#!@#!@#!@#!@#"+storeList);
-
-
-//        // subGroup list
-//        List<SubGroup> subGroupList = groupAdminService.selectSubGroupsList(order);
-
-//        model.addAttribute("subGroupList",subGroupList);
-//        model.addAttribute("storeList",storeList);
-
-
         return storeList;
     }
 
@@ -385,7 +340,8 @@ public class StatisticsController {
     public List<Order> getStoreStatisticsByOrder(@RequestParam(value = "startDate") String startDate
                                                 ,@RequestParam(value = "endDate") String endDate
                                                 ,@RequestParam(value = "groupID", required = false) String groupId
-                                                ,@RequestParam(value = "subGroupID", required = false) String subGroupId
+                                                //,@RequestParam(value = "subGroupID", required = false) String subGroupId
+                                                ,@RequestParam(value = "subGroupName", required = false) String subGroupName
                                                 ,@RequestParam(value = "storeID", required = false) String storeId) {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -419,9 +375,10 @@ public class StatisticsController {
             order.getGroup().setId(groupId);
         }
 
-        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+        // 21-01-21 서브그룹 그룹화
+        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
             order.setSubGroup(new SubGroup());
-            order.getSubGroup().setId(subGroupId);
+            order.getSubGroup().setGroupingName(subGroupName);
         }
 
         if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
@@ -525,7 +482,7 @@ public class StatisticsController {
     public List<AdminByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
                                                 ,@RequestParam("endDate") String endDate
                                                 ,@RequestParam(value = "groupID", required = false) String groupId
-                                                ,@RequestParam(value = "subGroupID", required = false) String subGroupId
+                                                ,@RequestParam(value = "subGroupName", required = false) String subGroupName
                                                 ,@RequestParam(value = "storeID", required = false) String storeId){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -558,9 +515,9 @@ public class StatisticsController {
             order.getGroup().setId(groupId);
         }
 
-        if (subGroupId.trim() != "" && !subGroupId.toLowerCase().equals("reset")){
+        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
             order.setSubGroup(new SubGroup());
-            order.getSubGroup().setId(subGroupId);
+            order.getSubGroup().setGroupingName(subGroupName);
         }
 
         if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){

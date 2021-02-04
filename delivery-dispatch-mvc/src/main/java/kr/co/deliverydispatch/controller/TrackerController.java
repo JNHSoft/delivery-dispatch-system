@@ -140,10 +140,6 @@ public class TrackerController {
             long localNow = LocalDateTime.now(timeZone.toZoneId()).atZone(timeZone.toZoneId()).toInstant().toEpochMilli();
             long abs = Math.abs(rqDate - localNow) / 60000;
 
-//            System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
-//            System.out.println("getRequestDate = "+trackerResult.getRequestDate());
-//            System.out.println("abs = "+abs);
-
             if (trackerResult.getRiderLatitude() != null) {
                 Misc misc = new Misc();
                 trackerResult.setDistance(Double.toString(misc.getHaversine(trackerResult.getStoreLatitude(), trackerResult.getStoreLongitude(), trackerResult.getRiderLatitude(), trackerResult.getRiderLongitude()) / (double) 1000));

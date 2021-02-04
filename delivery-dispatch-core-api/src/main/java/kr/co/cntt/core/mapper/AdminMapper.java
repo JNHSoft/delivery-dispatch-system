@@ -495,4 +495,11 @@ public interface AdminMapper {
     List<Map> selectStatisticsMin30BelowByDate(Order order);
     List<Map> selectStatisticsMin30BelowByDateAtTWKFC(Order order);
 
+    /**
+     * 21.01.21
+     * 서브 그룹 그룹핑 처리
+     * */
+    List<SubGroup> selectSubGroupGrouping(Common common);
+    List<SubGroupStoreRel> selectSubgrouGroupingStoreRels(SubGroupStoreRel subGroupStoreRel);
+
 }

@@ -504,7 +504,6 @@ function postStore() {
     });
 }
 
-
 /**
  * 상점 삭제
  */

@@ -129,7 +129,8 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
                         CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                         checkFcmResponse(iosPushNotification);
                     }catch (Exception e){
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
 
@@ -156,7 +157,8 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
                         CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                         checkFcmResponse(androidPushNotification);
                     }catch (Exception e){
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
 
@@ -183,7 +185,8 @@ public class NoticeServiceImpl extends ServiceSupport implements NoticeService {
                         CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                         checkFcmResponse(oldPushNotification);
                     }catch (Exception e){
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
             }

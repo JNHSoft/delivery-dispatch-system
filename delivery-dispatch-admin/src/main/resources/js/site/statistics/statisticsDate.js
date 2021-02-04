@@ -66,7 +66,7 @@ function getStoreStatisticsByDate() {
             startDate: $('#startDate').val(),
             endDate: $('#endDate').val(),
             groupID: $("#statisticsGroupList").val(),
-            subGroupID: $("#statisticsSubGroupList").val(),
+            subGroupName: $("#statisticsSubGroupList").val(),
             storeID: $("#statisticsStoreList").val(),
         },
         dataType: 'json',
@@ -343,14 +343,6 @@ function getStoreStatisticsByDate() {
 
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
             loading.hide();
-
-            // $('.state_wrap .btn_close').click(function (e) {
-            //     e.preventDefault();
-            //     $('.state_wrap').removeClass('on'); //상세보기 닫기
-            //     setTimeout(function () {
-            //         $(window).trigger('resize');
-            //     }, 300)//그리드 리사이즈
-            // });
         }
     });
 }
@@ -576,7 +568,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
             if(data) {
                 var pstatisticsSubGroupListHtml = "<option value='reset'>" + list_search_all_subgroup + "</option>";
                 for (var i in data){
-                    pstatisticsSubGroupListHtml += "<option value='" + data[i].id  + "'>" + data[i].name + "</option>";
+                    pstatisticsSubGroupListHtml += "<option value='" + data[i].name  + "'>" + data[i].name + "</option>";
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
@@ -601,7 +593,7 @@ function getStatisticsStoreList(subId, gId) {
         type : 'get',
         data : {
             groupId : selectGroupId,
-            subGroupId : selecSubGroupId
+            subGroupName : selecSubGroupId
         },
         async : false,
         dataType : 'json',

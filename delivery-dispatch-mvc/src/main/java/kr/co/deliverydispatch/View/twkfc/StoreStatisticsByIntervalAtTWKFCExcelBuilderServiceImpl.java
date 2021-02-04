@@ -124,8 +124,6 @@ public class StoreStatisticsByIntervalAtTWKFCExcelBuilderServiceImpl extends Com
         Drawing drawing = sheet.createDrawingPatriarch();
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-//        System.out.println("data = " + storeStatisticsByInterval.getIntervalMinuteCounts().size());
-
         // 내용 부분
         for(int i = 0, r = storeStatisticsByInterval.getIntervalMinuteCounts().size(); i<r; i++) {
             String time = null;

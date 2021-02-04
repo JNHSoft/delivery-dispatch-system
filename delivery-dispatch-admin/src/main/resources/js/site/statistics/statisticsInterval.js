@@ -187,18 +187,6 @@ function chart30minute(data){
     series.tooltip.pointerOrientation = "vertical";
 
     series.columns.template.width = am4core.percent(100);
-    /*var labelBullet = new am4charts.LabelBullet();
-    series.bullets.push(labelBullet);
-    labelBullet.strokeOpacity = 0;
-    labelBullet.stroke = am4core.color("#dadada");
-    labelBullet.dy = -20;
-    labelBullet.minWidth = 20;
-    labelBullet.label.text = "{valueY}";
-    labelBullet.label.fontSize = 10;
-    labelBullet.label.adapter.add("text", function(value, target) {
-        if(target.dataItem.valueY == 0) return '';
-        return value;
-    })*/
 }
 
 function chartPercentage(data){
@@ -255,9 +243,6 @@ function chartPercentage(data){
         pieSeries.slices.template.cursorOverStyle = [{"property": "cursor","value": "pointer"}];
         pieSeries.marginLeft = 20;
 
-        //pieSeries.tooltip.getFillFromObject = false;
-        //pieSeries.tooltip.label.fill = am4core.color('#fff');
-
         pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
         pieSeries.labels.template.radius = am4core.percent(-30);
 
@@ -276,10 +261,8 @@ function chartPercentage(data){
         chart.legend = new am4charts.Legend();
         chart.legend.position = "right";
         chart.legend.width = 110;
-        //chart.legend.markers.template.disabled = true;
         chart.legend.labels.template.text = "[bold {color}]{name}";
         chart.legend.valueLabels.template.text = "{value.value}";
-        //chart.legend.itemContainers.template.tooltipText = "";
         chart.legend.itemContainers.template.hoverable = false;
     } else {
         $('#chart_percentage').html(`<div class="no_chart_wrap">${label_count}<br>${result_none}</div>`);
@@ -319,9 +302,6 @@ function chartTc(data){
     series.columns.template.fill = am4core.color("#85a9e3");
     series.tooltip.pointerOrientation = "vertical";
 
-    /*series.columns.template.column.cornerRadiusTopLeft = 5;
-    series.columns.template.column.cornerRadiusTopRight = 5;
-    series.columns.template.column.fillOpacity = 0.8;*/
     series.columns.template.width = am4core.percent(85);
 
     var labelBullet = new am4charts.LabelBullet();

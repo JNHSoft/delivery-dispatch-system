@@ -213,7 +213,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
                         r.setDistance(r.getDistance() - r.getDistance() % 10);//거리 10미터 단위
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
 
                 } else {
@@ -348,7 +349,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -375,7 +377,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -402,7 +405,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -491,7 +495,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
 
@@ -556,7 +561,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             try {
                 order.setDistance(Double.toString(misc.getHaversine(storeDTO.getLatitude(), storeDTO.getLongitude(), orderLatitude, orderLongitude) / (double) 1000));
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
 
@@ -682,7 +688,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             S_Order.setTotalPrice(numberFormat.format(totalPrice));
 
         }catch (Exception e){
-            e.printStackTrace();
+//            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
 
@@ -721,13 +728,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_STORE")
     @Override
     public int putOrderInfo(Order order) throws AppTrException {
-
-        System.out.println("#@### putOrderInfo 들어왔음 ");
-
-        /*int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
-        if (selectOrderIsApprovalCompleted != 0) {
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00021), ErrorCodeEnum.E00021.name());
-        }*/
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
         if (selectOrderIsCompletedIsCanceled != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00022), ErrorCodeEnum.E00022.name());
@@ -809,7 +809,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     try {
                         orgQT = Integer.parseInt(orgOrd.getCookingTime());
                     }catch (Exception e){
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }finally {
                         if (orgQT == 0){
                             orgQT = 30;
@@ -840,7 +841,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
             }
         }catch (Exception e){
-            e.printStackTrace();
+//            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         if (order.getMenuPrice() == null || order.getMenuPrice().equals("")) {
@@ -933,7 +935,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -960,7 +963,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -987,7 +991,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
                 }
@@ -1035,7 +1040,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                                 checkFcmResponse(iosPushNotification);
                             }catch (Exception e){
-                                e.printStackTrace();
+//                                e.printStackTrace();
+                                log.error(e.getMessage());
                             }
                         }
 
@@ -1062,7 +1068,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                                 checkFcmResponse(androidPushNotification);
                             }catch (Exception e){
-                                e.printStackTrace();
+//                                e.printStackTrace();
+                                log.error(e.getMessage());
                             }
                         }
 
@@ -1089,7 +1096,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                                 checkFcmResponse(oldPushNotification);
                             }catch (Exception e){
-                                e.printStackTrace();
+//                                e.printStackTrace();
+                                log.error(e.getMessage());
                             }
                         }
                     }
@@ -1265,7 +1273,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1292,7 +1301,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1319,7 +1329,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1365,7 +1376,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1392,7 +1404,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1419,7 +1432,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1578,7 +1592,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     int iResult = putOrderCompleted(order);
                     log.info("newRider Put Arrived Button gotoCompleted result = [" + iResult + "]");
                 }catch (Exception e){
-                    e.printStackTrace();
+//                    e.printStackTrace();
                     log.info("newRider Put Error");
                     log.info(e.getMessage());
                 }
@@ -1618,7 +1632,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 log.info("new Rider Android Check OK");
                 bUpdateAndroid = true;
             }catch (Exception e){
-                e.printStackTrace();
+//                e.printStackTrace();
                 log.info("newRider Android Check Error");
                 log.info(e.getMessage());
             }
@@ -1684,10 +1698,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
          * */
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);
 
-        System.out.println("####################################");
-        System.out.println("storeDTO =[" + storeDTO + "]");
-        System.out.println("####################################");
-
         if (result != 0) {
             if (S_Store.getSubGroup() != null) {
                 redisService.setPublisher(Content.builder().type("order_completed").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
@@ -1737,7 +1747,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1764,7 +1775,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1791,7 +1803,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
                 }
@@ -1899,7 +1912,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1926,7 +1940,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -1953,7 +1968,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
                 }
@@ -2001,7 +2017,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                                 checkFcmResponse(iosPushNotification);
                             }catch (Exception e){
-                                e.printStackTrace();
+//                                e.printStackTrace();
+                                log.error(e.getMessage());
                             }
                         }
 
@@ -2028,7 +2045,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                                 checkFcmResponse(androidPushNotification);
                             }catch (Exception e){
-                                e.printStackTrace();
+//                                e.printStackTrace();
+                                log.error(e.getMessage());
                             }
                         }
 
@@ -2055,7 +2073,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                                 checkFcmResponse(oldPushNotification);
                             }catch (Exception e){
-                                e.printStackTrace();
+//                                e.printStackTrace();
+                                log.error(e.getMessage());
                             }
                         }
                     }
@@ -2215,7 +2234,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -2242,7 +2262,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
 
@@ -2269,7 +2290,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
                 }
@@ -2427,7 +2449,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                         checkFcmResponse(iosPushNotification);
                     }catch (Exception e){
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
 
@@ -2454,7 +2477,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                         checkFcmResponse(androidPushNotification);
                     }catch (Exception e){
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
 
@@ -2481,7 +2505,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                         checkFcmResponse(oldPushNotification);
                     }catch (Exception e){
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
             }

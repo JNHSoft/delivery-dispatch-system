@@ -113,14 +113,14 @@ public class StaffApprovalController {
         // 승인을 거부하는 경우
         if (riderInfo.getApprovalStatus().trim().equals("2") &&
                 !((chkRiderInfo.getApprovalStatus().trim().equals("0") || chkRiderInfo.getApprovalStatus().trim().equals("1")))){
-            System.out.println("return false two #################");
+            log.info("changeApprovalStatus return false # New Reject");
             return false;
         }
 
         // 승인이 된 상태에서 취소하는 경우
         if (riderInfo.getApprovalStatus().trim().equals("3") &&
                 !(chkRiderInfo.getApprovalStatus().trim().equals("1"))){
-            System.out.println("return false three #################");
+            log.info("changeApprovalStatus return false # Reject after Approval");
             return false;
         }
 
@@ -158,13 +158,12 @@ public class StaffApprovalController {
 
         // 승인을 요청하는 경우
         if (riderInfo.getApprovalStatus().trim().equals("1") && !chkRiderInfo.getApprovalStatus().equals("0")){
-            System.out.println("return false one #################");
+            log.info("approvalAccept return false # request Accept but Not Waiting mode");
             return false;
         }
 
         // 관련 라이더 정보가 있는지 확인 LOGIN ID는 중복되면 안되므로
         chkRiderInfo.setRole("ROLE_SEARCH");
-        System.out.println(chkRiderInfo.getRole());
         List<RiderApprovalInfo> approvalInfos = staffApprovalAdminService.getRiderApprovalList(chkRiderInfo);
 
         // 필터링 시작
@@ -239,7 +238,6 @@ public class StaffApprovalController {
 
             // 만료 기간이 없는 경우 강제로 현재 일자롤부터 180일을 추가한다.
             if (chkRiderInfo.getSession() == null || chkRiderInfo.getSession().getExpiryDatetime() == ""){
-                System.out.println("유효기간 입력");
                 if (chkRiderInfo.getSession() == null){
                     chkRiderInfo.setSession(new RiderSession());
                 }
@@ -249,10 +247,6 @@ public class StaffApprovalController {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(new Date());
                     calendar.add(Calendar.YEAR, 1);
-
-                    System.out.println("############ 유효기간 설정 #################");
-                    System.out.println(defaultFormat.format(calendar.getTime()));
-                    System.out.println("############ 유효기간 설정 #################");
 
                     chkRiderInfo.getSession().setExpiryDatetime(defaultFormat.format(calendar.getTime()));
 
@@ -431,10 +425,6 @@ public class StaffApprovalController {
             staffApprovalAdminService.updateRiderInfo(changeRider);
         }else{
             // 승인 이외의 정보는 Rider Approval Info에서 적용한다.
-
-            System.out.println("###########");
-            System.out.println(chkRiderInfo.getCode());
-
             staffApprovalAdminService.setRiderInfo(chkRiderInfo);
         }
 

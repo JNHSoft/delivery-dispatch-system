@@ -140,7 +140,8 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
             try {
                 storeHaversineMap.put(s.getId(), misc.getHaversine(C_Store.getLatitude(), C_Store.getLongitude(), s.getLatitude(), s.getLongitude()));
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
 //        }
@@ -258,20 +259,6 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00034), ErrorCodeEnum.E00034.name());
         }
 
-
-        /*Misc misc = new Misc();
-
-        if (S_Order.getLatitude() != null && S_Order.getLongitude() != null) {
-
-
-            Order orderInfo = orderMapper.selectOrderLocation(S_Order.getId());
-
-            try {
-                S_Order.setDistance(Double.toString(misc.getHaversine(orderInfo.getLatitude(), orderInfo.getLongitude(), orderInfo.getLatitude(), orderInfo.getLongitude()) / (double) 1000));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
         return S_Order;
     }
 

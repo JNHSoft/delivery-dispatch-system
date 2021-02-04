@@ -97,7 +97,6 @@ public class DeliveryDispatchAdminAudit {
             if (method.isAnnotationPresent(CnttMethodDescription.class)) {
                 Set<String> patternSet = requestMappingInfo.getPatternsCondition().getPatterns();
                 for (String pattern : patternSet) {
-                    //System.out.print(method.getName());
                     REQUEST_MAPPING_DESCRIPTION_MAP.put(pattern, method.getAnnotation(CnttMethodDescription.class).value());
                 }
             }
