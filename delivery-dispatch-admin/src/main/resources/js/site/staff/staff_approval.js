@@ -267,7 +267,8 @@ function popUpSaveData(){
             id: approvalID,
             vehicleNumber: riderVehicle,
             code: riderCode,
-            name: riderName
+            name: riderName,
+            sharedStatus: $("#selShared").val()
         },
         dataType: "json",
         success: function (data){
@@ -302,6 +303,14 @@ function searchRiderApprovalDetail(rowID){
             $("#riderExpDate").val(data.session == undefined ? "" : dateFormat(data.session.expiryDatetime));
             $("#approvalID").val(data.id);
             $("#approvalStatus").val(data.approvalStatus);
+
+            if (data.sharedStatus == undefined){
+                $("#selShared").val("0").prop("selected", true);
+            }else{
+                //$("#selShared").val(data.sharedStatus).attr("selected", "selected");
+                $("#selShared").val(data.sharedStatus).prop("selected", true);
+            }
+
 
             $("#riderExpDate").datepicker({
                 minDate: new Date,

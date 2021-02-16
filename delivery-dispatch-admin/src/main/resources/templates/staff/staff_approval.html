@@ -83,6 +83,18 @@
                                 <a class="button btn_blue2" th:text="${#messages.msg('reset.password')}" onclick="javascript:resetRiderPw()"/>
                             </td>
                         </tr>
+                        <tr>
+                            <th th:text="${#messages.msg('list.search.sharedTitle')}"/>
+                            <td>
+                            </td>
+                            <th th:text="${#messages.msg('list.search.sharedTitle')}"/>
+                            <td>
+                                <select name="" class="select" id="selShared">
+                                    <option value="0" th:text="${#messages.msg('list.search.unshared')}" />
+                                    <option value="1" th:text="${#messages.msg('list.search.shared')}" />
+                                </select>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>

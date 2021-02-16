@@ -169,6 +169,7 @@
 		<result property="riderId" column="rider_id" />
 		<result property="acceptDatetime" column="accept_datetime" />
 		<result property="rejectDatetime" column="reject_datetime" />
+		<result property="sharedStatus" column="shared_flag" />
 
 		<association property="riderDetail" resultMap="selectRiderNowResult"/>
 
@@ -474,6 +475,10 @@
 				, A.status = #{status}
 			</if>
 
+			<if	test="sharedStatus != null and sharedStatus != ''">
+				, A.shared_flag = #{sharedStatus}
+			</if>
+
 			<if test="vehicleNumber != null and vehicleNumber != ''">
 				, A.vehicle_number = #{vehicleNumber}
 			</if>
@@ -493,33 +498,10 @@
 			<if test="changePhone eq '1'.toString() ">
 				, C.push_token = null
 			</if>
-			<!--<choose>
-				<when test="subGroupRiderRel != null and subGroupRiderRel != ''" >
-					<if test="subGroupRiderRel.storeId == null or subGroupRiderRel.storeId == ''" >
-						, B.deleted = now()
-					</if>
-					<if test="subGroupRiderRel.storeId != null and subGroupRiderRel.storeId != ''">
-						, B.modified_datetime = now()
-						, B.store_id = #{subGroupRiderRel.storeId}
-					</if>
-					<if test="subGroupRiderRel.subGroupId != null and subGroupRiderRel.subGroupId != ''">
-						, B.modified_datetime = now()
-						, B.group_id = #{subGroupRiderRel.groupId}
-						, B.subgroup_id = #{subGroupRiderRel.subGroupId}
-					</if>
-				</when>
-			</choose>-->
-
 			, A.id = LAST_INSERT_ID(A.id)
 		WHERE 1=1 and B.deleted IS NULL
 		<choose>
 			<when test="id != null and id != ''">
-				<!--<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-				</if>
-				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-					AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-				</if>-->
 				AND A.id = #{id}
 			</when>
 			<otherwise>
@@ -1379,6 +1361,7 @@
 				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,IFNULL(R.code, REQ.code)						as code
+				,IFNULL(R.shared_flag, 0)						as shared_flag
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1446,6 +1429,9 @@
 		<if test="working != null and working eq '0'.toString()">
 			,B.modified_datetime = now()
 			,B.working = #{working}
+		</if>
+		<if test="sharedStatus != null">
+			,B.shared_flag = #{sharedStatus}
 		</if>
 		where	 A.id = #{id}
 	</update>
