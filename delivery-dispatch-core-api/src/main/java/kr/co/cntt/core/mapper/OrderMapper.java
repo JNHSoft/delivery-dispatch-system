@@ -131,7 +131,7 @@ public interface OrderMapper {
      */
     public List<Reason> selectOrderFirstAssignmentReason(Common common);
 
-    public List<Map> selectPushToken(SubGroup subGroup);
+    public List<Map<String, String>> selectPushToken(SubGroup subGroup);
 
     public List<Order> selectFooterOrders(Order order);
 

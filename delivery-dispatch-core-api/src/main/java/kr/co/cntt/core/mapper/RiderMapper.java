@@ -198,11 +198,11 @@ public interface RiderMapper {
      * @param
      * @return
      */
-    public int updateRiderWorkingAuto(HashMap map);
+    public Integer updateRiderWorkingAuto(HashMap map);
 
-    public List<Map> selectRiderToken(Order order);
+    public List<Map<String, String>> selectRiderToken(Order order);
 
-    public List<Map> selectRiderTokenByOrderId(Order order);
+    public List<Map<String, String>> selectRiderTokenByOrderId(Order order);
 
     public List<Reason> selectRejectReason(Common common);
 

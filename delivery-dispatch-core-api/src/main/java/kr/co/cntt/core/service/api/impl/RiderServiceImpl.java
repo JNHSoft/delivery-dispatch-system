@@ -343,8 +343,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             map.remove("num");
                         }
                         map.put("num", i);
-                        int temp = riderMapper.updateRiderWorkingAuto(map);
-                        if (temp != 1) {
+
+                        Integer temp = riderMapper.updateRiderWorkingAuto(map);
+
+                        if (temp == null || temp != 1) {
                             break;
                         }
                     }

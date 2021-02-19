@@ -27,7 +27,6 @@ import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -86,6 +85,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     /**********************************************
      * 19-10-28
      * 라이더 자동 배정 순위 변경
+     * 21-02-19
+     * 라이더 쉐어 방식 변경
+     *  #기존 => 하위 그룹 간 전체 라이더 공유
+     *  #변경 => 하위 그룹 중 매장 or 관리자에서 공유를 허용한 라이더만 쉐어
+     *  # 라이더 자동 배정 순위 변경은 다음과 같이 진행 될 예정
+     *    --> ???
      **********************************************/
     @Override
     public void autoAssignOrder() throws AppTrException {
@@ -96,9 +101,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         log.debug(">>> autoAssign_GetOrderList:::: orderList: " + orderList);
 
         for (Order order : orderList) {
-            Map map = new HashMap();
+            Map<String, Object> map = new HashMap<>();
             map.put("order", order);
-            Map denyOrderIdChkMap = new HashMap();
+            Map<String, String> denyOrderIdChkMap = new HashMap<>();
             denyOrderIdChkMap.put("orderId", order.getId());
             denyOrderIdChkMap.put("storeId", order.getStore().getId());
             // 추가되어 있는 인덱스를 활용하여 조회 속도 업
@@ -123,25 +128,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             List<Order> firstAssignedRider = orderMapper.selectNearOrderRider(searchMap);
 
-            allowRiderList.forEach(x -> {
+            allowRiderList.forEach(x ->
                 rejectRiderList.forEach(y->{
                     if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
                         astRiderList.remove(x);
                     }
-                });
-            });
+                }));
 
             astRiderList.removeAll(rejectRiderList);
 
-            for (Iterator<Rider> riderX = astRiderList.iterator(); riderX.hasNext();
-                 ) {
-                Rider r = riderX.next();
-
-                for (Iterator<Rider> riderY = astRiderList.iterator(); riderY.hasNext();){
-                    Rider y = riderY.next();
-
-                    if (r.getId().equals(y.getId()) && r.getShared_sort() > y.getShared_sort()){
-//                        astRiderList.remove(y);
+            for (Rider r : astRiderList) {
+                for (Rider y : astRiderList) {
+                    if (r.getId().equals(y.getId()) && r.getShared_sort() > y.getShared_sort()) {
                         duplicationRider.add(y);
                     }
                 }
@@ -170,19 +168,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 return true;
                             case "1":           //// 배정 완료
                             default:
-
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
-                                if (firstAssignedRider.stream().filter(y -> {
-                                    if (y.getRiderId().equals(x.getId())){
-                                        return true;
-                                    }else{
-                                        return false;
-                                    }
-                                }).count() > 0){
-                                    return false;
-                                }else{
-                                    return true;
-                                }
+                                return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId())).count() <= 0;
                         }
                     }
                 })
@@ -206,14 +193,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
             Misc misc = new Misc();
 
-            for (Iterator<Rider> rider = riderList.iterator(); rider.hasNext(); ) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
-                Rider r = rider.next();
+            for (Rider r : riderList) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
                 if (r.getLatitude() != null) {
                     try {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
                         r.setDistance(r.getDistance() - r.getDistance() % 10);//거리 10미터 단위
                     } catch (Exception e) {
-//                        e.printStackTrace();
                         log.error(e.getMessage());
                     }
 
@@ -221,6 +206,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     riderList.remove(r);//위치정보가 없는 라이더 제거
                 }
             }
+
             log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList);
 
             riderList = riderList.stream()
@@ -258,12 +244,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
             else {
                 log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: " + order.getId());
-//                throw new AppTrException(getMessage(ErrorCodeEnum.E00029, locale), ErrorCodeEnum.E00029.name());//해당 주문을 배정받을 기사가 없습니다.
             }
         }
     }
 
-    public int autoAssignOrderProc(Map map) throws AppTrException {
+    public int autoAssignOrderProc(Map<String, Object> map) throws AppTrException {
         if (map.get("rider") == null) {
             log.debug(">>> autoAssignOrderProc_GetRiderList:::: riderListMap: " + map.get("rider"));
 //            throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
@@ -276,7 +261,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setId(order.getRegOrderId());
             order.setRiderId(rider.getId());
             order.setStatus("1");
-//            order.setAssignedDatetime(LocalDateTime.now().toString());
+
             order.setAssignedDatetime("-2");
             if (rider.getLatitude() != null && !rider.getLatitude().equals("")) {
                 order.setAssignXy(rider.getLatitude() + "|" + rider.getLongitude());
@@ -284,7 +269,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 order.setAssignXy("none");
             }
 
-            ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(order);
+            ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) riderMapper.selectRiderToken(order);
             int result = orderMapper.updateOrder(order);
 
             Store storeDTO = new Store();
@@ -325,50 +310,35 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     fcmBody.getNotification().setTitle(getMessage("ASSIGN.ORDER"));
                     fcmBody.getNotification().setBody(getMessage("ASSIGN.ORDER"));
 
-                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                    iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 iOS
+                    ArrayList<Map<String, String>> iosMap =
+                            new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                     // iOS push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(iosTokenValue);
 
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
 
-
-                    android.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 android
+                    ArrayList<Map<String, String>> android =
+                            new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                     // new android push
                     if (android.size() > 0){
                         try {
                             ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(androidTokenValue);
 
                             // noti 전문 삭제
@@ -377,26 +347,21 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
 
 
-                    oldMap.addAll(tokens.stream().filter(x->{
-                        if (x.getOrDefault("appType", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 구버전 (단, iOS 버전 없음)
+                    ArrayList<Map<String, String>> oldMap =
+                            new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                     // old android push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(oldTokenValue);
 
                             // noti 전문 삭제
@@ -405,11 +370,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
-
                 }
             }
 
@@ -436,8 +399,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_STORE")
     @Override
     public int postOrder(Order order) throws AppTrException {
-        // orderList = null;
-
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
@@ -445,10 +406,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         String address = "";
-
-        /*if((locale.toString()).equals("zh_TW")){
-            address += storeDTO.getDetailAddress();
-        }*/
 
         if (order.getAreaAddress() != null && !order.getAreaAddress().equals("")) {
             address += order.getAreaAddress();
@@ -571,6 +528,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         if (postOrder == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00011), ErrorCodeEnum.E00011.name());
         }
+
+        ///////////
 
         if (postOrder != 0) {
             if (storeDTO.getAssignmentStatus().equals("1")) {
@@ -702,10 +661,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     /**
      * <p> putOrder
-     *
-     * @param order
-     * @return
-     * @throws AppTrException
      */
     public int putOrder(Order order) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -741,10 +696,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         String address = "";
 
-        /*if((locale.toString()).equals("zh_TW")){
-            address += storeDTO.getDetailAddress();
-        }*/
-
         if (order.getAreaAddress() != null && !order.getAreaAddress().equals("")) {
             address += order.getAreaAddress();
         }
@@ -767,19 +718,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setAddress(address);
 
-        /*Geocoder geocoder = new Geocoder();
-
-        if (order.getAddress() != null && order.getAddress() != "") {
-            try {
-                Map<String, String> geo = geocoder.getLatLng(order.getAddress());
-                order.setLatitude(geo.get("lat"));
-                order.setLongitude(geo.get("lng"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }*/
-
         order.setRole("ROLE_STORE");
         // 20.07.01 주문 예약 시간 변동 시, 라이더 배정 취소 프로세스 추가
         Order orgOrd = getOrderInfo(order);     // 변경 전 주문 정보 추출
@@ -789,7 +727,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 Date changeDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());             // 변경될 예약 시간의 형식 변경
                 Date orgDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orgOrd.getReservationDatetime());          // 기존에 적용된 예약 시간
 
-                Locale regionLocale = LocaleContextHolder.getLocale();
+                //Locale regionLocale = LocaleContextHolder.getLocale();
 
                 //int iTimer = regionLocale.toString().equals("zh_TW") ? 31 : 51;     // 국가별 배정 타임이 다르므로
 
@@ -800,10 +738,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 변경되어야 될 내용 적용 ex. 배정취소
                     // 20.08.03 배정 취소 사라지게 하기
                     // 20.08.28 배정 시간을 임의로 조정
-                    /**
+                    /*
                      * 배정시간 조건
                      * 예약 시간 마이너스 QT 타임을 비교하여, QT 타임보다 낮은 경우에 한하여, 예약시간 - QT 타임 시간을 적용한다.
-                     * */
+                     */
                     int orgQT = 0;
 
                     try {
@@ -893,7 +831,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Order curOrder = getOrderInfo(order);
             if (curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")) {
                 // 해당 라이더한테만 푸쉬
-                ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);
+                ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) riderMapper.selectRiderTokenByOrderId(order);
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_CHANGE);
@@ -905,56 +843,39 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     obj.put("obj", noti);
 
                     fcmBody.setData(obj);
-                    //fcmBody.setRegistration_ids(tokens);
                     fcmBody.setPriority("high");
 
                     fcmBody.getNotification().setTitle(getMessage("CHANGE.ORDER"));
                     fcmBody.getNotification().setBody(getMessage("CHANGE.ORDER"));
 
-                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                    iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 iOS
+                    ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                     // iOS push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(iosTokenValue);
 
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
 
 
-                    android.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 android
+                    ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                     // new android push
                     if (android.size() > 0){
                         try {
                             ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(androidTokenValue);
 
                             // noti 전문 삭제
@@ -963,26 +884,20 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
 
 
-                    oldMap.addAll(tokens.stream().filter(x->{
-                        if (x.getOrDefault("appType", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 구버전 (단, iOS 버전 없음)
+                    ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                     // old android push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(oldTokenValue);
 
                             // noti 전문 삭제
@@ -991,7 +906,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -999,7 +913,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             } else {
                 // 상점 관련 라이더한테 푸쉬
                 if (storeDTO.getAssignmentStatus().equals("2")) {
-                    ArrayList<Map> tokens = (ArrayList) orderMapper.selectPushToken(storeDTO.getSubGroup());
+                    ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) orderMapper.selectPushToken(storeDTO.getSubGroup());
                     if (tokens.size() > 0) {
                         Notification noti = new Notification();
                         noti.setType(Notification.NOTI.ORDER_CHANGE);
@@ -1016,50 +930,34 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         fcmBody.getNotification().setTitle(getMessage("CHANGE.ORDER"));
                         fcmBody.getNotification().setBody(getMessage("CHANGE.ORDER"));
 
-                        // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                        ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                        ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                        ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                        iosMap.addAll(tokens.stream().filter(x -> {
-                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                                return true;
-                            }
-
-                            return false;
-                        }).collect(Collectors.toList()));
+                        // 신규 iOS
+                        ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                         // iOS push
                         if (iosMap.size() > 0){
                             try {
                                 ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                                iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                                iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                                 fcmBody.setRegistration_ids(iosTokenValue);
 
                                 CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                                 checkFcmResponse(iosPushNotification);
                             }catch (Exception e){
-//                                e.printStackTrace();
                                 log.error(e.getMessage());
                             }
                         }
 
 
-                        android.addAll(tokens.stream().filter(x -> {
-                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                                return true;
-                            }
-
-                            return false;
-                        }).collect(Collectors.toList()));
+                        // 신규 android
+                        ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                         // new android push
                         if (android.size() > 0){
                             try {
                                 ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                                android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                                android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                                 fcmBody.setRegistration_ids(androidTokenValue);
 
                                 // noti 전문 삭제
@@ -1068,26 +966,20 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                                 checkFcmResponse(androidPushNotification);
                             }catch (Exception e){
-//                                e.printStackTrace();
                                 log.error(e.getMessage());
                             }
                         }
 
 
-                        oldMap.addAll(tokens.stream().filter(x->{
-                            if (x.getOrDefault("appType", "").toString().equals("")){
-                                return true;
-                            }
-
-                            return false;
-                        }).collect(Collectors.toList()));
+                        // 구버전 (단, iOS 버전 없음)
+                        ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                         // old android push
                         if (iosMap.size() > 0){
                             try {
                                 ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                                oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                                oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                                 fcmBody.setRegistration_ids(oldTokenValue);
 
                                 // noti 전문 삭제
@@ -1096,7 +988,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                                 checkFcmResponse(oldPushNotification);
                             }catch (Exception e){
-//                                e.printStackTrace();
                                 log.error(e.getMessage());
                             }
                         }
@@ -1181,10 +1072,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssigned.setId(order.getId());
         orderAssigned.setRiderId(order.getRiderId());
         orderAssigned.setStatus("1");
-//        orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
         orderAssigned.setAssignedDatetime("-2");
-//        orderAssigned.setCombinedOrderId(order.getCombinedOrderId());
-        if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
+
+        if (S_Rider != null && S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
             orderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
         } else {
             orderAssigned.setAssignXy("none");
@@ -1198,8 +1088,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
-//            combinedOrderAssigned.setCombinedOrderId(order.getId());
-            if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
+
+            if (S_Rider != null && S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
                 combinedOrderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
             } else {
                 combinedOrderAssigned.setAssignXy("none");
@@ -1231,11 +1121,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-                ArrayList<Map> tokens = (ArrayList) orderMapper.selectPushToken(S_Store.getSubGroup());
+                ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) orderMapper.selectPushToken(S_Store.getSubGroup());
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN);
-                    noti.setRider_id(Integer.valueOf(orderAssigned.getRiderId()));
+                    noti.setRider_id(Integer.parseInt(orderAssigned.getRiderId()));
 
                     // PUSH 객체로 변환 후 전달
                     FcmBody fcmBody = new FcmBody();
@@ -1249,25 +1139,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     fcmBody.getNotification().setTitle(getMessage("ASSIGN.ORDER"));
                     fcmBody.getNotification().setBody(getMessage("ASSIGN.ORDER"));
 
-                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                    iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 iOS
+                    ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                     // iOS push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(iosTokenValue);
 
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
@@ -1279,20 +1159,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    android.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 android
+                    ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                     // new android push
                     if (android.size() > 0){
                         try {
                             ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(androidTokenValue);
 
                             // noti 전문 삭제
@@ -1307,20 +1182,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    oldMap.addAll(tokens.stream().filter(x->{
-                        if (x.getOrDefault("appType", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 구버전 (단, iOS 버전 없음)
+                    ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                     // old android push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(oldTokenValue);
 
                             // noti 전문 삭제
@@ -1336,7 +1206,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
                 }
             } else {
-                ArrayList<Map> tokens = (ArrayList) orderMapper.selectPushToken(S_Store.getSubGroup());
+                ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) orderMapper.selectPushToken(S_Store.getSubGroup());
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN);
@@ -1352,25 +1222,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
                     fcmBody.getNotification().setTitle(getMessage("ASSIGN.ORDER"));
                     fcmBody.getNotification().setBody(getMessage("ASSIGN.ORDER"));
-                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
 
-                    iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 iOS
+                    ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                     // iOS push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(iosTokenValue);
 
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
@@ -1382,20 +1243,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    android.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 android
+                    ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                     // new android push
                     if (android.size() > 0){
                         try {
                             ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(androidTokenValue);
 
                             // noti 전문 삭제
@@ -1410,20 +1266,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    oldMap.addAll(tokens.stream().filter(x->{
-                        if (x.getOrDefault("appType", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 구버전 (단, iOS 버전 없음)
+                    ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                     // old android push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(oldTokenValue);
 
                             // noti 전문 삭제
@@ -1450,12 +1301,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         order.setRole("ROLE_RIDER");
         Order orderInfo = orderMapper.selectOrderInfo(order);
 
-
-        if (orderInfo.getStatus().toString().equals("0")){
+        if (orderInfo.getStatus().equals("0")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
-        }else if (orderInfo.getStatus().toString().equals("3") || orderInfo.getStatus().toString().equals("4")){
+        }else if (orderInfo.getStatus().equals("3") || orderInfo.getStatus().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
-        }else if (!(orderInfo.getStatus().toString().equals("1"))){
+        }else if (!(orderInfo.getStatus().equals("1"))){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00056), ErrorCodeEnum.E00056.name());
         }
 
@@ -1524,11 +1374,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         order.setRole("ROLE_RIDER");
         Order orderInfo = orderMapper.selectOrderInfo(order);
 
-        if (orderInfo.getStatus().toString().equals("0")){
+        if (orderInfo.getStatus().equals("0")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
-        }else if (orderInfo.getStatus().toString().equals("3") || orderInfo.getStatus().toString().equals("4")){
+        }else if (orderInfo.getStatus().equals("3") || orderInfo.getStatus().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
-        }else if (!(orderInfo.getStatus().toString().equals("2"))){
+        }else if (!(orderInfo.getStatus().equals("2"))){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00057), ErrorCodeEnum.E00057.name());
         }
 
@@ -1614,11 +1464,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
         Order orderInfo = orderMapper.selectOrderInfo(order);
 
-        if (orderInfo.getStatus().toString().equals("0")){
+        if (orderInfo.getStatus().equals("0")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
-        }else if (orderInfo.getStatus().toString().equals("4")){
+        }else if (orderInfo.getStatus().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
-        }else if (!(orderInfo.getStatus().toString().equals("6"))){
+        }else if (!(orderInfo.getStatus().equals("6"))){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00058), ErrorCodeEnum.E00058.name());
         }
 
@@ -1693,9 +1543,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             storeDTO.setId(S_Order.getStoreId());
         }
 
-        /**
+        /*
          * 주문 상태를 매장에 전송하기 위하여 추출
-         * */
+         */
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);
 
         if (result != 0) {
@@ -1706,7 +1556,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-                ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(S_Order);
+                ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) riderMapper.selectRiderToken(S_Order);
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_COMPLET);
@@ -1723,25 +1573,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     fcmBody.getNotification().setTitle(getMessage("COMPLETED.ORDER"));
                     fcmBody.getNotification().setBody(getMessage("COMPLETED.ORDER"));
 
-                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                    iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 iOS
+                    ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                     // iOS push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(iosTokenValue);
 
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
@@ -1753,20 +1593,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    android.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 android
+                    ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                     // new android push
                     if (android.size() > 0){
                         try {
                             ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(androidTokenValue);
 
                             // noti 전문 삭제
@@ -1781,20 +1616,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    oldMap.addAll(tokens.stream().filter(x->{
-                        if (x.getOrDefault("appType", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 구버전 (단, iOS 버전 없음)
+                    ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                     // old android push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(oldTokenValue);
 
                             // noti 전문 삭제
@@ -1871,7 +1701,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             Order curOrder = getOrderInfo(order);
             if (curOrder.getRiderId() != null && !curOrder.getRiderId().equals("")) {
                 // 해당 라이더한테만 푸쉬
-                ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);
+                ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) riderMapper.selectRiderTokenByOrderId(order);
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_CANCEL);
@@ -1888,25 +1718,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     fcmBody.getNotification().setTitle(getMessage("CANCEL.ORDER"));
                     fcmBody.getNotification().setBody(getMessage("CANCEL.ORDER"));
 
-                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                    iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 iOS
+                    ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                     // iOS push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(iosTokenValue);
 
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
@@ -1918,20 +1738,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    android.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 android
+                    ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                     // new android push
                     if (android.size() > 0){
                         try {
                             ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(androidTokenValue);
 
                             // noti 전문 삭제
@@ -1946,20 +1761,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    oldMap.addAll(tokens.stream().filter(x->{
-                        if (x.getOrDefault("appType", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 구버전 (단, iOS 버전 없음)
+                    ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                     // old android push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(oldTokenValue);
 
                             // noti 전문 삭제
@@ -1976,7 +1786,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             } else {
                 // 상점 관련 라이더한테 푸쉬
                 if (storeDTO.getAssignmentStatus().equals("2")) {
-                    ArrayList<Map> tokens = (ArrayList) orderMapper.selectPushToken(storeDTO.getSubGroup());
+                    ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) orderMapper.selectPushToken(storeDTO.getSubGroup());
                     if (tokens.size() > 0) {
                         Notification noti = new Notification();
                         noti.setType(Notification.NOTI.ORDER_CANCEL);
@@ -1993,25 +1803,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         fcmBody.getNotification().setTitle(getMessage("CANCEL.ORDER"));
                         fcmBody.getNotification().setBody(getMessage("CANCEL.ORDER"));
 
-                        // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                        ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                        ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                        ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                        iosMap.addAll(tokens.stream().filter(x -> {
-                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                                return true;
-                            }
-
-                            return false;
-                        }).collect(Collectors.toList()));
+                        // 신규 iOS
+                        ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                         // iOS push
                         if (iosMap.size() > 0){
                             try {
                                 ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                                iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                                iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                                 fcmBody.setRegistration_ids(iosTokenValue);
 
                                 CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
@@ -2023,20 +1823,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
 
 
-                        android.addAll(tokens.stream().filter(x -> {
-                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                                return true;
-                            }
-
-                            return false;
-                        }).collect(Collectors.toList()));
+                        // 신규 android
+                        ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                         // new android push
                         if (android.size() > 0){
                             try {
                                 ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                                android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                                android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                                 fcmBody.setRegistration_ids(androidTokenValue);
 
                                 // noti 전문 삭제
@@ -2051,20 +1846,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
 
 
-                        oldMap.addAll(tokens.stream().filter(x->{
-                            if (x.getOrDefault("appType", "").toString().equals("")){
-                                return true;
-                            }
-
-                            return false;
-                        }).collect(Collectors.toList()));
+                        // 구버전 (단, iOS 버전 없음)
+                        ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                         // old android push
                         if (iosMap.size() > 0){
                             try {
                                 ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                                oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                                oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                                 fcmBody.setRegistration_ids(oldTokenValue);
 
                                 // noti 전문 삭제
@@ -2098,7 +1888,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     public int putOrderAssignCanceled(Order order) throws AppTrException {
         int selectOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
         int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
-        ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderTokenByOrderId(order);      // 위치변경 20.07.16 주문이 취소되기 전에 구해놓은다.
+        ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) riderMapper.selectRiderTokenByOrderId(order);      // 위치변경 20.07.16 주문이 취소되기 전에 구해놓은다.
 
         if (selectOrderIsApprovalCompleted != 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00017), ErrorCodeEnum.E00017.name());
@@ -2115,7 +1905,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
 
         // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
-        if(order.getAssignedDatetime() != null && order.getAssignedDatetime() == "-1"){
+        if(order.getAssignedDatetime() != null && order.getAssignedDatetime().equals("-1")){
             orderAssignCanceled.setAssignedDatetime("-1");
         }else{
             orderAssignCanceled.setAssignedDatetime(order.getAssignedDatetime());
@@ -2134,7 +1924,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssignCanceled.setRiderId("-1");
             combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
             // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
-            if (order.getAssignedDatetime() != null && order.getAssignedDatetime() == "-1"){
+            if (order.getAssignedDatetime() != null && order.getAssignedDatetime().equals("-1")){
                 combinedOrderAssignCanceled.setAssignedDatetime("-1");
             }else{
                 combinedOrderAssignCanceled.setAssignedDatetime(order.getAssignedDatetime());
@@ -2157,8 +1947,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             this.putOrder(combinedOrderAssignCanceled);
         }
-
-        String tmpRegOrderId = order.getId();
 
         int ret = this.putOrder(orderAssignCanceled);
 
@@ -2210,50 +1998,34 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     fcmBody.getNotification().setTitle(getMessage("ASSIGN.CANCEL.ORDER"));
                     fcmBody.getNotification().setBody(getMessage("ASSIGN.CANCEL.ORDER"));
 
-                    // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                    ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                    ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                    ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                    iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 iOS
+                    ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                     // iOS push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                            iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(iosTokenValue);
 
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
 
 
-                    android.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 신규 android
+                    ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                     // new android push
                     if (android.size() > 0){
                         try {
                             ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                            android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                            android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(androidTokenValue);
 
                             // noti 전문 삭제
@@ -2268,20 +2040,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
 
-                    oldMap.addAll(tokens.stream().filter(x->{
-                        if (x.getOrDefault("appType", "").toString().equals("")){
-                            return true;
-                        }
-
-                        return false;
-                    }).collect(Collectors.toList()));
+                    // 구버전 (단, iOS 버전 없음)
+                    ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                     // old android push
                     if (iosMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                            oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                             fcmBody.setRegistration_ids(oldTokenValue);
 
                             // noti 전문 삭제
@@ -2319,7 +2086,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
-        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
+        //List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
 
         int nRet = orderMapper.insertOrderConfirm(needOrderId);
         if (nRet != 0) {
@@ -2347,7 +2114,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
-        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
+        //List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
 
         List<OrderCheckAssignment> S_OrderDeny = orderMapper.selectOrderDeny(needOrderId);
 
@@ -2408,7 +2175,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 해당 라이더한테만 푸쉬
             Order pushOrder = new Order();
             pushOrder.setRiderId(S_Rider.getId());
-            ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(pushOrder);
+            ArrayList<Map<String, String>> tokens = (ArrayList<Map<String, String>>) riderMapper.selectRiderToken(pushOrder);
             if (tokens.size() > 0) {
                 Notification noti = new Notification();
                 noti.setType(Notification.NOTI.RIDER_WORKING_OFF);
@@ -2425,25 +2192,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 fcmBody.getNotification().setTitle(getMessage("RIDER.WORKING.OFF"));
                 fcmBody.getNotification().setBody(getMessage("RIDER.WORKING.OFF"));
 
-                // APP 유형 및 신규 APP 사용 유무에 다른 분기처리
-                ArrayList<Map> iosMap = new ArrayList<>();      // 신규 iOS
-                ArrayList<Map> android = new ArrayList<>();     // 신규 android
-                ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
-
-                iosMap.addAll(tokens.stream().filter(x -> {
-                    if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
-                        return true;
-                    }
-
-                    return false;
-                }).collect(Collectors.toList()));
+                // 신규 iOS
+                ArrayList<Map<String, String>> iosMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("")).collect(Collectors.toList()));
 
                 // iOS push
                 if (iosMap.size() > 0){
                     try {
                         ArrayList<String> iosTokenValue = new ArrayList<>();
 
-                        iosMap.forEach(x -> iosTokenValue.add(x.get("push_token").toString()));
+                        iosMap.forEach(x -> iosTokenValue.add(x.get("push_token")));
                         fcmBody.setRegistration_ids(iosTokenValue);
 
                         CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
@@ -2455,20 +2212,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
 
 
-                android.addAll(tokens.stream().filter(x -> {
-                    if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("android")){
-                        return true;
-                    }
-
-                    return false;
-                }).collect(Collectors.toList()));
+                // 신규 android
+                ArrayList<Map<String, String>> android = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("1") && x.getOrDefault("platform", "").equals("android")).collect(Collectors.toList()));
 
                 // new android push
                 if (android.size() > 0){
                     try {
                         ArrayList<String> androidTokenValue = new ArrayList<>();
 
-                        android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
+                        android.forEach(x -> androidTokenValue.add(x.get("push_token")));
                         fcmBody.setRegistration_ids(androidTokenValue);
 
                         // noti 전문 삭제
@@ -2483,20 +2235,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }
 
 
-                oldMap.addAll(tokens.stream().filter(x->{
-                    if (x.getOrDefault("appType", "").toString().equals("")){
-                        return true;
-                    }
-
-                    return false;
-                }).collect(Collectors.toList()));
+                // 구버전 (단, iOS 버전 없음)
+                ArrayList<Map<String, String>> oldMap = new ArrayList<>(tokens.stream().filter(x -> x.getOrDefault("appType", "").equals("")).collect(Collectors.toList()));
 
                 // old android push
                 if (iosMap.size() > 0){
                     try {
                         ArrayList<String> oldTokenValue = new ArrayList<>();
 
-                        oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
+                        oldMap.forEach(x -> oldTokenValue.add(x.get("push_token")));
                         fcmBody.setRegistration_ids(oldTokenValue);
 
                         // noti 전문 삭제
@@ -2550,20 +2297,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     @Secured({"ROLE_ADMIN", "ROLE_STORE", "ROLE_RIDER"})
     @Override
-    public List<Reason> getOrderFirstAssignmentReason(Common common) throws AppTrException {
+    public List<Reason> getOrderFirstAssignmentReason(Common common) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-            common.setRole("ROLE_STORE");
-        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
-            common.setRole("ROLE_RIDER");
-        } else if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
-            common.setRole("ROLE_ADMIN");
+        switch (authentication.getAuthorities().toString()) {
+            case "[ROLE_STORE]":
+                common.setRole("ROLE_STORE");
+                break;
+            case "[ROLE_RIDER]":
+                common.setRole("ROLE_RIDER");
+                break;
+            case "[ROLE_ADMIN]":
+                common.setRole("ROLE_ADMIN");
+                break;
         }
 
-        List<Reason> reasonList = orderMapper.selectOrderFirstAssignmentReason(common);
-
-        return reasonList;
+        return orderMapper.selectOrderFirstAssignmentReason(common);
     }
 
     @Secured("ROLE_RIDER")
@@ -2572,9 +2321,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         order.setRole("ROLE_RIDER");
         Order orderInfo = orderMapper.selectOrderInfo(order);
 
-        if (orderInfo.getStatus().toString().equals("0")){
+        if (orderInfo.getStatus().equals("0")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
-        }else if (orderInfo.getStatus().toString().equals("4")){
+        }else if (orderInfo.getStatus().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
         }else if (StringUtil.isEmpty(orderInfo.getPickedUpDatetime()) || StringUtil.isEmpty(orderInfo.getArrivedDatetime()) || StringUtil.isEmpty(orderInfo.getCompletedDatetime())){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00059), ErrorCodeEnum.E00059.name());
