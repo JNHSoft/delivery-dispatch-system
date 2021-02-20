@@ -492,10 +492,6 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         }
 
 
-        // 20.01.13 Shared Check
-//        List<Rider> sharedRider = S_Rider.stream()
-//                                    .filter(x -> x.getShared_admin_id() != null)
-//                                    .collect(Collectors.toList());
         List<Rider> chkAllowRider = S_Rider.stream()
                 .filter(x->x.getShared_admin_id() != null && x.getShared_flag() == 1)
                 .collect(Collectors.toList());

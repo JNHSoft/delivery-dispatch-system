@@ -180,11 +180,6 @@ public interface RiderMapper {
     public List<Rider> selectForAssignRiders(Map map);
 
     /**
-     * <p> 관리자 또는 그룹에 속한 타 라이더 목록
-     * */
-    List<Rider> selectForAssignRidersAssistant(Map map);
-
-    /**
      *  <p> 자동 휴식 관련 기사 목록
      *
      * @param

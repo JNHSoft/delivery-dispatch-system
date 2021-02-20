@@ -109,16 +109,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 추가되어 있는 인덱스를 활용하여 조회 속도 업
             denyOrderIdChkMap.put("adminId", order.getStore().getAdminId());
             List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
-            // 19.12.23 제 3자 배달기사 리스트 구하기
-            List<Rider> astRiderList = riderMapper.selectForAssignRidersAssistant(denyOrderIdChkMap);
-            // 제 3자 배달기사 리스트 중 허용 값만 추출
-            List<Rider> allowRiderList = astRiderList.stream()
-                                                  .filter(x -> x.getShared_flag() == 1).collect(Collectors.toList());
-
-            // 제 3자 배달기사 리스트 중 비허용 값 추출
-            List<Rider> rejectRiderList = astRiderList.stream()
-                    .filter(x -> x.getShared_flag() == 0).collect(Collectors.toList());
-            List<Rider> duplicationRider = new ArrayList<>();
 
             // 20.05.29 주문 번호를 이용하여, 거리 측정 및 라이더 ID 가져오기.
             Map<String, String> searchMap = new HashMap<>();
@@ -127,26 +117,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
 
             List<Order> firstAssignedRider = orderMapper.selectNearOrderRider(searchMap);
-
-            allowRiderList.forEach(x ->
-                rejectRiderList.forEach(y->{
-                    if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
-                        astRiderList.remove(x);
-                    }
-                }));
-
-            astRiderList.removeAll(rejectRiderList);
-
-            for (Rider r : astRiderList) {
-                for (Rider y : astRiderList) {
-                    if (r.getId().equals(y.getId()) && r.getShared_sort() > y.getShared_sort()) {
-                        duplicationRider.add(y);
-                    }
-                }
-            }
-
-            astRiderList.removeAll(duplicationRider);
-            riderList.addAll(astRiderList);
 
             /// 20.05.29 반경 범위의 라이더가 존재하는 경우 작업
             if (firstAssignedRider.size() > 0){

@@ -1068,63 +1068,6 @@
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
 
-	<!-- selectForAssignRidersAssistant -->
-	<select id="selectForAssignRidersAssistant" parameterType="Map" resultMap="selectSubgroupRiderRelsResult">
-		select	 a.id
-				,a.status
-				,a.working
-				,a.working_hours
-				,a.rest_hours
-				,a.latitude
-				,a.longitude
-				,a.return_time
-				,a.order_standby_datetime
-				,a.order_standby_status
-				,d.subgroup_id							as subGroupRiderRel_subgroup_id
-				,d.store_id								as subGroupRiderRel_store_id
-				,(SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = a.id AND status in (1,2,6) AND created_datetime > CURRENT_DATE()) AS assign_count
-				,(SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = a.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
-				,(SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2,6) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
-				,(SELECT max(status) FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2,6) AND created_datetime > CURRENT_DATE()) AS min_order_status
-				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime
-				,(select order_id from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as deny_order_id
-				,c.allow_admin_id
-				,c.allow_group_id
-				,c.allow_subgroup_id
-				,c.allow_store_id
-				,c.allow_flag
-				,c.allow_sort
-		from	 TB_RIDER				as	a
-		left join TB_REQ_REGIST_RIDER	as	e
-			on	 a.id = e.rider_id
-				,TB_SUBGROUP_RIDER_REL	as	b
-				,TB_SHARED_INFO 		as	c
-				,TB_SUBGROUP_STORE_REL	as	d
-		where	 a.admin_id = b.admin_id
-		and		 a.id = b.rider_id
-		and		 a.deleted is null
-		and		 b.deleted is null
-		AND		 e.deleted_datetime is null
-		and		 ifnull(e.req_status, 1) = 1
-		AND	(	(a.app_type is null)
-			or	(a.app_type = 1 and e.req_status = 1)
-			)
-		and		 a.working = 1
-		and		 c.admin_id = d.admin_id
-		and		 ifnull(c.group_id, d.group_id) = d.group_id
-		and		 ifnull(c.subgroup_id, d.subgroup_id) = d.subgroup_id
-		and		 ifnull(c.store_id, d.store_id) = d.store_id
-		and		 c.deleted_datetime is null
-		and		 d.deleted is null
-		and		 c.allow_admin_id in ( select allow_admin_id from TB_SHARED_ADMIN where admin_id = #{adminId} and deleted_datetime is null and allow_flag = 1 and allow_sort = 0 )
-		and		 b.admin_id = c.allow_admin_id
-		and		 b.group_id = ifnull(c.allow_group_id, b.group_id)
-		and		 b.subgroup_id = ifnull(c.allow_subgroup_id, b.subgroup_id)
-		and		 b.store_id = ifnull(c.allow_store_id, b.store_id)
-		and		 d.store_id = #{storeId}
-		order by c.allow_sort, min_assigned_datetime is null desc, assign_count asc, min_assigned_datetime asc
-	</select>
-
 	<!-- selectRiderRestHours -->
 	<select id="selectRiderRestHours" resultType="kr.co.cntt.core.model.rider.Rider">
 		SELECT id, rest_hours, working from TB_RIDER where working = 1 or working = 3;
