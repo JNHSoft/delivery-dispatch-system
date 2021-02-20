@@ -1036,6 +1036,7 @@
 							,R.return_time
 							,R.order_standby_datetime
 							,R.order_standby_status
+							,R.shared_flag
 					from	 TB_RIDER				as R
 					left join TB_REQ_REGIST_RIDER	as RR
 						on	 R.id = RR.rider_id
@@ -1063,7 +1064,7 @@
 			on	 A.id = B.rider_id
 		where	 1=1
 		and	(	 B.store_id = #{storeId}
-			or	 B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and deleted is null )
+			or	(B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and deleted is null ) and B.store_id <![CDATA[<>]]> #{storeId} and ifnull(A.shared_flag, 0) = 1)
 			)
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>

@@ -163,8 +163,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
             Misc misc = new Misc();
 
+            // 21.02.21 NULL 오류 발생으로 프로세스 변경
+            List<Rider> deleteRiderList = new ArrayList<>();
+
             for (Rider r : riderList) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
-                if (r.getLatitude() != null) {
+                if (r.getLatitude() != null && r.getLongitude() != null) {
                     try {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
                         r.setDistance(r.getDistance() - r.getDistance() % 10);//거리 10미터 단위
@@ -173,8 +176,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
 
                 } else {
-                    riderList.remove(r);//위치정보가 없는 라이더 제거
+                    deleteRiderList.add(r);
                 }
+            }
+
+            // 21.02.21 삭제해야될 라이더가 있는 경우, List에서 제외하기
+            if (deleteRiderList.size() > 0){
+                riderList.removeAll(deleteRiderList);
             }
 
             log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList);
@@ -203,7 +211,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))) //4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
                     .collect(Collectors.toList());
 
-
             if (!riderList.isEmpty()) {//riderList.size()!=0
                 map.put("rider", riderList.get(0));
 
@@ -221,7 +228,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     public int autoAssignOrderProc(Map<String, Object> map) throws AppTrException {
         if (map.get("rider") == null) {
             log.debug(">>> autoAssignOrderProc_GetRiderList:::: riderListMap: " + map.get("rider"));
-//            throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
             return -1;
         } else {
             Rider rider = (Rider) map.get("rider");
@@ -320,7 +326,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             log.error(e.getMessage());
                         }
                     }
-
 
                     // 구버전 (단, iOS 버전 없음)
                     ArrayList<Map<String, String>> oldMap =
