@@ -410,10 +410,6 @@ public class StaffApprovalController {
             chkRiderInfo.setName(riderInfo.getName());
         }
 
-        System.out.println("riderInfo Get Shared Status === " + riderInfo.getSharedStatus());
-        System.out.println("chkRiderInfo Get Shared Status === " + chkRiderInfo.getSharedStatus());
-        System.out.println(riderInfo.getSharedStatus() != null && !riderInfo.getSharedStatus().equals(chkRiderInfo.getSharedStatus()));
-
         // 공유 상태가 다른 경우
         if (riderInfo.getSharedStatus() != null && !riderInfo.getSharedStatus().equals(chkRiderInfo.getSharedStatus())){
             chkRiderInfo.setSharedStatus(riderInfo.getSharedStatus());

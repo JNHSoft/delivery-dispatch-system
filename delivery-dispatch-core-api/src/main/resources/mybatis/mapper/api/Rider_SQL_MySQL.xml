@@ -40,12 +40,6 @@
 		<!-- 20.11.11 라이더 OS 구분 추가 -->
 		<result property="platform" column="os" />
 
-		<!-- 20.01.13 Shared Rider Info -->
-		<result property="shared_admin_id" column="allow_admin_id" />
-		<result property="shared_group_id" column="allow_group_id" />
-		<result property="shared_subgroup_id" column="allow_subgroup_id" />
-		<result property="shared_store_id" column="allow_store_id" />
-
 		<association property="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
 			<result property="name" column="group_name" />
