@@ -362,35 +362,9 @@ function checkExpDate(selectedDate, obj){
     return false;
 }
 
-// 유효기간 달력 OPEN
-function showExpDateCalendar(rowID){
-    //let date = $.datepicker.formatDate('yyyy-mm-dd', new Date);
-
-    $("#expDate" + rowID).datepicker({
-        minDate: new Date,
-        onSelect: function (selectDate, obj){
-            if(checkExpDate(selectDate, obj)){
-                updateExpDate(selectDate, rowID);
-            }
-        }
-    });
-
-    $("#expDate" + rowID).datepicker('show');
-}
-
 function dateFormat(date){
     if (date) {
         let d = new Date(date);
-        return $.datepicker.formatDate('yy-mm-dd', d);
-    } else {
-        return "-";
-    }
-}
-
-function dateFormat2(date){
-    if (date) {
-        let d = new Date(date);
-        //return $.datepicker.formatDate('mm/dd/yy', d);
         return $.datepicker.formatDate('yy-mm-dd', d);
     } else {
         return "-";

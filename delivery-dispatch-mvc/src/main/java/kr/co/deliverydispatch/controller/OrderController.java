@@ -157,20 +157,4 @@ public class OrderController {
         List<Rider> riderList = storeOrderService.getSubgroupRiderRels(common);
         return riderList;
     }
-
-    /*
-    @GetMapping("/order-post")
-    @CnttMethodDescription("주문 등록 페이지")
-    public String postOrder(Store store, Model model) {
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        store.setToken(storeInfo.getStoreAccessToken());
-        Store myStore = storeOrderService.getStoreInfo(store);
-        model.addAttribute("store", myStore);
-        model.addAttribute("token", store.getToken());
-        model.addAttribute("origin", origin);
-        model.addAttribute("regionLocale", regionLocale);
-        return "/order/order_post";
-    }
-    */
-
 }

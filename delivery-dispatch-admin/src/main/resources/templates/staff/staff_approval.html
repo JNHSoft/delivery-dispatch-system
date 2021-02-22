@@ -119,7 +119,6 @@
 <script layout:fragment="script" th:inline="javascript">
     var my_store = /*[[${store}]]*/ 'my_store';
 
-    //var tmpTitle = /*[[#{statistics.4th.title}]]*/ 'tmpTitle';
     let storeName = /*[[#{store.name}]]*/ 'storeName';
     let riderLoginID = /*[[#{rider.approval.login.id}]]*/ 'riderLoginID';
     let riderName = /*[[#{rider.name}]]*/ 'riderName';
@@ -129,7 +128,6 @@
     let setting = /*[[#{gnb.setting}]]*/ 'setting';
     let approval = /*[[#{rider.approval.approval}]]*/ 'approval';
     let disapproval = /*[[#{rider.approval.disapproval}]]*/ 'approval';
-    let expDateSetting = /*[[#{rider.approval.expiry.setting}]]*/ 'expDateSetting';
     let approvalStatus = /*[[#{rider.approval.status}]]*/ 'approvalStatus';
     let waitApproval = /*[[#{rider.approval.status.wait}]]*/ 'waitApproval';
     let expiryApproval = /*[[#{rider.approval.status.expiry}]]*/ 'expiryApproval';

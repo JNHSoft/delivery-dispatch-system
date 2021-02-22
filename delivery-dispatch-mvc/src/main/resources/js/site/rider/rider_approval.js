@@ -3,17 +3,12 @@ let loading = $('<div id="loading"><div><p style="background-color: #838d96"></p
 // Start Function after page loading completed.
 $(function (){
     getApprovalRiderList();
-    // let date = $.datepicker.formatDate('yy-mm-dd', new Date);
-
-    // $("#riderExpDate").val(date);
-
 });
 
 function getApprovalRiderList(){
 
     let gridData = [];
     loading.show();
-    // makeGrid(gridData);
 
     $.ajax({
         url: "/getApprovalRiderList",
@@ -271,7 +266,8 @@ function popUpSaveData(){
             id: approvalID,
             vehicleNumber: riderVehicle,
             code: riderCode,
-            name: riderName
+            name: riderName,
+            sharedStatus: $("#selShared").val()
         },
         dataType: "json",
         success: function (data){
@@ -306,6 +302,13 @@ function searchRiderApprovalDetail(rowID){
             $("#riderExpDate").val(data.session == undefined ? "" : dateFormat(data.session.expiryDatetime));
             $("#approvalID").val(data.id);
             $("#approvalStatus").val(data.approvalStatus);
+
+            if (data.sharedStatus == undefined){
+                $("#selShared").val("0").prop("selected", true);
+            }else{
+                //$("#selShared").val(data.sharedStatus).attr("selected", "selected");
+                $("#selShared").val(data.sharedStatus).prop("selected", true);
+            }
 
             $("#riderExpDate").datepicker({
                 minDate: new Date,
@@ -355,22 +358,6 @@ function checkExpDate(selectedDate, obj){
     $("#" + obj.id).val(dateFormat(date));
 
     return false;
-}
-
-// 유효기간 달력 OPEN
-function showExpDateCalendar(rowID){
-    //let date = $.datepicker.formatDate('yyyy-mm-dd', new Date);
-
-    $("#expDate" + rowID).datepicker({
-        minDate: new Date,
-        onSelect: function (selectDate, obj){
-            if(checkExpDate(selectDate, obj)){
-                updateExpDate(selectDate, rowID);
-            }
-        }
-    });
-
-    $("#expDate" + rowID).datepicker('show');
 }
 
 function dateFormat(date){

@@ -77,14 +77,6 @@ public class Rider extends User implements Dto {
     private String currentPw;
     private String newPw;
 
-    // 20.01.13 다른 그룹 허용 여부 체크
-    private Integer shared_admin_id;
-    private Integer shared_group_id;
-    private Integer shared_subgroup_id;
-    private Integer shared_store_id;
-    private Integer shared_flag;
-    private Integer shared_sort;
-
     // 21.02.16 라이더 쉐어 유무 확인 (하위 그룹간의 쉐어 유무)
     private String sharedStatus;
 
