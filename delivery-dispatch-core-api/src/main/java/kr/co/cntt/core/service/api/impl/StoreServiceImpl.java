@@ -3,7 +3,6 @@ package kr.co.cntt.core.service.api.impl;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
-import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.order.Order;
@@ -42,18 +41,12 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
     private StoreMapper storeMapper;
 
     /**
-     * Order DAO
-     */
-    private OrderMapper orderMapper;
-
-    /**
      * @param storeMapper USER D A O
      * @author Nick
      */
     @Autowired
-    public StoreServiceImpl(StoreMapper storeMapper, OrderMapper orderMapper) {
+    public StoreServiceImpl(StoreMapper storeMapper) {
         this.storeMapper = storeMapper;
-        this.orderMapper = orderMapper;
     }
 
     // login_id 체크하는 함수
@@ -131,7 +124,6 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         Store C_Store = storeMapper.selectStoreInfo(store);
         List<Store> S_Store = storeMapper.selectSubGroupStores(store);
 
-//        for (Store cs : C_Store) {
         for (Store s : S_Store) {
             if (C_Store.getId().equals(s.getId())) {
                 continue;
@@ -140,11 +132,9 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
             try {
                 storeHaversineMap.put(s.getId(), misc.getHaversine(C_Store.getLatitude(), C_Store.getLongitude(), s.getLatitude(), s.getLongitude()));
             } catch (Exception e) {
-//                e.printStackTrace();
                 log.error(e.getMessage());
             }
         }
-//        }
 
         if (storeHaversineMap.isEmpty()) {
             store.setStoreDistanceSort("-1");
@@ -192,8 +182,6 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
         store.setThirdParty(StringUtils.arrayToDelimitedString(tempStr, "|"));
 
         int result = storeMapper.updateStoreThirdParty(store);
-
-        Store C_Store = storeMapper.selectStoreInfo(store);
 
         if (result != 0) {
             redisService.setPublisher(Content.builder().type("store_info_updated").build());
@@ -261,6 +249,4 @@ public class StoreServiceImpl extends ServiceSupport implements StoreService {
 
         return S_Order;
     }
-
-
 }
