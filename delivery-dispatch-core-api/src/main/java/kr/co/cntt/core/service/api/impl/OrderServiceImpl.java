@@ -206,21 +206,28 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
             Misc misc = new Misc();
 
-            for (Iterator<Rider> rider = riderList.iterator(); rider.hasNext(); ) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
-                Rider r = rider.next();
-                if (r.getLatitude() != null) {
+            // 21.02.21 NULL 오류 발생으로 프로세스 변경
+            List<Rider> deleteRiderList = new ArrayList<>();
+
+            for (Rider r : riderList) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
+                if (r.getLatitude() != null && r.getLongitude() != null) {
                     try {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
                         r.setDistance(r.getDistance() - r.getDistance() % 10);//거리 10미터 단위
                     } catch (Exception e) {
-//                        e.printStackTrace();
                         log.error(e.getMessage());
                     }
 
                 } else {
-                    riderList.remove(r);//위치정보가 없는 라이더 제거
+                    deleteRiderList.add(r);
                 }
             }
+
+            // 21.02.21 삭제해야될 라이더가 있는 경우, List에서 제외하기
+            if (deleteRiderList.size() > 0){
+                riderList.removeAll(deleteRiderList);
+            }
+
             log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList);
 
             riderList = riderList.stream()
