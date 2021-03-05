@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderRouteInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
@@ -325,4 +326,15 @@ public interface RiderMapper {
      * 라이더 세션 변경 (os 정보 포함)
      * */
     int updatePushToken(Rider rider);
+    
+    
+    /**
+     * 2021-03-05 라이더 경로와 관련한 데이터를 가져오는 쿼리
+     * */
+
+    /// 라이더가 가지고 있는 주문에 대한 리스트
+    List<Order> getOrderForRider(Rider rider);
+
+    /// 주문에 대한 매장정보를 가져온다.
+    List<Store> getStoreInfoAtOrder(String[] arrStoreID);
 }

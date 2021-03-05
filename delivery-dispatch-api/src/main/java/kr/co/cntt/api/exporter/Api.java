@@ -189,7 +189,10 @@ public interface Api {
     String RIDER_RETURN_TIME_PUT = "/putRiderReturnTime.json";
 
     /** 배정 거절 사유 목록 조회 **/
-    String REJECT_REASON_LIST = "getRejectReasonList.json";
+    String REJECT_REASON_LIST = "/getRejectReasonList.json";
+
+    /** Rider 경로정보 가져오기 */
+    String RIDER_TOTAL_ROUTE_INFO = "/getTotalRouteInfos.json";
 
     // ############################################################################################ //
 

@@ -5,16 +5,19 @@ import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
+import kr.co.cntt.core.model.rider.RiderRouteInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
+import kr.co.cntt.core.util.Misc;
 import kr.co.cntt.core.util.ShaEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,7 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("riderService")
@@ -675,6 +679,295 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         return false;
+    }
+
+    /**
+     * 2021-03-05 라이더 전체 경로 가져오는 프로세스
+     * */
+    @Override
+    public Map getTotalRouteInfos(Rider rider) throws AppTrException {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        // 라이더 정보 체크
+        if (StringUtils.isEmpty(rider.getToken()) || StringUtils.isEmpty(rider.getLatitude()) || StringUtils.isEmpty(rider.getLongitude())){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
+        }
+
+        Rider riderInfo = riderMapper.getRiderInfo(rider);
+        List<Order> orderList = riderMapper.getOrderForRider(rider);
+
+        if (orderList.size() < 1){
+            throw new AppTrException("배정된 주문이 없습니다.", "0000");
+        }
+
+        System.out.println("getTotalRouteInfos 정보를 시작합니다.");
+
+        List<String> storeIdList = new ArrayList<>();
+        List<String> usedStoreId = new ArrayList<>();
+        List<String> usedOrderId = new ArrayList<>();
+
+        Misc misc = new Misc();
+
+        for (Order o: orderList){
+            storeIdList.add(o.getStoreId());
+        }
+
+        List<Store> storeList = riderMapper.getStoreInfoAtOrder(storeIdList.toArray(new String[storeIdList.size()]));
+
+        System.out.println("주문이 접수된 스토어 정보를 가져옵니다. => 스토어 개수 " + storeList.size());
+
+        List<RiderRouteInfo> routeInfoList = new ArrayList<>();
+
+        List<Order> nonAssignedOrderList = orderList.stream().filter(x -> !x.getStatus().equals("1")).collect(Collectors.toList());
+
+        System.out.println("배정이후의 상태를 가진 주문 정보를 가져옵니다 => " + nonAssignedOrderList.size());
+
+        String positionX = rider.getLatitude();
+        String positionY = rider.getLongitude();
+
+        // 배정 이후의 개수가 존재한다면, 관련 스토어의 순서를 정렬한다.
+        if (nonAssignedOrderList != null && nonAssignedOrderList.size() > 0){
+            System.out.println("배정 이후의 주문이 존재합니다. ");
+            // 픽업 시간이 빠른 순으로 정렬 (처음 1개의 데이터만 추출
+            Order firstOrder = nonAssignedOrderList.stream()
+                    .sorted(Comparator.comparing(Order::getPickedUpDatetime, Comparator.nullsLast(Comparator.naturalOrder())))
+                    .findFirst().get();
+            Store storeInfo = storeList.stream().filter(x -> x.getId().equals(firstOrder.getStoreId())).findFirst().get();
+
+            // 현재 라이더 위치에서 스토어 간의 거리를 구한다
+            int iDistance = 0;
+
+            try{
+                iDistance = misc.getHaversine(positionX, positionY, storeInfo.getLatitude(), storeInfo.getLongitude());
+                positionX = storeInfo.getLatitude();
+                positionY = storeInfo.getLongitude();
+
+                System.out.println("배정 이후의 주문이 존재합니다. 거리를 구했습니다. => " + iDistance);
+            }catch (Exception e){
+                log.error(e.getMessage());
+            }
+
+            RiderRouteInfo route = new RiderRouteInfo();
+            route.setRouteRank(1);
+            route.setRouteType(0);
+            route.setId(riderInfo.getId());
+            route.setName(riderInfo.getName());
+            route.setRouteId(storeInfo.getId());
+            route.setRouteName(storeInfo.getStoreRealName());
+            route.setAddress(storeInfo.getAddress());
+            route.setLatitude(storeInfo.getLatitude());
+            route.setLongitude(storeInfo.getLongitude());
+            route.setDistance(String.valueOf(iDistance));
+            route.setBrandCode(storeInfo.getBrandCode());
+            route.setBrandName(storeInfo.getBrandName());
+
+            usedStoreId.add(storeInfo.getId());
+
+            routeInfoList.add(route);
+
+            System.out.println("배정 이후의 주문이 존재합니다. routeInfoList 등록 완료.");
+        }
+
+        int loopCount = storeList.size() + orderList.size();
+
+        System.out.println("routeInfo의 전체 개수가 정해졌습니다. => " + loopCount);
+
+        // 전체 순서를 정렬한다.
+        for (int i = 0; i < loopCount; i++) {
+            // 만약 첫 픽업지가 정해진 경우라면, 처음 지정은 건너뛴다.
+            if (routeInfoList.size() > 0 && i == 0){
+                System.out.println("i 값이 0이며, 픽업지 방문이 완료 되었습니다. => " + routeInfoList.get(0).getRouteName());
+                continue;
+            }
+
+            // 다음 순번에 넣을 정보를 저장해놓은다.
+            Store minStore = null;
+            Order minOrder = null;
+            RiderRouteInfo route = new RiderRouteInfo();
+            route.setRouteRank(i + 1);
+            System.out.println("Route 정보를 저장하기 위한 밸류데이션이 설정되었습니다. => " + route.getRouteRank());
+
+            // 첫 픽업지가 정해지지 않은 경우도 있을 수 있으므로
+            if (i == 0){
+                System.out.println("i가 0이며, 처음에는 픽업지로 가야됩니다.");
+                int minDistance = -1;
+
+                for (Store store:storeList
+                     ) {
+                    int distance = 0;
+
+                    try{
+                        distance = misc.getHaversine(positionX, positionY, store.getLatitude(), store.getLongitude());
+                    } catch (Exception e){
+                        log.error(e.getMessage());
+                    }
+
+                    if (minDistance == -1){
+                        minDistance = distance;
+                        minStore = store;
+                    }else{
+                        minDistance = Integer.min(minDistance, distance);
+                        minStore = store;
+                    }
+                }
+
+                System.out.println("최단 거리의 스토어 정보를 추출 완료 하였습니다. => " + minStore.getId());
+
+                if (minStore != null){
+                    route.setRouteType(0);
+                    route.setId(riderInfo.getId());
+                    route.setName(riderInfo.getName());
+                    route.setRouteId(minStore.getId());
+                    route.setRouteName(minStore.getStoreRealName());
+                    route.setAddress(minStore.getAddress());
+                    route.setLatitude(minStore.getLatitude());
+                    route.setLongitude(minStore.getLongitude());
+                    route.setDistance(String.valueOf(minDistance));
+                    route.setBrandCode(minStore.getBrandCode());
+                    route.setBrandName(minStore.getBrandName());
+
+                    routeInfoList.add(route);
+
+                    usedStoreId.add(minStore.getId());
+
+                    System.out.println("최단 거리의 스토어 정보를 route에 저장하였습니다.");
+                }
+
+            }
+            // 처음 픽업지가 정해진 이후에 다음 목적지가 어디인지 구한다.
+            else{
+                System.out.println(i + " 번째 loop를 진행합니다.");
+                // 이전 위치에 대한 정보를 가져온다.
+                RiderRouteInfo beforeRoute = routeInfoList.get(i - 1);
+
+                System.out.println("################################");
+                System.out.println("이전에 등록된 router 정보는 다음과 같습니다.\n" + beforeRoute);
+                System.out.println("################################");
+
+                int beforeStoreDistance = -1;
+                int beforeOrderDistance = -1;
+
+
+                // 스토어 정보를 구한다.
+                for (Store store:storeList){
+                    // 사용된 Store 정보라면 넘어간다.
+                    if (usedStoreId.stream().filter(x -> x.equals(store.getId())).count() > 0){
+                        System.out.println("이미 사용된 스토어 정보로 확인되었습니다. => " + store.getId());
+                        continue;
+                    }
+
+                    int currentStoreDistance = 0;
+
+                    try{
+                        currentStoreDistance = misc.getHaversine(beforeRoute.getLatitude(), beforeRoute.getLongitude(), store.getLatitude(), store.getLongitude());
+                    }catch (Exception e){
+                        log.error(e.getMessage());
+                    }
+
+                    // 비교할 이전 정보가 없는 경우, 최초 스토어 정보를 저장하고 넘어간다.
+                    if (minStore == null){
+                        System.out.println("비교할 스토어 정보가 없었습니다.");
+                        minStore = store;
+                        beforeStoreDistance = currentStoreDistance;
+                        continue;
+                    }
+
+                    // 이전 스토어와 현재 스토어 간의 정보를 비교한다.
+                    if (beforeStoreDistance > currentStoreDistance){
+                        minStore = store;
+                        beforeStoreDistance = currentStoreDistance;
+                        System.out.println("스토어 거리가 변경되었습니다.");
+                    }
+                }
+
+                // 주문 정보를 가져온다.
+                for (Order order:orderList) {
+                    if (usedOrderId.stream().filter(x -> x.equals(order.getId())).count() > 0){
+                        System.out.println("이미 등록된 주문 정보입니다. => " + order.getId());
+                        continue;
+                    }
+
+                    // 경로 상에서 스토어를 지난 후의 주문인지 확인 한다.
+                    System.out.println("스토어 ID를 확인합니다. => " + order.getId() + "   ## " + order.getStoreId());
+                    if (routeInfoList.stream().filter(x -> x.getRouteId().equals(order.getStoreId())).count() > 0){
+                        System.out.println("스토어 정보가 없습니다.");
+                        continue;
+                    }
+
+                    int currentOrderDistance = 0;
+
+                    try{
+                        currentOrderDistance = misc.getHaversine(beforeRoute.getLatitude(), beforeRoute.getLongitude(), order.getLatitude(), order.getLongitude());
+                    }catch (Exception e){
+                        log.error(e.getMessage());
+                    }
+
+                    // 비교할 이전 정보가 없는 경우, 최초 주문 정보를 저장하고 넘어간다.
+                    if (minOrder == null){
+                        System.out.println("비교할 주문 정보가 없습니다.");
+                        minOrder = order;
+                        beforeOrderDistance = currentOrderDistance;
+                        continue;
+                    }
+
+                    if (beforeOrderDistance > currentOrderDistance){
+                        minOrder = order;
+                        beforeOrderDistance = currentOrderDistance;
+                        System.out.println("주문 거리가 변경되었습니다.");
+                    }
+                }
+
+                // 주문과 스토어 간의 정보를 이용하여 가까운 순서의 데이터를 다음 루트로 저장한다.
+
+                System.out.println("거리 비교!! Store => " + beforeStoreDistance);
+                System.out.println("거리 비교!! Order => " + beforeOrderDistance);
+
+                // 주문 목적지의 위치가 가까운 경우 다음 루트는 주문 경로가 되어야한다.
+                if ((beforeStoreDistance > beforeOrderDistance || (minStore == null && minOrder != null)) && beforeOrderDistance > -1){
+                    System.out.println("######## 어디야 1 > " + minOrder);
+                    route.setRouteType(1);
+                    route.setId(riderInfo.getId());
+                    route.setName(riderInfo.getName());
+                    route.setRouteId(minOrder.getId());
+                    route.setAddress(minOrder.getAddress());
+                    route.setLatitude(minOrder.getLatitude());
+                    route.setLongitude(minOrder.getLongitude());
+                    route.setReservationDatetime(minOrder.getReservationDatetime());
+                    route.setDistance(String.valueOf(beforeOrderDistance));
+                    route.setBrandCode(minOrder.getStore().getBrandCode());
+                    route.setBrandName(minOrder.getStore().getBrandName());
+
+                    usedOrderId.add(minOrder.getId());
+                }
+                // 스토어 픽업지가 가까운 경우 다음 루트는 매장 경로가 되어야한다.
+                else if(beforeStoreDistance <= beforeOrderDistance || (minOrder == null && minStore != null) && beforeStoreDistance > -1){
+                    System.out.println("######## 어디야 2 > " + minStore);
+                    route.setRouteType(0);
+                    route.setId(riderInfo.getId());
+                    route.setName(riderInfo.getName());
+                    route.setRouteId(minStore.getId());
+                    route.setRouteName(minStore.getStoreRealName());
+                    route.setAddress(minStore.getAddress());
+                    route.setLatitude(minStore.getLatitude());
+                    route.setLongitude(minStore.getLongitude());
+                    route.setDistance(String.valueOf(beforeStoreDistance));
+                    route.setBrandCode(minStore.getBrandCode());
+                    route.setBrandName(minStore.getBrandName());
+
+                    usedStoreId.add(minStore.getId());
+                }
+
+                routeInfoList.add(route);
+
+                System.out.println("스토어 또는 주문 정보에 대한 경로가 저장되었습니다.");
+            }
+        }
+
+        resultMap.put("routeCount", routeInfoList.size());
+        resultMap.put("routeInfo", routeInfoList);
+
+
+        return resultMap;
     }
 
     private String getRndNumber(int rndLang){

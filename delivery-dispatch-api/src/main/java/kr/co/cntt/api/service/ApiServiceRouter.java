@@ -178,6 +178,10 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 배정 거절 사유 목록 조회 */
 	REJECT_REASON_LIST("riderService", "getRejectReasonList", Common.class),
 
+	/** Rider 경로정보 가져오기 */
+	RIDER_TOTAL_ROUTE_INFO("riderService", "getTotalRouteInfos", Rider.class),
+
+
 	// ############################################################################################ //
 
 	/** Store 정보조회 */

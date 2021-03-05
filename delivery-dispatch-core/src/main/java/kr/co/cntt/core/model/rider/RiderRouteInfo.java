@@ -2,7 +2,7 @@
  * 2021-03-04
  * 라이더(트래커)의 최적의 경로 정보 제공을 위한 내용
  * */
-package kr.co.cntt.core.model.tracker;
+package kr.co.cntt.core.model.rider;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import kr.co.cntt.core.model.Dto;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TrackerRouteInfo extends Common implements Dto {
+public class RiderRouteInfo extends Common implements Dto {
     private Integer routeRank;          // 경로 순서
     private Integer routeType;          // 경로에 대한 종류 0 = 픽업장소 , 1 = 목적지
 

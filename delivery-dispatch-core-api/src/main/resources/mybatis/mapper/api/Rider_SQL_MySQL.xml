@@ -176,6 +176,31 @@
 		<result property="deleted" column="deleted_datetime" />
 	</resultMap>
 
+	<!-- Order 정보 -->
+	<resultMap id="selectOrderResult" type="kr.co.cntt.core.model.order.Order">
+		<result property="id" column="id" />
+		<result property="regOrderId" column="reg_order_id" />
+		<result property="storeId" column="store_id" />
+		<result property="riderId" column="rider_id" />
+		<result property="address" column="address" />
+		<result property="status" column="status" />
+		<result property="reservationDatetime" column="reservation_datetime" />
+		<result property="assignedDatetime" column="assigned_datetime" />
+		<result property="pickedUpDatetime" column="picked_up_datetime" />
+		<result property="arrivedDatetime" column="arrived_datetime" />
+		<result property="completedDatetime" column="completed_datetime" />
+		<result property="returnDatetime" column="return_datetime" />
+		<result property="combinedOrderId" column="combined_order_id" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+
+		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="id" column="store_id" />
+			<result property="brandCode" column="brand_code" />
+			<result property="brandName" column="brand_name" />
+		</association>
+	</resultMap>
+
 	<!-- 2020.09.17 라이더가 소속된 매장의 브랜드 정보를 가져온다. -->
 	<select id="selectLoginRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="Map">
 		select	 A.login_id			as loginId
@@ -1158,7 +1183,7 @@
 		</choose>
 	</update>
 
-<!--	Rider Approval-->
+	<!--Rider Approval-->
 	<select id="selectApprovalRiderList" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderApprovalResult">
 		select	 REQ.id											as approval_id
 				,REQ.created_datetime
@@ -1405,5 +1430,49 @@
 		and		 deleted_datetime is null
 	</select>
 
+	<!-- 2021-03-05 라이더 Router 관련 Query -->
+	<!-- 라이더가 가지고 있는 주문리스트 항목 추출 -->
+	<select id="getOrderForRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultMap="selectOrderResult">
+		select	 id
+				,reg_order_id
+				,admin_id
+				,store_id
+				,rider_id
+				,combined_order_id
+				,status
+				,address
+				,latitude
+				,longitude
+				,reservation_datetime
+				,assigned_datetime
+				,picked_up_datetime
+				,arrived_datetime
+				,completed_datetime
+				,return_datetime
+				,( select brand_code from TB_STORE where id = o.store_id )			as brand_code
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = ( select brand_code from TB_STORE where id = o.store_id ) )		as brand_name
+		from	 TB_ORDER				as o
+		where	 created_datetime > current_date()
+		and		 status not in (0, 4, 5)
+		and		 return_datetime is null
+		and		 rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
+	</select>
 
+	<!-- 주문에 대한 스토어 정보를 가져온다 -->
+	<select id="getStoreInfoAtOrder" parameterType="java.util.ArrayList" resultType="kr.co.cntt.core.model.store.Store">
+		select	 id
+				,admin_id			as adminId
+				,store_name			as storeRealName
+				,address			as address
+				,latitude			as latitude
+				,longitude			as longitude
+				,brand_code			as brandCode
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = s.brand_code )		as brandName
+		from	 TB_STORE		as s
+		where	 1=1
+		and      id IN
+		<foreach collection="array" item="storeIdItem" index="index" separator="," open="(" close=")">
+			#{storeIdItem}
+		</foreach>
+	</select>
 </mapper>
