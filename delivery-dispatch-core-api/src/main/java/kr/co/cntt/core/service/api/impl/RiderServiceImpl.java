@@ -722,9 +722,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         System.out.println("배정이후의 상태를 가진 주문 정보를 가져옵니다 => " + nonAssignedOrderList.size());
 
-        String positionX = rider.getLatitude();
-        String positionY = rider.getLongitude();
-
         // 배정 이후의 개수가 존재한다면, 관련 스토어의 순서를 정렬한다.
         if (nonAssignedOrderList != null && nonAssignedOrderList.size() > 0){
             System.out.println("배정 이후의 주문이 존재합니다. ");
@@ -738,9 +735,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             int iDistance = 0;
 
             try{
-                iDistance = misc.getHaversine(positionX, positionY, storeInfo.getLatitude(), storeInfo.getLongitude());
-                positionX = storeInfo.getLatitude();
-                positionY = storeInfo.getLongitude();
+                iDistance = misc.getHaversine(rider.getLatitude(), rider.getLongitude(), storeInfo.getLatitude(), storeInfo.getLongitude());
 
                 System.out.println("배정 이후의 주문이 존재합니다. 거리를 구했습니다. => " + iDistance);
             }catch (Exception e){
@@ -797,7 +792,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     int distance = 0;
 
                     try{
-                        distance = misc.getHaversine(positionX, positionY, store.getLatitude(), store.getLongitude());
+                        distance = misc.getHaversine(rider.getLatitude(), rider.getLongitude(), store.getLatitude(), store.getLongitude());
                     } catch (Exception e){
                         log.error(e.getMessage());
                     }
@@ -889,7 +884,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
                     // 경로 상에서 스토어를 지난 후의 주문인지 확인 한다.
                     System.out.println("스토어 ID를 확인합니다. => " + order.getId() + "   ## " + order.getStoreId());
-                    if (routeInfoList.stream().filter(x -> x.getRouteId().equals(order.getStoreId())).count() > 0){
+                    if (!(routeInfoList.stream().filter(x -> x.getRouteId().equals(order.getStoreId())).count() > 0)){
                         System.out.println("스토어 정보가 없습니다.");
                         continue;
                     }
@@ -899,6 +894,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     try{
                         currentOrderDistance = misc.getHaversine(beforeRoute.getLatitude(), beforeRoute.getLongitude(), order.getLatitude(), order.getLongitude());
                     }catch (Exception e){
+                        System.out.println("오류 발생111");
                         log.error(e.getMessage());
                     }
 
@@ -923,8 +919,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 System.out.println("거리 비교!! Order => " + beforeOrderDistance);
 
                 // 주문 목적지의 위치가 가까운 경우 다음 루트는 주문 경로가 되어야한다.
-                if ((beforeStoreDistance > beforeOrderDistance || (minStore == null && minOrder != null)) && beforeOrderDistance > -1){
-                    System.out.println("######## 어디야 1 > " + minOrder);
+                if ((beforeStoreDistance > beforeOrderDistance && beforeOrderDistance > -1) || beforeStoreDistance == -1){
+                    System.out.println("######## 어디야 1 > " + minOrder.getId());
                     route.setRouteType(1);
                     route.setId(riderInfo.getId());
                     route.setName(riderInfo.getName());
@@ -940,8 +936,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     usedOrderId.add(minOrder.getId());
                 }
                 // 스토어 픽업지가 가까운 경우 다음 루트는 매장 경로가 되어야한다.
-                else if(beforeStoreDistance <= beforeOrderDistance || (minOrder == null && minStore != null) && beforeStoreDistance > -1){
-                    System.out.println("######## 어디야 2 > " + minStore);
+                else if((beforeStoreDistance <= beforeOrderDistance && beforeStoreDistance > -1) || beforeOrderDistance == -1){
+                    System.out.println("######## 어디야 2 > " + minStore.getId());
                     route.setRouteType(0);
                     route.setId(riderInfo.getId());
                     route.setName(riderInfo.getName());
@@ -956,6 +952,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
                     usedStoreId.add(minStore.getId());
                 }
+
+                System.out.println("route에 등록된 Route ID => " + route.getRouteType() + " ### " + route.getRouteId() + " ### " + route.getRouteRank());
 
                 routeInfoList.add(route);
 
