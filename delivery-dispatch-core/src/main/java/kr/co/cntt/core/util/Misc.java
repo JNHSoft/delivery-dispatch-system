@@ -22,30 +22,28 @@ public class Misc {
      * @throws Exception
      */
     public int getHaversine(String lat1, String lon1, String lat2, String lon2) throws Exception {
-//        double radiansLat1 = Math.toRadians(Double.parseDouble(lat1));
-//        double radiansLon1 = Math.toRadians(Double.parseDouble(lon1));
-//        double radiansLat2 = Math.toRadians(Double.parseDouble(lat2));
-//        double radiansLon2 = Math.toRadians(Double.parseDouble(lon2));
-//
-//        double dlat = radiansLat2 - radiansLat1;
-//        double dlon = radiansLon2 - radiansLon1;
-//
-//        double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(radiansLat1) * Math.cos(radiansLat2) * Math.pow(Math.sin(dlon / 2), 2);
-//        double c = 2 * Math.asin(Math.sqrt(a));
-//
-//        int m = Integer.parseInt(String.valueOf(Math.round(6367 * c * 1000)));
+        double radiansLat1 = Math.toRadians(Double.parseDouble(lat1));
+        double radiansLon1 = Math.toRadians(Double.parseDouble(lon1));
+        double radiansLat2 = Math.toRadians(Double.parseDouble(lat2));
+        double radiansLon2 = Math.toRadians(Double.parseDouble(lon2));
 
-        double rLat1 = Math.toRadians(Double.parseDouble(lat1));
-        double rLat2 = Math.toRadians(Double.parseDouble(lat2));
-        double dLat = Math.toRadians(Double.parseDouble(lat2) - Double.parseDouble(lat1));
-        double dLon = Math.toRadians(Double.parseDouble(lon2) - Double.parseDouble(lon1));
+        double dlat = radiansLat2 - radiansLat1;
+        double dlon = radiansLon2 - radiansLon1;
 
-        double a = Math.pow(Math.sin(dLat/2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(rLat1) * Math.cos(rLat2);
-        double b = 2 * Math.asin(Math.sqrt(a));
+        double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(radiansLat1) * Math.cos(radiansLat2) * Math.pow(Math.sin(dlon / 2), 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
 
-        int m = Integer.parseInt(String.valueOf(Math.round(6371 * b * 1000)));
+        int m = Integer.parseInt(String.valueOf(Math.round(6371 * c * 1000)));
 
         return m;
+    }
+
+    private double deg2rad(double deg){
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad){
+        return (rad * 180 / Math.PI);
     }
 
     /**
