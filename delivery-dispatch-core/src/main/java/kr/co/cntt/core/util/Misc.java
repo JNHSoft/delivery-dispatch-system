@@ -38,14 +38,6 @@ public class Misc {
         return m;
     }
 
-    private double deg2rad(double deg){
-        return (deg * Math.PI / 180.0);
-    }
-
-    private double rad2deg(double rad){
-        return (rad * 180 / Math.PI);
-    }
-
     /**
      * <p> Map Value 정렬
      *
