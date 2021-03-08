@@ -698,7 +698,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         if (orderList.size() < 1){
             log.info("싸이클 정보 : " + rider.getId() + " #### 라이더에게 배정된 주문이 없습니다.");
-            throw new AppTrException("배정된 주문이 없습니다.", "0000");
+            throw new AppTrException(getMessage(ErrorCodeEnum.ERR0001), ErrorCodeEnum.ERR0001.name());
         }
 
         List<String> storeIdList = new ArrayList<>();

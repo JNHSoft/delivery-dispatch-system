@@ -170,5 +170,8 @@ public enum ErrorCodeEnum {
 	SM00002,
 	SM00003,
 	SM00004,
+
+	/* 라이더 경로 최적화 중 오류 코드 */
+	ERR0001,
 	;
 }
