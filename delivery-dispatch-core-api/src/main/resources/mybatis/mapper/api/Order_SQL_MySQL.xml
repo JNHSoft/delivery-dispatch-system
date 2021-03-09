@@ -114,6 +114,7 @@
 			<result property="detailAddress" column="store_detail_address" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
 			<result property="brandCode" column="brand_code" />
+			<result property="phone" column="store_phone" />
 		</association>
 
 
@@ -333,6 +334,8 @@
 			, B.app_type
 			, D.brand_code
 			, ( select os from TB_RIDER_SESSION where rider_id = B.id limit 1 )			as os
+
+			, D.store_phone
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_RIDER AS B
 		ON A.rider_id = B.id
@@ -355,14 +358,7 @@
 				</when>
 				<!--서브그룹이 없을때 오류 적용 Nick-->
 				<when test="role != null and role == 'ROLE_RIDER'">
-<!--					AND A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))-->
-<!--					AND IF(-->
-<!--						C.subgroup_id IS NULL OR C.deleted IS NOT NULL,-->
-<!--						A.store_id = (SELECT store_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1) ,-->
-<!--						C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_RIDER_REL WHERE rider_id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}) ORDER BY created_datetime DESC LIMIT 1)-->
-<!--						)-->
 					and   A.rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
-					<!--AND C.deleted IS NULL-->
 				</when>
 				<otherwise>
 					AND A.id IS NULL

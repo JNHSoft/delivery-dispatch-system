@@ -897,7 +897,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     route.setRouteType(1);
                     route.setId(riderInfo.getId());
                     route.setName(riderInfo.getName());
-                    route.setRouteId(minOrder.getId());
+                    route.setRouteId(minOrder.getRegOrderId());
                     route.setAddress(minOrder.getAddress());
                     route.setLatitude(minOrder.getLatitude());
                     route.setLongitude(minOrder.getLongitude());

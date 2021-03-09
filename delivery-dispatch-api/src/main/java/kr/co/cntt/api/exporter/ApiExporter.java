@@ -159,23 +159,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
             log.info("[AppApiExporter][createAuthenticate][actor][loginId : {}]", actor.getLoginId());
             log.info("[AppApiExporter][createAuthenticate][actor][loginPw : {}]", actor.getLoginPw());
             log.info("[AppApiExporter][createAuthenticate][actor][uuid : {}]", actor.getUsername());
-            //log.info("[AppApiExporter][createAuthenticate][actor][ip : {}]", actor.getIp());
             log.info("[AppApiExporter][createAuthenticate][actor][time : {}]", actor.getTime());
             log.info("[AppApiExporter][createAuthenticate][actor][token : {}]", token);
 
-            /*
-            final Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(actor.getUuid(), actor.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            final ActorDetails actorDetails = customAuthentificateService.loadUserByUsername(actor.getUuid());
-            final String token = tokenManager.generateToken(actorDetails, device);
-            log.info("[AppApiExporter][createAuthenticate][actor][loginId : {}]", actor.getLoginId());
-            log.info("[AppApiExporter][createAuthenticate][actor][loginPw : {}]", actor.getLoginPw());
-            log.info("[AppApiExporter][createAuthenticate][actor][uuid : {}]", actor.getUsername());
-            //log.info("[AppApiExporter][createAuthenticate][actor][ip : {}]", actor.getIp());
-            log.info("[AppApiExporter][createAuthenticate][actor][time : {}]", actor.getTime());
-            log.info("[AppApiExporter][createAuthenticate][actor][token : {}]", token);
-            */
             result.put("result", CODE_SUCCESS);
             data.put("token", token);
 
@@ -242,7 +228,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
         } catch (Exception e) {
             return ResponseEntity.ok(new CommonBody<String>(CODE_ERROR, e.getLocalizedMessage(), null));
         }
-
     }
 
     /**
