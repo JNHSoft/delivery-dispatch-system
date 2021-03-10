@@ -109,23 +109,23 @@ subclient.subscribe('pubsub:web-notification');
 
 subclient.on("error", function (err) {
     if(err){
-        logger.err("err : "+ err);
+        logger.error("err : "+ err);
     }
 });
 subclient.on("ready", function (ready) {
     if(ready){
-        logger.err("ready : "+ ready);
+        logger.error("ready : "+ ready);
     }
 });
 subclient.on("connect", function (connect) {
     if(connect){
-        logger.err("connect : "+ connect);
+        logger.error("connect : "+ connect);
     }
 });
 
 pubclient.on("error", function (err) {
     if(err){
-        logger.err("connect : "+ err);
+        logger.error("connect : "+ err);
     }
 });
 
