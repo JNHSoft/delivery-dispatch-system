@@ -115,7 +115,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             searchMap.put("id", order.getId());
             searchMap.put("distance", "300");        // 목적지 반경 거리 (단위 : 미터)
 
-
             List<Order> firstAssignedRider = orderMapper.selectNearOrderRider(searchMap);
 
             /// 20.05.29 반경 범위의 라이더가 존재하는 경우 작업
@@ -125,7 +124,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
                     // 20.07.23 대만 요청으로 배달 제한 수 추가
                     if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
-                    //if (x.getMinOrderStatus() == null){
+                        System.out.println("################## true => " + x.getId() + " # " + x.getAssignCount());
                         return true;
                     }else{
                         switch (x.getMinOrderStatus()){
@@ -193,9 +192,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     .filter(a -> a.getSubGroupRiderRel() != null && a.getSubGroupRiderRel().getStoreId() != null)      // 소속된 매장 정보가 없는 경우 제외한다.
                     .filter(a -> {
                         if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
-                                log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
+                            System.out.println("########## 필터 a.getSubGroupRiderRel().getSubGroupId()");
+                            System.out.println(a.getId() + " ### " + a.getSubGroupRiderRel().getSubGroupId());
+                            log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
                             return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
                         } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때
+                            System.out.println("########## 필터 order.getSubGroupStoreRel() != null && a.getReturnTime() == null");
+                            System.out.println(a.getId() + " ### " + a.getSubGroupRiderRel().getSubGroupId());
                                 log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
                                 log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
@@ -205,10 +208,20 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
                     })
                     .filter(a -> !order.getId().equals((a.getOrderCheckAssignment() == null) ? "" : a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
-                    .sorted(Comparator.comparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder()))// 1순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
-                            .thenComparing(Rider::getAssignCount)//2순위 라이더의 오더 개수....
-                            .thenComparing(Rider::getDistance)// 3순위 거리순(10미터 단위)           // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
-                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))) //4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
+                    .sorted(Comparator
+                            .comparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
+                                String storeID1 = o1.getStoreId();
+
+                                if (storeID1.equals(order.getStoreId())){
+                                    return 9999;
+                                }
+                                return 0;
+                            }) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
+                            .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())) // 2순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
+                            .thenComparing(Rider::getAssignCount)//3순위 라이더의 오더 개수....
+                            .thenComparing(Rider::getDistance)// 4순위 거리순(10미터 단위)           // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
+                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))
+                            ) //5순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
                     .collect(Collectors.toList());
 
             if (!riderList.isEmpty()) {//riderList.size()!=0
@@ -503,8 +516,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         if (postOrder == 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00011), ErrorCodeEnum.E00011.name());
         }
-
-        ///////////
 
         if (postOrder != 0) {
             if (storeDTO.getAssignmentStatus().equals("1")) {

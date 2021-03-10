@@ -337,4 +337,9 @@ public interface RiderMapper {
 
     /// 주문에 대한 매장정보를 가져온다.
     List<Store> getStoreInfoAtOrder(String[] arrStoreID);
+
+    /**
+     * 가입 승인 요청 시, 기존에 등록된 LOGIN ID가 있는지 확인
+     * */
+    List<Rider> selectRegistRiderInfoList(User user);
 }
