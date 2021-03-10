@@ -1405,5 +1405,18 @@
 		and		 deleted_datetime is null
 	</select>
 
+	<!-- 등록된 라이더 정보가 있는지 확인한다 -->
+	<select id="selectRegistRiderInfoList" parameterType="kr.co.cntt.core.model.login.User" resultMap="selectSubgroupRiderRelsResult">
+		select	 id
+				,name
+				,phone
+				,login_id
+				,admin_id
+				,( select store_id from TB_SUBGROUP_RIDER_REL where rider_id = R.id )		as store_id
+				,created_datetime	as location_updated
+		from	 TB_RIDER			as R
+		where	 login_id = #{loginId}
+		and		 deleted is null;
+	</select>
 
 </mapper>

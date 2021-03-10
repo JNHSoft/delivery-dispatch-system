@@ -44,6 +44,9 @@ public class RiderController {
     @Value("${spring.mvc.locale}")
     private Locale regionLocale;
 
+    @Value("${api.cors.origin}")
+    private String strApiRoot;
+
     @Autowired
     public RiderController(StoreRiderService storeRiderService, CommInfoService commInfoService, CommunityService communityService) {
         this.storeRiderService = storeRiderService;
@@ -233,59 +236,72 @@ public class RiderController {
             return false;
         }
 
-        // 승인 허용 유무 절차 완료 # 승인 정보 등록
+        // 승인 실패로 인하여 등록된 라이더 정보가 있는 경우
+        List<Rider> getRegistRiderInfo = storeRiderService.getRegistRiderInfoList(chkRiderInfo);
+
         Rider rider = new Rider();
+        if (getRegistRiderInfo.size() < 1) {
+            // 승인 허용 유무 절차 완료 # 승인 정보 등록
 
-        rider.setAdminId(chkRiderInfo.getAdminId());
-        rider.setType("3");
-        rider.setPhone(chkRiderInfo.getPhone());
-        rider.setGender(chkRiderInfo.getGender());
-        rider.setAddress(chkRiderInfo.getAddress());
-        rider.setWorking("0");
-        rider.setStatus("0");
-        rider.setLatitude(chkRiderInfo.getLatitude());
-        rider.setLongitude(chkRiderInfo.getLongitude());
-        rider.setVehicleNumber(chkRiderInfo.getVehicleNumber());
-        rider.setWorkingHours("0|0");
-        rider.setName(chkRiderInfo.getName());
-        rider.setLoginId(chkRiderInfo.getLoginId());
-        rider.setLoginPw(commInfoService.selectApprovalRiderPw(chkRiderInfo.getId()));
-        rider.setAppType("1");
+            rider.setAdminId(chkRiderInfo.getAdminId());
+            rider.setType("3");
+            rider.setPhone(chkRiderInfo.getPhone());
+            rider.setGender(chkRiderInfo.getGender());
+            rider.setAddress(chkRiderInfo.getAddress());
+            rider.setWorking("0");
+            rider.setStatus("0");
+            rider.setLatitude(chkRiderInfo.getLatitude());
+            rider.setLongitude(chkRiderInfo.getLongitude());
+            rider.setVehicleNumber(chkRiderInfo.getVehicleNumber());
+            rider.setWorkingHours("0|0");
+            rider.setName(chkRiderInfo.getName());
+            rider.setLoginId(chkRiderInfo.getLoginId());
+            rider.setLoginPw(commInfoService.selectApprovalRiderPw(chkRiderInfo.getId()));
+            rider.setAppType("1");
 
-        /* #### 그룹 정보 #### */
-        if (chkRiderInfo.getRiderDetail().getRiderStore() != null){
-            myStore = storeRiderService.getStoreInfo(chkRiderInfo.getRiderDetail().getRiderStore());
+            /** #### 그룹 정보 #### */
+            if (chkRiderInfo.getRiderDetail().getRiderStore() != null) {
+                myStore = storeRiderService.getStoreInfo(chkRiderInfo.getRiderDetail().getRiderStore());
 
-            Group group = new Group();
-            group.setId(myStore.getGroup().getId());
+                Group group = new Group();
+                group.setId(myStore.getGroup().getId());
 
-            SubGroup subGroup = new SubGroup();
-            subGroup.setGroupId(myStore.getSubGroup().getGroupId());
-            subGroup.setId(myStore.getSubGroup().getId());
+                SubGroup subGroup = new SubGroup();
+                subGroup.setGroupId(myStore.getSubGroup().getGroupId());
+                subGroup.setId(myStore.getSubGroup().getId());
 
-            rider.setGroup(group);
-            rider.setSubGroup(subGroup);
-            rider.setRiderStore(myStore);
-        }
+                rider.setGroup(group);
+                rider.setSubGroup(subGroup);
+                rider.setRiderStore(myStore);
+            }
 
-        // 채팅 User ID 등록
-        commInfoService.insertChatUser(rider);
-        rider.setRole("ROLE_ADD");
-        commInfoService.insertRiderInfo(rider);
+            // 채팅 User ID 등록
+            commInfoService.insertChatUser(rider);
+            rider.setRole("ROLE_ADD");
+            commInfoService.insertRiderInfo(rider);
 
-        riderInfo.setRiderId(rider.getId());
+            riderInfo.setRiderId(rider.getId());
 
-        // 라이더 소속 그룹 저장
-        SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
-        if (rider.getSubGroup() != null){
-            subGroupRiderRel.setSubGroupId(rider.getSubGroup().getId());
-            subGroupRiderRel.setGroupId(rider.getSubGroup().getGroupId());
-            subGroupRiderRel.setRiderId(rider.getId());
-            subGroupRiderRel.setStoreId(chkRiderInfo.getRiderDetail().getRiderStore().getId());
+            // 라이더 소속 그룹 저장
+            SubGroupRiderRel subGroupRiderRel = new SubGroupRiderRel();
+            if (rider.getSubGroup() != null) {
+                subGroupRiderRel.setSubGroupId(rider.getSubGroup().getId());
+                subGroupRiderRel.setGroupId(rider.getSubGroup().getGroupId());
+                subGroupRiderRel.setRiderId(rider.getId());
+                subGroupRiderRel.setStoreId(chkRiderInfo.getRiderDetail().getRiderStore().getId());
 
-            rider.setSubGroupRiderRel(subGroupRiderRel);
+                rider.setSubGroupRiderRel(subGroupRiderRel);
 
-            commInfoService.insertSubGroupRiderRel(rider);
+                commInfoService.insertSubGroupRiderRel(rider);
+            }
+        }else{
+            Rider regRiderInfo = getRegistRiderInfo.stream()
+                    .sorted(Comparator.comparing(Rider::getLocationUpdated, Comparator.nullsFirst(Comparator.naturalOrder())).reversed())
+                    .findFirst().get();
+
+            riderInfo.setRiderId(regRiderInfo.getId());
+            rider.setLoginId(chkRiderInfo.getLoginId());
+            rider.setLoginPw(commInfoService.selectApprovalRiderPw(chkRiderInfo.getId()));
         }
 
         // Token 발급을 위한 메소드 호출
@@ -302,7 +318,7 @@ public class RiderController {
             while (iCount < 3){
                 log.info("TOKEN 발급 API 호출 시작 횟수 : [" + iCount + "]");
                 try{
-                    String resultJson = communityService.sendPostApiServer("https://dde-api.jrgtw.com/API/getToken.do", resultMap);
+                    String resultJson = communityService.sendPostApiServer(strApiRoot + "/API/getToken.do", resultMap);
                     result = new Gson().fromJson(resultJson, Map.class);
 
                     log.info("resultJson = [" + resultJson + "]");

@@ -9,6 +9,7 @@ import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.fcm.FcmBody;
+import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notification.Notification;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.redis.Content;
@@ -342,6 +343,19 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
 
 
         //common.setRole("ROLE_STORE");
+    }
+
+    /**
+     * 21.03.10 라이더 승인 내용
+     * */
+    @Override
+    public List<Rider> getRegistRiderInfoList(User user){
+        List<Rider> regRiderList = riderMapper.selectRegistRiderInfoList(user);
+        if (regRiderList.size() == 0) {
+            return Collections.<Rider>emptyList();
+        }
+
+        return regRiderList;
     }
 
     /**

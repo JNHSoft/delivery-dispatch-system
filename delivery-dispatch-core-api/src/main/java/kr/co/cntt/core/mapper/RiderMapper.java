@@ -325,4 +325,9 @@ public interface RiderMapper {
      * 라이더 세션 변경 (os 정보 포함)
      * */
     int updatePushToken(Rider rider);
+
+    /**
+     * 가입 승인 요청 시, 기존에 등록된 LOGIN ID가 있는지 확인
+     * */
+    List<Rider> selectRegistRiderInfoList(User user);
 }
