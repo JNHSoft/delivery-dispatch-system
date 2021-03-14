@@ -222,13 +222,12 @@ public class RiderController {
 
         // 승인을 요청하는 경우
         if (riderInfo.getApprovalStatus().trim().equals("1") && !chkRiderInfo.getApprovalStatus().equals("0")){
-            System.out.println("return false one #################");
+            log.info("approvalAccept return false # request Accept but Not Waiting mode");
             return false;
         }
 
         // 관련 라이더 정보가 있는지 확인 LOGIN ID는 중복되면 안되므로
         chkRiderInfo.setRole("ROLE_SEARCH");
-        System.out.println(chkRiderInfo.getRole());
         List<RiderApprovalInfo> approvalInfos = storeRiderService.getRiderApprovalList(chkRiderInfo);
 
         // 필터링 시작

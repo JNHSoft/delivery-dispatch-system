@@ -33,6 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -124,7 +125,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
                     // 20.07.23 대만 요청으로 배달 제한 수 추가
                     if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
-                        System.out.println("################## true => " + x.getId() + " # " + x.getAssignCount());
                         return true;
                     }else{
                         switch (x.getMinOrderStatus()){
@@ -192,13 +192,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     .filter(a -> a.getSubGroupRiderRel() != null && a.getSubGroupRiderRel().getStoreId() != null)      // 소속된 매장 정보가 없는 경우 제외한다.
                     .filter(a -> {
                         if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
-                            System.out.println("########## 필터 a.getSubGroupRiderRel().getSubGroupId()");
-                            System.out.println(a.getId() + " ### " + a.getSubGroupRiderRel().getSubGroupId());
                             log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
                             return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
                         } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때
-                            System.out.println("########## 필터 order.getSubGroupStoreRel() != null && a.getReturnTime() == null");
-                            System.out.println(a.getId() + " ### " + a.getSubGroupRiderRel().getSubGroupId());
                                 log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
                                 log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
@@ -608,6 +604,56 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     }
 
+    @Secured({"ROLE_RIDER"})
+    @Override
+    public List<Order> getOrderHistory(Order order) throws AppTrException {
+        order.setRole("ROLE_RIDER");
+
+        // 데이터가 빈값인 경우 오류 반환
+        if (StringUtils.isEmptyOrWhitespaceOnly(order.getToken()) || StringUtils.isEmptyOrWhitespaceOnly(order.getStartDate()) || StringUtils.isEmptyOrWhitespaceOnly(order.getEndDate())){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
+        }
+
+        // 날짜 형식 및 기간 조회에 대한 범위 지정
+        // 날짜 차이가 31일 이상인 경우 프로세스 종료
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date dateStart = format.parse(order.getStartDate());
+            Date dateEnd = format.parse(order.getEndDate());
+
+            long dateDiff = ((dateEnd.getTime() - dateStart.getTime()) / (1000*3600*24));
+
+            if (dateDiff > 31){
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00061), ErrorCodeEnum.E00061.name());
+            }
+
+        }catch (ParseException ex){
+            log.error(ex.getMessage());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00060), ErrorCodeEnum.E00060.name());
+        }
+
+
+        char[] statusArray;
+        if (order.getStatus() != null) {
+            if(order.getStatus().contains("1")){
+                order.setStatus(order.getStatus().concat(",5"));
+            }
+
+            String tmpString = order.getStatus().replaceAll("[\\D]", "");
+            statusArray = tmpString.toCharArray();
+            order.setStatusArray(statusArray);
+        }
+
+        List<Order> orderList = orderMapper.selectOrderHistory(order);
+
+        // 조회된 주문이 없는 경우
+        if (orderList == null || orderList.size() < 1){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00015), ErrorCodeEnum.E00015.name());
+        }
+
+        return orderList;
+    }
+
     @Secured({"ROLE_STORE", "ROLE_RIDER"})
     @Override
     public Order getOrderInfo(Common common) throws AppTrException {
@@ -633,7 +679,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             S_Order.setTotalPrice(numberFormat.format(totalPrice));
 
         }catch (Exception e){
-//            e.printStackTrace();
             log.error(e.getMessage());
         }
 
@@ -713,12 +758,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 Date changeDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());             // 변경될 예약 시간의 형식 변경
                 Date orgDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orgOrd.getReservationDatetime());          // 기존에 적용된 예약 시간
 
-                //Locale regionLocale = LocaleContextHolder.getLocale();
-
-                //int iTimer = regionLocale.toString().equals("zh_TW") ? 31 : 51;     // 국가별 배정 타임이 다르므로
-
-                // 변경된 예약 시간이 현재 시간보다 30분을 초과하는 경우 (넉넉하게 31분 기준)
-                //if ((changeDate.getTime() - new Date().getTime()) / 1000 > (iTimer * 60)){
                 // 20.08.19 배정 시간이 변동된 경우 및 주문 상태가 신규 또는 배정인 경우에 한하여 취소
                 if (!(changeDate.getTime() == orgDate.getTime()) && (orgOrd.getStatus().equals("0") || orgOrd.getStatus().equals("1") || orgOrd.getStatus().equals("5"))){
                     // 변경되어야 될 내용 적용 ex. 배정취소
@@ -733,7 +772,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     try {
                         orgQT = Integer.parseInt(orgOrd.getCookingTime());
                     }catch (Exception e){
-//                        e.printStackTrace();
                         log.error(e.getMessage());
                     }finally {
                         if (orgQT == 0){

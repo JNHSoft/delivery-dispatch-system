@@ -274,7 +274,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
                 // new android push
                 if (android.size() > 0){
                     try {
-                        System.out.println("############# 안드로이드 푸쉬");
+                        log.info("############# 안드로이드 푸쉬");
                         ArrayList<String> androidTokenValue = new ArrayList<>();
 
                         android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
@@ -302,7 +302,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
                 // old android push
                 if (oldMap.size() > 0){
                     try {
-                        System.out.println("############# 구버젼 푸쉬");
+                        log.info("############# 구버젼 푸쉬");
                         ArrayList<String> oldTokenValue = new ArrayList<>();
 
                         oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));
