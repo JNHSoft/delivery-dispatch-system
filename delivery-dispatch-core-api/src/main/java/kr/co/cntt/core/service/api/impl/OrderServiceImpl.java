@@ -635,10 +635,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         char[] statusArray;
         if (order.getStatus() != null) {
-            if(order.getStatus().contains("1")){
-                order.setStatus(order.getStatus().concat(",5"));
-            }
-
             String tmpString = order.getStatus().replaceAll("[\\D]", "");
             statusArray = tmpString.toCharArray();
             order.setStatusArray(statusArray);

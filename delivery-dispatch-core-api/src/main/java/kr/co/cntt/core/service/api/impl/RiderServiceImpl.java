@@ -894,6 +894,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
                 // 주문 목적지의 위치가 가까운 경우 다음 루트는 주문 경로가 되어야한다.
                 if ((beforeStoreDistance > beforeOrderDistance && beforeOrderDistance > -1) || beforeStoreDistance == -1){
+                    // 주문정보입니다.
                     route.setRouteType(1);
                     route.setId(riderInfo.getId());
                     route.setName(riderInfo.getName());
@@ -905,6 +906,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     route.setDistance(String.valueOf(beforeOrderDistance));
                     route.setBrandCode(minOrder.getStore().getBrandCode());
                     route.setBrandName(minOrder.getStore().getBrandName());
+                    route.setOrder(new Order());
+                    route.getOrder().setStatus(minOrder.getStatus());
 
                     usedOrderId.add(minOrder.getId());
                     log.info("싸이클 정보 : " + rider.getId() + " #### i = " + i + " #### 주문 목적지 등록 => " + route.getRouteId());

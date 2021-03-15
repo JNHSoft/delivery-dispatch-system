@@ -1452,7 +1452,7 @@
 				,( select brand_code from TB_STORE where id = o.store_id )			as brand_code
 				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = ( select brand_code from TB_STORE where id = o.store_id ) )		as brand_name
 		from	 TB_ORDER				as o
-		where	 created_datetime > current_date()
+		where	 reservation_datetime > current_date()
 		and		 status not in (0, 4, 5)
 		and		 return_datetime is null
 		and		 rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )

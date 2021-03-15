@@ -7,6 +7,8 @@ package kr.co.cntt.core.model.rider;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.store.Store;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,4 +35,7 @@ public class RiderRouteInfo extends Common implements Dto {
     // 브랜드 관리
     private String brandCode;           // 매장에 대한 브랜드코드
     private String brandName;           // 매장에 대한 브랜드명칭
+
+    private Order order;                // 주문과 관련한 상세 정보
+    private Store store;                // 매장과 관련한 상세 정보
 }
