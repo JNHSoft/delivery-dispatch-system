@@ -641,6 +641,39 @@
 
 	</update>
 
+	<select id="selectRiderWorkingHistory" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="Map">
+		select	 b.rider_id
+				,b.working_status
+				,b.working_on
+				,b.working_off
+		from	 TB_RIDER					as a
+				,TB_RIDER_WORKING_HISTORY	as b
+		where	 a.id = b.rider_id
+		and		 a.id = (select rider_id from TB_RIDER_SESSION where access_token = #{token} and date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d'))
+		and		 b.working_status = 1
+		order by b.working_on
+	</select>
+
+	<insert id="insertRiderWorkingHistory" parameterType="kr.co.cntt.core.model.rider.Rider">
+		insert into TB_RIDER_WORKING_HISTORY(rider_id, working_status, working_on)
+		select	 id
+				,'1'
+				,now()
+		from	 TB_RIDER
+		where	 working = 1
+		and		 id = (select rider_id from TB_RIDER_SESSION where access_token = #{token})
+	</insert>
+
+	<update id="updateRiderWorkingHistory" parameterType="kr.co.cntt.core.model.rider.Rider">
+		update	 TB_RIDER_WORKING_HISTORY
+		set		 working_status = 0
+				,working_off = now()
+				,updated_datetime = now()
+		where	 working_status = 1
+		and		 working_off is null
+		and		 rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
+	</update>
+
 	<!--rider 위치 정보 전송 -->
 	<update id="updateRiderLocation" parameterType="kr.co.cntt.core.model.rider.Rider">
 		UPDATE TB_RIDER

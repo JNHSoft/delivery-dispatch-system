@@ -195,6 +195,26 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         Rider S_Rider = riderMapper.getRiderInfo(rider);
 
         if (nRet != 0) {
+            Map<String, Object> riderHistoryInfo = riderMapper.selectRiderWorkingHistory(rider);
+
+            // 라이더 상태에 따른, 히스토리 내용 생성
+            if (rider.getWorking().equals("1")){
+                // 출근 요청인 경우
+                if (riderHistoryInfo == null){
+                    // 출근에 대한 히스토리가 없으므로, 데이터를 입력한다.
+                    riderMapper.insertRiderWorkingHistory(rider);
+                    log.info("라이더의 출근 히스토리 등록 => " + rider.getToken());
+                }
+
+            }else if (rider.getWorking().equals("0")){
+                // 퇴근 요청인 경우
+                if (riderHistoryInfo != null){
+                    // 출근에 대한 히스토리가 없으므로, 넘어간다.
+                    riderMapper.updateRiderWorkingHistory(rider);
+                    log.info("라이더의 퇴근 히스토리 등록 => " + rider.getToken());
+                }
+            }
+
             if (S_Rider.getSubGroupStoreRel() != null) {
                 redisService.setPublisher(Content.builder().type("rider_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).storeId(S_Rider.getStore().getId()).subGroupId(S_Rider.getSubGroupStoreRel().getSubGroupId()).build());
             } else {

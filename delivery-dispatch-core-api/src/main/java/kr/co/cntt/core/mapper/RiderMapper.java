@@ -112,6 +112,24 @@ public interface RiderMapper {
      */
     public int updateWorkingRider(Rider rider);
 
+    /**
+     * 21-03-16
+     * 라이더 출근 히스토리에 데이터가 있는지 확인
+     * */
+    Map<String, Object> selectRiderWorkingHistory(Rider rider);
+
+    /**
+     * 21-03-16
+     * 라이더 출근에 대한 정보 등록
+     * */
+    int insertRiderWorkingHistory(Rider rider);
+
+    /**
+     * 21-03-16
+     * 라이더의 퇴근에 대한 정보 등록
+     * */
+    int updateRiderWorkingHistory(Rider rider);
+
 
     /**
      * Rider 위치 정보 전송
