@@ -15,10 +15,10 @@ import com.google.gson.Gson;
 
 import kr.co.cntt.core.concurrent.task.ILogSupport;
 import kr.co.cntt.core.concurrent.task.LogService;
-import kr.co.cntt.core.concurrent.task.LogTask;
+//import kr.co.cntt.core.concurrent.task.LogTask;
 import kr.co.cntt.core.controller.CnttBaseExceptionHandler;
 import kr.co.cntt.core.model.web.ErrorLog;
-import kr.co.cntt.core.trace.NotMonitor;
+//import kr.co.cntt.core.trace.NotMonitor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @ControllerAdvice
-@NotMonitor
+//@NotMonitor
 @Slf4j
 public class CnttExceptionAdvice extends CnttBaseExceptionHandler {
 
@@ -50,32 +50,32 @@ public class CnttExceptionAdvice extends CnttBaseExceptionHandler {
 	@Override
 	public void insertErrorLog(HttpServletRequest request, HandlerMethod handler, Throwable ex) {
 		ErrorLog error = ErrorLog.create(request, ex, handler);
-		if (this.executor != null) {
-			executor.doTask(new LogTask<ErrorLog>(new ILogSupport<ErrorLog>() {
-				@Override
-				public void insertLog() {
-//					LogService logService = (LogService) context.getBean("logService");
-//					try {
-//						logService.insertErrorLog(error);
-//					} catch (Exception e) {
-//						// 에러 무시
-//						if (log.isDebugEnabled()) {
-//							log.debug("insertErrorLog error occured");
-//						}
+//		if (this.executor != null) {
+//			executor.doTask(new LogTask<ErrorLog>(new ILogSupport<ErrorLog>() {
+//				@Override
+//				public void insertLog() {
+////					LogService logService = (LogService) context.getBean("logService");
+////					try {
+////						logService.insertErrorLog(error);
+////					} catch (Exception e) {
+////						// 에러 무시
+////						if (log.isDebugEnabled()) {
+////							log.debug("insertErrorLog error occured");
+////						}
+////					}
+//				}
+//				@Override
+//				public void traceLog() {
+//					if (log.isDebugEnabled()) {
+//
+//						log.debug("#################################################### CNT ERROR TRACE ####################################################");
+//						log.debug("ErrorLog : {}", new Gson().toJson(error, ErrorLog.class));
+//						log.debug("error.getMessage : {} ", error.getMessage());
+//						log.debug("ex : {}",ex.toString());
+//						log.debug("#########################################################################################################################");
 //					}
-				}
-				@Override
-				public void traceLog() {
-					if (log.isDebugEnabled()) {
-
-						log.debug("#################################################### CNT ERROR TRACE ####################################################");
-						log.debug("ErrorLog : {}", new Gson().toJson(error, ErrorLog.class));
-						log.debug("error.getMessage : {} ", error.getMessage());
-						log.debug("ex : {}",ex.toString());
-						log.debug("#########################################################################################################################");
-					}
-				}
-			}));
-		}
+//				}
+//			}));
+//		}
 	}
 }

@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 
 import kr.co.deliverydispatch.config.DeliveryDispatchWebConfig;
 import kr.co.deliverydispatch.config.CacheConfig;
-import kr.co.cntt.core.concurrent.ConcurrentConfig;
+//import kr.co.cntt.core.concurrent.ConcurrentConfig;
 import kr.co.cntt.rest.config.RestConfig;
 
 /**
@@ -30,7 +30,8 @@ import kr.co.cntt.rest.config.RestConfig;
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class, ErrorMvcAutoConfiguration.class})
 @ComponentScan(basePackages={"kr.co.deliverydispatch", "kr.co.cntt.core"})
-@Import({DeliveryDispatchWebConfig.class, ConcurrentConfig.class, CacheConfig.class, RestConfig.class})
+//@Import({DeliveryDispatchWebConfig.class, ConcurrentConfig.class, CacheConfig.class, RestConfig.class})
+@Import({DeliveryDispatchWebConfig.class, CacheConfig.class, RestConfig.class})
 @EnableCaching
 public class DeliveryDispatchWeb extends SpringBootServletInitializer {
     private static ApplicationContext context;

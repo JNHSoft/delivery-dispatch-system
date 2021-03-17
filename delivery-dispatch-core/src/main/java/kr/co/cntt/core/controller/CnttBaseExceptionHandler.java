@@ -24,11 +24,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.HandlerMethod;
 
-import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
+//import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.CnttBizException;
 import kr.co.cntt.core.exception.InvalidRequestException;
-import kr.co.cntt.core.trace.NotMonitor;
+//import kr.co.cntt.core.trace.NotMonitor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -36,20 +36,20 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NotMonitor
+//@NotMonitor
 public abstract class CnttBaseExceptionHandler implements ApplicationContextAware, MessageSourceAware{
 
 	private final Logger logger = LoggerFactory.getLogger(CnttBaseExceptionHandler.class);
 	
 	private MessageSource messageSource;
 	public ApplicationContext context;
-	public ServerTaskExecuteService executor;
+//	public ServerTaskExecuteService executor;
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.context = applicationContext;
-		this.executor = (ServerTaskExecuteService) context.getBean("serverTaskExecuteService");
+//		this.executor = (ServerTaskExecuteService) context.getBean("serverTaskExecuteService");
 	}
 	
 	public abstract Object handleGenericException(Throwable e, HandlerMethod handlerMethod, HttpServletRequest request, HttpServletResponse response); 

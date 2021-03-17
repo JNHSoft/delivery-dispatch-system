@@ -23,13 +23,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.google.gson.Gson;
 
-import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
+//import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
 import kr.co.cntt.core.concurrent.task.ILogSupport;
 import kr.co.cntt.core.concurrent.task.LogService;
-import kr.co.cntt.core.concurrent.task.LogTask;
+//import kr.co.cntt.core.concurrent.task.LogTask;
 import kr.co.cntt.core.model.web.ErrorLog;
 import kr.co.cntt.core.model.web.TrLog;
-import kr.co.cntt.core.trace.NotMonitor;
+//import kr.co.cntt.core.trace.NotMonitor;
 import kr.co.cntt.core.util.DateUtil;
 
 @Aspect
@@ -39,13 +39,13 @@ public class MonitorAspect {
 	
 	private static boolean isEnabled = false;
 	private static String basepackage = "";
-	private ServerTaskExecuteService executor;
+//	private ServerTaskExecuteService executor;
 	
 	
-	@PostConstruct
-	public void initialize() {
-		this.executor = (ServerTaskExecuteService) SpringApplicationContext.getBean("serverTaskExecuteService");
-	}
+//	@PostConstruct
+//	public void initialize() {
+//		this.executor = (ServerTaskExecuteService) SpringApplicationContext.getBean("serverTaskExecuteService");
+//	}
 	
 	@Value("${cntt.monitor.enable}")
 	public void setEnable(boolean isEnable) {
@@ -66,9 +66,9 @@ public class MonitorAspect {
 
 	@Around("controller()")
 	public Object logPrint(ProceedingJoinPoint joinPoint) throws Throwable {
-		if (joinPoint.getTarget().getClass().isAnnotationPresent(NotMonitor.class) || !isEnabled) {
-			return joinPoint.proceed();
-		}
+//		if (joinPoint.getTarget().getClass().isAnnotationPresent(NotMonitor.class) || !isEnabled) {
+//			return joinPoint.proceed();
+//		}
 		log.debug("############################### Cntt Monitor Start ################################");
 		Object result;
 		StopWatch watch = new StopWatch(joinPoint.getTarget().getClass().getName());
@@ -126,8 +126,8 @@ public class MonitorAspect {
 	@AfterThrowing(pointcut="controller()", throwing="ex")
 	public void afterThrowing(JoinPoint joinPoint, Throwable ex){
 		log.debug("############ Cntt Monitor Aspect afterThrowing Task Start ############");
-		boolean isMonitorAllowed = !joinPoint.getTarget().getClass().isAnnotationPresent(NotMonitor.class);
-		if (isMonitorAllowed) {
+//		boolean isMonitorAllowed = !joinPoint.getTarget().getClass().isAnnotationPresent(NotMonitor.class);
+//		if (isMonitorAllowed) {
 			try {
 				HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 				ErrorLog errorLog = ErrorLog.create(request, ex, joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
@@ -138,58 +138,58 @@ public class MonitorAspect {
 			} finally {
 				log.debug("############ Cntt Monitor Aspect afterThrowing Task End ############");
 			}
-		}
+//		}
 	}
 	
 	private void insertTrLog(TrLog trLog) {
-		executor.doTask(new LogTask<TrLog>(new ILogSupport<TrLog>() {
-			@Override
-			public void insertLog() {
-//				LogService logService = (LogService) SpringApplicationContext.getBean("logService");
-//				try {
-//					logService.insertTrLog(trLog);
-//				} catch (Exception e) {
-//					// 에러 무시
-//					if (log.isDebugEnabled()) {
-//						log.debug("insertErrorLog error occured");
-//					}
+//		executor.doTask(new LogTask<TrLog>(new ILogSupport<TrLog>() {
+//			@Override
+//			public void insertLog() {
+////				LogService logService = (LogService) SpringApplicationContext.getBean("logService");
+////				try {
+////					logService.insertTrLog(trLog);
+////				} catch (Exception e) {
+////					// 에러 무시
+////					if (log.isDebugEnabled()) {
+////						log.debug("insertErrorLog error occured");
+////					}
+////				}
+//			}
+//			@Override
+//			public void traceLog() {
+//				if (log.isDebugEnabled()) {
+//					log.debug("#################################################### TRLOG TRACE ####################################################");
+//					log.debug("request : {}", new Gson().toJson(trLog, TrLog.class));
+//					log.debug("#########################################################################################################################");
 //				}
-			}
-			@Override
-			public void traceLog() {
-				if (log.isDebugEnabled()) {
-					log.debug("#################################################### TRLOG TRACE ####################################################");
-					log.debug("request : {}", new Gson().toJson(trLog, TrLog.class));
-					log.debug("#########################################################################################################################");
-				}
-			}
-		}));
+//			}
+//		}));
 	}
 	
 	private void insertErrorLog(ErrorLog errorLog) {
-		executor.doTask(new LogTask<ErrorLog>(new ILogSupport<ErrorLog>() {
-			@Override
-			public void insertLog() {
-//				LogService logService = (LogService) SpringApplicationContext.getBean("logService");
-//				try {
-//					logService.insertErrorLog(errorLog);
-//				} catch (Exception e) {
-//					// 에러 무시
-//					if (log.isDebugEnabled()) {
-//						log.debug("insertErrorLog error occured");
-//					}
+//		executor.doTask(new LogTask<ErrorLog>(new ILogSupport<ErrorLog>() {
+//			@Override
+//			public void insertLog() {
+////				LogService logService = (LogService) SpringApplicationContext.getBean("logService");
+////				try {
+////					logService.insertErrorLog(errorLog);
+////				} catch (Exception e) {
+////					// 에러 무시
+////					if (log.isDebugEnabled()) {
+////						log.debug("insertErrorLog error occured");
+////					}
+////				}
+//			}
+//			@Override
+//			public void traceLog() {
+//				if (log.isDebugEnabled()) {
+//					log.debug("#################################################### TRLOG ERROR TRACE ####################################################");
+//					log.debug("request : {}", new Gson().toJson(errorLog, ErrorLog.class));
+//					log.debug("traceLog errorLog : {}",errorLog.getMessage());
+//					log.debug("#########################################################################################################################");
 //				}
-			}
-			@Override
-			public void traceLog() {
-				if (log.isDebugEnabled()) {
-					log.debug("#################################################### TRLOG ERROR TRACE ####################################################");
-					log.debug("request : {}", new Gson().toJson(errorLog, ErrorLog.class));
-					log.debug("traceLog errorLog : {}",errorLog.getMessage());
-					log.debug("#########################################################################################################################");
-				}
-			}
-		}));
+//			}
+//		}));
 	}
 	
 	
