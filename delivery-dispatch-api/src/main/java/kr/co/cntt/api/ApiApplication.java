@@ -22,7 +22,7 @@ import org.springframework.context.annotation.PropertySource;
 
 import kr.co.cntt.api.security.SecurityConfigurer;
 import kr.co.cntt.api.config.ApiConfig;
-import kr.co.cntt.core.concurrent.ConcurrentConfig;
+//import kr.co.cntt.core.concurrent.ConcurrentConfig;
 import kr.co.cntt.rest.config.RestConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -32,7 +32,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class, ErrorMvcAutoConfiguration.class})
 @ComponentScan(basePackages={"kr.co.cntt.api", "kr.co.cntt.core"})
 @EnableCaching
-@Import({ApiConfig.class, ConcurrentConfig.class, SecurityConfigurer.class, RestConfig.class})
+//@Import({ApiConfig.class, ConcurrentConfig.class, SecurityConfigurer.class, RestConfig.class})
+@Import({ApiConfig.class, SecurityConfigurer.class, RestConfig.class})
 //@PropertySource("classpath:servicekey.properties")
 @EnableAspectJAutoProxy
 @EnableScheduling

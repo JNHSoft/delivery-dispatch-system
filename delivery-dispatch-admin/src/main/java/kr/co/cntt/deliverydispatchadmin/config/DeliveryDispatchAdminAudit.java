@@ -19,9 +19,9 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
+//import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
 import kr.co.cntt.core.concurrent.task.ILogSupport;
-import kr.co.cntt.core.concurrent.task.LogTask;
+//import kr.co.cntt.core.concurrent.task.LogTask;
 
 import kr.co.cntt.core.model.admin.AdminPerformanceHistory;
 import kr.co.cntt.core.util.AgentUtil;
@@ -49,7 +49,7 @@ public class DeliveryDispatchAdminAudit {
      * <p>server task executor working in backgroud mode
      * @author JIN
      */
-    private ServerTaskExecuteService taskExecuteService;
+//    private ServerTaskExecuteService taskExecuteService;
     /**
      * <p>관리자 D A O
      * @author JIN
@@ -76,11 +76,11 @@ public class DeliveryDispatchAdminAudit {
     @Autowired
     public DeliveryDispatchAdminAudit(RequestMappingHandlerMapping requestMappingHandlerMapping
             , AuthenticationInfo authenticationInfo
-            , ServerTaskExecuteService taskExecuteService
+//            , ServerTaskExecuteService taskExecuteService
             , AdminMapper adminMapper){
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
         this.authenticationInfo = authenticationInfo;
-        this.taskExecuteService = taskExecuteService;
+//        this.taskExecuteService = taskExecuteService;
         this.adminMapper = adminMapper;
     }
     /**
@@ -120,19 +120,19 @@ public class DeliveryDispatchAdminAudit {
             adminPerformanceHistory.setRequestUri(key);
             adminPerformanceHistory.setPerformanceTask(value);
             adminPerformanceHistory.setIp(AgentUtil.getIp(request));
-            taskExecuteService.doTask(new LogTask<AdminPerformanceHistory>(new ILogSupport<AdminPerformanceHistory>(){
-                @Override
-                public void insertLog() {
-                    //adminMapper.insertAdminPerformanceHistoryLog(adminPerformanceHistory);
-                }
-                @Override
-                public void traceLog() {
-                    if (log.isDebugEnabled()) {
-                        log.debug("[AdminPerformanceHistoryFilter][doFilterInternal][K]:{}", key);
-                        log.debug("[AdminPerformanceHistoryFilter][doFilterInternal][V]:{}", value);
-                    }
-                }
-            }));
+//            taskExecuteService.doTask(new LogTask<AdminPerformanceHistory>(new ILogSupport<AdminPerformanceHistory>(){
+//                @Override
+//                public void insertLog() {
+//                    //adminMapper.insertAdminPerformanceHistoryLog(adminPerformanceHistory);
+//                }
+//                @Override
+//                public void traceLog() {
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("[AdminPerformanceHistoryFilter][doFilterInternal][K]:{}", key);
+//                        log.debug("[AdminPerformanceHistoryFilter][doFilterInternal][V]:{}", value);
+//                    }
+//                }
+//            }));
         }
     }
 }

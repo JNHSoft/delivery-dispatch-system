@@ -198,7 +198,7 @@ public interface RiderMapper {
      * @param
      * @return
      */
-    public int updateRiderWorkingAuto(HashMap map);
+    public Integer updateRiderWorkingAuto(HashMap map);
 
     public List<Map> selectRiderToken(Order order);
 

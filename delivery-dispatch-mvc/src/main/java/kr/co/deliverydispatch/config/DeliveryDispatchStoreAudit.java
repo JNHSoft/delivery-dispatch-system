@@ -19,9 +19,9 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
+//import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
 import kr.co.cntt.core.concurrent.task.ILogSupport;
-import kr.co.cntt.core.concurrent.task.LogTask;
+//import kr.co.cntt.core.concurrent.task.LogTask;
 
 import kr.co.cntt.core.model.store.StorePerformanceHistory;
 import kr.co.cntt.core.util.AgentUtil;
@@ -49,7 +49,7 @@ public class DeliveryDispatchStoreAudit {
      * <p>server task executor working in backgroud mode
      * @author JIN
      */
-    private ServerTaskExecuteService taskExecuteService;
+//    private ServerTaskExecuteService taskExecuteService;
     /**
      * <p>관리자 D A O
      * @author JIN
@@ -76,11 +76,11 @@ public class DeliveryDispatchStoreAudit {
     @Autowired
     public DeliveryDispatchStoreAudit(RequestMappingHandlerMapping requestMappingHandlerMapping
             , AuthenticationInfo authenticationInfo
-            , ServerTaskExecuteService taskExecuteService
+//            , ServerTaskExecuteService taskExecuteService
             , StoreMapper storeMapper){
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
         this.authenticationInfo = authenticationInfo;
-        this.taskExecuteService = taskExecuteService;
+//        this.taskExecuteService = taskExecuteService;
         this.storeMapper = storeMapper;
     }
     /**
@@ -120,19 +120,19 @@ public class DeliveryDispatchStoreAudit {
             storePerformanceHistory.setRequestUri(key);
             storePerformanceHistory.setPerformanceTask(value);
             storePerformanceHistory.setIp(AgentUtil.getIp(request));
-            taskExecuteService.doTask(new LogTask<StorePerformanceHistory>(new ILogSupport<StorePerformanceHistory>(){
-                @Override
-                public void insertLog() {
-                    //storeMapper.insertStorePerformanceHistoryLog(storePerformanceHistory);
-                }
-                @Override
-                public void traceLog() {
-                    if (log.isDebugEnabled()) {
-                        log.debug("[StorePerformanceHistoryFilter][doFilterInternal][K]:{}", key);
-                        log.debug("[StorePerformanceHistoryFilter][doFilterInternal][V]:{}", value);
-                    }
-                }
-            }));
+//            taskExecuteService.doTask(new LogTask<StorePerformanceHistory>(new ILogSupport<StorePerformanceHistory>(){
+//                @Override
+//                public void insertLog() {
+//                    //storeMapper.insertStorePerformanceHistoryLog(storePerformanceHistory);
+//                }
+//                @Override
+//                public void traceLog() {
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("[StorePerformanceHistoryFilter][doFilterInternal][K]:{}", key);
+//                        log.debug("[StorePerformanceHistoryFilter][doFilterInternal][V]:{}", value);
+//                    }
+//                }
+//            }));
         }
     }
 }

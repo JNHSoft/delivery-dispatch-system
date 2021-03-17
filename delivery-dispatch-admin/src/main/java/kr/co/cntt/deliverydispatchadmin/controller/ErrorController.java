@@ -1,13 +1,13 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 import kr.co.cntt.core.controller.AbstractErrorController;
-import kr.co.cntt.core.trace.NotMonitor;
+//import kr.co.cntt.core.trace.NotMonitor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@NotMonitor
+//@NotMonitor
 public class ErrorController extends AbstractErrorController {
 	
 	@RequestMapping(value = ERROR_DEFAULT, method = RequestMethod.GET)
