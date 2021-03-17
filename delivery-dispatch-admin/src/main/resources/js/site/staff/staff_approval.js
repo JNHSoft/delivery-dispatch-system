@@ -548,7 +548,7 @@ function resetRiderPw() {
         type : 'put',
         dataType : 'text',
         data : {
-            id	: $("#selectedRiderId").val()
+            id	: $("#approvalID").val()
         },
         success : function(data){
             if (data == 'geo_err') {

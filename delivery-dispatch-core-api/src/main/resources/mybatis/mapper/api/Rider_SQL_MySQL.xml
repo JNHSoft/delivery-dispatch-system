@@ -1109,7 +1109,8 @@
 		UPDATE TB_RIDER
 		SET login_pw = #{loginPw}
 		, modified_datetime = now()
-		WHERE id = #{id} AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		WHERE id = ( select rider_id from TB_REQ_REGIST_RIDER where id = #{id} )
+		AND admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 	</update>
 
 	<!-- resetRiderPassword for Store -->

@@ -126,10 +126,9 @@ subprojects {
 project(':delivery-dispatch-core') {
     dependencies {
 //        compile fileTree(dir: 'libs', includes: ['*.jar'])
-        compile files('libs/std-cntt-common-concurrent-1.0.2.jar')
-        compile files('libs/std-cntt-common-mail-1.0.2.jar')
+        //compile files('libs/std-cntt-common-concurrent-1.0.2.jar')
         compile files('libs/std-cntt-common-rest-1.0.6.jar')
-        compile files('libs/std-cntt-common-trace-1.0.3.jar')
+        //compile files('libs/std-cntt-common-trace-1.0.3.jar')
     }
 }
 
