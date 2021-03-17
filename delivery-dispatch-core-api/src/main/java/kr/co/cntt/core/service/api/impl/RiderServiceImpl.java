@@ -8,10 +8,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.redis.Content;
-import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.rider.RiderApprovalInfo;
-import kr.co.cntt.core.model.rider.RiderRouteInfo;
-import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.rider.*;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
@@ -1035,6 +1032,21 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         return outResult.toString();
 
+    }
+
+    /**
+     * 21-03-16
+     * 라이더의 당일 활동에 따른 주문 내역
+     * */
+    @Secured({"ROLE_RIDER"})
+    @Override
+    public RiderActiveInfo getRiderActiveInfo(Rider rider) throws AppTrException {
+
+        if (StringUtils.isEmpty(rider.getToken())){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
+        }
+
+        return riderMapper.selectRiderActiveInfo(rider);
     }
 }
 

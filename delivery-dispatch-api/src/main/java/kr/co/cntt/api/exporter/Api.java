@@ -194,6 +194,8 @@ public interface Api {
     /** Rider 경로정보 가져오기 */
     String RIDER_TOTAL_ROUTE_INFO = "/getTotalRouteInfos.json";
 
+    String RIDER_ACTIVE_INFO = "/getRiderActiveInfo.json";
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */

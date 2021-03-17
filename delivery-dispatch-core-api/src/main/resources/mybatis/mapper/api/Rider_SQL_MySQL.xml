@@ -1523,4 +1523,19 @@
 		and		 deleted is null;
 	</select>
 
+	<select id="selectRiderActiveInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.rider.RiderActiveInfo">
+		select	 count(*)																																					as orderCount
+				,ifnull(round(avg(timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime)), 0), 0)																	as avgD7Times
+				,ifnull(concat(round((sum(case WHEN timestampdiff(MINUTE, assigned_datetime, picked_up_datetime) <![CDATA[<]]> 7 THEN 1 else 0 end )	/ count(*)) * 100, 2), '%'), 0)	as avgD7
+				,ifnull(round(avg(timestampdiff(SECOND, A.assigned_datetime, arrived_datetime)), 0), 0)																		as avgD30Times
+				,ifnull(concat(round((sum(case WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) <![CDATA[<= 30]]> THEN 1 else 0 end )	/ count(*)) * 100, 2), '%'), 0)	as avgD30
+				,ifnull(round((count(*) / (timestampdiff(second, min(B.working_on), ifnull(max(B.working_off), now())) / 3600)), 1), 0)												as tpoh
+		from	 TB_ORDER						A
+				,TB_RIDER_WORKING_HISTORY		B
+		where	 A.rider_id = B.rider_id
+		and		 B.working_status = 1
+		and      A.status = 3
+		and		 A.rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
+		and		 A.reservation_datetime > current_date()
+	</select>
 </mapper>

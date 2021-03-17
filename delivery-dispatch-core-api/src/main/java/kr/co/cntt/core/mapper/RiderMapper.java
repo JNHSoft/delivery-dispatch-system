@@ -7,10 +7,7 @@ import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
-import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.rider.RiderApprovalInfo;
-import kr.co.cntt.core.model.rider.RiderRouteInfo;
-import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.rider.*;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
 
@@ -360,4 +357,8 @@ public interface RiderMapper {
      * 가입 승인 요청 시, 기존에 등록된 LOGIN ID가 있는지 확인
      * */
     List<Rider> selectRegistRiderInfoList(User user);
+
+    /// 21-03-16
+    /// 라이더의 당일 활동에 필요로 하는 정보 추출
+    RiderActiveInfo selectRiderActiveInfo(Rider rider);
 }
