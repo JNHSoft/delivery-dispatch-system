@@ -181,7 +181,10 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 경로정보 가져오기 */
 	RIDER_TOTAL_ROUTE_INFO("riderService", "getTotalRouteInfos", Rider.class),
 
-	/* Rider 당일 활동 기록 */
+	/** Rider 경로정보 가져오기 */
+	RIDER_TOTAL_ROUTE_INFO2("riderService", "getTotalRouteInfos2", Rider.class),
+
+	/** Rider 당일 활동 기록 */
 	RIDER_ACTIVE_INFO("riderService", "getRiderActiveInfo", Rider.class),
 	
 

@@ -188,7 +188,12 @@ public interface RiderService {
      * Rider 경로정보 가져오기
      * */
     Map getTotalRouteInfos(Rider rider) throws AppTrException;
-    
+
+    /**
+     * Rider 경로정보 가져오기
+     * */
+    Map getTotalRouteInfos2(Rider rider) throws AppTrException;
+
     /**
      * 라이더의 당일 활동 내역
      * */
