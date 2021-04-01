@@ -55,6 +55,7 @@
 			<result property="assignmentLimit" column="assignment_limit" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
 			<result property="brandCode" column="brand_code" />
+			<result property="code" column="store_code" />
 		</association>
 
 		<association property="thirdParty" column="thirdParty" javaType="kr.co.cntt.core.model.thirdParty.ThirdParty">
@@ -240,6 +241,7 @@
 
 				,A.third_party_id
 				,(select name from TB_THIRD_PARTY where id = A.third_party_id and deleted is null )	as third_party_name
+				,C.code																			as store_code
 		from	 TB_ORDER	A
 		left join TB_SUBGROUP_STORE_REL	B
 			ON	 A.store_id = B.store_id

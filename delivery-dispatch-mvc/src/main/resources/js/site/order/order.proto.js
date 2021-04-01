@@ -336,6 +336,7 @@ DDELib.Orders.prototype = {
                 {label: order_reserved, name: 'time7', width: 80, align: 'center'},
                 {label: rider_name, name: 'rider', width: 80, align: 'center'},
                 {label: order_assigned_advance, name: 'button', width: 80, align: 'center'},
+                {label: store_code, name: 'storeCode', width: 80, align: 'center'},
                 {label: "", name: 'orderbystatus', width: 80, align: 'center'},
                 {label: "", name: 'assignedFirst', width: 80, align: 'center'}
             ],
@@ -412,6 +413,9 @@ DDELib.Orders.prototype = {
         // 서드 파티 추가
         tmpdata.rider = this.getRiderOrThirdTypeName(ev);
         tmpdata.button = this.makeButtonOrderData(ev,'putAssignedAdvanceFirst');
+
+        // 스토어 코드 추가
+        tmpdata.storeCode = ev.store.code;
 
         // 20.05.12 상태 값추가로 인하여 정렬 흐트림 방지
         // tmpdata.orderbystatus = (ev.status == 5)? 0 : ev.status ;
