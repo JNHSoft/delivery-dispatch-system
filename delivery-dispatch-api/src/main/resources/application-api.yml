@@ -67,9 +67,12 @@ server:
   port: 8091
   tomcat:
     uri-encoding: UTF-8
+  session:
+    timeout: 300
   jsp-servlet:
     init-parameters:
       development: true
+
 api.token.serviceKey : testkey
 api.token.secretKey : ATE6OLdQuouPbqyZ5qt1H++taImbDhqSPw53ClPT7+k=
 api.token.expiration : 6000
