@@ -33,7 +33,7 @@ public class Misc {
         double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(radiansLat1) * Math.cos(radiansLat2) * Math.pow(Math.sin(dlon / 2), 2);
         double c = 2 * Math.asin(Math.sqrt(a));
 
-        int m = Integer.parseInt(String.valueOf(Math.round(6367 * c * 1000)));
+        int m = Integer.parseInt(String.valueOf(Math.round(6371 * c * 1000)));
 
         return m;
     }

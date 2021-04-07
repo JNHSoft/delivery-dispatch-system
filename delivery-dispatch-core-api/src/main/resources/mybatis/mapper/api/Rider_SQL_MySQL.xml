@@ -1159,7 +1159,7 @@
 		</choose>
 	</update>
 
-<!--	Rider Approval-->
+	<!--Rider Approval-->
 	<select id="selectApprovalRiderList" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderApprovalResult">
 		select	 REQ.id											as approval_id
 				,REQ.created_datetime
