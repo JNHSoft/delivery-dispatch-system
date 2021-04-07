@@ -448,6 +448,9 @@ function getStatisticsList() {
                         }else if ($('#selectStatus option:selected').val()=="cancel" && data[key].status =="4"){
                             $mydata.push($tmpData);
                         }
+
+                        // 라이더의 공유 상태 추가
+                        $tmpData.th20 = data[key].rider.sharedStatus;
                     }
                 }
             }
@@ -479,7 +482,8 @@ function getStatisticsList() {
                     {label: order_pickedup, name: 'th12', width: 80, align: 'center'},
                     {label: order_arrived, name: 'th18', width: 80, align: 'center'},
                     {label: order_reserved, name: 'th13', width: 80, align: 'center'},
-                    {label: rider_name, name: 'th14', width: 80, align: 'center'}
+                    {label: rider_name, name: 'th14', width: 80, align: 'center'},
+                    {label: rider_shared, name: 'th20', width: 80, align: 'center'}
                 ],
                 height: 680,
                 autowidth: true,
