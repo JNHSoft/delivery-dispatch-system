@@ -6,7 +6,7 @@
 			<property value="/home/ddetw/logs/delivery-dispatch/dev/api/dde_api_application" name="LOG_FILE_PREFIX" />
 		</springProfile>
 		<springProfile name="oper">
-			<property value="/home/ddetw/logs/delivery-dispatch/oper/api/dde_api_application" name="LOG_FILE_PREFIX" />
+			<property value="/mnt/disks/logs/delivery-dispatch/oper/api/dde_api_application" name="LOG_FILE_PREFIX" />
 		</springProfile>
 	</springProfile>
 

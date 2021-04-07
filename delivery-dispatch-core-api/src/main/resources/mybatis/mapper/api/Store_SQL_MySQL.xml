@@ -95,6 +95,7 @@
             <result property="id" column="id" />
             <result property="name" column="rider_name" />
             <result property="phone" column="rider_phone" />
+            <result property="sharedStatus" column="rider_shared_status" />
         </association>
 
         <association property="payment" column="payment" javaType="kr.co.cntt.core.model.payment.Payment">
@@ -1692,6 +1693,7 @@
                 ,A.combined_order_id
                 ,A.phone
                 ,A.message
+                ,case when ( select shared_flag from TB_RIDER where id = A.rider_id ) = 1 then 'Y' else 'N' end		as rider_shared_status
         from	 TB_ORDER	A
         where	 date_format(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > date_format(ifnull(reservation_datetime, now()), '%Y-%m-%d %H:%i')
         and		 A.status in (3, 4)

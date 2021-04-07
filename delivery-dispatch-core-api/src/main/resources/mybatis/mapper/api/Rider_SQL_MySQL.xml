@@ -878,7 +878,8 @@
 		and	(	 B.store_id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
 			or	(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null) and B.store_id <![CDATA[<>]]> (SELECT store_id FROM TB_STORE_SESSION where access_token = #{token}) and ifnull(A.shared_flag, 0) = 1)
 			)
-		order by A.id;
+		order by case when A.working = '1' then case when E.order_status = '1' then 1 when E.order_status = '2' then 2 else 3 end when A.working = '3' then 4 else 99 end, A.id;
+<!--		order by A.id;-->
 	</select>
 
 	<!-- selectSubgroupRiderRels -->
