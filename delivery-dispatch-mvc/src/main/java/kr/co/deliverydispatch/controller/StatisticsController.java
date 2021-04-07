@@ -126,39 +126,15 @@ public class StatisticsController {
         model.addAttribute("store", myStore);
         model.addAttribute("regionLocale", regionLocale);
 
-        if (myStore.getBrandCode().trim().equals("1"))       /// KFC
-        {
-            viewPath = viewPath.concat("/orderdetail_tw_kfc");
-        }else{
-            viewPath = "redirect:/statisticsByOrder";
-        }
-
+//        if (myStore.getBrandCode().trim().equals("1"))       /// KFC
+//        {
+//            viewPath = viewPath.concat("/orderdetail");
+//        }else{
+//            viewPath = "redirect:/statisticsByOrder";
+//        }
+        viewPath = viewPath.concat("/orderdetail");
         return viewPath;
     }
-
-    /*@ResponseBody
-    @GetMapping("/getStoreStatistics")
-    @CnttMethodDescription("통계 리스트 조회")
-    public List<Order> getStoreStatistics(@RequestParam(value = "startDate") String startDate
-            ,@RequestParam(value = "endDate") String endDate){
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
-            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
-            long diffDays = diff / (24 * 60 * 60 * 1000);
-
-            order.setDays(Integer.toString((int) (long) diffDays + 1));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        order.setToken(storeInfo.getStoreAccessToken());
-        List<Order> statisticsList = storeStatementService.getStoreStatistics(order);
-        return statisticsList;
-    }*/
 
     @ResponseBody
     @GetMapping("/getStoreStatisticsByOrder")
@@ -231,35 +207,6 @@ public class StatisticsController {
         Order statisticsInfo = storeStatementService.getStoreStatisticsInfo(order);
         return statisticsInfo;
     }
-
-    // excel 다운로드
-//    @ResponseBody
-    /*@GetMapping("/excelDownload")
-    public ModelAndView statisticsExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
-        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
-        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setToken(storeInfo.getStoreAccessToken());
-        order.setCurrentDatetime(startDate);
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
-            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
-            long diffDays = diff / (24 * 60 * 60 * 1000);
-
-            order.setDays(Integer.toString((int) (long) diffDays + 1));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        ModelAndView modelAndView = new ModelAndView("StatisticsStoreExcelBuilderServiceImpl");
-        List<Order> orderStatisticsByStoreList = storeStatementService.getStoreStatisticsExcel(order);
-        modelAndView.addObject("getStoreStatisticsExcel", orderStatisticsByStoreList);
-
-        return modelAndView;
-    }*/
 
     @GetMapping("/excelDownloadByOrder")
     public ModelAndView statisticsByOrderExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate) {
@@ -432,5 +379,4 @@ public class StatisticsController {
 
         return modelAndView;
     }
-
 }

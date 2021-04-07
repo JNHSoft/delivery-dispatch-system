@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component("StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl")
-public class StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl extends CommExcel {
+@Component("StoreStatisticsByOrderDetailExcelBuilderServiceImpl")
+public class StoreStatisticsByOrderDetailExcelBuilderServiceImpl extends CommExcel {
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception{
         locale = LocaleContextHolder.getLocale();
@@ -30,8 +30,8 @@ public class StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl extends 
         String fileName = "[" + dTime + "]";
         SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
-        if(request.getRequestURI().matches("/excelDownloadByOrderListAtTWKFC")) {
-            List<Order> orderStatisticsByStoreList = (List<Order>) model.get("getStoreStatisticsByOrderListAtTWKFCExcel");
+        if(request.getRequestURI().matches("/excelDownloadByOrderList")) {
+            List<Order> orderStatisticsByStoreList = (List<Order>) model.get("getStoreStatisticsByOrderListExcel");
             setStoreStatisticsByOrderListExcel(workbook, orderStatisticsByStoreList);
             fileName += " OrderList_Report.xlsx";
         }
