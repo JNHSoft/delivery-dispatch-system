@@ -147,6 +147,12 @@ public class StoreStatisticsByOrderDetailExcelBuilderServiceImpl extends CommExc
             addTitle.setCellValue(messageSource.getMessage("order.return",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 라이더 공유 유무
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("list.search.shared",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             rowNum++;
         }
 
@@ -222,6 +228,11 @@ public class StoreStatisticsByOrderDetailExcelBuilderServiceImpl extends CommExc
             // 복귀 시간
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getReturnDatetime()));
+            cell.setCellStyle(dataCellStyle);
+
+            // 라이더 공유
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getRider().getSharedStatus()));
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;

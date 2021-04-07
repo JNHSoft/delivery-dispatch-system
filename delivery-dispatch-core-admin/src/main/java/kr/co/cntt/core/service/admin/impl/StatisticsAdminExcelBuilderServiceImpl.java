@@ -198,6 +198,12 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("rider.name",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 라이더 공유 상태
+            sheet.setColumnWidth(colNum, 15*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("list.search.shared",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             sheet.setColumnWidth(colNum, 15*256);
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("rider.phone",null, locale));
@@ -337,6 +343,11 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getRider().getName()));
+            cell.setCellStyle(dataCellStyle);
+
+            // 라이더 공유 상태
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getRider().getSharedStatus()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);

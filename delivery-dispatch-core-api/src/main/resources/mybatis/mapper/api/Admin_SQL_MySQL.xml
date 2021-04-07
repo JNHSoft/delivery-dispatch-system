@@ -1149,7 +1149,7 @@
 		, TBO.latitude
 		, TBO.longitude
 		, TBO.distance
-
+		,case when TBR.shared_flag = 1 then 'Y' else 'N' end	as rider_shared_status
 		FROM TB_ORDER AS TBO
 
 		LEFT JOIN
