@@ -8,8 +8,6 @@ var rider;
 var RiderChatUserId = "";
 var chatUserName = "";
 
-
-
 if(typeof DDELib === 'undefined'){
     DDELib = {};
 }
@@ -55,12 +53,39 @@ DDELib.Riders.prototype = {
             +"<td>{=ETC}</td>"
             +"</tr>",
             riderbutton : "<button class='button h20 {=CLASSMODE}' data-id='{=ID}'>{=REST}</button>"
-
         };
 
         this.riderlist = new Map();
         this.isprocchat = false;
         this.isPressCtrl = false;
+        
+        // 체크박스 체크 효과 넣기
+        // 디폴트 > 15 (전체)
+        // 1, 2, 4, 8 (화면 순서대로 1, 2, 4, 8)
+        // 비트 플래그 이용
+        let chkStatus = Number(window.localStorage.getItem("riderStatusFlag"));
+
+        if (chkStatus <= 0){
+            chkStatus = 15;
+        }
+
+        // 전체 체크
+        if (chkStatus !== 15){
+
+            this.checkBoxs.all.prop("checked", false);
+
+            this.checkBoxs.srchChk.each(function() {
+                $(this).prop("checked", false);
+                $(this).attr("disabled", false);
+                console.log("체크 해제 완료");
+            });
+
+            for (let i = 0; i < 4; i++){
+                if (Number(chkStatus & Math.pow(2, i)) === Number(Math.pow(2, i))){
+                    this.checkBoxs.srchChk[i].checked = true;
+                }
+            }
+        }
 
     },
     bindEvent: function () {
@@ -299,17 +324,47 @@ DDELib.Riders.prototype = {
     onCheckBoxClick : function (e) {
         this.log("onCheckBoxChange:"+e.which);
         var el = $(e.target);
+
+        // 21.04.08 라이더 상태 값 저장
+        let tmpCheck = Number(localStorage.getItem('riderStatusFlag'));
+
         if(el.is(this.checkBoxs.all)){
             this.log("ALL checkbox change:"+el.is(":checked"));
             this.checkBoxs.srchChk.each(function() {
                 $(this).prop("checked", el.is(":checked"));
                 $(this).attr("disabled", el.is(":checked"));
             });
+
+            // 전체 선택 완료에 따른 값 변경
+            if (el.is(":checked")){
+                tmpCheck = 15;
+            }else{
+                tmpCheck = 0;
+            }
+
+            // 21.04.08 라이더 상태값 저장
+            localStorage.setItem('riderStatusFlag', tmpCheck);
+
             this.getRiderList();
         } else if( el.is(this.checkBoxs.srchChk) ){
             this.log("Other checkbox change:"+el.attr("id"));
+
+            // 부분 선택 시, 선택된 값에 따른 값 변경
+            if (tmpCheck === 0){
+                tmpCheck = Math.pow(2, Number(this.checkBoxs.srchChk.index(el)));
+            }else{
+                if (el.is(":checked")){
+                    tmpCheck = tmpCheck | Math.pow(2, Number(this.checkBoxs.srchChk.index(el)));
+                }else{
+                    tmpCheck = tmpCheck & ~Math.pow(2, Number(this.checkBoxs.srchChk.index(el)));
+                }
+            }
+
+            // 21.04.08 라이더 상태값 저장
+            localStorage.setItem('riderStatusFlag', tmpCheck);
             this.getRiderList();
         }
+
     },
     onKeyUp : function(e){
         this.log("onKeyUp:"+e.which);
