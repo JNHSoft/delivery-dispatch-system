@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" th:src="@{/resources/js/site/statistics/detail_tw_kfc.js}" layout:fragment="script2"></script>
+    <script type="text/javascript" th:src="@{/resources/js/site/statistics/detail.js}" layout:fragment="script2"></script>
 </section>
 <!-- //컨텐츠 영역 -->
 <script layout:fragment="script" th:inline="javascript">
@@ -56,6 +56,8 @@
     var order_arrived = /*[[#{order.arrived}]]*/ 'order_arrived';
     var order_completed = /*[[#{order.completed}]]*/ 'order_completed';
     var order_return = /*[[#{order.return}]]*/ 'order_return';
+
+    var rider_shared = /*[[#{list.search.shared}]]*/ 'rider_shared';
 
     $(document).ready(function () {
         var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;

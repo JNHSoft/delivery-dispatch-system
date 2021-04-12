@@ -143,8 +143,6 @@ function getStoreList() {
                     {label:store_name, name:'th3', width:80, align:'center'},
                     {label:store_code, name:'th4', width:60, align:'center'},
                     {label:store_phone, name:'th5', width:80, align:'center'},
-                    // {label:store_manager_name, name:'th6', width:60, align:'center'},
-                    // {label:store_manager_phone, name:'th7', width:80, align:'center'},
                     {label:store_address, name:'th8', width:200},
                     {label:store_address_detail, name:'th9', width:200},
                     {label:login_id, name:'th10', width:60, align:'center'},

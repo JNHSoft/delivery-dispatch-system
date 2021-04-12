@@ -49,13 +49,13 @@ function noticeAlarm() {
                     $('.imgTitle').attr("src", my_store.brandImg);
                     $('.imgTitle').attr("alt", my_store.brandName);
 
-                    if (my_store.brandCode == "1"){
-                        $('#orderdetail').css('display', '');
-                    }else{
-                        $('#orderdetail').remove();
-                    }
+                    // if (my_store.brandCode == "1"){
+                    //     $('#orderdetail').css('display', '');
+                    // }else{
+                    //     $('#orderdetail').remove();
+                    // }
                 }else{
-                    $('#orderdetail').remove();
+                    // $('#orderdetail').remove();
                 }
             }
             $("#notice_alarm").removeClass('new');

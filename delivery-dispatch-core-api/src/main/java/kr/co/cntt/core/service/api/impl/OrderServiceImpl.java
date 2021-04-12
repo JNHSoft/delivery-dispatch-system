@@ -27,7 +27,6 @@ import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -86,6 +85,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     /**********************************************
      * 19-10-28
      * 라이더 자동 배정 순위 변경
+     * 21-02-19
+     * 라이더 쉐어 방식 변경
+     *  #기존 => 하위 그룹 간 전체 라이더 공유
+     *  #변경 => 하위 그룹 중 매장 or 관리자에서 공유를 허용한 라이더만 쉐어
+     *  # 라이더 자동 배정 순위 변경은 다음과 같이 진행 될 예정
+     *    --> ???
      **********************************************/
     @Override
     public void autoAssignOrder() throws AppTrException {
@@ -104,51 +109,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 추가되어 있는 인덱스를 활용하여 조회 속도 업
             denyOrderIdChkMap.put("adminId", order.getStore().getAdminId());
             List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
-            // 19.12.23 제 3자 배달기사 리스트 구하기
-            List<Rider> astRiderList = riderMapper.selectForAssignRidersAssistant(denyOrderIdChkMap);
-            // 제 3자 배달기사 리스트 중 허용 값만 추출
-            List<Rider> allowRiderList = astRiderList.stream()
-                                                  .filter(x -> x.getShared_flag() == 1).collect(Collectors.toList());
-
-            // 제 3자 배달기사 리스트 중 비허용 값 추출
-            List<Rider> rejectRiderList = astRiderList.stream()
-                    .filter(x -> x.getShared_flag() == 0).collect(Collectors.toList());
-            List<Rider> duplicationRider = new ArrayList<>();
 
             // 20.05.29 주문 번호를 이용하여, 거리 측정 및 라이더 ID 가져오기.
             Map<String, String> searchMap = new HashMap<>();
             searchMap.put("id", order.getId());
             searchMap.put("distance", "300");        // 목적지 반경 거리 (단위 : 미터)
 
-
             List<Order> firstAssignedRider = orderMapper.selectNearOrderRider(searchMap);
-
-            allowRiderList.forEach(x -> {
-                rejectRiderList.forEach(y->{
-                    if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
-                        astRiderList.remove(x);
-                    }
-                });
-            });
-
-            astRiderList.removeAll(rejectRiderList);
-
-            for (Iterator<Rider> riderX = astRiderList.iterator(); riderX.hasNext();
-                 ) {
-                Rider r = riderX.next();
-
-                for (Iterator<Rider> riderY = astRiderList.iterator(); riderY.hasNext();){
-                    Rider y = riderY.next();
-
-                    if (r.getId().equals(y.getId()) && r.getShared_sort() > y.getShared_sort()){
-//                        astRiderList.remove(y);
-                        duplicationRider.add(y);
-                    }
-                }
-            }
-
-            astRiderList.removeAll(duplicationRider);
-            riderList.addAll(astRiderList);
 
             /// 20.05.29 반경 범위의 라이더가 존재하는 경우 작업
             if (firstAssignedRider.size() > 0){
@@ -157,7 +124,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
                     // 20.07.23 대만 요청으로 배달 제한 수 추가
                     if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
-                    //if (x.getMinOrderStatus() == null){
+                        System.out.println("################## true => " + x.getId() + " # " + x.getAssignCount());
                         return true;
                     }else{
                         switch (x.getMinOrderStatus()){
@@ -170,19 +137,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 return true;
                             case "1":           //// 배정 완료
                             default:
-
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
-                                if (firstAssignedRider.stream().filter(y -> {
-                                    if (y.getRiderId().equals(x.getId())){
-                                        return true;
-                                    }else{
-                                        return false;
-                                    }
-                                }).count() > 0){
-                                    return false;
-                                }else{
-                                    return true;
-                                }
+                                return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId())).count() <= 0;
                         }
                     }
                 })
@@ -248,12 +204,21 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
                     })
                     .filter(a -> !order.getId().equals((a.getOrderCheckAssignment() == null) ? "" : a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
-                    .sorted(Comparator.comparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder()))// 1순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
-                            .thenComparing(Rider::getAssignCount)//2순위 라이더의 오더 개수....
-                            .thenComparing(Rider::getDistance)// 3순위 거리순(10미터 단위)           // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
-                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))) //4순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
-                    .collect(Collectors.toList());
+                    .sorted(Comparator
+                            .comparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
+                                String storeID1 = o1.getStoreId();
 
+                                if (storeID1.equals(order.getStoreId())){
+                                    return 9999;
+                                }
+                                return 0;
+                            }) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
+                            .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())) // 2순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
+                            .thenComparing(Rider::getAssignCount)//3순위 라이더의 오더 개수....
+                            .thenComparing(Rider::getDistance)// 4순위 거리순(10미터 단위)           // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
+                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))
+                            ) //5순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
+                    .collect(Collectors.toList());
 
             if (!riderList.isEmpty()) {//riderList.size()!=0
                 map.put("rider", riderList.get(0));
@@ -265,7 +230,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
             else {
                 log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: " + order.getId());
-//                throw new AppTrException(getMessage(ErrorCodeEnum.E00029, locale), ErrorCodeEnum.E00029.name());//해당 주문을 배정받을 기사가 없습니다.
             }
         }
     }
@@ -273,7 +237,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     public int autoAssignOrderProc(Map map) throws AppTrException {
         if (map.get("rider") == null) {
             log.debug(">>> autoAssignOrderProc_GetRiderList:::: riderListMap: " + map.get("rider"));
-//            throw new AppTrException(getMessage(ErrorCodeEnum.E00029), ErrorCodeEnum.E00029.name());
             return -1;
         } else {
             Rider rider = (Rider) map.get("rider");
@@ -283,7 +246,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setId(order.getRegOrderId());
             order.setRiderId(rider.getId());
             order.setStatus("1");
-//            order.setAssignedDatetime(LocalDateTime.now().toString());
+
             order.setAssignedDatetime("-2");
             if (rider.getLatitude() != null && !rider.getLatitude().equals("")) {
                 order.setAssignXy(rider.getLatitude() + "|" + rider.getLongitude());
@@ -356,7 +319,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -384,7 +346,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -412,11 +373,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
-
                 }
             }
 
@@ -443,8 +402,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Secured("ROLE_STORE")
     @Override
     public int postOrder(Order order) throws AppTrException {
-        // orderList = null;
-
         Store storeDTO = new Store();
         storeDTO.setAccessToken(order.getToken());
         storeDTO.setToken(order.getToken());
@@ -452,10 +409,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
         String address = "";
-
-        /*if((locale.toString()).equals("zh_TW")){
-            address += storeDTO.getDetailAddress();
-        }*/
 
         if (order.getAreaAddress() != null && !order.getAreaAddress().equals("")) {
             address += order.getAreaAddress();
@@ -748,10 +701,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         String address = "";
 
-        /*if((locale.toString()).equals("zh_TW")){
-            address += storeDTO.getDetailAddress();
-        }*/
-
         if (order.getAreaAddress() != null && !order.getAreaAddress().equals("")) {
             address += order.getAreaAddress();
         }
@@ -774,19 +723,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setAddress(address);
 
-        /*Geocoder geocoder = new Geocoder();
-
-        if (order.getAddress() != null && order.getAddress() != "") {
-            try {
-                Map<String, String> geo = geocoder.getLatLng(order.getAddress());
-                order.setLatitude(geo.get("lat"));
-                order.setLongitude(geo.get("lng"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }*/
-
         order.setRole("ROLE_STORE");
         // 20.07.01 주문 예약 시간 변동 시, 라이더 배정 취소 프로세스 추가
         Order orgOrd = getOrderInfo(order);     // 변경 전 주문 정보 추출
@@ -796,7 +732,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 Date changeDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());             // 변경될 예약 시간의 형식 변경
                 Date orgDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orgOrd.getReservationDatetime());          // 기존에 적용된 예약 시간
 
-                Locale regionLocale = LocaleContextHolder.getLocale();
+                //Locale regionLocale = LocaleContextHolder.getLocale();
 
                 //int iTimer = regionLocale.toString().equals("zh_TW") ? 31 : 51;     // 국가별 배정 타임이 다르므로
 
@@ -912,7 +848,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     obj.put("obj", noti);
 
                     fcmBody.setData(obj);
-                    //fcmBody.setRegistration_ids(tokens);
                     fcmBody.setPriority("high");
 
                     fcmBody.getNotification().setTitle(getMessage("CHANGE.ORDER"));
@@ -942,7 +877,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -970,7 +904,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -998,7 +931,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -1075,7 +1007,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                                 checkFcmResponse(androidPushNotification);
                             }catch (Exception e){
-//                                e.printStackTrace();
                                 log.error(e.getMessage());
                             }
                         }
@@ -1103,7 +1034,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                                 checkFcmResponse(oldPushNotification);
                             }catch (Exception e){
-//                                e.printStackTrace();
                                 log.error(e.getMessage());
                             }
                         }
@@ -1188,10 +1118,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssigned.setId(order.getId());
         orderAssigned.setRiderId(order.getRiderId());
         orderAssigned.setStatus("1");
-//        orderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
         orderAssigned.setAssignedDatetime("-2");
-//        orderAssigned.setCombinedOrderId(order.getCombinedOrderId());
-        if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
+
+        if (S_Rider != null && S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
             orderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
         } else {
             orderAssigned.setAssignXy("none");
@@ -1205,8 +1134,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssigned.setStatus("1");
             combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
             combinedOrderAssigned.setToken(order.getToken());
-//            combinedOrderAssigned.setCombinedOrderId(order.getId());
-            if (S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
+
+            if (S_Rider != null && S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
                 combinedOrderAssigned.setAssignXy(S_Rider.getLatitude() + "|" + S_Rider.getLongitude());
             } else {
                 combinedOrderAssigned.setAssignXy("none");
@@ -1242,7 +1171,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 if (tokens.size() > 0) {
                     Notification noti = new Notification();
                     noti.setType(Notification.NOTI.ORDER_ASSIGN);
-                    noti.setRider_id(Integer.valueOf(orderAssigned.getRiderId()));
+                    noti.setRider_id(Integer.parseInt(orderAssigned.getRiderId()));
 
                     // PUSH 객체로 변환 후 전달
                     FcmBody fcmBody = new FcmBody();
@@ -2122,7 +2051,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
 
         // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
-        if(order.getAssignedDatetime() != null && order.getAssignedDatetime() == "-1"){
+        if(order.getAssignedDatetime() != null && order.getAssignedDatetime().equals("-1")){
             orderAssignCanceled.setAssignedDatetime("-1");
         }else{
             orderAssignCanceled.setAssignedDatetime(order.getAssignedDatetime());
@@ -2141,7 +2070,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssignCanceled.setRiderId("-1");
             combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
             // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
-            if (order.getAssignedDatetime() != null && order.getAssignedDatetime() == "-1"){
+            if (order.getAssignedDatetime() != null && order.getAssignedDatetime().equals("-1")){
                 combinedOrderAssignCanceled.setAssignedDatetime("-1");
             }else{
                 combinedOrderAssignCanceled.setAssignedDatetime(order.getAssignedDatetime());
@@ -2164,8 +2093,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             this.putOrder(combinedOrderAssignCanceled);
         }
-
-        String tmpRegOrderId = order.getId();
 
         int ret = this.putOrder(orderAssignCanceled);
 
@@ -2241,7 +2168,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -2326,7 +2252,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
-        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
+        //List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
 
         int nRet = orderMapper.insertOrderConfirm(needOrderId);
         if (nRet != 0) {
@@ -2354,7 +2280,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00009), ErrorCodeEnum.E00009.name());
         }
 
-        List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
+        //List<OrderCheckAssignment> S_OrderConfirm = orderMapper.selectOrderConfirm(needOrderId);
 
         List<OrderCheckAssignment> S_OrderDeny = orderMapper.selectOrderDeny(needOrderId);
 
@@ -2557,20 +2483,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     @Secured({"ROLE_ADMIN", "ROLE_STORE", "ROLE_RIDER"})
     @Override
-    public List<Reason> getOrderFirstAssignmentReason(Common common) throws AppTrException {
+    public List<Reason> getOrderFirstAssignmentReason(Common common) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
-            common.setRole("ROLE_STORE");
-        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
-            common.setRole("ROLE_RIDER");
-        } else if (authentication.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
-            common.setRole("ROLE_ADMIN");
+        switch (authentication.getAuthorities().toString()) {
+            case "[ROLE_STORE]":
+                common.setRole("ROLE_STORE");
+                break;
+            case "[ROLE_RIDER]":
+                common.setRole("ROLE_RIDER");
+                break;
+            case "[ROLE_ADMIN]":
+                common.setRole("ROLE_ADMIN");
+                break;
         }
 
-        List<Reason> reasonList = orderMapper.selectOrderFirstAssignmentReason(common);
-
-        return reasonList;
+        return orderMapper.selectOrderFirstAssignmentReason(common);
     }
 
     @Secured("ROLE_RIDER")

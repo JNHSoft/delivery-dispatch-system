@@ -56,11 +56,9 @@ public class RiderController {
 
     /**
      * 기사현황 페이지
-     *
-     * @return
      */
     @GetMapping("/rider")
-    public String rider(Store store, @RequestParam(required = false) String frag, Model model) {
+    public String rider(Store store, Model model) {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
         Store myStore = storeRiderService.getStoreInfo(store);
@@ -75,8 +73,7 @@ public class RiderController {
     public List<Rider> getMyRiderList(Common common){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         common.setToken(storeInfo.getStoreAccessToken());
-        List<Rider> riderList = storeRiderService.getRiderNow(common);
-        return riderList;
+        return storeRiderService.getRiderNow(common);
     }
 
     @ResponseBody
@@ -95,8 +92,7 @@ public class RiderController {
     public List<Chat> getChatList(Chat chat){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         chat.setToken(storeInfo.getStoreAccessToken());
-        List<Chat> chatList = storeRiderService.getChat(chat);
-        return chatList;
+        return storeRiderService.getChat(chat);
     }
 
     @ResponseBody
@@ -114,7 +110,7 @@ public class RiderController {
      * # 라이더 앱에서 회원가입 프로세스
      * */
     @GetMapping("/riderApproval")
-    public String riderApprovalView(Store store, @RequestParam(required = false) String frag, Model model){
+    public String riderApprovalView(Store store, Model model){
 
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         store.setToken(storeInfo.getStoreAccessToken());
@@ -129,17 +125,15 @@ public class RiderController {
     @GetMapping("/getApprovalRiderList")
     @ResponseBody
     @CnttMethodDescription("라이더 승인 리스트")
-    public List<RiderApprovalInfo> getApprovalRiderList(Model model){
+    public List<RiderApprovalInfo> getApprovalRiderList(){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        //store.setToken(storeInfo.getStoreAccessToken());
+
         Store store = new Store();
         store.setToken(storeInfo.getStoreAccessToken());
         store.setRole("ROLE_STORE");
 
         // 스토어 정보
-        List<RiderApprovalInfo> approvalRider = storeRiderService.getRiderApprovalList(store);
-
-        return approvalRider;
+        return storeRiderService.getRiderApprovalList(store);
     }
 
     // 승인 리스트 항목 Excel Download
@@ -170,8 +164,6 @@ public class RiderController {
         }
 
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Store myStore = null;
-        //store.setToken(storeInfo.getStoreAccessToken());
         riderInfo.setToken(storeInfo.getStoreAccessToken());
 
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
@@ -192,7 +184,7 @@ public class RiderController {
         // 승인이 된 상태에서 취소하는 경우
         if (riderInfo.getApprovalStatus().trim().equals("3") &&
                 !(chkRiderInfo.getApprovalStatus().trim().equals("1"))){
-            System.out.println("return false three #################");
+            log.info("changeApprovalStatus return false # Approval");
             return false;
         }
 
@@ -216,8 +208,8 @@ public class RiderController {
     @CnttMethodDescription("라이더 승인 허용")
     public Boolean approvalAccept(RiderApprovalInfo riderInfo){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Store myStore = null;
-        //store.setToken(storeInfo.getStoreAccessToken());
+        Store myStore;
+
         riderInfo.setToken(storeInfo.getStoreAccessToken());
 
         // 라이더의 상태값 체크를 위해 다시 한번 정보를 가져온다.
@@ -230,13 +222,12 @@ public class RiderController {
 
         // 승인을 요청하는 경우
         if (riderInfo.getApprovalStatus().trim().equals("1") && !chkRiderInfo.getApprovalStatus().equals("0")){
-            System.out.println("return false one #################");
+            log.info("approvalAccept return false # request Accept but Not Waiting mode");
             return false;
         }
 
         // 관련 라이더 정보가 있는지 확인 LOGIN ID는 중복되면 안되므로
         chkRiderInfo.setRole("ROLE_SEARCH");
-        System.out.println(chkRiderInfo.getRole());
         List<RiderApprovalInfo> approvalInfos = storeRiderService.getRiderApprovalList(chkRiderInfo);
 
         // 필터링 시작
@@ -315,7 +306,7 @@ public class RiderController {
         // Token 발급을 위한 메소드 호출
         try {
             Map<String, String> resultMap = new HashMap<>();
-            Map<String, String> result = new HashMap<>();
+            Map<String, String> result;
             int iCount = 0;
             boolean bToken = false;
 
@@ -351,7 +342,7 @@ public class RiderController {
             }
 
             if (!bToken){
-                System.out.println("return token null false 4 #################");
+                log.info("Approval Failed # Not Found Token");
                 return false;
             }
 
@@ -360,7 +351,7 @@ public class RiderController {
             storeRiderService.setRiderInfo(riderInfo);
 
             // 만료 기간이 없는 경우 강제로 현재 일자롤부터 180일을 추가한다.
-            if (chkRiderInfo.getSession() == null || chkRiderInfo.getSession().getExpiryDatetime() == ""){
+            if (chkRiderInfo.getSession() == null || chkRiderInfo.getSession().getExpiryDatetime().equals("")){
                 log.info("유효기간 입력");
                 if (chkRiderInfo.getSession() == null){
                     chkRiderInfo.setSession(new RiderSession());
@@ -471,9 +462,9 @@ public class RiderController {
         RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
 
         // 비교를 위한 날짜들을 가져온다.
-        Date nowDate = null;            // 현재 날짜
-        Date regDate = null;            // 변경 전 날짜
-        Date changeDate = null;          // 변경 요청 날짜
+        Date nowDate;            // 현재 날짜
+        Date regDate;            // 변경 전 날짜
+        Date changeDate;          // 변경 요청 날짜
 
         try{
             nowDate = defaultFormat.parse(DateTime.now().toString());
@@ -516,7 +507,6 @@ public class RiderController {
     public Boolean changeRiderInfo(RiderApprovalInfo riderInfo){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         riderInfo.setToken(storeInfo.getStoreAccessToken());
-        boolean bExpDate = false;
 
         // 라이더의 원본 데이터를 가져온다.
         RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
@@ -528,17 +518,20 @@ public class RiderController {
         // 직원코드가 다른 경우
         if (riderInfo.getCode() != null && !riderInfo.getCode().equals(chkRiderInfo.getCode())){
             chkRiderInfo.setCode(riderInfo.getCode());
-            bExpDate = true;
         }
 
         // 번호판이 다른 경우 변경한다.
         if (riderInfo.getVehicleNumber() != null && !riderInfo.getVehicleNumber().equals(chkRiderInfo.getVehicleNumber())){
             chkRiderInfo.setVehicleNumber(riderInfo.getVehicleNumber());
-            bExpDate = true;
         }
 
         if (riderInfo.getName() != null && !riderInfo.getName().equals(chkRiderInfo.getName())){
             chkRiderInfo.setName(riderInfo.getName());
+        }
+
+        // 공유 상태가 다른 경우
+        if (riderInfo.getSharedStatus() != null && !riderInfo.getSharedStatus().equals(chkRiderInfo.getSharedStatus())){
+            chkRiderInfo.setSharedStatus(riderInfo.getSharedStatus());
         }
 
         if (chkRiderInfo.getApprovalStatus().equals("1")){
@@ -549,14 +542,11 @@ public class RiderController {
             changeRider.setVehicleNumber(riderInfo.getVehicleNumber());
             changeRider.setCode(riderInfo.getCode());
             changeRider.setName(chkRiderInfo.getName());
+            changeRider.setSharedStatus(chkRiderInfo.getSharedStatus());
 
             commInfoService.updateRiderInfo(changeRider);
         }else{
             // 승인 이외의 정보는 Rider Approval Info에서 적용한다.
-
-            log.info("###########");
-            log.info(chkRiderInfo.getCode());
-
             storeRiderService.setRiderInfo(chkRiderInfo);
         }
 
@@ -618,11 +608,7 @@ public class RiderController {
                     expDate = dateFormat.parse(dateFormat.format(fullFormat.parse(x.getSession().getExpiryDatetime())));
 
                     if (expDate.getTime() >= nowDate.getTime()){
-                        if (x.getApprovalStatus().equals("1")){
-                            return true;
-                        }else{
-                            return false;
-                        }
+                        return x.getApprovalStatus().equals("1");
                     }else{
                         return false;
                     }
@@ -631,18 +617,10 @@ public class RiderController {
                 }
 
             }else{      // 유효기간이 없는 경우는 유효기간이 오버되지 않았으므로,
-                if (x.getApprovalStatus().equals("1")){
-                    return true;
-                }else{
-                    return false;
-                }
+                return x.getApprovalStatus().equals("1");
             }
-                }).count();
+        }).count();
 
-        if (underExpDate > 0){
-            return false;
-        }else{
-            return true;
-        }
+        return underExpDate <= 0;
     }
 }

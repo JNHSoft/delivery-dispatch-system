@@ -388,7 +388,6 @@ public class StaffApprovalController {
     public Boolean changeRiderInfo(RiderApprovalInfo riderInfo){
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         riderInfo.setToken(adminInfo.getAdminAccessToken());
-        boolean bExpDate = false;
 
         // 라이더의 원본 데이터를 가져온다.
         RiderApprovalInfo chkRiderInfo = staffApprovalAdminService.getRiderApprovalInfo(riderInfo);
@@ -400,17 +399,20 @@ public class StaffApprovalController {
         // 직원코드가 다른 경우
         if (riderInfo.getCode() != null && !riderInfo.getCode().equals(chkRiderInfo.getCode())){
             chkRiderInfo.setCode(riderInfo.getCode());
-            bExpDate = true;
         }
 
         // 번호판이 다른 경우 변경한다.
         if (riderInfo.getVehicleNumber() != null && !riderInfo.getVehicleNumber().equals(chkRiderInfo.getVehicleNumber())){
             chkRiderInfo.setVehicleNumber(riderInfo.getVehicleNumber());
-            bExpDate = true;
         }
 
         if (riderInfo.getName() != null && !riderInfo.getName().equals(chkRiderInfo.getName())){
             chkRiderInfo.setName(riderInfo.getName());
+        }
+
+        // 공유 상태가 다른 경우
+        if (riderInfo.getSharedStatus() != null && !riderInfo.getSharedStatus().equals(chkRiderInfo.getSharedStatus())){
+            chkRiderInfo.setSharedStatus(riderInfo.getSharedStatus());
         }
 
         if (chkRiderInfo.getApprovalStatus().equals("1")){
@@ -421,6 +423,7 @@ public class StaffApprovalController {
             changeRider.setVehicleNumber(riderInfo.getVehicleNumber());
             changeRider.setCode(riderInfo.getCode());
             changeRider.setName(riderInfo.getName());
+            changeRider.setSharedStatus(chkRiderInfo.getSharedStatus());
 
             staffApprovalAdminService.updateRiderInfo(changeRider);
         }else{

@@ -6,7 +6,6 @@
     var gnb_store = /*[[#{gnb.store}]]*/ 'gnb_store';
     var list_search_all = /*[[#{list.search.all}]]*/ 'list_search_all';
     var list_search_placeholder = /*[[#{list.search.placeholder}]]*/ 'list_search_placeholder';
-    var list_search = /*[[#{list.search}]]*/ 'list_search';
     var btn_store = /*[[#{btn.store}]]*/ 'btn_store';
     var store_detail  = /*[[#{store.detail}]]*/ 'store_detail';
     var login_id = /*[[#{login.id}]]*/ 'login_id';
@@ -16,7 +15,6 @@
     var login_password = /*[[#{login.password}]]*/ 'login_password';
     var store_manager_name = /*[[#{store.manager.name}]]*/ 'store_manager_name';
     var store_code = /*[[#{store.code}]]*/ 'store_code';
-    var store_manager_phone = /*[[#{store.manager.phone}]]*/ 'store_manager_phone';
     var store_name = /*[[#{store.name}]]*/ 'store_name';
     var store_address = /*[[#{store.address}]]*/ 'store_address';
     var store_phone = /*[[#{store.phone}]]*/ 'store_phone';
@@ -143,8 +141,6 @@
 					<tr>
 						<th th:text="${#messages.msg('store.code')}"></th>
 						<td><input type="text" name="" class="input" value="" id="postStoreCode"/></td>
-						<!--<th th:text="${#messages.msg('store.manager.phone')}"></th>-->
-						<!--<td><input type="text" name="" class="input" value="" id="postStoreUserPhone"/></td>-->
 						<th th:text="${#messages.msg('store.address.detail')}"></th>
 						<td><input type="text" name="" class="input w_100" value="" id="postStoreDetailAddress"/></td>
 					</tr>
@@ -227,8 +223,6 @@
 						<td><input type="text" name="" class="input w_100" value="" id="storeDetailStoreAddress"/></td>
 					</tr>
 					<tr>
-						<!--<th th:text="${#messages.msg('store.manager.phone')}"></th>-->
-						<!--<td><input type="text" name="" class="input" value="" id="storeDetailStoreUserPhone" /></td>-->
 						<th th:text="${#messages.msg('store.name')}"/>
 						<td><input type="text" name="" class="input" value="" id="storeDetailStoreName"/></td>
 						<th th:text="${#messages.msg('store.address.detail')}"/>

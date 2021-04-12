@@ -139,6 +139,7 @@ project(':delivery-dispatch-core-admin') {
     dependencies {
         compile project(':delivery-dispatch-core')
         compile project(':delivery-dispatch-core-api')
+        compile "org.jfree:jfreechart:1.5.0"
     }
 }
 

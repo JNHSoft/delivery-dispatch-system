@@ -40,14 +40,6 @@
 		<!-- 20.11.11 라이더 OS 구분 추가 -->
 		<result property="platform" column="os" />
 
-		<!-- 20.01.13 Shared Rider Info -->
-		<result property="shared_admin_id" column="allow_admin_id" />
-		<result property="shared_group_id" column="allow_group_id" />
-		<result property="shared_subgroup_id" column="allow_subgroup_id" />
-		<result property="shared_store_id" column="allow_store_id" />
-		<result property="shared_flag" column="allow_flag" />
-		<result property="shared_sort" column="allow_sort" />
-
 		<association property="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
 			<result property="name" column="group_name" />
@@ -109,14 +101,6 @@
 		<result property="orderCount" column="order_count" />
 		<result property="myWorkCount" column="my_work_count" />
 
-		<!-- 20.01.13 Shared Rider Info -->
-		<result property="shared_admin_id" column="allow_admin_id" />
-		<result property="shared_group_id" column="allow_group_id" />
-		<result property="shared_subgroup_id" column="allow_subgroup_id" />
-		<result property="shared_store_id" column="allow_store_id" />
-		<result property="shared_flag" column="allow_flag" />
-		<result property="shared_sort" column="allow_sort" />
-
 		<association property="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
 			<result property="id" column="subGroupRiderRel_id" />
 			<result property="adminId" column="subGroupRiderRel_admin_id" />
@@ -169,6 +153,7 @@
 		<result property="riderId" column="rider_id" />
 		<result property="acceptDatetime" column="accept_datetime" />
 		<result property="rejectDatetime" column="reject_datetime" />
+		<result property="sharedStatus" column="shared_flag" />
 
 		<association property="riderDetail" resultMap="selectRiderNowResult"/>
 
@@ -474,6 +459,10 @@
 				, A.status = #{status}
 			</if>
 
+			<if	test="sharedStatus != null and sharedStatus != ''">
+				, A.shared_flag = #{sharedStatus}
+			</if>
+
 			<if test="vehicleNumber != null and vehicleNumber != ''">
 				, A.vehicle_number = #{vehicleNumber}
 			</if>
@@ -493,33 +482,10 @@
 			<if test="changePhone eq '1'.toString() ">
 				, C.push_token = null
 			</if>
-			<!--<choose>
-				<when test="subGroupRiderRel != null and subGroupRiderRel != ''" >
-					<if test="subGroupRiderRel.storeId == null or subGroupRiderRel.storeId == ''" >
-						, B.deleted = now()
-					</if>
-					<if test="subGroupRiderRel.storeId != null and subGroupRiderRel.storeId != ''">
-						, B.modified_datetime = now()
-						, B.store_id = #{subGroupRiderRel.storeId}
-					</if>
-					<if test="subGroupRiderRel.subGroupId != null and subGroupRiderRel.subGroupId != ''">
-						, B.modified_datetime = now()
-						, B.group_id = #{subGroupRiderRel.groupId}
-						, B.subgroup_id = #{subGroupRiderRel.subGroupId}
-					</if>
-				</when>
-			</choose>-->
-
 			, A.id = LAST_INSERT_ID(A.id)
 		WHERE 1=1 and B.deleted IS NULL
 		<choose>
 			<when test="id != null and id != ''">
-				<!--<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-				</if>
-				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-					AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-				</if>-->
 				AND A.id = #{id}
 			</when>
 			<otherwise>
@@ -819,13 +785,6 @@
 				,E.store_id				as order_store_id
 				,E.order_count
 				,E.order_status
-
-				,D.allow_admin_id
-				,D.allow_group_id
-				,D.allow_subgroup_id
-				,D.allow_store_id
-				,D.allow_flag
-				,D.allow_sort
 		FROM	 TB_RIDER A
 		left join(
 					SELECT	 admin_id
@@ -845,31 +804,6 @@
 			on	 B.admin_id = C.admin_id
 			and  B.store_id = C.id
 			and	 C.deleted is null
-		left join(
-					select	 store.admin_id
-							,store.group_id
-							,store.subgroup_id
-							,store.store_id
-							,shared.allow_admin_id
-							,shared.allow_group_id
-							,shared.allow_subgroup_id
-							,shared.allow_store_id
-							,shared.allow_flag
-							,shared.allow_sort
-					from	 TB_SHARED_INFO				as shared
-							,TB_SUBGROUP_STORE_REL		as store
-					where	 shared.admin_id = store.admin_id
-					and		 ifnull(shared.group_id, store.group_id) = store.group_id
-					and		 ifnull(shared.subgroup_id, store.subgroup_id) = store.subgroup_id
-					and		 ifnull(shared.store_id, store.store_id) = store.store_id
-					and		 store.deleted is null
-					and		 shared.deleted_datetime is null
-					and		 ifnull(shared.store_id, store.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
-				)	as D
-			on	 B.admin_id = D.allow_admin_id
-			and	 B.group_id = ifnull(D.allow_group_id, B.group_id)
-			and	 B.subgroup_id = ifnull(D.allow_subgroup_id, B.subgroup_id)
-			and	 B.store_id = ifnull(D.allow_store_id, B.store_id)
 		left join TB_REQ_REGIST_RIDER		as F
 			on	 B.rider_id = F.rider_id
 		WHERE	 A.admin_id = B.admin_id
@@ -882,11 +816,12 @@
 		AND	(	(A.app_type is null)
 			or	(A.app_type = 1 and F.req_status = 1)
 			)
-		and		 ifnull(D.admin_id, A.admin_id) = ( SELECT admin_id FROM TB_STORE WHERE id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} ) )
-		and	(	 ifnull(D.store_id, B.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
-			or	 ifnull(D.subgroup_id, B.subgroup_id) = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null)
+		and		 A.admin_id = ( SELECT admin_id FROM TB_STORE WHERE id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} ) )
+		and	(	 B.store_id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
+			or	(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null) and B.store_id <![CDATA[<>]]> (SELECT store_id FROM TB_STORE_SESSION where access_token = #{token}) and ifnull(A.shared_flag, 0) = 1)
 			)
-		order by A.id;
+		order by case when A.working = '1' then case when E.order_status = '1' then 1 when E.order_status = '2' then 2 else 3 end when A.working = '3' then 4 else 99 end, A.id;
+<!--		order by A.id;-->
 	</select>
 
 	<!-- selectSubgroupRiderRels -->
@@ -909,44 +844,11 @@
 				,B.group_id				as group_id
 				,( select name from TB_GROUP where admin_id = B.admin_id and id = B.group_id )		as group_name
 				,B.admin_id				as group_admin_id
-
-				,C.allow_admin_id
-				,C.allow_group_id
-				,C.allow_store_id
-				,C.allow_flag
-				,C.allow_sort
 		from	 TB_RIDER				as A
 		inner join TB_SUBGROUP_RIDER_REL	as B
 			on	 A.id = B.rider_id
 			and	 A.admin_id = B.admin_id
 			and	 B.deleted is null
-		left join
-				(
-					select	 store.admin_id
-							,store.group_id
-							,store.subgroup_id
-							,store.store_id
-							,shared.allow_admin_id
-							,shared.allow_group_id
-							,shared.allow_subgroup_id
-							,shared.allow_store_id
-							,shared.allow_flag
-							,shared.allow_sort
-					from	 TB_SHARED_INFO				as shared
-							,TB_SUBGROUP_STORE_REL		as store
-					where	 shared.admin_id = store.admin_id
-					and		 ifnull(shared.group_id, store.group_id) = store.group_id
-					and		 ifnull(shared.subgroup_id, store.subgroup_id) = store.subgroup_id
-					and		 ifnull(shared.store_id, store.store_id) = store.store_id
-					and		 store.deleted is null
-					and		 shared.deleted_datetime is null
-					and		 ifnull(shared.store_id, store.store_id) = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
-				)	as C
-			on	 B.admin_id = C.allow_admin_id
-			and	 B.group_id = ifnull(C.allow_group_id, B.group_id)
-			and	 B.subgroup_id = ifnull(C.allow_subgroup_id, B.subgroup_id)
-			and	 B.store_id = ifnull(C.allow_store_id, B.store_id)
-			and	 C.admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null and admin_id = (select admin_id from TB_SHARED_ADMIN where allow_sort = 0 and allow_flag = 1 and deleted_datetime is null) )
 		left join TB_REQ_REGIST_RIDER	as D
 			on	 A.id = D.rider_id
 		where	 1=1
@@ -956,8 +858,10 @@
 		AND	(	(A.app_type is null)
 			or	(A.app_type = 1 and D.req_status = 1)
 			)
-		and		 ifnull(C.admin_id, A.admin_id) = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) )
-		and		 ifnull(C.subgroup_id, B.subgroup_id) = ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null )
+		and		 A.admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) )
+		and	(	 B.store_id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
+			or	(B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null ) and B.store_id <![CDATA[<>]]> (SELECT store_id FROM TB_STORE_SESSION where access_token = #{token}) and ifnull(A.shared_flag, 0) = 1)
+			)
 	</select>
 
 	<select id="selectMyStoreRiderRels" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
@@ -1054,6 +958,7 @@
 							,R.return_time
 							,R.order_standby_datetime
 							,R.order_standby_status
+							,R.shared_flag
 					from	 TB_RIDER				as R
 					left join TB_REQ_REGIST_RIDER	as RR
 						on	 R.id = RR.rider_id
@@ -1081,66 +986,9 @@
 			on	 A.id = B.rider_id
 		where	 1=1
 		and	(	 B.store_id = #{storeId}
-			or	 B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and deleted is null )
+			or	(B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and deleted is null ) and B.store_id <![CDATA[<>]]> #{storeId} and ifnull(A.shared_flag, 0) = 1)
 			)
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
-	</select>
-
-	<!-- selectForAssignRidersAssistant -->
-	<select id="selectForAssignRidersAssistant" parameterType="Map" resultMap="selectSubgroupRiderRelsResult">
-		select	 a.id
-				,a.status
-				,a.working
-				,a.working_hours
-				,a.rest_hours
-				,a.latitude
-				,a.longitude
-				,a.return_time
-				,a.order_standby_datetime
-				,a.order_standby_status
-				,d.subgroup_id							as subGroupRiderRel_subgroup_id
-				,d.store_id								as subGroupRiderRel_store_id
-				,(SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = a.id AND status in (1,2,6) AND created_datetime > CURRENT_DATE()) AS assign_count
-				,(SELECT MIN(assigned_datetime) FROM TB_ORDER WHERE rider_id = a.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
-				,(SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2,6) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
-				,(SELECT max(status) FROM TB_ORDER WHERE rider_id = a.id AND status in(1,2,6) AND created_datetime > CURRENT_DATE()) AS min_order_status
-				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime
-				,(select order_id from TB_ORDER_DENY_ASSIGNMENT where rider_id = a.id and admin_id = c.allow_admin_id and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as deny_order_id
-				,c.allow_admin_id
-				,c.allow_group_id
-				,c.allow_subgroup_id
-				,c.allow_store_id
-				,c.allow_flag
-				,c.allow_sort
-		from	 TB_RIDER				as	a
-		left join TB_REQ_REGIST_RIDER	as	e
-			on	 a.id = e.rider_id
-				,TB_SUBGROUP_RIDER_REL	as	b
-				,TB_SHARED_INFO 		as	c
-				,TB_SUBGROUP_STORE_REL	as	d
-		where	 a.admin_id = b.admin_id
-		and		 a.id = b.rider_id
-		and		 a.deleted is null
-		and		 b.deleted is null
-		AND		 e.deleted_datetime is null
-		and		 ifnull(e.req_status, 1) = 1
-		AND	(	(a.app_type is null)
-			or	(a.app_type = 1 and e.req_status = 1)
-			)
-		and		 a.working = 1
-		and		 c.admin_id = d.admin_id
-		and		 ifnull(c.group_id, d.group_id) = d.group_id
-		and		 ifnull(c.subgroup_id, d.subgroup_id) = d.subgroup_id
-		and		 ifnull(c.store_id, d.store_id) = d.store_id
-		and		 c.deleted_datetime is null
-		and		 d.deleted is null
-		and		 c.allow_admin_id in ( select allow_admin_id from TB_SHARED_ADMIN where admin_id = #{adminId} and deleted_datetime is null and allow_flag = 1 and allow_sort = 0 )
-		and		 b.admin_id = c.allow_admin_id
-		and		 b.group_id = ifnull(c.allow_group_id, b.group_id)
-		and		 b.subgroup_id = ifnull(c.allow_subgroup_id, b.subgroup_id)
-		and		 b.store_id = ifnull(c.allow_store_id, b.store_id)
-		and		 d.store_id = #{storeId}
-		order by c.allow_sort, min_assigned_datetime is null desc, assign_count asc, min_assigned_datetime asc
 	</select>
 
 	<!-- selectRiderRestHours -->
@@ -1312,7 +1160,7 @@
 		</choose>
 	</update>
 
-<!--	Rider Approval-->
+	<!--Rider Approval-->
 	<select id="selectApprovalRiderList" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectRiderApprovalResult">
 		select	 REQ.id											as approval_id
 				,REQ.created_datetime
@@ -1380,6 +1228,7 @@
 				,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,IFNULL(R.code, REQ.code)						as code
+				,IFNULL(R.shared_flag, 0)						as shared_flag
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1447,6 +1296,9 @@
 		<if test="working != null and working eq '0'.toString()">
 			,B.modified_datetime = now()
 			,B.working = #{working}
+		</if>
+		<if test="sharedStatus != null">
+			,B.shared_flag = #{sharedStatus}
 		</if>
 		where	 A.id = #{id}
 	</update>

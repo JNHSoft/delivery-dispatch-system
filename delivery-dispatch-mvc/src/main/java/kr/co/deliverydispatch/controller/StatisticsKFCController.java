@@ -412,12 +412,12 @@ public class StatisticsKFCController {
     }
 
     /**
-     * 2020-06-16 orderdetail_tw_kfc.html
+     * 2020-06-16 orderdetail.html
      * */
     @ResponseBody
-    @GetMapping("/getStoreOrderListAtTWKFC")
-    @CnttMethodDescription("날짜별 주문 리스트 조회 TW KFC")
-    public List<Order> getStoreOrderListAtTWKFC(@RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate){
+    @GetMapping("/getStoreOrderList")
+    @CnttMethodDescription("날짜별 주문 리스트 조회 통합")
+    public List<Order> getStoreOrderList(@RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate){
         // 날짜
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
@@ -447,7 +447,7 @@ public class StatisticsKFCController {
         return orderList;
     }
 
-    @GetMapping("/excelDownloadByOrderListAtTWKFC")
+    @GetMapping("/excelDownloadByOrderList")
     public ModelAndView statisticsByOrderListExcelDownload(HttpServletResponse response, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "endDate") String endDate){
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -472,9 +472,9 @@ public class StatisticsKFCController {
             e.printStackTrace();
         }
 
-        ModelAndView modelAndView = new ModelAndView("StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl");
+        ModelAndView modelAndView = new ModelAndView("StoreStatisticsByOrderDetailExcelBuilderServiceImpl");
         List<Order> storeStatisticsByOrderList = storeStatementService.getStoreOrderList(order);
-        modelAndView.addObject("getStoreStatisticsByOrderListAtTWKFCExcel", storeStatisticsByOrderList);
+        modelAndView.addObject("getStoreStatisticsByOrderListExcel", storeStatisticsByOrderList);
 
         return modelAndView;
     }

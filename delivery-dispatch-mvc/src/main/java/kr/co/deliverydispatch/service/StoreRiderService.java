@@ -18,7 +18,7 @@ public interface StoreRiderService {
      * @param store
      * @return
      */
-    public Store getStoreInfo(Store store);
+    Store getStoreInfo(Store store);
 
     /**
      * <p> getRiderNow
@@ -26,7 +26,7 @@ public interface StoreRiderService {
      * @param common
      * @return List<Rider>
      */
-    public List<Rider> getRiderNow(Common common);
+    List<Rider> getRiderNow(Common common);
 
     /**
      * <p> getRiderFooter
@@ -34,7 +34,7 @@ public interface StoreRiderService {
      * @param common
      * @return List<Rider>
      */
-    public List<Rider> getRiderFooter(Common common);
+    List<Rider> getRiderFooter(Common common);
 
 
     /**
@@ -43,7 +43,7 @@ public interface StoreRiderService {
      * @param rider
      * @return int
      */
-    public int putRiderReturnTime(Rider rider);
+    int putRiderReturnTime(Rider rider);
 
     /**
      * <p> getChat
@@ -51,7 +51,7 @@ public interface StoreRiderService {
      * @param chat
      * @return List<Chat>
      */
-    public List<Chat> getChat(Chat chat);
+    List<Chat> getChat(Chat chat);
 
     /**
      * <p> postChat
@@ -59,13 +59,13 @@ public interface StoreRiderService {
      * @param chat
      * @return int
      */
-    public int postChat(Chat chat);
+    int postChat(Chat chat);
 
     /**
      * <p> getRiderApprovalList
      *
      * */
-    public List<RiderApprovalInfo> getRiderApprovalList(Common common);
+    List<RiderApprovalInfo> getRiderApprovalList(Common common);
 
     /**
      * <p> getRegistRiderInfoList </p>
@@ -76,18 +76,18 @@ public interface StoreRiderService {
     /**
      * <p> getRiderApprovalInfo
      * */
-    public RiderApprovalInfo getRiderApprovalInfo(Common common);
+    RiderApprovalInfo getRiderApprovalInfo(Common common);
 
     /**
      * <p> setRiderInfo
      * 라이더 승인과 관련한 정보 변경 건
      * */
-    public int setRiderInfo(RiderApprovalInfo riderInfo);
+    int setRiderInfo(RiderApprovalInfo riderInfo);
 
     /**
      * <p> update ExpiryDatetime for Rider Session
      * */
-    public int updateRiderSession(RiderSession session);
+    int updateRiderSession(RiderSession session);
 
     /**
      * deleteApprovalRiderRowData

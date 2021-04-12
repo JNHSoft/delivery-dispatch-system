@@ -107,7 +107,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Admin adminInfo = new Admin();
         User trackerInfo = new User();
 
-        System.out.println("#######platform ### createAuthenticate => [" + request.getHeader("platform") + "]");
+        log.info("platform createAuthenticate value # " + request.getHeader("platform"));
 
         try {
             if (level.equals("3")) {
@@ -159,23 +159,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
             log.info("[AppApiExporter][createAuthenticate][actor][loginId : {}]", actor.getLoginId());
             log.info("[AppApiExporter][createAuthenticate][actor][loginPw : {}]", actor.getLoginPw());
             log.info("[AppApiExporter][createAuthenticate][actor][uuid : {}]", actor.getUsername());
-            //log.info("[AppApiExporter][createAuthenticate][actor][ip : {}]", actor.getIp());
             log.info("[AppApiExporter][createAuthenticate][actor][time : {}]", actor.getTime());
             log.info("[AppApiExporter][createAuthenticate][actor][token : {}]", token);
 
-            /*
-            final Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(actor.getUuid(), actor.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            final ActorDetails actorDetails = customAuthentificateService.loadUserByUsername(actor.getUuid());
-            final String token = tokenManager.generateToken(actorDetails, device);
-            log.info("[AppApiExporter][createAuthenticate][actor][loginId : {}]", actor.getLoginId());
-            log.info("[AppApiExporter][createAuthenticate][actor][loginPw : {}]", actor.getLoginPw());
-            log.info("[AppApiExporter][createAuthenticate][actor][uuid : {}]", actor.getUsername());
-            //log.info("[AppApiExporter][createAuthenticate][actor][ip : {}]", actor.getIp());
-            log.info("[AppApiExporter][createAuthenticate][actor][time : {}]", actor.getTime());
-            log.info("[AppApiExporter][createAuthenticate][actor][token : {}]", token);
-            */
             result.put("result", CODE_SUCCESS);
             data.put("token", token);
 
@@ -200,8 +186,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
                     riderSession.setAccessToken(token);
                     riderService.updateRiderOSInfo(riderSession);
 
-
-                    System.out.println("Rider OS info Update");
+                    log.info("Rider OS info Update => " + request.getHeader("platform"));
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -243,43 +228,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
         } catch (Exception e) {
             return ResponseEntity.ok(new CommonBody<String>(CODE_ERROR, e.getLocalizedMessage(), null));
         }
-
     }
-
-    /** Token 만료일 설정은 관리자 및 스토어 페이지에서 가능 */
-//    @RequestMapping(value = PUT_TOKEN)
-//    public ResponseEntity<?> expiryToken(HttpServletRequest request, @RequestParam String level, @RequestParam String token) throws Exception {
-////        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
-//        Map<String, Object> response = new HashMap<String, Object>();
-//        Map<String, Object> result = new HashMap<String, Object>();
-//        Map<String, Object> data = new HashMap<String, Object>();
-//
-//        try {
-//
-//            if (level.equals("3")) {
-//                riderService.updateRiderSession(token);
-//            } else if (level.equals("2")) {
-//                storeService.updateStoreSession(token);
-//            } else if (level.equals("1")) {
-//                adminService.updateAdminSession(token);
-//            }
-//
-//            result.put("result", CODE_SUCCESS);
-//            response.put("result", CODE_SUCCESS);
-//
-//            return ResponseEntity.ok(new Gson().toJson(response).toString());
-//        } catch(Exception e) {
-//            result.put("result", CODE_ERROR);
-//            data.put("token", token);
-//            data.put("msg", e.getLocalizedMessage());
-//            response.put("result", CODE_ERROR);
-//            response.put("token", token);
-//            response.put("msg", e.getLocalizedMessage());
-////            response.add(result);
-////            response.add(data);
-//            return ResponseEntity.ok(new Gson().toJson(response).toString());
-//        }
-//    }
 
     /**
      * 가입 페이지 기본 정보
@@ -347,10 +296,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
 //    @PostMapping(value = {"/{service}", "/admin/{service}"})
     @PostMapping(value = "/{service}")
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
-
-        System.out.println("execute Service = " + service);
-        System.out.println("#######platform => [" + request.getHeader("platform") + "]");
-
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
         } catch (Exception e) {

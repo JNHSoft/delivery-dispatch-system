@@ -95,6 +95,7 @@
             <result property="id" column="id" />
             <result property="name" column="rider_name" />
             <result property="phone" column="rider_phone" />
+            <result property="sharedStatus" column="rider_shared_status" />
         </association>
 
         <association property="payment" column="payment" javaType="kr.co.cntt.core.model.payment.Payment">
@@ -232,94 +233,6 @@
 
 	<!--store 정보 조회-->
     <select id="selectStoreInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectStoreResult">
-<!--        SELECT-->
-<!--            TS.created_datetime-->
-<!--            , TS.modified_datetime-->
-<!--            , TS.last_access-->
-<!--            , TS.admin_id-->
-<!--            , TS.chat_user_id-->
-<!--            , TS.id-->
-<!--            , TS.login_id-->
-<!--            , TS.login_pw-->
-<!--            , TS.code-->
-<!--            , TS.name-->
-<!--            , TS.phone-->
-<!--            , TS.store_name-->
-<!--            , TS.ch_store_name-->
-<!--            , TS.store_phone-->
-<!--            , TS.address-->
-<!--            , TS.detail_address-->
-<!--            , TS.latitude-->
-<!--            , TS.longitude-->
-<!--            , TS.store_status-->
-<!--            , TS.store_distance_sort-->
-<!--            , TS.radius-->
-<!--            , TS.assignment_status-->
-<!--            , TS.assignment_limit-->
-<!--            , TS.third_party-->
-<!--            , TS.deleted-->
-<!--            , TS.alarm-->
-<!--            , TSG.id AS subgroup_id-->
-<!--            , TSG.group_id AS subgroup_group_id-->
-<!--            , TSG.name AS subgroup_name-->
-<!--            , TSG.admin_id AS subgroup_admin_id-->
-<!--            , TG.name AS group_name-->
-<!--            , TG.id AS group_id-->
-<!--            , TG.admin_id AS group_admin_id-->
-<!--            , TA.assignment_status AS admin_assignment_status-->
-<!--            , TA.assignment_limit AS admin_assignment_limit-->
-<!--            , TSS.access_token-->
-<!--        FROM TB_STORE TS-->
-
-<!--        LEFT JOIN-->
-<!--        TB_SUBGROUP_STORE_REL AS SSR-->
-<!--        on TS.id = SSR.store_id-->
-<!--        AND SSR.deleted is NULL-->
-
-<!--        LEFT JOIN-->
-<!--        TB_SUBGROUP AS TSG-->
-<!--        on TSG.group_id=SSR.group_id-->
-<!--        AND TSG.id = SSR.subgroup_id-->
-<!--        AND TSG.deleted is NULL-->
-
-<!--        LEFT JOIN-->
-<!--        TB_GROUP AS TG-->
-<!--        on TG.id = TSG.group_id-->
-<!--        AND TG.deleted is NULL-->
-
-<!--        LEFT JOIN-->
-<!--        TB_ADMIN AS TA-->
-<!--        on TS.admin_id = TA.id-->
-
-<!--        LEFT JOIN-->
-<!--        TB_STORE_SESSION AS TSS-->
-<!--        on TS.id = TSS.store_id-->
-
-<!--        WHERE 1=1-->
-<!--        <choose>-->
-<!--            <when test="role != null and role == 'ROLE_SYSTEM'">-->
-<!--                AND TS.id = #{id}-->
-<!--            </when>-->
-<!--            <otherwise>-->
-<!--                <choose>-->
-<!--                    <when test="id != null and id != ''">-->
-<!--                        <if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">-->
-<!--                            AND TS.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))-->
-<!--                        </if>-->
-<!--                        <if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">-->
-<!--                            AND TS.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})-->
-<!--                        </if>-->
-<!--                        AND TS.id = #{id}-->
-<!--                    </when>-->
-<!--                    <otherwise>-->
-<!--                        AND TS.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
-<!--                        AND TS.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token=#{token}-->
-<!--                        )-->
-<!--                    </otherwise>-->
-<!--                </choose>-->
-<!--            </otherwise>-->
-<!--        </choose>-->
-
         select	 A.created_datetime
                 ,A.modified_datetime
                 ,A.last_access
@@ -375,9 +288,7 @@
                 <choose>
                     <when test="id != null and id != ''">
                         <if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-                            AND ( A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
-                                or A.admin_id in ( select admin_id from TB_SHARED_ADMIN where allow_sort = 0 and allow_flag = 1 and allow_admin_id = ( select admin_id from TB_RIDER where id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token}) ) )
-                                )
+                            AND  A.admin_id = (SELECT admin_id FROM TB_RIDER WHERE id = (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token}))
                         </if>
                         <if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
                             AND A.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
@@ -1782,6 +1693,7 @@
                 ,A.combined_order_id
                 ,A.phone
                 ,A.message
+                ,case when ( select shared_flag from TB_RIDER where id = A.rider_id ) = 1 then 'Y' else 'N' end		as rider_shared_status
         from	 TB_ORDER	A
         where	 date_format(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > date_format(ifnull(reservation_datetime, now()), '%Y-%m-%d %H:%i')
         and		 A.status in (3, 4)

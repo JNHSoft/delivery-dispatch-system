@@ -108,46 +108,6 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
             return Collections.<Rider>emptyList();
         }
 
-        // 20.01.13 Shared Check
-//        List<Rider> sharedRider = S_Rider.stream()
-//                                    .filter(x -> x.getShared_admin_id() != null)
-//                                    .collect(Collectors.toList());
-        List<Rider> chkAllowRider = S_Rider.stream()
-                                    .filter(x->x.getShared_admin_id() != null && x.getShared_flag() == 1)
-                                    .collect(Collectors.toList());
-        List<Rider> chkRejectRider = S_Rider.stream()
-                                        .filter(x->x.getShared_admin_id() != null && x.getShared_flag() == 0)
-                                        .collect(Collectors.toList());
-
-        List<Rider> duplicationRider = new ArrayList<>();
-
-        chkAllowRider.forEach(x -> {
-            chkRejectRider.forEach(y->{
-                if (y.getId().equals(x.getId()) && y.getShared_sort() > x.getShared_sort()){
-//                    S_Rider.remove(y);
-                    S_Rider.remove(x);
-                }
-            });
-        });
-
-        // 중복된 라이더 제거
-        for (Iterator<Rider> riderX = chkAllowRider.iterator(); riderX.hasNext();){
-            Rider r = riderX.next();
-
-            for (Iterator<Rider> riderY = chkAllowRider.iterator(); riderY.hasNext();){
-                Rider y = riderY.next();
-
-                if (r.getId().equals(y.getId()) && r.getShared_sort() > y.getShared_sort()){
-//                    S_Rider.remove(y);
-//                    chkAllowRider.remove(y);
-                    duplicationRider.add(y);
-                }
-            }
-        }
-
-        S_Rider.removeAll(chkRejectRider);
-        S_Rider.removeAll(duplicationRider);
-
         return S_Rider;
     }
 
@@ -314,7 +274,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
                 // new android push
                 if (android.size() > 0){
                     try {
-                        System.out.println("############# 안드로이드 푸쉬");
+                        log.info("############# 안드로이드 푸쉬");
                         ArrayList<String> androidTokenValue = new ArrayList<>();
 
                         android.forEach(x -> androidTokenValue.add(x.get("push_token").toString()));
@@ -342,7 +302,7 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
                 // old android push
                 if (oldMap.size() > 0){
                     try {
-                        System.out.println("############# 구버젼 푸쉬");
+                        log.info("############# 구버젼 푸쉬");
                         ArrayList<String> oldTokenValue = new ArrayList<>();
 
                         oldMap.forEach(x -> oldTokenValue.add(x.get("push_token").toString()));

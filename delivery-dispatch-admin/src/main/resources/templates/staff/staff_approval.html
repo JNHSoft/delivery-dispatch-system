@@ -83,6 +83,19 @@
                                 <a class="button btn_blue2" th:text="${#messages.msg('reset.password')}" onclick="javascript:resetRiderPw()"/>
                             </td>
                         </tr>
+                        <tr>
+<!--                            <th th:text="${#messages.msg('list.search.sharedTitle')}"/>-->
+                            <th/>
+                            <td>
+                            </td>
+                            <th th:text="${#messages.msg('list.search.sharedTitle')}"/>
+                            <td>
+                                <select name="" class="select" id="selShared">
+                                    <option value="0" th:text="${#messages.msg('list.search.unshared')}" />
+                                    <option value="1" th:text="${#messages.msg('list.search.shared')}" />
+                                </select>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -106,7 +119,6 @@
 <script layout:fragment="script" th:inline="javascript">
     var my_store = /*[[${store}]]*/ 'my_store';
 
-    //var tmpTitle = /*[[#{statistics.4th.title}]]*/ 'tmpTitle';
     let storeName = /*[[#{store.name}]]*/ 'storeName';
     let riderLoginID = /*[[#{rider.approval.login.id}]]*/ 'riderLoginID';
     let riderName = /*[[#{rider.name}]]*/ 'riderName';
@@ -116,7 +128,6 @@
     let setting = /*[[#{gnb.setting}]]*/ 'setting';
     let approval = /*[[#{rider.approval.approval}]]*/ 'approval';
     let disapproval = /*[[#{rider.approval.disapproval}]]*/ 'approval';
-    let expDateSetting = /*[[#{rider.approval.expiry.setting}]]*/ 'expDateSetting';
     let approvalStatus = /*[[#{rider.approval.status}]]*/ 'approvalStatus';
     let waitApproval = /*[[#{rider.approval.status.wait}]]*/ 'waitApproval';
     let expiryApproval = /*[[#{rider.approval.status.expiry}]]*/ 'expiryApproval';
@@ -132,6 +143,9 @@
     let msgChangeExpDate = /*[[#{rider.message.confirm.change.expdate}]]*/ 'msgChangeExpDate';
     let msgChangeSuccess = /*[[#{rider.message.confirm.change.success}]]*/ 'msgChangeSuccess';
     let msgChangeFailed = /*[[#{rider.message.confirm.change.failed}]]*/ 'msgChangeFailed';
+
+    var alert_confirm_mod_success = /*[[#{alert.confirm.mod.success}]]*/ 'alert_confirm_mod_success';
+    var alert_address_error = /*[[#{alert.address.error}]]*/ 'alert_address_error';
 
 </script>
 </html>

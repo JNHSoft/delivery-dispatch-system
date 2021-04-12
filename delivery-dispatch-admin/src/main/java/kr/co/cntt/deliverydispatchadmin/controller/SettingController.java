@@ -1,19 +1,13 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
-import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.reason.Reason;
-import kr.co.cntt.core.model.shared.SharedRiderInfo;
-import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.admin.*;
 import kr.co.cntt.core.util.FileUtil;
@@ -59,15 +53,13 @@ public class SettingController {
     private AssignAdminService assignAdminService;
     private FileUploadAdminService fileUploadAdminService;
     private NoticeAdminService noticeAdminService;
-    private SharedInfoService sharedInfoService;
 
     @Autowired
-    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, FileUploadAdminService fileUploadAdminService, NoticeAdminService noticeAdminService, SharedInfoService sharedInfoService) {
+    public SettingController(AccountAdminService accountAdminService, AssignAdminService assignAdminService, FileUploadAdminService fileUploadAdminService, NoticeAdminService noticeAdminService) {
         this.accountAdminService = accountAdminService;
         this.assignAdminService = assignAdminService;
         this.fileUploadAdminService = fileUploadAdminService;
         this.noticeAdminService = noticeAdminService;
-        this.sharedInfoService = sharedInfoService;
     }
 
     @Autowired
@@ -370,20 +362,12 @@ public class SettingController {
 
                     alarm.setAlarmType(Integer.toString(j));
                     alarm.setOriFileName(reqFiles.get(j).getOriginalFilename());
-//                String[] tmp = reqFiles.get(j).getOriginalFilename().split("\\.");
-//                alarm.setFileName(RandomStringUtils.randomAlphanumeric(16) + "_" + LocalDateTime.now().format(dateformatter) + "." + tmp[1]);
                     alarm.setFileName(LocalDateTime.now().format(dateformatter) + "_" + reqFiles.get(j).getOriginalFilename());
                     alarm.setFileSize(Long.toString(reqFiles.get(j).getSize()));
 
                     fileUploadAdminService.alarmFileUpload(alarm);
                 }
             }
-
-//        for (MultipartFile f : reqFiles) {
-//            if (f.getSize() > 0) {
-//                files.add(f);
-//            }
-//        }
 
             if (!files.isEmpty()) {
                 MultipartFile[] fileArray = new MultipartFile[files.size()];
@@ -396,7 +380,6 @@ public class SettingController {
                 if (fileArray.length > 0) {
                     FileUtil fileUtil = new FileUtil();
                     fileUtil.fileUpload(fileArray, alarmFileUploadPath+"/");
-//                fileUtil.fileUpload(fileArray, "c:\\");
                 }
             }
         } else {
@@ -552,7 +535,7 @@ public class SettingController {
 
     @GetMapping("/noticeFileDownload")
     @CnttMethodDescription("공지사항 첨부파일 다운로드")
-    public void noticeFileDownload(HttpServletResponse response,/*Notice notice*/@RequestParam(value = "fileName", required = false) String fileName)  throws IOException {
+    public void noticeFileDownload(HttpServletResponse response, @RequestParam(value = "fileName", required = false) String fileName)  throws IOException {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Notice notice = new Notice();
         notice.setFileName(fileName);
@@ -561,202 +544,19 @@ public class SettingController {
         MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext,  notice.getFileName());
 
         File file = new File(noticeFileUploadPath + "/" + notice.getFileName());
-//        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
         if(file.exists()){
             response.setContentType(mediaType.getType());
 
-        /* "Content-Disposition : inline" will show viewable types [like images/text/pdf/anything viewable by browser] right on browser
-            while others(zip e.g) will be directly downloaded [may provide save as popup, based on your browser setting.]*/
             response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() +"\""));
-
-
-            /* "Content-Disposition : attachment" will be directly download, may provide save as popup, based on your browser setting*/
-            //response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
 
             response.setContentLength((int)file.length());
 
 
             InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
 
-            //Copy bytes from source to destination(outputstream in this example), closes both streams.
             FileCopyUtils.copy(inputStream, response.getOutputStream());
         }else{
             response.sendError(404, "잘못된 접근입니다.");
         }
-
-
-
-//        String path = String.format("%s%s", fsResource.getPath(), filename);
-
-        /*FileSystemResource resource = new FileSystemResource(noticeFileUploadPath + "/" + notice.getFileName());
-        InputStreamResource isResource = new InputStreamResource(resource.getInputStream());
-
-
-
-
-
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-
-        responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-
-        responseHeaders.set("Content-Disposition", "attachment;filename=\"" + notice.getFileName() + "\";");
-
-        responseHeaders.set("Content-Transfer-Encoding", "binary");
-
-        return new ResponseEntity<InputStreamResource>(isResource, responseHeaders, HttpStatus.OK);*/
-
-
-
-
-        /*return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
-                .contentType(mediaType)
-                .contentLength(file.length())
-                .body(resource);*/
-
-//        return "redirect:/setting-account";
-    }
-
-    /**
-     * 설정 - 매장 쉐어링에 필요한 공통 항목
-     * */
-    @ResponseBody
-    @GetMapping("/getSharedAdminInfo")
-    @CnttMethodDescription("공유 허용된 관리자 정보")
-    public List<User> getSharedAdminInfo(){
-        List<User> allowAdmin = new ArrayList<>();
-        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-
-        allowAdmin = sharedInfoService.getAllowAdminInfo(adminInfo.getAdminSeq());
-
-        return allowAdmin;
-    }
-
-    @ResponseBody
-    @GetMapping("/getSharedGroupInfo")
-    @CnttMethodDescription("공유된 관리자의 그룹 정보")
-    public List<Group> getSharedGroupInfo(@RequestParam(value ="sharedAdminID") Integer sharedAdminID){
-        if (sharedAdminID == null){
-            return new ArrayList<>();
-        }
-
-        //SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        List<Group> groupList = sharedInfoService.getSharedGroupListForAdmin(sharedAdminID);
-
-        return groupList;
-    }
-
-    @ResponseBody
-    @GetMapping("/getSharedSubGroupInfo")
-    @CnttMethodDescription("공유된 관리자의 하위 그룹 정보")
-    public List<SubGroup> getSharedSubGroupInfo(@RequestParam(value="sharedAdminID") Integer sharedAdminID,
-                                                @RequestParam(value="sharedGroupID") Integer sharedGroupID){
-        if (sharedAdminID == null || sharedGroupID == null){
-            return new ArrayList<>();
-        }
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("sharedAdminID", sharedAdminID);
-        map.put("sharedGroupID", sharedGroupID);
-
-        List<SubGroup> subGroupList = sharedInfoService.getSharedSubGroupListForAdmin(map);
-
-        return subGroupList;
-    }
-
-    @ResponseBody
-    @GetMapping("/getSharedStoreInfo")
-    @CnttMethodDescription("공유된 관리자의 매장 정보")
-    public List<Store> getSharedSubGroupInfo(@RequestParam(value="sharedAdminID") Integer sharedAdminID,
-                                             @RequestParam(value="sharedGroupID") Integer sharedGroupID,
-                                             @RequestParam(value = "sharedSubGroupID") Integer sharedSubGroupID){
-        if (sharedAdminID == null || sharedGroupID == null || sharedSubGroupID == null){
-            return new ArrayList<>();
-        }
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("sharedAdminID", sharedAdminID);
-        map.put("sharedGroupID", sharedGroupID);
-        map.put("sharedSubGroupID", sharedSubGroupID);
-
-        List<Store> subGroupList = sharedInfoService.getSharedStoreListForAdmin(map);
-
-        return subGroupList;
-    }
-
-    @ResponseBody
-    @GetMapping("/getSharedInfoList")
-    @CnttMethodDescription("공유 허용된 정보 리스트")
-    public List<SharedRiderInfo> getSharedInfoList(){
-        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-
-        List<SharedRiderInfo> riderInfos = sharedInfoService.getSharedInfoListForAdmin(adminInfo.getAdminSeq());
-
-        return riderInfos;
-    }
-
-    /**
-     * 19.12.19 Dev Start
-     * 설정 - 관리자 쉐어링 관리
-     * 다른 관리자 라이더 매핑
-     * */
-    @GetMapping("/setting-shared-admin")
-    @CnttMethodDescription("관리자 쉐어링 페이지")
-    public String sharedAdminSetting(){
-        return "/setting/setting_shared_admin";
-    }
-
-    /**
-     * 19.12.19 Dev Start
-     * 설정 - 관리자 쉐어링 관리
-     * 다른 관리자 라이더 매핑
-     * */
-    @GetMapping("/setting-shared-rider")
-    @CnttMethodDescription("라이더 쉐어링 페이지")
-    public String sharedRiderSetting(){
-        return "/setting/setting_shared_rider";
-    }
-
-    @ResponseBody
-    @PostMapping("/save-shared-rider")
-    @CnttMethodDescription("라이더 쉐어링 정보 저장")
-    public String postSaveSharedRider(@RequestParam(value = "sharedRiders")String strRider){
-        int adminID = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails()).getAdminSeq();
-
-        ObjectMapper mapper = new ObjectMapper();
-        List<SharedRiderInfo> riderInfos = new ArrayList<>();
-
-        try {
-            riderInfos = Arrays.asList(mapper.readValue(strRider, SharedRiderInfo[].class));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (riderInfos.stream()
-                .filter(x-> x.getShared_adminid() == null || x.getShared_adminid().toString() == "" || x.getGroupid() == null || x.getGroupid().toString() == "" )
-                .count() > 0){
-            return "failed";
-        }
-
-        for (SharedRiderInfo rider:riderInfos
-             ) {
-            rider.setAdminid(adminID);
-            sharedInfoService.setSharedInfoUpdate(rider);
-        }
-
-        return "success";
-    }
-
-    @ResponseBody
-    @PostMapping("/update-shared-info")
-    @CnttMethodDescription("쉐어링 정보 삭제")
-    public String postSaveSharedRider(SharedRiderInfo riderInfo){
-        int adminID = ((SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails()).getAdminSeq();
-
-        riderInfo.setAdminid(adminID);
-        sharedInfoService.setSharedInfoUpdate(riderInfo);
-
-        return "OK";
     }
 }

@@ -34,7 +34,7 @@ function getStoreOrderList() {
 
     // Call Ajax
     $.ajax({
-        url: "/getStoreOrderListAtTWKFC",
+        url: "/getStoreOrderList",
         type: "get",
         data:{
             startDate: $("#day1").val(),
@@ -63,6 +63,9 @@ function getStoreOrderList() {
                     tmpData.completedDatetime = timeSet(data[key].completedDatetime);
                     tmpData.returnDatetime = timeSet(data[key].returnDatetime);
 
+                    // 21.04.07 라이더 쉐어 유무
+                    tmpData.sharedRider = data[key].rider.sharedStatus;
+
                     myData.push(tmpData);
                 }
             }
@@ -90,7 +93,8 @@ function getStoreOrderList() {
                    {label: order_pickedup, name: 'pickedUpDatetime', width: 80, align: 'center'},
                    {label: order_arrived, name: 'arrivedDatetime', width: 80, align: 'center'},
                    {label: order_completed, name: 'completedDatetime', width: 80, align: 'center'},
-                   {label: order_return, name: 'returnDatetime', width: 80, align: 'center'}
+                   {label: order_return, name: 'returnDatetime', width: 80, align: 'center'},
+                    {label: rider_shared, name: 'sharedRider', width: 80, align: 'center'}
                    ],
                 height: 680,
                 autowidth: true,
@@ -154,7 +158,7 @@ function excelDownloadByOrderList() {
     loading.show();
 
     // ajax 통신
-    $.fileDownload("/excelDownloadByOrderListAtTWKFC",{
+    $.fileDownload("/excelDownloadByOrderList",{
         httpMethod: "get",
         data:{
             startDate: startDate,

@@ -267,7 +267,8 @@ function popUpSaveData(){
             id: approvalID,
             vehicleNumber: riderVehicle,
             code: riderCode,
-            name: riderName
+            name: riderName,
+            sharedStatus: $("#selShared").val()
         },
         dataType: "json",
         success: function (data){
@@ -302,6 +303,14 @@ function searchRiderApprovalDetail(rowID){
             $("#riderExpDate").val(data.session == undefined ? "" : dateFormat(data.session.expiryDatetime));
             $("#approvalID").val(data.id);
             $("#approvalStatus").val(data.approvalStatus);
+
+            if (data.sharedStatus == undefined){
+                $("#selShared").val("0").prop("selected", true);
+            }else{
+                //$("#selShared").val(data.sharedStatus).attr("selected", "selected");
+                $("#selShared").val(data.sharedStatus).prop("selected", true);
+            }
+
 
             $("#riderExpDate").datepicker({
                 minDate: new Date,
@@ -353,35 +362,9 @@ function checkExpDate(selectedDate, obj){
     return false;
 }
 
-// 유효기간 달력 OPEN
-function showExpDateCalendar(rowID){
-    //let date = $.datepicker.formatDate('yyyy-mm-dd', new Date);
-
-    $("#expDate" + rowID).datepicker({
-        minDate: new Date,
-        onSelect: function (selectDate, obj){
-            if(checkExpDate(selectDate, obj)){
-                updateExpDate(selectDate, rowID);
-            }
-        }
-    });
-
-    $("#expDate" + rowID).datepicker('show');
-}
-
 function dateFormat(date){
     if (date) {
         let d = new Date(date);
-        return $.datepicker.formatDate('yy-mm-dd', d);
-    } else {
-        return "-";
-    }
-}
-
-function dateFormat2(date){
-    if (date) {
-        let d = new Date(date);
-        //return $.datepicker.formatDate('mm/dd/yy', d);
         return $.datepicker.formatDate('yy-mm-dd', d);
     } else {
         return "-";

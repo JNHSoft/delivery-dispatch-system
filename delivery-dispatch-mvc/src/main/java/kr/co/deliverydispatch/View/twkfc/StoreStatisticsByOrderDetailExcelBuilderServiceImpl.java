@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component("StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl")
-public class StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl extends CommExcel {
+@Component("StoreStatisticsByOrderDetailExcelBuilderServiceImpl")
+public class StoreStatisticsByOrderDetailExcelBuilderServiceImpl extends CommExcel {
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception{
         locale = LocaleContextHolder.getLocale();
@@ -30,8 +30,8 @@ public class StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl extends 
         String fileName = "[" + dTime + "]";
         SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
-        if(request.getRequestURI().matches("/excelDownloadByOrderListAtTWKFC")) {
-            List<Order> orderStatisticsByStoreList = (List<Order>) model.get("getStoreStatisticsByOrderListAtTWKFCExcel");
+        if(request.getRequestURI().matches("/excelDownloadByOrderList")) {
+            List<Order> orderStatisticsByStoreList = (List<Order>) model.get("getStoreStatisticsByOrderListExcel");
             setStoreStatisticsByOrderListExcel(workbook, orderStatisticsByStoreList);
             fileName += " OrderList_Report.xlsx";
         }
@@ -147,6 +147,12 @@ public class StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl extends 
             addTitle.setCellValue(messageSource.getMessage("order.return",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 라이더 공유 유무
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("list.search.shared",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             rowNum++;
         }
 
@@ -222,6 +228,11 @@ public class StoreStatisticsByOrderDetailAtTWKFCExcelBuilderServiceImpl extends 
             // 복귀 시간
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getReturnDatetime()));
+            cell.setCellStyle(dataCellStyle);
+
+            // 라이더 공유
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(changeType(String.class, storeStatisticsByOrderList.get(i).getRider().getSharedStatus()));
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
