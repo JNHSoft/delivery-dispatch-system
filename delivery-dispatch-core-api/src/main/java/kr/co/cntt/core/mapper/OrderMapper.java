@@ -139,7 +139,7 @@ public interface OrderMapper {
      */
     List<Reason> selectOrderFirstAssignmentReason(Common common);
 
-    List<Map<String, String>> selectPushToken(SubGroup subGroup);
+    List<Map> selectPushToken(SubGroup subGroup);
 
     List<Order> selectFooterOrders(Order order);
 
