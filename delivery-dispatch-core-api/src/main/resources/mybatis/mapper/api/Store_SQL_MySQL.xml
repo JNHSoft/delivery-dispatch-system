@@ -1496,7 +1496,7 @@
                         else NULL
                     end
                 ) /
-                (TRUNCATE((sum(
+                (round(sum(
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
@@ -1508,7 +1508,7 @@
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then timestampdiff(MINUTE, picked_up_datetime, return_datetime)
                         else 0
-                    end) / 30 ),0) /2) AS tplh
+                    end) / 60, 2)) AS tplh
                 ,sum(
                     case
                         when	 assigned_datetime is not null
@@ -1522,7 +1522,7 @@
                         then total_price
                         else 0
                     end
-                ) / (TRUNCATE((sum(
+                ) / (round(sum(
                     case
                         when	 assigned_datetime is not null
                             and	 picked_up_datetime is not null
@@ -1534,7 +1534,7 @@
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then timestampdiff(MINUTE, picked_up_datetime, return_datetime)
                         else 0
-                    end) / 30 ),0) /2) AS spmh
+                    end) / 60, 2)) AS spmh
                 ,sum(
                     case
                         when	 assigned_datetime is not null
