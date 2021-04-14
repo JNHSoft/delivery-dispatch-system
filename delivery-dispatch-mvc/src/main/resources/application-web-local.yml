@@ -3,7 +3,7 @@ spring:
   profiles: web-local
   profiles.include: web
   mvc:
-    locale: zh_TW
+    locale: ko_KR
 
 # logging
 logging:
@@ -29,16 +29,16 @@ datasource:
 #    username: devuser
 #    password: devuserpw!
 
-#    url: jdbc:mysql://home.kaifalife.com:33306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
-#    username: devuser
-#    password: devuserpw!
+    url: jdbc:mysql://home.kaifalife.com:33306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: devuser
+    password: devuserpw!
 
 #    url: jdbc:mysql://104.199.200.242:3306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
 #    username: devuser
 #    password: devuserpw!
-    url: jdbc:mysql://104.199.182.29:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
-    username: twuser
-    password: twuserpw!
+#    url: jdbc:mysql://104.199.182.29:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+#    username: twuser
+#    password: twuserpw!
 
 
 ---
