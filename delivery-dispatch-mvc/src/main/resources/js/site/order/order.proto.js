@@ -406,7 +406,8 @@ DDELib.Orders.prototype = {
         // 픽업 , 도착 , 복귀
         tmpdata.time5 = checkTime(ev.pickedUpDatetime, ev.completedDatetime);
         tmpdata.time6 = this.getPickupTime(ev);
-        tmpdata.time7 = this.getReserveTime(ev);
+        // 21-04-14 예약 유무에 따른 빨간색 표기 삭제
+        tmpdata.time7 = timeSet2(ev.reservationDatetime);
         // 2020.05.12 고객 집 앞 도착 시간
         tmpdata.time8 = (!ev.arrivedDatetime )?"-":timeSet2(ev.arrivedDatetime);
 
