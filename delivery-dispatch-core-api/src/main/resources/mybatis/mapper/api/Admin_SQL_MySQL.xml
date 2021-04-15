@@ -129,6 +129,7 @@
 			<result property="name" column="rider_name" />
 			<result property="phone" column="rider_phone" />
 			<result property="sharedStatus" column="rider_shared_status" />
+			<result property="loginId" column="rider_login_id" />
 		</association>
 
 		<association property="payment" column="payment" javaType="kr.co.cntt.core.model.payment.Payment">
@@ -1150,6 +1151,8 @@
 		, TBO.longitude
 		, TBO.distance
 		,case when TBR.shared_flag = 1 then 'Y' else 'N' end	as rider_shared_status
+
+		,TBR.login_id				as rider_login_id
 		FROM TB_ORDER AS TBO
 
 		LEFT JOIN
