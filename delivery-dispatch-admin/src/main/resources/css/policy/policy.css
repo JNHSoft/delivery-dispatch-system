@@ -1,0 +1,71 @@
+@charset "UTF-8";
+
+html{
+    font-size: 62.5%;
+    font-family: "KaiTi";
+}
+
+@media all {
+    html{font-size: 50%;}
+}
+
+.policy{
+    padding: 0px;
+    display: inline-block;
+    width: 100vw;
+    height: 100vh;
+}
+
+.policy-body{
+    min-width: 330px;
+    width: 60vw;
+    height: 100vh;
+}
+
+.policy-banner{
+    padding: 5px;
+    margin: 0px;
+}
+
+.policy-baner-img{
+    width: 100%;
+    height: auto;
+}
+
+.policy-content{
+    height: 60vh;
+}
+
+.policy-title{
+    padding: 0px;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.policy-detail{
+    border: 1px solid black;
+    margin-top: 0px;
+    padding: 10px;
+    text-align: left;
+    max-height: 77vh;
+    overflow: auto;
+    font-size: 1.5rem;
+    word-wrap:break-word;
+    word-break:break-all;
+}
+
+.font-bold {
+    font-weight: bolder;
+}
+
+.font-italic{
+    font-style: italic;
+}
+
+.text-overline{
+    text-decoration: overline;
+}
+
+.text-underline{
+    text-decoration: underline;
+}
