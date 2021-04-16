@@ -1,12 +1,14 @@
 @charset "UTF-8";
 
-html{
-    font-size: 62.5%;
-    font-family: "KaiTi";
+@font-face {
+    font-family: "Ma Shan Zheng";
+    src: local('Ma Shan Zheng');
+    src: url("../fonts/chinese/MaShanZheng-Regular.woff") format('woff');
 }
 
-@media all {
-    html{font-size: 50%;}
+html{
+    font-family: "Ma Shan Zheng" !important;
+    font-size: 62.5%;
 }
 
 .policy{
@@ -28,18 +30,21 @@ html{
 }
 
 .policy-baner-img{
-    width: 100%;
+    width: 80%;
     height: auto;
+    margin: 0px;
+    padding: 0px;
 }
 
 .policy-content{
-    height: 60vh;
+    height: 60%;
 }
 
 .policy-title{
     padding: 0px;
-    margin-bottom: 10px;
-    font-size: 2rem;
+    margin: 0px 0px 10px 0px;
+    font-size: 1.3rem;
+    word-break: keep-all;
 }
 
 .policy-detail{
@@ -49,7 +54,7 @@ html{
     text-align: left;
     max-height: 77vh;
     overflow: auto;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     word-wrap:break-word;
     word-break:break-all;
 }
