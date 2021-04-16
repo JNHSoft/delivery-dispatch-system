@@ -1,13 +1,7 @@
 @charset "UTF-8";
 
-@font-face {
-    font-family: "Ma Shan Zheng";
-    src: local('Ma Shan Zheng');
-    src: url("../fonts/chinese/MaShanZheng-Regular.woff") format('woff');
-}
-
 html{
-    font-family: "Ma Shan Zheng" !important;
+    font-family: "FontAwesome" !important;
     font-size: 62.5%;
 }
 
