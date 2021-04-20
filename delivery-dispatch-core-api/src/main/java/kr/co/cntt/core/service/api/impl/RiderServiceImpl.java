@@ -752,30 +752,46 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 log.error(e.getMessage());
             }
 
-            RiderRouteInfo route = new RiderRouteInfo();
-            route.setRouteRank(1);
-            route.setRouteType(0);
-            route.setId(riderInfo.getId());
-            route.setName(riderInfo.getName());
-            route.setRouteId(storeInfo.getId());
-            route.setRouteName(storeInfo.getStoreRealName());
-            route.setAddress(storeInfo.getAddress());
-            route.setLatitude(storeInfo.getLatitude());
-            route.setLongitude(storeInfo.getLongitude());
-            route.setDistance(String.valueOf(iDistance));
-            route.setBrandCode(storeInfo.getBrandCode());
-            route.setBrandName(storeInfo.getBrandName());
+            // 매장에 대한 주문 개수를 구한다.
+            List<String> orderID = new ArrayList<>();
 
-            usedStoreId.add(storeInfo.getId());
+            orderList.stream().filter(x -> x.getStoreId().equals(storeInfo.getId())).forEach(x -> orderID.add(x.getRegOrderId()));
 
-            routeInfoList.add(route);
-            log.info("싸이클 정보 : " + riderInfo.getId() + " #### 픽업 이후의 상태의 스토어 정보를 등록하였습니다.");
+            log.info("싸이클 정보 : 매장정보 [" + storeInfo.getId() + " # " + storeInfo.getStoreRealName() + "]의 주문 개수 : [" + orderList.size() + "]");
+
+            for (String strID : orderID){
+                RiderRouteInfo route = new RiderRouteInfo();
+                route.setRouteRank(1);
+                route.setRouteType(0);
+                route.setId(riderInfo.getId());
+                route.setName(riderInfo.getName());
+                //route.setRouteId(storeInfo.getId());
+                route.setRouteId(strID);
+                route.setRouteName(storeInfo.getStoreRealName());
+                route.setAddress(storeInfo.getAddress());
+                route.setLatitude(storeInfo.getLatitude());
+                route.setLongitude(storeInfo.getLongitude());
+                route.setDistance(String.valueOf(iDistance));
+                route.setBrandCode(storeInfo.getBrandCode());
+                route.setBrandName(storeInfo.getBrandName());
+
+                // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                route.setOrder(new Order());
+                route.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strID)).findFirst().get().getStatus());
+
+                usedStoreId.add(storeInfo.getId());
+
+                routeInfoList.add(route);
+            }
+
+            log.info("싸이클 정보 : " + riderInfo.getId() + " #### 픽업 이후의 상태의 스토어 정보를 등록하였습니다. => [" + routeInfoList + "]");
         }
 
         int loopCount = storeList.size() + orderList.size();
 
         // 전체 순서를 정렬한다.
         for (int i = 0; i < loopCount; i++) {
+            log.info("싸이클 정보 : " + riderInfo.getId() + "#### routeInfo의 개수를 구합니다 => " + routeInfoList.size());
             // 만약 첫 픽업지가 정해진 경우라면, 처음 지정은 건너뛴다.
             if (routeInfoList.size() > 0 && i == 0){
                 log.info("싸이클 정보 : " + riderInfo.getId() + " #### 첫번째 픽업지가 설정되어 있습니다.");
@@ -794,7 +810,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지를 찾는 중입니다.");
 
                 for (Store store:storeList
-                     ) {
+                ) {
                     int distance = 0;
 
                     try{
@@ -814,21 +830,68 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 }
 
                 if (minStore != null){
-                    route.setRouteType(0);
-                    route.setId(riderInfo.getId());
-                    route.setName(riderInfo.getName());
-                    route.setRouteId(minStore.getId());
-                    route.setRouteName(minStore.getStoreRealName());
-                    route.setAddress(minStore.getAddress());
-                    route.setLatitude(minStore.getLatitude());
-                    route.setLongitude(minStore.getLongitude());
-                    route.setDistance(String.valueOf(minDistance));
-                    route.setBrandCode(minStore.getBrandCode());
-                    route.setBrandName(minStore.getBrandName());
+                    // 주문번호로 변경
+                    // 매장에 대한 주문 개수를 구한다.
+                    List<String> orderID = new ArrayList<>();
+                    String minStoreID = minStore.getId();
 
-                    routeInfoList.add(route);
+                    orderList.stream().filter(x -> x.getStoreId().equals(minStoreID)).forEach(x -> orderID.add(x.getRegOrderId()));
 
-                    usedStoreId.add(minStore.getId());
+                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지 등록을 진행합니다. 매장에 대한 주문 개수. => " + orderID.size());
+
+                    for (int j = 0; j < orderID.size(); j++) {
+                        String strOrderID = orderID.get(j);                     // 21-04-20 요청사항에 따라, 픽업지에도 주문 상태를 넣어줘야한다.
+
+                        if (j != orderID.size() - 1){
+                            // 중복 매장 개수를 등록해야하는 경우를 위해 작업
+                            RiderRouteInfo addRoute = new RiderRouteInfo();
+                            addRoute.setRouteRank(route.getRouteRank());
+
+                            addRoute.setRouteType(0);
+                            addRoute.setId(riderInfo.getId());
+                            addRoute.setName(riderInfo.getName());
+                            //route.setRouteId(minStore.getId());
+                            addRoute.setRouteId(strOrderID);
+                            addRoute.setRouteName(minStore.getStoreRealName());
+                            addRoute.setAddress(minStore.getAddress());
+                            addRoute.setLatitude(minStore.getLatitude());
+                            addRoute.setLongitude(minStore.getLongitude());
+                            addRoute.setDistance(String.valueOf(minDistance));
+                            addRoute.setBrandCode(minStore.getBrandCode());
+                            addRoute.setBrandName(minStore.getBrandName());
+
+                            // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                            addRoute.setOrder(new Order());
+                            addRoute.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strOrderID)).findFirst().get().getStatus());
+
+
+                            routeInfoList.add(addRoute);
+
+                            addRoute = null;
+                        }else{
+                            route.setRouteType(0);
+                            route.setId(riderInfo.getId());
+                            route.setName(riderInfo.getName());
+                            //route.setRouteId(minStore.getId());
+                            //route.setRouteId(orderID.get(j));
+                            route.setRouteId(strOrderID);
+                            route.setRouteName(minStore.getStoreRealName());
+                            route.setAddress(minStore.getAddress());
+                            route.setLatitude(minStore.getLatitude());
+                            route.setLongitude(minStore.getLongitude());
+                            route.setDistance(String.valueOf(minDistance));
+                            route.setBrandCode(minStore.getBrandCode());
+                            route.setBrandName(minStore.getBrandName());
+
+                            // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                            route.setOrder(new Order());
+                            route.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strOrderID)).findFirst().get().getStatus());
+
+                            routeInfoList.add(route);
+                        }
+
+                        usedStoreId.add(minStore.getId());
+                    }
 
                     log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지 등록을 진행했습니다. => " + route.getRouteId());
                 }
@@ -838,13 +901,14 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             else{
                 // 이전 위치에 대한 정보를 가져온다.
                 RiderRouteInfo beforeRoute = routeInfoList.get(i - 1);
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 이전 픽업지 ID => " + route.getRouteId());
+                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 이전 픽업지 ID(종류) => " + beforeRoute.getRouteId() + "(" + beforeRoute.getRouteType() + ")");
 
                 int beforeStoreDistance = -1;
                 int beforeOrderDistance = -1;
 
 
                 // 스토어 정보를 구한다.
+                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 정보 구하기 시작");
                 for (Store store:storeList){
                     // 사용된 Store 정보라면 넘어간다.
                     if (usedStoreId.stream().filter(x -> x.equals(store.getId())).count() > 0){
@@ -874,14 +938,19 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     }
                 }
 
+                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 정보 구하기 종료");
+
+                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 정보 구하기 시작");
                 // 주문 정보를 가져온다.
                 for (Order order:orderList) {
                     if (usedOrderId.stream().filter(x -> x.equals(order.getId())).count() > 0){
+                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 사용된 주문 번호입니다.");
                         continue;
                     }
 
                     // 경로 상에서 스토어를 지난 후의 주문인지 확인 한다.
-                    if (!(routeInfoList.stream().filter(x -> x.getRouteId().equals(order.getStoreId())).count() > 0)){
+                    if (!(routeInfoList.stream().filter(x -> x.getRouteId().equals(order.getRegOrderId()) && x.getRouteType().equals(0)).count() > 0)){
+                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문에 대한 스토어가 안 지났습니다.");
                         continue;
                     }
 
@@ -907,8 +976,13 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     }
                 }
 
+                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 정보 구하기 종료");
+
+                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 매장과 주문 정보에 대한 내용 등록 시작");
+
                 // 주문 목적지의 위치가 가까운 경우 다음 루트는 주문 경로가 되어야한다.
                 if ((beforeStoreDistance > beforeOrderDistance && beforeOrderDistance > -1) || beforeStoreDistance == -1){
+                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문지 등록");
                     // 주문정보입니다.
                     route.setRouteType(1);
                     route.setId(riderInfo.getId());
@@ -929,23 +1003,69 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 }
                 // 스토어 픽업지가 가까운 경우 다음 루트는 매장 경로가 되어야한다.
                 else if((beforeStoreDistance <= beforeOrderDistance && beforeStoreDistance > -1) || beforeOrderDistance == -1){
-                    route.setRouteType(0);
-                    route.setId(riderInfo.getId());
-                    route.setName(riderInfo.getName());
-                    route.setRouteId(minStore.getId());
-                    route.setRouteName(minStore.getStoreRealName());
-                    route.setAddress(minStore.getAddress());
-                    route.setLatitude(minStore.getLatitude());
-                    route.setLongitude(minStore.getLongitude());
-                    route.setDistance(String.valueOf(beforeStoreDistance));
-                    route.setBrandCode(minStore.getBrandCode());
-                    route.setBrandName(minStore.getBrandName());
+                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 목적지 등록");
+                    // 매장에 대한 주문 개수를 구한다.
+                    List<String> orderID = new ArrayList<>();
+                    String minStoreID = minStore.getId();
 
-                    usedStoreId.add(minStore.getId());
-                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 목적지 등록 => " + route.getRouteId());
+                    orderList.stream().filter(x -> x.getStoreId().equals(minStoreID)).forEach(x -> orderID.add(x.getRegOrderId()));
+
+                    for (int j = 0; j < orderID.size(); j++) {
+                        String strOrderID = orderID.get(j);                     // 21-04-20 요청사항에 따라, 픽업지에도 주문 상태를 넣어줘야한다.
+                        if (j != orderID.size() - 1){
+                            // 중복 매장 개수를 등록해야하는 경우를 위해 작업
+                            RiderRouteInfo addRoute = new RiderRouteInfo();
+                            addRoute.setRouteRank(route.getRouteRank());
+
+                            addRoute.setRouteType(0);
+                            addRoute.setId(riderInfo.getId());
+                            addRoute.setName(riderInfo.getName());
+                            //route.setRouteId(minStore.getId());
+                            addRoute.setRouteId(orderID.get(j));
+                            addRoute.setRouteName(minStore.getStoreRealName());
+                            addRoute.setAddress(minStore.getAddress());
+                            addRoute.setLatitude(minStore.getLatitude());
+                            addRoute.setLongitude(minStore.getLongitude());
+                            addRoute.setDistance(String.valueOf(beforeStoreDistance));
+                            addRoute.setBrandCode(minStore.getBrandCode());
+                            addRoute.setBrandName(minStore.getBrandName());
+
+                            // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                            addRoute.setOrder(new Order());
+                            addRoute.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strOrderID)).findFirst().get().getStatus());
+
+                            routeInfoList.add(addRoute);
+
+                            addRoute = null;
+                        }else{
+                            route.setRouteType(0);
+                            route.setId(riderInfo.getId());
+                            route.setName(riderInfo.getName());
+                            //route.setRouteId(minStore.getId());
+                            route.setRouteId(orderID.get(j));
+                            route.setRouteName(minStore.getStoreRealName());
+                            route.setAddress(minStore.getAddress());
+                            route.setLatitude(minStore.getLatitude());
+                            route.setLongitude(minStore.getLongitude());
+                            route.setDistance(String.valueOf(beforeStoreDistance));
+                            route.setBrandCode(minStore.getBrandCode());
+                            route.setBrandName(minStore.getBrandName());
+
+                            // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                            route.setOrder(new Order());
+                            route.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strOrderID)).findFirst().get().getStatus());
+
+                        }
+
+                        usedStoreId.add(minStore.getId());
+                    }
+
+                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 목적지 등록 (개수) => " + minStore.getId() + "(" + orderID.size() + ")");
                 }
 
                 routeInfoList.add(route);
+
+                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 매장과 주문 정보에 대한 내용 등록 완료");
             }
         }
 
@@ -955,6 +1075,260 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         log.info("싸이클 정보 : " + riderInfo.getId() + " #### 최종 결과물 => " + resultMap);
 
         return resultMap;
+//        Map<String, Object> resultMap = new HashMap<>();
+//
+//        // 라이더 정보 체크
+//        if (StringUtils.isEmpty(rider.getToken()) || StringUtils.isEmpty(rider.getLatitude()) || StringUtils.isEmpty(rider.getLongitude())){
+//            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
+//        }
+//
+//        Rider riderInfo = riderMapper.getRiderInfo(rider);
+//        List<Order> orderList = riderMapper.getOrderForRider(rider);
+//
+//        if (orderList.size() < 1){
+//            log.info("싸이클 정보 : " + riderInfo.getId() + " #### 라이더에게 배정된 주문이 없습니다.");
+//            throw new AppTrException(getMessage(ErrorCodeEnum.ERR0001), ErrorCodeEnum.ERR0001.name());
+//        }
+//
+//        List<String> storeIdList = new ArrayList<>();
+//        List<String> usedStoreId = new ArrayList<>();
+//        List<String> usedOrderId = new ArrayList<>();
+//
+//        Misc misc = new Misc();
+//
+//        for (Order o: orderList){
+//            storeIdList.add(o.getStoreId());
+//        }
+//
+//        List<Store> storeList = riderMapper.getStoreInfoAtOrder(storeIdList.toArray(new String[storeIdList.size()]));
+//
+//        List<RiderRouteInfo> routeInfoList = new ArrayList<>();
+//
+//        List<Order> nonAssignedOrderList = orderList.stream().filter(x -> !x.getStatus().equals("1")).collect(Collectors.toList());
+//
+//        // 배정 이후의 개수가 존재한다면, 관련 스토어의 순서를 정렬한다.
+//        if (nonAssignedOrderList != null && nonAssignedOrderList.size() > 0){
+//            // 픽업 시간이 빠른 순으로 정렬 (처음 1개의 데이터만 추출
+//            Order firstOrder = nonAssignedOrderList.stream()
+//                    .sorted(Comparator.comparing(Order::getPickedUpDatetime, Comparator.nullsLast(Comparator.naturalOrder())))
+//                    .findFirst().get();
+//            Store storeInfo = storeList.stream().filter(x -> x.getId().equals(firstOrder.getStoreId())).findFirst().get();
+//
+//            log.info("싸이클 정보 : " + riderInfo.getId() + " #### 픽업 이후의 상태의 주문이 존재합니다. => " + firstOrder.getId() + " ## " + firstOrder.getRegOrderId());
+//
+//            // 현재 라이더 위치에서 스토어 간의 거리를 구한다
+//            int iDistance = 0;
+//
+//            try{
+//                iDistance = misc.getHaversine(rider.getLatitude(), rider.getLongitude(), storeInfo.getLatitude(), storeInfo.getLongitude());
+//            }catch (Exception e){
+//                log.info("싸이클 정보 : " + riderInfo.getId() + " #### 거리 도출 중 오류 발생");
+//                log.error(e.getMessage());
+//            }
+//
+//            RiderRouteInfo route = new RiderRouteInfo();
+//            route.setRouteRank(1);
+//            route.setRouteType(0);
+//            route.setId(riderInfo.getId());
+//            route.setName(riderInfo.getName());
+//            route.setRouteId(storeInfo.getId());
+//            route.setRouteName(storeInfo.getStoreRealName());
+//            route.setAddress(storeInfo.getAddress());
+//            route.setLatitude(storeInfo.getLatitude());
+//            route.setLongitude(storeInfo.getLongitude());
+//            route.setDistance(String.valueOf(iDistance));
+//            route.setBrandCode(storeInfo.getBrandCode());
+//            route.setBrandName(storeInfo.getBrandName());
+//
+//            usedStoreId.add(storeInfo.getId());
+//
+//            routeInfoList.add(route);
+//            log.info("싸이클 정보 : " + riderInfo.getId() + " #### 픽업 이후의 상태의 스토어 정보를 등록하였습니다.");
+//        }
+//
+//        int loopCount = storeList.size() + orderList.size();
+//
+//        // 전체 순서를 정렬한다.
+//        for (int i = 0; i < loopCount; i++) {
+//            // 만약 첫 픽업지가 정해진 경우라면, 처음 지정은 건너뛴다.
+//            if (routeInfoList.size() > 0 && i == 0){
+//                log.info("싸이클 정보 : " + riderInfo.getId() + " #### 첫번째 픽업지가 설정되어 있습니다.");
+//                continue;
+//            }
+//
+//            // 다음 순번에 넣을 정보를 저장해놓은다.
+//            Store minStore = null;
+//            Order minOrder = null;
+//            RiderRouteInfo route = new RiderRouteInfo();
+//            route.setRouteRank(i + 1);
+//
+//            // 첫 픽업지가 정해지지 않은 경우도 있을 수 있으므로
+//            if (i == 0){
+//                int minDistance = -1;
+//                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지를 찾는 중입니다.");
+//
+//                for (Store store:storeList
+//                     ) {
+//                    int distance = 0;
+//
+//                    try{
+//                        distance = misc.getHaversine(rider.getLatitude(), rider.getLongitude(), store.getLatitude(), store.getLongitude());
+//                    } catch (Exception e){
+//                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 거리 계산 중 오류 발생.");
+//                        log.error(e.getMessage());
+//                    }
+//
+//                    if (minDistance == -1){
+//                        minDistance = distance;
+//                        minStore = store;
+//                    }else{
+//                        minDistance = Integer.min(minDistance, distance);
+//                        minStore = store;
+//                    }
+//                }
+//
+//                if (minStore != null){
+//                    route.setRouteType(0);
+//                    route.setId(riderInfo.getId());
+//                    route.setName(riderInfo.getName());
+//                    route.setRouteId(minStore.getId());
+//                    route.setRouteName(minStore.getStoreRealName());
+//                    route.setAddress(minStore.getAddress());
+//                    route.setLatitude(minStore.getLatitude());
+//                    route.setLongitude(minStore.getLongitude());
+//                    route.setDistance(String.valueOf(minDistance));
+//                    route.setBrandCode(minStore.getBrandCode());
+//                    route.setBrandName(minStore.getBrandName());
+//
+//                    routeInfoList.add(route);
+//
+//                    usedStoreId.add(minStore.getId());
+//
+//                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지 등록을 진행했습니다. => " + route.getRouteId());
+//                }
+//
+//            }
+//            // 처음 픽업지가 정해진 이후에 다음 목적지가 어디인지 구한다.
+//            else{
+//                // 이전 위치에 대한 정보를 가져온다.
+//                RiderRouteInfo beforeRoute = routeInfoList.get(i - 1);
+//                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 이전 픽업지 ID => " + route.getRouteId());
+//
+//                int beforeStoreDistance = -1;
+//                int beforeOrderDistance = -1;
+//
+//
+//                // 스토어 정보를 구한다.
+//                for (Store store:storeList){
+//                    // 사용된 Store 정보라면 넘어간다.
+//                    if (usedStoreId.stream().filter(x -> x.equals(store.getId())).count() > 0){
+//                        continue;
+//                    }
+//
+//                    int currentStoreDistance = 0;
+//
+//                    try{
+//                        currentStoreDistance = misc.getHaversine(beforeRoute.getLatitude(), beforeRoute.getLongitude(), store.getLatitude(), store.getLongitude());
+//                    }catch (Exception e){
+//                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 거리 계산 중 오류 발생");
+//                        log.error(e.getMessage());
+//                    }
+//
+//                    // 비교할 이전 정보가 없는 경우, 최초 스토어 정보를 저장하고 넘어간다.
+//                    if (minStore == null){
+//                        minStore = store;
+//                        beforeStoreDistance = currentStoreDistance;
+//                        continue;
+//                    }
+//
+//                    // 이전 스토어와 현재 스토어 간의 정보를 비교한다.
+//                    if (beforeStoreDistance > currentStoreDistance){
+//                        minStore = store;
+//                        beforeStoreDistance = currentStoreDistance;
+//                    }
+//                }
+//
+//                // 주문 정보를 가져온다.
+//                for (Order order:orderList) {
+//                    if (usedOrderId.stream().filter(x -> x.equals(order.getId())).count() > 0){
+//                        continue;
+//                    }
+//
+//                    // 경로 상에서 스토어를 지난 후의 주문인지 확인 한다.
+//                    if (!(routeInfoList.stream().filter(x -> x.getRouteId().equals(order.getStoreId())).count() > 0)){
+//                        continue;
+//                    }
+//
+//                    int currentOrderDistance = 0;
+//
+//                    try{
+//                        currentOrderDistance = misc.getHaversine(beforeRoute.getLatitude(), beforeRoute.getLongitude(), order.getLatitude(), order.getLongitude());
+//                    }catch (Exception e){
+//                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 거리 계산 중 오류발생");
+//                        log.error(e.getMessage());
+//                    }
+//
+//                    // 비교할 이전 정보가 없는 경우, 최초 주문 정보를 저장하고 넘어간다.
+//                    if (minOrder == null){
+//                        minOrder = order;
+//                        beforeOrderDistance = currentOrderDistance;
+//                        continue;
+//                    }
+//
+//                    if (beforeOrderDistance > currentOrderDistance){
+//                        minOrder = order;
+//                        beforeOrderDistance = currentOrderDistance;
+//                    }
+//                }
+//
+//                // 주문 목적지의 위치가 가까운 경우 다음 루트는 주문 경로가 되어야한다.
+//                if ((beforeStoreDistance > beforeOrderDistance && beforeOrderDistance > -1) || beforeStoreDistance == -1){
+//                    // 주문정보입니다.
+//                    route.setRouteType(1);
+//                    route.setId(riderInfo.getId());
+//                    route.setName(riderInfo.getName());
+//                    route.setRouteId(minOrder.getRegOrderId());
+//                    route.setAddress(minOrder.getAddress());
+//                    route.setLatitude(minOrder.getLatitude());
+//                    route.setLongitude(minOrder.getLongitude());
+//                    route.setReservationDatetime(minOrder.getReservationDatetime());
+//                    route.setDistance(String.valueOf(beforeOrderDistance));
+//                    route.setBrandCode(minOrder.getStore().getBrandCode());
+//                    route.setBrandName(minOrder.getStore().getBrandName());
+//                    route.setOrder(new Order());
+//                    route.getOrder().setStatus(minOrder.getStatus());
+//
+//                    usedOrderId.add(minOrder.getId());
+//                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 목적지 등록 => " + route.getRouteId());
+//                }
+//                // 스토어 픽업지가 가까운 경우 다음 루트는 매장 경로가 되어야한다.
+//                else if((beforeStoreDistance <= beforeOrderDistance && beforeStoreDistance > -1) || beforeOrderDistance == -1){
+//                    route.setRouteType(0);
+//                    route.setId(riderInfo.getId());
+//                    route.setName(riderInfo.getName());
+//                    route.setRouteId(minStore.getId());
+//                    route.setRouteName(minStore.getStoreRealName());
+//                    route.setAddress(minStore.getAddress());
+//                    route.setLatitude(minStore.getLatitude());
+//                    route.setLongitude(minStore.getLongitude());
+//                    route.setDistance(String.valueOf(beforeStoreDistance));
+//                    route.setBrandCode(minStore.getBrandCode());
+//                    route.setBrandName(minStore.getBrandName());
+//
+//                    usedStoreId.add(minStore.getId());
+//                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 목적지 등록 => " + route.getRouteId());
+//                }
+//
+//                routeInfoList.add(route);
+//            }
+//        }
+//
+//        resultMap.put("routeCount", routeInfoList.size());
+//        resultMap.put("routeInfo", routeInfoList);
+//
+//        log.info("싸이클 정보 : " + riderInfo.getId() + " #### 최종 결과물 => " + resultMap);
+//
+//        return resultMap;
     }
 
     /**
@@ -1036,6 +1410,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 route.setBrandCode(storeInfo.getBrandCode());
                 route.setBrandName(storeInfo.getBrandName());
 
+                // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                route.setOrder(new Order());
+                route.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strID)).findFirst().get().getStatus());
+
                 usedStoreId.add(storeInfo.getId());
 
                 routeInfoList.add(route);
@@ -1097,6 +1475,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지 등록을 진행합니다. 매장에 대한 주문 개수. => " + orderID.size());
 
                     for (int j = 0; j < orderID.size(); j++) {
+                        String strOrderID = orderID.get(j);                     // 21-04-20 요청사항에 따라, 픽업지에도 주문 상태를 넣어줘야한다.
+
                         if (j != orderID.size() - 1){
                             // 중복 매장 개수를 등록해야하는 경우를 위해 작업
                             RiderRouteInfo addRoute = new RiderRouteInfo();
@@ -1106,7 +1486,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             addRoute.setId(riderInfo.getId());
                             addRoute.setName(riderInfo.getName());
                             //route.setRouteId(minStore.getId());
-                            addRoute.setRouteId(orderID.get(j));
+                            addRoute.setRouteId(strOrderID);
                             addRoute.setRouteName(minStore.getStoreRealName());
                             addRoute.setAddress(minStore.getAddress());
                             addRoute.setLatitude(minStore.getLatitude());
@@ -1114,6 +1494,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             addRoute.setDistance(String.valueOf(minDistance));
                             addRoute.setBrandCode(minStore.getBrandCode());
                             addRoute.setBrandName(minStore.getBrandName());
+
+                            // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                            addRoute.setOrder(new Order());
+                            addRoute.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strOrderID)).findFirst().get().getStatus());
+
 
                             routeInfoList.add(addRoute);
 
@@ -1123,7 +1508,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             route.setId(riderInfo.getId());
                             route.setName(riderInfo.getName());
                             //route.setRouteId(minStore.getId());
-                            route.setRouteId(orderID.get(j));
+                            //route.setRouteId(orderID.get(j));
+                            route.setRouteId(strOrderID);
                             route.setRouteName(minStore.getStoreRealName());
                             route.setAddress(minStore.getAddress());
                             route.setLatitude(minStore.getLatitude());
@@ -1131,6 +1517,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             route.setDistance(String.valueOf(minDistance));
                             route.setBrandCode(minStore.getBrandCode());
                             route.setBrandName(minStore.getBrandName());
+
+                            // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                            route.setOrder(new Order());
+                            route.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strOrderID)).findFirst().get().getStatus());
 
                             routeInfoList.add(route);
                         }
@@ -1256,6 +1646,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     orderList.stream().filter(x -> x.getStoreId().equals(minStoreID)).forEach(x -> orderID.add(x.getRegOrderId()));
 
                     for (int j = 0; j < orderID.size(); j++) {
+                        String strOrderID = orderID.get(j);                     // 21-04-20 요청사항에 따라, 픽업지에도 주문 상태를 넣어줘야한다.
                         if (j != orderID.size() - 1){
                             // 중복 매장 개수를 등록해야하는 경우를 위해 작업
                             RiderRouteInfo addRoute = new RiderRouteInfo();
@@ -1274,6 +1665,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             addRoute.setBrandCode(minStore.getBrandCode());
                             addRoute.setBrandName(minStore.getBrandName());
 
+                            // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                            addRoute.setOrder(new Order());
+                            addRoute.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strOrderID)).findFirst().get().getStatus());
+
                             routeInfoList.add(addRoute);
 
                             addRoute = null;
@@ -1290,6 +1685,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                             route.setDistance(String.valueOf(beforeStoreDistance));
                             route.setBrandCode(minStore.getBrandCode());
                             route.setBrandName(minStore.getBrandName());
+
+                            // 21-04-20 스토어에도 주문 상태 값을 넣어달라는 요청으로 인하여 상태값 주임
+                            route.setOrder(new Order());
+                            route.getOrder().setStatus(orderList.stream().filter(x -> x.getRegOrderId().equals(strOrderID)).findFirst().get().getStatus());
+
                         }
 
                         usedStoreId.add(minStore.getId());
