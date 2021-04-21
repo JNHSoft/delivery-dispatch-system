@@ -204,18 +204,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
                     })
                     .filter(a -> !order.getId().equals((a.getOrderCheckAssignment() == null) ? "" : a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
-                    .sorted(Comparator
-                            .comparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
-                                String storeID1 = o1.getStoreId();
-
-                                if (storeID1.equals(order.getStoreId())){
-                                    return 9999;
-                                }
-                                return 0;
-                            }) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
-                            .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())) // 2순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
-                            .thenComparing(Rider::getAssignCount)//3순위 라이더의 오더 개수....
-                            .thenComparing(Rider::getDistance)// 4순위 거리순(10미터 단위)           // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
+                    .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.reverseOrder()) // 1순위 주문된 매장의 라이더가 아닌 경우 1위}) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
+                            .thenComparing(Rider::getDistance)                                      // 4순위 거리순(10미터 단위)             // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
+                            .thenComparing(Rider::getAssignCount)                                   //3순위 라이더의 오더 개수....
                             .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))
                             ) //5순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
                     .collect(Collectors.toList());
