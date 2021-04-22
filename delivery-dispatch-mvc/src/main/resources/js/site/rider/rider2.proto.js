@@ -86,35 +86,6 @@ DDELib.Riders.prototype = {
                 }
             }
         }
-
-        // 체크박스 체크 효과 넣기
-        // 디폴트 > 15 (전체)
-        // 1, 2, 4, 8 (화면 순서대로 1, 2, 4, 8)
-        // 비트 플래그 이용
-        let chkStatus = Number(window.localStorage.getItem("riderStatusFlag"));
-
-        if (chkStatus <= 0){
-            chkStatus = 15;
-        }
-
-        // 전체 체크
-        if (chkStatus !== 15){
-
-            this.checkBoxs.all.prop("checked", false);
-
-            this.checkBoxs.srchChk.each(function() {
-                $(this).prop("checked", false);
-                $(this).attr("disabled", false);
-                console.log("체크 해제 완료");
-            });
-
-            for (let i = 0; i < 4; i++){
-                if (Number(chkStatus & Math.pow(2, i)) === Number(Math.pow(2, i))){
-                    this.checkBoxs.srchChk[i].checked = true;
-                }
-            }
-        }
-
     },
     bindEvent: function () {
         this.log("bindEvent");
