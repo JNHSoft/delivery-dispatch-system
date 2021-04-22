@@ -39,6 +39,7 @@
 
 		<!-- 20.11.11 라이더 OS 구분 추가 -->
 		<result property="platform" column="os" />
+		<result property="sharedStatus" column="rider_shared_status" />
 
 		<association property="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -947,6 +948,7 @@
 				,(SELECT max(status) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2,6) AND created_datetime > CURRENT_DATE()) AS min_order_status
 				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = A.id and admin_id = #{adminId} and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime
 				,(select order_id from TB_ORDER_DENY_ASSIGNMENT where rider_id = A.id and admin_id = #{adminId} and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as deny_order_id
+				,ifnull(A.shared_flag, 0)					as rider_shared_status
 		from	(
 					select	 R.id
 							,R.status
