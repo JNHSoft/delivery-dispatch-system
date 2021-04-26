@@ -68,3 +68,29 @@ html{
 .text-underline{
     text-decoration: underline;
 }
+
+.text_riderAlign{
+    text-align: right;
+}
+
+.policyTable{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #000000;
+    border-collapse: collapse;
+}
+
+.tdTitle{
+    width: 30%;
+    border: 1px solid #000000;
+    margin: 0;
+    padding: 5px;
+}
+
+.tdContent{
+    width: auto;
+    border: 1px solid #000000;
+    margin: 0;
+    padding: 5px;
+}
