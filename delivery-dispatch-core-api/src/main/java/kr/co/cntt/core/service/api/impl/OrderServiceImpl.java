@@ -256,7 +256,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 21.04.26 주문을 다시 확인하여 배정이 되었는지 체크한다.
             Order checkOrder = orderMapper.selectOrderInfo(order);
 
-            if (!StringUtils.isNullOrEmpty(checkOrder.getRiderId().trim())){
+            if (checkOrder != null){
                 log.info("자동 배정 중 라이더가 이미 배정이 되어 종료 되었습니다. # Order Reg Order ID = " + checkOrder.getRegOrderId() + " # Order ID = " + checkOrder.getId() + " # 이미 배정된 라이더 = " + checkOrder.getRiderId() + " # 배정 될 라이더 = " + order.getRiderId());
                 return 0;
             }
