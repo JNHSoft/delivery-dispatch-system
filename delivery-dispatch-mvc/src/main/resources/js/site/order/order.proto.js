@@ -466,13 +466,18 @@ DDELib.Orders.prototype = {
         tmpdata.phone = (!ev.phone)?"-":ev.phone;
         tmpdata.time3 = (!ev.assignedDatetime )?"-":timeSet2(ev.assignedDatetime);
         tmpdata.time4 = (!ev.pickedUpDatetime )?"-":timeSet2(ev.pickedUpDatetime);
-        // 픽업 시간
-        // 픽업 , 도착 , 복귀
-        tmpdata.time5 = checkTime(ev.pickedUpDatetime, ev.completedDatetime);
+
+        // Order Completed
+        tmpdata.time5 = timeSet2(ev.completedDatetime) ;//checkTime(ev.pickedUpDatetime, ev.completedDatetime);
+
+        // Order Return
         tmpdata.time6 = this.getPickupTime(ev);
-        tmpdata.time7 = this.getReserveTime(ev);
-        // 2020.05.12 고객 집 앞 도착 시간
-        tmpdata.time8 = (!ev.arrivedDatetime )?"-":timeSet2(ev.arrivedDatetime);
+
+        // 21-04-14 예약 유무에 따른 빨간색 표기 삭제 # Resrvation
+        tmpdata.time7 = timeSet2(ev.reservationDatetime);
+        // 2020.05.12 고객 집 앞 도착 시간 # Arrived
+        //tmpdata.time8 = (!ev.arrivedDatetime )?"-":timeSet2(ev.arrivedDatetime);
+        tmpdata.time8 =  checkTime(ev.pickedUpDatetime, ev.arrivedDatetime); //timeSet2(ev.arrivedDatetime);
 
         // 서드 파티 추가
         tmpdata.rider = this.getRiderOrThirdTypeName(ev);
@@ -1175,7 +1180,7 @@ function checkTime(time1, time2) {
     }
     return result;
 }
-// 시간 비교 2분차이
+// 시간 비교 1분차이
 function diffTime(time1, time2) {
     // 픽업시간 - 완료시간
     if (time1 && time2) {
@@ -1231,9 +1236,6 @@ function convertDateTime(time){
     var ss = changeDate.getUTCSeconds().toString();
 
     return new Date(yyyy, mm, dd, hh, nn, ss);
-
-    // return yyyy + '/' + (mm[1] ? mm : '0' + mm[0]) + '/' + (dd[1]?dd:'0' + dd[0]) + ' '+
-    //     (hh[1] ? hh : '0' + hh[0]) + ':' + (nn[1] ? nn : '0' + nn[0]) + ':' + (ss[1] ? ss : '0' + ss[0]);
 }
 
 $(document).ready(function () {

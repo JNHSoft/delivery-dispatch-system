@@ -385,10 +385,9 @@ function getStoreStatisticsByDate() {
                 datatype: "local",
                 data: mydata,
                 colModel: [
-                    {label: group_name, name: 'group_name', width: 80, align: 'center', hidden: true},
-                    {label: subGroup_name, name: 'subGroup_name', width: 80, align: 'center', hidden: true},
-
                     {label: label_store, name: 'store', width: 80, align: 'center'},
+                    {label: group_name, name: 'group_name', width: 80, align: 'center'},
+                    {label: subGroup_name, name: 'subGroup_name', width: 80, align: 'center'},
 
                     {label: label_in_store_time, name: 'orderPickup', index: 'orderPickup', width: 80, align: 'center'},
                     {label: label_delivery_time, name: 'pickupComplete', index: 'pickupComplete', width: 80, align: 'center'},

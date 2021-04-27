@@ -161,6 +161,10 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             LocalDateTime orderTime = LocalDateTime.parse((orderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
             LocalDateTime completeTime = LocalDateTime.parse((orderList.get(i).getCompletedDatetime()).replace(" ", "T"));
+
+            // Assigned 시간으로 변경
+            LocalDateTime assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+
             LocalDateTime returnTime = LocalDateTime.MIN;
             LocalDateTime arrivedTime = LocalDateTime.MIN;
 
@@ -176,13 +180,16 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             }
 
 
-            long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
+            //long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
+            long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
             long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
-            long orderComplete = arrivedTime != LocalDateTime.MIN ? orderTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            //long orderComplete = arrivedTime != LocalDateTime.MIN ? orderTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long stayTime = arrivedTime != LocalDateTime.MIN ? arrivedTime.until(completeTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            //long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long orderReturn = returnTime != LocalDateTime.MIN ? assignTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
             orderPickupTime += orderPickup;
             pickupCompleteTime += pickupComplete;
