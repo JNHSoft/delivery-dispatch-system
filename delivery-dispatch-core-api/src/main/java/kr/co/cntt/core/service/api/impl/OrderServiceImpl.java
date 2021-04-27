@@ -138,7 +138,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             case "1":           //// 배정 완료
                             default:
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
-                                return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId())).count() <= 0;
+                                // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store_id
+                                return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
                         }
                     }
                 })
@@ -246,6 +247,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(order);
+
+            // 21.04.26 주문을 다시 확인하여 배정이 되었는지 체크한다.
+            Order checkOrder = orderMapper.selectOrderInfo(order);
+
+            if (checkOrder != null){
+                log.info("자동 배정 중 라이더가 이미 배정이 되어 종료 되었습니다. # Order Reg Order ID = " + checkOrder.getRegOrderId() + " # Order ID = " + checkOrder.getId() + " # 이미 배정된 라이더 = " + checkOrder.getRiderId() + " # 배정 될 라이더 = " + order.getRiderId());
+                return 0;
+            }
+
             int result = orderMapper.updateOrder(order);
 
             Store storeDTO = new Store();

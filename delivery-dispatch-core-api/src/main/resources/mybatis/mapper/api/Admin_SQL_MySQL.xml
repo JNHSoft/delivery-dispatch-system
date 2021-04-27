@@ -1489,11 +1489,7 @@
 		<if test="group != null and group.id != null and group.id != ''">
 			AND	 sbStore.group_id = #{group.id}
 		</if>
-<!--		<if test="subGroup != null and subGroup.id != null and subGroup.id != ''">-->
-<!--			AND	 sbStore.subgroup_id = #{subGroup.id}-->
-<!--		</if>-->
 		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-<!--			AND	 SUBSTRING_INDEX(sbStore.name, '-', 1) = #{subGroup.groupingName}-->
 			AND		 sbStore.subgroup_id in ( select id from TB_SUBGROUP where admin_id = sbStore.admin_id and group_id = sbStore.group_id and id = sbStore.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 		</if>
 		<if test="storeId != null and storeId != ''">
@@ -2039,7 +2035,6 @@
 		AND		 A.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND		 third_party_id IS NULL
 		]]>
-<!--		AND		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)-->
 		<choose>
 			<when test="chkTime != null and chkTime == true">
 				AND	  A.reservation_datetime >= #{currentDatetime}
