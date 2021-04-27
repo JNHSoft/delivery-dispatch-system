@@ -2458,7 +2458,8 @@
 	</select>
 
 	<select id="selectStatisticsByInterval" parameterType="kr.co.cntt.core.model.order.Order" resultType="Integer">
-		SELECT   ifnull(TIMESTAMPDIFF(MINUTE, (CASE WHEN reservation_status THEN DATE_ADD(reservation_datetime, INTERVAL -30 MINUTE) ELSE created_datetime END), arrived_datetime), 0) AS interval_minute
+<!--		SELECT   ifnull(TIMESTAMPDIFF(MINUTE, (CASE WHEN reservation_status THEN DATE_ADD(reservation_datetime, INTERVAL -30 MINUTE) ELSE created_datetime END), arrived_datetime), 0) AS interval_minute-->
+		SELECT   ifnull(TIMESTAMPDIFF(MINUTE, assigned_datetime, arrived_datetime), 0) AS interval_minute
 		FROM     TB_ORDER
 		WHERE    admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
 		AND      status in (3)

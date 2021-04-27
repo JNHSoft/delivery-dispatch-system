@@ -385,6 +385,11 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getRider().getLoginId()));
             cell.setCellStyle(dataCellStyle);
 
+            // 21.04.15 직원 login id 추가
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getRider().getLoginId()));
+            cell.setCellStyle(dataCellStyle);
+
             rowNum ++;
         }
     }
