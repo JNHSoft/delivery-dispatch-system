@@ -49,6 +49,48 @@ DDELib.Orders.prototype = {
         }
         this.mydata = [];
         this.lastModifyDatetime = null;
+
+        // 21-04-22 상태에 따른 값 체크
+        let orderAllStatus = Number(localStorage.getItem('orderAll'));
+
+        if (orderAllStatus != 1){
+            let chkCount = 0;
+            let totalCheck = this.checkBoxs.srchChk.length;
+
+            this.checkBoxs.all.prop("checked", false);
+            this.checkBoxs.srchChk.each(function() {
+                $(this).prop("checked", false);
+                $(this).attr("disabled", false);
+                console.log("체크 해제 완료");
+            });
+
+            this.checkBoxs.srchChk.each(function (index, obj){
+                console.log('srchChk 값 확인');
+                console.log(localStorage.getItem(obj.id.toString()));
+                console.log(obj.id.toString());
+                if (localStorage.getItem(obj.id.toString()) != null){
+                    obj.checked = true;
+                    chkCount++;
+                }
+            });
+
+            console.log("개수확인 111");
+            console.log(chkCount);
+            console.log(totalCheck);
+            console.log("개수확인 2222");
+
+            if (chkCount == totalCheck || chkCount == 0){
+                this.checkBoxs.all.prop("checked", true);
+                this.checkBoxs.srchChk.each(function() {
+                    if (chkCount == 0){
+                        $(this).prop("checked", true);
+                    }
+                    $(this).attr("disabled", true);
+                    console.log("체크 완료");
+                });
+                localStorage.setItem('orderAll', 1);
+            }
+        }
     },
     bindEvent: function () {
         this.log("bindEvent");
@@ -169,16 +211,38 @@ DDELib.Orders.prototype = {
     onCheckBoxClick : function (e) {
         this.log("onCheckBoxChange:"+e.which);
         var el = $(e.target);
+
+        // 21.04.22 체크 값을 가져온다.
+
         if(el.is(this.checkBoxs.all)){
             this.log("ALL checkbox change:"+el.is(":checked"));
             this.checkBoxs.srchChk.each(function() {
                 $(this).prop("checked", el.is(":checked"));
                 $(this).attr("disabled", el.is(":checked"));
             });
+            
+            // 21.04.22 전체 선택에 따른 값 변경
+            localStorage.setItem('orderAll', Number(el.is(":checked")));
+
+            // value 값 없애기
+            this.checkBoxs.srchChk.each(function (index, obj){
+                localStorage.removeItem(obj.id.toString())
+            });
+
             this.getOrderList();
         } else if( el.is(this.checkBoxs.srchChk) ){
             this.log("Other checkbox change:"+el.attr("id"));
             this.getOrderList();
+
+            console.log("ID를 잘못 갖고 왔니?");
+            console.log(el.attr("id"));
+
+            if (el.is(":checked")){
+                localStorage.setItem(el.attr("id"), "true");
+            }else{
+                localStorage.removeItem(el.attr("id"));
+            }
+
             this.log("Other checkValus:"+ this.checkStatusValus());
         } else if( el.is(this.checkBoxs.myStoreChk) ){
             this.log("MyStoreChk checkbox change:"+el.attr("id"));
@@ -402,13 +466,18 @@ DDELib.Orders.prototype = {
         tmpdata.phone = (!ev.phone)?"-":ev.phone;
         tmpdata.time3 = (!ev.assignedDatetime )?"-":timeSet2(ev.assignedDatetime);
         tmpdata.time4 = (!ev.pickedUpDatetime )?"-":timeSet2(ev.pickedUpDatetime);
-        // 픽업 시간
-        // 픽업 , 도착 , 복귀
-        tmpdata.time5 = checkTime(ev.pickedUpDatetime, ev.completedDatetime);
+
+        // Order Completed
+        tmpdata.time5 = timeSet2(ev.completedDatetime) ;//checkTime(ev.pickedUpDatetime, ev.completedDatetime);
+
+        // Order Return
         tmpdata.time6 = this.getPickupTime(ev);
-        tmpdata.time7 = this.getReserveTime(ev);
-        // 2020.05.12 고객 집 앞 도착 시간
-        tmpdata.time8 = (!ev.arrivedDatetime )?"-":timeSet2(ev.arrivedDatetime);
+
+        // 21-04-14 예약 유무에 따른 빨간색 표기 삭제 # Resrvation
+        tmpdata.time7 = timeSet2(ev.reservationDatetime);
+        // 2020.05.12 고객 집 앞 도착 시간 # Arrived
+        //tmpdata.time8 = (!ev.arrivedDatetime )?"-":timeSet2(ev.arrivedDatetime);
+        tmpdata.time8 =  checkTime(ev.pickedUpDatetime, ev.arrivedDatetime); //timeSet2(ev.arrivedDatetime);
 
         // 서드 파티 추가
         tmpdata.rider = this.getRiderOrThirdTypeName(ev);
@@ -1111,7 +1180,7 @@ function checkTime(time1, time2) {
     }
     return result;
 }
-// 시간 비교 2분차이
+// 시간 비교 1분차이
 function diffTime(time1, time2) {
     // 픽업시간 - 완료시간
     if (time1 && time2) {
@@ -1167,9 +1236,6 @@ function convertDateTime(time){
     var ss = changeDate.getUTCSeconds().toString();
 
     return new Date(yyyy, mm, dd, hh, nn, ss);
-
-    // return yyyy + '/' + (mm[1] ? mm : '0' + mm[0]) + '/' + (dd[1]?dd:'0' + dd[0]) + ' '+
-    //     (hh[1] ? hh : '0' + hh[0]) + ':' + (nn[1] ? nn : '0' + nn[0]) + ':' + (ss[1] ? ss : '0' + ss[0]);
 }
 
 $(document).ready(function () {

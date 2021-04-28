@@ -399,6 +399,10 @@
 				<when test="role != null and role == 'ROLE_RIDER'">
 					and   A.rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
 				</when>
+				<!--자동 배정 시 주문 내역을 다시 확인하기 위한 용도-->
+				<when test="role != null and role == 'ROLE_SYSTEM'">
+					and   A.rider_id is not null
+				</when>
 				<otherwise>
 					AND A.id IS NULL
 				</otherwise>

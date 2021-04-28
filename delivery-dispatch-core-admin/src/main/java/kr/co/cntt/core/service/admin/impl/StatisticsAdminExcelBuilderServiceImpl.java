@@ -234,6 +234,12 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("order.distance",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 21.04.15 라이더 로그인 ID 추가 , 단 엑셀에서만 표기될 것
+            sheet.setColumnWidth(colNum, 15*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("rider.approval.login.id",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             rowNum++;
         }
         // 내용 부분
@@ -372,6 +378,16 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getDistance()));
+            cell.setCellStyle(dataCellStyle);
+            
+            // 21.04.15 직원 login id 추가
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getRider().getLoginId()));
+            cell.setCellStyle(dataCellStyle);
+
+            // 21.04.15 직원 login id 추가
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getRider().getLoginId()));
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;

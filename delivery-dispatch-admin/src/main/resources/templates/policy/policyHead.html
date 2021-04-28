@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout">
+<!--[if lt IE 8]> <html class="lt-ie10 lt-ie9 lt-ie8" lang="ko" /> <![endif]-->
+<!--[if IE 8]>    <html class="lt-ie10 lt-ie9" lang="ko" /> <![endif]-->
+<!--[if IE 9]>    <html class="lt-ie10" lang="ko" /> <![endif]-->
+<!--[if gt IE 9]><!--> <html lang="ko" /> <!--<![endif]-->
+
+<head th:fragment="head">
+  <meta charset="utf-8" />
+  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+  <title>policy</title>
+
+  <script type="text/javascript" th:src="@{/resources/js/lib/jquery-3.3.1.min.js}"></script>
+  <script type="text/javascript" th:src="@{/resources/js/lib/jquery-migrate-3.0.1.min.js}"></script>
+  <script type="text/javascript" th:src="@{/resources/js/lib/jquery-ui-1.12.1.min.js}"></script>
+  <script type="text/javascript" th:src="@{/resources/js/lib/jquery.cookie.js}"/>
+
+  <link rel="stylesheet" th:href="@{/resources/css/lib/normalize.min.css}" />
+  <link rel="stylesheet" th:href="@{/resources/css/lib/font-awesome-4.7.0.min.css}" />
+  <link rel="stylesheet" th:href="@{/resources/css/policy/policy.css}" />
+
+  <!-- 사용자 스크립트 영역 -->
+  <th:block layout:fragment="script"></th:block>
+  <th:block layout:fragment="script2"></th:block>
+  <th:block layout:fragment="script3"></th:block>
+  <th:block layout:fragment="script4"></th:block>
+  <th:block layout:fragment="script5"></th:block>
+
+</head>
+</html>

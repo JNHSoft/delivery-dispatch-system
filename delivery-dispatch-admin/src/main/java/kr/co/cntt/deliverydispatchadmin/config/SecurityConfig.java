@@ -15,7 +15,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>kr.co.cntt.deliverydispatchadmin.config
@@ -94,6 +102,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        // 21.04.16 약관 동의 페이지는 전체 접근 허용으로 변경
+        RequestMatcher policyMatcher = new AntPathRequestMatcher("/policy");
+        List<RequestMatcher> whiteList = new ArrayList<>();
+        whiteList.add(policyMatcher);
+
+        DelegatingRequestMatcherHeaderWriter headerWriter = new DelegatingRequestMatcherHeaderWriter(
+                new NegatedRequestMatcher(
+                        new OrRequestMatcher(
+                                whiteList
+                        )
+                ),
+                new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN));
+
         http
                 .csrf().disable()	// 1회성 인증키 csrf토큰 미사용
                 .authorizeRequests()
@@ -101,6 +123,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // .antMatchers("/").permitAll()
                 .antMatchers("/healthCheck").permitAll()				// 헬스체크 페이지 Nick
                 .antMatchers("/login").permitAll()
+                .antMatchers("/policy").permitAll()                 // 21-04-16 약관 Viewer
                 // 슈퍼, 개발자만 허용
                 .antMatchers("/admin/list/**").access("hasRole('SUPER') or hasRole('GOD')")
                 .antMatchers("/admin/delete/**").access("hasRole('SUPER') or hasRole('GOD')")
@@ -130,7 +153,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterAfter(createAdminPerformanceHistoryFilter(), BasicAuthenticationFilter.class);
 
-        http.headers().frameOptions().sameOrigin();
+        http.headers().frameOptions().sameOrigin().addHeaderWriter(headerWriter);
     }
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)

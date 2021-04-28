@@ -138,7 +138,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             case "1":           //// 배정 완료
                             default:
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
-                                return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId())).count() <= 0;
+                                // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store_id
+                                System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
+                                return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
                         }
                     }
                 })
@@ -204,18 +206,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
                     })
                     .filter(a -> !order.getId().equals((a.getOrderCheckAssignment() == null) ? "" : a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
-                    .sorted(Comparator
-                            .comparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
-                                String storeID1 = o1.getStoreId();
-
-                                if (storeID1.equals(order.getStoreId())){
-                                    return 9999;
-                                }
-                                return 0;
-                            }) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
-                            .thenComparing(Rider::getMinPickedUpDatetime, Comparator.nullsFirst(Comparator.naturalOrder())) // 2순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 픽업시간
-                            .thenComparing(Rider::getAssignCount)//3순위 라이더의 오더 개수....
-                            .thenComparing(Rider::getDistance)// 4순위 거리순(10미터 단위)           // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
+                    .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.reverseOrder()) // 1순위 주문된 매장의 라이더가 아닌 경우 1위}) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
+                            .thenComparing(Rider::getDistance)                                      // 4순위 거리순(10미터 단위)             // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
+                            .thenComparing(Rider::getAssignCount)                                   //3순위 라이더의 오더 개수....
                             .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))
                             ) //5순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
                     .collect(Collectors.toList());
@@ -255,6 +248,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(order);
+
+            // 21.04.26 주문을 다시 확인하여 배정이 되었는지 체크한다.
+            Order checkOrder = orderMapper.selectOrderInfo(order);
+
+            if (checkOrder != null){
+                log.info("자동 배정 중 라이더가 이미 배정이 되어 종료 되었습니다. # Order Reg Order ID = " + checkOrder.getRegOrderId() + " # Order ID = " + checkOrder.getId() + " # 이미 배정된 라이더 = " + checkOrder.getRiderId() + " # 배정 될 라이더 = " + order.getRiderId());
+                return 0;
+            }
+
             int result = orderMapper.updateOrder(order);
 
             Store storeDTO = new Store();
@@ -319,7 +321,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -347,7 +348,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> androidPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "android");
                             checkFcmResponse(androidPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -375,7 +375,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> oldPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "old");
                             checkFcmResponse(oldPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
@@ -2205,7 +2204,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                             checkFcmResponse(iosPushNotification);
                         }catch (Exception e){
-//                            e.printStackTrace();
                             log.error(e.getMessage());
                         }
                     }
