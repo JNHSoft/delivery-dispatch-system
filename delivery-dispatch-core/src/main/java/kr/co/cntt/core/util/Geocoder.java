@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class Geocoder {
 
-    private static final String apiKey = "AIzaSyDjTHhFpKViBPzb7VQ21kh9Dp6KOhtOTBo";
+    private static final String apiKey = "AIzaSyBeYYK4f3VZhUuslLAChJnwedur8MxkbhU";
 
     /**
      * <p> Google Geocoder - Address to latitude, longitude
