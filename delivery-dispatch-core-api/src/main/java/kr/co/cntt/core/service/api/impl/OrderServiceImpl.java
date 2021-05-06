@@ -171,7 +171,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 if (r.getLatitude() != null && r.getLongitude() != null) {
                     try {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
-                        r.setDistance(r.getDistance() - r.getDistance() % 10);//거리 10미터 단위
+                        //r.setDistance(r.getDistance() - r.getDistance() % 100); // 0~100M => 0, 101M ~ 201M => 1
+                        r.setDistance(r.getDistance() / 100); // 100M 범위로 변경
                     } catch (Exception e) {
                         log.error(e.getMessage());
                     }
@@ -197,8 +198,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
                             return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
                         } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때
-                                log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
-                                log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
+                            log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
+                            log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
                         } else {
                             log.debug(">>> autoAssignRider_Stream False:::: Stream False:::: ");
@@ -206,11 +207,78 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
                     })
                     .filter(a -> !order.getId().equals((a.getOrderCheckAssignment() == null) ? "" : a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
-                    .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.reverseOrder()) // 1순위 주문된 매장의 라이더가 아닌 경우 1위}) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
-                            .thenComparing(Rider::getDistance)                                      // 4순위 거리순(10미터 단위)             // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
-                            .thenComparing(Rider::getAssignCount)                                   //3순위 라이더의 오더 개수....
-                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))
-                            ) //5순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
+                    .filter(a -> {
+                        if (a.getMinOrderStatus() == null){
+                            return true;
+                        }
+
+                        switch (a.getMinOrderStatus()){
+                            case "2":       // 픽업
+                            case "6":       // 도착
+                                return false;
+                            default:
+                                return true;
+                        }
+                    })                  // 주문 상태 값이 픽업 또는 배달 중인 경우 삭제
+                    .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.nullsLast(Comparator.naturalOrder()))       // 1순위 쉐어 내용에 따른 정렬
+                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))          // 2순위 상태값 정렬 (현재는 배정과 미배정만 나온다)
+                            .thenComparing(Rider::getDistance)                                                                  // 3순위 거리 순
+                            .thenComparing(Rider::getAssignCount)                                                               // 4순위 주문을 가지고 있는 순서
+                            .thenComparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
+                                int sameStore1 = o1.getStoreId() == order.getStoreId() ? 1 : 2;
+                                int sameStore2 = o2.getStoreId() == order.getStoreId() ? 1 : 2;
+
+                                return sameStore1 > sameStore2 ? 2 : (sameStore1 == sameStore2 ? 1 : 0);
+                            })                                                                                                  // 5순위 주문이 들어간 매장의 라이더가 먼저 배정 될 수 있도록 적용
+//                            .thenComparing(Rider->Rider, (o1, o2) -> {
+//                                int iResult;
+//
+//                                // Rider의 값을 전체적으로 비교하여 정렬한다. 기본 주문 상태
+//                                int minStatus1;
+//                                switch (o1.getMinOrderStatus())
+//                                {
+//                                    case "2":           // 픽업 상태
+//                                        minStatus1 = 3;
+//                                        break;
+//                                    case "6":           //  도착 상태
+//                                        minStatus1 = 4;
+//                                        break;
+//                                    default:            // 위 3가지 상황 이외의 상태
+//                                        minStatus1 = 1;
+//                                        break;
+//                                }
+//
+//                                int minStatus2;
+//                                switch (o2.getMinOrderStatus()){
+//                                    case "2":           // 픽업 상태
+//                                        minStatus2 = 3;
+//                                        break;
+//                                    case "6":           //  도착 상태
+//                                        minStatus2 = 4;
+//                                        break;
+//                                    default:            // 위 3가지 상황 이외의 상태
+//                                        minStatus2 = 1;
+//                                        break;
+//                                }
+//
+//                                // iResult 값 정하기
+//                                if (minStatus1 == minStatus2 && minStatus1 == 1){
+//                                    //
+//                                }
+//
+//                                return minStatus1 < minStatus2 ? 0 : (minStatus1 == minStatus2 ? 1 : 2);
+//
+//
+//                            })
+                    )
+
+//                    .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.reverseOrder()) // 1순위 주문된 매장의 라이더가 아닌 경우 1위}) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
+//                            .thenComparing(Rider::getDistance)                                      // 4순위 거리순(10미터 단위)             // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
+//                            .thenComparing(Rider::getAssignCount)                                   //3순위 라이더의 오더 개수....
+//                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))
+//                            ) //5순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
+
+
                     .collect(Collectors.toList());
 
             if (!riderList.isEmpty()) {//riderList.size()!=0
