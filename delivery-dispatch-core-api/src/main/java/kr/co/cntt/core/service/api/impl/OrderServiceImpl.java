@@ -1460,6 +1460,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00056), ErrorCodeEnum.E00056.name());
         }
 
+        // 라이더 위치 업데이트
+        try {
+            Rider rider = new Rider();
+            rider.setAccessToken(order.getToken());
+            rider.setLatitude(order.getLatitude());
+            rider.setLongitude(order.getLongitude());
+
+            riderMapper.updateRiderLocation(rider);
+            
+            log.info("픽업 버튼 클릭으로 라이더 위치 업데이트 완료 token = " +  rider.getAccessToken());
+
+        }catch (Exception e){
+            log.error("픽업 버튼 클릭으로 라이더 위치 업데이트 중 오류 발생", e);
+        }
+
+
         Order orderPickedUp = new Order();
 
         orderPickedUp.setToken(order.getToken());
@@ -1532,6 +1548,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }else if (!(orderInfo.getStatus().toString().equals("2"))){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00057), ErrorCodeEnum.E00057.name());
         }
+
+        // 라이더 위치 업데이트
+        try {
+            Rider rider = new Rider();
+            rider.setAccessToken(order.getToken());
+            rider.setLatitude(order.getLatitude());
+            rider.setLongitude(order.getLongitude());
+
+            riderMapper.updateRiderLocation(rider);
+
+            log.info("도착 버튼 클릭으로 라이더 위치 업데이트 완료 token = " +  rider.getAccessToken());
+
+        }catch (Exception e){
+            log.error("도착 버튼 클릭으로 라이더 위치 업데이트 중 오류 발생", e);
+        }
+
 
         Order orderArrived = new Order();
 
@@ -1638,6 +1670,21 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 log.info(e.getMessage());
             }
 
+        }
+
+        // 라이더 위치 업데이트
+        try {
+            Rider rider = new Rider();
+            rider.setAccessToken(order.getToken());
+            rider.setLatitude(order.getLatitude());
+            rider.setLongitude(order.getLongitude());
+
+            riderMapper.updateRiderLocation(rider);
+
+            log.info("완료 버튼 클릭으로 라이더 위치 업데이트 완료 token = " +  rider.getAccessToken());
+
+        }catch (Exception e){
+            log.error("완료 버튼 클릭으로 라이더 위치 업데이트 중 오류 발생", e);
         }
 
 
@@ -2578,6 +2625,21 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
         }else if (StringUtil.isEmpty(orderInfo.getPickedUpDatetime()) || StringUtil.isEmpty(orderInfo.getArrivedDatetime()) || StringUtil.isEmpty(orderInfo.getCompletedDatetime())){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00059), ErrorCodeEnum.E00059.name());
+        }
+
+        // 라이더 위치 업데이트
+        try {
+            Rider rider = new Rider();
+            rider.setAccessToken(order.getToken());
+            rider.setLatitude(order.getLatitude());
+            rider.setLongitude(order.getLongitude());
+
+            riderMapper.updateRiderLocation(rider);
+
+            log.info("복귀 버튼 클릭으로 라이더 위치 업데이트 완료 token = " +  rider.getAccessToken());
+
+        }catch (Exception e){
+            log.error("복귀 버튼 클릭으로 라이더 위치 업데이트 중 오류 발생", e);
         }
 
         order.setRole("ROLE_RIDER");
