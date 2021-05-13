@@ -175,9 +175,11 @@ public class StatisticsController {
                 // 19.08.26 데이터 격차가 음수로 나오는지 여부 체크
                 LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
 //                if(assignTime.until(pickupTime, ChronoUnit.SECONDS)>=120 && pickupTime.until(completeTime, ChronoUnit.SECONDS)>=120 && completeTime.until(returnTime, ChronoUnit.SECONDS)>=120){
-
+                LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
                 // 19.08.26 페이지에서 음수가 나오는 오류 사항 변경
-                if(completeTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                // KFC와 동일한 조건으로 만들기 위해 사용
+                //if(completeTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(completeTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
                     return true;
                 }else{
                     /* 19.08.26 디버그 시 내용 확인*/

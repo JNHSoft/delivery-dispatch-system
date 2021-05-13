@@ -1522,7 +1522,7 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, ifnull(A.arrived_datetime, A.completed_datetime)) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.picked_up_datetime, A.assigned_datetime))
+						then time_to_sec(timediff(A.picked_up_datetime, date_sub(A.reservation_datetime, interval 30 minute))
 					else NULL
 					end
 				) AS order_pickup

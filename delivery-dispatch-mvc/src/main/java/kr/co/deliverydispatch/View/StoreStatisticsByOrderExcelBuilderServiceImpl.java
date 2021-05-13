@@ -172,6 +172,11 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
 
             // Assigned Datetime
             LocalDateTime assignTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+            // 예약 시간에서 30분을 제외한 시간으로 변경한다.
+            LocalDateTime bookingTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getReservationDatetime()).replace(" ", "T"));
+            System.out.println("######################## bookingTime => " + bookingTime);
+            LocalDateTime bookingMinusTime = bookingTime.minusMinutes(30);
+            System.out.println("######################## bookingTime minusMinutes => " + bookingTime + " ########## bookingMinusTime => " + bookingMinusTime);
 
             LocalDateTime returnTime = LocalDateTime.MIN;
             LocalDateTime arrivedTime = LocalDateTime.MIN;
@@ -186,7 +191,8 @@ public class StoreStatisticsByOrderExcelBuilderServiceImpl extends AbstractView 
             }
 
             //long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
-            long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
+            //long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
+            long orderPickup = bookingMinusTime.until(pickupTime, ChronoUnit.MILLIS);       // 예약 시간에서 30분을 제외한 시간으로 변경
             long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             //long orderComplete = arrivedTime != LocalDateTime.MIN ? orderTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
