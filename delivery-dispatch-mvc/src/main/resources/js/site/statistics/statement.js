@@ -250,12 +250,13 @@ function getStoreStatistics() {
                     let tmpDate = new Date(data[key].reservationDatetime);
                     tmpDate.setMinutes(tmpDate.getMinutes()-30);            // 예약 시간에서 30분을 제외한다.
 
-                    tmpData.orderPickup1 = minusTimeSet2(tmpDate, data[key].pickedUpDatetime);           // 21-05-13 30분 제외 시간으로 변경
+                    // 배정 ~ 픽업 시간이 1분 미만인 경우 파란색으로 표시
+                    tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(tmpDate, data[key].pickedUpDatetime));           // 21-05-13 30분 제외 시간으로 변경
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
 
                     // 고객에게 머무른 시간 체크
                     if (data[key].arrivedDatetime){
-                        tmpData.riderStayTime = minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime);
+                        tmpData.riderStayTime = diffTimeBlue(data[key].arrivedDatetime, data[key].completedDatetime, minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime));
                         riderStayTimeSum += minusTime(data[key].arrivedDatetime, data[key].completedDatetime);
                     }else{
                         tmpData.riderStayTime = "-"
@@ -416,4 +417,19 @@ function excelDownloadByOrder(){
             loading.hide();
         }
     })
+}
+
+// 21.05.13
+function diffTimeBlue(time1, time2, time3){
+    var result = timer3;
+    // timer2 - timer1의 시간이 1분 미만인 경우 timer3의 시간을 blue 색으로 보이게 한다.
+    if (time1 && timer2){
+        let t1 = new Date(time1);
+        let t2 = new Date(time2);
+
+        if (t2.getTime() - t1.getTime() < 60000){
+            result = '<span style="color: blue">' + time3 + '</span>'
+        }
+    }
+    return result;
 }

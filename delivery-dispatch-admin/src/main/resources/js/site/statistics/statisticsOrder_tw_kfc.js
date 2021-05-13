@@ -254,7 +254,7 @@ function getStoreStatistics() {
                     tmpData.assignedDate = timeSet(data[key].assignedDatetime);
                     tmpData.qtTimes = data[key].cookingTime;
 
-                    tmpData.orderPickup1 = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);
+                    tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
 
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
                     tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
@@ -441,6 +441,22 @@ function excelDownloadByOrder(){
         }
     })
 }
+
+// 21.05.13
+function diffTimeBlue(time1, time2, time3){
+    var result = timer3;
+    // timer2 - timer1의 시간이 1분 미만인 경우 timer3의 시간을 blue 색으로 보이게 한다.
+    if (time1 && timer2){
+        let t1 = new Date(time1);
+        let t2 = new Date(time2);
+
+        if (t2.getTime() - t1.getTime() < 60000){
+            result = '<span style="color: blue">' + time3 + '</span>'
+        }
+    }
+    return result;
+}
+
 
 //// 20.04.24 이벤트 추가제
 /**

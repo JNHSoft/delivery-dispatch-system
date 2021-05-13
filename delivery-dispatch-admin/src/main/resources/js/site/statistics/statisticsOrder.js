@@ -253,13 +253,15 @@ function getStoreStatistics() {
                     // 21-05-13 PizzaHut만 예약시간에서 무조건 -30분한 시간으로 계산 될 수 있도록 적용 단, 배정 ~ 픽업 간의 시간 표기만 적용한다.
                     let tmpDate = new Date(data[key].reservationDatetime);
                     tmpDate.setMinutes(tmpDate.getMinutes()-30);            // 예약 시간에서 30분을 제외한다.
-
-                    tmpData.orderPickup1 = minusTimeSet2(tmpDate, data[key].pickedUpDatetime);
+                    
+                    // 배정 ~ 픽업 시간이 1분 미만인 경우 파란색으로 표시
+                    tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(tmpDate, data[key].pickedUpDatetime));
 
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
 
                     if (data[key].arrivedDatetime){
-                        tmpData.riderStayTime = minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime);
+                        // 도착 ~ 완료 시간이 1분 미만인 경우 파란색으로 표시
+                        tmpData.riderStayTime = diffTimeBlue(data[key].arrivedDatetime, data[key].completedDatetime, minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime));
                         riderStayTimeSum += minusTime(data[key].arrivedDatetime, data[key].completedDatetime);
                     }else{
                         tmpData.riderStayTime = "-";
@@ -408,6 +410,19 @@ function getStoreStatistics() {
                         }, 300)//그리드 리사이즈
                     }
                 }
+                // ,loadComplete: function (data) {
+                //     let ids = $("#jqGrid").getDataIDs();
+                //
+                //     $.each(ids, function (idx, rowId) {
+                //         let objRowData = $("#jqGrid").getRowData(rowId);
+                //
+                //         if (objRowData.approvalStatus == "2" || objRowData.approvalStatus == "3"){
+                //             $("#jqGrid").setRowData(rowId, false, {background: '#FFAA55'});
+                //         }else if (objRowData.approvalStatus == "4"){
+                //             $("#jqGrid").setRowData(rowId, false, {background: '#f5c717'});
+                //         }
+                //     });
+                // }
             });
 
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
@@ -447,6 +462,21 @@ function excelDownloadByOrder(){
             loading.hide();
         }
     })
+}
+
+// 21.05.13
+function diffTimeBlue(time1, time2, time3){
+    var result = timer3;
+    // timer2 - timer1의 시간이 1분 미만인 경우 timer3의 시간을 blue 색으로 보이게 한다.
+    if (time1 && timer2){
+        let t1 = new Date(time1);
+        let t2 = new Date(time2);
+
+        if (t2.getTime() - t1.getTime() < 60000){
+            result = '<span style="color: blue">' + time3 + '</span>'
+        }
+    }
+    return result;
 }
 
 //// 20.04.24 이벤트 추가제
