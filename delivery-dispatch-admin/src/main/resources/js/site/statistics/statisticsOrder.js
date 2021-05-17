@@ -294,11 +294,13 @@ function getStoreStatistics() {
 
 
                     if(data[key].returnDatetime){
-                        tmpData.completeReturn1 = minusTimeSet2(data[key].arrivedDatetime, data[key].returnDatetime);
+                        //tmpData.completeReturn1 = minusTimeSet2(data[key].arrivedDatetime, data[key].returnDatetime);
+                        tmpData.completeReturn1 = minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime);           // 21.05.17 완료 시간 ~ 복귀 시간으로 변경
                         tmpData.pickupReturn1 = minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime);
                         //tmpData.orderReturn1 = minusTimeSet2(data[key].createdDatetime, data[key].returnDatetime);
                         tmpData.orderReturn1 = minusTimeSet2(data[key].assignedDatetime, data[key].returnDatetime);
-                        completeReturnSum += minusTime(data[key].arrivedDatetime, data[key].returnDatetime);
+                        //completeReturnSum += minusTime(data[key].arrivedDatetime, data[key].returnDatetime);
+                        completeReturnSum += minusTime(data[key].completedDatetime, data[key].returnDatetime);              // 21.05.17 완료 시간 ~ 복귀 시간으로 변경
                         pickupReturnSum += minusTime(data[key].pickedUpDatetime, data[key].returnDatetime);
                         //orderReturnSum += minusTime(data[key].createdDatetime, data[key].returnDatetime);
                         orderReturnSum += minusTime(data[key].assignedDatetime, data[key].returnDatetime);
