@@ -444,9 +444,9 @@ function excelDownloadByOrder(){
 
 // 21.05.13
 function diffTimeBlue(time1, time2, time3){
-    var result = timer3;
+    var result = time3;
     // timer2 - timer1의 시간이 1분 미만인 경우 timer3의 시간을 blue 색으로 보이게 한다.
-    if (time1 && timer2){
+    if (time1 && time2){
         let t1 = new Date(time1);
         let t2 = new Date(time2);
 
