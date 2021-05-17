@@ -694,7 +694,7 @@
                             and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                        then time_to_sec(timediff(picked_up_datetime, assigned_datetime))
+                        then time_to_sec(timediff(picked_up_datetime, date_sub(A.reservation_datetime, interval 30 minute)))
                         else NULL
                     end
                 ) AS order_pickup
@@ -722,20 +722,6 @@
                             and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                        then time_to_sec(timediff(completed_datetime, arrived_datetime))
-                        else NULL
-                    end
-                )	as stay_time
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
                         then time_to_sec(timediff(arrived_datetime, assigned_datetime))
                         else NULL
                     end
@@ -750,7 +736,21 @@
                             and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
                             and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                        then time_to_sec(timediff(return_datetime, arrived_datetime))
+                        then time_to_sec(timediff(completed_datetime, arrived_datetime))
+                        else NULL
+                    end
+                )	as stay_time
+                ,avg(
+                    case
+                        when	 assigned_datetime is not null
+                            and	 picked_up_datetime is not null
+                            and	 ifnull(arrived_datetime, completed_datetime) is not null
+                            and	 return_datetime is not null
+                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
+                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
+                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
+                        then time_to_sec(timediff(return_datetime, completed_datetime))
                         else NULL
                     end
                 ) AS complete_return
@@ -2056,7 +2056,7 @@
                 ,A.combined_order_id
                 ,A.phone
                 ,A.message
-                ,case when ( select shared_flag from TB_RIDER where id = A.rider_id ) = 1 then 'Y' else 'N' end		as rider_shared_status
+                ,case when ifnull(shared_flag, 0) = 1 then 'Y' else 'N' end		as rider_shared_status
         from	 TB_ORDER	A
         where	 date_format(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > date_format(ifnull(reservation_datetime, now()), '%Y-%m-%d %H:%i')
         and		 A.status in (3, 4)

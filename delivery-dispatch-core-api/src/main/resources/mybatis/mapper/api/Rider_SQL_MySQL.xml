@@ -357,7 +357,7 @@
 		,(select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = ifnull(TS.brand_code, ( select brand_code from TB_ADMIN where id = TS.admin_id )))	as brandName
 
 		,( select os from TB_RIDER_SESSION where rider_id = TR.id order by expiry_datetime desc limit 1 )		as os
-
+		,ifnull(shared_flag, 0)					as rider_shared_status
 		FROM TB_RIDER TR
 
 		left join

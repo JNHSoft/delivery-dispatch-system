@@ -315,6 +315,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 order.setAssignXy("none");
             }
 
+            // 21.05.17
+            // 현재 라이더 상태 기준의 Rider Shared Flag 값을 Order에도 넣는다.
+            order.setRider(new Rider());
+            order.getRider().setSharedStatus(rider.getSharedStatus());
+
+            System.out.println("###################### 라이더의 쉐어링 111");
+            System.out.println("### Rider => " + rider.getSharedStatus());
+            System.out.println("### Order.Rider => " + order.getRider().getSharedStatus());
+            System.out.println("###################### 라이더의 쉐어링 111");
+
             ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(order);
 
             // 21.04.26 주문을 다시 확인하여 배정이 되었는지 체크한다.
