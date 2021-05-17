@@ -340,6 +340,16 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
             order.setAssignXy("none");
         }
         order.setId(tmpOrderId);
+
+        // 21.05.17 라이더 공유 유무 넣기
+        order.setRider(new Rider());
+        order.getRider().setSharedStatus(S_Rider.getSharedStatus());
+
+        System.out.println("###################### 라이더의 쉐어링");
+        System.out.println("### Rider => " + S_Rider.getSharedStatus());
+        System.out.println("### Order.Rider => " + order.getRider().getSharedStatus());
+        System.out.println("###################### 라이더의 쉐어링");
+
         int ret = this.putOrder(order);
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {

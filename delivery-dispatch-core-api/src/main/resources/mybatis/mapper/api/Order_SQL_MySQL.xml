@@ -416,6 +416,14 @@
 		<if test="riderId == '-1'">
 			, rider_id = NULL
 		</if>
+		
+		<if test="rider != null and rider.sharedStatus != null and rider.sharedStatus != '' and riderId != '-1'">
+			,shared_flag = #{rider.sharedStatus}
+		</if>
+		<if test="riderId == '-1'">
+			, shared_flag = NULL
+		</if>
+
 		<if test="address != null and address != ''">
 			, address = #{address}
 		</if>
