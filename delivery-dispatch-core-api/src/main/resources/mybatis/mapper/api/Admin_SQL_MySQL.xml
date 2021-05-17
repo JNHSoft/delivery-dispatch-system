@@ -1522,7 +1522,7 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, ifnull(A.arrived_datetime, A.completed_datetime)) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.picked_up_datetime, A.assigned_datetime))
+						then time_to_sec(timediff(A.picked_up_datetime, date_sub(A.reservation_datetime, interval 30 minute)))
 					else NULL
 					end
 				) AS order_pickup
@@ -1540,20 +1540,6 @@
 					else NULL
 					end
 				) AS pickup_complete
-				,avg(
-					case
-						when	 A.assigned_datetime is not null
-							and	 A.picked_up_datetime is not null
-							and	 ifnull(A.arrived_datetime, A.completed_datetime) is not null
-							and	 A.return_datetime is not null
-							and	 timestampdiff(SECOND, ifnull(A.arrived_datetime, A.completed_datetime), A.return_datetime) >= 60
-							and	 timestampdiff(SECOND, A.assigned_datetime, ifnull(A.arrived_datetime, A.completed_datetime)) >= 0
-							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
-							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.completed_datetime, A.arrived_datetime))
-					else NULL
-					end
-				) AS stay_time
 				,avg(
 					case
 						when	 A.assigned_datetime is not null
@@ -1578,7 +1564,21 @@
 							and	 timestampdiff(SECOND, A.assigned_datetime, ifnull(A.arrived_datetime, A.completed_datetime)) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
 							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
-						then time_to_sec(timediff(A.return_datetime, A.arrived_datetime))
+						then time_to_sec(timediff(A.completed_datetime, A.arrived_datetime))
+					else NULL
+					end
+				) AS stay_time
+				,avg(
+					case
+						when	 A.assigned_datetime is not null
+							and	 A.picked_up_datetime is not null
+							and	 ifnull(A.arrived_datetime, A.completed_datetime) is not null
+							and	 A.return_datetime is not null
+							and	 timestampdiff(SECOND, ifnull(A.arrived_datetime, A.completed_datetime), A.return_datetime) >= 60
+							and	 timestampdiff(SECOND, A.assigned_datetime, ifnull(A.arrived_datetime, A.completed_datetime)) >= 0
+							and	 timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime) >= 0
+							and	 timestampdiff(SECOND, A.assigned_datetime, A.return_datetime) >= 0
+						then time_to_sec(timediff(A.return_datetime, A.completed_datetime))
 					else NULL
 					end
 				) AS complete_return

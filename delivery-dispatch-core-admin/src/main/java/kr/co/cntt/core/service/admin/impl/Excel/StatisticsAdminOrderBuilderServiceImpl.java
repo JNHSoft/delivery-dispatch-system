@@ -18,10 +18,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component("StatisticsAdminOrderBuilderServiceImpl")
@@ -164,6 +161,11 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
 
             // Assigned 시간으로 변경
             LocalDateTime assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+            // 예약 시간에서 30분을 제외한 시간으로 변경한다.
+            LocalDateTime bookingTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
+            System.out.println("######################## bookingTime => " + bookingTime);
+            LocalDateTime bookingMinusTime = bookingTime.minusMinutes(30);
+            System.out.println("######################## bookingTime minusMinutes => " + bookingTime + " ########## bookingMinusTime => " + bookingMinusTime);
 
             LocalDateTime returnTime = LocalDateTime.MIN;
             LocalDateTime arrivedTime = LocalDateTime.MIN;
@@ -181,7 +183,8 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
 
 
             //long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
-            long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
+            //long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
+            long orderPickup = bookingMinusTime.until(pickupTime, ChronoUnit.MILLIS);       // 예약 시간에서 30분을 제외한 시간으로 변경
             long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             //long orderComplete = arrivedTime != LocalDateTime.MIN ? orderTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
