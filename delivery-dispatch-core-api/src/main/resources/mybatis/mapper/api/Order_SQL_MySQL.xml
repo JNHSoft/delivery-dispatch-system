@@ -228,7 +228,7 @@
 				,A.combined_order_id
 				,A.phone
 				,A.message
-				,( select name from TB_RIDER where id = A.rider_id and deleted is null )		as rider_name
+				,( select name from TB_RIDER where id = A.rider_id )							as rider_name
 				,C.name																			as store_name
 				,C.store_name																	as store_real_name
 				,C.latitude																		as store_latitude
