@@ -66,7 +66,7 @@ datasource:
     driver-class-name: com.mysql.jdbc.Driver
 
 #    [DDE-TW-MAIN]
-    url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://192.168.100.73:3306/twdb?useUnicode=true&characterEncoding=utf8&useSSL=false
     username: twuser
     password: twuserpw!
 

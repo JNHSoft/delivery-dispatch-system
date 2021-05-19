@@ -29,7 +29,7 @@ datasource:
     #validation-query: select 1
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:mysql://10.156.32.14:3306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    url: jdbc:mysql://10.156.32.14:3306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false
     username: devuser
     password: devuserpw!
 
