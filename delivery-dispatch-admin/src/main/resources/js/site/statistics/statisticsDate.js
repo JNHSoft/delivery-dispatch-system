@@ -89,6 +89,7 @@ function getStoreStatisticsByDate() {
             let totalSalesSum = 0;
 
             let errtcSum = 0;
+            let thirdtcSum = 0;
             let tcSum = 0;
             let tplhSum = 0;
             let spmhSum = 0;
@@ -153,6 +154,14 @@ function getStoreStatisticsByDate() {
                     }else{
                         tmpdata.errtc = "-";
                     }
+
+                    if (data[key].thirdtc){
+                        tmpdata.thirdtc = data[key].thirdtc;
+                        thirdtcSum += formatFloat(data[key].thirdtc, 1);
+                    }else{
+                        tmpdata.thirdtc = "-";
+                    }
+
 
                     tmpdata.tc = formatInt(data[key].tc, 1);
 
@@ -260,6 +269,15 @@ function getStoreStatisticsByDate() {
             } else {
                 avgData.errtc = "-";
             }
+
+            if (thirdtcSum != 0){
+                avgData.thirdtc = formatInt((thirdtc/rowCnt), 1);
+            } else {
+                avgData.thirdtc = "-";
+            }
+
+
+
             avgData.tc = formatInt((tcSum/rowCnt), 1);
 
             if(tpSpCnt!=0){
@@ -317,6 +335,7 @@ function getStoreStatisticsByDate() {
                     {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_errtc, name: 'errtc', index: 'errtc', width: 50, align: 'center'},
+                    {label: label_third_party, name: 'thirdtc', index: 'thirdtc', width: 50, align: 'center'},
                     {label: label_tc, name: 'tc', index: 'tc', width: 50, align: 'center'},
                     {label: label_tplh, name: 'tplh', index: 'tplh', width: 80, align: 'center'},
                     {label: label_spmh, name: 'spmh', index: 'spmh', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
@@ -337,7 +356,7 @@ function getStoreStatisticsByDate() {
                 groupHeaders:[
                     {startColumnName: 'orderPickup', numberOfColumns: 7, titleText: label_average_time},
                     {startColumnName: 'min30Below', numberOfColumns: 6, titleText: label_percent_completed},
-                    {startColumnName: 'totalSales', numberOfColumns: 7, titleText: label_productivity}
+                    {startColumnName: 'totalSales', numberOfColumns: 8, titleText: label_productivity}
                 ]
             });
 

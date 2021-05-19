@@ -171,6 +171,7 @@ function getStoreStatisticsByDate() {
             let totalD7Success = 0;
 
             let errtcSum = 0;
+            let thirdtcSum = 0;
             let tcSum = 0;
             let tplhSum = 0;
             let spmhSum = 0;
@@ -221,6 +222,7 @@ function getStoreStatisticsByDate() {
                     tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
                     tmpdata.totalSales = formatInt(data[key].totalSales, 1);
                     tmpdata.errtc = formatInt(data[key].errtc);
+                    tmpdata.thirdtc = formatInt(data[key].thirdtc);
                     tmpdata.tc = formatInt(data[key].tc);
 
                     if(data[key].tplh){
@@ -288,6 +290,7 @@ function getStoreStatisticsByDate() {
                     totalD7Success += formatInt(data[key].d7Success, 1);
 
                     errtcSum += formatInt(data[key].errtc, 1);
+                    thirdtcSum += formatInt(data[key].thirdtc, 1);
                     tcSum += formatInt(data[key].tc, 1);
 
                     mydata.push(tmpdata);
@@ -322,6 +325,7 @@ function getStoreStatisticsByDate() {
             avgData.min90Under = formatFloat((min90UnderSum/tcRowCnt), 1) +"%";
             avgData.totalSales = formatInt((totalSalesSum/tcRowCnt), 1);
             avgData.errtc = formatInt((errtcSum/rowCnt), 1);
+            avgData.thirdtc = formatInt((thirdtcSum/rowCnt), 1);
             avgData.tc = formatInt((tcSum/tcRowCnt), 1);
 
             if(tpSpCnt!=0){
@@ -371,6 +375,7 @@ function getStoreStatisticsByDate() {
                     {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_errtc, name: 'errtc', index: 'errtc', width: 50, align: 'center'},
+                    {label: label_third_party, name: 'thirdtc', index: 'thirdtc', width: 50, align: 'center'},
                     {label: label_tc, name: 'tc', index: 'tc', width: 50, align: 'center'},
                     {label: label_tplh, name: 'tplh', index: 'tplh', width: 80, align: 'center'},
                     {label: label_spmh, name: 'spmh', index: 'spmh', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
@@ -390,7 +395,7 @@ function getStoreStatisticsByDate() {
                 groupHeaders:[
                     {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: label_average_time},
                     {startColumnName: 'minD7Below', numberOfColumns: 7, titleText: label_percent_completed},
-                    {startColumnName: 'totalSales', numberOfColumns: 7, titleText: label_productivity}
+                    {startColumnName: 'totalSales', numberOfColumns: 8, titleText: label_productivity}
                 ]
             });
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
