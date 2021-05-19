@@ -86,7 +86,7 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             sheet.addMergedRegion(new CellRangeAddress(0,0,3,9));
 
             sheet.addMergedRegion(new CellRangeAddress(0,0,10,locale.toString().equals("zh_TW")?10:15));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?11:16,locale.toString().equals("zh_TW")?15:22));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?11:16,locale.toString().equals("zh_TW")?16:23));
 
 
             // 0 상점
@@ -263,6 +263,11 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.thirdparty",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.tc",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
@@ -308,6 +313,7 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
         float min90Under = 0f;
         float totalSales = 0f;
         float errtc = 0f;
+        float thirdtc = 0f;
         float tc = 0f;
         float tplh = 0f;
         float spmh = 0f;
@@ -360,6 +366,7 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
             totalSales += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTotalSales()));
 
             errtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
+            thirdtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()));
             tc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTc()));
 
             if(storeStatisticsByDateList.get(i).getTplh() !=null){
@@ -465,6 +472,10 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -643,6 +654,14 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 cell2 = addListRow.createCell(colNum++);
                 if (errtc > 0 && rowCnt > 0){
                     cell2.setCellValue(String.format("%.0f",errtc/rowCnt));
+                }else{
+                    cell2.setCellValue("0");
+                }
+                cell2.setCellStyle(dataCellStyle);
+
+                cell2 = addListRow.createCell(colNum++);
+                if (thirdtc > 0 && rowCnt > 0){
+                    cell2.setCellValue(String.format("%.0f",thirdtc/rowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }

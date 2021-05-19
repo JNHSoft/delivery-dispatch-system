@@ -271,7 +271,7 @@ function getStoreStatisticsByDate() {
             }
 
             if (thirdtcSum != 0){
-                avgData.thirdtc = formatInt((thirdtc/rowCnt), 1);
+                avgData.thirdtc = formatInt((thirdtcSum/rowCnt), 1);
             } else {
                 avgData.thirdtc = "-";
             }
