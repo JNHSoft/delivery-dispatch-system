@@ -303,6 +303,9 @@ function searchRiderApprovalDetail(rowID){
             $("#approvalID").val(data.id);
             $("#approvalStatus").val(data.approvalStatus);
 
+            // 라이더ID
+            $("#riderID").val(data.riderId);
+
             if (data.sharedStatus == undefined){
                 $("#selShared").val("0").prop("selected", true);
             }else{
@@ -564,5 +567,94 @@ function resetRiderPw() {
         }
     });
 }
+
+/**
+ * 2021-05-20 타 매장에 라이더를 공유하도록 설정
+ * */
+function sharedStoreInfo(){
+    let gridData = [];
+    loading.show();
+
+    $.ajax({
+        url: "/getSharedStoreList",
+        type: "post",
+        dataType: "json",
+        success: function (data){
+            if (data.length < 1){
+                jQuery('#jqGridSharedStore').jqGrid('clearGridData');
+                jQuery('#jqGridSharedStore').jqGrid('setGridParam', {data: data, page: 1});
+                jQuery('#jqGridSharedStore').trigger('reloadGrid');
+                alert("공유 가능한 매장이 없습니다.");
+                return;
+            }
+
+            let i = 0;
+            for (var key in data){
+                if (data.hasOwnProperty(key)){
+                    let tmpObj = new Object();
+
+                    tmpObj.No = ++i;
+                    tmpObj.id = data[key].id == undefined ? "" : data[key].id;
+                    tmpObj.code = data[key].code == undefined ? "" : data[key].code;
+                    tmpObj.storeName = data[key].storeName == undefined ? "" : data[key].storeName;
+
+                    gridData.push(tmpObj);
+                }
+            }
+            popOpen("#popStoreShared");
+
+
+        },
+        error: function (err){
+            console.log(err);
+        },
+        complete: function (data) {
+            makeSharedStoreGrid(gridData);
+            loading.hide();
+        }
+    });
+}
+
+function makeSharedStoreGrid(data){
+    if (data != null){
+        jQuery('#jqGridSharedStore').jqGrid('clearGridData');
+        jQuery('#jqGridSharedStore').jqGrid('setGridParam', {data: data, page: 1});
+        jQuery('#jqGridSharedStore').trigger('reloadGrid');
+    }
+
+    $("#jqGridSharedStore").jqGrid({
+        datatype: "local",
+        data: data,
+        colModel:[
+            {label: '', name: 'id', width: 25, key: true, align: 'center', hidden: true},
+            {label: 'No', name: 'No', width: 25, align: 'center'},
+            {label: storeCode, name: 'code', width: 120, align: 'center'},
+            {label: storeName, name: 'storeName', width: 120, align: 'center'},
+        ],
+        height: 330,
+        autowidth: true,
+        rowNum: 20,
+        pager: "#jqGridPagerSharedStore",
+        ondblClickRow: function (rowid, iRow, iCol){
+            console.log(rowid, iRow, iCol);
+        },
+        loadComplete: function (data) {
+            let ids = $("#jqGrid").getDataIDs();
+
+            // $.each(ids, function (idx, rowId) {
+            //     let objRowData = $("#jqGrid").getRowData(rowId);
+            //
+            //     if (objRowData.approvalStatus == "2" || objRowData.approvalStatus == "3"){
+            //         $("#jqGrid").setRowData(rowId, false, {background: '#FFAA55'});
+            //     }else if (objRowData.approvalStatus == "4"){
+            //         $("#jqGrid").setRowData(rowId, false, {background: '#f5c717'});
+            //     }
+            // });
+        }
+    });
+
+    resizeJqGrid("#jqGridSharedStore");
+}
+
 
 /*]]>*/

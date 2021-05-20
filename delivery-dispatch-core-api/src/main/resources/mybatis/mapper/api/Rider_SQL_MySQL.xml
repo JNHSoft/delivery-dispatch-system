@@ -102,6 +102,11 @@
 		<result property="orderCount" column="order_count" />
 		<result property="myWorkCount" column="my_work_count" />
 
+		<!-- 타매장에 라이더를 빌려주는 기능 추가 -->
+		<result property="sharedStore" column="shared_store" />
+		<result property="sharedStoreId" column="shared_store_id" />
+		<result property="sharedStoreCode" column="shared_store_code" />
+
 		<association property="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
 			<result property="id" column="subGroupRiderRel_id" />
 			<result property="adminId" column="subGroupRiderRel_admin_id" />
@@ -1231,6 +1236,9 @@
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,IFNULL(R.code, REQ.code)						as code
 				,IFNULL(R.shared_flag, 0)						as shared_flag
+				,case when IFNULL(R.store_shared, 0) = 1 then 'Y' else 'N' end																															as shared_store
+				,(select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = R.admin_id and rider_id = R.id)													as shared_store_id
+				,(select store_name from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = R.admin_id and rider_id = R.id))		as shared_store_code
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1422,5 +1430,4 @@
 		where	 login_id = #{loginId}
 		and		 deleted is null;
 	</select>
-
 </mapper>

@@ -401,4 +401,12 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
         riderMapper.resetRiderPasswordforStore(rider);
         return 0;
     }
+
+    /**
+     * 21.05.20 소속된 관리자가 관리하는 스토어 현황 가져오기
+     * */
+    @Override
+    public List<Store> getSharedStoreList(Common comm){
+        return storeMapper.selectSharedStoreList(comm);
+    }
 }

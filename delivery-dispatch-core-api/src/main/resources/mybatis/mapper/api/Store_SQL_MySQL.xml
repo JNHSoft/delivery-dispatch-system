@@ -2139,5 +2139,15 @@
         ORDER BY A.id
     </select>
 
+    <!-- 21.05.20 공유 가능한 스토어 정보 가져오기 -->
+    <select id="selectSharedStoreList" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectStoreResult">
+        select	 id
+                ,code
+                ,store_name
+        from	 TB_STORE
+        where	 admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) )
+        and		 id <![CDATA[<>]]> ( select store_id from TB_STORE_SESSION where access_token = #{token} )
+    </select>
+
 </mapper>
  

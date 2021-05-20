@@ -98,4 +98,9 @@ public interface StoreRiderService {
      * 라이더 패스워드 초기화
      * */
     int resetRiderPassword(Rider rider);
+    
+    /**
+     * 21.05.20 소속된 관리자가 관리하는 스토어 현황 가져오기
+     * */
+    List<Store> getSharedStoreList(Common comm);
 }

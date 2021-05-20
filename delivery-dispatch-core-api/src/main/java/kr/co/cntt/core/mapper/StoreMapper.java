@@ -249,4 +249,9 @@ public interface StoreMapper {
     public Admin selectAdminInfo(Common common);
 
     List<Order> selectOrderListForStore(Order order);
+
+    /**
+     * 21.05.20 소속된 관리자가 관리하는 스토어 현황 가져오기
+     * */
+    List<Store> selectSharedStoreList(Common comm);
 }

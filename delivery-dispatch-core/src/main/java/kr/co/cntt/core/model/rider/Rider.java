@@ -80,4 +80,10 @@ public class Rider extends User implements Dto {
     // 21.02.16 라이더 쉐어 유무 확인 (하위 그룹간의 쉐어 유무)
     private String sharedStatus;
 
+    // 21.02.16 라이더가 타 매장에 공유되어있는지 확인
+    private String sharedStore;
+    // 21.02.16 라이더 쉐어가 되어 있는 경우, 해당 매장 Id
+    private String sharedStoreId;
+    // 21.02.16 라이더 쉐어가 되어 있는 경우, 해당 매장 코드
+    private String sharedStoreCode;
 }

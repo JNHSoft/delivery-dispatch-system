@@ -588,6 +588,18 @@ public class RiderController {
 
     }
 
+    @ResponseBody
+    @PostMapping("getSharedStoreList")
+    @CnttMethodDescription("공유 가능한 매장 정보 가져오기")
+    public List<Store> sharedStoreList(Store store){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        store.setToken(storeInfo.getStoreAccessToken());
+
+        List<Store> sharedStoreList = storeRiderService.getSharedStoreList(store);
+
+        return  sharedStoreList;
+    }
+
     // 라이더 상태 및 유효기간을 체크한다
     // true = 가입 가능
     private Boolean checkExpDate(List<RiderApprovalInfo> approvalInfos){
