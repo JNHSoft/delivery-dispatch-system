@@ -29,7 +29,7 @@ datasource:
 #    username: devuser
 #    password: devuserpw!
 
-    url: jdbc:mysql://home.kaifalife.com:33306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    url: jdbc:mysql://home.kaifalife.com:33306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false
     username: devuser
     password: devuserpw!
 

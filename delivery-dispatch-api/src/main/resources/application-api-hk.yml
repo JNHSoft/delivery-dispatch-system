@@ -25,7 +25,7 @@ datasource:
     time-between-eviction-runs-millis: 60000
     driver-class-name: com.mysql.jdbc.Driver
 
-    url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8&noAccessToProcedureBodies=true
+    url: jdbc:mysql://192.168.100.73:3306/hkdb?useUnicode=true&characterEncoding=utf8&noAccessToProcedureBodies=true&useSSL=false
     username: hkuser
     password: hkuserpw!
 

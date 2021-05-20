@@ -29,7 +29,7 @@ datasource:
     #validation-query: select 1
     driver-class-name: com.mysql.jdbc.Driver
 
-    url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://1.255.51.183:3306/devdb?useUnicode=true&characterEncoding=utf8&useSSL=false
     username: devuser
     password: devuserpw!
 

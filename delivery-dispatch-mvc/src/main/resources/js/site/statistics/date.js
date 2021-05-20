@@ -76,6 +76,7 @@ function getStoreStatisticsByDate() {
 
             // 20.07.15 errTC 추가
             let errtcSum = 0;
+            let thirdtcSum = 0;
             let tcSum = 0;
             let tplhSum = 0;
             let spmhSum = 0;
@@ -125,6 +126,13 @@ function getStoreStatisticsByDate() {
                         errtcSum += formatInt(data[key].errtc);
                     }else{
                         tmpdata.errtc = "-";
+                    }
+
+                    if (data[key].thirdtc){
+                        tmpdata.thirdtc = data[key].thirdtc;
+                        thirdtcSum += formatInt(data[key].thirdtc);
+                    }else{
+                        tmpdata.thirdtc = "-";
                     }
 
                     tmpdata.tc = data[key].tc;
@@ -229,6 +237,13 @@ function getStoreStatisticsByDate() {
                 console.log(errtcSum);
                 avgData.errtc = "-";
             }
+
+            if (thirdtcSum != 0){
+                avgData.thirdtc = formatInt((thirdtcSum/rowCnt));
+            }else{
+                avgData.thirdtc = "-";
+            }
+
             avgData.tc = parseInt((tcSum/rowCnt));
             if(tpSpCnt!=0){
                 avgData.tplh = formatFloat((tplhSum/tpSpCnt), 2);
@@ -277,6 +292,7 @@ function getStoreStatisticsByDate() {
                     {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_errtc, name: 'errtc', index: 'errtc', width: 50, align: 'center'},
+                    {label: label_third_party, name: 'thirdtc', index: 'thirdtc', width: 50, align: 'center'},
                     {label: label_tc, name: 'tc', index: 'tc', width: 50, align: 'center'},
                     {label: label_tplh, name: 'tplh', index: 'tplh', width: 80, align: 'center'},
                     {label: label_spmh, name: 'spmh', index: 'spmh', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
@@ -297,7 +313,7 @@ function getStoreStatisticsByDate() {
                 groupHeaders:[
                     {startColumnName: 'orderPickup', numberOfColumns: 7, titleText: label_average_time},
                     {startColumnName: 'min30Below', numberOfColumns: 6, titleText: label_percent_completed},
-                    {startColumnName: 'totalSales', numberOfColumns: 7, titleText: label_productivity}
+                    {startColumnName: 'totalSales', numberOfColumns: 8, titleText: label_productivity}
                 ]
             });
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
