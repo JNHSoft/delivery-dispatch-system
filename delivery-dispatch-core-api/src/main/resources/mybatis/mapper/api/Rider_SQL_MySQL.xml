@@ -814,7 +814,6 @@
 					,rider_id
 					,max(status) 			as order_status
 					,any_value(store_id) 	as store_id
-					-- ,( select id from TB_ORDER where created_datetime > CURRENT_DATE() and assigned_datetime = min(ord.assigned_datetime) and admin_id = ord.admin_id and rider_id = ord.rider_id )		as order_id
 					,count(rider_id)			as order_count
 					FROM	 TB_ORDER	as ord
 					where	 created_datetime > CURRENT_DATE()
@@ -829,6 +828,10 @@
 			and	 C.deleted is null
 		left join TB_REQ_REGIST_RIDER		as F
 			on	 B.rider_id = F.rider_id
+		left join TB_RIDER_SHARED_INFO		as G
+			on	 B.rider_id = G.rider_id
+			and	 G.deleted is null
+			and	 G.created_datetime > current_date()
 		WHERE	 A.admin_id = B.admin_id
 		AND		 A.id = B.rider_id
 		AND		 A.deleted IS NULL
@@ -842,6 +845,7 @@
 		and		 A.admin_id = ( SELECT admin_id FROM TB_STORE WHERE id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} ) )
 		and	(	 B.store_id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
 			or	(B.subgroup_id = (select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null) and B.store_id <![CDATA[<>]]> (SELECT store_id FROM TB_STORE_SESSION where access_token = #{token}) and ifnull(A.shared_flag, 0) = 1)
+			or	(G.store_id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} ))
 			)
 		order by case when A.working = '1' then case when E.order_status = '1' then 1 when E.order_status = '2' then 2 else 3 end when A.working = '3' then 4 else 99 end, A.id;
 <!--		order by A.id;-->
@@ -866,7 +870,9 @@
 				,B.admin_id				as subgroup_admin
 				,B.group_id				as group_id
 				,( select name from TB_GROUP where admin_id = B.admin_id and id = B.group_id )		as group_name
-				,B.admin_id				as group_admin_id
+				,B.admin_id					as group_admin_id
+				,case when ifnull(A.store_shared, 0) = 1 then 'Y' else 'N' end	as shared_store
+				,E.store_id					as shared_store_id
 		from	 TB_RIDER				as A
 		inner join TB_SUBGROUP_RIDER_REL	as B
 			on	 A.id = B.rider_id
@@ -874,6 +880,10 @@
 			and	 B.deleted is null
 		left join TB_REQ_REGIST_RIDER	as D
 			on	 A.id = D.rider_id
+		left join TB_RIDER_SHARED_INFO	as E
+			on	 A.id = E.rider_id
+			and	 E.deleted is null
+			and	 E.created_datetime > current_date()
 		where	 1=1
 		and		 A.deleted is null
 		AND		 D.deleted_datetime is null
@@ -884,6 +894,7 @@
 		and		 A.admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) )
 		and	(	 B.store_id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} )
 			or	(B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null ) and B.store_id <![CDATA[<>]]> (SELECT store_id FROM TB_STORE_SESSION where access_token = #{token}) and ifnull(A.shared_flag, 0) = 1)
+			or	(E.store_id = ( SELECT store_id FROM TB_STORE_SESSION where access_token = #{token} ))
 			)
 	</select>
 

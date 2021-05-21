@@ -61,23 +61,14 @@ DDELib.Orders.prototype = {
             this.checkBoxs.srchChk.each(function() {
                 $(this).prop("checked", false);
                 $(this).attr("disabled", false);
-                console.log("체크 해제 완료");
             });
 
             this.checkBoxs.srchChk.each(function (index, obj){
-                console.log('srchChk 값 확인');
-                console.log(localStorage.getItem(obj.id.toString()));
-                console.log(obj.id.toString());
                 if (localStorage.getItem(obj.id.toString()) != null){
                     obj.checked = true;
                     chkCount++;
                 }
             });
-
-            console.log("개수확인 111");
-            console.log(chkCount);
-            console.log(totalCheck);
-            console.log("개수확인 2222");
 
             if (chkCount == totalCheck || chkCount == 0){
                 this.checkBoxs.all.prop("checked", true);
@@ -86,7 +77,6 @@ DDELib.Orders.prototype = {
                         $(this).prop("checked", true);
                     }
                     $(this).attr("disabled", true);
-                    console.log("체크 완료");
                 });
                 localStorage.setItem('orderAll', 1);
             }
@@ -777,7 +767,8 @@ DDELib.Orders.prototype = {
                         if (ev.working == "1") {
                             if ($("input[name=myStoreChk]:checkbox").prop("checked")) {
                                 if (ev.subGroupRiderRel) {
-                                    if (ev.subGroupRiderRel.storeId == $('#orderMyStoreChk').val()) {
+                                    if ((ev.subGroupRiderRel.storeId === $('#orderMyStoreChk').val())
+                                        || (ev.sharedStore !== undefined && ev.sharedStore === "Y" && ev.sharedStoreId === $('#orderMyStoreChk').val())) {
                                         shtml +=  self.tpl.option.replace(/{=VALUE}/,ev.id).replace(/{=TEXT}/g,ev.name);
                                         // '<option value="' + data[key].id + '">' + data[key].name + '</option>';
                                         var tmpId = ev.id;
@@ -785,8 +776,9 @@ DDELib.Orders.prototype = {
                                     }
                                 }
                             } else {
-                                if ((ev.subGroupRiderRel.storeId == $('#orderMyStoreChk').val())
-                                    || (ev.subGroupRiderRel.storeId != $('#orderMyStoreChk').val() && ev.returnTime == null)) {
+                                if ((ev.subGroupRiderRel.storeId === $('#orderMyStoreChk').val())
+                                    || (ev.subGroupRiderRel.storeId !== $('#orderMyStoreChk').val() && ev.returnTime == null)
+                                    || (ev.sharedStore !== undefined && ev.sharedStore === "Y" && ev.sharedStoreId === $('#orderMyStoreChk').val())) {
                                     shtml += self.tpl.option.replace(/{=VALUE}/,ev.id).replace(/{=TEXT}/g,ev.name);
                                     var tmpId = ev.id;
                                     shtml2 += '<span id="rider' + tmpId + '" class="riderPhone" style="display:none">' + ev.phone + '</span>';
