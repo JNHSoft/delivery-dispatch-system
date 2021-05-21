@@ -44,6 +44,9 @@
                     <input type="hidden" name="" id="approvalID" class="input" value="" readonly="true"/>
                     <input type="hidden" name="" id="riderID" class="input" value="" readonly="true"/>
                     <input type="hidden" name="" id="approvalStatus" class="input" value="" readonly="true"/>
+                    <input type="hidden" name="" id="storeShared" class="input" value="" readonly="true"/>
+                    <input type="hidden" name="" id="sharedStoreId" class="input" value="" readonly="true"/>
+                    <input type="hidden" name="" id="sharedStoreCode" class="input" value="" readonly="true"/>
                     <table class="table tbl_left">
                         <colgroup>
                             <col width="13%" />
@@ -95,9 +98,11 @@
                         <tr>
                             <th th:text="${#messages.msg('list.search.store.shared')}"/>
                             <td>
-                                <span>공유한 상점명</span>
-                                <input type="button" th:value="${#messages.msg('list.search.shared')}" onclick="sharedStoreInfo()" />
-                                <input type="button" th:value="${#messages.msg('list.search.unshared')}" onclick="" />
+                                <div class="h30">
+                                    <span id="spSharedStatus" style="margin-right: 5px;" content="aaaa"></span><span id="spSharedStoreInfo"></span>
+                                    <a href="#" class="button h30 btn_blue" style="margin-left: 10px;" th:text="${#messages.msg('list.search.shared')}" onclick="sharedStoreInfo()"></a>
+                                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('list.search.unshared')}" onclick="regUnsharedStore()"></a>
+                                </div>
                             </td>
                             <th th:text="${#messages.msg('list.search.sharedTitle')}"/>
                             <td>
@@ -142,12 +147,12 @@
                     </div>
                 </div>
             </div>
-            <div class="pop_foot">
-                <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
-                <div class="right">
-                    <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('btn.save')}"></a>
-                </div>
-            </div>
+<!--            <div class="pop_foot">-->
+<!--                <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>-->
+<!--                <div class="right">-->
+<!--                    <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('btn.save')}"></a>-->
+<!--                </div>-->
+<!--            </div>-->
             <a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>
         </article>
     </div>
@@ -186,6 +191,9 @@
 
     let storeCode = /*[[#{store.code}]]*/ 'storeCode';
     let storeName = /*[[#{store.name}]]*/ 'storeName';
+
+    let statusShared = /*[[#{list.search.shared}]]*/ 'statusShared';
+    let statusUnshared = /*[[#{list.search.unshared}]]*/ 'statusUnshared';
 
 </script>
 </html>

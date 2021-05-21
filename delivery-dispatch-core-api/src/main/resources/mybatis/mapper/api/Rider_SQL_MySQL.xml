@@ -106,6 +106,7 @@
 		<result property="sharedStore" column="shared_store" />
 		<result property="sharedStoreId" column="shared_store_id" />
 		<result property="sharedStoreCode" column="shared_store_code" />
+		<result property="sharedStoreName" column="shared_store_name" />
 
 		<association property="subGroupRiderRel" javaType="kr.co.cntt.core.model.group.SubGroupRiderRel">
 			<result property="id" column="subGroupRiderRel_id" />
@@ -338,6 +339,12 @@
 
 		,( select os from TB_RIDER_SESSION where rider_id = TR.id order by expiry_datetime desc limit 1 )		as os
 		,ifnull(shared_flag, 0)					as rider_shared_status
+
+		,case when IFNULL(TR.store_shared, 0) = 1 then 'Y' else 'N' end																														as shared_store
+		,(select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1)													as shared_store_id
+		,(select code from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1))			as shared_store_code
+		,(select store_name from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1))		as shared_store_name
+
 		FROM TB_RIDER TR
 
 		left join
@@ -467,6 +474,10 @@
 
 			<if	test="sharedStatus != null and sharedStatus != ''">
 				, A.shared_flag = #{sharedStatus}
+			</if>
+
+			<if	test="sharedStore != null and sharedStore != ''">
+				, A.store_shared = #{sharedStore}
 			</if>
 
 			<if test="vehicleNumber != null and vehicleNumber != ''">
@@ -1236,9 +1247,10 @@
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,IFNULL(R.code, REQ.code)						as code
 				,IFNULL(R.shared_flag, 0)						as shared_flag
-				,case when IFNULL(R.store_shared, 0) = 1 then 'Y' else 'N' end																															as shared_store
-				,(select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = R.admin_id and rider_id = R.id)													as shared_store_id
-				,(select store_name from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = R.admin_id and rider_id = R.id))		as shared_store_code
+				,case when IFNULL(R.store_shared, 0) = 1 then 'Y' else 'N' end																														as shared_store
+				,(select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = R.admin_id and rider_id = R.id and deleted is null order by created_datetime desc limit 1)													as shared_store_id
+				,(select code from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = R.admin_id and rider_id = R.id and deleted is null order by created_datetime desc limit 1))			as shared_store_code
+				,(select store_name from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = R.admin_id and rider_id = R.id and deleted is null order by created_datetime desc limit 1))		as shared_store_name
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
@@ -1430,4 +1442,19 @@
 		where	 login_id = #{loginId}
 		and		 deleted is null;
 	</select>
+
+	<!-- 21.05.21 라이더의 타매장 정보 기입 -->
+	<insert id="insertSharedStoreInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
+		insert into TB_RIDER_SHARED_INFO(created_datetime, apply_user_type, admin_id, rider_id, group_id, subgroup_id, store_id)
+		values(now(), #{type}, #{adminId}, #{id}, #{subGroupStoreRel.groupId}, #{subGroupStoreRel.subGroupId}, #{sharedStoreId})
+	</insert>
+	
+	<update id="deleteSharedStoreInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
+		update 	 TB_RIDER_SHARED_INFO
+		set		 deleted = now()
+				,modified_datetime = now()
+		where 	 created_datetime > current_date()
+		and		 deleted is null
+		and		 rider_id = #{id}
+	</update>
 </mapper>

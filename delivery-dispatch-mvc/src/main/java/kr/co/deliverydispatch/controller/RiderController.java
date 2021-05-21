@@ -7,6 +7,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
+import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -599,6 +601,77 @@ public class RiderController {
 
         return  sharedStoreList;
     }
+
+    @ResponseBody
+    @PostMapping("regSharedStore")
+    @CnttMethodDescription("타 매장에 라이더 공유")
+    public boolean postSharedStore(Rider rider){
+        SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        rider.setToken(storeInfo.getStoreAccessToken());
+
+        // 현재 라이더의 상태 값 가져오기
+        Rider riderInfo = commInfoService.selectRiderInfo(rider);
+        // 공유될 매장의 정보 가져오기
+        Store searchStore = new Store();
+        searchStore.setRole("ROLE_SYSTEM");
+        searchStore.setId(rider.getSharedStoreId());
+
+        Store store = storeRiderService.getStoreInfo(searchStore);
+
+        System.out.println("######################################### 라이더의 정보111");
+        System.out.println(riderInfo);
+        System.out.println("######################################### 라이더의 정보111");
+
+        System.out.println("######################################### 스토어 정보111");
+        System.out.println(store);
+        System.out.println("######################################### 스토어 정보111");
+
+
+        // 라이더의 정보를 저장
+        rider.setAdminId(riderInfo.getAdminId());
+        rider.setType("2");
+
+
+        // 라이더에게 배정할 타 매장의 신규 정보를 저장해 놓는다.
+        rider.setSubGroupStoreRel(new SubGroupStoreRel());
+        rider.getSubGroupStoreRel().setGroupId(store.getSubGroup().getGroupId());
+        rider.getSubGroupStoreRel().setSubGroupId(store.getSubGroup().getId());
+
+        
+        System.out.println("######################################### 라이더의 정보");
+        System.out.println(rider);
+        System.out.println("######################################### 라이더의 정보");
+
+        rider.setSharedStore("1");
+        rider.setAdminId(riderInfo.getAdminId());
+
+        commInfoService.updateRiderInfo(rider);
+        
+        if (riderInfo.getSharedStore() != null && riderInfo.getSharedStore().equals("Y")){
+            // 라이더에 대한 타 매장 정보를 모두 삭제
+            storeRiderService.deleteSharedStoreInfo(rider);
+        }
+
+        // 라이더 관련 정보 생성 후 전달
+        storeRiderService.regSharedStoreInfo(rider);
+
+        return true;
+    }
+
+    @ResponseBody
+    @PostMapping("unsharedStore")
+    @CnttMethodDescription("타 매장에 공유된 라이더의 공유 취소")
+    public boolean unsharedStore(Rider rider){
+        rider.setSharedStore("0");
+
+        commInfoService.updateRiderInfo(rider);
+
+        // 등록되어 있던 라이더 정보 삭제
+        storeRiderService.deleteSharedStoreInfo(rider);
+
+        return  true;
+    }
+
 
     // 라이더 상태 및 유효기간을 체크한다
     // true = 가입 가능

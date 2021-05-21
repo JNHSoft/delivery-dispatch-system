@@ -86,4 +86,6 @@ public class Rider extends User implements Dto {
     private String sharedStoreId;
     // 21.02.16 라이더 쉐어가 되어 있는 경우, 해당 매장 코드
     private String sharedStoreCode;
+    // 21.02.16 라이더 쉐어가 되어 있는 경우, 해당 매장 이름
+    private String sharedStoreName;
 }

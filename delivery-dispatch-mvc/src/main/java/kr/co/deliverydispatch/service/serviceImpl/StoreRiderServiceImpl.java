@@ -409,4 +409,21 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
     public List<Store> getSharedStoreList(Common comm){
         return storeMapper.selectSharedStoreList(comm);
     }
+
+    /**
+     * 21.05.21 라이더가 속해질 타 매장의 정보 저장
+     * */
+    @Override
+    public int regSharedStoreInfo(Rider rider){
+        return riderMapper.insertSharedStoreInfo(rider);
+    }
+
+    /**
+     * 21.05.21 라이더가 소속되어 있던 타 매장 정보 삭제
+     * */
+    @Override
+    public int deleteSharedStoreInfo(Rider rider){
+        return riderMapper.deleteSharedStoreInfo(rider);
+    }
+
 }
