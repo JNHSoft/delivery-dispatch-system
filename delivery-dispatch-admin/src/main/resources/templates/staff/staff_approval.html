@@ -84,9 +84,13 @@
                             </td>
                         </tr>
                         <tr>
-<!--                            <th th:text="${#messages.msg('list.search.sharedTitle')}"/>-->
-                            <th/>
+                            <th th:text="${#messages.msg('list.search.store.shared')}"/>
                             <td>
+                                <div class="h30">
+                                    <span id="spSharedStatus" style="margin-right: 5px;" content="aaaa"></span><span id="spSharedStoreInfo"></span>
+                                    <a href="#" class="button h30 btn_blue" style="margin-left: 10px;" th:text="${#messages.msg('list.search.shared')}" onclick="sharedStoreInfo()"></a>
+                                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('list.search.unshared')}" onclick="regUnsharedStore()"></a>
+                                </div>
                             </td>
                             <th th:text="${#messages.msg('list.search.sharedTitle')}"/>
                             <td>
@@ -112,6 +116,35 @@
         </article>
     </div>
     <!-- POPUP 관련 F -->
+
+    <!-- POPUP 공유할 매장 리스트 관련 S -->
+    <div id="popStoreShared" class="pop_wrap" layout:fragment="popup">
+        <article class="popup">
+            <div class="pop_head">
+                <h1 th:text="${#messages.msg('rider.approval.popup.shared.store.title')}"></h1>
+            </div>
+            <div class="pop_cont">
+                <div class="tbl_wrap">
+                    <div class="jq_grid">
+                        <div>
+                            <table id="jqGridSharedStore"></table>
+                        </div>
+                    </div>
+                    <div id="jqGridPagerSharedStore">
+
+                    </div>
+                </div>
+            </div>
+            <!--            <div class="pop_foot">-->
+            <!--                <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>-->
+            <!--                <div class="right">-->
+            <!--                    <a href="#" class="button h30 btn_blue" th:text="${#messages.msg('btn.save')}"></a>-->
+            <!--                </div>-->
+            <!--            </div>-->
+            <a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>
+        </article>
+    </div>
+    <!-- POPUP 공유할 매장 리스트 관련 F -->
 
     <script type="text/javascript" th:src="@{/resources/js/site/staff/staff_approval.js}" layout:fragment="script2"></script>
 </section>
@@ -146,6 +179,11 @@
 
     var alert_confirm_mod_success = /*[[#{alert.confirm.mod.success}]]*/ 'alert_confirm_mod_success';
     var alert_address_error = /*[[#{alert.address.error}]]*/ 'alert_address_error';
+
+    let storeCode = /*[[#{store.code}]]*/ 'storeCode';
+
+    let statusShared = /*[[#{list.search.shared}]]*/ 'statusShared';
+    let statusUnshared = /*[[#{list.search.unshared}]]*/ 'statusUnshared';
 
 </script>
 </html>
