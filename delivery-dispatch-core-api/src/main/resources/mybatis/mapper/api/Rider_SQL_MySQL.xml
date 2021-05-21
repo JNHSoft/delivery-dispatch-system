@@ -41,6 +41,12 @@
 		<result property="platform" column="os" />
 		<result property="sharedStatus" column="rider_shared_status" />
 
+		<!-- 타매장에 라이더를 빌려주는 기능 추가 -->
+		<result property="sharedStore" column="shared_store" />
+		<result property="sharedStoreId" column="shared_store_id" />
+		<result property="sharedStoreCode" column="shared_store_code" />
+		<result property="sharedStoreName" column="shared_store_name" />
+
 		<association property="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
 			<result property="name" column="group_name" />
@@ -965,6 +971,8 @@
 				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = A.id and admin_id = #{adminId} and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime
 				,(select order_id from TB_ORDER_DENY_ASSIGNMENT where rider_id = A.id and admin_id = #{adminId} and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as deny_order_id
 				,ifnull(A.shared_flag, 0)					as rider_shared_status
+				,ifnull(A.store_shared, 0)					as shared_store
+				,C.store_id									as shared_store_id
 		from	(
 					select	 R.id
 							,R.status
@@ -977,6 +985,7 @@
 							,R.order_standby_datetime
 							,R.order_standby_status
 							,R.shared_flag
+							,R.store_shared
 					from	 TB_RIDER				as R
 					left join TB_REQ_REGIST_RIDER	as RR
 						on	 R.id = RR.rider_id
@@ -1002,9 +1011,24 @@
 					and		 admin_id = #{adminId}
 				)	B
 			on	 A.id = B.rider_id
+		left join
+				(
+					select	 rider_id
+							,admin_id
+							,group_id
+							,subgroup_id
+							,store_id
+					from	 TB_RIDER_SHARED_INFO
+					where	 deleted is null
+					and		 admin_id = #{adminId}
+					and      store_id = #{storeId}
+					and      created_datetime > current_date()
+				)	C
+		on	 A.id = C.rider_id
 		where	 1=1
 		and	(	 B.store_id = #{storeId}
-			or	(B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and deleted is null ) and B.store_id <![CDATA[<>]]> #{storeId} and ifnull(A.shared_flag, 0) = 1)
+			or	(B.subgroup_id = ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = #{adminId} and store_id = #{storeId} and deleted is null ) and B.store_id <![CDATA[<>]]> #{storeId} and ifnull(A.shared_flag, 0) = 1 and ifnull(A.store_shared, 0) = 0)
+			or	(C.store_id = #{storeId})
 			)
 		ORDER BY min_assigned_datetime IS NULL DESC, assign_count ASC , min_assigned_datetime ASC;
 	</select>
