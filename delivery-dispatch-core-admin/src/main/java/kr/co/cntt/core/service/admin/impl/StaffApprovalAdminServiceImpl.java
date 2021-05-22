@@ -59,6 +59,7 @@ public class StaffApprovalAdminServiceImpl implements StaffApprovalAdminService 
             common.setRole("ROLE_ADMIN");
         }
         RiderApprovalInfo info = riderMapper.selectApprovalRiderInfo(common);
+
         return info;
     }
 
@@ -131,5 +132,32 @@ public class StaffApprovalAdminServiceImpl implements StaffApprovalAdminService 
         return riderMapper.resetRiderPassword(rider);
     }
 
+    // 라이더 정보 가져오기
+    @Override
+    public Rider getRiderInfo(Common common){
+        return riderMapper.getRiderInfo(common);
+    }
+
+    // 라이더를 빌려줄 매장의 정보 가져오기
+    @Override
+    public List<Store> getSharedStoreList(Rider rider){
+        return storeMapper.selectSharedStoreList(rider);
+    }
+
+    /**
+     * 21.05.21 라이더가 속해질 타 매장의 정보 저장
+     * */
+    @Override
+    public int regSharedStoreInfo(Rider rider){
+        return riderMapper.insertSharedStoreInfo(rider);
+    }
+
+    /**
+     * 21.05.21 라이더가 소속되어 있던 타 매장 정보 삭제
+     * */
+    @Override
+    public int deleteSharedStoreInfo(Rider rider){
+        return riderMapper.deleteSharedStoreInfo(rider);
+    }
 
 }

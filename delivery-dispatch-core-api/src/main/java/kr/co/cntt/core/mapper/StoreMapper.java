@@ -6,6 +6,7 @@ import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
+import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
@@ -249,4 +250,9 @@ public interface StoreMapper {
     public Admin selectAdminInfo(Common common);
 
     List<Order> selectOrderListForStore(Order order);
+
+    /**
+     * 21.05.20 소속된 관리자가 관리하는 스토어 현황 가져오기
+     * */
+    List<Store> selectSharedStoreList(Rider rider);
 }

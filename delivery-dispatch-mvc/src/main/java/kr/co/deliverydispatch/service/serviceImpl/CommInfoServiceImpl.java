@@ -76,4 +76,9 @@ public class CommInfoServiceImpl extends ServiceSupport implements CommInfoServi
     public String selectApprovalRiderPw(String id) {
         return riderMapper.selectApprovalRiderPw(id);
     }
+
+    @Override
+    public Rider selectRiderInfo(Common common){
+        return riderMapper.getRiderInfo(common);
+    }
 }

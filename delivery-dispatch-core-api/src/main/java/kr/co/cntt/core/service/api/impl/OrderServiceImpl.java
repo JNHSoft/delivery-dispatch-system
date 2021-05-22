@@ -139,7 +139,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             default:
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
                                 // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store_id
-                                System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
+                                //System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
                                 return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
                         }
                     }
@@ -197,10 +197,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
                             log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
                             return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
-                        } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때
+                        } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null && a.getSharedStore().equals("0")) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때 21.05.21 타 매장에서 공유 받은 라이더인 경우 조건이 부합되지 않아 별도처리
                             log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
                             log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
+                        } else if (a.getSharedStore().equals("1") && a.getSharedStoreId() != null){
+                            log.debug(">>> autoAssignRider_Stream Third_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
+                            log.debug(">>> autoAssignRider_Stream Third_2:::: Stream Boolean: " + a.getReturnTime());
+
+                            return a.getSharedStoreId().equals(order.getStoreId());
                         } else {
                             log.debug(">>> autoAssignRider_Stream False:::: Stream False:::: ");
                             return false;
@@ -319,11 +324,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 현재 라이더 상태 기준의 Rider Shared Flag 값을 Order에도 넣는다.
             order.setRider(new Rider());
             order.getRider().setSharedStatus(rider.getSharedStatus());
-
-            System.out.println("###################### 라이더의 쉐어링 111");
-            System.out.println("### Rider => " + rider.getSharedStatus());
-            System.out.println("### Order.Rider => " + order.getRider().getSharedStatus());
-            System.out.println("###################### 라이더의 쉐어링 111");
 
             ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(order);
 
@@ -1741,7 +1741,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         orderCompleted.setToken(order.getToken());
         orderCompleted.setId(order.getId());
-        
+
         // 21.05.17 신규 라이더 앱 배포 후 동일하게 적용할 것
         orderCompleted.setStatus("3");
 //        if (bUpdateAndroid){
@@ -2431,6 +2431,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Override
     public int postOrderDeny(Order order) throws AppTrException {
         order.setRole("ROLE_RIDER");
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00024), ErrorCodeEnum.E00024.name());
+        }
+
 
         Order needOrderId = orderMapper.selectOrderInfo(order);
         needOrderId.setToken(order.getToken());

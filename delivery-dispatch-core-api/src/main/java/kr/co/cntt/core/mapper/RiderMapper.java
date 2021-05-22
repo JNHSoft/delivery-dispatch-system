@@ -361,4 +361,14 @@ public interface RiderMapper {
     /// 21-03-16
     /// 라이더의 당일 활동에 필요로 하는 정보 추출
     RiderActiveInfo selectRiderActiveInfo(Rider rider);
+
+    /**
+     * 21.05.21 라이더가 속해질 타 매장 정보 저장
+     * */
+    int insertSharedStoreInfo(Rider rider);
+    /**
+     * 21.05.21 라이더가 속해진 타 매장 정보 삭제
+     * */
+    int deleteSharedStoreInfo(Rider rider);
+
 }

@@ -29,6 +29,7 @@ public class ByDate implements Dto {
     private String min60To90;
     private String min90Under;
     private String errtc;
+    private String thirdtc;
     private String tc;
     private String totalSales;
     private String tplh;

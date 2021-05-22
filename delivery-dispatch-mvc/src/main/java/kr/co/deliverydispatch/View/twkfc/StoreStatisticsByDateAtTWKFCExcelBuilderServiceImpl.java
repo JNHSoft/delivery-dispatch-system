@@ -90,7 +90,7 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
             sheet.addMergedRegion(new CellRangeAddress(0,0,1,6));
 
             sheet.addMergedRegion(new CellRangeAddress(0,0,7,locale.toString().equals("zh_TW")?8:13));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?13:20));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?14:21));
 
             sheet.setColumnWidth(colNum, 15*256);
             Cell addTitle = titleRow.createCell(colNum++);
@@ -252,6 +252,11 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.thirdparty",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.tc",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
@@ -297,6 +302,7 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
         float min90Under = 0f;
         float totalSales = 0f;
         float errtc = 0f;
+        float thirdtc = 0f;
         float tc = 0f;
         float tplh = 0f;
         float spmh = 0f;
@@ -356,6 +362,7 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
             totalSales += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTotalSales()));
 
             errtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
+            thirdtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()));
             tc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTc()));
 
             if(storeStatisticsByDateList.get(i).getTplh() !=null){
@@ -453,6 +460,10 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
 
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()))));
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()))));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -619,6 +630,14 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
                 cell2 = addListRow.createCell(colNum++);
                 if (errtc > 0 && rowCnt > 0){
                     cell2.setCellValue(String.format("%.0f",errtc/rowCnt));
+                }else{
+                    cell2.setCellValue("0");
+                }
+                cell2.setCellStyle(dataCellStyle);
+
+                cell2 = addListRow.createCell(colNum++);
+                if (thirdtc > 0 && rowCnt > 0){
+                    cell2.setCellValue(String.format("%.0f",thirdtc/rowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }

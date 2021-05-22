@@ -77,7 +77,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
             sheet.addMergedRegion(new CellRangeAddress(0,0,1,7));
 
             sheet.addMergedRegion(new CellRangeAddress(0,0,8,locale.toString().equals("zh_TW")?8:13));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?13:20));
+            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?14:21));
 
 
             sheet.setColumnWidth(colNum, 15*256);
@@ -240,6 +240,11 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.thirdparty",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
             addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.tc",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
@@ -285,6 +290,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
         float min90Under = 0f;
         float totalSales = 0f;
         float errtc = 0f;           // 20.07.15
+        float thirdtc = 0f;
         float tc = 0f;
         float tplh = 0f;
         float spmh = 0f;
@@ -336,6 +342,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
                 totalSales += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTotalSales()));
 
                 errtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
+                thirdtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()));
                 tc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTc()));
 
                 if(storeStatisticsByDateList.get(i).getTplh() !=null){
@@ -436,6 +443,10 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
                 cell.setCellStyle(dataCellStyle);
 
                 cell = addListRow.createCell(colNum++);
+                cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()))));
+                cell.setCellStyle(dataCellStyle);
+
+                cell = addListRow.createCell(colNum++);
                 cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTc()))));
                 cell.setCellStyle(dataCellStyle);
 
@@ -481,59 +492,111 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(minusChkFilter(orderPickupTime/rowCnt));
+                    if (orderPickupTime > 0 && rowCnt > 0){
+                        cell2.setCellValue(minusChkFilter(orderPickupTime/rowCnt));
+                    }else{
+                        cell2.setCellValue(0);
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(minusChkFilter(pickupCompleteTime/rowCnt));
+                    if (pickupCompleteTime > 0 && rowCnt > 0){
+                        cell2.setCellValue(minusChkFilter(pickupCompleteTime/rowCnt));
+                    }else{
+                        cell2.setCellValue("0");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(minusChkFilter(orderCompleteTime/rowCnt));
+                    if (orderCompleteTime > 0 && rowCnt > 0){
+                        cell2.setCellValue(minusChkFilter(orderCompleteTime/rowCnt));
+                    }else {
+                        cell2.setCellValue("0");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     // 20.07.15 도착
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(minusChkFilter(riderStayTimeSum/rowCnt));
+                    if (riderStayTimeSum > 0 && rowCnt > 0){
+                        cell2.setCellValue(minusChkFilter(riderStayTimeSum/rowCnt));
+                    }else{
+                        cell2.setCellValue("0");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
 
                     // 빈값 가능
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(minusChkFilter(completeReturnTime/returnNullCnt));
+                    if (completeReturnTime > 0 && returnNullCnt > 0){
+                        cell2.setCellValue(minusChkFilter(completeReturnTime/returnNullCnt));
+                    }else{
+                        cell2.setCellValue("0");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(minusChkFilter(pickupReturnTime/returnNullCnt));
+                    if (pickupReturnTime > 0 && returnNullCnt > 0){
+                        cell2.setCellValue(minusChkFilter(pickupReturnTime/returnNullCnt));
+                    }else{
+                        cell2.setCellValue("0");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(minusChkFilter(orderReturnTime/returnNullCnt));
+                    if (orderReturnTime > 0 && returnNullCnt > 0){
+                        cell2.setCellValue(minusChkFilter(orderReturnTime/returnNullCnt));
+                    }else{
+                        cell2.setCellValue("0");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(String.format("%.1f",min30Below/rowCnt) +"%");
+                    if (min30Below > 0 && rowCnt > 0){
+                        cell2.setCellValue(String.format("%.1f",min30Below/rowCnt) +"%");
+                    }else{
+                        cell2.setCellValue("0%");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     if(!locale.toString().equals("zh_TW")) {
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.1f", min30To40 / rowCnt) + "%");
+                        if (min30To40 > 0 && rowCnt > 0){
+                            cell2.setCellValue(String.format("%.1f", min30To40 / rowCnt) + "%");
+                        }else{
+                            cell2.setCellValue("0%");
+                        }
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.1f", min40To50 / rowCnt) + "%");
+                        if (min40To50 > 0 && rowCnt > 0){
+                            cell2.setCellValue(String.format("%.1f", min40To50 / rowCnt) + "%");
+                        }else{
+                            cell2.setCellValue("0%");
+                        }
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.1f", min50To60 / rowCnt) + "%");
+                        if (min50To60 > 0 && rowCnt > 0){
+                            cell2.setCellValue(String.format("%.1f", min50To60 / rowCnt) + "%");
+                        }else{
+                            cell2.setCellValue("0%");
+                        }
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.1f", min60To90 / rowCnt) + "%");
+                        if (min60To90 > 0 && rowCnt > 0){
+                            cell2.setCellValue(String.format("%.1f", min60To90 / rowCnt) + "%");
+                        }else{
+                            cell2.setCellValue("0%");
+                        }
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
-                        cell2.setCellValue(String.format("%.1f", min90Under / rowCnt) + "%");
+                        if (min90Under > 0 && rowCnt > 0){
+                            cell2.setCellValue(String.format("%.1f", min90Under / rowCnt) + "%");
+                        }else{
+                            cell2.setCellValue("0%");
+                        }
                         cell2.setCellStyle(dataCellStyle);
 
                         cell2 = addListRow.createCell(colNum++);
@@ -548,6 +611,14 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
                     cell2 = addListRow.createCell(colNum++);
                     if (errtc > 0 && rowCnt > 0){
                         cell2.setCellValue(String.format("%.0f",errtc/rowCnt));
+                    }else{
+                        cell2.setCellValue("0");
+                    }
+                    cell2.setCellStyle(dataCellStyle);
+
+                    cell2 = addListRow.createCell(colNum++);
+                    if (thirdtc > 0 && rowCnt > 0){
+                        cell2.setCellValue(String.format("%.0f",thirdtc/rowCnt));
                     }else{
                         cell2.setCellValue("0");
                     }
@@ -581,11 +652,19 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
                     }
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(minusChkFilter((totalPickupReturnTime*1000)/returnNullCnt));
+                    if (totalPickupReturnTime > 0 && returnNullCnt > 0){
+                        cell2.setCellValue(minusChkFilter((totalPickupReturnTime*1000)/returnNullCnt));
+                    }else {
+                        cell2.setCellValue("0");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                     cell2 = addListRow.createCell(colNum++);
-                    cell2.setCellValue(String.format("%.1f",totalDistance/distanceNullCnt)+"km");
+                    if (totalDistance > 0 && distanceNullCnt > 0){
+                        cell2.setCellValue(String.format("%.1f",totalDistance/distanceNullCnt)+"km");
+                    }else{
+                        cell2.setCellValue("0km");
+                    }
                     cell2.setCellStyle(dataCellStyle);
 
                 }

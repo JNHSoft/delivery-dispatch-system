@@ -100,10 +100,10 @@ public class TrackerController {
                 String decBase1 = CustomEncryptUtil.decodeBase64(aseValue);
                 String decAes1 = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(aseValue));
 
-                System.out.println("#####################################################");
-                System.out.println("decBase1 = " + decBase1);
-                System.out.println("decAes1 = " + decAes1);
-                System.out.println("#####################################################");
+//                System.out.println("#####################################################");
+//                System.out.println("decBase1 = " + decBase1);
+//                System.out.println("decAes1 = " + decAes1);
+//                System.out.println("#####################################################");
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

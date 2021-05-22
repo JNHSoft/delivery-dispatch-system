@@ -163,9 +163,7 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             LocalDateTime assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
             // 예약 시간에서 30분을 제외한 시간으로 변경한다.
             LocalDateTime bookingTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
-            System.out.println("######################## bookingTime => " + bookingTime);
             LocalDateTime bookingMinusTime = bookingTime.minusMinutes(30);
-            System.out.println("######################## bookingTime minusMinutes => " + bookingTime + " ########## bookingMinusTime => " + bookingMinusTime);
 
             LocalDateTime returnTime = LocalDateTime.MIN;
             LocalDateTime arrivedTime = LocalDateTime.MIN;
