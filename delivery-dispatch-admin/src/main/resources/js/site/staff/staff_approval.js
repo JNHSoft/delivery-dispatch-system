@@ -294,6 +294,8 @@ function searchRiderApprovalDetail(rowID){
         },
         dataType: "json",
         success: function (data){
+            console.log(data);
+
             $("#riderLoginID").val(data.loginId);
             $("#riderStore").val(data.riderDetail.riderStore.storeName);
             $("#riderName").val(data.name);
@@ -592,6 +594,9 @@ function sharedStoreInfo(){
         url: "/getSharedStoreList",
         type: "post",
         dataType: "json",
+        data:{
+            id: $("#riderID").val()
+        },
         success: function (data){
             if (data.length < 1){
                 jQuery('#jqGridSharedStore').jqGrid('clearGridData');

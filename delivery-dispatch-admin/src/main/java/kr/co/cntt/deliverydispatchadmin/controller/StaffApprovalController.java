@@ -478,11 +478,12 @@ public class StaffApprovalController {
     @ResponseBody
     @PostMapping("getSharedStoreList")
     @CnttMethodDescription("공유 가능한 매장 정보 가져오기")
-    public List<Store> sharedStoreList(Store store){
+    public List<Store> sharedStoreList(Rider rider){
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        store.setToken(adminInfo.getAdminAccessToken());
+        rider.setToken(adminInfo.getAdminAccessToken());
+        rider.setRole("ROLE_ADMIN");
 
-        List<Store> sharedStoreList = staffApprovalAdminService.getSharedStoreList(store);
+        List<Store> sharedStoreList = staffApprovalAdminService.getSharedStoreList(rider);
 
         return  sharedStoreList;
     }
@@ -503,15 +504,6 @@ public class StaffApprovalController {
 
         Store store = staffApprovalAdminService.selectStoreInfo(searchStore);
 
-        System.out.println("######################################### 라이더의 정보111");
-        System.out.println(riderInfo);
-        System.out.println("######################################### 라이더의 정보111");
-
-        System.out.println("######################################### 스토어 정보111");
-        System.out.println(store);
-        System.out.println("######################################### 스토어 정보111");
-
-
         // 라이더의 정보를 저장
         rider.setAdminId(riderInfo.getAdminId());
         rider.setType("2");
@@ -521,11 +513,6 @@ public class StaffApprovalController {
         rider.setSubGroupStoreRel(new SubGroupStoreRel());
         rider.getSubGroupStoreRel().setGroupId(store.getSubGroup().getGroupId());
         rider.getSubGroupStoreRel().setSubGroupId(store.getSubGroup().getId());
-
-
-        System.out.println("######################################### 라이더의 정보");
-        System.out.println(rider);
-        System.out.println("######################################### 라이더의 정보");
 
         rider.setSharedStore("1");
         rider.setAdminId(riderInfo.getAdminId());

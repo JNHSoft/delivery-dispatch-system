@@ -124,7 +124,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
                     // 20.07.23 대만 요청으로 배달 제한 수 추가
                     if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
-                        System.out.println("################## true => " + x.getId() + " # " + x.getAssignCount());
+                        //System.out.println("################## true => " + x.getId() + " # " + x.getAssignCount());
                         return true;
                     }else{
                         switch (x.getMinOrderStatus()){
@@ -139,7 +139,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             default:
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
                                 // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store_id
-                                System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
+                                //System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
                                 return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
                         }
                     }
@@ -324,11 +324,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             // 현재 라이더 상태 기준의 Rider Shared Flag 값을 Order에도 넣는다.
             order.setRider(new Rider());
             order.getRider().setSharedStatus(rider.getSharedStatus());
-
-            System.out.println("###################### 라이더의 쉐어링 111");
-            System.out.println("### Rider => " + rider.getSharedStatus());
-            System.out.println("### Order.Rider => " + order.getRider().getSharedStatus());
-            System.out.println("###################### 라이더의 쉐어링 111");
 
             ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(order);
 

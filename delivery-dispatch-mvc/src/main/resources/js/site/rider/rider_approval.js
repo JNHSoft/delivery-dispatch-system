@@ -598,6 +598,9 @@ function sharedStoreInfo(){
         url: "/getSharedStoreList",
         type: "post",
         dataType: "json",
+        data:{
+            id: $("#riderID").val()
+        },
         success: function (data){
             if (data.length < 1){
                 jQuery('#jqGridSharedStore').jqGrid('clearGridData');

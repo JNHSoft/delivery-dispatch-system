@@ -59,6 +59,7 @@ public class StaffApprovalAdminServiceImpl implements StaffApprovalAdminService 
             common.setRole("ROLE_ADMIN");
         }
         RiderApprovalInfo info = riderMapper.selectApprovalRiderInfo(common);
+
         return info;
     }
 
@@ -139,8 +140,8 @@ public class StaffApprovalAdminServiceImpl implements StaffApprovalAdminService 
 
     // 라이더를 빌려줄 매장의 정보 가져오기
     @Override
-    public List<Store> getSharedStoreList(Common comm){
-        return storeMapper.selectSharedStoreList(comm);
+    public List<Store> getSharedStoreList(Rider rider){
+        return storeMapper.selectSharedStoreList(rider);
     }
 
     /**
