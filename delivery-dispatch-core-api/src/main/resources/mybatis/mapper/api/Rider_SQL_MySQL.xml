@@ -1492,4 +1492,17 @@
 		and		 deleted is null
 		and		 rider_id = #{id}
 	</update>
+
+	<update id="updateResetSharedRiderForStore">
+		update	 TB_RIDER					a
+				,TB_RIDER_SHARED_INFO		b
+		set		 a.store_shared = 0
+				,a.modified_datetime = now()
+		where	 a.id = b.rider_id
+		and		 a.deleted is null
+		and		 b.deleted is null
+		and		 a.store_shared = 1
+		and		 b.created_datetime <![CDATA[<]]> current_date()
+		and		 a.id not in ( select rider_id from TB_RIDER_SHARED_INFO where deleted is null and created_datetime > current_date() );
+	</update>
 </mapper>

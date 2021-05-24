@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.admin.impl;
 
+import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.Interval;
@@ -11,13 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.annotation.Resource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
@@ -79,13 +77,20 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     /**
      * 객체 주입
      */
+    RiderMapper riderMapper;
     StatisticsAdminService statisticsAdminService;
 
+
     @Autowired
-    public ScheduleAdminServiceImpl(StatisticsAdminService statisticsAdminService){
+    public ScheduleAdminServiceImpl(RiderMapper riderMapper, StatisticsAdminService statisticsAdminService){
+        this.riderMapper = riderMapper;
         this.statisticsAdminService = statisticsAdminService;
     }
 
+    @Override
+    public int resetRiderSharedStatusForStore(){
+        return riderMapper.updateResetSharedRiderForStore();
+    }
 
     @Override
     public boolean sendStatisticsByMail() {

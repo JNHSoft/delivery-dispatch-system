@@ -5,4 +5,7 @@ public interface ScheduleAdminService {
     boolean sendStatisticsByMail();
 
     boolean sendStatisticsByMailForKFC();
+
+    // 21.05.24 라이더 상태 초기화
+    int resetRiderSharedStatusForStore();
 }
