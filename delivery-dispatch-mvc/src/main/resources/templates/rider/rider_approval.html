@@ -96,12 +96,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <th th:text="${#messages.msg('list.search.store.shared')}"/>
+                            <th th:text="${#messages.msg('rider.approval.text.store.shared')}"/>
                             <td>
                                 <div class="h30">
                                     <span id="spSharedStatus" style="margin-right: 5px;" content="aaaa"></span><span id="spSharedStoreInfo"></span>
-                                    <a href="#" class="button h30 btn_blue" style="margin-left: 10px;" th:text="${#messages.msg('list.search.shared')}" onclick="sharedStoreInfo()"></a>
-                                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('list.search.unshared')}" onclick="regUnsharedStore()"></a>
+                                    <a href="#" class="button h30 btn_blue" style="margin-left: 10px;" th:text="${#messages.msg('rider.approval.btn.store.shared')}" onclick="sharedStoreInfo()"></a>
+                                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('rider.approval.btn.store.unshared')}" onclick="regUnsharedStore()"></a>
                                 </div>
                             </td>
                             <th th:text="${#messages.msg('list.search.sharedTitle')}"/>
@@ -192,8 +192,11 @@
     let storeCode = /*[[#{store.code}]]*/ 'storeCode';
     let storeName = /*[[#{store.name}]]*/ 'storeName';
 
-    let statusShared = /*[[#{list.search.shared}]]*/ 'statusShared';
-    let statusUnshared = /*[[#{list.search.unshared}]]*/ 'statusUnshared';
+    let alertSame = /*[[#{rider.approval.popup.shared.store.alert1}]]*/ 'alertSame';
+    let alertNoStore = /*[[#{rider.approval.popup.shared.store.alert2}]]*/ 'alertNoStore';
+    let alertCurrentNoShared = /*[[#{rider.approval.popup.shared.store.alert3}]]*/ 'alertCurrentNoShared';
 
+    let statusSharedForStore = /*[[#{rider.approval.result.store.shared}]]*/ 'statusSharedForStore';
+    let statusUnsharedForStore = /*[[#{rider.approval.result.store.unshared}]]*/ 'statusUnsharedForStore';
 </script>
 </html>

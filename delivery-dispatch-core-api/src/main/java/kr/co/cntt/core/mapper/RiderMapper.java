@@ -371,4 +371,8 @@ public interface RiderMapper {
      * */
     int deleteSharedStoreInfo(Rider rider);
 
+    /**
+     * 21.05.21 매장에 할당된 타 매장의 라이더 정보 초기화
+     * */
+    int updateResetSharedRiderForStore();
 }

@@ -506,7 +506,7 @@ public class StaffApprovalController {
 
         // 라이더의 정보를 저장
         rider.setAdminId(riderInfo.getAdminId());
-        rider.setType("2");
+        rider.setType("1");
 
 
         // 라이더에게 배정할 타 매장의 신규 정보를 저장해 놓는다.

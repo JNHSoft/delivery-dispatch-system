@@ -128,14 +128,14 @@ function makeRowButton(obj){
 
     switch (obj.approvalStatus){
         case "0":           // 요청
-            btn_approval = "<button class='button btn_pale_green h30 w100 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
+            btn_approval = "<button class='button btn_pale_green h30 w100 mr10' style='font-size: 14px;' onclick='riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
             btn_disapproval = "<button class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</button>"
             btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             break;
         case "1":           // 수락
         case "5":
             if (bExpDate){
-                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit + "</button>"
+                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit + "</button>"
             }else{
                 btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             }
@@ -315,13 +315,13 @@ function searchRiderApprovalDetail(rowID){
                 $("#sharedStoreId").val(data.riderDetail.sharedStoreId);
                 $("#sharedStoreCode").val(data.riderDetail.sharedStoreCode);
 
-                $("#spSharedStatus").html(statusShared);
+                $("#spSharedStatus").html(statusSharedForStore);
                 $("#spSharedStoreInfo").html(data.riderDetail.sharedStoreName + '(' + data.riderDetail.sharedStoreCode + ')');
             }else{
                 $("#sharedStoreId").val('');
                 $("#sharedStoreCode").val('');
 
-                $("#spSharedStatus").html(statusUnshared);
+                $("#spSharedStatus").html(statusUnsharedForStore);
                 $("#spSharedStoreInfo").html('');
             }
 
@@ -602,7 +602,7 @@ function sharedStoreInfo(){
                 jQuery('#jqGridSharedStore').jqGrid('clearGridData');
                 jQuery('#jqGridSharedStore').jqGrid('setGridParam', {data: data, page: 1});
                 jQuery('#jqGridSharedStore').trigger('reloadGrid');
-                alert("공유 가능한 매장이 없습니다.");
+                alert(alertNoStore);
                 popOpen("#popStoreShared");
                 return;
             }
@@ -657,7 +657,7 @@ function makeSharedStoreGrid(data){
             let sharedStoreId = $("#sharedStoreId").val();
 
             if (rowid === sharedStoreId){
-                alert('변경할 대상이 변경 전 대상과 동일합니다. 다른 매장을 선택하십시오.');
+                alert(alertSame);
                 return;
             }
 
@@ -673,8 +673,6 @@ function makeSharedStoreGrid(data){
 
                 $.each(ids, function (idx, rowId) {
                     let objRowData = $("#jqGridSharedStore").getRowData(rowId);
-
-                    console.log("objRowData => ", objRowData);
 
                     if (objRowData.id == sharedStoreId){
                         $("#jqGridSharedStore").setRowData(rowId, false, {background: '#FFAA55'});
@@ -693,7 +691,7 @@ function makeSharedStoreGrid(data){
 function regUnsharedStore(){
 
     if ($("#storeShared").val() == "N"){
-        alert("미공유 상태입니다.");
+        alert(alertCurrentNoShared);
         return;
     }
 

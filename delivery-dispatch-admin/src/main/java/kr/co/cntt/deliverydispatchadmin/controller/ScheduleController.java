@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -118,6 +116,21 @@ public class ScheduleController {
             log.info("피자헛 통계 전송 결과 : " + scheduleAdminService.sendStatisticsByMail());
             log.info("KFC 통계 전송 결과 : " + scheduleAdminService.sendStatisticsByMailForKFC());
             log.info("통계 자료 메일 발송 완료 ## " + new Date());
+        }
+    }
+
+    /**
+     * 21.05.24 일정 시간이 될 시에 라이더에게 공유된 매장 초기화
+     * 매일 00시 05분에 매장에 공유된 타 라이더의 초기화 진행
+     * */
+    @Scheduled(cron = "0 05 0 * * *")
+    public void resetRiderSharedForStore(){
+        String strInternalIP = getInternalIP();
+
+        if (Arrays.stream(internalIP.split(",")).filter(x -> x.equals(strInternalIP)).count() > 0){
+            log.info("라이더의 타 매장 공유 설정 초기화 시작 ## " + new Date());
+            log.info("라이더의 매장 공유 초기화 결과 : " + scheduleAdminService.resetRiderSharedStatusForStore());
+            log.info("라이더의 타 매장 공유 설정 초기화 완료 ## " + new Date());
         }
     }
 
