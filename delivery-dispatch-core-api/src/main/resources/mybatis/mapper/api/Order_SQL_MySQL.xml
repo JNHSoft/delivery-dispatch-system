@@ -525,7 +525,8 @@
 			, assigned_datetime = #{assignedDatetime}
 		</if>
 		<if test="assignedDatetime == '-2'">
-			, assigned_datetime = ifnull(assigned_datetime, now())
+			-- , assigned_datetime = ifnull(assigned_datetime, now())
+			, assigned_datetime = ifnull(assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) >= 30 then 30 else ifnull(cooking_time, 30) end minute))
 		</if>
 		<if test="assignedDatetime == '-1'">
 			, assigned_datetime = NULL

@@ -1246,7 +1246,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssigned.setId(order.getCombinedOrderId());
             combinedOrderAssigned.setRiderId(order.getRiderId());
             combinedOrderAssigned.setStatus("1");
-            combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+            //combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+            combinedOrderAssigned.setAssignedDatetime("-2");
             combinedOrderAssigned.setToken(order.getToken());
 
             if (S_Rider != null && S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
