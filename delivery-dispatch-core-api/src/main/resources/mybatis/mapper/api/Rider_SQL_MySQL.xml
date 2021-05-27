@@ -1483,7 +1483,7 @@
 		insert into TB_RIDER_SHARED_INFO(created_datetime, apply_user_type, admin_id, rider_id, group_id, subgroup_id, store_id)
 		values(now(), #{type}, #{adminId}, #{id}, #{subGroupStoreRel.groupId}, #{subGroupStoreRel.subGroupId}, #{sharedStoreId})
 	</insert>
-	
+
 	<update id="deleteSharedStoreInfo" parameterType="kr.co.cntt.core.model.rider.Rider">
 		update 	 TB_RIDER_SHARED_INFO
 		set		 deleted = now()

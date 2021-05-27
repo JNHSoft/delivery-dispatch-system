@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -633,7 +632,7 @@ public class RiderController {
         rider.setAdminId(riderInfo.getAdminId());
 
         commInfoService.updateRiderInfo(rider);
-        
+
         if (riderInfo.getSharedStore() != null && riderInfo.getSharedStore().equals("Y")){
             // 라이더에 대한 타 매장 정보를 모두 삭제
             storeRiderService.deleteSharedStoreInfo(rider);
