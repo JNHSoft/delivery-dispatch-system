@@ -27,4 +27,7 @@ public interface CommInfoService {
     int deleteRiderInfo(Rider rider);
 
     String selectApprovalRiderPw(String id);
+
+    // 라이더 정보 가져오기
+    Rider selectRiderInfo(Common common);
 }

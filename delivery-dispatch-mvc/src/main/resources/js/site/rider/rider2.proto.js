@@ -86,7 +86,6 @@ DDELib.Riders.prototype = {
                 }
             }
         }
-
     },
     bindEvent: function () {
         this.log("bindEvent");

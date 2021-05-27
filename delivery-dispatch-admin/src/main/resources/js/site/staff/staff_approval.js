@@ -128,14 +128,14 @@ function makeRowButton(obj){
 
     switch (obj.approvalStatus){
         case "0":           // 요청
-            btn_approval = "<button class='button btn_pale_green h30 w100 mr10' style='font-size: 14px;' onclick='javascript:riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
+            btn_approval = "<button class='button btn_pale_green h30 w100 mr10' style='font-size: 14px;' onclick='riderApprovalStatus(" + obj.id + ", 1)'>" + approval + "</button>";
             btn_disapproval = "<button class='button h30 w100 btn_blue mr10' onclick='statusDisapproval(" + obj.id + ", " + obj.approvalStatus + ")'>" + disapproval + "</button>"
             btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             break;
         case "1":           // 수락
         case "5":
             if (bExpDate){
-                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='javascript:searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit + "</button>"
+                btn_edit = "<button class='button btn_blue h30 w80' style='font-size: 14px;' onclick='searchRiderApprovalDetail(" + obj.id + ")'>" + btnEdit + "</button>"
             }else{
                 btn_edit = "<button class='button btn_gray2 h30 w80' style='font-size: 14px;' disabled>" + btnEdit + "</button>"
             }
@@ -294,6 +294,8 @@ function searchRiderApprovalDetail(rowID){
         },
         dataType: "json",
         success: function (data){
+            console.log(data);
+
             $("#riderLoginID").val(data.loginId);
             $("#riderStore").val(data.riderDetail.riderStore.storeName);
             $("#riderName").val(data.name);
@@ -303,6 +305,26 @@ function searchRiderApprovalDetail(rowID){
             $("#riderExpDate").val(data.session == undefined ? "" : dateFormat(data.session.expiryDatetime));
             $("#approvalID").val(data.id);
             $("#approvalStatus").val(data.approvalStatus);
+
+            // 라이더ID
+            $("#riderID").val(data.riderId);
+            $("#storeShared").val(data.riderDetail === undefined ? "N" : data.riderDetail.sharedStore);
+
+
+            if (data.riderDetail !== undefined && data.riderDetail.sharedStore !== "" && data.riderDetail.sharedStore === "Y"){
+                $("#sharedStoreId").val(data.riderDetail.sharedStoreId);
+                $("#sharedStoreCode").val(data.riderDetail.sharedStoreCode);
+
+                $("#spSharedStatus").html(statusSharedForStore);
+                $("#spSharedStoreInfo").html(data.riderDetail.sharedStoreName + '(' + data.riderDetail.sharedStoreCode + ')');
+            }else{
+                $("#sharedStoreId").val('');
+                $("#sharedStoreCode").val('');
+
+                $("#spSharedStatus").html(statusUnsharedForStore);
+                $("#spSharedStoreInfo").html('');
+            }
+
 
             if (data.sharedStatus == undefined){
                 $("#selShared").val("0").prop("selected", true);
@@ -560,4 +582,168 @@ function resetRiderPw() {
         }
     });
 }
+
+/**
+ * 21.05.21 라이더의 타 매장 공유
+ * */
+function sharedStoreInfo(){
+    let gridData = [];
+    loading.show();
+
+    $.ajax({
+        url: "/getSharedStoreList",
+        type: "post",
+        dataType: "json",
+        data:{
+            id: $("#riderID").val()
+        },
+        success: function (data){
+            if (data.length < 1){
+                jQuery('#jqGridSharedStore').jqGrid('clearGridData');
+                jQuery('#jqGridSharedStore').jqGrid('setGridParam', {data: data, page: 1});
+                jQuery('#jqGridSharedStore').trigger('reloadGrid');
+                alert(alertNoStore);
+                popOpen("#popStoreShared");
+                return;
+            }
+
+            let i = 0;
+            for (var key in data){
+                if (data.hasOwnProperty(key)){
+                    let tmpObj = new Object();
+
+                    tmpObj.No = ++i;
+                    tmpObj.id = data[key].id == undefined ? "" : data[key].id;
+                    tmpObj.code = data[key].code == undefined ? "" : data[key].code;
+                    tmpObj.storeName = data[key].storeName == undefined ? "" : data[key].storeName;
+
+                    gridData.push(tmpObj);
+                }
+            }
+            popOpen("#popStoreShared");
+        },
+        error: function (err){
+            console.log(err);
+        },
+        complete: function (data) {
+            makeSharedStoreGrid(gridData);
+            popOpen("#popStoreShared");
+            loading.hide();
+        }
+    });
+}
+
+function makeSharedStoreGrid(data){
+    if (data != null){
+        jQuery('#jqGridSharedStore').jqGrid('clearGridData');
+        jQuery('#jqGridSharedStore').jqGrid('setGridParam', {data: data, page: 1});
+        jQuery('#jqGridSharedStore').trigger('reloadGrid');
+    }
+
+    $("#jqGridSharedStore").jqGrid({
+        datatype: "local",
+        data: data,
+        colModel:[
+            {label: '', name: 'id', width: 25, key: true, align: 'center', hidden: true},
+            {label: 'No', name: 'No', width: 25, align: 'center'},
+            {label: storeCode, name: 'code', width: 120, align: 'center'},
+            {label: storeName, name: 'storeName', width: 120, align: 'center'},
+        ],
+        height: 330,
+        autowidth: true,
+        rowNum: 20,
+        pager: "#jqGridPagerSharedStore",
+        ondblClickRow: function (rowid, iRow, iCol){
+            let sharedStoreId = $("#sharedStoreId").val();
+
+            if (rowid === sharedStoreId){
+                alert(alertSame);
+                return;
+            }
+
+            // 신규 등록 또는 값 변경 진행
+            regSharedStore(rowid);
+        },
+        loadComplete: function (data) {
+            let sharedStatus = $("#storeShared").val();
+            let sharedStoreId = $("#sharedStoreId").val();
+
+            if (sharedStatus == "Y"){
+                let ids = $("#jqGridSharedStore").getDataIDs();
+
+                $.each(ids, function (idx, rowId) {
+                    let objRowData = $("#jqGridSharedStore").getRowData(rowId);
+
+                    if (objRowData.id == sharedStoreId){
+                        $("#jqGridSharedStore").setRowData(rowId, false, {background: '#FFAA55'});
+                    }
+                });
+            }
+        }
+    });
+
+    resizeJqGrid("#jqGridSharedStore");
+}
+
+/**
+ * 2021-05-21 타 매장에 공유된 라이더의 회수한다.
+ * */
+function regUnsharedStore(){
+
+    if ($("#storeShared").val() == "N"){
+        alert(alertCurrentNoShared);
+        return;
+    }
+
+    loading.show();
+
+    $.ajax({
+        url: "/unsharedStore",
+        method: "post",
+        dataType: "text",
+        data:{
+            id: $("#riderID").val()
+        },
+        success: function (data){
+            console.log(data);
+        },
+        error: function (err){
+            console.log(err);
+        },
+        complete: function (data){
+            console.log(data);
+            loading.hide();
+            getApprovalRiderList();
+            popClose("#popRiderInfo");
+        }
+    });
+}
+
+function regSharedStore(storeid){
+
+    loading.show();
+
+    $.ajax({
+        url: "/regSharedStore",
+        method: "post",
+        dataType: "text",
+        data: {
+            id: $("#riderID").val(),
+            sharedStoreId: storeid
+        },
+        success: function (data){
+            console.log(data);
+        },
+        error: function (err){
+
+        },
+        complete: function (data){
+            loading.hide();
+            getApprovalRiderList();
+            popClose("#popStoreShared");
+            popClose("#popRiderInfo");
+        }
+    });
+}
+
 /*]]>*/

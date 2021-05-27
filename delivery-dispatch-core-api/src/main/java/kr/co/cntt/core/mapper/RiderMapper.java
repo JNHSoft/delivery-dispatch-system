@@ -330,4 +330,18 @@ public interface RiderMapper {
      * 가입 승인 요청 시, 기존에 등록된 LOGIN ID가 있는지 확인
      * */
     List<Rider> selectRegistRiderInfoList(User user);
+
+    /**
+     * 21.05.21 라이더가 속해질 타 매장 정보 저장
+     * */
+    int insertSharedStoreInfo(Rider rider);
+    /**
+     * 21.05.21 라이더가 속해진 타 매장 정보 삭제
+     * */
+    int deleteSharedStoreInfo(Rider rider);
+
+    /**
+     * 21.05.21 매장에 할당된 타 매장의 라이더 정보 초기화
+     * */
+    int updateResetSharedRiderForStore();
 }

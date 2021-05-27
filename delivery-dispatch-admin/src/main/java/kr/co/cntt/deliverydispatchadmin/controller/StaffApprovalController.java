@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
+import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
@@ -448,6 +449,101 @@ public class StaffApprovalController {
         return true;
     }
 
+
+    /**
+     * 라이더 비밀번호 초기화
+     *
+     * @return
+     */
+    @ResponseBody
+    @PutMapping("putRiderPwReset")
+    @CnttMethodDescription("라이더 비밀번호 초기화")
+    public String resetRiderPw(Rider rider){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        rider.setToken(adminInfo.getAdminAccessToken());
+
+        ShaEncoder sha = new ShaEncoder(512);
+        rider.setLoginPw(sha.encode("1111"));
+
+        int iResetPwd = staffApprovalAdminService.resetRiderPassword(rider);
+
+        if (iResetPwd == 0) {
+            return "err";
+        } else {
+            return "ok";
+        }
+    }
+
+
+    @ResponseBody
+    @PostMapping("getSharedStoreList")
+    @CnttMethodDescription("공유 가능한 매장 정보 가져오기")
+    public List<Store> sharedStoreList(Rider rider){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        rider.setToken(adminInfo.getAdminAccessToken());
+        rider.setRole("ROLE_ADMIN");
+
+        List<Store> sharedStoreList = staffApprovalAdminService.getSharedStoreList(rider);
+
+        return  sharedStoreList;
+    }
+
+    @ResponseBody
+    @PostMapping("regSharedStore")
+    @CnttMethodDescription("타 매장에 라이더 공유")
+    public boolean postSharedStore(Rider rider){
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        rider.setToken(adminInfo.getAdminAccessToken());
+
+        // 현재 라이더의 상태 값 가져오기
+        Rider riderInfo = staffApprovalAdminService.getRiderInfo(rider);
+        // 공유될 매장의 정보 가져오기
+        Store searchStore = new Store();
+        searchStore.setRole("ROLE_SYSTEM");
+        searchStore.setId(rider.getSharedStoreId());
+
+        Store store = staffApprovalAdminService.selectStoreInfo(searchStore);
+
+        // 라이더의 정보를 저장
+        rider.setAdminId(riderInfo.getAdminId());
+        rider.setType("1");
+
+
+        // 라이더에게 배정할 타 매장의 신규 정보를 저장해 놓는다.
+        rider.setSubGroupStoreRel(new SubGroupStoreRel());
+        rider.getSubGroupStoreRel().setGroupId(store.getSubGroup().getGroupId());
+        rider.getSubGroupStoreRel().setSubGroupId(store.getSubGroup().getId());
+
+        rider.setSharedStore("1");
+        rider.setAdminId(riderInfo.getAdminId());
+
+        staffApprovalAdminService.updateRiderInfo(rider);
+
+        if (riderInfo.getSharedStore() != null && riderInfo.getSharedStore().equals("Y")){
+            // 라이더에 대한 타 매장 정보를 모두 삭제
+            staffApprovalAdminService.deleteSharedStoreInfo(rider);
+        }
+
+        // 라이더 관련 정보 생성 후 전달
+        staffApprovalAdminService.regSharedStoreInfo(rider);
+
+        return true;
+    }
+
+    @ResponseBody
+    @PostMapping("unsharedStore")
+    @CnttMethodDescription("타 매장에 공유된 라이더의 공유 취소")
+    public boolean unsharedStore(Rider rider){
+        rider.setSharedStore("0");
+
+        staffApprovalAdminService.updateRiderInfo(rider);
+
+        // 등록되어 있던 라이더 정보 삭제
+        staffApprovalAdminService.deleteSharedStoreInfo(rider);
+
+        return  true;
+    }
+
     // 라이더 상태 및 유효기간을 체크한다
     // true = 가입 가능
     private Boolean checkExpDate(List<RiderApprovalInfo> approvalInfos){
@@ -493,30 +589,6 @@ public class StaffApprovalController {
             return false;
         }else{
             return true;
-        }
-    }
-
-    /**
-     * 라이더 비밀번호 초기화
-     *
-     * @return
-     */
-    @ResponseBody
-    @PutMapping("putRiderPwReset")
-    @CnttMethodDescription("라이더 비밀번호 초기화")
-    public String resetRiderPw(Rider rider){
-        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        rider.setToken(adminInfo.getAdminAccessToken());
-
-        ShaEncoder sha = new ShaEncoder(512);
-        rider.setLoginPw(sha.encode("1111"));
-
-        int iResetPwd = staffApprovalAdminService.resetRiderPassword(rider);
-
-        if (iResetPwd == 0) {
-            return "err";
-        } else {
-            return "ok";
         }
     }
 }

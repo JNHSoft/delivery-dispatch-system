@@ -2130,13 +2130,38 @@
                 ,A.combined_order_id
                 ,A.phone
                 ,A.message
-                ,case when ( select shared_flag from TB_RIDER where id = A.rider_id ) = 1 then 'Y' else 'N' end		as rider_shared_status
+                ,case when ifnull(shared_flag, 0) = 1 then 'Y' else 'N' end		as rider_shared_status
         from	 TB_ORDER	A
         where	 date_format(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > date_format(ifnull(reservation_datetime, now()), '%Y-%m-%d %H:%i')
         and		 A.status in (3, 4)
         and		 A.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
         and		 A.store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} )
         ORDER BY A.id
+    </select>
+
+    <!-- 21.05.20 공유 가능한 스토어 정보 가져오기 -->
+    <select id="selectSharedStoreList" parameterType="kr.co.cntt.core.model.store.Store" resultMap="selectStoreResult">
+        select	 a.id
+                ,a.code
+                ,a.store_name
+        from	 TB_STORE				as a
+        left join TB_SUBGROUP_STORE_REL	as b
+            on	 a.id = b.store_id
+        where	 b.subgroup_id is not null
+        and		 a.deleted is null
+        and		 b.deleted is null
+        <choose>
+            <when test="role != null and role == 'ROLE_ADMIN'">
+                and		 a.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
+            </when>
+            <when test="role != null and role == 'ROLE_STORE'">
+                and		 a.admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) )
+            </when>
+            <otherwise>
+                and      1 <![CDATA[<>]]> 1
+            </otherwise>
+        </choose>
+        and		 a.id not in (select store_id from TB_SUBGROUP_RIDER_REL where rider_id = #{id})
     </select>
 
 </mapper>

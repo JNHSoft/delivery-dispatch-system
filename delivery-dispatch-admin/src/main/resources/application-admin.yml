@@ -109,3 +109,14 @@ api.tracker.key: sg9h6f6rg4lo1i3s255czh31v9zxc029
 
 ---
 api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav
+
+---
+#메일 서버 정보 세팅
+mail:
+  host: smtp.gmail.com
+  port: 465
+  auth: true
+  enable: true
+  id: kaifalife@gmail.com
+  pwd: trvqzugmzmflhbnb
+  sender: 10.105.0.3,10.150.0.8,192.168.227.1

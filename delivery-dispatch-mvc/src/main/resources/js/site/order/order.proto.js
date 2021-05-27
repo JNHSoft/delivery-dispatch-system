@@ -767,7 +767,8 @@ DDELib.Orders.prototype = {
                         if (ev.working == "1") {
                             if ($("input[name=myStoreChk]:checkbox").prop("checked")) {
                                 if (ev.subGroupRiderRel) {
-                                    if (ev.subGroupRiderRel.storeId == $('#orderMyStoreChk').val()) {
+                                    if ((ev.subGroupRiderRel.storeId === $('#orderMyStoreChk').val())
+                                        || (ev.sharedStore !== undefined && ev.sharedStore === "Y" && ev.sharedStoreId === $('#orderMyStoreChk').val())) {
                                         shtml +=  self.tpl.option.replace(/{=VALUE}/,ev.id).replace(/{=TEXT}/g,ev.name);
                                         // '<option value="' + data[key].id + '">' + data[key].name + '</option>';
                                         var tmpId = ev.id;
@@ -775,8 +776,9 @@ DDELib.Orders.prototype = {
                                     }
                                 }
                             } else {
-                                if ((ev.subGroupRiderRel.storeId == $('#orderMyStoreChk').val())
-                                    || (ev.subGroupRiderRel.storeId != $('#orderMyStoreChk').val() && ev.returnTime == null)) {
+                                if ((ev.subGroupRiderRel.storeId === $('#orderMyStoreChk').val())
+                                    || (ev.subGroupRiderRel.storeId !== $('#orderMyStoreChk').val() && ev.returnTime == null)
+                                    || (ev.sharedStore !== undefined && ev.sharedStore === "Y" && ev.sharedStoreId === $('#orderMyStoreChk').val())) {
                                     shtml += self.tpl.option.replace(/{=VALUE}/,ev.id).replace(/{=TEXT}/g,ev.name);
                                     var tmpId = ev.id;
                                     shtml2 += '<span id="rider' + tmpId + '" class="riderPhone" style="display:none">' + ev.phone + '</span>';

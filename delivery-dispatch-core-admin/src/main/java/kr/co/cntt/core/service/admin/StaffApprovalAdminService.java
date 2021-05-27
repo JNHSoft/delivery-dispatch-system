@@ -49,4 +49,19 @@ public interface StaffApprovalAdminService {
     // 라이더 비밀번호 초기화
     int resetRiderPassword(Rider rider);
 
+    // 라이더 정보 가져오기
+    Rider getRiderInfo(Common common);
+
+    // 라이더를 빌려줄 매장의 정보 가져오기
+    List<Store> getSharedStoreList(Rider rider);
+
+    /**
+     * 21.05.21 라이더가 속해질 타 매장의 정보 저장
+     * */
+    int regSharedStoreInfo(Rider rider);
+
+    /**
+     * 21.05.21 라이더가 소속되어 있던 타 매장 정보 삭제
+     * */
+    int deleteSharedStoreInfo(Rider rider);
 }

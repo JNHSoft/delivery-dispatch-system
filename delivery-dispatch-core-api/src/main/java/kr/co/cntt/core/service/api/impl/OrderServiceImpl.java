@@ -124,7 +124,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
                     // 20.07.23 대만 요청으로 배달 제한 수 추가
                     if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
-                        System.out.println("################## true => " + x.getId() + " # " + x.getAssignCount());
+                        //System.out.println("################## true => " + x.getId() + " # " + x.getAssignCount());
                         return true;
                     }else{
                         switch (x.getMinOrderStatus()){
@@ -139,6 +139,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             default:
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
                                 // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store_id
+                                //System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
                                 return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
                         }
                     }
@@ -194,12 +195,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     .filter(a -> a.getSubGroupRiderRel() != null && a.getSubGroupRiderRel().getStoreId() != null)      // 소속된 매장 정보가 없는 경우 제외한다.
                     .filter(a -> {
                         if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
-                                log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
+                            log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
                             return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
-                        } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때
-                                log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
-                                log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
+                        } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null && a.getSharedStore().equals("0")) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때 21.05.21 타 매장에서 공유 받은 라이더인 경우 조건이 부합되지 않아 별도처리
+                            log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
+                            log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
+                        } else if (a.getSharedStore().equals("1") && a.getSharedStoreId() != null){
+                            log.debug(">>> autoAssignRider_Stream Third_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
+                            log.debug(">>> autoAssignRider_Stream Third_2:::: Stream Boolean: " + a.getReturnTime());
+
+                            return a.getSharedStoreId().equals(order.getStoreId());
                         } else {
                             log.debug(">>> autoAssignRider_Stream False:::: Stream False:::: ");
                             return false;
@@ -313,6 +319,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             } else {
                 order.setAssignXy("none");
             }
+
+            // 21.05.17
+            // 현재 라이더 상태 기준의 Rider Shared Flag 값을 Order에도 넣는다.
+            order.setRider(new Rider());
+            order.getRider().setSharedStatus(rider.getSharedStatus());
 
             ArrayList<Map> tokens = (ArrayList) riderMapper.selectRiderToken(order);
 
@@ -731,10 +742,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
     /**
      * <p> putOrder
-     *
-     * @param order
-     * @return
-     * @throws AppTrException
      */
     public int putOrder(Order order) throws AppTrException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -812,10 +819,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 변경되어야 될 내용 적용 ex. 배정취소
                     // 20.08.03 배정 취소 사라지게 하기
                     // 20.08.28 배정 시간을 임의로 조정
-                    /**
+                    /*
                      * 배정시간 조건
                      * 예약 시간 마이너스 QT 타임을 비교하여, QT 타임보다 낮은 경우에 한하여, 예약시간 - QT 타임 시간을 적용한다.
-                     * */
+                     */
                     int orgQT = 0;
 
                     try {
@@ -1048,7 +1055,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 CompletableFuture<FirebaseResponse> iosPushNotification = androidPushNotificationsService.sendGroup(fcmBody, "ios");
                                 checkFcmResponse(iosPushNotification);
                             }catch (Exception e){
-//                                e.printStackTrace();
                                 log.error(e.getMessage());
                             }
                         }
@@ -1201,7 +1207,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssigned.setId(order.getCombinedOrderId());
             combinedOrderAssigned.setRiderId(order.getRiderId());
             combinedOrderAssigned.setStatus("1");
-            combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+            //combinedOrderAssigned.setAssignedDatetime(LocalDateTime.now().toString());
+            combinedOrderAssigned.setAssignedDatetime("-2");
             combinedOrderAssigned.setToken(order.getToken());
 
             if (S_Rider != null && S_Rider.getLatitude() != null && !S_Rider.getLatitude().equals("")) {
@@ -1745,9 +1752,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             storeDTO.setId(S_Order.getStoreId());
         }
 
-        /**
+        /*
          * 주문 상태를 매장에 전송하기 위하여 추출
-         * */
+         */
         Store S_Store = storeMapper.selectStoreInfo(storeDTO);
 
         if (result != 0) {
@@ -2381,6 +2388,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
     @Override
     public int postOrderDeny(Order order) throws AppTrException {
         order.setRole("ROLE_RIDER");
+        int selectOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+        if (selectOrderIsCompletedIsCanceled != 0) {
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00024), ErrorCodeEnum.E00024.name());
+        }
+
 
         Order needOrderId = orderMapper.selectOrderInfo(order);
         needOrderId.setToken(order.getToken());

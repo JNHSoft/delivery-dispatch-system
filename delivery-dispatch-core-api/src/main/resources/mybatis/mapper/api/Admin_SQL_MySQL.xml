@@ -1080,7 +1080,7 @@
 				,TBO.address
 				,TBO.paid
 				,TBO.reg_order_id
-				,case when TBR.shared_flag = 1 then 'Y' else 'N' end	as rider_shared_status
+				,case when ifnull(TBO.shared_flag, 0) = 1 then 'Y' else 'N' end	as rider_shared_status
 		FROM	 TB_ORDER AS TBO
 		LEFT JOIN  TB_RIDER AS TBR
 			on	 TBR.id = TBO.rider_id
@@ -1150,7 +1150,7 @@
 		, TBO.latitude
 		, TBO.longitude
 		, TBO.distance
-		,case when TBR.shared_flag = 1 then 'Y' else 'N' end	as rider_shared_status
+		,case when ifnull(TBO.shared_flag, 0) = 1 then 'Y' else 'N' end	as rider_shared_status
 
 		,TBR.login_id				as rider_login_id
 		FROM TB_ORDER AS TBO
