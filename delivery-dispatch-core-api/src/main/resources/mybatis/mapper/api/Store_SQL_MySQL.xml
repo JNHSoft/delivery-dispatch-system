@@ -652,496 +652,97 @@
 
     <!-- 통계 조회 List1 -->
     <select id="selectStoreStatisticsByOrder" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
-        SELECT
-        admin_id
-        , store_id
-        , rider_id
-        , status
-        , id
-        , created_datetime
-        , cooking_time
-        , assigned_datetime
-        , picked_up_datetime
-        , arrived_datetime
-        , completed_datetime
-        , return_datetime
-        , reservation_datetime
-        , reservation_status
-        , reg_order_id
-        , distance
-
-        FROM TB_ORDER
-        WHERE
-        store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-        AND status in (3)
-        AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > created_datetime
-        AND created_datetime > #{currentDatetime}
-        AND third_party_id IS NULL
+        SELECT	 admin_id
+                ,store_id
+                ,rider_id
+                ,status
+                ,id
+                ,created_datetime
+                ,cooking_time
+                ,assigned_datetime
+                ,picked_up_datetime
+                ,ifnull(arrived_datetime, completed_datetime)               as arrived_datetime
+                ,completed_datetime
+                ,return_datetime
+                ,reservation_datetime
+                ,reservation_status
+                ,reg_order_id
+                ,distance
+        FROM	 TB_ORDER
+        WHERE	 store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+        AND		 status in (3)
+        AND		 date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > created_datetime
+        AND		 created_datetime > #{currentDatetime}
+        AND		 third_party_id IS NULL
     </select>
 
     <!-- 통계 30분 미만 통계에서 35분 미만통계로 계산만 변경적용 Nick -->
     <!-- 통계 조회 List2 -->
     <select id="selectStoreStatisticsByDate" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.ByDate">
         <![CDATA[
-        SELECT	 (SELECT store_name FROM TB_STORE WHERE id = A.store_id) AS store_name
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and  picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then time_to_sec(timediff(picked_up_datetime, date_sub(A.reservation_datetime, interval 30 minute)))
-                        else NULL
-                    end
-                ) AS order_pickup
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then time_to_sec(timediff(arrived_datetime, picked_up_datetime))
-                        else NULL
-                    end
-                ) AS pickup_complete
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then time_to_sec(timediff(arrived_datetime, assigned_datetime))
-                        else NULL
-                    end
-                ) AS order_complete
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then time_to_sec(timediff(completed_datetime, arrived_datetime))
-                        else NULL
-                    end
-                )	as stay_time
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then time_to_sec(timediff(return_datetime, completed_datetime))
-                        else NULL
-                    end
-                ) AS complete_return
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then time_to_sec(timediff(return_datetime, picked_up_datetime))
-                        else NULL
-                    end
-                ) AS pickup_return
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then time_to_sec(timediff(return_datetime, assigned_datetime))
-                        else NULL
-                    end
-                ) AS order_return
-
-                ,count(
-                    CASE
-                        WHEN timestampdiff(MINUTE, assigned_datetime, arrived_datetime) <= 30 THEN
-                            case
+        SELECT	 ( select store_name from TB_STORE where id = T.store_id )																									as store_name
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )			as order_pickup
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, picked_up_datetime)) else null end )												as pickup_complete
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )											as order_complete
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(completed_datetime, arrived_datetime)) else null end )												as stay_time
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, completed_datetime)) else null end )												as complete_return
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else null end )												as pickup_return
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, newAssignedDatetime)) else null end )												as order_return
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then case when condition1 = 1 then 1 else null end else null end )
+                 / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_30below
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 then case when condition1 = 1 then 1 else null end else null end )
+                 / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_30to40
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 then case when condition1 = 1 then 1 else null end else null end )
+                 / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_40to50
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 then case when condition1 = 1 then 1 else null end else null end )
+                 / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_50to60
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 then case when condition1 = 1 then 1 else null end else null end )
+                 / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_60to90
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 then case when condition1 = 1 then 1 else null end else null end )
+                 / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_90under
+                ,count( case when condition1 = 1 then null when third_party_id is not null then null else 1 end )															as errtc
+                ,count( case when third_party_id is not null then 1 else null end )																							as thirdtc
+                ,count( case when condition1 = 1 then 1 else null end )																										as tc
+                ,sum( case when condition1 = 1 then total_price else 0 end )																								as total_sales
+                ,count( case when condition1 = 1 then 1 else null end )
+                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)								as tplh
+                ,sum( case when condition1 = 1 then total_price else 0 end )
+                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)								as spmh
+                ,sum( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else 0 end )													as total_pickup_return
+                ,avg( case when condition1 = 1 then distance else null end )																								as avg_distance
+        FROM	(
+                    SELECT	 store_id
+                            ,cooking_time
+                            ,reservation_datetime
+                            ,picked_up_datetime
+                            ,arrived_datetime
+                            ,completed_datetime
+                            ,return_datetime
+                            ,total_price
+                            ,distance
+                            ,third_party_id
+                            ,if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
+                            ,case
                                 when	 assigned_datetime is not null
-                                    and	 picked_up_datetime is not null
+                                    and  picked_up_datetime is not null
                                     and	 ifnull(arrived_datetime, completed_datetime) is not null
                                     and	 return_datetime is not null
                                     and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
+                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
                                     and  third_party_id is null
                                 then 1
-                                else NULL
-                            end
-                        else NULL
-                    END
-                ) /
-                count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then 1
-                        else NULL
-                    end
-                ) * 100 AS min_30below
-                ,count(
-                    CASE
-                        WHEN timestampdiff(MINUTE, assigned_datetime, arrived_datetime) between 31 and 41 THEN
-                            case
-                                when	 assigned_datetime is not null
-                                    and	 picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else NULL
-                            end
-                        else null
-                    END
-                ) /
-                count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then 1
-                        else null
-                    end
-                ) * 100 AS min_30to40
-                ,count(
-                    CASE
-                        WHEN timestampdiff(MINUTE, assigned_datetime, arrived_datetime) between 41 and 51 THEN
-                            case
-                                when	 assigned_datetime is not null
-                                    and	 picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else NULL
-                            end
-                        else null
-                    END
-                ) /
-                count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then 1
-                        else NULL
-                    end
-                ) * 100 AS min_40to50
-                ,count(
-                    CASE
-                        WHEN timestampdiff(MINUTE, assigned_datetime, arrived_datetime) between 51 and 61 THEN
-                            case
-                                when	 assigned_datetime is not null
-                                    and	 picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else NULL
-                            end
-                        else null
-                    END
-                ) /
-                count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then 1
-                        else NULL
-                    end
-                ) * 100 AS min_50to60
-                ,count(
-                    CASE
-                        WHEN timestampdiff(MINUTE, assigned_datetime, arrived_datetime) between 61 and 91 THEN
-                            case
-                                when	 assigned_datetime is not null
-                                    and	 picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else NULL
-                            end
-                        else null
-                    END
-                ) /
-                count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then 1
-                        else NULL
-                    end
-                ) * 100 AS min_60to90
-                ,count(
-                    CASE
-                        WHEN timestampdiff(MINUTE, assigned_datetime, arrived_datetime) > 90 THEN
-                            case
-                                when	 assigned_datetime is not null
-                                    and	 picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else NULL
-                            end
-                        else null
-                    END
-                ) /
-                count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then 1
-                        else NULL
-                    end
-                ) * 100 AS min_90under
-
-                ,count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then NULL
-                        when     third_party_id is not null
-                        then null
-                        else 1
-                    end
-                ) AS errtc
-                ,count(
-                    case
-                        when	 third_party_id is not null
-                        then 1
-                        else NULL
-                    end
-                ) AS thirdtc
-                ,count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then 1
-                        else NULL
-                    end
-                ) AS tc
-                ,sum(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then total_price
-                        else 0
-                    end
-                ) AS total_sales
-                ,count(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then 1
-                        else NULL
-                    end
-                ) / ROUND(sum(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then timestampdiff(MINUTE, picked_up_datetime, return_datetime)
-                        else 0
-                    end) / 60, 2) AS tplh
-                ,sum(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then total_price
-                        else 0
-                    end
-                ) / ROUND(sum(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then timestampdiff(MINUTE, picked_up_datetime, return_datetime)
-                        else 0
-                    end) / 60, 2) AS spmh
-                ,sum(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then time_to_sec(timediff(return_datetime, picked_up_datetime))
-                        else 0
-                    end
-                ) AS total_pickup_return
-                ,avg(
-                    case
-                        when	 assigned_datetime is not null
-                            and	 picked_up_datetime is not null
-                            and	 ifnull(arrived_datetime, completed_datetime) is not null
-                            and	 return_datetime is not null
-                            and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                            and	 timestampdiff(SECOND, assigned_datetime, ifnull(arrived_datetime, completed_datetime)) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, picked_up_datetime) >= 0
-                            and	 timestampdiff(SECOND, assigned_datetime, return_datetime) >= 0
-                            and  third_party_id is null
-                        then distance
-                        else NULL
-                    end
-                ) AS avg_distance
-        FROM	 TB_ORDER AS A
-        WHERE	 A.status in (3)
-        AND		 A.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                                else 0
+                            end					as condition1
+                    FROM	 TB_ORDER
+                    WHERE	 status in (3)
+                    AND		 store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                    AND		 date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > created_datetime
+                    AND		 created_datetime > #{currentDatetime}
+                )	T
+        group by store_id
         ]]>
-        AND		 date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > A.created_datetime
-        AND		 A.created_datetime > #{currentDatetime}
-        group by store_id;
     </select>
 
     <!-- 20.06.04 대만 KFC 요청으로 인하여 분리 작업 -->

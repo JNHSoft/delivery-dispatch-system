@@ -245,13 +245,13 @@ function getStoreStatistics() {
                     tmpData.origin_reg_order_id = data[key].regOrderId;
                     tmpData.orderDate = timeSetDate(data[key].createdDatetime);
                     //tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
-                    //tmpData.orderPickup1 = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);
+                    tmpData.orderPickup1 = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);
                     // 21-05-13 PizzaHut만 예약시간에서 무조건 -30분한 시간으로 계산 될 수 있도록 적용 단, 배정 ~ 픽업 간의 시간 표기만 적용한다.
-                    let tmpDate = new Date(data[key].reservationDatetime);
-                    tmpDate.setMinutes(tmpDate.getMinutes()-30);            // 예약 시간에서 30분을 제외한다.
-
+                    //let tmpDate = new Date(data[key].reservationDatetime);
+                    //tmpDate.setMinutes(tmpDate.getMinutes()-30);            // 예약 시간에서 30분을 제외한다.
+``
                     // 배정 ~ 픽업 시간이 1분 미만인 경우 파란색으로 표시
-                    tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(tmpDate, data[key].pickedUpDatetime));           // 21-05-13 30분 제외 시간으로 변경
+                    tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));           // 21-05-13 30분 제외 시간으로 변경
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
 
                     // 고객에게 머무른 시간 체크
@@ -267,7 +267,7 @@ function getStoreStatistics() {
 
                     //orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
                     //orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
-                    orderPickupSum += minusTime(tmpDate, data[key].pickedUpDatetime);   // 예약 시간에서 30분을 제외한 값
+                    orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
                     pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
                     //orderCompleteSum += minusTime(data[key].createdDatetime, data[key].arrivedDatetime);
                     orderCompleteSum += minusTime(data[key].assignedDatetime, data[key].arrivedDatetime);

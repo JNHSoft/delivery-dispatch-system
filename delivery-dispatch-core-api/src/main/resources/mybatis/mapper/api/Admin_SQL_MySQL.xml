@@ -1467,7 +1467,7 @@
 				,ORD.cooking_time
 				,ORD.assigned_datetime
 				,ORD.picked_up_datetime
-				,ORD.arrived_datetime
+				,ifnull(ORD.arrived_datetime, ORD.completed_datetime)			as  arrived_datetime
 				,ORD.completed_datetime
 				,ORD.return_datetime
 				,ORD.reservation_datetime
