@@ -55,4 +55,6 @@ public class Tracker implements Dto {
     private String riderLeftImg;
     private String riderRightImg;
 
+    //제 3자배송인지 확인하기 위함
+    private String thirdPartyId;
 }
