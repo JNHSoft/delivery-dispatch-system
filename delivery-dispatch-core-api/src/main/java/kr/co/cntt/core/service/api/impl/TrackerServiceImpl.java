@@ -87,17 +87,6 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             String code = jsonObject.get("code").toString();
             String webOrderId = jsonObject.get("webOrderId").toString();
 
-//            Map<String, String> query_pairs = new LinkedHashMap<>();
-//            String decParam = aesUtil.aesDecode(encParam);
-//            String[] pairs = decParam.split("&");
-//            for (String pair : pairs) {
-//                int idx = pair.indexOf("=");
-//                query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
-//            }
-//
-//            String regOrderId = query_pairs.get("regOrderId");
-//            String code = query_pairs.get("code");
-
             tracker.setRegOrderId(regOrderId);
             tracker.setCode(code);
             tracker.setWebOrderId(webOrderId);
