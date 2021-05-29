@@ -70,37 +70,28 @@
 
 	<!-- selectTracker -->
 	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
-		SELECT
-			A.created_datetime
-			<!--, A.reg_order_id-->
-			<!--, A.web_order_id-->
-			<!--, A.id-->
-			, A.status
-			, A.latitude
-			, A.longitude
-			<!--, A.cooking_time-->
-			, A.distance
-			, A.reservation_datetime
-			<!--, A.detail_address-->
-			<!--, B.code-->
-			, B.store_name AS store_name
-			<!--, B.phone AS store_phone-->
-			, B.latitude AS store_latitude
-			, B.longitude AS store_longitude
-			, B.detail_address AS store_detail_address
-			<!--, C.name AS rider_name-->
-			<!--, C.phone AS rider_phone-->
-			, C.latitude AS rider_latitude
-			, C.longitude AS rider_longitude
-			, ifnull(B.brand_code, '')	as brand_code
-			, ( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = B.brand_code )	as brand_name
-		FROM TB_ORDER AS A
+		SELECT	 A.created_datetime
+				,A.status
+				,A.latitude
+				,A.longitude
+				,A.distance
+				,A.reservation_datetime
+				,B.store_name AS store_name
+				,B.latitude AS store_latitude
+				,B.longitude AS store_longitude
+				,B.detail_address AS store_detail_address
+				,C.latitude AS rider_latitude
+				,C.longitude AS rider_longitude
+				,ifnull(B.brand_code, '')	as brand_code
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = B.brand_code )	as brand_name
+				,A.third_party_id
+		FROM 	 TB_ORDER AS A
 		LEFT JOIN TB_STORE AS B
-		ON A.store_id = B.id
+			ON 	 A.store_id = B.id
 		LEFT JOIN TB_RIDER AS C
-		ON A.rider_id = C.id
-		WHERE A.web_order_id = #{webOrderId}
-			AND B.code = #{code}
+			ON 	 A.rider_id = C.id
+		WHERE 	 A.web_order_id = #{webOrderId}
+		AND 	 B.code = #{code}
 	</select>
 
 </mapper>
