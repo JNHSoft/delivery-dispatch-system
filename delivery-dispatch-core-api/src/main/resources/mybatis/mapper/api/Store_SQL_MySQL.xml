@@ -648,7 +648,7 @@
     <select id="selectStoreStatisticsByDate" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.ByDate">
         <![CDATA[
         SELECT	 ( select store_name from TB_STORE where id = T.store_id )																									as store_name
-                ,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )			as order_pickup
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )			                                as order_pickup
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, picked_up_datetime)) else null end )												as pickup_complete
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )											as order_complete
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(completed_datetime, arrived_datetime)) else null end )												as stay_time
@@ -716,10 +716,10 @@
     <select id="selectStoreStatisticsByDateAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.ByDate">
         <![CDATA[
         select	 ( select store_name from TB_STORE where id = t.store_id )																					as store_name
-                ,sum( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 and condition1 = 1 then 1 else 0 end )						as d7_success
+                ,sum( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 and condition1 = 1 then 1 else 0 end )					as d7_success
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )							as order_pickup
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, picked_up_datetime)) else null end )								as pickup_complete
-                ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )								as order_complete
+                ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )							as order_complete
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, arrived_datetime)) else null end )								as complete_return
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else null end )								as pickup_return
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, newAssignedDatetime)) else null end )								as order_return
