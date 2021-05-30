@@ -59,10 +59,28 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
         int rowNum = 0;
         int colNum = 0;
         orderList.stream().map(a -> {
-            if (a.getReservationStatus().equals("1")) {
-                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
+            LocalDateTime reserveDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+            int qtTime = 0;
+
+            try {
+                qtTime = Integer.parseInt(a.getCookingTime());
+            }catch (Exception e){
+                qtTime = 30;
             }
+
+            if (qtTime > 30 || qtTime < 1) qtTime = 30;
+
+
+            // 21.05.27 배정 시간의 규칙 변경
+            // 배정 시간이 예약 시간 - QT 시간보다 늦어진 경우에 예약 - QT 시간으로 계산한다.
+            LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+            LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
+
+            if (ChronoUnit.MINUTES.between(assignTime, qtAssignTime) < 0){
+                assignTime = qtAssignTime;
+                a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
+            }
+
             return true;
         }).collect(Collectors.toList());
         Sheet sheet = wb.createSheet("StoreStatisticsByOrder");
@@ -155,7 +173,6 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
         int distanceNullCnt = 0;
 
         for (int i = 0, r = orderList.size(); i < r; i++) {
-            LocalDateTime orderTime = LocalDateTime.parse((orderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
             LocalDateTime completeTime = LocalDateTime.parse((orderList.get(i).getCompletedDatetime()).replace(" ", "T"));
 

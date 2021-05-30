@@ -55,13 +55,6 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
     public void setOrderStatisticsByOrderExcel(SXSSFWorkbook wb, List<Order> orderList) {
         int rowNum = 0;
         int colNum = 0;
-        orderList.stream().map(a -> {
-            if (a.getReservationStatus().equals("1")) {
-                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
-            }
-            return true;
-        }).collect(Collectors.toList());
         Sheet sheet = wb.createSheet("StoreStatisticsByOrder");
 
         // Title Area Cell Style
@@ -158,9 +151,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
         int distanceNullCnt = 0;
 
         for (int i = 0, r = orderList.size(); i < r; i++) {
-            LocalDateTime orderTime = LocalDateTime.parse((orderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
-            LocalDateTime completeTime = LocalDateTime.parse((orderList.get(i).getCompletedDatetime()).replace(" ", "T"));
 
             // Assign Time
             LocalDateTime assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
