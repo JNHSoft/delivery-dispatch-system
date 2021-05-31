@@ -59,9 +59,28 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
         int rowNum = 0;
         int colNum = 0;
         orderList.stream().map(a -> {
-            if (a.getReservationStatus().equals("1")) {
-                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
+            if (a.getReservationDatetime() != null && a.getAssignedDatetime() != null){
+                LocalDateTime reserveDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                int qtTime = 0;
+
+                try {
+                    qtTime = Integer.parseInt(a.getCookingTime());
+                }catch (Exception e){
+                    qtTime = 30;
+                }
+
+                if (qtTime > 30 || qtTime < 1) qtTime = 30;
+
+
+                // 21.05.27 배정 시간의 규칙 변경
+                // 배정 시간이 예약 시간 - QT 시간보다 늦어진 경우에 예약 - QT 시간으로 계산한다.
+                LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
+
+                if (ChronoUnit.MINUTES.between(assignTime, qtAssignTime) < 0){
+                    assignTime = qtAssignTime;
+                    a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
+                }
             }
             return true;
         }).collect(Collectors.toList());
@@ -155,15 +174,14 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
         int distanceNullCnt = 0;
 
         for (int i = 0, r = orderList.size(); i < r; i++) {
-            LocalDateTime orderTime = LocalDateTime.parse((orderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
             LocalDateTime completeTime = LocalDateTime.parse((orderList.get(i).getCompletedDatetime()).replace(" ", "T"));
 
             // Assigned 시간으로 변경
-            LocalDateTime assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
-            // 예약 시간에서 30분을 제외한 시간으로 변경한다.
-            LocalDateTime bookingTime = LocalDateTime.parse((orderList.get(i).getReservationDatetime()).replace(" ", "T"));
-            LocalDateTime bookingMinusTime = bookingTime.minusMinutes(30);
+            LocalDateTime assignTime = null;
+            if (orderList.get(i).getAssignedDatetime() != null){
+                assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+            }
 
             LocalDateTime returnTime = LocalDateTime.MIN;
             LocalDateTime arrivedTime = LocalDateTime.MIN;
@@ -180,17 +198,13 @@ public class StatisticsAdminOrderBuilderServiceImpl extends ExcelComm {
             }
 
 
-            //long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
-            //long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
-            long orderPickup = bookingMinusTime.until(pickupTime, ChronoUnit.MILLIS);       // 예약 시간에서 30분을 제외한 시간으로 변경
+            long orderPickup = assignTime == null ? 0 : assignTime.until(pickupTime, ChronoUnit.MILLIS);
             long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
-            //long orderComplete = arrivedTime != LocalDateTime.MIN ? orderTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
-            long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
+            long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime == null ? 0 : assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long stayTime = arrivedTime != LocalDateTime.MIN ? arrivedTime.until(completeTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            //long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            long orderReturn = returnTime != LocalDateTime.MIN ? assignTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
+            long orderReturn = returnTime != LocalDateTime.MIN ? assignTime == null ? 0 : assignTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
             orderPickupTime += orderPickup;
             pickupCompleteTime += pickupComplete;

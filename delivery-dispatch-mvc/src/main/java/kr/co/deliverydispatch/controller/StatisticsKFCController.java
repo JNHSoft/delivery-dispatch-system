@@ -76,25 +76,36 @@ public class StatisticsKFCController {
         List<Order> statisticsList = storeStatementService.getStoreStatisticsByOrder(order);
         return statisticsList.stream().filter(a->{
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
-                if (a.getReservationStatus().equals("1")) {
-                    // 2020.05.18 예약시간 - 30분 시간이 실제 주문 시간보다 큰 경우에만 적용
-                    LocalDateTime createDatetime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                    LocalDateTime bookingDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-
-                    if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
-                        LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                        a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
-                    }
-                }
+                LocalDateTime reserveDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
                 LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
-                LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+                // 배달 도착 시간
+                LocalDateTime arrivedTime = LocalDateTime.parse((a.getArrivedDatetime()).replace(" ", "T"));
+                //LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
                 LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
-                // 19.08.26 데이터 격차가 음수로 나오는지 여부 체크 / 날짜 기준 변경
+                int qtTime = 0;
+
+                try {
+                    qtTime = Integer.parseInt(a.getCookingTime());
+                }catch (Exception e){
+                    log.error("QT Time 파싱 중 오류 발생", e);
+                    qtTime = 30;
+                }
+
+                if (qtTime > 30 || qtTime < 1) qtTime = 30;
+
+                // 21.05.27 배정 시간의 규칙 변경
+                // 배정 시간이 예약 시간 - QT 시간보다 늦어진 경우에 예약 - QT 시간으로 계산한다.
                 LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
+
+                if (ChronoUnit.MINUTES.between(assignTime, qtAssignTime) < 0){
+                    assignTime = qtAssignTime;
+                    a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
+                }
 
                 // 19.08.26 페이지에서 음수가 나오는 오류 사항 변경
                 // 20.05.22 기준 시간 변경
-                if(completeTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(assignTime.until(completeTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                if(arrivedTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
                     return true;
                 }else{
                     return false;
@@ -140,32 +151,36 @@ public class StatisticsKFCController {
                 storeStatisticsByOrderList.stream().filter(a -> {
                     // 다음 4가지의 모든 시간이 NULL 이 아닌 경우만 가져온다
                     if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null){
-                        // 예약 주문인 경우 30분을 제외한다.
-                        if (a.getReservationStatus().equals("1")){
-                            // 2020.05.18 예약시간 - 30분 시간이 실제 주문 시간보다 큰 경우에만 적용
-                            LocalDateTime createDatetime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
-                            LocalDateTime bookingDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-
-                            if (createDatetime.isBefore(bookingDatetime.minusMinutes(30))){
-                                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                                a.setCreatedDatetime((reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"))));
-                            }
-                        }
-
+                        LocalDateTime reserveDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
                         // 픽업 시간
                         LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+                        // 배달 도착 시간
+                        LocalDateTime arrivedTime = LocalDateTime.parse((a.getArrivedDatetime()).replace(" ", "T"));
                         // 배달 완료 시간
-                        LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+                        //LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
                         // 기사 복귀 시간
                         LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+                        int qtTime = 0;
+
+                        try {
+                            qtTime = Integer.parseInt(a.getCookingTime());
+                        }catch (Exception e){
+                            log.error("QT Time 파싱 중 오류 발생", e);
+                            qtTime = 30;
+                        }
+
+                        if (qtTime > 30 || qtTime < 1) qtTime = 30;
 
                         // 주문 등록 시간
-                        //LocalDateTime createdTime = LocalDateTime.parse((a.getCreatedDatetime()).replace(" ", "T"));
                         LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                        LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
 
-                        // 다음 조건에 부합한 경우만 표기되도록 적용
-                        //if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
-                        if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(completeTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                        if (ChronoUnit.MINUTES.between(assignTime, qtAssignTime) < 0){
+                            assignTime = qtAssignTime;
+                            a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
+                        }
+
+                        if (arrivedTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
                             return  true;
                         }else {
                             return  false;
