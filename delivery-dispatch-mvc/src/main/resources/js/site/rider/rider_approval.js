@@ -2,8 +2,53 @@
 let loading = $('<div id="loading"><div><p style="background-color: #838d96"></p></div></div>').appendTo(document.body).hide();
 // Start Function after page loading completed.
 $(function (){
+    makeObjectEvent();
     getApprovalRiderList();
 });
+
+function makeObjectEvent(){
+    // 검색 버튼 클릭 이벤트
+    $("#searchButton").off().on('click', function(){
+        console.log("승인 목록에서 라이더 검색 버튼 클릭");
+
+        let searchText = $("#searchText").val();
+        let filter = {
+            groupOp : "OR",
+            rules : []
+        };
+
+        let select = $("#searchSelect option:selected").val();
+
+        console.log("select => " + select);
+
+        switch (select){
+            case "all":
+                filter.rules.push({
+                    field: 'riderID',
+                    op: "cn",
+                    data: searchText
+                });
+
+                filter.rules.push({
+                   field: 'riderName',
+                   op: "cn",
+                   data: searchText
+                });
+            default:
+                filter.rules.push({
+                    field: select,
+                    op: "cn",
+                    data: searchText
+                })
+        }
+
+        // 필터 선택이 완료 되었다면, 그리드를 갱신하자
+        let grid = $("#jqGrid");
+        grid[0].p.search = filter.rules.length > 0;
+        $.extend(grid[0].p.postData, {filter: JSON.stringify(filter)});
+        grid.trigger("reloadGrid", [{page: 1}]);
+    });
+}
 
 function getApprovalRiderList(){
 
@@ -84,6 +129,7 @@ function makeGrid(data){
         ],
         height: 660,
         autowidth: true,
+        loadonce: false,
         rowNum: 20,
         pager: "#jqGridPager",
         loadComplete: function (data) {
