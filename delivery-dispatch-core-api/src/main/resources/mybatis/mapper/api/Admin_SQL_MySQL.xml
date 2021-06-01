@@ -1580,7 +1580,7 @@
 						and	 b.group_id = #{group.id}
 					</if>
 					<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-						and	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
+						and	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 					</if>
 					<if test="storeId != null and storeId != ''">
 						and	 b.store_id = #{storeId}
@@ -1690,13 +1690,13 @@
 
 					-- 검색 조건 추가
 					<if test="group != null and group.id != null and group.id != ''">
-						AND	 B.group_id = #{group.id}
+						AND	 b.group_id = #{group.id}
 					</if>
 					<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-						AND	 B.subgroup_id in ( select id from TB_SUBGROUP where admin_id = B.admin_id and group_id = B.group_id and id = B.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
+						AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
 					</if>
 					<if test="storeId != null and storeId != ''">
-						AND	 B.store_id = #{storeId}
+						AND	 b.store_id = #{storeId}
 					</if>
 				)	t
 		group by store_id, group_id, subgroup_id
