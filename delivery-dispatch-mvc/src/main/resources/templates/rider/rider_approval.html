@@ -20,9 +20,9 @@
             <div class="right">
                 <span>
                     <select name="searchSelect" id="searchSelect" class="select">
-                        <option value="all">전체</option>
-                        <option value="riderID">로그인아이디</option>
-                        <option value="riderName">라이더명</option>
+                        <option value="all" th:text="${#messages.msg('list.search.all')}" />
+                        <option value="riderID" th:text="${#messages.msg('list.search.rider')}" />
+                        <option value="riderName" th:text="${#messages.msg('list.search.rider.loginid')}" />
                     </select>
                     <input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
                     <button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}"/></button>
