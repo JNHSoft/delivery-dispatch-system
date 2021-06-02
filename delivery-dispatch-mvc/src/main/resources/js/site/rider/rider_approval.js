@@ -12,6 +12,13 @@ function makeObjectEvent(){
         console.log("승인 목록에서 라이더 검색 버튼 클릭");
 
         let searchText = $("#searchText").val();
+        // 만약 검색어가 없다면, 전체 데이터 리플레시
+        if (searchText.length < 1){
+            $("#jqGrid")[0].p.search = false;
+            getApprovalRiderList();
+            return;
+        }
+
         let filter = {
             groupOp : "OR",
             rules : []
@@ -30,23 +37,28 @@ function makeObjectEvent(){
                 });
 
                 filter.rules.push({
-                   field: 'riderName',
-                   op: "cn",
-                   data: searchText
+                    field: 'riderName',
+                    op: "cn",
+                    data: searchText
                 });
+
+                break;
             default:
                 filter.rules.push({
                     field: select,
                     op: "cn",
                     data: searchText
-                })
+                });
+
+                break;
         }
 
         // 필터 선택이 완료 되었다면, 그리드를 갱신하자
         let grid = $("#jqGrid");
-        grid[0].p.search = filter.rules.length > 0;
-        $.extend(grid[0].p.postData, {filter: JSON.stringify(filter)});
-        grid.trigger("reloadGrid", [{page: 1}]);
+        //grid[0].p.search = filter.rules.length > 0;
+        grid[0].p.search = true;
+        $.extend(grid[0].p.postData, { filters: JSON.stringify(filter) });
+        grid.trigger("reloadGrid", [{ page: 1 }]);
     });
 }
 
@@ -129,7 +141,6 @@ function makeGrid(data){
         ],
         height: 660,
         autowidth: true,
-        loadonce: false,
         rowNum: 20,
         pager: "#jqGridPager",
         loadComplete: function (data) {
