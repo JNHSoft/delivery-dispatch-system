@@ -1626,19 +1626,43 @@
 				,avgD30
 				,tpoh
 		from	(
-					select	 count(*)																																					as orderCount
-							,ifnull(round(avg(timestampdiff(SECOND, A.assigned_datetime, A.picked_up_datetime)), 0), 0)																	as avgD7Times
-							,ifnull(concat(round((sum(case WHEN timestampdiff(MINUTE, assigned_datetime, picked_up_datetime) <![CDATA[<]]> 7 THEN 1 else 0 end )	/ count(*)) * 100, 1), '%'), 0)	as avgD7
-							,ifnull(round(avg(timestampdiff(SECOND, A.assigned_datetime, arrived_datetime)), 0), 0)																		as avgD30Times
-							,ifnull(concat(round((sum(case WHEN timestampdiff(MINUTE, A.assigned_datetime, arrived_datetime) <![CDATA[<= 30]]> THEN 1 else 0 end )	/ count(*)) * 100, 1), '%'), 0)	as avgD30
-							,ifnull(round((count(*) / (timestampdiff(second, min(B.working_on), ifnull(max(B.working_off), now())) / 3600)), 1), 0)												as tpoh
-					from	 TB_ORDER						A
-							,TB_RIDER_WORKING_HISTORY		B
-					where	 A.rider_id = B.rider_id
-					and		 B.working_status = 1
-					and      A.status = 3
-					and		 A.rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
-					and		 A.reservation_datetime > current_date()
-				)	as a
+					select	 count(*)																																				as orderCount
+							,ifnull(round(avg(timestampdiff(SECOND, assigned_datetime, picked_up_datetime)), 0), 0)																	as avgD7Times
+							,ifnull(concat(round((sum(case WHEN timestampdiff(MINUTE, assigned_datetime, picked_up_datetime) <![CDATA[<]]> case when brand_code = 1 then 14 else 7 end THEN 1 else 0 end )	/ count(*)) * 100, 1), '%'), 0)	as avgD7
+							,ifnull(round(avg(timestampdiff(SECOND, assigned_datetime, arrived_datetime)), 0), 0)																		as avgD30Times
+							,ifnull(concat(round((sum(case WHEN timestampdiff(MINUTE, assigned_datetime, arrived_datetime) <![CDATA[<=]]> 30 THEN 1 else 0 end )	/ count(*)) * 100, 1), '%'), 0)	as avgD30
+							,ifnull(round((count(*) / (timestampdiff(second, min(working_on), ifnull(max(working_off), now())) / 3600)), 1), 0)												as tpoh
+					from	 TB_ORDER			as a
+							,(
+								select	 rider_id																	as rider_id
+										,min(working_on)															as working_on
+										,max(ifnull(working_off, now()))											as working_off
+										,sum(timestampdiff(second, working_on, ifnull(working_off, now())) )		as working_time
+								from	 TB_RIDER_WORKING_HISTORY
+								where	 1=1
+								and		 rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
+								and		 case when working_off is not null and date_format(working_off, '%Y-%m-%d') <![CDATA[<>]]> date_format(working_on, '%Y-%m-%d') then working_on else ifnull(working_off, now()) end > current_date()
+								group by rider_id
+							)								as b
+					left join
+							(
+								select	 t1.admin_id
+										,t1.group_id
+										,t1.subgroup_id
+										,t1.store_id
+										,t1.rider_id
+										,t2.brand_code
+								from	 TB_SUBGROUP_RIDER_REL			as t1
+										,TB_STORE						as t2
+								where	 t1.deleted is null
+								and		 t2.deleted is null
+								and		 t1.admin_id = t2.admin_id
+								and		 t1.store_id = t2.id
+							)								as c
+						on	 b.rider_id = c.rider_id
+					where	 a.rider_id = b.rider_id
+					and		 a.status = 3
+					and		 a.reservation_datetime > current_date()
+				)	t
 	</select>
 </mapper>
