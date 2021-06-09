@@ -127,7 +127,10 @@ public class ScheduleController {
     public void resetRiderSharedForStore(){
         String strInternalIP = getInternalIP();
 
-        if (Arrays.stream(internalIP.split(",")).filter(x -> x.equals(strInternalIP)).count() > 0){
+        log.info("reserRiderSharedForStore internalIP => " + strInternalIP);
+        log.info("reserRiderSharedForStore internal IP List => " + internalIP);
+
+        if (Arrays.stream(internalIP.split(",")).filter(x -> x.equals(strInternalIP)).count() > -1){
             log.info("라이더의 타 매장 공유 설정 초기화 시작 ## " + new Date());
             log.info("라이더의 매장 공유 초기화 결과 : " + scheduleAdminService.resetRiderSharedStatusForStore());
             log.info("라이더의 타 매장 공유 설정 초기화 완료 ## " + new Date());

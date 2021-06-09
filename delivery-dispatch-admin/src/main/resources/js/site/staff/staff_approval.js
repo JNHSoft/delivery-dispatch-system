@@ -1,13 +1,145 @@
 /*<![CDATA[*/
 let loading = $('<div id="loading"><div><p style="background-color: #838d96"></p></div></div>').appendTo(document.body).hide();
+
+// 그룹 및 하위 그룹 정보 저장용 변수
+let selectId = $("#statisticsStoreList");
+let selectIdOption = $("#statisticsStoreList option:selected");
+
 // Start Function after page loading completed.
 $(function (){
+    makeObjectEvent();
+    getGroupList();
     getApprovalRiderList();
-    // let date = $.datepicker.formatDate('yy-mm-dd', new Date);
-
-    // $("#riderExpDate").val(date);
-
 });
+
+function makeObjectEvent(){
+    // 검색 버튼 클릭 이벤트
+    $("#searchButton").off().on('click', function(){
+        console.log("승인 목록에서 라이더 검색 버튼 클릭");
+        let searchText = $("#searchText").val();
+
+        // 신규 데이터를 갱신할 수 있도록 추가
+        if (searchText.length < 1){
+            getApprovalRiderList();
+        }
+
+        searchList();
+    });
+
+    // 그룹 선택 이벤트
+    $(".select").off().on('change', function(){
+        selectId = $(this);
+        selectIdOption = $('option:selected', this);
+        searchList();
+    });
+}
+
+function searchList(){
+
+    // 그룹 선택에 대한 이벤트 초기화
+    if (selectId.attr('id') === "statisticsGroupList"){
+        // RC의 내용
+        $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
+
+        if (selectIdOption.val() === "reset"){
+            $("#statisticsSubGroupList").html("<option value='reset'>" + list_search_all_subgroup + "</option>");
+        }else{
+            $("#statisticsSubGroupList").val("reset").prop("selected", true);
+        }
+    }else if (selectId.attr('id') === "statisticsSubGroupList"){
+        // AC의 내용
+        if(selectIdOption.val() == "reset") {
+            $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
+        }else{
+            $("#statisticsStoreList").val("reset").prop("selected", true);
+        }
+    }
+
+    let select = $("#searchSelect option:selected").val();
+    let searchText = $("#searchText").val();
+
+    let filter = {
+        groupOp : "OR",
+        rules : []
+    };
+
+    console.log("select => " + select);
+
+    switch (select){
+        case "all":
+            filter.rules.push({
+                field: 'riderID',
+                op: "cn",
+                data: searchText
+            });
+
+            filter.rules.push({
+                field: 'riderName',
+                op: "cn",
+                data: searchText
+            });
+
+            break;
+        default:
+            filter.rules.push({
+                field: select,
+                op: "cn",
+                data: searchText
+            });
+
+            break;
+    }
+
+    let groupFilter = {
+        groupOp: "AND",
+        rules: [],
+        groups: [filter]
+    }
+    
+    // 대그룹이 선택된 경우
+    let groupID = $("#statisticsGroupList option:selected").val();
+    console.log("groupID => " + groupID);
+
+    if (groupID !== undefined && groupID !== "reset"){
+        groupFilter.rules.push({
+            field: 'groupID',
+            op: "eq",
+            data: groupID
+        });
+    }
+
+    // 하위 그룹이 선택된 경우
+    let subGroupName = $("#statisticsSubGroupList option:selected").val();
+    console.log("subGroupName => " + subGroupName);
+
+    if (subGroupName !== undefined && subGroupName !== "reset"){
+        groupFilter.rules.push({
+            field: 'subGroupName',
+            op: "cn",
+            data: subGroupName
+        });
+    }
+
+    // 스토어
+    let storeID = $("#statisticsStoreList option:selected").val();
+    console.log("storeID => " + storeID);
+
+    if (storeID !== undefined && storeID !== "reset"){
+        groupFilter.rules.push({
+            field: 'storeID',
+            op: "eq",
+            data: storeID
+        });
+    }
+
+    // 필터 선택이 완료 되었다면, 그리드를 갱신하자
+    let grid = $("#jqGrid");
+    //grid[0].p.search = filter.rules.length > 0;
+    grid[0].p.search = true;
+    $.extend(grid[0].p.postData, { filters: JSON.stringify(groupFilter) });
+    grid.trigger("reloadGrid", [{ page: 1 }]);
+}
+
 
 function getApprovalRiderList(){
 
@@ -23,6 +155,8 @@ function getApprovalRiderList(){
         dataType: "json",
         success: function (data, status){
             let i = 0;
+
+            console.log(data);
 
             for (var key in data){
                 if (data.hasOwnProperty(key)){
@@ -49,6 +183,17 @@ function getApprovalRiderList(){
                     tmpObj.status = getStatusValue(data[key].approvalStatus, data[key].id);
 
                     tmpObj.approvalStatus = data[key].approvalStatus;
+
+                    // 그룹 필터링을 위한 정보
+                    if (data[key].riderDetail != undefined && data[key].riderDetail.subGroupRiderRel != null){
+                        tmpObj.groupID = data[key].riderDetail.subGroupRiderRel.groupId;
+                        tmpObj.subGroupName = data[key].riderDetail.subGroupRiderRel.name;
+                        tmpObj.storeID = data[key].riderDetail.subGroupRiderRel.storeId;
+                    }else {
+                        tmpObj.groupID = "";
+                        tmpObj.name = "";
+                        tmpObj.storeID = "";
+                    }
 
                     gridData.push(tmpObj);
                 }
@@ -88,9 +233,13 @@ function makeGrid(data){
             {label: setting, name: 'setting', width: 300, align: 'center'},
             {label: approvalStatus, name: 'status', width: 80, align: 'center'},
             {label: '', name: 'approvalStatus', width: 80, align: 'center', hidden:true},
+            {label: '', name: 'groupID', width: 80, align: 'center', hidden:true},
+            {label: '', name: 'subGroupName', width: 80, align: 'center', hidden:true},
+            {label: '', name: 'storeID', width: 80, align: 'center', hidden:true},
         ],
         height: 660,
         autowidth: true,
+        search: false,
         rowNum: 20,
         pager: "#jqGridPager",
         loadComplete: function (data) {
@@ -745,5 +894,102 @@ function regSharedStore(storeid){
         }
     });
 }
+
+/**
+ * 그룹 List 불러오기
+ */
+function getGroupList() {
+    $.ajax({
+        url : "/getStatisticsGroupList",
+        type : 'get',
+        data : {
+
+        },
+        async : false,
+        dataType : 'json',
+        success : function(data) {
+            if (data) {
+
+                var statisticsGroupListHtml = "<option value='reset'>" + list_search_all_group + "</option>";
+                // var statisticsGroupListHtml = "";
+                for (var i in data) {
+                    statisticsGroupListHtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
+                }
+                statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
+                $("#statisticsGroupList").html(statisticsGroupListHtml);
+
+                $("#statisticsGroupList").on("change", function () {
+                    getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                });
+            }
+        }
+    });
+}
+
+/**
+ * 서브 그룹 List 불러오기
+ */
+function getStatisticsSubGroupList(gId, subGroup) {
+    var selectGroupId = null;
+
+    if (gId == null) {
+        selectGroupId = '1';
+    } else {
+        selectGroupId = gId
+    }
+
+    $.ajax({
+        url : "/getStatisticsSubGroupList",
+        type : 'get',
+        data : {
+            groupId : selectGroupId
+        },
+        async : false,
+        dataType : 'json',
+        success : function(data){
+            if(data) {
+                var pstatisticsSubGroupListHtml = "<option value='reset'>" + list_search_all_subgroup + "</option>";
+                for (var i in data){
+                    pstatisticsSubGroupListHtml += "<option value='" + data[i].name  + "'>" + data[i].name + "</option>";
+                }
+                $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
+
+                $("#statisticsSubGroupList").on("change", function () {
+                    getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                });
+
+            }
+        }
+    });
+}
+
+/**
+ * 상점 List 불러오기
+ */
+function getStatisticsStoreList(subId, gId) {
+    var selectGroupId = gId;
+    var selecSubGroupId = subId;
+    // debugger;
+    $.ajax({
+        url : "/getStatisticsStoreList",
+        type : 'get',
+        data : {
+            groupId : selectGroupId,
+            subGroupName : selecSubGroupId
+        },
+        async : false,
+        dataType : 'json',
+        success : function(data){
+            if(data) {
+                var statisticsStoreListHtml = "<option value='reset'>" + list_search_all_store + "</option>";
+                for (var i in data){
+                    statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
+                }
+                $("#statisticsStoreList").html(statisticsStoreListHtml);
+            }
+        }
+    });
+}
+
 
 /*]]>*/

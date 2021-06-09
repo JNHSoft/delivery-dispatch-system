@@ -47,7 +47,6 @@
     /*<![CDATA[*/
     var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
     var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
-    var trackerStatus = /*[[${tracker.status}]]*/ 'trackerStatus';
     var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
     var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
     var storeName = /*[[${tracker.storeName}]]*/ 'storeName';
@@ -68,6 +67,8 @@
     var beforeDurationTime = 60;
     var routeArray = [];
     var AllDurationTime = [];
+    let trackerStatus = -1;
+    let deliveryThird = undefined;
 
     function setUI() {
         $.ajax({
@@ -78,26 +79,9 @@
             },
             dataType : 'json',
             success : function(data) {
-                // console.log(data);
-                //
-                // // 주문 매장의 브랜드 코드에 따른 이미지 변경
-                // switch (data.brandCode) {
-                //     case "1":
-                //         $(".visual_area").css({"position":"relative","height":"300px","background":"url('../resources/images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat","background-size":"cover"});
-                //
-                //         console.log("brandCode");
-                //
-                //         $("#tAssign").removeClass('.step2');
-                //
-                //         $("#tAssign").addClass('kfc');
-                //         break;
-                //     default:
-                //         break;
-                // }
-
-
                 trackerStatus = data.status;
-                // console.log(trackerStatus)
+                deliveryThird = data.thirdPartyId;
+
                 if (data.reservationDatetime) {
                     var arriveTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
                     var createTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
@@ -203,18 +187,12 @@
                     $('.t_red').text('');
                     $(".visual_area_kfc").attr("id","");
                     $(".mapCtrl").attr("id","map");
-                    $(".visual_area_kfc").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
-                    // // 주문 매장의 브랜드 코드에 따른 문구 색상 변경
-                    // switch (data.brandCode) {
-                    // 	case "1":
-                    // 		$(".visual_area").html('<p class="tit_red">請享用熱騰騰<br/>的美味餐點</p>');
-                    // 		break;
-                    // 	default:
-                    // 		$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
-                    // 		break;
-                    // }
-                    /*                $.removeCookie('checkStep');
-                                    $.removeCookie('chkProgress');*/
+                    if (deliveryThird != undefined && deliveryThird.toString().trim().length > 0) {
+                        $(".visual_area_kfc").html('<p class="tit_third" style="filter:drop-shadow(2px 4px 6px black);">由於外送訂單較多，<br/>您的訂單將由第三方外送夥伴安排配送，<br/>完成配對後，將發送簡訊通知。<br/><span class="tit_third_second">謝謝您的耐心等待。<br/>如有疑問，請聯絡門市。</span></p>');
+                    }else {
+                        $(".visual_area_kfc").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
+                    }
+
                     localStorage.clear();
                 } else if(trackerStatus == 4){
                     location.href ="/error/error-tracker";

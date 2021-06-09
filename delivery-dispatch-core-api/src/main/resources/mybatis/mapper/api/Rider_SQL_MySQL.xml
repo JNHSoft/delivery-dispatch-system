@@ -119,6 +119,7 @@
 			<result property="adminId" column="subGroupRiderRel_admin_id" />
 			<result property="groupId" column="subGroupRiderRel_group_id" />
 			<result property="subGroupId" column="subGroupRiderRel_subgroup_id" />
+			<result property="name" column="subgroup_name" />
 			<result property="storeId" column="subGroupRiderRel_store_id" />
 			<result property="riderId" column="subGroupRiderRel_rider_id" />
 		</association>
@@ -1291,11 +1292,18 @@
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,REQ.accept_datetime
 				,REQ.reject_datetime
+				,RR.group_id									as subGroupRiderRel_group_id
+				,RR.subgroup_id									as subGroupRiderRel_subgroup_id
+				,( select name from TB_SUBGROUP where admin_id = RR.admin_id and group_id = RR.group_id and id = RR.subgroup_id and deleted is null )			as subgroup_name
+				,RR.store_id									as subGroupRiderRel_store_id
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
 		left join TB_RIDER_SESSION		RS
 			on	 REQ.rider_id = RS.rider_id
+		left join TB_SUBGROUP_RIDER_REL	RR
+			on	 R.id = RR.rider_id
+			and	 RR.deleted is null
 		where	 1=1
 		AND      REQ.deleted_datetime is null
 		<choose>

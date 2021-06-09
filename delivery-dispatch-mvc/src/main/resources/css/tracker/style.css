@@ -18,6 +18,8 @@ th {font-weight:normal;}
 .h390 {height:390px !important;}
 .tit_wh {font-size:35px; color:#fff;text-align:center;font-weight:bold;position:relative;top:50%;transform:translateY(-50%);}
 .tit_red {font-size:35px; color:#e41319;text-align:center;font-weight:bold;position:relative;top:50%;transform:translateY(-50%);}
+.tit_third {font-size:25px; color:#fff;text-align:center;font-weight:bold;position:relative;top:50%;transform:translateY(-50%);}
+.tit_third_second{font-size:17px; color:#fff;text-align:center;font-weight:bold;}
 
 .tracker{position:relative;background:url('../../images/tracker/bg.jpg?ver=0.2') 0 0 repeat;}
 .tracker-top {padding:17px 10px;text-align:center;z-index:10;}

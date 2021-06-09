@@ -55,13 +55,6 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
     public void setOrderStatisticsByOrderExcel(SXSSFWorkbook wb, List<Order> orderList) {
         int rowNum = 0;
         int colNum = 0;
-        orderList.stream().map(a -> {
-            if (a.getReservationStatus().equals("1")) {
-                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
-            }
-            return true;
-        }).collect(Collectors.toList());
         Sheet sheet = wb.createSheet("StoreStatisticsByOrder");
 
         // Title Area Cell Style
@@ -158,9 +151,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
         int distanceNullCnt = 0;
 
         for (int i = 0, r = orderList.size(); i < r; i++) {
-            LocalDateTime orderTime = LocalDateTime.parse((orderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
-            LocalDateTime completeTime = LocalDateTime.parse((orderList.get(i).getCompletedDatetime()).replace(" ", "T"));
 
             // Assign Time
             LocalDateTime assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
@@ -178,14 +169,11 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
             }
 
 
-            //long orderPickup = orderTime.until(pickupTime, ChronoUnit.MILLIS);
             long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
             long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
-            //long orderComplete = orderTime.until(completeTime, ChronoUnit.MILLIS);
             long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long pickupReturn = returnTime != LocalDateTime.MIN ? pickupTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
-            //long orderReturn = returnTime != LocalDateTime.MIN ? orderTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
             long orderReturn = returnTime != LocalDateTime.MIN ? assignTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
 
             orderPickupTime += orderPickup;

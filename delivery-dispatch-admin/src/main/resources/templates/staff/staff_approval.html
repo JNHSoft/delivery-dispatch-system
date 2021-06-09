@@ -10,7 +10,25 @@
             <span class="lbl" th:text="${#messages.msg('rider.approval.title')}" style="font-size: 15px; font-weight: bold; color:black" />
         </div>
         <div class="right">
-            <button type="button" class="button btn_green" onclick="excelDownload()"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+            <span>
+                <select name="" class="select" id="statisticsGroupList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.group')}" />
+                </select>
+                <select name="" class="select" id="statisticsSubGroupList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.subgroup')}" />
+                </select>
+                <select name="" class="select" id="statisticsStoreList">
+                    <option value="reset" th:text="${#messages.msg('list.search.all.store')}" />
+                </select>
+                <select name="searchSelect" id="searchSelect" class="select">
+                    <option value="all" th:text="${#messages.msg('list.search.all')}" />
+                    <option value="riderID" th:text="${#messages.msg('list.search.rider')}" />
+                    <option value="riderName" th:text="${#messages.msg('list.search.rider.loginid')}" />
+                </select>
+                <input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
+                <button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}"/></button>
+                <button type="button" class="button btn_green" onclick="excelDownload()"><i class="fa fa-file-excel-o" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.excel')}"/></button>
+            </span>
         </div>
     </div>
 
@@ -192,5 +210,13 @@
 
     let statusSharedForStore = /*[[#{rider.approval.result.store.shared}]]*/ 'statusSharedForStore';
     let statusUnsharedForStore = /*[[#{rider.approval.result.store.unshared}]]*/ 'statusUnsharedForStore';
+
+    let list_search_all_group = /*[[#{list.search.all.group}]]*/ 'list_search_all_group';
+    let list_search_all_subgroup = /*[[#{list.search.all.subgroup}]]*/ 'list_search_all_subgroup';
+    let list_search_all_store = /*[[#{list.search.all.store}]]*/ 'list_search_all_store';
+    let subGroup_name = /*[[#{subgroup.name}]]*/ 'subGroup_name';
+    let store_name = /*[[#{store.name}]]*/ 'store_name';
+    let group_name = /*[[#{group.name}]]*/ 'group_name';
+    let group_none = /*[[#{group.none}]]*/ 'group_none';
 </script>
 </html>

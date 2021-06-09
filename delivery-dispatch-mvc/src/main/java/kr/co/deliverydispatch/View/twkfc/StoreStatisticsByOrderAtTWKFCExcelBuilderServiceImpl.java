@@ -52,13 +52,6 @@ public class StoreStatisticsByOrderAtTWKFCExcelBuilderServiceImpl extends CommEx
     public void setStoreStatisticsByOrderExcel(SXSSFWorkbook wb, List<Order> storeStatisticsByOrderList) {
         int rowNum = 0;
         int colNum = 0;
-        storeStatisticsByOrderList.stream().map(a->{
-            if(a.getReservationStatus().equals("1")){
-                LocalDateTime reserveToCreated = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                a.setCreatedDatetime(reserveToCreated.minusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
-            }
-            return true;
-        }).collect(Collectors.toList());
         Sheet sheet = wb.createSheet("StoreStatisticsByOrder");
 
         // Title Area Cell Style
@@ -150,10 +143,7 @@ public class StoreStatisticsByOrderAtTWKFCExcelBuilderServiceImpl extends CommEx
         int distanceNullCnt = 0;
 
         for(int i = 0, r = storeStatisticsByOrderList.size(); i<r; i++) {
-            LocalDateTime orderTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getCreatedDatetime()).replace(" ", "T"));
             LocalDateTime pickupTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
-            LocalDateTime completeTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getCompletedDatetime()).replace(" ", "T"));
-
             // Assign Time
             LocalDateTime assignTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getAssignedDatetime()).replace(" ", "T"));
 
