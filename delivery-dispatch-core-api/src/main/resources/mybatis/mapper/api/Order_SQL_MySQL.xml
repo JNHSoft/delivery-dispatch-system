@@ -525,8 +525,8 @@
 			, assigned_datetime = #{assignedDatetime}
 		</if>
 		<if test="assignedDatetime == '-2'">
-			-- , assigned_datetime = ifnull(assigned_datetime, now())
-			, assigned_datetime = ifnull(assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) >= 30 then 30 else ifnull(cooking_time, 30) end minute))
+			, assigned_datetime = ifnull(assigned_datetime, now())
+			-- , assigned_datetime = ifnull(assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) >= 30 then 30 else ifnull(cooking_time, 30) end minute))
 		</if>
 		<if test="assignedDatetime == '-1'">
 			, assigned_datetime = NULL
@@ -779,10 +779,10 @@
 		and		 assignment_status = 1
 		<choose>
 			<when test="locale eq 'zh_TW'">
-				and		 timestampdiff(second, now(), A.reservation_datetime) <![CDATA[<=]]> (case when reservation_status = 1 and cooking_time <![CDATA[<]]> 30 then cooking_time else 30 end) * 60
+				and		 timestampdiff(second, now(), A.reservation_datetime) <![CDATA[<=]]> (case when cooking_time <![CDATA[<]]> 30 then cooking_time else 30 end) * 60
 			</when>
 			<otherwise>
-				and		 timestampdiff(second, now(), A.reservation_datetime) <![CDATA[<=]]> (case when reservation_status = 1 and cooking_time <![CDATA[<]]> 50 then cooking_time else 50 end) * 60
+				and		 timestampdiff(second, now(), A.reservation_datetime) <![CDATA[<=]]> (case when cooking_time <![CDATA[<]]> 50 then cooking_time else 50 end) * 60
 			</otherwise>
 		</choose>
 		ORDER BY A.reservation_datetime DESC, A.assigned_first DESC, A.created_datetime ASC;
