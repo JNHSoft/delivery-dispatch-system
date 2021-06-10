@@ -7,11 +7,10 @@ import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
-import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.rider.RiderApprovalInfo;
-import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.rider.*;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ public interface RiderMapper {
      *
      * @return loginId String
      */
+    @Transactional(readOnly=true)
     public Map selectLoginRider(Rider rider);
 
     /**
@@ -39,6 +39,7 @@ public interface RiderMapper {
      *
      * @return Count Int
      */
+    @Transactional(readOnly=true)
     public int selectRiderTokenCheck(Rider rider);
 
     /**
@@ -46,6 +47,7 @@ public interface RiderMapper {
      *
      * @return Count Int
      */
+    @Transactional(readOnly=true)
     public User selectRiderTokenLoginCheck(Rider rider);
 
     /**
@@ -80,6 +82,7 @@ public interface RiderMapper {
      *
      * @return Rider Info 조회 결과값
      */
+    @Transactional(readOnly=true)
     public Rider getRiderInfo(Common common);
 
     /**
@@ -87,6 +90,7 @@ public interface RiderMapper {
      *
      * @return 해당 스토어 Rider 목록 조회 결과값
      */
+    @Transactional(readOnly=true)
     public List<Rider> getStoreRiders(User user);
 
 
@@ -111,6 +115,24 @@ public interface RiderMapper {
      */
     public int updateWorkingRider(Rider rider);
 
+    /**
+     * 21-03-16
+     * 라이더 출근 히스토리에 데이터가 있는지 확인
+     * */
+    Map<String, Object> selectRiderWorkingHistory(Rider rider);
+
+    /**
+     * 21-03-16
+     * 라이더 출근에 대한 정보 등록
+     * */
+    int insertRiderWorkingHistory(Rider rider);
+
+    /**
+     * 21-03-16
+     * 라이더의 퇴근에 대한 정보 등록
+     * */
+    int updateRiderWorkingHistory(Rider rider);
+
 
     /**
      * Rider 위치 정보 전송
@@ -124,6 +146,7 @@ public interface RiderMapper {
      * @param rider
      * @return
      */
+    @Transactional(readOnly=true)
     public Rider getRiderLocation(Rider rider);
 
     /**
@@ -132,9 +155,11 @@ public interface RiderMapper {
      * @return
      */
     // riders admin
+    @Transactional(readOnly=true)
     public List<Rider> getAdminRidersLocation(Rider rider);
 
     // riders store
+    @Transactional(readOnly=true)
     public List<Rider> getStoreRidersLocation(Rider rider);
 
 
@@ -144,6 +169,7 @@ public interface RiderMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Rider> selectSubgroupRiderRels(Common common);
 
     /**
@@ -152,6 +178,7 @@ public interface RiderMapper {
      * @param rider
      * @return
      */
+    @Transactional(readOnly=true)
     public String selectRiderAssignmentStatus(Rider rider);
 
 
@@ -177,6 +204,7 @@ public interface RiderMapper {
      * @param map(storeId, orderId)
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Rider> selectForAssignRiders(Map map);
 
     /**
@@ -185,6 +213,7 @@ public interface RiderMapper {
      * @param
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Rider> selectRiderRestHours();
 
     /**
@@ -195,14 +224,19 @@ public interface RiderMapper {
      */
     public Integer updateRiderWorkingAuto(HashMap map);
 
+    @Transactional(readOnly=true)
     public List<Map> selectRiderToken(Order order);
 
+    @Transactional(readOnly=true)
     public List<Map> selectRiderTokenByOrderId(Order order);
 
+    @Transactional(readOnly=true)
     public List<Reason> selectRejectReason(Common common);
 
+    @Transactional(readOnly=true)
     public List<Map> selectRiderTokenByChatUserId(Chat chat);
 
+    @Transactional(readOnly=true)
     public SubGroupRiderRel selectMySubgroupRiderRels(Rider rider);
 
     /**
@@ -211,8 +245,11 @@ public interface RiderMapper {
      * @param
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Rider> selectRiderNow(Common common);
+    @Transactional(readOnly=true)
     public List<Rider> selectRiderFooter(Common common);
+    @Transactional(readOnly=true)
     public List<Rider> selectMyStoreRiderRels(Common common);
 
     /**
@@ -221,6 +258,7 @@ public interface RiderMapper {
      * @param device
      * @return
      */
+    @Transactional(readOnly=true)
     public String selectMobileVersion(String device);
 
     /**
@@ -259,11 +297,13 @@ public interface RiderMapper {
      * 20.08.07
      * 라이더 승인 관련
      * */
+    @Transactional(readOnly=true)
     public List<RiderApprovalInfo> selectApprovalRiderList(Common common);
 
     /**
      * 라이더 승인 정보
      * */
+    @Transactional(readOnly=true)
     public RiderApprovalInfo selectApprovalRiderInfo(Common common);
 
     /**
@@ -274,6 +314,7 @@ public interface RiderMapper {
     /**
      * 라이더 요청 등록 페이지에서 필요로 하는 기본 정보
      * */
+    @Transactional(readOnly=true)
     public List<Store> selectAllStore();
 
     /**
@@ -284,6 +325,7 @@ public interface RiderMapper {
     /**
      * 라이더 암호 가져오기
      * */
+    @Transactional(readOnly=true)
     public String selectApprovalRiderPw(String id);
 
     /**
@@ -319,6 +361,7 @@ public interface RiderMapper {
     /**
      * 라이더 인증번호 체크
      * */
+    @Transactional(readOnly=true)
     SmsApplyInfo selectRiderApplySMS(SmsApplyInfo smsApplyInfo);
 
     /**
@@ -326,10 +369,26 @@ public interface RiderMapper {
      * */
     int updatePushToken(Rider rider);
 
+
+    /**
+     * 2021-03-05 라이더 경로와 관련한 데이터를 가져오는 쿼리
+     * */
+
+    /// 라이더가 가지고 있는 주문에 대한 리스트
+    List<Order> getOrderForRider(Rider rider);
+
+    /// 주문에 대한 매장정보를 가져온다.
+    List<Store> getStoreInfoAtOrder(String[] arrStoreID);
+
     /**
      * 가입 승인 요청 시, 기존에 등록된 LOGIN ID가 있는지 확인
      * */
+    @Transactional(readOnly=true)
     List<Rider> selectRegistRiderInfoList(User user);
+
+    /// 21-03-16
+    /// 라이더의 당일 활동에 필요로 하는 정보 추출
+    RiderActiveInfo selectRiderActiveInfo(Rider rider);
 
     /**
      * 21.05.21 라이더가 속해질 타 매장 정보 저장

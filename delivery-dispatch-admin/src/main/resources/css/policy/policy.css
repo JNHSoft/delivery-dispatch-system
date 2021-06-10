@@ -1,0 +1,96 @@
+@charset "UTF-8";
+
+html{
+    font-family: "FontAwesome" !important;
+    font-size: 62.5%;
+}
+
+.policy{
+    padding: 0px;
+    display: inline-block;
+    width: 100vw;
+    height: 100vh;
+}
+
+.policy-body{
+    min-width: 330px;
+    width: 60vw;
+    height: 100vh;
+}
+
+.policy-banner{
+    padding: 5px;
+    margin: 0px;
+}
+
+.policy-baner-img{
+    width: 80%;
+    height: auto;
+    margin: 0px;
+    padding: 0px;
+}
+
+.policy-content{
+    height: 60%;
+}
+
+.policy-title{
+    padding: 0px;
+    margin: 0px 0px 10px 0px;
+    font-size: 1.3rem;
+    word-break: keep-all;
+}
+
+.policy-detail{
+    border: 1px solid black;
+    margin-top: 0px;
+    padding: 10px;
+    text-align: left;
+    max-height: 77vh;
+    overflow: auto;
+    font-size: 1.2rem;
+    word-wrap:break-word;
+    word-break:break-all;
+}
+
+.font-bold {
+    font-weight: bolder;
+}
+
+.font-italic{
+    font-style: italic;
+}
+
+.text-overline{
+    text-decoration: overline;
+}
+
+.text-underline{
+    text-decoration: underline;
+}
+
+.text_riderAlign{
+    text-align: right;
+}
+
+.policyTable{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #000000;
+    border-collapse: collapse;
+}
+
+.tdTitle{
+    width: 30%;
+    border: 1px solid #000000;
+    margin: 0;
+    padding: 5px;
+}
+
+.tdContent{
+    width: auto;
+    border: 1px solid #000000;
+    margin: 0;
+    padding: 5px;
+}
