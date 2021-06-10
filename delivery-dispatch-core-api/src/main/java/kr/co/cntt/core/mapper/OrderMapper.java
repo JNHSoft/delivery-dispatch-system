@@ -41,6 +41,14 @@ public interface OrderMapper {
     List<Order> selectOrders(Order order);
 
     /**
+     * <p> selectOrderHistory
+     *
+     * @param order
+     * @return
+     */
+    List<Order> selectOrderHistory(Order order);
+
+    /**
      * <p> Order 정보 조회
      * 혹시라도 백업 서버에 적용이 안된 경우 중복 유무를 체크할 방법이 없으므로, readOnly는 제외한다.
      * @param common

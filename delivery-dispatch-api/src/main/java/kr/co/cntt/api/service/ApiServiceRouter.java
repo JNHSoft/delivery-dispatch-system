@@ -178,6 +178,16 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Rider 배정 거절 사유 목록 조회 */
 	REJECT_REASON_LIST("riderService", "getRejectReasonList", Common.class),
 
+	/** Rider 경로정보 가져오기 */
+	RIDER_TOTAL_ROUTE_INFO("riderService", "getTotalRouteInfos", Rider.class),
+
+	/** Rider 경로정보 가져오기 */
+	RIDER_TOTAL_ROUTE_INFO2("riderService", "getTotalRouteInfos2", Rider.class),
+
+	/** Rider 당일 활동 기록 */
+	RIDER_ACTIVE_INFO("riderService", "getRiderActiveInfo", Rider.class),
+	
+
 	// ############################################################################################ //
 
 	/** Store 정보조회 */
@@ -226,6 +236,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** Order 목록 조회 */
 	ORDERS_LIST("orderService", "getOrders", Order.class),
+
+	/** Order 검색 목록 조회 */
+	SEARCH_ORDERS_LIST("orderService", "getOrderHistory", Order.class),
 
 	/** Order 정보 조회 */
 	ORDER_INFO("orderService", "getOrderInfo", Order.class),

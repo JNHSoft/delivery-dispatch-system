@@ -7,9 +7,7 @@ import kr.co.cntt.core.model.group.SubGroupRiderRel;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.reason.Reason;
-import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.rider.RiderApprovalInfo;
-import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.rider.*;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,6 +114,24 @@ public interface RiderMapper {
      * @return
      */
     public int updateWorkingRider(Rider rider);
+
+    /**
+     * 21-03-16
+     * 라이더 출근 히스토리에 데이터가 있는지 확인
+     * */
+    Map<String, Object> selectRiderWorkingHistory(Rider rider);
+
+    /**
+     * 21-03-16
+     * 라이더 출근에 대한 정보 등록
+     * */
+    int insertRiderWorkingHistory(Rider rider);
+
+    /**
+     * 21-03-16
+     * 라이더의 퇴근에 대한 정보 등록
+     * */
+    int updateRiderWorkingHistory(Rider rider);
 
 
     /**
@@ -352,13 +368,28 @@ public interface RiderMapper {
      * 라이더 세션 변경 (os 정보 포함)
      * */
     int updatePushToken(Rider rider);
+    
+    
+    /**
+     * 2021-03-05 라이더 경로와 관련한 데이터를 가져오는 쿼리
+     * */
+
+    /// 라이더가 가지고 있는 주문에 대한 리스트
+    List<Order> getOrderForRider(Rider rider);
+
+    /// 주문에 대한 매장정보를 가져온다.
+    List<Store> getStoreInfoAtOrder(String[] arrStoreID);
 
     /**
      * 가입 승인 요청 시, 기존에 등록된 LOGIN ID가 있는지 확인
      * */
     @Transactional(readOnly=true)
     List<Rider> selectRegistRiderInfoList(User user);
-    
+
+    /// 21-03-16
+    /// 라이더의 당일 활동에 필요로 하는 정보 추출
+    RiderActiveInfo selectRiderActiveInfo(Rider rider);
+
     /**
      * 21.05.21 라이더가 속해질 타 매장 정보 저장
      * */

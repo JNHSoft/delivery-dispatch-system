@@ -189,7 +189,14 @@ public interface Api {
     String RIDER_RETURN_TIME_PUT = "/putRiderReturnTime.json";
 
     /** 배정 거절 사유 목록 조회 **/
-    String REJECT_REASON_LIST = "getRejectReasonList.json";
+    String REJECT_REASON_LIST = "/getRejectReasonList.json";
+
+    /** Rider 경로정보 가져오기 */
+    String RIDER_TOTAL_ROUTE_INFO = "/getTotalRouteInfos.json";
+    /** Rider 경로정보 가져오기 */
+    String RIDER_TOTAL_ROUTE_INFO2 = "/getTotalRouteInfos2.json";
+
+    String RIDER_ACTIVE_INFO = "/getRiderActiveInfo.json";
 
     // ############################################################################################ //
 
@@ -227,6 +234,9 @@ public interface Api {
 
     /** Order 목록 조회 */
     String ORDERS_LIST = "/getOrders.json";
+    
+    /** Order History 조회 */
+    String SEARCH_ORDERS_LIST = "/getOrderHistory.json";
 
     /** Order 정보 조회 */
     String ORDER_INFO = "/getOrderInfo.json";

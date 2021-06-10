@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import java.util.List;
 import java.util.Map;
 
+import kr.co.cntt.core.model.rider.RiderActiveInfo;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
@@ -182,4 +183,19 @@ public interface RiderService {
      * 라이더 OS 등록
      * */
     boolean updateRiderOSInfo(Rider rider) throws AppTrException;
+    
+    /**
+     * Rider 경로정보 가져오기
+     * */
+    Map getTotalRouteInfos(Rider rider) throws AppTrException;
+
+    /**
+     * Rider 경로정보 가져오기
+     * */
+    Map getTotalRouteInfos2(Rider rider) throws AppTrException;
+
+    /**
+     * 라이더의 당일 활동 내역
+     * */
+    RiderActiveInfo getRiderActiveInfo(Rider rider) throws AppTrException;
 }

@@ -115,6 +115,7 @@
 			<result property="detailAddress" column="store_detail_address" />
 			<result property="storeDistanceSort" column="store_distance_sort" />
 			<result property="brandCode" column="brand_code" />
+			<result property="phone" column="store_phone" />
 		</association>
 
 
@@ -288,6 +289,43 @@
 		</choose>
 	</select>
 
+	<!-- select Order History -->
+	<select id="selectOrderHistory" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
+		select	 A.id
+				,A.reg_order_id
+				,A.created_datetime
+				,ifnull(A.modified_datetime, A.created_datetime)	as modified_datetime
+				,A.store_id
+				,A.rider_id
+				,A.address
+				,A.status
+				,A.menu_name
+				,A.reservation_datetime
+				,A.assigned_datetime
+				,A.arrived_datetime
+				,A.picked_up_datetime
+				,A.arrived_datetime
+				,A.completed_datetime
+				,A.return_datetime
+				,A.menu_price
+				,A.message
+				,C.name																			as store_name
+				,C.store_name																	as store_real_name
+		from	 TB_ORDER	A
+		left join TB_STORE	C
+			on	 A.store_id = C.id
+			and	 C.deleted is null
+		where	 date_format(reservation_datetime, '%Y-%m-%d') between #{startDate} and #{endDate}
+		and		 A.rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
+		<if test="status != null and status != ''">
+			AND A.status IN
+			<foreach collection="statusArray" item="statusItem" index="index" separator="," open="(" close=")">
+				#{statusItem}
+			</foreach>
+		</if>
+		ORDER BY A.reservation_datetime
+	</select>
+
 
 	<!-- selectOrderInfo -->
 	<select id="selectOrderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectOrderInfoResult">
@@ -334,7 +372,9 @@
 
 			, B.app_type
 			, D.brand_code
-			, ( select os from TB_RIDER_SESSION where rider_id = B.id limit 1 )			as os
+			, ifnull(B.employment_type, ( select os from TB_RIDER_SESSION where rider_id = B.id limit 1 ))			as os
+
+			, D.store_phone
 		FROM TB_ORDER AS A
 		LEFT JOIN TB_RIDER AS B
 		ON A.rider_id = B.id
