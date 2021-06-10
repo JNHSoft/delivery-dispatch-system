@@ -17,6 +17,7 @@ import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.model.login.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ public interface AdminMapper {
      *
      * @return loginId String
      */
+    @Transactional(readOnly=true)
     public Admin loginAdminInfo(Admin admin);
 
 
@@ -44,6 +46,7 @@ public interface AdminMapper {
      *
      * @return loginId String
      */
+    @Transactional(readOnly=true)
     public Map selectLoginAdmin(Admin admin);
 
     /**
@@ -51,6 +54,7 @@ public interface AdminMapper {
      *
      * @return Count Int
      */
+    @Transactional(readOnly=true)
     public int selectAdminTokenCheck(Admin admin);
 
     /**
@@ -58,6 +62,7 @@ public interface AdminMapper {
      *
      * @return Count Int
      */
+    @Transactional(readOnly=true)
     public User selectAdminTokenLoginCheck(Admin admin);
 
     /**
@@ -81,6 +86,7 @@ public interface AdminMapper {
      * @param common
      * @return Admin Info 조회 결과값
      */
+    @Transactional(readOnly=true)
     public List<Admin> selectAdminInfo(Common common);
 
     /**
@@ -97,6 +103,7 @@ public interface AdminMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Group> selectGroups(Common common);
 
     /**
@@ -129,6 +136,7 @@ public interface AdminMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public List<SubGroup> selectSubGroups(Common common);
 
     /**
@@ -161,6 +169,7 @@ public interface AdminMapper {
      * @param subGroupStoreRel
      * @return
      */
+    @Transactional(readOnly=true)
     public List<SubGroupStoreRel> selectNoneSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel);
 
     /**
@@ -169,6 +178,7 @@ public interface AdminMapper {
      * @param subGroupStoreRel
      * @return
      */
+    @Transactional(readOnly=true)
     public List<SubGroupStoreRel> selectSubgroupStoreRels(SubGroupStoreRel subGroupStoreRel);
 
     /**
@@ -253,6 +263,7 @@ public interface AdminMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Rider> selectRiders(Common common);
 
     /**
@@ -261,6 +272,7 @@ public interface AdminMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public int selectRiderCountForStore(Common common);
 
     /**
@@ -359,6 +371,7 @@ public interface AdminMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Order> selectAdminStatistics(Order order);
 
     /**
@@ -366,6 +379,7 @@ public interface AdminMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Order> selectAdminStatisticsExcel(Order order);
 
 
@@ -374,6 +388,7 @@ public interface AdminMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public Order selectAdminStatisticsInfo(Order order);
 
 
@@ -383,6 +398,7 @@ public interface AdminMapper {
      * @param store
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Store> selectStoreList(Store store);
 
     /**
@@ -474,42 +490,52 @@ public interface AdminMapper {
     /**
      * 2020.04.24 통계 페이지 추가
      * */
-
+    @Transactional(readOnly=true)
     List<Order> selectStoreStatisticsByOrderForAdmin(Order order);
 
     /**
      * 2020.04.28 일자별 통계 페이지 추가
      * */
+    @Transactional(readOnly=true)
     List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order);
+    @Transactional(readOnly=true)
     List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(Order order);
 
     /**
      * 누적 통계 페이지 추가 1
      * */
+    @Transactional(readOnly=true)
     List<Integer> selectStatisticsByInterval(Order order);
+    @Transactional(readOnly=true)
     List<Map> selectStatisticsByIntervalAtTWKFC(Order order);
 
     /**
      * 누적 통계 페이지 추가 1
      * */
+    @Transactional(readOnly=true)
     List<Map> selectStatisticsMin30BelowByDate(Order order);
+    @Transactional(readOnly=true)
     List<Map> selectStatisticsMin30BelowByDateAtTWKFC(Order order);
 
     /**
      * 20.12.30
      * 누적 시간 오버된 매장 개수 구하기
      * */
+    @Transactional(readOnly=true)
     Map selectOverTimeByStore(Store store);
     
     /**
      * 21.01.21
      * 서브 그룹 그룹핑 처리
      * */
+    @Transactional(readOnly=true)
     List<SubGroup> selectSubGroupGrouping(Common common);
+    @Transactional(readOnly=true)
     List<SubGroupStoreRel> selectSubgrouGroupingStoreRels(SubGroupStoreRel subGroupStoreRel);
 
     /**
      * 메일을 받을 계정
      * */
+    @Transactional(readOnly=true)
     List<String> selectReceivedMailAccount(String adminID);
 }

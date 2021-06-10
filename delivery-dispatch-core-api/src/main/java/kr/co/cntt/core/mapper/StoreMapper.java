@@ -10,6 +10,7 @@ import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public interface StoreMapper {
      *
      * @return loginId String
      */
+    @Transactional(readOnly=true)
     public Store loginStoreInfo(Store admin);
     /**
      * login id 확인
@@ -36,6 +38,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
+    @Transactional(readOnly=true)
     public Map selectLoginStore(Store store);
 
     /**
@@ -44,6 +47,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
+    @Transactional(readOnly=true)
     public int selectStoreTokenCheck(Store store);
 
     /**
@@ -52,6 +56,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
+    @Transactional(readOnly=true)
     public User selectStoreTokenLoginCheck(Store store);
 
     /**
@@ -86,6 +91,7 @@ public interface StoreMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public Store selectStoreInfo(Common common);
 
     /**
@@ -102,6 +108,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Store> selectStores(Store store);
 
     /**
@@ -110,6 +117,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Store> selectSubGroupStores(Store store);
 
     /**
@@ -134,6 +142,7 @@ public interface StoreMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public List<ThirdParty> selectThirdParty(Common common);
 
     /**
@@ -142,6 +151,7 @@ public interface StoreMapper {
      * @param storeId
      * @return
      */
+    @Transactional(readOnly=true)
     public Store selectStoreLocation(String storeId);
 
     /**
@@ -158,6 +168,7 @@ public interface StoreMapper {
      * @param store
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Alarm> selectAlarm(Store store);
 
     /**
@@ -165,6 +176,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Order> selectStoreStatistics(Order order);
 
     /**
@@ -172,6 +184,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Order> selectStoreStatisticsByOrder(Order order);
 
     /**
@@ -179,6 +192,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public Order selectStoreStatisticsInfo(Order order);
 
     /**
@@ -186,6 +200,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Order> selectStoreStatisticsExcel(Order order);
 
     /**
@@ -201,6 +216,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Integer> selectStoreStatisticsByInterval(Order order);
 
     /**
@@ -208,6 +224,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Map> selectStoreStatisticsByIntervalAtTWKFC(Order order);
 
 
@@ -216,6 +233,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<ByDate> selectStoreStatisticsByDate(Order order);
 
     /**
@@ -223,6 +241,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<ByDate> selectStoreStatisticsByDateAtTWKFC(Order order);
 
     /**
@@ -230,6 +249,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Map> selectStoreStatisticsMin30BelowByDate(Order order);
 
 
@@ -238,6 +258,7 @@ public interface StoreMapper {
      * @param order
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Map> selectStoreStatisticsMin30BelowByDateAtTWKFC(Order order);
 
 
@@ -247,12 +268,15 @@ public interface StoreMapper {
      * @param common
      * @return Admin Info 조회 결과값
      */
+    @Transactional(readOnly=true)
     public Admin selectAdminInfo(Common common);
 
+    @Transactional(readOnly=true)
     List<Order> selectOrderListForStore(Order order);
 
     /**
      * 21.05.20 소속된 관리자가 관리하는 스토어 현황 가져오기
      * */
+    @Transactional(readOnly=true)
     List<Store> selectSharedStoreList(Rider rider);
 }

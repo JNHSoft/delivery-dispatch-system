@@ -4,6 +4,7 @@ package kr.co.cntt.core.mapper;
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.payment.Payment;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public interface PaymentMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Payment> selectPaymentInfo(Common common);
 
     /**
