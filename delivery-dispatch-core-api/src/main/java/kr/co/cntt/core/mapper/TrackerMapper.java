@@ -3,6 +3,7 @@ package kr.co.cntt.core.mapper;
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.tracker.Tracker;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public interface TrackerMapper {
      * @param user
      * @return loginId String
      */
+    @Transactional(readOnly=true)
     public Map selectLoginTracker(User user);
 
     /**
@@ -30,6 +32,7 @@ public interface TrackerMapper {
      * @param user
      * @return Count Int
      */
+    @Transactional(readOnly=true)
     public int selectTrackerTokenCheck(User user);
 
     /**
@@ -38,6 +41,7 @@ public interface TrackerMapper {
      * @param user
      * @return Count Int
      */
+    @Transactional(readOnly=true)
     public User selectTrackerTokenLoginCheck(User user);
 
     /**
@@ -54,6 +58,7 @@ public interface TrackerMapper {
      * @param tracker
      * @return tracker
      */
+    @Transactional(readOnly=true)
     public Tracker selectTracker(Tracker tracker);
 
 }

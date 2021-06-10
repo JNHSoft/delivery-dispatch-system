@@ -39,6 +39,15 @@ public interface OrderService {
     public List<Order> getOrders(Order order) throws AppTrException;
 
     /**
+     * <p> getOrders
+     *
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    List<Order> getOrderHistory(Order order) throws AppTrException;
+
+    /**
      * <p> getOrderInfo
      *
      * @param common

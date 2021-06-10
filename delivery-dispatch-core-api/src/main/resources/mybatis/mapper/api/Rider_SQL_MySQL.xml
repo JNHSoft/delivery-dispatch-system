@@ -119,6 +119,7 @@
 			<result property="adminId" column="subGroupRiderRel_admin_id" />
 			<result property="groupId" column="subGroupRiderRel_group_id" />
 			<result property="subGroupId" column="subGroupRiderRel_subgroup_id" />
+			<result property="name" column="subgroup_name" />
 			<result property="storeId" column="subGroupRiderRel_store_id" />
 			<result property="riderId" column="subGroupRiderRel_rider_id" />
 		</association>
@@ -187,6 +188,31 @@
 		<result property="applyStatus" column="apply_status" />
 		<result property="applyDatetime" column="apply_datetime" />
 		<result property="deleted" column="deleted_datetime" />
+	</resultMap>
+
+	<!-- Order 정보 -->
+	<resultMap id="selectOrderResult" type="kr.co.cntt.core.model.order.Order">
+		<result property="id" column="id" />
+		<result property="regOrderId" column="reg_order_id" />
+		<result property="storeId" column="store_id" />
+		<result property="riderId" column="rider_id" />
+		<result property="address" column="address" />
+		<result property="status" column="status" />
+		<result property="reservationDatetime" column="reservation_datetime" />
+		<result property="assignedDatetime" column="assigned_datetime" />
+		<result property="pickedUpDatetime" column="picked_up_datetime" />
+		<result property="arrivedDatetime" column="arrived_datetime" />
+		<result property="completedDatetime" column="completed_datetime" />
+		<result property="returnDatetime" column="return_datetime" />
+		<result property="combinedOrderId" column="combined_order_id" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+
+		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
+			<result property="id" column="store_id" />
+			<result property="brandCode" column="brand_code" />
+			<result property="brandName" column="brand_name" />
+		</association>
 	</resultMap>
 
 	<!-- 2020.09.17 라이더가 소속된 매장의 브랜드 정보를 가져온다. -->
@@ -637,6 +663,39 @@
 		and   rider_id = A.id
 		)
 
+	</update>
+
+	<select id="selectRiderWorkingHistory" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="Map">
+		select	 b.rider_id
+				,b.working_status
+				,b.working_on
+				,b.working_off
+		from	 TB_RIDER					as a
+				,TB_RIDER_WORKING_HISTORY	as b
+		where	 a.id = b.rider_id
+		and		 a.id = (select rider_id from TB_RIDER_SESSION where access_token = #{token} and date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d'))
+		and		 b.working_status = 1
+		order by b.working_on
+	</select>
+
+	<insert id="insertRiderWorkingHistory" parameterType="kr.co.cntt.core.model.rider.Rider">
+		insert into TB_RIDER_WORKING_HISTORY(rider_id, working_status, working_on)
+		select	 id
+				,'1'
+				,now()
+		from	 TB_RIDER
+		where	 working = 1
+		and		 id = (select rider_id from TB_RIDER_SESSION where access_token = #{token})
+	</insert>
+
+	<update id="updateRiderWorkingHistory" parameterType="kr.co.cntt.core.model.rider.Rider">
+		update	 TB_RIDER_WORKING_HISTORY
+		set		 working_status = 0
+				,working_off = now()
+				,updated_datetime = now()
+		where	 working_status = 1
+		and		 working_off is null
+		and		 rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
 	</update>
 
 	<!--rider 위치 정보 전송 -->
@@ -1233,11 +1292,18 @@
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,REQ.accept_datetime
 				,REQ.reject_datetime
+				,RR.group_id									as subGroupRiderRel_group_id
+				,RR.subgroup_id									as subGroupRiderRel_subgroup_id
+				,( select name from TB_SUBGROUP where admin_id = RR.admin_id and group_id = RR.group_id and id = RR.subgroup_id and deleted is null )			as subgroup_name
+				,RR.store_id									as subGroupRiderRel_store_id
 		from	 TB_REQ_REGIST_RIDER	REQ
 		left join TB_RIDER				R
 			on	 REQ.rider_id = R.id
 		left join TB_RIDER_SESSION		RS
 			on	 REQ.rider_id = RS.rider_id
+		left join TB_SUBGROUP_RIDER_REL	RR
+			on	 R.id = RR.rider_id
+			and	 RR.deleted is null
 		where	 1=1
 		AND      REQ.deleted_datetime is null
 		<choose>
@@ -1464,6 +1530,52 @@
 		and		 deleted_datetime is null
 	</select>
 
+	<!-- 2021-03-05 라이더 Router 관련 Query -->
+	<!-- 라이더가 가지고 있는 주문리스트 항목 추출 -->
+	<select id="getOrderForRider" parameterType="kr.co.cntt.core.model.rider.Rider" resultMap="selectOrderResult">
+		select	 id
+				,reg_order_id
+				,admin_id
+				,store_id
+				,rider_id
+				,combined_order_id
+				,status
+				,address
+				,latitude
+				,longitude
+				,reservation_datetime
+				,assigned_datetime
+				,picked_up_datetime
+				,arrived_datetime
+				,completed_datetime
+				,return_datetime
+				,( select brand_code from TB_STORE where id = o.store_id )			as brand_code
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = ( select brand_code from TB_STORE where id = o.store_id ) )		as brand_name
+		from	 TB_ORDER				as o
+		where	 reservation_datetime > current_date()
+		and		 status not in (0, 4, 5)
+		and		 return_datetime is null
+		and		 rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
+	</select>
+
+	<!-- 주문에 대한 스토어 정보를 가져온다 -->
+	<select id="getStoreInfoAtOrder" parameterType="java.util.ArrayList" resultType="kr.co.cntt.core.model.store.Store">
+		select	 id
+				,admin_id			as adminId
+				,store_name			as storeRealName
+				,address			as address
+				,latitude			as latitude
+				,longitude			as longitude
+				,brand_code			as brandCode
+				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = s.brand_code )		as brandName
+		from	 TB_STORE		as s
+		where	 1=1
+		and      id IN
+		<foreach collection="array" item="storeIdItem" index="index" separator="," open="(" close=")">
+			#{storeIdItem}
+		</foreach>
+	</select>
+
 	<!-- 등록된 라이더 정보가 있는지 확인한다 -->
 	<select id="selectRegistRiderInfoList" parameterType="kr.co.cntt.core.model.login.User" resultMap="selectSubgroupRiderRelsResult">
 		select	 id
@@ -1505,4 +1617,52 @@
 		and		 b.created_datetime <![CDATA[<]]> current_date()
 		and		 a.id not in ( select rider_id from TB_RIDER_SHARED_INFO where deleted is null and created_datetime > current_date() );
 	</update>
+
+	<select id="selectRiderActiveInfo" parameterType="kr.co.cntt.core.model.rider.Rider" resultType="kr.co.cntt.core.model.rider.RiderActiveInfo">
+		select	 orderCount
+				,time_format(sec_to_time(avgD7Times), if(avgD7Times >= 3600, '%h:%i:%s', '%i:%s'))						as avgD7Times
+				,avgD7
+				,time_format(sec_to_time(avgD30Times), if(avgD30Times>= 3600, '%h:%i:%s', '%i:%s'))						as avgD30Times
+				,avgD30
+				,tpoh
+		from	(
+					select	 count(*)																																				as orderCount
+							,ifnull(round(avg(timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime)), 0), 0)																	as avgD7Times
+							,ifnull(concat(round((sum(case WHEN timestampdiff(MINUTE, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) <![CDATA[<]]> case when brand_code = 1 then 14 else 7 end THEN 1 else 0 end )	/ count(*)) * 100, 1), '%'), 0)	as avgD7
+							,ifnull(round(avg(timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), arrived_datetime)), 0), 0)																		as avgD30Times
+							,ifnull(concat(round((sum(case WHEN timestampdiff(MINUTE, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), arrived_datetime) <![CDATA[<=]]> 30 THEN 1 else 0 end )	/ count(*)) * 100, 1), '%'), 0)	as avgD30
+							,ifnull(round((count(*) / (timestampdiff(second, min(working_on), ifnull(max(working_off), now())) / 3600)), 1), 0)												as tpoh
+					from	 TB_ORDER			as a
+							,(
+								select	 rider_id																	as rider_id
+										,min(working_on)															as working_on
+										,max(ifnull(working_off, now()))											as working_off
+										,sum(timestampdiff(second, working_on, ifnull(working_off, now())) )		as working_time
+								from	 TB_RIDER_WORKING_HISTORY
+								where	 1=1
+								and		 rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
+								and		 case when working_off is not null and date_format(working_off, '%Y-%m-%d') <![CDATA[<>]]> date_format(working_on, '%Y-%m-%d') then working_on else ifnull(working_off, now()) end > current_date()
+								group by rider_id
+							)								as b
+					left join
+							(
+								select	 t1.admin_id
+										,t1.group_id
+										,t1.subgroup_id
+										,t1.store_id
+										,t1.rider_id
+										,t2.brand_code
+								from	 TB_SUBGROUP_RIDER_REL			as t1
+										,TB_STORE						as t2
+								where	 t1.deleted is null
+								and		 t2.deleted is null
+								and		 t1.admin_id = t2.admin_id
+								and		 t1.store_id = t2.id
+							)								as c
+						on	 b.rider_id = c.rider_id
+					where	 a.rider_id = b.rider_id
+					and		 a.status = 3
+					and		 a.reservation_datetime > current_date()
+				)	t
+	</select>
 </mapper>
