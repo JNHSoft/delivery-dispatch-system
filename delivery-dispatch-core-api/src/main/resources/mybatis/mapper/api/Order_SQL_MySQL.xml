@@ -372,7 +372,7 @@
 
 			, B.app_type
 			, D.brand_code
-			, ( select os from TB_RIDER_SESSION where rider_id = B.id limit 1 )			as os
+			, ifnull(B.employment_type, ( select os from TB_RIDER_SESSION where rider_id = B.id limit 1 ))			as os
 
 			, D.store_phone
 		FROM TB_ORDER AS A
