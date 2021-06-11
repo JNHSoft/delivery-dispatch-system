@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.notice.Notice;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public interface NoticeMapper {
      * @param notice
      * @return
      */
+    @Transactional(readOnly=true)
     public Notice selectAdminId(Notice notice);
 
     /**
@@ -37,6 +39,7 @@ public interface NoticeMapper {
      * @param notice
      * @return
      */
+    @Transactional(readOnly=true)
     public Notice selectStoreAdminId(Notice notice);
 
     /**
@@ -59,12 +62,15 @@ public interface NoticeMapper {
      * @return
      */
     // store Detail
+    @Transactional(readOnly=true)
     public Notice getStoreDetailNoticeList(Notice notice);
 
     // rider Store Detail
+    @Transactional(readOnly=true)
     public Notice getRiderDetailNoticeList(Notice notice);
 
     // Admin admin
+    @Transactional(readOnly=true)
     public Notice getAdminDetailNoticeList(Notice notice);
 
 
@@ -75,16 +81,21 @@ public interface NoticeMapper {
      * @return
      */
     // store 공지사항
+    @Transactional(readOnly=true)
     public List<Notice> getStoreNoticeList(Notice notice);
 
     // rider 공지사항
+    @Transactional(readOnly=true)
     public List<Notice> getRiderNoticeList(Notice notice);
 
     // admin 공지사항
+    @Transactional(readOnly=true)
     public List<Notice> getAdminNoticeList(Notice notice);
 
+    @Transactional(readOnly=true)
     public List<Map> selectAllToken();
 
+    @Transactional(readOnly=true)
     public List<Notice> selectNoticeConfirm(Notice notice);
 
     public int insertNoticeConfirm(Notice notice);

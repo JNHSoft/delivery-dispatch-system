@@ -31,7 +31,7 @@ public class Rider extends User implements Dto {
     private String code;
     private String phone;
     private String gender;
-    private String employmentType;
+    private String employmentType;          // 21-06-10 신규 앱의 전체 배포 전까지만, 임시로 신규 앱 유무로 사용
     private String address;
     private String working;
     private String status;

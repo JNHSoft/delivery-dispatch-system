@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.chat.Chat;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public interface ChatMapper {
      * @param chat
      * @return
      */
+    @Transactional(readOnly=true)
     public Chat selectChatUserChatRoomRel(Chat chat);
 
     /**
@@ -70,6 +72,7 @@ public interface ChatMapper {
      * @param chat
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Chat> selectChat(Chat chat);
 
     /**
@@ -78,6 +81,7 @@ public interface ChatMapper {
      * @param chat
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Chat> selectStoreChat(Chat chat);
 
     /**
@@ -86,6 +90,7 @@ public interface ChatMapper {
      * @param chat
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Chat> selectChatRoom(Chat chat);
 
 }
