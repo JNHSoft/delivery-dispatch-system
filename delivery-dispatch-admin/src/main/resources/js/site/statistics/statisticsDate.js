@@ -95,7 +95,8 @@ function getStoreStatisticsByDate() {
             let spmhSum = 0;
             let totalPickupReturnSum = 0;
             let avgDistanceSum = 0;
-            // row 갯수
+
+            // row 갯수 (정상적인 주문 개수)
             let rowCnt = 0;
             // 빈값이 들어간 row 갯수
             let rowReduceCnt = 0;
@@ -103,6 +104,10 @@ function getStoreStatisticsByDate() {
             let distanceCnt = 0;
             // tpsp 제외 count
             let tpSpCnt = 0;
+            // Error 개수
+            let onlyErrCnt = 0;
+            // Third party 개수
+            let onlyThirdCnt = 0;
 
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -110,6 +115,9 @@ function getStoreStatisticsByDate() {
                     let chkCnt = 0;
                     let chkDistanceCnt = 0;
                     let chkTpSpCnt = 0;
+                    let chkTCCnt = 0;
+                    let chkErrCnt = 0;
+                    let chkThirdCnt = 0;
 
                     let tmpdata = new Object();
                     rowCnt++;
@@ -151,6 +159,7 @@ function getStoreStatisticsByDate() {
                         tmpdata.errtc = data[key].errtc;
                         //20.07.15 err tc 추가
                         errtcSum += formatFloat(data[key].errtc, 1);
+                        chkErrCnt++;
                     }else{
                         tmpdata.errtc = "-";
                     }
@@ -158,12 +167,18 @@ function getStoreStatisticsByDate() {
                     if (data[key].thirdtc){
                         tmpdata.thirdtc = data[key].thirdtc;
                         thirdtcSum += formatFloat(data[key].thirdtc, 1);
+                        chkThirdCnt++;
                     }else{
                         tmpdata.thirdtc = "-";
                     }
 
+                    if (data[key].tc){
+                        tmpdata.tc = formatInt(data[key].tc, 1);
+                    }else{
+                        tmpdata.tc = "-";
+                        chkTCCnt++;
+                    }
 
-                    tmpdata.tc = formatInt(data[key].tc, 1);
 
                     if(data[key].tplh){
                         tmpdata.tplh = formatFloat(data[key].tplh, 2);
@@ -240,6 +255,17 @@ function getStoreStatisticsByDate() {
                         tpSpCnt--;
                     }
 
+                    if (chkErrCnt != 0){
+                        onlyErrCnt++;
+                    }
+
+                    if (chkThirdCnt != 0){
+                        onlyThirdCnt++;
+                    }
+
+                    if (chkTCCnt == 0){
+                        rowCnt--;
+                    }
                 }
             }
             // 평균 값
@@ -265,13 +291,13 @@ function getStoreStatisticsByDate() {
             avgData.totalSales = formatFloat((totalSalesSum/rowCnt), 1);
 
             if (errtcSum != 0){
-                avgData.errtc = formatInt((errtcSum/rowCnt), 1);
+                avgData.errtc = formatInt((errtcSum/onlyErrCnt), 1);
             } else {
                 avgData.errtc = "-";
             }
 
             if (thirdtcSum != 0){
-                avgData.thirdtc = formatInt((thirdtcSum/rowCnt), 1);
+                avgData.thirdtc = formatInt((thirdtcSum/onlyThirdCnt), 1);
             } else {
                 avgData.thirdtc = "-";
             }

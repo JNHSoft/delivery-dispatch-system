@@ -615,7 +615,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (postOrder != 0) {
             if (storeDTO.getAssignmentStatus().equals("1")) {
-                this.autoAssignOrder();
+                new Thread(() -> {
+                    try {
+                        this.autoAssignOrder();
+                    } catch (AppTrException e) {
+                        log.error(e.getErrorMessage());
+                    }
+                }).start();
             }
             if (storeDTO.getSubGroup() != null) {
                 redisService.setPublisher(Content.builder().type("order_new").orderId(order.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
