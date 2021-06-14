@@ -234,9 +234,6 @@ public interface Api {
 
     /** Order 목록 조회 */
     String ORDERS_LIST = "/getOrders.json";
-    
-    /** Order History 조회 */
-    String SEARCH_ORDERS_LIST = "/getOrderHistory.json";
 
     /** Order History 조회 */
     String SEARCH_ORDERS_LIST = "/getOrderHistory.json";
