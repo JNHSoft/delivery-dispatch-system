@@ -95,7 +95,7 @@ function searchList(){
         rules: [],
         groups: [filter]
     }
-    
+
     // 대그룹이 선택된 경우
     let groupID = $("#statisticsGroupList option:selected").val();
     console.log("groupID => " + groupID);

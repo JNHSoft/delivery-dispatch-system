@@ -183,7 +183,7 @@ public interface RiderService {
      * 라이더 OS 등록
      * */
     boolean updateRiderOSInfo(Rider rider) throws AppTrException;
-    
+
     /**
      * Rider 경로정보 가져오기
      * */

@@ -186,7 +186,7 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** Rider 당일 활동 기록 */
 	RIDER_ACTIVE_INFO("riderService", "getRiderActiveInfo", Rider.class),
-	
+
 
 	// ############################################################################################ //
 

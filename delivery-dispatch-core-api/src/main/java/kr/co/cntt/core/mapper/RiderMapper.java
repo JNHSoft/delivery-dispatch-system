@@ -225,10 +225,10 @@ public interface RiderMapper {
     public Integer updateRiderWorkingAuto(HashMap map);
 
     @Transactional(readOnly=true)
-    public List<Map<String, String>> selectRiderToken(Order order);
+    public List<Map> selectRiderToken(Order order);
 
     @Transactional(readOnly=true)
-    public List<Map<String, String>> selectRiderTokenByOrderId(Order order);
+    public List<Map> selectRiderTokenByOrderId(Order order);
 
     @Transactional(readOnly=true)
     public List<Reason> selectRejectReason(Common common);
@@ -368,8 +368,8 @@ public interface RiderMapper {
      * 라이더 세션 변경 (os 정보 포함)
      * */
     int updatePushToken(Rider rider);
-    
-    
+
+
     /**
      * 2021-03-05 라이더 경로와 관련한 데이터를 가져오는 쿼리
      * */

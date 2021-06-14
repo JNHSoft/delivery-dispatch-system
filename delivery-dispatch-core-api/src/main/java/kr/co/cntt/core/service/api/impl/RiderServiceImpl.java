@@ -1614,7 +1614,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 정보 구하기 종료");
 
                 log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 매장과 주문 정보에 대한 내용 등록 시작");
-                
+
                 // 주문 목적지의 위치가 가까운 경우 다음 루트는 주문 경로가 되어야한다.
                 if ((beforeStoreDistance > beforeOrderDistance && beforeOrderDistance > -1) || beforeStoreDistance == -1){
                     log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문지 등록");
