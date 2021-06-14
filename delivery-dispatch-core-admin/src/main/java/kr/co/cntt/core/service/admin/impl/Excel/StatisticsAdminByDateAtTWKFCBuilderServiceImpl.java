@@ -295,8 +295,6 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
         long totalPickupReturnTime = 0L;
         float totalDistance = 0f;
 
-
-        int rowCnt = storeStatisticsByDateList.size();
         int tcRowCnt = storeStatisticsByDateList.stream()
                 .filter(x -> {
                     if (Integer.parseInt(changeType(Integer.class, x.getTc())) > 0){
@@ -309,12 +307,16 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
         int returnNullCnt = 0;
         int tpSpNullCnt = 0;
         int distanceNullCnt = 0;
+        int onlyErrCnt = 0;
+        int onlyThirdCnt = 0;
 
         for(int i = 0, r = storeStatisticsByDateList.size(); i<r; i++) {
 
             int chkCnt = 0;
             int chkTpSpCnt = 0;
             int chkDistanceCnt = 0;
+            int chkErrCnt = 0;
+            int chkThirdCnt = 0;
 
             orderPickupTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderPickup())) * 1000;
             pickupCompleteTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getPickupComplete())) * 1000;
@@ -349,9 +351,18 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             totalSales += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTotalSales()));
 
-            errtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
-            thirdtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()));
+            if (storeStatisticsByDateList.get(i).getErrtc() != null){
+                errtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
+                chkErrCnt++;
+            }
+
+            if (storeStatisticsByDateList.get(i).getThirdtc() != null){
+                thirdtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()));
+                chkThirdCnt++;
+            }
+
             tc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTc()));
+
 
             if(storeStatisticsByDateList.get(i).getTplh() !=null){
                 tplh += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTplh()));
@@ -486,6 +497,15 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
                 distanceNullCnt++;
             }
 
+            // 정상 개수가 없는 경우에만 err랑 제3자를 센다
+            if (chkErrCnt > 0){
+                onlyErrCnt++;
+            }
+
+            if (chkThirdCnt > 0){
+                onlyThirdCnt++;
+            }
+
             // 평균값
             if(i==storeStatisticsByDateList.size()-1){
                 colNum = 0;
@@ -611,16 +631,16 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
                 }
 
                 cell2 = addListRow.createCell(colNum++);
-                if (errtc > 0 && rowCnt > 0){
-                    cell2.setCellValue(String.format("%.0f",errtc/rowCnt));
+                if (errtc > 0 && onlyErrCnt > 0){
+                    cell2.setCellValue(String.format("%.0f",errtc/onlyErrCnt));
                 }else{
                     cell2.setCellValue("0");
                 }
                 cell2.setCellStyle(dataCellStyle);
 
                 cell2 = addListRow.createCell(colNum++);
-                if (thirdtc > 0 && rowCnt > 0){
-                    cell2.setCellValue(String.format("%.0f",thirdtc/rowCnt));
+                if (thirdtc > 0 && onlyThirdCnt > 0){
+                    cell2.setCellValue(String.format("%.0f",thirdtc/onlyThirdCnt));
                 }else{
                     cell2.setCellValue("0");
                 }

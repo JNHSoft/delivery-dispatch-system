@@ -187,6 +187,11 @@ function getStoreStatisticsByDate() {
             let distanceCnt = 0;
             // tpsp 제외 count
             let tpSpCnt = 0;
+            // Error 개수
+            let onlyErrCnt = 0;
+            // Third party 개수
+            let onlyThirdCnt = 0;
+
 
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -194,6 +199,8 @@ function getStoreStatisticsByDate() {
                     let chkCnt = 0;
                     let chkDistanceCnt = 0;
                     let chkTpSpCnt = 0;
+                    let chkErrCnt = 0;
+                    let chkThirdCnt = 0;
 
                     let tmpdata = new Object();
                     rowCnt++;
@@ -221,8 +228,21 @@ function getStoreStatisticsByDate() {
                     tmpdata.min60To90 = formatInt(data[key].min60To90, 1) + "%";
                     tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
                     tmpdata.totalSales = formatInt(data[key].totalSales, 1);
-                    tmpdata.errtc = formatInt(data[key].errtc);
-                    tmpdata.thirdtc = formatInt(data[key].thirdtc);
+
+                    if (data[key].errtc){
+                        tmpdata.errtc = formatInt(data[key].errtc);
+                        chkErrCnt++;
+                    }else{
+                        tmpdata.errtc = "-"
+                    }
+
+                    if (data[key].thirdtc){
+                        tmpdata.thirdtc = formatInt(data[key].thirdtc);
+                        chkThirdCnt++;
+                    }else{
+                        tmpdata.thirdtc = "-"
+                    }
+
                     tmpdata.tc = formatInt(data[key].tc);
 
                     if(data[key].tplh){
@@ -304,6 +324,15 @@ function getStoreStatisticsByDate() {
                         tpSpCnt--;
                     }
 
+                    // 정상 개수가 없는 경우 에러와 제 3자를 제외
+                    if (chkErrCnt != 0){
+                        onlyErrCnt++;
+                    }
+
+                    if (chkThirdCnt != 0){
+                        onlyThirdCnt++;
+                    }
+
                 }
             }
 
@@ -324,8 +353,8 @@ function getStoreStatisticsByDate() {
             avgData.min60To90 = formatFloat((min60To90Sum/tcRowCnt), 1) +"%";
             avgData.min90Under = formatFloat((min90UnderSum/tcRowCnt), 1) +"%";
             avgData.totalSales = formatInt((totalSalesSum/tcRowCnt), 1);
-            avgData.errtc = formatInt((errtcSum/rowCnt), 1);
-            avgData.thirdtc = formatInt((thirdtcSum/rowCnt), 1);
+            avgData.errtc = formatInt((errtcSum/onlyErrCnt), 1);
+            avgData.thirdtc = formatInt((thirdtcSum/onlyThirdCnt), 1);
             avgData.tc = formatInt((tcSum/tcRowCnt), 1);
 
             if(tpSpCnt!=0){
