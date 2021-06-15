@@ -289,7 +289,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if (!riderList.isEmpty()) {//riderList.size()!=0
                 map.put("rider", riderList.get(0));
 
-                log.debug(">>> autoAssign_GetRiderList::::: riderListMap: " + riderList.get(0));
+
+                log.debug(">>> autoAssign_GetRiderList::::: riderListMap: " + riderList.get(0) + " Current OrderID & RegID =>" + order.getId() + " (" + order.getRegOrderId() + ")");
+
+                // Rider ID를 가져온다.
+                for (Rider tmpRider:riderList
+                     ) {
+                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude());
+                }
+
                 log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);
                 log.debug(">>> autoAssign_GetRiderList_OrderId:::: riderListMap_OrderId: " + order.getId());
                 this.autoAssignOrderProc(map);
@@ -617,9 +625,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if (storeDTO.getAssignmentStatus().equals("1")) {
                 new Thread(() -> {
                     try {
+                        Thread.sleep(1000);             // 배정 프로세스가 1초 뒤에 실행 될 수 있도록 적용 # 신규 주문 신호 후 바로 전송 시 화면 갱신 오류 발생
                         this.autoAssignOrder();
                     } catch (AppTrException e) {
                         log.error(e.getErrorMessage());
+                    } catch (Exception e){
+                        log.error(e.getMessage());
                     }
                 }).start();
             }
