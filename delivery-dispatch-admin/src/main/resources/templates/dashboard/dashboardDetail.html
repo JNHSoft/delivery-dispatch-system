@@ -2,9 +2,6 @@
 <html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
 <!-- 컨텐츠 영역 -->
 <section id="container" layout:fragment="content">
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc.1/dist/chartjs-plugin-datalabels.min.js"></script>
-
   <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.dashboard')}"/>
   <div class="p-14">
     <div class="mb-8 flex items-center">
