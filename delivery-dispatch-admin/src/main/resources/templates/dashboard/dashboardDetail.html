@@ -2,11 +2,195 @@
 <html xmlns:th="//www.thymeleaf.org" xmlns:layout="//www.ultraq.net.nz/thymeleaf/layout" layout:decorator="/layout">
 <!-- 컨텐츠 영역 -->
 <section id="container" layout:fragment="content">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc.1/dist/chartjs-plugin-datalabels.min.js"></script>
+
   <h2 id="pageTit" class="blind" th:text="${#messages.msg('gnb.dashboard')}"/>
-  <div class="search_box">
-    <div class="left">
-      <span class="lbl" th:text="${#messages.msg('gnb.dashboard')}" style="font-size: 15px; font-weight: bold; color:black" />
+  <div class="p-14">
+    <div class="mb-8 flex items-center">
+      <a href="#" class="block w-8 h-8 mr-3 rounded-full border border-solid border-gray-300 bg-arw-left bg-no-repeat bg-center">
+        <span class="hidden">뒤로가기</span>
+      </a>
+      <h3 class="text-2xl font-bold text-gray-900">D7</h3>
+<!--      <h3 class="text-2xl font-bold text-gray-900" th:text="${#messages.msg('gnb.dashboard')}"></h3>-->
     </div>
+    <div class="flex flex-wrap mb-10 gap-y-2">
+      <div class="mr-2">
+        <select class="search-select" id="statisticsGroupList">
+          <option value="reset" th:text="${#messages.msg('list.search.all.group')}" />
+        </select>
+      </div>
+      <div class="mr-2">
+        <select class="search-select" id="statisticsSubGroupList">
+          <option value="reset" th:text="${#messages.msg('list.search.all.subgroup')}" />
+        </select>
+      </div>
+      <div class="mr-2">
+        <select class="search-select" id="statisticsStoreList">
+          <option value="reset" th:text="${#messages.msg('list.search.all.store')}" />
+        </select>
+      </div>
+      <div class="flex items-center space-x-1.5 mr-2">
+        <input type="date" class="search-cal" value="2021-06-01" />
+        <span>~</span>
+        <input type="date" class="search-cal" />
+      </div>
+      <div class="flex mr-2">
+        <button class="search-button rounded-l-full on">
+          <span>today</span>
+        </button>
+        <button class="search-button">
+          <span>last 7 days</span>
+        </button>
+        <button class="search-button rounded-r-full">
+          <span>current month</span>
+        </button>
+      </div>
+      <div class="mr-2">
+        <button class="search-button rounded-full on">
+          <span>Total Time</span>
+        </button>
+      </div>
+      <div class="mr-2">
+        <select class="search-select">
+          <option>Peak Time</option>
+          <option value="1">1</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 차트가 표시되는 영역 -->
+    <div class="mb-10 text-white">
+      <canvas id="myChart" width="400" height="200"></canvas>
+      <script>
+        // const labels = Utils.months({count: 7});
+        const data = {
+
+          labels: [
+            '2021-04-01',
+            '2021-04-02',
+            '2021-04-03',
+            '2021-04-04',
+            '2021-04-05',
+            '2021-04-06',
+            '2021-04-07',
+          ],
+          datasets: [{
+            label: '',
+            data: [65, 59, 80, 81, 56, 55, 40],
+            backgroundColor: [
+              'rgba(107 87 236)',
+              'rgba(107 87 236)',
+              'rgba(107 87 236)',
+              'rgba(107 87 236)',
+              'rgba(107 87 236)',
+              'rgba(107 87 236)',
+              'rgba(107 87 236)',
+
+            ],
+            borderWidth: 0,
+            borderRadius: 4,
+            // barPercentage: 40,
+            barThickness: 28,
+            // maxBarThickness: 8
+          }]
+        };
+
+        const config = {
+          plugins: [ChartDataLabels],
+          type: 'bar',
+          data: data,
+          options: {
+            plugins: {
+              legend: {
+                display: false,
+              },
+              datalabels: {
+                align: 'end',
+                anchor: 'end',
+                color: '#6b57ec',
+                padding: 8,
+                formatter: function(value, context) {
+                  return value + '%';
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false,
+                }
+              },
+              y: {
+                beginAtZero: true,
+                min: 0,
+                max: 100,
+                ticks: {
+                  count: 5,
+                  callback: function(value, index, values) {
+                    return value + '%';
+                  }
+                }
+              }
+            }
+          },
+        };
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        var myChart = new Chart(ctx, config);
+      </script>
+    </div>
+    <!-- 차트가 표시되는 영역 -->
+
+    <!-- 엑셀 다운로드 버튼 -->
+    <div class="flex items-center justify-between mb-4">
+      <h4 class="text-lg font-bold text-gray-900">STORE RANKING</h4>
+      <div>
+        <button class="btn-excel">
+          <span>Export to Excel</span>
+        </button>
+      </div>
+    </div>
+    <!-- 엑셀 다운로드 버튼 -->
+
+    <!-- 리스트가 표시되는 영역 -->
+    <div>
+      <table class="table-rank">
+        <caption class="hidden">STORE RANKING</caption>
+        <colgroup>
+          <col width="28%" />
+          <col width="*" />
+          <col width="28%" />
+        </colgroup>
+        <thead>
+        <tr>
+          <th>Store</th>
+          <th>TC</th>
+          <th>達成率</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>88KT111111 - Taichung Wu Chuan</td>
+          <td>10</td>
+          <td>100%</td>
+        </tr>
+        <tr>
+          <td>88KT111111 - Taichung Wu Chuan</td>
+          <td>10</td>
+          <td>100%</td>
+        </tr>
+        <tr>
+          <td>88KT111111 - Taichung Wu Chuan</td>
+          <td>10</td>
+          <td>100%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- 리스트가 표시되는 영역 -->
+
   </div>
   <script type="text/javascript" th:src="@{/resources/js/site/dashboard/dashboardDetail.js}" layout:fragment="script2"></script>
 </section>
