@@ -541,7 +541,7 @@ public class StatisticsAdminByDateBuilderServiceImpl extends ExcelComm {
                 onlyThirdCnt++;
             }
 
-            if (chkTCCnt == 0){
+            if (chkTCCnt != 0){
                rowCnt--;
             }
 

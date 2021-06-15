@@ -155,7 +155,7 @@ function getStoreStatisticsByDate() {
                     tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
                     tmpdata.totalSales = formatFloat(data[key].totalSales, 1);
 
-                    if (data[key].errtc){
+                    if (formatInt(data[key].errtc, 0) > 0){
                         tmpdata.errtc = data[key].errtc;
                         //20.07.15 err tc 추가
                         errtcSum += formatFloat(data[key].errtc, 1);
@@ -164,7 +164,7 @@ function getStoreStatisticsByDate() {
                         tmpdata.errtc = "-";
                     }
 
-                    if (data[key].thirdtc){
+                    if (formatInt(data[key].thirdtc, 0) > 0){
                         tmpdata.thirdtc = data[key].thirdtc;
                         thirdtcSum += formatFloat(data[key].thirdtc, 1);
                         chkThirdCnt++;
@@ -172,7 +172,7 @@ function getStoreStatisticsByDate() {
                         tmpdata.thirdtc = "-";
                     }
 
-                    if (data[key].tc){
+                    if (formatInt(data[key].tc, 0) > 0){
                         tmpdata.tc = formatInt(data[key].tc, 1);
                     }else{
                         tmpdata.tc = "-";
@@ -195,7 +195,7 @@ function getStoreStatisticsByDate() {
                         tmpdata.spmh = "-";
                         chkTpSpCnt++;
                     }
-                    tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn*1000);
+                    tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn * 1000);
                     tmpdata.avgDistance = (data[key].avgDistance?formatFloat(data[key].avgDistance, 1):0) +'km';
 
                     // 평균 값
@@ -263,11 +263,16 @@ function getStoreStatisticsByDate() {
                         onlyThirdCnt++;
                     }
 
-                    if (chkTCCnt == 0){
+                    if (chkTCCnt != 0){
                         rowCnt--;
                     }
                 }
             }
+
+            console.log("orderPickupSum => " + orderPickupSum);
+            console.log("rowCnt => " + rowCnt);
+
+
             // 평균 값
             let avgData = new Object();
             avgData.store = "Average" ;
@@ -292,6 +297,8 @@ function getStoreStatisticsByDate() {
 
             if (errtcSum != 0){
                 avgData.errtc = formatInt((errtcSum/onlyErrCnt), 1);
+                console.log(errtcSum);
+                console.log(onlyErrCnt);
             } else {
                 avgData.errtc = "-";
             }
@@ -317,10 +324,8 @@ function getStoreStatisticsByDate() {
             avgData.totalPickupReturn = totalTimeSet((totalPickupReturnSum*1000)/rowReduceCnt);
             avgData.avgDistance = formatFloat((avgDistanceSum/distanceCnt), 1) +'km';
 
-            // 날짜 조회시 avg 노출
-            if(rowCnt!=0){
-                mydata.push(avgData);
-            }
+            // 무조건 노출
+            mydata.push(avgData);
 
             if (mydata.length > 0) {
                 dateGraph(avgData);
