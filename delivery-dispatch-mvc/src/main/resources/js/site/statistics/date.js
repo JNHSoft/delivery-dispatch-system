@@ -127,7 +127,7 @@ function getStoreStatisticsByDate() {
                     tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
                     tmpdata.totalSales = formatFloat(data[key].totalSales, 1);
 
-                    if (data[key].errtc){
+                    if (formatInt(data[key].errtc, 0) > 0){
                         tmpdata.errtc = data[key].errtc;
                         //20.07.15 err tc 추가
                         errtcSum += formatInt(data[key].errtc);
@@ -136,7 +136,7 @@ function getStoreStatisticsByDate() {
                         tmpdata.errtc = "-";
                     }
 
-                    if (data[key].thirdtc){
+                    if (formatInt(data[key].thirdtc, 0) > 0){
                         tmpdata.thirdtc = data[key].thirdtc;
                         thirdtcSum += formatInt(data[key].thirdtc);
                         chkThirdCnt++;
@@ -144,7 +144,7 @@ function getStoreStatisticsByDate() {
                         tmpdata.thirdtc = "-";
                     }
 
-                    if (data[key].tc){
+                    if (formatInt(data[key].tc, 0) > 0){
                         tmpdata.tc = data[key].tc;
                     }else{
                         tmpdata.tc = "-";
@@ -232,7 +232,7 @@ function getStoreStatisticsByDate() {
                         onlyThirdCnt++;
                     }
 
-                    if (chkTCCnt == 0){
+                    if (chkTCCnt != 0){
                         rowCnt--;
                     }
                 }

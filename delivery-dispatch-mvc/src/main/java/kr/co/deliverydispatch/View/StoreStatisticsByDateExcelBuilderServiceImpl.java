@@ -509,7 +509,7 @@ public class StoreStatisticsByDateExcelBuilderServiceImpl extends CommExcel {
                     onlyThirdCnt++;
                 }
 
-                if (chkTCCnt == 0){
+                if (chkTCCnt != 0){
                     rowCnt--;
                 }
 

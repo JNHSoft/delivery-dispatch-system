@@ -229,14 +229,14 @@ function getStoreStatisticsByDate() {
                     tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
                     tmpdata.totalSales = formatInt(data[key].totalSales, 1);
 
-                    if (data[key].errtc){
+                    if (formatInt(data[key].errtc) > 0){
                         tmpdata.errtc = formatInt(data[key].errtc);
                         chkErrCnt++;
                     }else{
                         tmpdata.errtc = "-"
                     }
 
-                    if (data[key].thirdtc){
+                    if (formatInt(data[key].thirdtc) > 0){
                         tmpdata.thirdtc = formatInt(data[key].thirdtc);
                         chkThirdCnt++;
                     }else{
