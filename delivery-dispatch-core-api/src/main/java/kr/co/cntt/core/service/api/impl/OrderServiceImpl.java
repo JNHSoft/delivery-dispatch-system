@@ -625,7 +625,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if (storeDTO.getAssignmentStatus().equals("1")) {
                 new Thread(() -> {
                     try {
-                        Thread.sleep(1000);             // 배정 프로세스가 1초 뒤에 실행 될 수 있도록 적용 # 신규 주문 신호 후 바로 전송 시 화면 갱신 오류 발생
+                        Thread.sleep(5000);             // 배정 프로세스가 5초 뒤에 실행 될 수 있도록 적용 # 신규 주문 신호 후 바로 전송 시 화면 갱신 오류 발생
                         this.autoAssignOrder();
                     } catch (AppTrException e) {
                         log.error(e.getErrorMessage());
