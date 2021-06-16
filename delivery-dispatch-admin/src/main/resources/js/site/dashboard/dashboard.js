@@ -8,6 +8,9 @@ let selectIdOption = $("#statisticsStoreList option:selected");
  * */
 $(function(){
     console.log("대시보드 페이지 오픈");
+    let date = $.datepicker.formatDate('yy-mm-dd', new Date);
+    $('#startDate, #endDate').val(date);
+
     makeEventBind();
     getGroupList();
     getDashBoardInfos()
@@ -18,9 +21,90 @@ $(function(){
  * Object에 대한 Event 바인딩
  * */
 function makeEventBind(){
-    $(".select").off().on('change', function (){
+    // 그룹, 하위그룹, 스토어에 대한 Select 이벤트
+    $(".search-select").off().on('change', function (){
         selectId = $(this);
         selectIdOption = $('option:selected',this);
+        searchList();
+    });
+
+    // 픽업 타임에 대한 이벤트
+    $("#sel_peak_time").off().on('change', function (){
+        if ($('option:selected', this).val() === "0"){
+            $("#btnTotalTime").removeClass('on');
+            $("#btnTotalTime").addClass('on');
+        }else{
+            $("#btnTotalTime").removeClass('on');
+        }
+
+        searchList();
+    });
+
+    // 전체 시간에 대한 이벤트
+    $("#btnTotalTime").off().on('click', function (){
+        // total 기능은 off가 되어 있을 때만 작동하도록 한다.
+        if(!($(this).hasClass('on'))){
+            $(this).addClass('on');
+            $("#sel_peak_time").val("0");
+            searchList();
+        }
+    });
+
+    // 달력의 Today, Last 7 Days, Current Month 이벤트
+    $(".search-date").off().on('click', function(){
+        // 클릭한 객체가 이미 클릭 상태로 되어 있는 경우 이벤트를 넘긴다.
+        if ($(this).hasClass('on')){
+            return;
+        }
+
+        // 현재 클래스 중 on 항목에 대한 내용 제거
+        $(".search-date").removeClass('on');
+        // 현재 클릭 이벤트가 발생된 곳에 on Class 추가
+        $(this).addClass('on');
+
+        // 클릭된 항목에 따라, 이벤트가 진행되도록 함.
+        console.log($(this).val());
+    });
+    
+    // 달력의 시작일자에 대한 이벤트
+    $("#startDate").off().on('change', function (){
+        let today = $.datepicker.formatDate('yy-mm-dd', new Date);
+        let startDate = $(this).val();
+        let endDate = $("#endDate").val();
+
+        // 오늘보다 큰 경우, 오늘 일자로 강제 변경
+        if (today < startDate){
+            $(this).val(today);
+            $("#endDate").val(today);
+            return;
+        }
+
+        // 시작일이 종료일보다 큰 경우 종료일을 시작일로 변경
+        if (startDate > endDate){
+            $("#endDate").val(startDate);
+        }
+
+        searchList();
+    });
+
+    // 달력의 종료일자에 대한 이벤트
+    $("#endDate").off().on('change', function (){
+        let today = $.datepicker.formatDate('yy-mm-dd', new Date);
+        let startDate = $("#startDate").val();
+        let endDate = $(this).val();
+
+        // 오늘보다 큰 경우, 오늘 일자로 강제 변경
+        if (today < endDate){
+            $(this).val(today);
+            $("#startDate").val(today);
+            return;
+        }
+
+        // 종료일이 시작일보다 작은 경우 시작일을 종료일 기간으로 맞춘다.
+        if (startDate > endDate){
+            $("#startDate").val(endDate);
+        }
+
         searchList();
     });
 }
@@ -43,7 +127,12 @@ function getDashBoardInfos(){
         url : "/totalStatistsc",
         type : 'post',
         data : {
-            groupId: $("#statisticsGroupList option:selected").val()
+            groupId: $("#statisticsGroupList option:selected").val(),
+            subgroupId: $("#statisticsSubGroupList option:selected").val(),
+            storeId: $("#statisticsStoreList option:selected").val(),
+            sDate: $("#startDate").val(),
+            eDate: $("#endDate").val(),
+            peakType: $("#sel_peak_time").val(),
         },
         async : false,
         dataType : 'json',

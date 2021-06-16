@@ -25,30 +25,31 @@
         </select>
       </div>
       <div class="flex items-center space-x-1.5 mr-2">
-        <input type="date" class="search-cal" value="2021-06-01" />
+        <input type="date" class="search-cal" id="startDate" />
         <span>~</span>
-        <input type="date" class="search-cal" />
+        <input type="date" class="search-cal" id="endDate" />
       </div>
       <div class="flex mr-2">
-        <button class="search-button rounded-l-full on">
+        <button class="search-button rounded-l-full search-date on" value="today">
           <span>today</span>
         </button>
-        <button class="search-button">
+        <button class="search-button search-date" value="lseven">
           <span>last 7 days</span>
         </button>
-        <button class="search-button rounded-r-full">
+        <button class="search-button rounded-r-full search-date" value="cmonth">
           <span>current month</span>
         </button>
       </div>
       <div class="mr-2">
-        <button class="search-button rounded-full on">
+        <button class="search-button rounded-full on" id="btnTotalTime">
           <span>Total Time</span>
         </button>
       </div>
       <div class="mr-2">
-        <select class="search-select">
-          <option>Peak Time</option>
-          <option value="1">1</option>
+        <select class="search-select" id="sel_peak_time">
+          <option value="0" th:label="${#messages.msg('peaktime.option.all')}"/>
+          <option value="1" th:label="${#messages.msg('peaktime.option.launch')}"/>
+          <option value="2" th:label="${#messages.msg('peaktime.option.dinner')}"/>
         </select>
       </div>
     </div>
