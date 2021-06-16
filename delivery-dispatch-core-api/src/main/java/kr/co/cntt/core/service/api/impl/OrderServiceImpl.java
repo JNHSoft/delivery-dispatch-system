@@ -225,7 +225,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 return true;
                         }
                     })                  // 주문 상태 값이 픽업 또는 배달 중인 경우 삭제
-                    .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.nullsLast(Comparator.naturalOrder()))       // 1순위 쉐어 내용에 따른 정렬
+                    .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.nullsLast(Comparator.reverseOrder()))       // 1순위 쉐어 내용에 따른 정렬
                             .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))          // 2순위 상태값 정렬 (현재는 배정과 미배정만 나온다)
                             .thenComparing(Rider::getDistance)                                                                  // 3순위 거리 순
                             .thenComparing(Rider::getAssignCount)                                                               // 4순위 주문을 가지고 있는 순서
@@ -289,7 +289,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if (!riderList.isEmpty()) {//riderList.size()!=0
                 map.put("rider", riderList.get(0));
 
-                log.debug(">>> autoAssign_GetRiderList::::: riderListMap: " + riderList.get(0));
+
+                log.debug(">>> autoAssign_GetRiderList::::: riderListMap: " + riderList.get(0) + " Current OrderID & RegID =>" + order.getId() + " (" + order.getRegOrderId() + ")");
+
+                // Rider ID를 가져온다.
+                for (Rider tmpRider:riderList
+                     ) {
+                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude());
+                }
+
                 log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);
                 log.debug(">>> autoAssign_GetRiderList_OrderId:::: riderListMap_OrderId: " + order.getId());
                 this.autoAssignOrderProc(map);
@@ -615,7 +623,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         if (postOrder != 0) {
             if (storeDTO.getAssignmentStatus().equals("1")) {
-                this.autoAssignOrder();
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(5000);             // 배정 프로세스가 5초 뒤에 실행 될 수 있도록 적용 # 신규 주문 신호 후 바로 전송 시 화면 갱신 오류 발생
+                        this.autoAssignOrder();
+                    } catch (AppTrException e) {
+                        log.error(e.getErrorMessage());
+                    } catch (Exception e){
+                        log.error(e.getMessage());
+                    }
+                }).start();
             }
             if (storeDTO.getSubGroup() != null) {
                 redisService.setPublisher(Content.builder().type("order_new").orderId(order.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());

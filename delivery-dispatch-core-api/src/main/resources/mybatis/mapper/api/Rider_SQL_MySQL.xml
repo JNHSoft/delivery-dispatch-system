@@ -1035,7 +1035,7 @@
 				,B.subgroup_id				as subGroupRiderRel_subgroup_id
 				,B.store_id					as subGroupRiderRel_store_id
 				,(SELECT COUNT(id) FROM TB_ORDER WHERE rider_id = A.id AND status in (1,2,6) AND created_datetime > CURRENT_DATE()) AS assign_count
-				,(SELECT MAX(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE()) AS min_assigned_datetime
+				,(SELECT MAX(assigned_datetime) FROM TB_ORDER WHERE rider_id = A.id AND created_datetime > CURRENT_DATE() AND third_party_id is null) AS min_assigned_datetime
 				,(SELECT MIN(picked_up_datetime) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2,6) AND created_datetime > CURRENT_DATE()) AS min_picked_up_datetime
 				,(SELECT max(status) FROM TB_ORDER WHERE rider_id = A.id AND status in(1,2,6) AND created_datetime > CURRENT_DATE()) AS min_order_status
 				,(select denied_datetime from TB_ORDER_DENY_ASSIGNMENT where rider_id = A.id and admin_id = #{adminId} and order_id = #{orderId} and created_datetime > current_date() and timestampdiff(minute, denied_datetime, now()) <![CDATA[<=]]> 5 )	as denied_datetime
@@ -1554,6 +1554,7 @@
 		from	 TB_ORDER				as o
 		where	 reservation_datetime > current_date()
 		and		 status not in (0, 4, 5)
+		and      third_party_id is null
 		and		 return_datetime is null
 		and		 rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
 	</select>
@@ -1662,6 +1663,7 @@
 						on	 b.rider_id = c.rider_id
 					where	 a.rider_id = b.rider_id
 					and		 a.status = 3
+					and 	 a.third_party_id is null
 					and		 a.reservation_datetime > current_date()
 				)	t
 	</select>
