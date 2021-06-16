@@ -317,6 +317,7 @@
 			and	 C.deleted is null
 		where	 date_format(reservation_datetime, '%Y-%m-%d') between #{startDate} and #{endDate}
 		and		 A.rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
+		and      A.third_party_id is null
 		<if test="status != null and status != ''">
 			AND A.status IN
 			<foreach collection="statusArray" item="statusItem" index="index" separator="," open="(" close=")">
