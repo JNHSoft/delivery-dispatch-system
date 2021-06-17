@@ -172,7 +172,7 @@ function getGroupList() {
 /**
  * 서브 그룹 List 불러오기
  */
-function getStatisticsSubGroupList(gId, subGroup) {
+function getStatisticsSubGroupList(gId) {
     var selectGroupId = null;
 
     console.log("getStatisticsSubGroupList");
