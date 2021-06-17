@@ -564,7 +564,7 @@ function getGroupList() {
                 statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
-                $("#statisticsGroupList").on("change", function () {
+                $("#statisticsGroupList").off().on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                 });
             }
@@ -600,7 +600,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
-                $("#statisticsSubGroupList").on("change", function () {
+                $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
                 });
 

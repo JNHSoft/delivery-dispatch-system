@@ -298,7 +298,7 @@ function getGroupList() {
                 statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
-                $("#statisticsGroupList").on("change", function () {
+                $("#statisticsGroupList").off().on("change", function () {
                     console.log("Group Change");
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                 });
@@ -338,7 +338,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
-                $("#statisticsSubGroupList").on("change", function () {
+                $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
                 });
 
@@ -370,11 +370,6 @@ function getStatisticsStoreList(subId, gId) {
                     statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
-
-                // $("#statisticsStoreList").on("change", function () {
-                //     getStoreStatisticsByDate();
-                // });
-
             }
         }
     });

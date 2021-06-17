@@ -582,7 +582,7 @@ function getGroupList() {
                 statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
-                $("#statisticsGroupList").on("change", function () {
+                $("#statisticsGroupList").off().on("change", function () {
                     console.log("Group Change");
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                 });
@@ -622,7 +622,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
-                $("#statisticsSubGroupList").on("change", function () {
+                $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
                 });
 
@@ -654,11 +654,6 @@ function getStatisticsStoreList(subId, gId) {
                     statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
-
-                // $("#statisticsStoreList").on("change", function () {
-                //     getStoreStatisticsByDate();
-                // });
-
             }
         }
     });
@@ -683,62 +678,4 @@ function searchList(selectId, selectIdOption) {
             $("#statisticsStoreList").val("reset").prop("selected", true);
         }
     }
-
-    // var searchText1= $("#statisticsGroupList option:selected").text();
-    // var searchTextVal1= $("#statisticsGroupList option:selected").val();
-    // var searchText2= $("#statisticsSubGroupList option:selected").text();
-    // var searchTextVal2= $("#statisticsSubGroupList option:selected").val();
-    // var searchText3= $("#statisticsStoreList option:selected").text();
-    // var searchTextVal3= $("#statisticsStoreList option:selected").val();
-    //
-    // var filter = {
-    //     groupOp: "AND",
-    //     rules: []
-    // };
-    //
-    // if(searchTextVal1 != "reset"){
-    //     filter.rules.push({
-    //         field : 'group_name',
-    //         op : "eq",
-    //         data : searchText1
-    //     });
-    //     if(searchTextVal2 != "reset"){
-    //         filter.rules.push({
-    //             field : 'subGroup_name',
-    //             op : "eq",
-    //             data : searchText2
-    //         });
-    //         if(searchTextVal3 != "reset"){
-    //             filter.rules.push({
-    //                 field : 'store',
-    //                 op : "eq",
-    //                 data : searchText3
-    //             });
-    //         }
-    //     }
-    // }
-    //
-    // var filter3 = {
-    //     groupOp: "OR",
-    //     rules: [],
-    //     groups:[filter]
-    // };
-    //
-    // if (filter.rules.length > 0){
-    //     filter3.rules.push({
-    //         field: "store",
-    //         op : "eq",
-    //         data : "Average"
-    //     });
-    // }
-    //
-    // var grid = jQuery('#jqGrid');
-    //
-    // if(filter.rules.length > 0 || filter3.rules.length > 0 ){
-    //     grid[0].p.search = true;
-    // }
-    //
-    // $.extend(grid[0].p.postData, { filters: filter3 });
-    // grid.trigger("reloadGrid", [{ page: 1 }]);
-    // console.log("grid trigger");
 }
