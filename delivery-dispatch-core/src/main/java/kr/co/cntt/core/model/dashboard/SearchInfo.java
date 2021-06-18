@@ -20,4 +20,18 @@ public class SearchInfo extends Common implements Dto {
     private String storeId;             // STORE ID
     private String sDate;               // Search Start Date
     private String eDate;               // Search End Date
+
+    public SearchInfo deapCopy(){
+        SearchInfo search = new SearchInfo();
+
+        search.setGroupId(this.getGroupId());
+        search.setSubgroupId(this.getSubgroupId());
+        search.setStoreId(this.getStoreId());
+        search.setSDate(this.getSDate());
+        search.setEDate(this.getEDate());
+        search.setPeakType(this.getPeakType());
+        search.setToken(this.getToken());
+
+        return search;
+    }
 }
