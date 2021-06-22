@@ -14,6 +14,7 @@ import lombok.ToString;
 public class DashboardInfo extends Common implements Dto {
     private String dashBoardType;               // 대시보드에 대한 내용 정의
     private Float mainValue;                    // 대시보드에 표기 되는 메인 데이터
-    private Long avgTimes;                      // 평균이 되는 시간
-    private Integer variation;                  // 직전 대비 증감률
+    private String unit;                        // 메인 Value에 대한 단위 표시
+    private Long avgValue;                      // 평균이 되는 시간
+    private Float variation;                    // 직전 대비 증감률
 }

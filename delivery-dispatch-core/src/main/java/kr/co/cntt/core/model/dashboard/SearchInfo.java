@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 public class SearchInfo extends Common implements Dto {
     private String groupId;             // RC ID
-    private String subgroupId;          // AC ID
+    private String subgroupId;          // AC Name
     private String storeId;             // STORE ID
     private String sDate;               // Search Start Date
     private String eDate;               // Search End Date
@@ -31,6 +31,8 @@ public class SearchInfo extends Common implements Dto {
         search.setEDate(this.getEDate());
         search.setPeakType(this.getPeakType());
         search.setToken(this.getToken());
+        search.setRole(this.getRole());
+        search.setDays(this.getDays());
 
         return search;
     }

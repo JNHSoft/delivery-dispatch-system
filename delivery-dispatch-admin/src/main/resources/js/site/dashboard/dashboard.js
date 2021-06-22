@@ -21,13 +21,6 @@ $(function(){
  * Object에 대한 Event 바인딩
  * */
 function makeEventBind(){
-    // 그룹, 하위그룹, 스토어에 대한 Select 이벤트
-    $(".search-select").off().on('change', function (){
-        selectId = $(this);
-        selectIdOption = $('option:selected',this);
-        searchList();
-    });
-
     // 픽업 타임에 대한 이벤트
     $("#sel_peak_time").off().on('change', function (){
         if ($('option:selected', this).val() === "0"){
@@ -212,12 +205,15 @@ function getDashBoardInfos(){
     // 정보들을 모두 설정한다.
     loading.show();
 
-    console.log("대쉬보드 인포스 S");
-    console.log($("#statisticsGroupList option:selected").val());
-    console.log($("#statisticsSubGroupList option:selected").val());
-    console.log($("#statisticsStoreList option:selected").val());
-    console.log($("input[name=searchDate]:checked").val());
-    console.log("대쉬보드 인포스 F");
+    let startDate = $('#startDate').val();
+    let endDate = $('#endDate').val();
+
+    let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
+    if (diffDate > 31){
+        loading.hide();
+        return;
+    }
+
 
     $.ajax({
         url : "/totalStatistsc",
@@ -226,14 +222,20 @@ function getDashBoardInfos(){
             groupId: $("#statisticsGroupList option:selected").val(),
             subgroupId: $("#statisticsSubGroupList option:selected").val(),
             storeId: $("#statisticsStoreList option:selected").val(),
-            sDate: $("#startDate").val(),
-            eDate: $("#endDate").val(),
-            peakType: $("#sel_peak_time").val(),
+            sDate: startDate,
+            eDate: endDate,
+            peakType: $("#sel_peak_time option:selected").val(),
         },
         async : false,
         dataType : 'json',
         success : function(data) {
-            console.log(data);
+            $("#cardContents").empty();
+
+            for (let key in data) {
+                if (data.hasOwnProperty(key)){
+                    $("#cardContents").append(drawCardUI(data[key]));
+                }
+            }
         },
         error: function (err){
             console.log("에러 => ", err);
@@ -244,6 +246,81 @@ function getDashBoardInfos(){
     });
 
     loading.hide();
+}
+
+/**
+ * 화면에 표기될 UI Source를 생성 후 리턴을 준다.
+ * */
+function drawCardUI(cardInfo){
+    let returnHtml = '<div class="w-full border shadow-lg rounded-xl bg-white border border-solid border-gray-300">';
+    returnHtml += '<a href="#" class="p-3.5 block relative ">';
+    returnHtml += '<div class="text-black text-sm mb-3">' + cardInfo.dashBoardType + '</div>';
+
+    if (cardInfo.hasOwnProperty('avgValue')){
+        returnHtml += '<div class="absolute right-9 top-2.5 rounded-2xl bg-gray-200 py-1 px-2 text-xs">' +  changeTime(cardInfo.avgValue * 1000) + '</div>';
+    }
+
+    returnHtml += '<div class="absolute right-2.5 top-3.5">';
+    returnHtml += '<i class="bg-info w-4 h-4 block bg-no-repeat" aria-hidden="true"></i>';
+    returnHtml += '</div>';
+
+    if (cardInfo.hasOwnProperty('mainValue')){
+        returnHtml += '<div class="text-black text-3xl font-bold mb-6">' + formatFloat(cardInfo.mainValue, 2) + cardInfo.unit + '</div>';
+    }else{
+        returnHtml += '<div class="text-black text-3xl font-bold mb-6">0' + cardInfo.unit + '</div>';
+    }
+
+    //<i class="bg-arw-down w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>
+    if (cardInfo.hasOwnProperty('variation')){
+        returnHtml += '<div class="text-green-700">';
+        if (cardInfo.variation < 0){
+            returnHtml += '<i class="bg-arw-down w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>';
+            returnHtml += '<span>' + cardInfo.variation + '%</span>';
+            returnHtml += '</div>';
+        }else if (cardInfo.variation > 0) {
+            returnHtml += '<i class="bg-arw-up w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>';
+            returnHtml += '<span>+' + cardInfo.variation + '%</span>';
+            returnHtml += '</div>';
+        } else {
+            returnHtml += '<i class="w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>';
+            returnHtml += '<span>0%</span>';
+            returnHtml += '</div>';
+        }
+    }
+    returnHtml += '</a>';
+    returnHtml += '</div>';
+
+    return returnHtml;
+}
+
+/**
+ * 소수점으로 변환 및 1000자리 콤마 추가
+ * */
+function formatFloat(sender, pointer) {
+    if (sender == null || isNaN(sender)){
+        return 0;
+    }
+
+    return parseFloat(parseFloat(sender).toFixed(pointer)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+/**
+ * 시간 형식 변환
+ * */
+function changeTime(time){
+    if (time) {
+        let d = new Date(time);
+
+        if(time>=(60 * 60 * 1000)) {
+            return ('0' + d.getUTCHours()).slice(-2) + 'h ' + ('0' + d.getUTCMinutes()).slice(-2) + 'm ' + ('0' + d.getUTCSeconds()).slice(-2) + 's';
+        }else if (time >= (60 * 1000)) {
+            return ('0' + d.getUTCMinutes()).slice(-2) + 'm ' + ('0' + d.getUTCSeconds()).slice(-2) + 's';
+        }else if (time >= 1000){
+            return ('0' + d.getUTCSeconds()).slice(-2) + 's';
+        }
+    } else {
+        return "-";
+    }
 }
 
 /**
@@ -270,11 +347,6 @@ function searchList(){
     getDashBoardInfos();
 }
 
-
-
-
-
-
 /**
 * RC (대그룹) 정보 불러오기
 * */
@@ -299,8 +371,10 @@ function getGroupList() {
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
                 $("#statisticsGroupList").off().on("change", function () {
-                    console.log("Group Change");
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList();
                 });
             }
         }
@@ -340,6 +414,9 @@ function getStatisticsSubGroupList(gId, subGroup) {
 
                 $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList();
                 });
 
             }
@@ -370,6 +447,12 @@ function getStatisticsStoreList(subId, gId) {
                     statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
+
+                $("#statisticsStoreList").off().on('change', function (){
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList();
+                });
             }
         }
     });

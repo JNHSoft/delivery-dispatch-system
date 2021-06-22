@@ -6,8 +6,13 @@ import kr.co.cntt.core.model.dashboard.SearchInfo;
 import java.util.List;
 
 public interface DashboardAdminService {
+
     /**
-     * 2021.06.18
+     * 메인에 표시된 모든 항목에 대한 정보를 출력하여 전달한다.
+     * */
+    List<DashboardInfo> selectAllDetail(SearchInfo search);
+
+    /**
      * D30 데이터 조회
      * @param search 검색 조건
      * */
