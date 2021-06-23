@@ -80,8 +80,6 @@ public class DashboardController {
             return new ArrayList<>();
         }
 
-        List<DashboardInfo> resultMap = new ArrayList<>();
-
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
@@ -144,14 +142,31 @@ public class DashboardController {
         /**
          * 비교할 이전 데이터를 가져온다.
          * */
-        List<DashboardInfo> beforeDetail = dashboardAdminService.selectAllDetail(compareSearchInfo);
+        List<DashboardInfo> compareDetail = dashboardAdminService.selectAllDetail(compareSearchInfo);
+
+
+
+        /**
+         * 브랜드별로 제외할 데이터는 제외한다.
+         * */
+        if (adminInfo.getAdminBrandCode().equals(0)){
+            // PizzaHut인 경우
+            currentDetail.removeIf(x -> x.getDashBoardType().equals("D7"));
+        }
 
         /**
          * 메인 데이터와 이전 데이터의 비교 
          * */
+        currentDetail.forEach(x -> {
+            DashboardInfo info = compareDetail.stream().filter(y -> y.getDashBoardType().equals(x.getDashBoardType())).findFirst().get();
+
+            float fVariation = ((x.getMainValue() / info.getMainValue()) - 1) * 100;
+            x.setVariation(fVariation);
+        });
+
 
         System.out.println(currentDetail);
-        System.out.println(beforeDetail);
+        System.out.println(compareDetail);
 
         System.out.println(searchInfo);
         System.out.println(compareSearchInfo);

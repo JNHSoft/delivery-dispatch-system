@@ -1,5 +1,6 @@
 /*<![CDATA[*/
-let loading = $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
+let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
+//let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).show();
 let selectId = $("#statisticsStoreList");
 let selectIdOption = $("#statisticsStoreList option:selected");
 
@@ -8,12 +9,14 @@ let selectIdOption = $("#statisticsStoreList option:selected");
  * */
 $(function(){
     console.log("대시보드 페이지 오픈");
+    loading.show();
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
     $('#startDate, #endDate').val(date);
 
     makeEventBind();
     getGroupList();
     getDashBoardInfos()
+    loading.hide();
 });
 
 
@@ -23,23 +26,29 @@ $(function(){
 function makeEventBind(){
     // 픽업 타임에 대한 이벤트
     $("#sel_peak_time").off().on('change', function (){
-        if ($('option:selected', this).val() === "0"){
-            $("#btnTotalTime").removeClass('on');
-            $("#btnTotalTime").addClass('on');
-        }else{
-            $("#btnTotalTime").removeClass('on');
-        }
+        loading.show();
+        setTimeout(() => {
+            if ($('option:selected', this).val() === "0"){
+                $("#btnTotalTime").removeClass('on');
+                $("#btnTotalTime").addClass('on');
+            }else{
+                $("#btnTotalTime").removeClass('on');
+            }
 
-        searchList();
+            searchList();
+        }, 500);
     });
 
     // 전체 시간에 대한 이벤트
     $("#btnTotalTime").off().on('click', function (){
         // total 기능은 off가 되어 있을 때만 작동하도록 한다.
         if(!($(this).hasClass('on'))){
-            $(this).addClass('on');
-            $("#sel_peak_time").val("0");
-            searchList();
+            loading.show();
+            setTimeout(() => {
+                $(this).addClass('on');
+                $("#sel_peak_time").val("0");
+                searchList();
+            }, 500);
         }
     });
 
@@ -50,151 +59,159 @@ function makeEventBind(){
             return;
         }
 
-        // 오늘일자, 시작일자, 종료일자를 변수에 담아 놓는다.
-        let today = new Date($.datepicker.formatDate('yy-mm-dd', new Date));
-        let startDate = new Date($("#startDate").val());
-        let endDate = new Date($("#endDate").val());
+        loading.show();
+        setTimeout(() => {
+            // 오늘일자, 시작일자, 종료일자를 변수에 담아 놓는다.
+            let today = new Date($.datepicker.formatDate('yy-mm-dd', new Date));
+            let startDate = new Date($("#startDate").val());
+            let endDate = new Date($("#endDate").val());
 
-        // 현재 클래스 중 on 항목에 대한 내용 제거
-        $(".search-date").removeClass('on');
-        // 현재 클릭 이벤트가 발생된 곳에 on Class 추가
-        $(this).addClass('on');
+            // 현재 클래스 중 on 항목에 대한 내용 제거
+            $(".search-date").removeClass('on');
+            // 현재 클릭 이벤트가 발생된 곳에 on Class 추가
+            $(this).addClass('on');
 
-        console.log("value = > ", $(this).val());
+            console.log("value = > ", $(this).val());
 
-        // 클릭된 항목에 따라, 이벤트가 진행되도록 함.
-        switch ($(this).val()){
-            case "today":
-                // 조회 시작일과 종요일을 오늘 날짜로 세팅한다.
-                $("#startDate, #endDate").val($.datepicker.formatDate('yy-mm-dd', today));
-                break;
-            case "lseven":
-                // 1. 시작일로 부터 당일까지 7일 미만인 경우, 종료일을 기준으로 7일 전 데이터로 보여준다.
-                if (today.getTime() - startDate.getTime() < 6 * 24 * 3600 * 1000){
-                    let beforeSeven = endDate;
-
-                    beforeSeven.setDate(endDate.getDate() - 6);
-
-                    $("#startDate").val($.datepicker.formatDate('yy-mm-dd', beforeSeven));
-                    console.log("No1.");
-                }
-                // 2. 시작일 ~ 종료일 차이가 7일 차이가 아니라면, 시작일 ~ 당일까지의 차이가 7일 초과인 경우에는 시작일을 기준으로 7일을 보여준다.
-                else if (((startDate.getTime() - endDate.getTime() < 6 * 24 * 3600 * 1000) || (startDate.getTime() - endDate.getTime() > 6 * 24 * 3600 * 1000))){
-                    let beforeSeven;
-                    let changeObj;
-
-                    if ( (today.getTime() - startDate.getTime() < 6 * 24 * 3600 * 1000)){
-                        // 시작일 ~ 오늘까지의 차이가 7일 이상인 경우, 종료일을 기준으로 계산 # 변화는 StartDate가
-                        beforeSeven = endDate;
-                        changeObj = $("startDate");
+            // 클릭된 항목에 따라, 이벤트가 진행되도록 함.
+            switch ($(this).val()){
+                case "today":
+                    // 조회 시작일과 종요일을 오늘 날짜로 세팅한다.
+                    $("#startDate, #endDate").val($.datepicker.formatDate('yy-mm-dd', today));
+                    break;
+                case "lseven":
+                    // 1. 시작일로 부터 당일까지 7일 미만인 경우, 종료일을 기준으로 7일 전 데이터로 보여준다.
+                    if (today.getTime() - startDate.getTime() < 6 * 24 * 3600 * 1000){
+                        let beforeSeven = endDate;
 
                         beforeSeven.setDate(endDate.getDate() - 6);
-                        console.log("No2.");
-                    }else {
-                        // 위 조건 이외에는 종료일자 기준으로 7일 계산 # 변화는 EndDate가
-                        beforeSeven = startDate;
-                        changeObj = $("#endDate");
 
-                        beforeSeven.setDate(startDate.getDate() + 6);
-                        console.log("No3.");
+                        $("#startDate").val($.datepicker.formatDate('yy-mm-dd', beforeSeven));
+                        console.log("No1.");
+                    }
+                    // 2. 시작일 ~ 종료일 차이가 7일 차이가 아니라면, 시작일 ~ 당일까지의 차이가 7일 초과인 경우에는 시작일을 기준으로 7일을 보여준다.
+                    else if (((startDate.getTime() - endDate.getTime() < 6 * 24 * 3600 * 1000) || (startDate.getTime() - endDate.getTime() > 6 * 24 * 3600 * 1000))){
+                        let beforeSeven;
+                        let changeObj;
+
+                        if ( (today.getTime() - startDate.getTime() < 6 * 24 * 3600 * 1000)){
+                            // 시작일 ~ 오늘까지의 차이가 7일 이상인 경우, 종료일을 기준으로 계산 # 변화는 StartDate가
+                            beforeSeven = endDate;
+                            changeObj = $("startDate");
+
+                            beforeSeven.setDate(endDate.getDate() - 6);
+                            console.log("No2.");
+                        }else {
+                            // 위 조건 이외에는 종료일자 기준으로 7일 계산 # 변화는 EndDate가
+                            beforeSeven = startDate;
+                            changeObj = $("#endDate");
+
+                            beforeSeven.setDate(startDate.getDate() + 6);
+                            console.log("No3.");
+                        }
+
+                        changeObj.val($.datepicker.formatDate('yy-mm-dd', beforeSeven));
+                    }
+                    // 위 2가지 조건이 모두 불충분할 때
+                    else{
+                        let beforeSeven = endDate;
+
+                        beforeSeven.setDate(endDate.getDate() - 6);
+
+                        $("#startDate").val($.datepicker.formatDate('yy-mm-dd', beforeSeven));
+                        console.log("No4.");
                     }
 
-                    changeObj.val($.datepicker.formatDate('yy-mm-dd', beforeSeven));
-                }
-                // 위 2가지 조건이 모두 불충분할 때
-                else{
-                    let beforeSeven = endDate;
+                    break;
+                case "cmonth":          // 이번달의 데이터이므로, today 기준의 달로 변경한다.
+                    let monthFirstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 
-                    beforeSeven.setDate(endDate.getDate() - 6);
+                    $("#endDate").val($.datepicker.formatDate('yy-mm-dd', today));
+                    $("#startDate").val($.datepicker.formatDate('yy-mm-dd', monthFirstDay));
 
-                    $("#startDate").val($.datepicker.formatDate('yy-mm-dd', beforeSeven));
-                    console.log("No4.");
-                }
+                    break;
+            }
 
-                break;
-            case "cmonth":          // 이번달의 데이터이므로, today 기준의 달로 변경한다.
-                let monthFirstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-
-                $("#endDate").val($.datepicker.formatDate('yy-mm-dd', today));
-                $("#startDate").val($.datepicker.formatDate('yy-mm-dd', monthFirstDay));
-
-                break;
-        }
-
-        // 날짜 지정이 완료된 후 데이터 갱신
-        searchList();
+            // 날짜 지정이 완료된 후 데이터 갱신
+            searchList();
+        }, 500);
     });
     
     // 달력의 시작일자에 대한 이벤트
     $("#startDate").off().on('change', function (){
-        let today = $.datepicker.formatDate('yy-mm-dd', new Date);
-        let startDate = $(this).val();
-        let endDate = $("#endDate").val();
+        loading.show();
+        setTimeout(() => {
+            let today = $.datepicker.formatDate('yy-mm-dd', new Date);
+            let startDate = $(this).val();
+            let endDate = $("#endDate").val();
 
-        console.log("start Date 변경 이벤트 발생");
+            console.log("start Date 변경 이벤트 발생");
 
-        // 오늘보다 큰 경우, 오늘 일자로 강제 변경
-        if (today < startDate){
-            $(this).val(today);
-            $("#endDate").val(today);
-        }
-        // 시작일이 종료일보다 큰 경우 종료일을 시작일로 변경
-        else if (startDate > endDate){
-            $("#endDate").val(startDate);
-        }
+            // 오늘보다 큰 경우, 오늘 일자로 강제 변경
+            if (today < startDate){
+                $(this).val(today);
+                $("#endDate").val(today);
+            }
+            // 시작일이 종료일보다 큰 경우 종료일을 시작일로 변경
+            else if (startDate > endDate){
+                $("#endDate").val(startDate);
+            }
 
-        // 날짜 범위를 체크하여 today, last 7 days, current Month 를 초기화 하거나 선택적으로 on을 시킨다.
-        $(".search-date").removeClass('on');
-        let nowDate = new Date(today);
-        let sDate = new Date($("#startDate").val());
-        let eDate = new Date($("#endDate").val());
-        let cMonthFirstDay = new Date(nowDate.getFullYear(), nowDate.getMonth(), 1, 9);
+            // 날짜 범위를 체크하여 today, last 7 days, current Month 를 초기화 하거나 선택적으로 on을 시킨다.
+            $(".search-date").removeClass('on');
+            let nowDate = new Date(today);
+            let sDate = new Date($("#startDate").val());
+            let eDate = new Date($("#endDate").val());
+            let cMonthFirstDay = new Date(nowDate.getFullYear(), nowDate.getMonth(), 1, 9);
 
-        if (sDate.getTime() === eDate.getTime() && sDate.getTime() === nowDate.getTime()){
-            $("#btnToday").addClass('on');
-        }else if (eDate.getTime() - sDate.getTime() === 6 * 24 * 3600 * 1000){
-            $("#btnLastSeven").addClass('on');
-        }else if (sDate.getTime() === cMonthFirstDay.getTime() && eDate.getTime() === nowDate.getTime()){
-            $("#btnCurrentMonth").addClass('on');
-        }
-
-        searchList();
+            if (sDate.getTime() === eDate.getTime() && sDate.getTime() === nowDate.getTime()){
+                $("#btnToday").addClass('on');
+            }else if (eDate.getTime() - sDate.getTime() === 6 * 24 * 3600 * 1000){
+                $("#btnLastSeven").addClass('on');
+            }else if (sDate.getTime() === cMonthFirstDay.getTime() && eDate.getTime() === nowDate.getTime()){
+                $("#btnCurrentMonth").addClass('on');
+            }
+            searchList();
+        }, 500);
     });
 
     // 달력의 종료일자에 대한 이벤트
     $("#endDate").off().on('change', function (){
-        let today = $.datepicker.formatDate('yy-mm-dd', new Date);
-        let startDate = $("#startDate").val();
-        let endDate = $(this).val();
+        loading.show();
+        setTimeout(() => {
+            let today = $.datepicker.formatDate('yy-mm-dd', new Date);
+            let startDate = $("#startDate").val();
+            let endDate = $(this).val();
 
-        console.log("end Date 변경 이벤트 발생");
+            console.log("end Date 변경 이벤트 발생");
 
-        // 오늘보다 큰 경우, 오늘 일자로 강제 변경
-        if (today < endDate){
-            $(this).val(today);
-            //$("#startDate").val(today);
-        }
-        // 종료일이 시작일보다 작은 경우 시작일을 종료일 기간으로 맞춘다.
-        else if (startDate > endDate){
-            $("#startDate").val(endDate);
-        }
+            // 오늘보다 큰 경우, 오늘 일자로 강제 변경
+            if (today < endDate){
+                $(this).val(today);
+                //$("#startDate").val(today);
+            }
+            // 종료일이 시작일보다 작은 경우 시작일을 종료일 기간으로 맞춘다.
+            else if (startDate > endDate){
+                $("#startDate").val(endDate);
+            }
 
-        // 날짜 범위를 체크하여 today, last 7 days, current Month 를 초기화 하거나 선택적으로 on을 시킨다.
-        $(".search-date").removeClass('on');
-        let nowDate = new Date(today);
-        let sDate = new Date($("#startDate").val());
-        let eDate = new Date($("#endDate").val());
-        let cMonthFirstDay = new Date(nowDate.getFullYear(), nowDate.getMonth(), 1, 9);
+            // 날짜 범위를 체크하여 today, last 7 days, current Month 를 초기화 하거나 선택적으로 on을 시킨다.
+            $(".search-date").removeClass('on');
+            let nowDate = new Date(today);
+            let sDate = new Date($("#startDate").val());
+            let eDate = new Date($("#endDate").val());
+            let cMonthFirstDay = new Date(nowDate.getFullYear(), nowDate.getMonth(), 1, 9);
 
-        if (sDate.getTime() === eDate.getTime() && sDate.getTime() === nowDate.getTime()){
-            $("#btnToday").addClass('on');
-        }else if (eDate.getTime() - sDate.getTime() === 6 * 24 * 3600 * 1000){
-            $("#btnLastSeven").addClass('on');
-        }else if (sDate.getTime() === cMonthFirstDay.getTime() && eDate.getTime() === nowDate.getTime()){
-            $("#btnCurrentMonth").addClass('on');
-        }
+            if (sDate.getTime() === eDate.getTime() && sDate.getTime() === nowDate.getTime()){
+                $("#btnToday").addClass('on');
+            }else if (eDate.getTime() - sDate.getTime() === 6 * 24 * 3600 * 1000){
+                $("#btnLastSeven").addClass('on');
+            }else if (sDate.getTime() === cMonthFirstDay.getTime() && eDate.getTime() === nowDate.getTime()){
+                $("#btnCurrentMonth").addClass('on');
+            }
 
-        searchList();
+            searchList();
+        }, 500);
     });
 }
 
@@ -203,17 +220,13 @@ function makeEventBind(){
  * */
 function getDashBoardInfos(){
     // 정보들을 모두 설정한다.
-    loading.show();
-
     let startDate = $('#startDate').val();
     let endDate = $('#endDate').val();
 
     let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
     if (diffDate > 31){
-        loading.hide();
         return;
     }
-
 
     $.ajax({
         url : "/totalStatistsc",
@@ -226,7 +239,7 @@ function getDashBoardInfos(){
             eDate: endDate,
             peakType: $("#sel_peak_time option:selected").val(),
         },
-        async : false,
+        async : true,
         dataType : 'json',
         success : function(data) {
             $("#cardContents").empty();
@@ -238,14 +251,11 @@ function getDashBoardInfos(){
             }
         },
         error: function (err){
-            console.log("에러 => ", err);
         },
         complete: function (){
-            console.log("완료");
+            loading.hide();
         }
     });
-
-    loading.hide();
 }
 
 /**
@@ -254,10 +264,14 @@ function getDashBoardInfos(){
 function drawCardUI(cardInfo){
     let returnHtml = '<div class="w-full border shadow-lg rounded-xl bg-white border border-solid border-gray-300">';
     returnHtml += '<a href="#" class="p-3.5 block relative ">';
-    returnHtml += '<div class="text-black text-sm mb-3">' + cardInfo.dashBoardType + '</div>';
+    returnHtml += '<div class="text-black text-sm mb-3">';
+    returnHtml += cardInfo.dashBoardType;
+    returnHtml += '</div>';
 
     if (cardInfo.hasOwnProperty('avgValue')){
-        returnHtml += '<div class="absolute right-9 top-2.5 rounded-2xl bg-gray-200 py-1 px-2 text-xs">' +  changeTime(cardInfo.avgValue * 1000) + '</div>';
+        returnHtml += '<div class="absolute right-9 top-2.5 rounded-2xl bg-gray-200 py-1 px-2 text-xs">';
+        returnHtml += changeTime(cardInfo.avgValue * 1000);
+        returnHtml += '</div>';
     }
 
     returnHtml += '<div class="absolute right-2.5 top-3.5">';
@@ -265,9 +279,14 @@ function drawCardUI(cardInfo){
     returnHtml += '</div>';
 
     if (cardInfo.hasOwnProperty('mainValue')){
-        returnHtml += '<div class="text-black text-3xl font-bold mb-6">' + formatFloat(cardInfo.mainValue, 2) + cardInfo.unit + '</div>';
+        returnHtml += '<div class="text-black text-3xl font-bold mb-6">';
+        returnHtml += formatFloat(cardInfo.mainValue, 2);
+        returnHtml += cardInfo.unit;
+        returnHtml += '</div>';
     }else{
-        returnHtml += '<div class="text-black text-3xl font-bold mb-6">0' + cardInfo.unit + '</div>';
+        returnHtml += '<div class="text-black text-3xl font-bold mb-6">0';
+        returnHtml += cardInfo.unit;
+        returnHtml += '</div>';
     }
 
     //<i class="bg-arw-down w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>
@@ -275,11 +294,15 @@ function drawCardUI(cardInfo){
         returnHtml += '<div class="text-green-700">';
         if (cardInfo.variation < 0){
             returnHtml += '<i class="bg-arw-down w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>';
-            returnHtml += '<span>' + cardInfo.variation + '%</span>';
+            returnHtml += '<span>';
+            returnHtml += formatFloat(cardInfo.variation, 2);
+            returnHtml += '%</span>';
             returnHtml += '</div>';
         }else if (cardInfo.variation > 0) {
             returnHtml += '<i class="bg-arw-up w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>';
-            returnHtml += '<span>+' + cardInfo.variation + '%</span>';
+            returnHtml += '<span>+';
+            returnHtml += formatFloat(cardInfo.variation, 2);
+            returnHtml += '%</span>';
             returnHtml += '</div>';
         } else {
             returnHtml += '<i class="w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>';
@@ -326,7 +349,7 @@ function changeTime(time){
 /**
  * 검색 조건에 대한 이벤트
  * */
-function searchList(){
+async function searchList(){
     // 그룹에서 reset을 클릭 시 초기화
     if(selectId.attr('id')=="statisticsGroupList"){
         $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
@@ -357,7 +380,7 @@ function getGroupList() {
         data : {
 
         },
-        async : false,
+        async : true,
         dataType : 'json',
         success : function(data) {
             if (data) {
@@ -374,7 +397,9 @@ function getGroupList() {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
-                    searchList();
+                    setTimeout(() => {
+                        searchList();
+                    }, 500);
                 });
             }
         }
@@ -416,7 +441,10 @@ function getStatisticsSubGroupList(gId, subGroup) {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
-                    searchList();
+                    loading.show();
+                    setTimeout(() => {
+                        searchList();
+                    }, 500);
                 });
 
             }
@@ -451,7 +479,9 @@ function getStatisticsStoreList(subId, gId) {
                 $("#statisticsStoreList").off().on('change', function (){
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
-                    searchList();
+                    setTimeout(() => {
+                        searchList();
+                    }, 500);
                 });
             }
         }

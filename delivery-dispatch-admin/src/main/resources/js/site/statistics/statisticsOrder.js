@@ -28,13 +28,6 @@ $(function () {
         }
     });     // 종료일 이벤트
 
-    $(".select").change(function(){
-        selectId = $(this);
-        selectIdOption = $('option:selected', this);
-        searchList(selectId, selectIdOption);
-        getStoreStatistics();
-    });     //select box의 change 이벤트
-
     $('#searchButton').click(function () {
         getStoreStatistics();
         searchList(selectId, selectIdOption);
@@ -585,6 +578,10 @@ function getGroupList() {
 
                 $("#statisticsGroupList").off().on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatistics();
                 });
             }
         }
@@ -621,6 +618,10 @@ function getStatisticsSubGroupList(gId, subGroup) {
 
                 $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatistics();
                 });
 
             }
@@ -651,6 +652,12 @@ function getStatisticsStoreList(subId, gId) {
                     statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
+                $("#statisticsStoreList").off().on("change", function (){
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatistics();
+                });
 
             }
         }

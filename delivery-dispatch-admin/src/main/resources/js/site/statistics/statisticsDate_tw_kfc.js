@@ -43,13 +43,6 @@ $(function () {
         }
     });
 
-    $(".select").change(function(){
-        selectId = $(this);
-        selectIdOption = $('option:selected', this);
-        searchList(selectId, selectIdOption);
-        getStoreStatisticsByDate();
-    });     //select box의 change 이벤트
-
     showTimePicker();
 });
 
@@ -676,6 +669,10 @@ function getGroupList() {
 
                 $("#statisticsGroupList").off().on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
                 });
             }
         }
@@ -712,6 +709,10 @@ function getStatisticsSubGroupList(gId) {
 
                 $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
                 });
 
             }
@@ -742,6 +743,12 @@ function getStatisticsStoreList(subId, gId) {
                     statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
+                $("#statisticsStoreList").off().on("change", function (){
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
+                });
             }
         }
     });
