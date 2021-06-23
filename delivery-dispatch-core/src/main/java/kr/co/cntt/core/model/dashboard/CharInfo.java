@@ -17,8 +17,12 @@ public class CharInfo extends DashboardInfo implements Dto {
     private float minX;
     // X좌표의 최대값 (가로)
     private float maxX;
+    // X좌표의 간격
+    private float intervalX;
     // Y좌표의 최소 값 (세로)
     private float minY;
     // Y좌표의 최대 값 (세로)
     private float maxY;
+    // Y좌표의 간격
+    private float intervalY;
 }

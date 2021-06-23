@@ -13,10 +13,11 @@ $(function(){
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
     $('#startDate, #endDate').val(date);
 
-    makeEventBind();
-    getGroupList();
-    getDashBoardInfos()
-    loading.hide();
+    setTimeout(() => {
+        makeEventBind();
+        getGroupList();
+        getDashBoardInfos()
+    }, 100);
 });
 
 
@@ -36,7 +37,7 @@ function makeEventBind(){
             }
 
             searchList();
-        }, 500);
+        }, 100);
     });
 
     // 전체 시간에 대한 이벤트
@@ -48,7 +49,7 @@ function makeEventBind(){
                 $(this).addClass('on');
                 $("#sel_peak_time").val("0");
                 searchList();
-            }, 500);
+            }, 100);
         }
     });
 
@@ -134,7 +135,7 @@ function makeEventBind(){
 
             // 날짜 지정이 완료된 후 데이터 갱신
             searchList();
-        }, 500);
+        }, 100);
     });
     
     // 달력의 시작일자에 대한 이벤트
@@ -172,7 +173,7 @@ function makeEventBind(){
                 $("#btnCurrentMonth").addClass('on');
             }
             searchList();
-        }, 500);
+        }, 100);
     });
 
     // 달력의 종료일자에 대한 이벤트
@@ -211,7 +212,7 @@ function makeEventBind(){
             }
 
             searchList();
-        }, 500);
+        }, 100);
     });
 }
 
@@ -243,11 +244,17 @@ function getDashBoardInfos(){
         dataType : 'json',
         success : function(data) {
             $("#cardContents").empty();
+            $("#cardContents").css({"display":"", "justify-content": "", "align-items":""});
 
-            for (let key in data) {
-                if (data.hasOwnProperty(key)){
-                    $("#cardContents").append(drawCardUI(data[key]));
+            if (data.length > 0){
+                for (let key in data) {
+                    if (data.hasOwnProperty(key)){
+                        $("#cardContents").append(drawCardUI(data[key]));
+                    }
                 }
+            }else{
+                $("#cardContents").css({"display":"flex", "justify-content": "center", "align-items":"center"});
+                $("#cardContents").append("No Data");
             }
         },
         error: function (err){
@@ -397,9 +404,10 @@ function getGroupList() {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
+                    loading.show();
                     setTimeout(() => {
                         searchList();
-                    }, 500);
+                    }, 100);
                 });
             }
         }
@@ -444,7 +452,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
                     loading.show();
                     setTimeout(() => {
                         searchList();
-                    }, 500);
+                    }, 100);
                 });
 
             }
@@ -479,9 +487,10 @@ function getStatisticsStoreList(subId, gId) {
                 $("#statisticsStoreList").off().on('change', function (){
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
+                    loading.show();
                     setTimeout(() => {
                         searchList();
-                    }, 500);
+                    }, 100);
                 });
             }
         }

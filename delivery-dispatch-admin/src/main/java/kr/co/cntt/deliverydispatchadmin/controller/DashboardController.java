@@ -124,8 +124,6 @@ public class DashboardController {
                 sevenValue--;
             }
 
-            System.out.println("몇 주에 대한 데이터인가요? => " + sevenValue);
-
             startCal.add(Calendar.DAY_OF_MONTH, -1 * (sevenValue * 7));
             endCal.add(Calendar.DAY_OF_MONTH, -1 * (sevenValue * 7));
 
@@ -144,12 +142,10 @@ public class DashboardController {
          * */
         List<DashboardInfo> compareDetail = dashboardAdminService.selectAllDetail(compareSearchInfo);
 
-
-
         /**
          * 브랜드별로 제외할 데이터는 제외한다.
          * */
-        if (adminInfo.getAdminBrandCode().equals(0)){
+        if (!adminInfo.getAdminBrandCode().equals("1")){
             // PizzaHut인 경우
             currentDetail.removeIf(x -> x.getDashBoardType().equals("D7"));
         }
@@ -163,13 +159,6 @@ public class DashboardController {
             float fVariation = ((x.getMainValue() / info.getMainValue()) - 1) * 100;
             x.setVariation(fVariation);
         });
-
-
-        System.out.println(currentDetail);
-        System.out.println(compareDetail);
-
-        System.out.println(searchInfo);
-        System.out.println(compareSearchInfo);
 
         return currentDetail;
     }

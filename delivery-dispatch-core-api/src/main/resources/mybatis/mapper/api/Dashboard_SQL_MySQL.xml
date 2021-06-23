@@ -2,18 +2,18 @@
 <mapper namespace="kr.co.cntt.core.mapper.DashboardMapper">
     <select id="selectAllDetail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="java.util.Map">
         <![CDATA[
-        select	 avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 when condition1 = 1 then 0 else null end ) * 100 as avgD30
-                ,avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, arrived_datetime) else null end ) as detailD30
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 when condition1 = 1 then 0 else null end ) * 100 as avgD7
-                ,avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else null end ) as detailD7
+        select	 avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ) * 100 as avgD30
+                ,avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, arrived_datetime) else 0 end ) as detailD30
+                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ) * 100 as avgD7
+                ,avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else 0 end ) as detailD7
                 ,count( case when condition1 = 1 then 1 else null end )
                  / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)				as avgTPLH
                 ,avg( case when condition1 = 1 then cooking_time else null end )																			as avgQT
                 ,sum( case when condition1 = 1 then 1 else 0 end )																							as sumTC
         from	(
-                    select	 id
-                            ,admin_id
-                            ,store_id
+                    select	 a.id
+                            ,a.admin_id
+                            ,a.store_id
                             ,cooking_time
                             ,assigned_datetime
                             ,picked_up_datetime
@@ -35,15 +35,18 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER
+                    from	 TB_ORDER					as a
+                    left join TB_SUBGROUP_STORE_REL		as b
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
+<!--                    and		 third_party_id is null-->
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
                             and 1 != 1
@@ -65,15 +68,15 @@
 <!--                                </otherwise>-->
                     </choose>
                     <!-- 그룹에 대한 필터 -->
-<!--                    <if test="group != null and group.id != null and group.id != ''">-->
-<!--                        AND	 b.group_id = #{group.id}-->
-<!--                    </if>-->
-<!--                    <if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">-->
-<!--                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )-->
-<!--                    </if>-->
-<!--                    <if test="storeId != null and storeId != ''">-->
-<!--                        AND	 b.store_id = #{storeId}-->
-<!--                    </if>-->
+                    <if test="groupId != null and groupId != '' and groupId != 'reset'">
+                        AND	 b.group_id = #{groupId}
+                    </if>
+                    <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
+                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                    </if>
+                    <if test="storeId != null and storeId != '' and storeId != 'reset'">
+                        AND	 b.store_id = #{storeId}
+                    </if>
                 )	t
     </select>
 
