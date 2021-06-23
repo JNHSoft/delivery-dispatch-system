@@ -4,6 +4,7 @@ package kr.co.cntt.deliverydispatchadmin.controller;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.Search;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.SearchInfo;
 import kr.co.cntt.core.model.order.Order;
@@ -163,13 +164,30 @@ public class DashboardController {
         return currentDetail;
     }
 
-    /**
-     * 대시 보드 상세 페이지
-     * */
-    @GetMapping("/dashboardDetail")
+    @GetMapping( "/dashboardDetail")
     @CnttMethodDescription("대시보드 상세페이지")
-    public String dashboardDetail(){
+    public String dashboardDetail(Model model,
+                                  @RequestParam("dashBoardType") String type){
+
+        System.out.println("dashBoardType => " + type);
 
         return "/dashboard/dashboardDetail";
+    }
+    
+    /**
+     * 대시 보드 상세 페이지 세부 내용 출력
+     * */
+    @ResponseBody
+    @PostMapping("/dashboardDetail")
+    @CnttMethodDescription("대시 보드 상세 내용 호출")
+    public ChartInfo dashboardDetailInfo(Model model,
+                                         @RequestParam("dashBoardType") String type,
+                                         SearchInfo searchInfo){
+
+        System.out.println("dashBoardType => " + type);
+        System.out.println("SearchInfo => " + searchInfo);
+
+        return null;
+
     }
 }

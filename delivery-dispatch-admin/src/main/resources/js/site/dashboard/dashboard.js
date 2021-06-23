@@ -1,8 +1,8 @@
 /*<![CDATA[*/
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
-//let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).show();
 let selectId = $("#statisticsStoreList");
 let selectIdOption = $("#statisticsStoreList option:selected");
+let intervalTime = 100;
 
 /**
  * 페이지 진입 시 처음 실행
@@ -17,7 +17,7 @@ $(function(){
         makeEventBind();
         getGroupList();
         getDashBoardInfos()
-    }, 100);
+    }, intervalTime);
 });
 
 
@@ -37,7 +37,7 @@ function makeEventBind(){
             }
 
             searchList();
-        }, 100);
+        }, intervalTime);
     });
 
     // 전체 시간에 대한 이벤트
@@ -49,7 +49,7 @@ function makeEventBind(){
                 $(this).addClass('on');
                 $("#sel_peak_time").val("0");
                 searchList();
-            }, 100);
+            }, intervalTime);
         }
     });
 
@@ -135,7 +135,7 @@ function makeEventBind(){
 
             // 날짜 지정이 완료된 후 데이터 갱신
             searchList();
-        }, 100);
+        }, intervalTime);
     });
     
     // 달력의 시작일자에 대한 이벤트
@@ -173,7 +173,7 @@ function makeEventBind(){
                 $("#btnCurrentMonth").addClass('on');
             }
             searchList();
-        }, 100);
+        }, intervalTime);
     });
 
     // 달력의 종료일자에 대한 이벤트
@@ -212,7 +212,7 @@ function makeEventBind(){
             }
 
             searchList();
-        }, 100);
+        }, intervalTime);
     });
 }
 
@@ -240,7 +240,7 @@ function getDashBoardInfos(){
             eDate: endDate,
             peakType: $("#sel_peak_time option:selected").val(),
         },
-        async : true,
+        async : false,
         dataType : 'json',
         success : function(data) {
             $("#cardContents").empty();
@@ -270,7 +270,7 @@ function getDashBoardInfos(){
  * */
 function drawCardUI(cardInfo){
     let returnHtml = '<div class="w-full border shadow-lg rounded-xl bg-white border border-solid border-gray-300">';
-    returnHtml += '<a href="#" class="p-3.5 block relative ">';
+    returnHtml += '<a href="#" class="p-3.5 block relative" onclick="moveDetailPage(\'' + cardInfo.dashBoardType + '\')">';
     returnHtml += '<div class="text-black text-sm mb-3">';
     returnHtml += cardInfo.dashBoardType;
     returnHtml += '</div>';
@@ -354,9 +354,16 @@ function changeTime(time){
 }
 
 /**
+ * 카드 클릭 시 상세 페이지로 이동하는 이벤트
+ * */
+function moveDetailPage(targetPage){
+    location.href = "/dashboardDetail?dashBoardType=" + targetPage;
+}
+
+/**
  * 검색 조건에 대한 이벤트
  * */
-async function searchList(){
+function searchList(){
     // 그룹에서 reset을 클릭 시 초기화
     if(selectId.attr('id')=="statisticsGroupList"){
         $("#statisticsStoreList").html("<option value='reset'>" + list_search_all_store + "</option>");
@@ -407,7 +414,7 @@ function getGroupList() {
                     loading.show();
                     setTimeout(() => {
                         searchList();
-                    }, 100);
+                    }, intervalTime);
                 });
             }
         }
@@ -452,7 +459,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
                     loading.show();
                     setTimeout(() => {
                         searchList();
-                    }, 100);
+                    }, intervalTime);
                 });
 
             }
@@ -490,7 +497,7 @@ function getStatisticsStoreList(subId, gId) {
                     loading.show();
                     setTimeout(() => {
                         searchList();
-                    }, 100);
+                    }, intervalTime);
                 });
             }
         }

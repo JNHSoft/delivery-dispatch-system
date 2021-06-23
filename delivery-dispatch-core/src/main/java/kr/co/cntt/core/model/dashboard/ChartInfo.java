@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
-public class CharInfo extends DashboardInfo implements Dto {
+public class ChartInfo extends DashboardInfo implements Dto {
     // 차트가 그려져야되는 종류 0=막대 그래프 # 1=꺽쇠 그래프
     private int chartType;
     // X좌표의 최소값 (가로)
