@@ -58,151 +58,8 @@
     </div>
 
     <!-- 차트가 표시되는 영역 -->
-    <div class="mb-10 text-white">
+    <div class="mb-10 text-white" id="chart_content">
       <canvas id="myChart" width="400" height="200"></canvas>
-      <script>
-        // const labels = Utils.months({count: 7});
-        // const data = {
-        //
-        //   labels: [
-        //     '2021-04-01',
-        //     '2021-04-02',
-        //     '2021-04-03',
-        //     '2021-04-04',
-        //     '2021-04-05',
-        //     '2021-04-06',
-        //     '2021-04-07',
-        //   ],
-        //   datasets: [{
-        //     label: '',
-        //     data: [65, 59, 80, 81, 56, 55, 40],
-        //     backgroundColor: [
-        //       'rgba(107 87 236)',
-        //       'rgba(107 87 236)',
-        //       'rgba(107 87 236)',
-        //       'rgba(107 87 236)',
-        //       'rgba(107 87 236)',
-        //       'rgba(107 87 236)',
-        //       'rgba(107 87 236)',
-        //
-        //     ],
-        //     borderWidth: 0,
-        //     borderRadius: 4,
-        //     // barPercentage: 40,
-        //     barThickness: 28,
-        //     // maxBarThickness: 8
-        //   }]
-        // };
-        //
-        // const config = {
-        //   plugins: [ChartDataLabels],
-        //   type: 'bar',
-        //   data: data,
-        //   options: {
-        //     plugins: {
-        //       legend: {
-        //         display: false,
-        //       },
-        //       datalabels: {
-        //         align: 'end',
-        //         anchor: 'end',
-        //         color: '#6b57ec',
-        //         padding: 8,
-        //         formatter: function(value, context) {
-        //           return value + '%';
-        //         }
-        //       }
-        //     },
-        //     scales: {
-        //       x: {
-        //         grid: {
-        //           display: false,
-        //         }
-        //       },
-        //       y: {
-        //         beginAtZero: true,
-        //         min: 0,
-        //         max: 100,
-        //         ticks: {
-        //           count: 5,
-        //           callback: function(value, index, values) {
-        //             return value + '%';
-        //           }
-        //         }
-        //       }
-        //     }
-        //   },
-        // };
-
-
-        <!-- 라인으로 그리는 차트 -->
-        const data = {
-
-          labels: [
-            '09:00',
-            '10:00',
-            '11:00',
-            '12:00',
-            '13:00',
-            '14:00',
-            '15:00',
-            '16:00',
-            '17:00',
-            '18:00',
-            '19:00',
-            '20:00',
-            '21:00',
-            '22:00',
-          ],
-          datasets: [{
-            label: 'Dataset 1',
-            data: [3.5, 2.5, 2.8, 2.1, 1.8, 1.8, 1.8, 2.1, 2.5, 2.7, 2.9, 3, 3.1, 3.2],
-            borderColor: '#6b57ec',
-            backgroundColor: '#ffffff',
-            datalabels: {
-              align: 'end',
-              anchor: 'end'
-            }
-          },]
-        };
-
-        const config = {
-          plugins: [ChartDataLabels],
-          type: 'line',
-          data: data,
-          options: {
-            plugins: {
-              legend: {
-                display: false,
-              },
-              datalabels: {
-                color: '#6b57ec',
-                borderRadius: 1,
-                padding: 8
-              }
-            },
-            scales: {
-              x: {
-                grid: {
-                  display: false,
-                }
-              },
-              y: {
-                beginAtZero: true,
-                min: 0,
-                max: 4,
-                ticks: {
-                  count: 6
-                }
-              }
-            }
-          },
-        };
-
-        var ctx = document.getElementById('myChart').getContext('2d');
-
-        var myChart = new Chart(ctx, config);
-      </script>
     </div>
     <!-- 차트가 표시되는 영역 -->
 
@@ -268,6 +125,7 @@
   let store_name = /*[[#{store.name}]]*/ 'store_name';
   let group_name = /*[[#{group.name}]]*/ 'group_name';
   let group_none = /*[[#{group.none}]]*/ 'group_none';
+  let result_none = /*[[#{result.none}]]*/ 'result_none';
   /*]]>*/
 </script>
 </html>

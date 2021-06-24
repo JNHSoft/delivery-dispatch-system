@@ -186,8 +186,62 @@ public class DashboardController {
 
         System.out.println("dashBoardType => " + type);
         System.out.println("SearchInfo => " + searchInfo);
+        ChartInfo info = new ChartInfo();
 
-        return null;
+        // 일자를 막도록 합시다.
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date sdfStartDate;
+        Date sdfEndDate;
+        try {
+            sdfStartDate = formatter.parse(searchInfo.getSDate());
+            sdfEndDate = formatter.parse(searchInfo.getEDate());
+
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            if (diffDays > 31) {
+                return info;
+            }
+
+            searchInfo.setDays((Integer.toString(((int) (long) diffDays + 1))));
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            return info;
+        }
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setRole("ROLE_ADMIN");
+        // platform 대시보드에서는 대시보드 종류로 이용한다.
+        searchInfo.setPlatform(type);
+
+
+        switch (type){
+            case "D30":
+                info = dashboardAdminService.selectD30Detail(searchInfo);
+                break;
+            case "D7":
+                info = dashboardAdminService.selectD7Detail(searchInfo);
+                break;
+            case "TPLH":
+                info = dashboardAdminService.selectTPLHDetail(searchInfo);
+                break;
+            case "QT":
+                info = dashboardAdminService.selectQTDetail(searchInfo);
+                break;
+            case "TC":
+                info = dashboardAdminService.selectTCDetail(searchInfo);
+                break;
+            default:
+                break;
+        }
+
+
+        System.out.println(info);
+
+        return info;
 
     }
 }

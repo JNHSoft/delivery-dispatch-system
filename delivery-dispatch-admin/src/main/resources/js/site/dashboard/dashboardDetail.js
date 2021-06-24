@@ -2,7 +2,8 @@
 let loading = $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 let selectId = $("#statisticsStoreList");
 let selectIdOption = $("#statisticsStoreList option:selected");
-let intervalTime = 1;
+let intervalTime = 100;
+let objChart;
 
 /**
  * 페이지 진입 시 처음 실행
@@ -223,11 +224,19 @@ function getDashBoardDetail(){
     // 정보들을 모두 설정한다.
     let startDate = $('#startDate').val();
     let endDate = $('#endDate').val();
+    let ctx = document.getElementById('myChart').getContext('2d');
 
     let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
     if (diffDate > 31){
+        loading.hide();
         return;
     }
+
+    console.log(objChart);
+    if (objChart !== undefined){
+        objChart.destroy();
+    }
+    $(".no_chart_wrap").remove();
 
     $.ajax({
         url : this.url,
@@ -244,9 +253,27 @@ function getDashBoardDetail(){
         dataType : 'json',
         success : function(data) {
             console.log(data);
+
+            if (data != undefined && data.detail.length > 0){
+
+                let config = null;
+                
+                if (data.chartType === 1){
+                    // Line 차트
+                    config = makeLineChart(data);
+                }else{
+                    // 기본적으로 Bar 차트를 보여준다.
+                    config = makeBarChart(data);
+                }
+
+                objChart = new Chart(ctx, config);
+            }
         },
         error: function (err){
             console.log("에러 => ", err);
+            //$("#chart_content").html(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
+            $("#chart_content").append(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
+            //ctx.append("No Data");
         },
         complete: function (){
             console.log("완료");
@@ -255,9 +282,106 @@ function getDashBoardDetail(){
     });
 }
 
-function drawChart(objBody, config){
+// Bar 차트 만들기
+function makeBarChart(objData){
+    let config = Object;
+    let bodyData = Object;
 
+    let arrLabel = [];
+    let arrData = [];
+    let arrColor = [];
+
+    let startDate = new Date(objData.minX);
+    let endDate = new Date(objData.maxX);
+    let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24)) + 1;
+
+    startDate.setDate(startDate.getDate() - 1);
+
+    for (let i = 0; i < diffDate; i++) {
+        startDate.setDate(startDate.getDate() + 1);
+        let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
+
+        arrLabel.push(addDate);
+        arrColor.push('rgba(107 87 236)');
+        
+        // Row 데이터 추가
+        if (objData.detail[i].hasOwnProperty('createdDatetime')){
+            if (objData.detail[i].createdDatetime === addDate){
+                arrData.push(objData.detail[i].mainValue);
+            }else {
+                arrData.push(0);
+            }
+        }
+    }
+
+    bodyData = {
+        labels: arrLabel,
+        datasets:[{
+            label: '',
+            data: arrData,
+            backgroundColor: arrColor,
+            borderWidth: 0,
+            borderRadius: 4,
+            barThickness: 28,
+        }]
+    };
+
+    config = {
+        plugins: [ChartDataLabels],
+        type: 'bar',
+        data: bodyData,
+        options: {
+            plugins: {
+                legend:{
+                    display: false,
+                },
+                datalabels: {
+                    align: 'end',
+                    anchor: 'end',
+                    color: '#6b57ec',
+                    padding: 8,
+                    formatter: function (val, cont){
+                        console.log("bar 차트 이벤트 => " + val + " cont => " + cont);
+                        return formatFloat(val, 2) + '%';
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid:{
+                        display: false,
+                    }
+                },
+                y: {
+                   beginAtZero: true,
+                   min: objData.minY,
+                   max: objData.maxY,
+                   ticks: {
+                       count: objData.intervalY,
+                       callback: function (val, index, values){
+                           console.log('bar Y 이벤트 => ' + val + " index => " + index + " values => " + values);
+                           return formatFloat(val, 2) + '%';
+                       }
+                   }
+                }
+            }
+        },
+    };
+
+
+
+
+    return config;
 }
+
+// Line 차트 만들기
+function makeLineChart(objData){
+    let config = Object;
+    let bodyData = Object;
+
+    return config;
+}
+
 
 /**
  * 소수점으로 변환 및 1000자리 콤마 추가

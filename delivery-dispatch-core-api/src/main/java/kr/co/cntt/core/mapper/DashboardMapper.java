@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.SearchInfo;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,35 +25,35 @@ public interface DashboardMapper {
      * D30 데이터 조회
      * */
     @Transactional(readOnly=true)
-    DashboardInfo selectD30Detail(SearchInfo search);
+    List<DashboardInfo> selectD30Detail(SearchInfo search);
 
     /**
      * TPLH 데이터 조회
      * */
     @Transactional(readOnly=true)
-    DashboardInfo selectTPLHDetail(SearchInfo search);
+    List<DashboardInfo> selectTPLHDetail(SearchInfo search);
     
     /**
      * QT 데이터 조회
      * */
     @Transactional(readOnly=true)
-    DashboardInfo selectQTDetail(SearchInfo search);
+    List<DashboardInfo> selectQTDetail(SearchInfo search);
 
     /**
      * TC 데이터 조회
      * */
     @Transactional(readOnly=true)
-    DashboardInfo selectTCDetail(SearchInfo search);
+    List<DashboardInfo> selectTCDetail(SearchInfo search);
     
     /**
      * OrderStackRate 데이터 조회
      * */
     @Transactional(readOnly=true)
-    DashboardInfo selectOrderStackRateDetail(SearchInfo search);
+    List<DashboardInfo> selectOrderStackRateDetail(SearchInfo search);
     
     /**
      * D7 데이터 조회
      * */
     @Transactional(readOnly=true)
-    DashboardInfo selectD7Detail(SearchInfo search);
+    List<DashboardInfo> selectD7Detail(SearchInfo search);
 }

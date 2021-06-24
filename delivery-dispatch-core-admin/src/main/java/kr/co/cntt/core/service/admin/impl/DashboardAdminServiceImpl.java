@@ -1,17 +1,19 @@
 package kr.co.cntt.core.service.admin.impl;
 
 import kr.co.cntt.core.mapper.DashboardMapper;
+import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.SearchInfo;
 import kr.co.cntt.core.service.admin.DashboardAdminService;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @Service("DashboardAdminService")
@@ -31,7 +33,6 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
 
         List<DashboardInfo> resultList = new ArrayList<>();
         Map resultMap = dashboardMapper.selectAllDetail(search);
-
 
         // 데이터에 대하여 파싱을 진행한다.
         System.out.println(resultMap);
@@ -122,33 +123,70 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
     }
 
     @Override
-    public DashboardInfo selectD30Detail(SearchInfo search) {
-        return dashboardMapper.selectD30Detail(search);
+    public ChartInfo selectD30Detail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectD30Detail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeBarChartInfo(detail, Integer.parseInt(search.getDays()), 5);
     }
 
     @Override
-    public DashboardInfo selectTPLHDetail(SearchInfo search) {
-        return dashboardMapper.selectTPLHDetail(search);
+    public ChartInfo selectTPLHDetail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectTPLHDetail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeLineChartInfo(detail, Integer.parseInt(search.getDays()), 5);
     }
 
     @Override
-    public DashboardInfo selectQTDetail(SearchInfo search) {
-        return dashboardMapper.selectQTDetail(search);
+    public ChartInfo selectQTDetail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectQTDetail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeLineChartInfo(detail, Integer.parseInt(search.getDays()), 5);
     }
 
     @Override
-    public DashboardInfo selectTCDetail(SearchInfo search) {
-        return dashboardMapper.selectTCDetail(search);
+    public ChartInfo selectTCDetail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectTCDetail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeLineChartInfo(detail, Integer.parseInt(search.getDays()), 5);
     }
 
     @Override
-    public DashboardInfo selectOrderStackRateDetail(SearchInfo search) {
-        return dashboardMapper.selectOrderStackRateDetail(search);
+    public ChartInfo selectOrderStackRateDetail(SearchInfo search) {
+        ChartInfo result = new ChartInfo();
+        List<DashboardInfo> detail = dashboardMapper.selectOrderStackRateDetail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeLineChartInfo(detail, Integer.parseInt(search.getDays()), 5);
     }
 
     @Override
-    public DashboardInfo selectD7Detail(SearchInfo search) {
-        return dashboardMapper.selectD7Detail(search);
+    public ChartInfo selectD7Detail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectD7Detail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeBarChartInfo(detail, Integer.parseInt(search.getDays()), 5);
     }
 
     private String changeValueType(Type type, String value){
@@ -163,14 +201,12 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
                 }catch (NumberFormatException e){
                     Double doubleValue = 0d;
 
-                    //doubleValue = Double.parseDouble(changeType(Double.class, value)) + 0.5d;       // 반올림 적용
                     doubleValue = Double.parseDouble(changeValueType(Double.class, value));
                     intValue = doubleValue.intValue();
 
                 }catch (NullPointerException e){
                     log.debug("changeType Data NullPoint = " + value);
                 }catch (Exception e){
-//                    e.printStackTrace();
                     log.error(e.getMessage());
                 }
 
@@ -183,7 +219,6 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
                 }catch (NullPointerException e){
                     log.debug("changeType Data NullPoint = " + value);
                 }catch (Exception e){
-//                    e.printStackTrace();
                     log.error(e.getMessage());
                 }
 
@@ -196,7 +231,6 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
                 }catch (NullPointerException e){
                     log.debug("changeType Data NullPoint = " + value);
                 }catch (Exception e){
-//                    e.printStackTrace();
                     log.error(e.getMessage());
                 }
                 strReturn = doubleValue.toString();
@@ -218,7 +252,6 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
                 }catch (NullPointerException e){
                     log.debug("changeType Data NullPoint = " + value);
                 }catch (Exception e){
-//                    e.printStackTrace();
                     log.error(e.getMessage());
                 }
 
@@ -226,10 +259,50 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
 
             }
         }catch (Exception e){
-//            e.printStackTrace();
             log.error(e.getMessage());
         }
 
         return strReturn;
     }
+
+    private ChartInfo makeBarChartInfo(List<DashboardInfo> dashboardInfo, int xValue, int yValue){
+        ChartInfo result = new ChartInfo();
+
+        result.setDetail(dashboardInfo);
+
+        result.setChartType(0);                         // 막대그래프(퍼센트)
+
+        // Y 좌표 정보
+        result.setMinY(0);
+        result.setMaxY(100);
+        result.setIntervalY(yValue);
+
+        // X 좌표 정보
+        result.setMinX(dashboardInfo.stream().min((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());
+        result.setMaxX(dashboardInfo.stream().max((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());
+        result.setIntervalX(Math.floorDiv(xValue, 10) + 1);
+
+        return  result;
+    }
+
+    private ChartInfo makeLineChartInfo(List<DashboardInfo> dashboardInfo, int xValue, int yValue){
+        ChartInfo result = new ChartInfo();
+
+        result.setDetail(dashboardInfo);
+
+        result.setChartType(1);                         // 라인그래프
+
+        // Y 좌표 정보
+        result.setMinY(dashboardInfo.stream().min(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue() - 2);
+        result.setMaxY(dashboardInfo.stream().max(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue() + 2);
+        result.setIntervalY(yValue);
+
+        // X 좌표 정보
+        result.setMinX(dashboardInfo.stream().min((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());
+        result.setMaxX(dashboardInfo.stream().max((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());
+        result.setIntervalX(Math.floorDiv(xValue, 10) + 1);
+
+        return  result;
+    }
+
 }

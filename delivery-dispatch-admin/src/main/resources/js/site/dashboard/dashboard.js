@@ -226,6 +226,7 @@ function getDashBoardInfos(){
 
     let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
     if (diffDate > 31){
+        loading.hide();
         return;
     }
 
@@ -254,7 +255,7 @@ function getDashBoardInfos(){
                 }
             }else{
                 $("#cardContents").css({"display":"flex", "justify-content": "center", "align-items":"center"});
-                $("#cardContents").append("No Data");
+                $("#cardContents").html(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
             }
         },
         error: function (err){
