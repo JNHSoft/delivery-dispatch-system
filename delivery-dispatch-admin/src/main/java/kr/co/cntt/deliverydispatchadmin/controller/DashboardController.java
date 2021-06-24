@@ -180,12 +180,10 @@ public class DashboardController {
     @ResponseBody
     @PostMapping("/dashboardDetail")
     @CnttMethodDescription("대시 보드 상세 내용 호출")
-    public ChartInfo dashboardDetailInfo(Model model,
+    public Map<String, Object> dashboardDetailInfo(Model model,
                                          @RequestParam("dashBoardType") String type,
                                          SearchInfo searchInfo){
-
-        System.out.println("dashBoardType => " + type);
-        System.out.println("SearchInfo => " + searchInfo);
+        Map<String, Object> resultMapt = new HashMap<>();
         ChartInfo info = new ChartInfo();
 
         // 일자를 막도록 합시다.
@@ -200,13 +198,15 @@ public class DashboardController {
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
             if (diffDays > 31) {
-                return info;
+                resultMapt.put("status", "Failed");
+                return resultMapt;
             }
 
             searchInfo.setDays((Integer.toString(((int) (long) diffDays + 1))));
         } catch (ParseException ex) {
             ex.printStackTrace();
-            return info;
+            resultMapt.put("status", "Failed");
+            return resultMapt;
         }
 
         // ADMIN 정보
@@ -238,10 +238,13 @@ public class DashboardController {
                 break;
         }
 
-
         System.out.println(info);
+        System.out.println(info.getDays());
 
-        return info;
+        resultMapt.put("status", "OK");
+        resultMapt.put("chartInfo", info);
+        resultMapt.put("rankInfo", null);
+        return resultMapt;
 
     }
 }

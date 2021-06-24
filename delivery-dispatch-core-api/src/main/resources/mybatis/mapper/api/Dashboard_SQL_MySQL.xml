@@ -268,7 +268,7 @@
                         AND	 b.store_id = #{storeId}
                     </if>
                 )	t
-        gropu by reservation_datetime
+        group by reservation_datetime
         order by 1
     </select>
 

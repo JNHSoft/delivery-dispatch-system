@@ -293,9 +293,16 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
         result.setChartType(1);                         // 라인그래프
 
         // Y 좌표 정보
-        result.setMinY(dashboardInfo.stream().min(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue() - 2);
-        result.setMaxY(dashboardInfo.stream().max(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue() + 2);
-        result.setIntervalY(yValue);
+        float minY = (int)(dashboardInfo.stream().min(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue() - 2);
+        float maxY = (int)(dashboardInfo.stream().max(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue() + 2);
+
+        if (((int)(minY)) <= 0){
+            minY = 0;
+        }
+
+        result.setMinY(minY);
+        result.setMaxY(maxY);
+        result.setIntervalY(Math.floorMod((int)(maxY), 10) + 1);
 
         // X 좌표 정보
         result.setMinX(dashboardInfo.stream().min((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());

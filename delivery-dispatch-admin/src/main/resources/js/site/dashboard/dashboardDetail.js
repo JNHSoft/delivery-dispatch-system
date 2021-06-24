@@ -254,26 +254,28 @@ function getDashBoardDetail(){
         success : function(data) {
             console.log(data);
 
-            if (data != undefined && data.detail.length > 0){
+            if (data != undefined && data["status"] === "OK"){
+                if (data["chartInfo"] != undefined){
+                    let config = null;
 
-                let config = null;
-                
-                if (data.chartType === 1){
-                    // Line 차트
-                    config = makeLineChart(data);
-                }else{
-                    // 기본적으로 Bar 차트를 보여준다.
-                    config = makeBarChart(data);
+                    if (data["chartInfo"].chartType === 1){
+                        // Line 차트
+                        config = makeLineChart(data["chartInfo"]);
+                    }else{
+                        // 기본적으로 Bar 차트를 보여준다.
+                        config = makeBarChart(data["chartInfo"]);
+                    }
+
+                    objChart = new Chart(ctx, config);
+                }else {
+                    $("#chart_content").append(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
                 }
-
-                objChart = new Chart(ctx, config);
+            }else {
+                $("#chart_content").append(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
             }
         },
         error: function (err){
-            console.log("에러 => ", err);
-            //$("#chart_content").html(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
             $("#chart_content").append(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
-            //ctx.append("No Data");
         },
         complete: function (){
             console.log("완료");
@@ -359,7 +361,6 @@ function makeBarChart(objData){
                    ticks: {
                        count: objData.intervalY,
                        callback: function (val, index, values){
-                           console.log('bar Y 이벤트 => ' + val + " index => " + index + " values => " + values);
                            return formatFloat(val, 2) + '%';
                        }
                    }
@@ -378,6 +379,88 @@ function makeBarChart(objData){
 function makeLineChart(objData){
     let config = Object;
     let bodyData = Object;
+
+    let arrLabel = [];
+    let arrData = [];
+    let arrColor = [];
+
+    let startDate = new Date(objData.minX);
+    let endDate = new Date(objData.maxX);
+    let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24)) + 1;
+
+    startDate.setDate(startDate.getDate() - 1);
+
+    for (let i = 0; i < diffDate; i++) {
+        startDate.setDate(startDate.getDate() + 1);
+        let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
+
+        arrLabel.push(addDate);
+        arrColor.push('rgba(107 87 236)');
+
+        // Row 데이터 추가
+        if (objData.detail[i].hasOwnProperty('createdDatetime')){
+            if (objData.detail[i].createdDatetime === addDate){
+                arrData.push(objData.detail[i].mainValue);
+            }else {
+                arrData.push(0);
+            }
+        }
+    }
+
+    bodyData = {
+        labels: arrLabel,
+        datasets:[{
+            label: 'Dataset 1',
+            data: arrData,
+            backgroundColor: arrColor,
+            borderColor: '#6b57ec',
+            backgroundColor: '#ffffff',
+            datalabels: {
+                align: 'end',
+                anchor: 'end'
+            }
+        }]
+    };
+
+    config = {
+        plugins: [ChartDataLabels],
+        type: 'line',
+        data: bodyData,
+        options: {
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                datalabels: {
+                    color: '#6b57ec',
+                    borderRadius: 1,
+                    padding: 8,
+                    formatter: function (val, cont){
+                        return formatFloat(val, 2);
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false,
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    min: objData.minY,
+                    max: objData.maxY,
+                    ticks: {
+                        count: objData.intervalY,
+                        callback: function (val, index, values){
+                            return formatFloat(val, 2);
+                        }
+                    }
+                }
+            }
+        },
+    };
+
 
     return config;
 }
