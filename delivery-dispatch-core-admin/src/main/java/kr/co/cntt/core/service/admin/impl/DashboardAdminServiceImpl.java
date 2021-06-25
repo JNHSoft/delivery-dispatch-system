@@ -370,7 +370,8 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
 
         result.setMinY(minY);
         result.setMaxY(maxY);
-        result.setIntervalY(Math.floorMod((int)(maxY), 10) + 1);
+        //result.setIntervalY(Math.floorMod((int)(maxY), 10) + 1);
+        result.setIntervalY(5);
 
         // X 좌표 정보
         result.setMinX(dashboardInfo.stream().min((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());

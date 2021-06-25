@@ -436,7 +436,7 @@ function makeLineChart(objData){
     bodyData = {
         labels: arrLabel,
         datasets:[{
-            label: 'Dataset 1',
+            label: '',
             data: arrData,
             borderColor: '#6b57ec',
             datalabels: {
@@ -500,10 +500,10 @@ function makeTableRow(objData){
 
 
     headerHtml += "<th>";
-    headerHtml += "Store";
+    headerHtml += first_column;
     headerHtml += "</th>";
     headerHtml += "<th>";
-    headerHtml += "TC";
+    headerHtml += second_column;
     headerHtml += "</th>";
 
     colHeadHtml += "<col width='28%' />";
@@ -527,7 +527,7 @@ function makeTableRow(objData){
 
                 if (bFirst){
                     headerHtml += "<th>";
-                    headerHtml += "達成率";
+                    headerHtml += third_column;
                     headerHtml += "</th>";
                     colHeadHtml += "<col width='28%' />";
                     bFirst = false;

@@ -8,7 +8,7 @@
       <a href="/dashboard" onclick="" class="block w-8 h-8 mr-3 rounded-full border border-solid border-gray-300 bg-arw-left bg-no-repeat bg-center">
         <span class="hidden">뒤로가기</span>
       </a>
-      <h3 class="text-2xl font-bold text-gray-900">D7</h3>
+      <h3 class="text-2xl font-bold text-gray-900" th:text="${dashboardType}"></h3>
 <!--      <h3 class="text-2xl font-bold text-gray-900" th:text="${#messages.msg('gnb.dashboard')}"></h3>-->
     </div>
     <div class="flex flex-wrap mb-10 gap-y-2">
@@ -67,9 +67,9 @@
     <div class="flex items-center justify-between mb-4">
       <h4 class="text-lg font-bold text-gray-900">STORE RANKING</h4>
       <div>
-        <button class="btn-excel" id="btnExcel">
-          <span>Export to Excel</span>
-        </button>
+        <button class="btn-excel" id="btnExcel" th:text="${#messages.msg('list.excel')}" />
+<!--          <span>Export to Excel</span>-->
+<!--        </button>-->
       </div>
     </div>
     <!-- 엑셀 다운로드 버튼 -->
@@ -107,10 +107,13 @@
   let list_search_all_subgroup = /*[[#{list.search.all.subgroup}]]*/ 'list_search_all_subgroup';
   let list_search_all_store = /*[[#{list.search.all.store}]]*/ 'list_search_all_store';
   let subGroup_name = /*[[#{subgroup.name}]]*/ 'subGroup_name';
-  let store_name = /*[[#{store.name}]]*/ 'store_name';
   let group_name = /*[[#{group.name}]]*/ 'group_name';
   let group_none = /*[[#{group.none}]]*/ 'group_none';
   let result_none = /*[[#{result.none}]]*/ 'result_none';
+
+  let first_column = /*[[#{dashboard.field.first}]]*/ 'first_column';
+  let second_column = /*[[${dashboardType}]]*/ 'second_column';
+  let third_column = /*[[#{dashboard.field.third}]]*/ 'third_column';
   /*]]>*/
 </script>
 </html>

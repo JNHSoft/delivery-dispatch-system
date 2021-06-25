@@ -168,6 +168,8 @@ public class DashboardController {
 
         System.out.println("dashBoardType => " + type);
 
+        model.addAttribute("dashboardType", type);
+
         return "/dashboard/dashboardDetail";
     }
     
