@@ -319,7 +319,7 @@ function makeBarChart(objData){
         let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
 
         arrLabel.push(addDate);
-        arrColor.push('rgba(107 87 236)');
+        arrColor.push('rgb(107, 87, 236)');
         
         // Row 데이터 추가
         if (objData.detail[i].hasOwnProperty('createdDatetime')){
@@ -393,7 +393,6 @@ function makeLineChart(objData){
 
     let arrLabel = [];
     let arrData = [];
-    let arrColor = [];
 
     let startDate = new Date(objData.minX);
     let endDate = new Date(objData.maxX);
@@ -401,21 +400,37 @@ function makeLineChart(objData){
 
     startDate.setDate(startDate.getDate() - 1);
 
+    // 하루치인 경우에는 앞 뒤로 1일씩 추가하여, 중앙에 표시 될 수 있도록 적용한다.
+    if (diffDate == 1){
+        let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
+
+        arrLabel.push(addDate);
+        arrData.push(NaN);
+    }
+
     for (let i = 0; i < diffDate; i++) {
         startDate.setDate(startDate.getDate() + 1);
         let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
 
         arrLabel.push(addDate);
-        arrColor.push('rgba(107 87 236)');
 
         // Row 데이터 추가
         if (objData.detail[i].hasOwnProperty('createdDatetime')){
             if (objData.detail[i].createdDatetime === addDate){
                 arrData.push(objData.detail[i].mainValue);
             }else {
-                arrData.push(0);
+                arrData.push(NaN);
             }
         }
+    }
+
+    // 하루치인 경우에는 앞 뒤로 1일씩 추가하여, 중앙에 표시 될 수 있도록 적용한다.
+    if (diffDate == 1){
+        startDate.setDate(startDate.getDate() + 1);
+        let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
+
+        arrLabel.push(addDate);
+        arrData.push(NaN);
     }
 
     bodyData = {
@@ -423,9 +438,7 @@ function makeLineChart(objData){
         datasets:[{
             label: 'Dataset 1',
             data: arrData,
-            backgroundColor: arrColor,
             borderColor: '#6b57ec',
-            backgroundColor: '#ffffff',
             datalabels: {
                 align: 'end',
                 anchor: 'end'

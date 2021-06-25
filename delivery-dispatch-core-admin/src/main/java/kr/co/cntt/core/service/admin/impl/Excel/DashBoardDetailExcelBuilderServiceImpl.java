@@ -105,12 +105,21 @@ public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(String.format("%.2f", dashboardList.get(i).getValue()));
+            if (dashboardList.get(i).getValue() != null){
+                cell.setCellValue(String.format("%.2f", dashboardList.get(i).getValue()));
+            }else{
+                cell.setCellValue(0);
+            }
             cell.setCellStyle(dataCellStyle);
 
             if (dashboardList.get(i).getAchievementRate() != null){
                 cell = addListRow.createCell(colNum++);
-                cell.setCellValue(String.format("%.2f", dashboardList.get(i).getAchievementRate()) + "%");
+                if (dashboardList.get(i).getAchievementRate() != null){
+                    cell.setCellValue(String.format("%.2f", dashboardList.get(i).getAchievementRate()) + "%");
+                }else {
+                    cell.setCellValue("0%");
+                }
+
                 cell.setCellStyle(dataCellStyle);
             }
 
