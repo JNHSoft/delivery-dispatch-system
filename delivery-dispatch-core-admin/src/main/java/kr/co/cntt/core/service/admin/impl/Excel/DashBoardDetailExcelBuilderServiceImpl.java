@@ -1,9 +1,7 @@
 package kr.co.cntt.core.service.admin.impl.Excel;
 
 import kr.co.cntt.core.model.dashboard.RankInfo;
-import kr.co.cntt.core.model.statistic.AdminByDate;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component("DashBoardDetailExcelBuilderServiceImpl")
 public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
