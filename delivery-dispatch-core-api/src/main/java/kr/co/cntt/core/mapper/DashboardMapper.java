@@ -2,6 +2,7 @@ package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
+import kr.co.cntt.core.model.dashboard.RankInfo;
 import kr.co.cntt.core.model.dashboard.SearchInfo;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,4 +57,52 @@ public interface DashboardMapper {
      * */
     @Transactional(readOnly=true)
     List<DashboardInfo> selectD7Detail(SearchInfo search);
+
+    /**
+     * D14 데이터 조회
+     * */
+    @Transactional(readOnly=true)
+    List<DashboardInfo> selectD14Detail(SearchInfo search);
+
+    /**
+     * D30 스토어 랭크 조회
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectD30Rank(SearchInfo search);
+
+    /**
+     * TPLH 스토어 랭크 조회
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectTPLHRank(SearchInfo search);
+
+    /**
+     * QT 스토어 랭크 조회
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectQTRank(SearchInfo search);
+
+    /**
+     * TC 스토어 랭크 조회
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectTCRank(SearchInfo search);
+
+    /**
+     * OrderStackRate 스토어 랭크 조회
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectOrderStackRateRank(SearchInfo search);
+
+    /**
+     * D7 스토어 랭크 조회
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectD7Rank(SearchInfo search);
+
+    /**
+     * D14 스토어 랭크 조회
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectD14Rank(SearchInfo search);
 }

@@ -2,6 +2,7 @@ package kr.co.cntt.core.service.admin;
 
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
+import kr.co.cntt.core.model.dashboard.RankInfo;
 import kr.co.cntt.core.model.dashboard.SearchInfo;
 
 import java.util.List;
@@ -43,4 +44,44 @@ public interface DashboardAdminService {
      * D7 데이터 조회
      * */
     ChartInfo selectD7Detail(SearchInfo search);
+
+    /**
+     * D14 데이터 조회
+     * */
+    ChartInfo selectD14Detail(SearchInfo search);
+
+    /**
+     * D30 스토어 랭키 조회
+     * */
+    List<RankInfo> selectD30Rank(SearchInfo search);
+
+    /**
+     * TPLH 스토어 랭키 조회
+     * */
+    List<RankInfo> selectTPLHRank(SearchInfo search);
+
+    /**
+     * QT 스토어 랭키 조회
+     * */
+    List<RankInfo> selectQTRank(SearchInfo search);
+
+    /**
+     * TC 스토어 랭키 조회
+     * */
+    List<RankInfo> selectTCRank(SearchInfo search);
+
+    /**
+     * OrderStackRate 스토어 랭키 조회
+     * */
+    List<RankInfo> selectOrderStackRateRank(SearchInfo search);
+
+    /**
+     * D7 스토어 랭키 조회
+     * */
+    List<RankInfo> selectD7Rank(SearchInfo search);
+
+    /**
+     * D14 스토어 랭키 조회
+     * */
+    List<RankInfo> selectD14Rank(SearchInfo search);
 }

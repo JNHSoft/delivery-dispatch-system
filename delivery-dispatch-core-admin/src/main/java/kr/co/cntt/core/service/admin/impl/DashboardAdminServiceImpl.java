@@ -3,10 +3,12 @@ package kr.co.cntt.core.service.admin.impl;
 import kr.co.cntt.core.mapper.DashboardMapper;
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
+import kr.co.cntt.core.model.dashboard.RankInfo;
 import kr.co.cntt.core.model.dashboard.SearchInfo;
 import kr.co.cntt.core.service.admin.DashboardAdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,6 +80,25 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
                 infoD7.setAvgValue(0l);
             }
 
+            // D14 등록
+            DashboardInfo infoD14 = new DashboardInfo();
+            infoD14.setDashBoardType("D14");
+            infoD14.setUnit("%");
+
+            // D14의 메인 Value 입력
+            if (resultMap.containsKey("avgD14")){
+                infoD14.setMainValue(Float.parseFloat(changeValueType(Float.class, resultMap.get("avgD14").toString())));
+            }else{
+                infoD14.setMainValue(0f);
+            }
+
+            // D14 의 평균 Value
+            if (resultMap.containsKey("detailD14")){
+                infoD14.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailD14").toString())));
+            }else{
+                infoD14.setAvgValue(0l);
+            }
+
             // TPLH 등록
             DashboardInfo infoTPLH = new DashboardInfo();
             infoTPLH.setDashBoardType("TPLH");
@@ -114,6 +135,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             // 정렬에 맞게 데이터를 넣어준다.
             resultList.add(infoD30);
             resultList.add(infoD7);
+            resultList.add(infoD14);
             resultList.add(infoTPLH);
             resultList.add(infoQT);
             resultList.add(infoTC);
@@ -187,6 +209,52 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
         }
 
         return makeBarChartInfo(detail, Integer.parseInt(search.getDays()), 5);
+    }
+
+    @Override
+    public ChartInfo selectD14Detail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectD14Detail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeBarChartInfo(detail, Integer.parseInt(search.getDays()), 5);
+    }
+
+    @Override
+    public List<RankInfo> selectD30Rank(SearchInfo search) {
+        return dashboardMapper.selectD30Rank(search);
+    }
+
+    @Override
+    public List<RankInfo> selectTPLHRank(SearchInfo search) {
+        return dashboardMapper.selectTPLHRank(search);
+    }
+
+    @Override
+    public List<RankInfo> selectQTRank(SearchInfo search) {
+        return dashboardMapper.selectQTRank(search);
+    }
+
+    @Override
+    public List<RankInfo> selectTCRank(SearchInfo search) {
+        return dashboardMapper.selectTCRank(search);
+    }
+
+    @Override
+    public List<RankInfo> selectOrderStackRateRank(SearchInfo search) {
+        return dashboardMapper.selectOrderStackRateRank(search);
+    }
+
+    @Override
+    public List<RankInfo> selectD7Rank(SearchInfo search) {
+        return dashboardMapper.selectD7Rank(search);
+    }
+
+    @Override
+    public List<RankInfo> selectD14Rank(SearchInfo search) {
+        return dashboardMapper.selectD14Rank(search);
     }
 
     private String changeValueType(Type type, String value){
@@ -311,5 +379,4 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
 
         return  result;
     }
-
 }

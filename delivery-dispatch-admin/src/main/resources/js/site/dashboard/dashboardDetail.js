@@ -2,7 +2,7 @@
 let loading = $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 let selectId = $("#statisticsStoreList");
 let selectIdOption = $("#statisticsStoreList option:selected");
-let intervalTime = 100;
+let intervalTime = 10;
 let objChart;
 
 /**
@@ -215,6 +215,15 @@ function makeEventBind(){
             searchList();
         }, intervalTime);
     });
+
+    // 엑셀 다운로드 이벤트
+    $("#btnExcel").off().on('click', function (){
+        loading.show();
+        setTimeout(() => {
+            dashBoardDetailDownloadExcel();
+            loading.hide();
+        }, intervalTime);
+    });
 }
 
 /**
@@ -237,6 +246,7 @@ function getDashBoardDetail(){
         objChart.destroy();
     }
     $(".no_chart_wrap").remove();
+    $("#storeRankDetail").empty();
 
     $.ajax({
         url : this.url,
@@ -267,6 +277,11 @@ function getDashBoardDetail(){
                     }
 
                     objChart = new Chart(ctx, config);
+                    
+                    // Store Ranking 등록
+                    if (data["rankInfo"] != undefined){
+                        $("#storeRankDetail").append(makeTableRow(data["rankInfo"]));
+                    }
                 }else {
                     $("#chart_content").append(`<div class="no_chart_wrap" style="line-height: 150px;">${result_none}</div>`);
                 }
@@ -343,7 +358,6 @@ function makeBarChart(objData){
                     color: '#6b57ec',
                     padding: 8,
                     formatter: function (val, cont){
-                        console.log("bar 차트 이벤트 => " + val + " cont => " + cont);
                         return formatFloat(val, 2) + '%';
                     }
                 }
@@ -368,9 +382,6 @@ function makeBarChart(objData){
             }
         },
     };
-
-
-
 
     return config;
 }
@@ -461,10 +472,63 @@ function makeLineChart(objData){
         },
     };
 
-
     return config;
 }
 
+// 테이블 내용 세팅
+function makeTableRow(objData){
+    let resultHtml = "";
+    let headerHtml = "";
+    let colHeadHtml = "";
+    let bFirst = true;
+
+    $("#colHeader").empty();
+    $("#rankHeader").empty();
+
+
+    headerHtml += "<th>";
+    headerHtml += "Store";
+    headerHtml += "</th>";
+    headerHtml += "<th>";
+    headerHtml += "TC";
+    headerHtml += "</th>";
+
+    colHeadHtml += "<col width='28%' />";
+    colHeadHtml += "<col width='*' />";
+
+    for (let key in objData) {
+        if (objData.hasOwnProperty(key)){
+
+            resultHtml += "<tr>";
+            resultHtml += "<td>";
+            resultHtml += objData[key].storeName;
+            resultHtml += "</td>";
+            resultHtml += "<td>";
+            resultHtml += formatFloat(objData[key].value, 2);
+            resultHtml += "</td>";
+
+            if (objData[key].hasOwnProperty("achievementRate")){
+                resultHtml += "<td>";
+                resultHtml += formatFloat(objData[key].achievementRate, 2) + '%';
+                resultHtml += "</td>";
+
+                if (bFirst){
+                    headerHtml += "<th>";
+                    headerHtml += "達成率";
+                    headerHtml += "</th>";
+                    colHeadHtml += "<col width='28%' />";
+                    bFirst = false;
+                }
+            }
+            resultHtml += "</tr>";
+        }
+    }
+
+    $("#colHeader").append(colHeadHtml);
+    $("#rankHeader").append(headerHtml);
+
+    return resultHtml;
+}
 
 /**
  * 소수점으로 변환 및 1000자리 콤마 추가
@@ -640,4 +704,35 @@ function getStatisticsStoreList(subId, gId) {
     });
 }
 
+
+/**
+ * Excel 다운로드
+ * */
+function dashBoardDetailDownloadExcel(){
+    // 정보들을 모두 설정한다.
+    let startDate = $('#startDate').val();
+    let endDate = $('#endDate').val();
+
+    let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
+    if (diffDate > 31){
+        return;
+    }
+
+    $.fileDownload("/dashboardDetailExcel" + location.search, {
+        httpMethod: "POST",
+        data: {
+            groupId: $("#statisticsGroupList option:selected").val(),
+            subgroupId: $("#statisticsSubGroupList option:selected").val(),
+            storeId: $("#statisticsStoreList option:selected").val(),
+            sDate: startDate,
+            eDate: endDate,
+            peakType: $("#sel_peak_time").val(),
+        },
+        successCallback: function (url){
+
+        }, failCallback: function (responseHtml, url, err){
+
+        }
+    });
+}
 /*]]>*/

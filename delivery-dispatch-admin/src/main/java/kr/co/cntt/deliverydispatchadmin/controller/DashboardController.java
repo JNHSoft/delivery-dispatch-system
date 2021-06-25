@@ -6,6 +6,7 @@ import kr.co.cntt.core.model.Search;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
+import kr.co.cntt.core.model.dashboard.RankInfo;
 import kr.co.cntt.core.model.dashboard.SearchInfo;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.service.admin.DashboardAdminService;
@@ -20,7 +21,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -149,6 +152,9 @@ public class DashboardController {
         if (!adminInfo.getAdminBrandCode().equals("1")){
             // PizzaHut인 경우
             currentDetail.removeIf(x -> x.getDashBoardType().equals("D7"));
+        }else{
+            // 피자헛 외적인 경우
+            currentDetail.removeIf(x -> x.getDashBoardType().equals("D14"));
         }
 
         /**
@@ -185,6 +191,7 @@ public class DashboardController {
                                          SearchInfo searchInfo){
         Map<String, Object> resultMapt = new HashMap<>();
         ChartInfo info = new ChartInfo();
+        List<RankInfo> storeRank = new ArrayList<>();
 
         // 일자를 막도록 합시다.
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -221,30 +228,102 @@ public class DashboardController {
         switch (type){
             case "D30":
                 info = dashboardAdminService.selectD30Detail(searchInfo);
+                storeRank = dashboardAdminService.selectD30Rank(searchInfo);
                 break;
             case "D7":
                 info = dashboardAdminService.selectD7Detail(searchInfo);
+                storeRank = dashboardAdminService.selectD7Rank(searchInfo);
+                break;
+            case "D14":
+                info = dashboardAdminService.selectD14Detail(searchInfo);
+                storeRank = dashboardAdminService.selectD14Rank(searchInfo);
                 break;
             case "TPLH":
                 info = dashboardAdminService.selectTPLHDetail(searchInfo);
+                storeRank = dashboardAdminService.selectTPLHRank(searchInfo);
                 break;
             case "QT":
                 info = dashboardAdminService.selectQTDetail(searchInfo);
+                storeRank = dashboardAdminService.selectQTRank(searchInfo);
                 break;
             case "TC":
                 info = dashboardAdminService.selectTCDetail(searchInfo);
+                storeRank = dashboardAdminService.selectTCRank(searchInfo);
                 break;
             default:
                 break;
         }
 
-        System.out.println(info);
-        System.out.println(info.getDays());
-
         resultMapt.put("status", "OK");
         resultMapt.put("chartInfo", info);
-        resultMapt.put("rankInfo", null);
+        resultMapt.put("rankInfo", storeRank);
         return resultMapt;
-
     }
+
+    @PostMapping("/dashboardDetailExcel")
+    public ModelAndView dashboardDetailExcelDownload(HttpServletResponse response,
+                                                     @RequestParam("dashBoardType") String type,
+                                                     SearchInfo searchInfo){
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        List<RankInfo> storeRank = new ArrayList<>();
+
+        // 일자를 막도록 합시다.
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date sdfStartDate;
+        Date sdfEndDate;
+        try {
+            sdfStartDate = formatter.parse(searchInfo.getSDate());
+            sdfEndDate = formatter.parse(searchInfo.getEDate());
+
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            if (diffDays > 31) {
+                return null;
+            }
+
+            searchInfo.setDays((Integer.toString(((int) (long) diffDays + 1))));
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setRole("ROLE_ADMIN");
+        // platform 대시보드에서는 대시보드 종류로 이용한다.
+        searchInfo.setPlatform(type);
+
+
+        switch (type){
+            case "D30":
+                storeRank = dashboardAdminService.selectD30Rank(searchInfo);
+                break;
+            case "D7":
+                storeRank = dashboardAdminService.selectD7Rank(searchInfo);
+                break;
+            case "D14":
+                storeRank = dashboardAdminService.selectD14Rank(searchInfo);
+                break;
+            case "TPLH":
+                storeRank = dashboardAdminService.selectTPLHRank(searchInfo);
+                break;
+            case "QT":
+                storeRank = dashboardAdminService.selectQTRank(searchInfo);
+                break;
+            case "TC":
+                storeRank = dashboardAdminService.selectTCRank(searchInfo);
+                break;
+            default:
+                break;
+        }
+
+        ModelAndView modelAndView = new ModelAndView("DashBoardDetailExcelBuilderServiceImpl");
+        modelAndView.addObject("getDashboardDetailInfo", storeRank);
+
+        return modelAndView;
+    }
+
 }

@@ -67,7 +67,7 @@
     <div class="flex items-center justify-between mb-4">
       <h4 class="text-lg font-bold text-gray-900">STORE RANKING</h4>
       <div>
-        <button class="btn-excel">
+        <button class="btn-excel" id="btnExcel">
           <span>Export to Excel</span>
         </button>
       </div>
@@ -78,34 +78,19 @@
     <div>
       <table class="table-rank">
         <caption class="hidden">STORE RANKING</caption>
-        <colgroup>
-          <col width="28%" />
-          <col width="*" />
-          <col width="28%" />
+        <colgroup id="colHeader">
+<!--          <col width="28%" />-->
+<!--          <col width="*" />-->
+<!--          <col width="28%" />-->
         </colgroup>
         <thead>
-        <tr>
-          <th>Store</th>
-          <th>TC</th>
-          <th>達成率</th>rm
+        <tr id="rankHeader">
+<!--          <th>Store</th>-->
+<!--          <th>TC</th>-->
+<!--          <th>達成率</th>-->
         </tr>
         </thead>
-        <tbody>
-        <tr>
-          <td>88KT111111 - Taichung Wu Chuan</td>
-          <td>10</td>
-          <td>100%</td>
-        </tr>
-        <tr>
-          <td>88KT111111 - Taichung Wu Chuan</td>
-          <td>10</td>
-          <td>100%</td>
-        </tr>
-        <tr>
-          <td>88KT111111 - Taichung Wu Chuan</td>
-          <td>10</td>
-          <td>100%</td>
-        </tr>
+        <tbody id="storeRankDetail">
         </tbody>
       </table>
     </div>
