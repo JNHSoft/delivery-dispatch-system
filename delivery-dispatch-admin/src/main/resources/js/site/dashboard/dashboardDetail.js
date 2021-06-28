@@ -303,6 +303,7 @@ function getDashBoardDetail(){
 function makeBarChart(objData){
     let config = Object;
     let bodyData = Object;
+    let frankI = 0;
 
     let arrLabel = [];
     let arrData = [];
@@ -322,9 +323,10 @@ function makeBarChart(objData){
         arrColor.push('rgb(107, 87, 236)');
         
         // Row 데이터 추가
-        if (objData.detail[i].hasOwnProperty('createdDatetime')){
-            if (objData.detail[i].createdDatetime === addDate){
+        if (objData.detail[frankI].hasOwnProperty('createdDatetime')){
+            if (objData.detail[frankI].createdDatetime === addDate){
                 arrData.push(objData.detail[i].mainValue);
+                frankI++;
             }else {
                 arrData.push(0);
             }
@@ -390,6 +392,7 @@ function makeBarChart(objData){
 function makeLineChart(objData){
     let config = Object;
     let bodyData = Object;
+    let frankI = 0;
 
     let arrLabel = [];
     let arrData = [];
@@ -415,9 +418,10 @@ function makeLineChart(objData){
         arrLabel.push(addDate);
 
         // Row 데이터 추가
-        if (objData.detail[i].hasOwnProperty('createdDatetime')){
-            if (objData.detail[i].createdDatetime === addDate){
+        if (objData.detail[frankI].hasOwnProperty('createdDatetime')){
+            if (objData.detail[frankI].createdDatetime === addDate){
                 arrData.push(objData.detail[i].mainValue);
+                frankI++;
             }else {
                 arrData.push(NaN);
             }

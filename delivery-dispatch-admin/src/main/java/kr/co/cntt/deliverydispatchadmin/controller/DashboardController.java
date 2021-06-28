@@ -199,6 +199,7 @@ public class DashboardController {
 
             if (diffDays > 31) {
                 resultMapt.put("status", "Failed");
+                log.debug("조회일이 31일을 초과했습니다.");
                 return resultMapt;
             }
 
@@ -206,6 +207,7 @@ public class DashboardController {
         } catch (ParseException ex) {
             ex.printStackTrace();
             resultMapt.put("status", "Failed");
+            log.debug("조회일이 산정 중 오류 발생");
             return resultMapt;
         }
 
@@ -217,7 +219,7 @@ public class DashboardController {
         // platform 대시보드에서는 대시보드 종류로 이용한다.
         searchInfo.setPlatform(type);
 
-
+        log.debug("type에 맞게 데이터를 조회합니다." + type);
         switch (type){
             case "D30":
                 info = dashboardAdminService.selectD30Detail(searchInfo);
@@ -246,6 +248,8 @@ public class DashboardController {
             default:
                 break;
         }
+
+        log.debug("데이터 조회가 완료 되었습니다.");
 
         resultMapt.put("status", "OK");
         resultMapt.put("chartInfo", info);
