@@ -1761,12 +1761,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderCompleted.setId(order.getId());
 
         // 21.05.17 신규 라이더 앱 배포 후 동일하게 적용할 것
-        //orderCompleted.setStatus("3");
-        if (bUpdateAndroid){
-            orderCompleted.setStatus("6");
-        }else {
-            orderCompleted.setStatus("3");
-        }
+        // 21.06.29 일괄 배포 적용이 될 예정이므로, 단일 상태 값으로 진행한다.
+        orderCompleted.setStatus("3");
+//        if (bUpdateAndroid){
+//            orderCompleted.setStatus("6");
+//        }else {
+//            orderCompleted.setStatus("3");
+//        }
 
         orderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
         orderCompleted.setCompleteXy(order.getLatitude() + "|" + order.getLongitude());
@@ -1776,12 +1777,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
             combinedOrderCompleted.setId(order.getCombinedOrderId());
             // 21.05.17 신규 라이더 앱 배포 후 동일하게 적용할 것
-            //combinedOrderCompleted.setStatus("3");
-            if (bUpdateAndroid){
-                combinedOrderCompleted.setStatus("6");
-            }else{
-                combinedOrderCompleted.setStatus("3");
-            }
+            combinedOrderCompleted.setStatus("3");
+//            if (bUpdateAndroid){
+//                combinedOrderCompleted.setStatus("6");
+//            }else{
+//                combinedOrderCompleted.setStatus("3");
+//            }
 
             combinedOrderCompleted.setCompletedDatetime(LocalDateTime.now().toString());
             combinedOrderCompleted.setToken(order.getToken());
