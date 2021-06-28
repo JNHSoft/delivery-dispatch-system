@@ -1722,22 +1722,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00058), ErrorCodeEnum.E00058.name());
         }
 
-        boolean bUpdateAndroid = false;
+//        boolean bUpdateAndroid = false;
 
         log.info("rier AppType = [" + orderInfo.getAppType() + "]");
 
-        if (orderInfo.getAppType() != null && orderInfo.getAppType().equals("1") && orderInfo.getStore() != null && orderInfo.getStore().getBrandCode().equals("1")
-                && orderInfo.getPlatform() != null && orderInfo.getPlatform().equals("android")){
-            try{
-                log.info("new Rider Android Check OK");
-                bUpdateAndroid = true;
-            }catch (Exception e){
-//                e.printStackTrace();
-                log.info("newRider Android Check Error");
-                log.info(e.getMessage());
-            }
-
-        }
+//        if (orderInfo.getAppType() != null && orderInfo.getAppType().equals("1") && orderInfo.getStore() != null && orderInfo.getStore().getBrandCode().equals("1")
+//                && orderInfo.getPlatform() != null && orderInfo.getPlatform().equals("android")){
+//            try{
+//                log.info("new Rider Android Check OK");
+//                bUpdateAndroid = true;
+//            }catch (Exception e){
+////                e.printStackTrace();
+//                log.info("newRider Android Check Error");
+//                log.info(e.getMessage());
+//            }
+//
+//        }
 
         // 라이더 위치 업데이트
         try {
