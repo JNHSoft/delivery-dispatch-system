@@ -6,7 +6,7 @@
                 ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, arrived_datetime) else null end ), 0) as detailD30
                 ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end else null end ), 0) * 100 as avgD7
                 ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else null end ), 0) as detailD7
-                ,ifnull(avg( case when condition1 = 1 case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end else null end ), 0) * 100 as avgD14
+                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end else null end ), 0) * 100 as avgD14
                 ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else null end ), 0) as detailD14
                 ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
                  / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else null end ) / 60, 2)				as avgTPLH
