@@ -2,15 +2,15 @@
 <mapper namespace="kr.co.cntt.core.mapper.DashboardMapper">
     <select id="selectAllDetail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="java.util.Map">
         <![CDATA[
-        select	 avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ) * 100 as avgD30
-                ,avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, arrived_datetime) else 0 end ) as detailD30
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ) * 100 as avgD7
-                ,avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else 0 end ) as detailD7
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ) * 100 as avgD14
-                ,avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else 0 end ) as detailD14
-                ,count( case when condition1 = 1 then 1 else null end )
+        select	 ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100 as avgD30
+                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, arrived_datetime) else 0 end ), 0) as detailD30
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100 as avgD7
+                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else 0 end ), 0) as detailD7
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100 as avgD14
+                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else 0 end ), 0) as detailD14
+                ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
                  / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)				as avgTPLH
-                ,avg( case when condition1 = 1 then cooking_time else null end )																			as avgQT
+                ,ifnull(avg( case when condition1 = 1 then cooking_time else null end ), 0)																	as avgQT
                 ,sum( case when condition1 = 1 then 1 else 0 end )																							as sumTC
         from	(
                     select	 a.id
@@ -84,9 +84,9 @@
 
     <select id="selectD30Detail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											as createdDatetime
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ) * 100 as mainValue
-                ,'%'																															as unit
+        select	 reservation_datetime																											            as createdDatetime
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100  as mainValue
+                ,'%'																															            as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
 					        ,arrived_datetime
@@ -149,7 +149,7 @@
     <select id="selectTPLHDetail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
         select	 reservation_datetime																											as createdDatetime
-                ,count( case when condition1 = 1 then 1 else null end )
+                ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
                  / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)	as mainValue
                 ,''																															    as unit
         from	(
@@ -214,7 +214,7 @@
     <select id="selectQTDetail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
         select	 reservation_datetime																											as createdDatetime
-                ,avg( case when condition1 = 1 then cooking_time else null end )																as mainValue
+                ,ifnull(avg( case when condition1 = 1 then cooking_time else null end ), 0)														as mainValue
                 ,''																															    as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
@@ -341,9 +341,9 @@
 
     <select id="selectD7Detail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											as createdDatetime
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ) * 100	as mainValue
-                ,'%'																															    as unit
+        select	 reservation_datetime																											            as createdDatetime
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100	as mainValue
+                ,'%'																															            as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
                             ,picked_up_datetime
@@ -405,9 +405,9 @@
 
     <select id="selectD14Detail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											    as createdDatetime
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ) * 100	as mainValue
-                ,'%'																															    as unit
+        select	 reservation_datetime																											            as createdDatetime
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100	as mainValue
+                ,'%'																															            as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
                             ,picked_up_datetime
@@ -469,10 +469,10 @@
 
     <select id="selectD30Rank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
-        select	 store_id																											                as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                            as storeName
-                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end )           as value
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ) * 100		as achievementRate
+        select	 store_id																											                            as id
+                ,( select store_name from TB_STORE where id = store_id )                                                                                        as storeName
+                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end )                       as value
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100		as achievementRate
         from	(
                     select	 a.store_id                                                                                                         as store_id
 					        ,arrived_datetime
@@ -536,7 +536,7 @@
         <![CDATA[
         select	 store_id																											            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
-                ,count( case when condition1 = 1 then 1 else null end )
+                ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
                  / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)	as value
         from	(
                     select	 a.store_id
@@ -601,7 +601,7 @@
         <![CDATA[
         select	 store_id																											            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
-                ,avg( case when condition1 = 1 then cooking_time else null end )																as value
+                ,ifnull(avg( case when condition1 = 1 then cooking_time else null end ), 0)														as value
         from	(
                     select	 a.store_id
                             ,cooking_time
@@ -663,9 +663,9 @@
     <select id="selectTCRank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
         select	 store_id																											            as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                              as storeName
+                ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
                 ,sum( case when condition1 = 1 then 1 else 0 end )																				as value
-                ,avg( case when condition1 = 1 then 1 else 0 end ) * 100    																    as achievementRate
+                ,ifnull(avg( case when condition1 = 1 then 1 else 0 end ), 0) * 100    															as achievementRate
         from	(
                     select	 a.store_id
                             ,case
@@ -729,10 +729,10 @@
 
     <select id="selectD7Rank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
-        select	 store_id																											                as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                                  as storeName
-                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end )           as value
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ) * 100	    as achievementRate
+        select	 store_id																											                        as id
+                ,( select store_name from TB_STORE where id = store_id )                                                                                    as storeName
+                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end )                   as value
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100	as achievementRate
         from	(
                     select	 a.store_id
                             ,picked_up_datetime
@@ -794,10 +794,10 @@
 
     <select id="selectD14Rank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
-        select	 store_id																											                    as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                                as storeName
-                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end )              as value
-                ,avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ) * 100	    as achievementRate
+        select	 store_id																											                            as id
+                ,( select store_name from TB_STORE where id = store_id )                                                                                        as storeName
+                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end )                      as value
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100	    as achievementRate
         from	(
                     select	 a.store_id
                             ,picked_up_datetime
