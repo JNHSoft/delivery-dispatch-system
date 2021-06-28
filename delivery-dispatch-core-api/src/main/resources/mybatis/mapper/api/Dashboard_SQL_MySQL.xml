@@ -2,14 +2,14 @@
 <mapper namespace="kr.co.cntt.core.mapper.DashboardMapper">
     <select id="selectAllDetail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="java.util.Map">
         <![CDATA[
-        select	 ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100 as avgD30
-                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, arrived_datetime) else 0 end ), 0) as detailD30
-                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100 as avgD7
-                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else 0 end ), 0) as detailD7
-                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100 as avgD14
-                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else 0 end ), 0) as detailD14
+        select	 ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else null end ), 0) * 100 as avgD30
+                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, arrived_datetime) else null end ), 0) as detailD30
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else null end ), 0) * 100 as avgD7
+                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else null end ), 0) as detailD7
+                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else null end ), 0) * 100 as avgD14
+                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else null end ), 0) as detailD14
                 ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
-                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)				as avgTPLH
+                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else null end ) / 60, 2)				as avgTPLH
                 ,ifnull(avg( case when condition1 = 1 then cooking_time else null end ), 0)																	as avgQT
                 ,sum( case when condition1 = 1 then 1 else 0 end )																							as sumTC
         from	(
@@ -42,7 +42,7 @@
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-<!--                    and		 third_party_id is null-->
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -85,7 +85,7 @@
     <select id="selectD30Detail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
         select	 reservation_datetime																											            as createdDatetime
-                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100  as mainValue
+                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end else null end ), 0) * 100  as mainValue
                 ,'%'																															            as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
@@ -107,9 +107,10 @@
         ]]>
                     from	 TB_ORDER					as a
                     left join TB_SUBGROUP_STORE_REL		as b
-                    on	 a.store_id = b.store_id
-                    and	 a.admin_id = b.admin_id
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -172,9 +173,10 @@
         ]]>
                     from	 TB_ORDER					as a
                     left join TB_SUBGROUP_STORE_REL		as b
-                    on	 a.store_id = b.store_id
-                    and	 a.admin_id = b.admin_id
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -235,9 +237,10 @@
         ]]>
                     from	 TB_ORDER					as a
                     left join TB_SUBGROUP_STORE_REL		as b
-                    on	 a.store_id = b.store_id
-                    and	 a.admin_id = b.admin_id
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -297,9 +300,10 @@
         ]]>
                     from	 TB_ORDER					as a
                     left join TB_SUBGROUP_STORE_REL		as b
-                    on	 a.store_id = b.store_id
-                    and	 a.admin_id = b.admin_id
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -342,7 +346,7 @@
     <select id="selectD7Detail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
         select	 reservation_datetime																											            as createdDatetime
-                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100	as mainValue
+                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end else null end ), 0) * 100	as mainValue
                 ,'%'																															            as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
@@ -364,9 +368,10 @@
         ]]>
                     from	 TB_ORDER					as a
                     left join TB_SUBGROUP_STORE_REL		as b
-                    on	 a.store_id = b.store_id
-                    and	 a.admin_id = b.admin_id
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -406,7 +411,7 @@
     <select id="selectD14Detail" parameterType="kr.co.cntt.core.model.dashboard.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
         select	 reservation_datetime																											            as createdDatetime
-                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100	as mainValue
+                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end else null end ), 0) * 100	as mainValue
                 ,'%'																															            as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
@@ -426,43 +431,44 @@
                                 else 0
                             end					as condition1
         ]]>
-        from	 TB_ORDER					as a
-        left join TB_SUBGROUP_STORE_REL		as b
-        on	 a.store_id = b.store_id
-        and	 a.admin_id = b.admin_id
-        where	 status = 3
-        <choose>
-            <when test="role != null and role == 'ROLE_STORE'">
-                and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
-            </when>
-            <when test="role != null and role == 'ROLE_ADMIN'">
-                and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-            </when>
-            <otherwise>
-                and 1 != 1
-            </otherwise>
-        </choose>
-        <!--Search에 대한 필터를 진행하십시오.-->
-        AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
-        <choose>
-            <when test="peakType == 1">
-                AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
-            </when>
-            <when test="peakType == 2">
-                AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
-            </when>
-        </choose>
-        <!-- 그룹에 대한 필터 -->
-        <if test="groupId != null and groupId != '' and groupId != 'reset'">
-            AND	 b.group_id = #{groupId}
-        </if>
-        <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
-            AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
-        </if>
-        <if test="storeId != null and storeId != '' and storeId != 'reset'">
-            AND	 b.store_id = #{storeId}
-        </if>
-        )	t
+                    from	 TB_ORDER					as a
+                    left join TB_SUBGROUP_STORE_REL		as b
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
+                    where	 status = 3
+                    and		 third_party_id is null
+                    <choose>
+                        <when test="role != null and role == 'ROLE_STORE'">
+                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                        </when>
+                        <when test="role != null and role == 'ROLE_ADMIN'">
+                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                        </when>
+                        <otherwise>
+                            and 1 != 1
+                        </otherwise>
+                    </choose>
+                    <!--Search에 대한 필터를 진행하십시오.-->
+                    AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+                    <choose>
+                        <when test="peakType == 1">
+                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                        </when>
+                        <when test="peakType == 2">
+                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                    </choose>
+                    <!-- 그룹에 대한 필터 -->
+                    <if test="groupId != null and groupId != '' and groupId != 'reset'">
+                        AND	 b.group_id = #{groupId}
+                    </if>
+                    <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
+                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                    </if>
+                    <if test="storeId != null and storeId != '' and storeId != 'reset'">
+                        AND	 b.store_id = #{storeId}
+                    </if>
+                )	t
         group by reservation_datetime
         order by 1
     </select>
@@ -471,8 +477,8 @@
         <![CDATA[
         select	 store_id																											                            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                                        as storeName
-                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end )                       as value
-                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100		as achievementRate
+                ,sum( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end else null end )                       as value
+                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end else null end ), 0) * 100		as achievementRate
         from	(
                     select	 a.store_id                                                                                                         as store_id
 					        ,arrived_datetime
@@ -493,9 +499,10 @@
         ]]>
                     from	 TB_ORDER					as a
                     left join TB_SUBGROUP_STORE_REL		as b
-                    on	 a.store_id = b.store_id
-                    and	 a.admin_id = b.admin_id
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -537,7 +544,7 @@
         select	 store_id																											            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
                 ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
-                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)	as value
+                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else null end ) / 60, 2)	as value
         from	(
                     select	 a.store_id
                             ,picked_up_datetime
@@ -558,9 +565,10 @@
         ]]>
                     from	 TB_ORDER					as a
                     left join TB_SUBGROUP_STORE_REL		as b
-                    on	 a.store_id = b.store_id
-                    and	 a.admin_id = b.admin_id
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -624,6 +632,7 @@
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -665,7 +674,7 @@
         select	 store_id																											            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
                 ,sum( case when condition1 = 1 then 1 else 0 end )																				as value
-                ,ifnull(avg( case when condition1 = 1 then 1 else 0 end ), 0) * 100    															as achievementRate
+                ,ifnull(avg( case when condition1 = 1 then 1 else null end ), 0) * 100    															as achievementRate
         from	(
                     select	 a.store_id
                             ,case
@@ -684,9 +693,10 @@
         ]]>
                     from	 TB_ORDER					as a
                     left join TB_SUBGROUP_STORE_REL		as b
-                    on	 a.store_id = b.store_id
-                    and	 a.admin_id = b.admin_id
+                        on	 a.store_id = b.store_id
+                        and	 a.admin_id = b.admin_id
                     where	 status = 3
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
                             and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
@@ -731,8 +741,8 @@
         <![CDATA[
         select	 store_id																											                        as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                                    as storeName
-                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end )                   as value
-                ,ifnull(avg( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100	as achievementRate
+                ,sum( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end else null end )                   as value
+                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end else null end ), 0) * 100	as achievementRate
         from	(
                     select	 a.store_id
                             ,picked_up_datetime

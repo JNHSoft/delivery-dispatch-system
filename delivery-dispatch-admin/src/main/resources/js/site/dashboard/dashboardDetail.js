@@ -238,6 +238,7 @@ function getDashBoardDetail(){
     let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
     if (diffDate > 31){
         loading.hide();
+        alert(search_over_days);
         return;
     }
 
