@@ -8,7 +8,8 @@ package kr.co.cntt.core.enums;
 public enum ErrorCodeEnum {
 	/* system error*/
 	S0001, 
-	S0002, 
+	S0002,
+	S0003,
 	
 	/* Member : 로그인, 회원가입, 회원 */
 	L0001,
