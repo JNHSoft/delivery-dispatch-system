@@ -325,7 +325,7 @@ function makeBarChart(objData){
         // Row 데이터 추가
         if (objData.detail[frankI].hasOwnProperty('createdDatetime')){
             if (objData.detail[frankI].createdDatetime === addDate){
-                arrData.push(objData.detail[i].mainValue);
+                arrData.push(objData.detail[frankI].mainValue);
                 frankI++;
             }else {
                 arrData.push(0);
@@ -420,7 +420,7 @@ function makeLineChart(objData){
         // Row 데이터 추가
         if (objData.detail[frankI].hasOwnProperty('createdDatetime')){
             if (objData.detail[frankI].createdDatetime === addDate){
-                arrData.push(objData.detail[i].mainValue);
+                arrData.push(objData.detail[frankI].mainValue);
                 frankI++;
             }else {
                 arrData.push(NaN);
