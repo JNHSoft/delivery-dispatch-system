@@ -317,6 +317,11 @@ public class DashboardController {
                 break;
         }
 
+        // 데이터가 없으면 return
+        if (storeRank.isEmpty()){
+            return null;
+        }
+
         ModelAndView modelAndView = new ModelAndView("DashBoardDetailExcelBuilderServiceImpl");
         modelAndView.addObject("getDashboardDetailInfo", storeRank);
 

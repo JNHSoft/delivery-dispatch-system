@@ -2,7 +2,7 @@
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 let selectId = $("#statisticsStoreList");
 let selectIdOption = $("#statisticsStoreList option:selected");
-let intervalTime = 100;
+let intervalTime = 10;
 
 /**
  * 페이지 진입 시 처음 실행
@@ -13,9 +13,54 @@ $(function(){
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
     $('#startDate, #endDate').val(date);
 
+    makeEventBind();
+    getGroupList();
+
+    // 검색 조건 세팅
+    if (localStorage.getItem("keepDashboard") === "Y"){
+        let objSearch = JSON.parse(localStorage.getItem("objSearch"));
+
+        localStorage.removeItem("objSearch");
+
+        console.log(objSearch);
+
+        // obejct 위치에 맞게 데이터 세팅
+        $("#startDate").val(objSearch.sDate);
+        $("#endDate").val(objSearch.eDate);
+        $("#sel_peak_time").val(objSearch.peakType);
+
+        // 그룹
+        $("#statisticsGroupList").val(objSearch.groupId);
+        getStatisticsSubGroupList(objSearch.groupId);
+
+        // 하위 그룹
+        $("#statisticsSubGroupList").val(objSearch.subgroupId);
+        getStatisticsStoreList(objSearch.subgroupId, objSearch.groupId);
+
+        // 스토어
+        $("#statisticsStoreList").val(objSearch.storeId);
+
+        $(".search-date").removeClass("on");
+        if (objSearch.toDay){
+            $("#btnToday").addClass("on");
+        }else if(objSearch.lastSeven){
+            $("#btnLastSeven").addClass("on");
+        }else if(objSearch.cMonth){
+            $("#btnCurrentMonth").addClass("on");
+        }
+
+        $("#btnTotalTime").removeClass("on");
+        if(objSearch.btnTotal){
+            $("#btnTotalTime").addClass("on");
+        }
+
+
+        localStorage.removeItem("keepDashboard");
+    }
+
+
+
     setTimeout(() => {
-        makeEventBind();
-        getGroupList();
         getDashBoardInfos()
     }, intervalTime);
 });
@@ -359,6 +404,24 @@ function changeTime(time){
  * 카드 클릭 시 상세 페이지로 이동하는 이벤트
  * */
 function moveDetailPage(targetPage){
+    let objSearch = new Object();
+    objSearch.groupId = $("#statisticsGroupList option:selected").val();
+    objSearch.subgroupId = $("#statisticsSubGroupList option:selected").val();
+    objSearch.storeId = $("#statisticsStoreList option:selected").val();
+    objSearch.sDate = $('#startDate').val();
+    objSearch.eDate = $('#endDate').val();
+    objSearch.peakType = $("#sel_peak_time").val();
+    objSearch.toDay = $("#btnToday").hasClass("on");
+    objSearch.lastSeven = $("#btnLastSeven").hasClass("on");
+    objSearch.cMonth = $("#btnCurrentMonth").hasClass("on");
+    objSearch.btnTotal = $("#btnTotalTime").hasClass("on");
+
+    localStorage.setItem("keepDashboard", "Y");
+    localStorage.setItem("objSearch", JSON.stringify(objSearch));
+
+    console.log("moveDetailPage => ");
+    console.log(objSearch);
+
     location.href = "/dashboardDetail?dashBoardType=" + targetPage;
 }
 
@@ -396,7 +459,7 @@ function getGroupList() {
         data : {
 
         },
-        async : true,
+        async : false,
         dataType : 'json',
         success : function(data) {
             if (data) {
@@ -413,10 +476,12 @@ function getGroupList() {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
-                    loading.show();
-                    setTimeout(() => {
-                        searchList();
-                    }, intervalTime);
+                    if (!(localStorage.getItem("keepDashboard") === "Y")) {
+                        loading.show();
+                        setTimeout(() => {
+                            searchList();
+                        }, intervalTime);
+                    }
                 });
             }
         }
@@ -458,10 +523,12 @@ function getStatisticsSubGroupList(gId, subGroup) {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
-                    loading.show();
-                    setTimeout(() => {
-                        searchList();
-                    }, intervalTime);
+                    if (!(localStorage.getItem("keepDashboard") === "Y")){
+                        loading.show();
+                        setTimeout(() => {
+                            searchList();
+                        }, intervalTime);
+                    }
                 });
 
             }
@@ -496,10 +563,12 @@ function getStatisticsStoreList(subId, gId) {
                 $("#statisticsStoreList").off().on('change', function (){
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
-                    loading.show();
-                    setTimeout(() => {
-                        searchList();
-                    }, intervalTime);
+                    if (!(localStorage.getItem("keepDashboard") === "Y")) {
+                        loading.show();
+                        setTimeout(() => {
+                            searchList();
+                        }, intervalTime);
+                    }
                 });
             }
         }
