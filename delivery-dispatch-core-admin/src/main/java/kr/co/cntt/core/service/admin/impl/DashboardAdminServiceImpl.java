@@ -342,7 +342,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
 
         // Y 좌표 정보
         result.setMinY(0);
-        result.setMaxY(100);
+        result.setMaxY(110);
         result.setIntervalY(yValue);
 
         // X 좌표 정보
@@ -361,12 +361,18 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
         result.setChartType(1);                         // 라인그래프
 
         // Y 좌표 정보
-        float minY = (int)(dashboardInfo.stream().min(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue() - 2);
-        float maxY = (int)(dashboardInfo.stream().max(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue() + 2);
+        float minY = (dashboardInfo.stream().min(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue());
+        float maxY = (dashboardInfo.stream().max(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue());
+
+        maxY += minY > 1000 ? minY * 0.05 : minY > 100 ? minY * 0.1 : 2;
+        minY -= minY > 1000 ? minY * 0.05 : minY > 100 ? minY * 0.1 : 2;
 
         if (((int)(minY)) <= 0){
             minY = 0;
         }
+
+        maxY = (int)maxY;
+        minY = (int)minY;
 
         result.setMinY(minY);
         result.setMaxY(maxY);
