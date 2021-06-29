@@ -45,7 +45,7 @@ import static kr.co.cntt.api.exporter.Api.Path;
 
 @Slf4j
 @RestController
-@RequestMapping(Path)
+@RequestMapping({Path, "/API/v1"})
 public class ApiExporter extends ExporterSupportor implements Api {
 
     /**
@@ -96,7 +96,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
     //@GetMapping(value = GET_TOKEN)
     @RequestMapping(value = GET_TOKEN)
     public ResponseEntity<?> createAuthenticate(HttpServletRequest request, @RequestParam String level, @RequestParam String loginId, @RequestParam String loginPw, Device device) throws Exception {
-//        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
+        //        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
         Map<String, Object> response = new HashMap<String, Object>();
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
@@ -296,6 +296,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
 //    @PostMapping(value = {"/{service}", "/admin/{service}"})
     @PostMapping(value = "/{service}")
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
+        log.debug("execute => " + request.getRequestURI() + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
+
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
         } catch (Exception e) {
@@ -310,8 +312,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Map<String, Object> min = new HashMap<String, Object>();
         Map<String, Object> recommand = new HashMap<String, Object>();
 
-        String userAgent = request.getHeader("user-agent");
-        String[] os = {"android", "ios", "macintosh", "windows"};
+        //String userAgent = request.getHeader("user-agent");
+        String userAgent = request.getHeader("platform");
+        String[] os = {"android", "ios"};
 
         String device = null;
         for (int i = 0; i < os.length; i++) {

@@ -405,7 +405,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                 ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
 
                 iosMap.addAll(tokens.stream().filter(x -> {
-                    if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                    if (x.getOrDefault("appType", "").toString().equals("1") && !(x.getOrDefault("platform", "").toString().equals("android"))){
                         return true;
                     }
 
@@ -626,7 +626,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                     ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
 
                     iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                        if (x.getOrDefault("appType", "").toString().equals("1") && !(x.getOrDefault("platform", "").toString().equals("android"))){
                             return true;
                         }
 
@@ -728,7 +728,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                         ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
 
                         iosMap.addAll(tokens.stream().filter(x -> {
-                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            if (x.getOrDefault("appType", "").toString().equals("1") && !(x.getOrDefault("platform", "").toString().equals("android"))){
                                 return true;
                             }
 
@@ -895,7 +895,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                     ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
 
                     iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                        if (x.getOrDefault("appType", "").toString().equals("1") && !(x.getOrDefault("platform", "").toString().equals("android"))){
                             return true;
                         }
 
@@ -997,7 +997,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                         ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
 
                         iosMap.addAll(tokens.stream().filter(x -> {
-                            if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                            if (x.getOrDefault("appType", "").toString().equals("1") && !(x.getOrDefault("platform", "").toString().equals("android"))){
                                 return true;
                             }
 
@@ -1175,7 +1175,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                     ArrayList<Map> oldMap = new ArrayList<>();      // 구버전 (단, iOS 버전 없음)
 
                     iosMap.addAll(tokens.stream().filter(x -> {
-                        if (x.getOrDefault("appType", "").toString().equals("1") && x.getOrDefault("platform", "").toString().equals("")){
+                        if (x.getOrDefault("appType", "").toString().equals("1") && !(x.getOrDefault("platform", "").toString().equals("android"))){
                             return true;
                         }
 
