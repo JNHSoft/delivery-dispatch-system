@@ -652,7 +652,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
             order.setRole("ROLE_STORE");
         } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
-            order.setRole("ROLE_RIDER");
+            //order.setRole("ROLE_RIDER");
+            throw new AppTrException(getMessage(ErrorCodeEnum.S0003), ErrorCodeEnum.S0003.name());
         }
 
         char[] statusArray = null;
