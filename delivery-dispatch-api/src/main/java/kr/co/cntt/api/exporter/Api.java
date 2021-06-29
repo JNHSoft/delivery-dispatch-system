@@ -3,7 +3,7 @@ package kr.co.cntt.api.exporter;
 public interface Api {
     // APP -> CNT APP API
     /** base uri */
-    String Path = "/API/v1";
+    String Path = "/API";
 
     /** 토큰발행 */
     String GET_TOKEN = "/getToken.do";

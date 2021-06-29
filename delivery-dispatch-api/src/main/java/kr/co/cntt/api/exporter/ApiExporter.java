@@ -45,7 +45,7 @@ import static kr.co.cntt.api.exporter.Api.Path;
 
 @Slf4j
 @RestController
-@RequestMapping({Path, "/API"})
+@RequestMapping({Path, "/API/v1"})
 public class ApiExporter extends ExporterSupportor implements Api {
 
     /**
@@ -96,11 +96,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
     //@GetMapping(value = GET_TOKEN)
     @RequestMapping(value = GET_TOKEN)
     public ResponseEntity<?> createAuthenticate(HttpServletRequest request, @RequestParam String level, @RequestParam String loginId, @RequestParam String loginPw, Device device) throws Exception {
-        if (!(request.getRequestURI().contains(Path))){
-            log.debug("이전 API로 호출이 되었습니다. => " + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
-            return responseError(null, new AppTrException(getMessage(ErrorCodeEnum.S0003), ErrorCodeEnum.S0003.name()));
-        }
-
         //        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
         Map<String, Object> response = new HashMap<String, Object>();
         Map<String, Object> result = new HashMap<String, Object>();
@@ -241,11 +236,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
      * */
     @RequestMapping(value = SIGN_UP_DEFAULT_INFO)
     public ResponseEntity<?> getSignUpDefaultInfo(HttpServletRequest request) throws Exception{
-        if (!(request.getRequestURI().contains(Path))){
-            log.debug("이전 API로 호출이 되었습니다. => " + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
-            return responseError(null, new AppTrException(getMessage(ErrorCodeEnum.S0003), ErrorCodeEnum.S0003.name()));
-        }
-
         CommonBody<Map<String, List<Store>>> response = new CommonBody<>(CODE_SUCCESS);
 
         Map<String, List<Store>> data = new HashMap<>();
@@ -307,7 +297,8 @@ public class ApiExporter extends ExporterSupportor implements Api {
     @PostMapping(value = "/{service}")
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
         System.out.println("execute => " + request.getRequestURI());
-        if (!(request.getRequestURI().contains(Path))){
+
+        if ((service.equals("getCheckRiderApproval")) && !request.getRequestURI().contains("/API/v1")){
             log.debug("이전 API로 호출이 되었습니다. => " + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
             return responseError(null, new AppTrException(getMessage(ErrorCodeEnum.S0003), ErrorCodeEnum.S0003.name()));
         }
@@ -322,11 +313,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
     @GetMapping(value = VERSION_CHECK)
     public ResponseEntity<?> versionCheck(HttpServletRequest request) throws Exception {
-        if (!(request.getRequestURI().contains(Path))){
-            log.debug("이전 API로 호출이 되었습니다. => " + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
-            return responseError(null, new AppTrException(getMessage(ErrorCodeEnum.S0003), ErrorCodeEnum.S0003.name()));
-        }
-
         Map<String, Object> response = new HashMap<String, Object>();
         Map<String, Object> min = new HashMap<String, Object>();
         Map<String, Object> recommand = new HashMap<String, Object>();
@@ -376,11 +362,6 @@ public class ApiExporter extends ExporterSupportor implements Api {
 
     @GetMapping(value = TRACKER_GET)
     public ResponseEntity<?> getTracker(HttpServletRequest request, @RequestParam String encParam) throws AppTrException {
-        if (!(request.getRequestURI().contains(Path))){
-            log.debug("이전 API로 호출이 되었습니다. => " + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
-            return responseError(null, new AppTrException(getMessage(ErrorCodeEnum.S0003), ErrorCodeEnum.S0003.name()));
-        }
-
         Map<String, Object> response = new HashMap<String, Object>();
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
