@@ -317,8 +317,9 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Map<String, Object> min = new HashMap<String, Object>();
         Map<String, Object> recommand = new HashMap<String, Object>();
 
-        String userAgent = request.getHeader("user-agent");
-        String[] os = {"android", "ios", "macintosh", "windows"};
+        //String userAgent = request.getHeader("user-agent");
+        String userAgent = request.getHeader("platform");
+        String[] os = {"android", "ios"};
 
         String device = null;
         for (int i = 0; i < os.length; i++) {
