@@ -14,7 +14,6 @@
 
 	<link rel="stylesheet" th:href="@{/resources/css/common.css}" />
 	<link rel="stylesheet" th:href="@{/resources/css/contents.css}" />
-	<link rel="stylesheet" th:href="@{/resources/css/dashboard.css}"/>
 
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-3.3.1.min.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-migrate-3.0.1.min.js}"></script>
@@ -23,12 +22,9 @@
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.number.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery.fileDownload.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/js/lib/socket.io.js}"></script>
-	<!--<script type="text/javascript" th:src="@{https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js}"></script>-->
+
 	<!-- 20.12.24 DateTime Picker -->
 	<script type="text/javascript" th:src="@{/resources/js/lib/jquery-ui-timepicker-addon.js}"></script>
-	<!-- 21.06.15 대쉬보드 관련 스크립트 -->
-	<script type="text/javascript" th:src="@{/resources/js/lib/chart/chart.min.js}"></script>
-	<script type="text/javascript" th:src="@{/resources/js/lib/chart/chartjs-plugin-datalabels.min.js}"></script>
 
 	<!--[if lt IE 9]>
 		<script src="/resources/js/lib/html5shiv-3.7.3.js"></script>
@@ -44,6 +40,7 @@
 	<script type="text/javascript" th:src="@{/resources/js/common/common.js}"></script>
 	
 	<!-- 사용자 스크립트 영역 -->
+	<th:block layout:fragment="css1"></th:block>
 	<th:block layout:fragment="script"></th:block>
 	<th:block layout:fragment="script2"></th:block>
 	<th:block layout:fragment="script3"></th:block>
