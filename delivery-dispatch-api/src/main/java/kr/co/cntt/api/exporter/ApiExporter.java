@@ -318,7 +318,18 @@ public class ApiExporter extends ExporterSupportor implements Api {
         Map<String, Object> recommand = new HashMap<String, Object>();
 
         //String userAgent = request.getHeader("user-agent");
-        String userAgent = request.getHeader("platform");
+        String userAgent = "";
+        try{
+            userAgent = request.getHeader("platform");
+        }catch (Exception e){
+            userAgent = "android";
+            e.printStackTrace();
+        }
+
+        if (userAgent == null){
+            userAgent = "android";
+        }
+
         String[] os = {"android", "ios"};
 
         String device = null;
@@ -362,7 +373,7 @@ public class ApiExporter extends ExporterSupportor implements Api {
     }
 
     @GetMapping(value = TRACKER_GET)
-    public ResponseEntity<?> getTracker(HttpServletRequest request, @RequestParam String encParam) throws AppTrException {
+    public ResponseEntity<?> getTracker(@RequestParam String encParam) throws AppTrException {
         Map<String, Object> response = new HashMap<String, Object>();
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> data = new HashMap<String, Object>();
