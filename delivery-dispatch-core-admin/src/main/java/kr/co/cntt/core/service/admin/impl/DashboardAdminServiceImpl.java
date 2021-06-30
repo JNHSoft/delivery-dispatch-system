@@ -342,8 +342,8 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
 
         // Y 좌표 정보
         result.setMinY(0);
-        result.setMaxY(110);
-        result.setIntervalY(yValue);
+        result.setMaxY(100);
+        result.setIntervalY(11);
 
         // X 좌표 정보
         result.setMinX(dashboardInfo.stream().min((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());
@@ -361,23 +361,27 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
         result.setChartType(1);                         // 라인그래프
 
         // Y 좌표 정보
-        float minY = (dashboardInfo.stream().min(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue());
+        float minY = 0;
         float maxY = (dashboardInfo.stream().max(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue());
 
-        maxY += minY > 1000 ? minY * 0.05 : minY > 100 ? minY * 0.1 : 2;
-        minY -= minY > 1000 ? minY * 0.05 : minY > 100 ? minY * 0.1 : 2;
-
-        if (((int)(minY)) <= 0){
-            minY = 0;
-        }
-
         maxY = (int)maxY;
-        minY = (int)minY;
+
+        double dLen = String.valueOf((int)maxY).length();
+        double dTen = Math.pow(10, (dLen - 1));
+        double dPV = Math.floorDiv((int)maxY, (int)dTen);
+
+
+        System.out.println("### => maxY => " + maxY);
+        System.out.println("### => dlen => " + dLen);
+        System.out.println("### => dTen => " + dTen);
+        System.out.println("### => dPV => " + dPV);
+
+        maxY = (float)((dPV + 2) * dTen);
 
         result.setMinY(minY);
         result.setMaxY(maxY);
-        //result.setIntervalY(Math.floorMod((int)(maxY), 10) + 1);
-        result.setIntervalY(5);
+        result.setIntervalY((float) (dPV + 3));
+
 
         // X 좌표 정보
         result.setMinX(dashboardInfo.stream().min((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());
