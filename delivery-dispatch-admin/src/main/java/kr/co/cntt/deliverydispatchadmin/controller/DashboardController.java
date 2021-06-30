@@ -324,6 +324,7 @@ public class DashboardController {
 
         ModelAndView modelAndView = new ModelAndView("DashBoardDetailExcelBuilderServiceImpl");
         modelAndView.addObject("getDashboardDetailInfo", storeRank);
+        modelAndView.addObject("typeName", type);
 
         return modelAndView;
     }
