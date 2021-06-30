@@ -1,9 +1,9 @@
 package kr.co.cntt.core.service.admin;
 
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.RankInfo;
-import kr.co.cntt.core.model.dashboard.SearchInfo;
 
 import java.util.List;
 

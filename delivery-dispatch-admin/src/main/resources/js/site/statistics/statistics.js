@@ -166,7 +166,7 @@ function getGroupList() {
                 statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
-                $("#statisticsGroupList").off().on("change", function () {
+                $("#statisticsGroupList").on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
                 });
             }
@@ -177,7 +177,7 @@ function getGroupList() {
 /**
  * 서브 그룹 List 불러오기
  */
-function getStatisticsSubGroupList(gId, subGroup) {
+function getStatisticsSubGroupList(gId) {
     var selectGroupId = null;
 
     if (gId == null) {
@@ -185,6 +185,8 @@ function getStatisticsSubGroupList(gId, subGroup) {
     } else {
         selectGroupId = gId
     }
+
+    console.log(gId);
 
     $.ajax({
         url : "/getStatisticsSubGroupList",
@@ -203,7 +205,7 @@ function getStatisticsSubGroupList(gId, subGroup) {
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
-                $("#statisticsSubGroupList").off().on("change", function () {
+                $("#statisticsSubGroupList").on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
                 });
 
@@ -233,11 +235,11 @@ function getStatisticsStoreList(subId, gId) {
             if(data) {
                 var statisticsStoreListHtml = "<option value='reset'>" + list_search_all_store + "</option>";
                 for (var i in data){
-                    statisticsStoreListHtml += "<option value='" + data[i].id  + "'>" + data[i].storeName + "</option>";
+                    statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
 
-                $("#statisticsStoreList").off().on("change", function () {
+                $("#statisticsStoreList").on("change", function () {
                     getStatisticsList();
                 });
 
@@ -282,17 +284,6 @@ function minusTime(time1, time2) {
     var minusTime = d2.getTime()-d1.getTime();
     return minusTime;
 }
-
-
-// function minusTime(time1, time2) {
-//     time1 += " 00:00:00";
-//     time2 += " 00:00:00";
-//     var d1 = new Date(time1);
-//     var d2 = new Date(time2);
-//     var minusTime = d2.getTime()-d1.getTime();
-//     return minusTime;
-// }
-
 
 /**
  * 날짜 계산 
@@ -349,7 +340,6 @@ function getStatisticsList() {
         },
         dataType: 'json',
         success: function (data) {
-            console.log("getStatisticsList");
             var i = 1;
             for (var key in data) {
                 var $tmpData = new Object();
@@ -390,7 +380,6 @@ function getStatisticsList() {
                         $tmpData.origin_reg_order_id = data[key].regOrderId;
                         $tmpData.th6 = timeSet(data[key].createdDatetime);
                         $tmpData.th7 = data[key].address
-                        // $tmpData.th8 = data[key].menuName
                         $tmpData.th9 = data[key].cookingTime
 
                         if (data[key].paid != null) {
@@ -475,7 +464,6 @@ function getStatisticsList() {
                     {label: order_status, name: 'th4', width: 80, align: 'center'},
                     {label: order_created, name: 'th6', width: 80, align: 'center'},
                     {label: order_address, name: 'th7', width: 200},
-                    /*{label: order_summary, name: 'th8', width: 80},*/
                     {label: order_cooking, name: 'th9', width: 80, align: 'center'},
                     {label: order_payment, name: 'th10', width: 80, align: 'center'},
                     {label: order_assigned, name: 'th11', width: 80, align: 'center'},
@@ -608,8 +596,12 @@ function excelDownload(){
     $.fileDownload("/excelDownload",{
         httpMethod:"GET",
         data : {
-            startDate : startDate,
-            endDate : endDate
+            sDate : startDate,
+            eDate : endDate,
+            groupId : $('#statisticsGroupList option:selected').val(),
+            subgroupId : $('#statisticsSubGroupList option:selected').val(),
+            storeId : $('#statisticsStoreList option:selected').val(),
+            orderStatus : $('#selectStatus option:selected').val(),
         },
         successCallback: function(url){
             loading.hide();

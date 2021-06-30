@@ -1,6 +1,7 @@
 package kr.co.cntt.core.service.admin.impl;
 
 import kr.co.cntt.core.mapper.RiderMapper;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.AdminByDate;
 import kr.co.cntt.core.model.statistic.Interval;
@@ -112,15 +113,15 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
      * 1페이지 통계
      * */
     private DataSource getStatisticsByOrderList(String token, String brandCode){
-        Order order = new Order();
+        SearchInfo searchInfo = new SearchInfo();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        order.setCurrentDatetime(formatter.format(new Date()));
-        order.setDays("1");
+        searchInfo.setCurrentDatetime(formatter.format(new Date()));
+        searchInfo.setDays("1");
 
-        order.setToken(token);
+        searchInfo.setToken(token);
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
-        List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(order);
+        List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(searchInfo);
         orderListStatisctics.setOrderStatisticsByAdminExcel(wb, orderStatisticsByAdminList, brandCode);
 
         return getDataSourceForExcel(wb);

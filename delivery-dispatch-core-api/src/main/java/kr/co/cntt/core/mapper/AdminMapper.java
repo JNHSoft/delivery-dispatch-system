@@ -4,6 +4,7 @@ import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupRiderRel;
@@ -376,11 +377,11 @@ public interface AdminMapper {
 
     /**
      * 통계 목록 Excel admin 에서 쓰기위해서 mapper 만추가했음 api는 등록하지않음
-     * @param order
+     * @param searchInfo
      * @return
      */
     @Transactional(readOnly=true)
-    public List<Order> selectAdminStatisticsExcel(Order order);
+    public List<Order> selectAdminStatisticsExcel(SearchInfo searchInfo);
 
 
     /**

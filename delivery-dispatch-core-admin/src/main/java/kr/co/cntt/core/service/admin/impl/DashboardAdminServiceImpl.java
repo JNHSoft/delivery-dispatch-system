@@ -1,20 +1,16 @@
 package kr.co.cntt.core.service.admin.impl;
 
 import kr.co.cntt.core.mapper.DashboardMapper;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.RankInfo;
-import kr.co.cntt.core.model.dashboard.SearchInfo;
 import kr.co.cntt.core.service.admin.DashboardAdminService;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j

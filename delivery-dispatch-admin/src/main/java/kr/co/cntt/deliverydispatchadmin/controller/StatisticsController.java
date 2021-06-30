@@ -1,19 +1,14 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
-import com.google.gson.Gson;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.admin.Admin;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
-import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
-import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.statistic.AdminByDate;
-import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
-import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
-import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.GroupAdminService;
 import kr.co.cntt.core.service.admin.NoticeAdminService;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
@@ -25,13 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.terracotta.statistics.Statistic;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -264,23 +255,19 @@ public class StatisticsController {
 //    @ResponseBody
     @GetMapping("/excelDownload")
     public ModelAndView statisticsExcelDownload(HttpServletResponse response,
-                                                @RequestParam(value = "startDate", required = false, defaultValue = "") String startDate,
-                                                @RequestParam(value = "endDate", required = false, defaultValue = "") String endDate
-
+                                                SearchInfo searchInfo
     ) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
-        Order order = new Order();
-
-        order.setCurrentDatetime(startDate);
+        System.out.println("SearchInfo => " + searchInfo);
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
@@ -289,18 +276,18 @@ public class StatisticsController {
                 return  null;
             }
 
-            order.setDays(Integer.toString((int) (long) diffDays + 1));
+            searchInfo.setDays(Integer.toString((int) (long) diffDays + 1));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
 
 
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminExcelBuilderServiceImpl");
 
         // List 불러오기                                               Nick
-        List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(order);
+        List<Order> orderStatisticsByAdminList = statisticsAdminService.selectAdminStatisticsExcel(searchInfo);
 
         modelAndView.addObject("selectAdminStatisticsExcel", orderStatisticsByAdminList);
         modelAndView.addObject("brandCode", adminInfo.getAdminBrandCode());

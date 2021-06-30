@@ -2,10 +2,10 @@ package kr.co.cntt.deliverydispatchadmin.controller;
 
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.RankInfo;
-import kr.co.cntt.core.model.dashboard.SearchInfo;
 import kr.co.cntt.core.service.admin.DashboardAdminService;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;

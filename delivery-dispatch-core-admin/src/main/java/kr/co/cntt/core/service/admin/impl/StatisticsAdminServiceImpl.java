@@ -4,6 +4,7 @@ import kr.co.cntt.core.mapper.AdminMapper;
 import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
@@ -89,8 +90,8 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
     // 통계 리스트 Excel
     @Override
-    public List<Order> selectAdminStatisticsExcel(Order order) {
-        List<Order> statisticsList =  adminMapper.selectAdminStatisticsExcel(order);
+    public List<Order> selectAdminStatisticsExcel(SearchInfo searchInfo) {
+        List<Order> statisticsList =  adminMapper.selectAdminStatisticsExcel(searchInfo);
 
         return statisticsList;
     }

@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.admin;
 
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
@@ -61,10 +62,10 @@ public interface StatisticsAdminService {
 
     /**
      * 통계 목록 Excel
-     * @param order
+     * @param searchInfo
      * @return
      */
-    public List<Order> selectAdminStatisticsExcel(Order order);
+    public List<Order> selectAdminStatisticsExcel(SearchInfo searchInfo);
 
 
     /**
