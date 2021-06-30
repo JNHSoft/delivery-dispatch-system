@@ -102,9 +102,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         log.debug(">>> autoAssign_GetOrderList:::: orderList: " + orderList);
 
         for (Order order : orderList) {
-            Map<String, Object> map = new HashMap<>();
+            Map map = new HashMap();
             map.put("order", order);
-            Map<String, String> denyOrderIdChkMap = new HashMap<>();
+            Map denyOrderIdChkMap = new HashMap();
             denyOrderIdChkMap.put("orderId", order.getId());
             denyOrderIdChkMap.put("storeId", order.getStore().getId());
             // 추가되어 있는 인덱스를 활용하여 조회 속도 업
@@ -308,7 +308,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }
     }
 
-    public int autoAssignOrderProc(Map<String, Object> map) throws AppTrException {
+    public int autoAssignOrderProc(Map map) throws AppTrException {
         if (map.get("rider") == null) {
             log.debug(">>> autoAssignOrderProc_GetRiderList:::: riderListMap: " + map.get("rider"));
             return -1;
