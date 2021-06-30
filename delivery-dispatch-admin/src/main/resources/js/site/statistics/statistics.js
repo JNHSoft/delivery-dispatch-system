@@ -23,14 +23,12 @@ $(function () {
         }
     });
 
-    $(".select").change(function () {
-        selectId = $(this);
-        selectIdOption = $('option:selected',this);
+    $("#searchButton").click(function () {
         getStatisticsList();
         searchList(selectId, selectIdOption);
     });
 
-    $("#searchButton").click(function () {
+    $("#selectStatus").off().on('change', function (){
         getStatisticsList();
         searchList(selectId, selectIdOption);
     });
@@ -166,8 +164,11 @@ function getGroupList() {
                 statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
-                $("#statisticsGroupList").on("change", function () {
+                $("#statisticsGroupList").off().on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList(selectId, selectIdOption);
                 });
             }
         }
@@ -205,8 +206,11 @@ function getStatisticsSubGroupList(gId) {
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
-                $("#statisticsSubGroupList").on("change", function () {
+                $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList(selectId, selectIdOption);
                 });
 
             }
@@ -239,8 +243,10 @@ function getStatisticsStoreList(subId, gId) {
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
 
-                $("#statisticsStoreList").on("change", function () {
-                    getStatisticsList();
+                $("#statisticsStoreList").off().on("change", function () {
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList(selectId, selectIdOption);
                 });
 
             }
@@ -578,8 +584,6 @@ function getStatisticsInfo(orderId) {
 
     });
 }
-
-
 
 function excelDownload(){
     let startDate = $('#startDate').val();
