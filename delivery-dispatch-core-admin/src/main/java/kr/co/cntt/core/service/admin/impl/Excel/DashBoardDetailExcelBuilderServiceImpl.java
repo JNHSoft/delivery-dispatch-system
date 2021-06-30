@@ -31,7 +31,8 @@ public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
 
             // 필요한 리스트 controller 에서 던져주는 List 					 		Nick
             List<RankInfo> dashboardDetailInfo = (List<RankInfo>) model.get("getDashboardDetailInfo");
-            setDashBoardDetailforExcel(workbook, dashboardDetailInfo);
+            String headerName = (String) model.get("typeName");
+            setDashBoardDetailforExcel(workbook, dashboardDetailInfo, headerName);
             // 파일 이름은 이렇게 한다. 											Nick
             fileName += " Date_Analysis_Report.xlsx";
 
@@ -49,7 +50,7 @@ public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
         workbook.dispose();
     }
 
-    public void setDashBoardDetailforExcel(SXSSFWorkbook wb, List<RankInfo> dashboardList) {
+    public void setDashBoardDetailforExcel(SXSSFWorkbook wb, List<RankInfo> dashboardList, String headerName) {
         int rowNum = 0;
         int colNum = 0;
 
@@ -79,7 +80,7 @@ public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
             sheet.setColumnWidth(colNum, 17 * 256);
             addTitle = titleRow.createCell(colNum++);
             //addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.average.time",null, locale));
-            addTitle.setCellValue("TC");
+            addTitle.setCellValue(headerName);
             addTitle.setCellStyle(titleCellStyle);
 
             if (dashboardList.get(0).getAchievementRate() != null){
