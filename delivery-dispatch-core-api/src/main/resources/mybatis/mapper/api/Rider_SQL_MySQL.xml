@@ -1287,7 +1287,6 @@
 				,REQ.req_status
 				,REQ.latitude
 				,REQ.longitude
-				-- ,IFNULL(RS.expiry_datetime, REQ.exp_datetime)	as expiry_datetime
 				,case when REQ.req_status in ('1', '5') and date_format(date_add(REQ.accept_datetime, interval 1 year), '%Y-%m-%d') = date_format(IFNULL(RS.expiry_datetime, REQ.exp_datetime), '%Y-%m-%d')  then null else IFNULL(RS.expiry_datetime, REQ.exp_datetime) end	as expiry_datetime
 				,IFNULL(R.id, REQ.rider_id)						as rider_id
 				,REQ.accept_datetime
