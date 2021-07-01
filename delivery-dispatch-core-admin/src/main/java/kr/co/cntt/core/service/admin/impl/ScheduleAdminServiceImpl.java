@@ -132,15 +132,15 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
     * 2페이지 통계 추출 (Pzh)
     * */
     private DataSource getStatisticsByOrder() {
-        Order order  = new Order();
+        SearchInfo searchInfo = new SearchInfo();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        order.setCurrentDatetime(formatter.format(new Date()));
-        order.setDays("1");
+        searchInfo.setCurrentDatetime(formatter.format(new Date()));
+        searchInfo.setDays("1");
 
-        order.setToken(pAdmin);
+        searchInfo.setToken(pAdmin);
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
-        List<Order> orderList = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+        List<Order> orderList = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
         orderStatisctics.setOrderStatisticsByOrderExcel(wb, orderList);
 
         return getDataSourceForExcel(wb);
@@ -150,15 +150,15 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
      * 3페이지 통계 추출 (Pzh)
      * */
     private DataSource getStatisticsByDate() {
-        Order order  = new Order();
+        SearchInfo searchInfo = new SearchInfo();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        order.setCurrentDatetime(formatter.format(new Date()));
-        order.setDays("1");
+        searchInfo.setCurrentDatetime(formatter.format(new Date()));
+        searchInfo.setDays("1");
 
-        order.setToken(pAdmin);
+        searchInfo.setToken(pAdmin);
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
-        List<AdminByDate> dateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+        List<AdminByDate> dateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(searchInfo);
         dateStatisctics.setStoreStatisticsByDateExcel(wb, dateList);
 
         return getDataSourceForExcel(wb);
@@ -201,15 +201,15 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
      * 2페이지 통계 추출 (KFC)
      * */
     private DataSource getStatisticsByOrderAtKFC() {
-        Order order  = new Order();
+        SearchInfo searchInfo = new SearchInfo();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        order.setCurrentDatetime(formatter.format(new Date()));
-        order.setDays("1");
+        searchInfo.setCurrentDatetime(formatter.format(new Date()));
+        searchInfo.setDays("1");
 
-        order.setToken(kAdmin);
+        searchInfo.setToken(kAdmin);
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
-        List<Order> orderList = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+        List<Order> orderList = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
 
         List<Order> filterOrderList =
                 orderList.stream().filter(a -> {
@@ -259,15 +259,15 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
      * 3페이지 통계 추출 (KFC)
      * */
     private DataSource getStatisticsByDateAtKFC() {
-        Order order  = new Order();
+        SearchInfo searchInfo = new SearchInfo();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        order.setCurrentDatetime(formatter.format(new Date()));
-        order.setDays("1");
+        searchInfo.setCurrentDatetime(formatter.format(new Date()));
+        searchInfo.setDays("1");
 
-        order.setToken(kAdmin);
+        searchInfo.setToken(kAdmin);
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
-        List<AdminByDate> dateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+        List<AdminByDate> dateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(searchInfo);
         dateStatiscticsAtKFC.setStoreStatisticsByDateExcel(wb, dateList);
 
         return getDataSourceForExcel(wb);

@@ -324,22 +324,16 @@ public class StatisticsController {
     @ResponseBody
     @GetMapping("/getStoreStatisticsByOrder")
     @CnttMethodDescription("관리자 주문별 통계 리스트 조회")
-    public List<Order> getStoreStatisticsByOrder(@RequestParam(value = "startDate") String startDate
-                                                ,@RequestParam(value = "endDate") String endDate
-                                                ,@RequestParam(value = "groupID", required = false) String groupId
-                                                //,@RequestParam(value = "subGroupID", required = false) String subGroupId
-                                                ,@RequestParam(value = "subGroupName", required = false) String subGroupName
-                                                ,@RequestParam(value = "storeID", required = false) String storeId) {
+    public List<Order> getStoreStatisticsByOrder(SearchInfo searchInfo) {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
+        searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
 
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
@@ -348,31 +342,15 @@ public class StatisticsController {
                 return new ArrayList<>();
             }
 
-            order.setDays((Integer.toString(((int) (long) diffDays + 1))));
+            searchInfo.setDays((Integer.toString(((int) (long) diffDays + 1))));
 
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
 
-        // 2020-08-24 검색조건
-        if (groupId.trim() != "" && !groupId.toLowerCase().equals("reset")){
-            order.setGroup(new Group());
-            order.getGroup().setId(groupId);
-        }
-        
-        // 21-01-21 서브그룹 그룹화
-        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
-            order.setSubGroup(new SubGroup());
-            order.getSubGroup().setGroupingName(subGroupName);
-        }
-
-        if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
-            order.setStoreId(storeId);
-        }
-        
-        List<Order> statistByOrder = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+        List<Order> statistByOrder = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
 
         return statistByOrder.stream().filter(a -> {
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null) {
@@ -416,20 +394,18 @@ public class StatisticsController {
     @GetMapping("/excelDownloadByOrder")
     @CnttMethodDescription("관리자 주문별 통계 리스트 엑셀 출력")
     public ModelAndView statisticsByOrderExcelDownload(HttpServletResponse response
-                                                      ,@RequestParam(value = "startDate") String startDate
-                                                      ,@RequestParam(value = "endDate") String endDate){
+                                                      ,SearchInfo searchInfo){
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
+        searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
@@ -437,15 +413,15 @@ public class StatisticsController {
                 return null;
             }
 
-            order.setDays(Integer.toString((int)(long) diffDays + 1));
+            searchInfo.setDays(Integer.toString((int)(long) diffDays + 1));
 
         }catch (ParseException e){
             e.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminOrderBuilderServiceImpl");
-        List<Order> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+        List<Order> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
         modelAndView.addObject("selectStoreStatisticsByOrderForAdmin", storeOrderListByAdmin);
 
         return modelAndView;
@@ -459,13 +435,12 @@ public class StatisticsController {
      * 기간별 통계 페이지
      * */
     @GetMapping("/statisticsByDate")
-    public String statisticsByDate(Order order, @RequestParam(required = false) String frag, Model model){
+    public String statisticsByDate(@RequestParam(required = false) String frag, Model model){
         log.info("adminstatisticsByDate");
 
         String viewPath = "/statistics";
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        order.setToken(adminInfo.getAdminAccessToken());
 
         if (adminInfo.getAdminBrandCode().trim().equals("1")){
             viewPath = viewPath.concat("/dateStatement_tw_kfc");
@@ -475,28 +450,22 @@ public class StatisticsController {
 
         model.addAttribute("regionLocale", regionLocale);
 
-
         return viewPath;
     }
 
     @ResponseBody
     @GetMapping("/getStoreStatisticsByDate")
     @CnttMethodDescription("날짜별 통계 리스트 조회")
-    public List<AdminByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
-                                                ,@RequestParam("endDate") String endDate
-                                                ,@RequestParam(value = "groupID", required = false) String groupId
-                                                ,@RequestParam(value = "subGroupName", required = false) String subGroupName
-                                                ,@RequestParam(value = "storeID", required = false) String storeId){
+    public List<AdminByDate> getStoreStatisticsByDate(SearchInfo searchInfo){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
+        searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
 
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24* 60 * 60 * 1000);
@@ -505,30 +474,14 @@ public class StatisticsController {
                 return new ArrayList<>();
             }
 
-            order.setDays(Integer.toString((int) (long) diffDays + 1));
+            searchInfo.setDays(Integer.toString((int) (long) diffDays + 1));
         }catch (ParseException e){
             e.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
 
-        // 2020-08-24 검색조건
-        if (groupId.trim() != "" && !groupId.toLowerCase().equals("reset")){
-            order.setGroup(new Group());
-            order.getGroup().setId(groupId);
-        }
-
-        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
-            order.setSubGroup(new SubGroup());
-            order.getSubGroup().setGroupingName(subGroupName);
-        }
-
-        if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
-            order.setStoreId(storeId);
-        }
-
-
-        List<AdminByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+        List<AdminByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(searchInfo);
 
         return byDateList;
     }
@@ -536,20 +489,18 @@ public class StatisticsController {
     @GetMapping("/excelDownloadByDate")
     @CnttMethodDescription("관리자 기간별 통계 리스트 엑셀 출력")
     public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response,
-                                                      @RequestParam(value = "startDate") String startDate,
-                                                      @RequestParam(value = "endDate") String endDate){
+                                                      SearchInfo searchInfo){
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
+        searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
@@ -557,15 +508,15 @@ public class StatisticsController {
                 return null;
             }
 
-            order.setDays(Integer.toString((int)(long) diffDays + 1));
+            searchInfo.setDays(Integer.toString((int)(long) diffDays + 1));
 
         }catch (ParseException e){
             e.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminByDateBuilderServiceImpl");
-        List<AdminByDate> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByDateForAdmin(order);
+        List<AdminByDate> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByDateForAdmin(searchInfo);
 
         modelAndView.addObject("selectStoreStatisticsByDateForAdmin", storeOrderListByAdmin);
 
@@ -581,22 +532,18 @@ public class StatisticsController {
      * 누적 완료 통계 페이지
      * */
     @GetMapping("/statisticsByInterval")
-    public String statisticsByInterval(Order order, @RequestParam(required = false) String frag, Model model){
+    public String statisticsByInterval(@RequestParam(required = false) String frag, Model model){
         log.info("adminstatisticsByDate");
 
         String viewPath = "/statistics";
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        order.setToken(adminInfo.getAdminAccessToken());
 
         if (adminInfo.getAdminBrandCode().trim().equals("1")){
             viewPath = viewPath.concat("/interval_tw_kfc");
         }else{
             viewPath = viewPath.concat("/interval");
         }
-
-//        model.addAttribute("regionLocale", regionLocale);
-
 
         return viewPath;
     }

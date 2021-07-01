@@ -1431,7 +1431,7 @@
 	///// 2020.04.24 Store 통계페이지의 관리자 형태로 변경
 	-->
 
-	<select id="selectStoreStatisticsByOrderForAdmin" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
+	<select id="selectStoreStatisticsByOrderForAdmin" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultMap="selectOrderResult">
 		SELECT	 ORD.admin_id
 				,ORD.store_id
 				,( SELECT store_name FROM TB_STORE WHERE id = ORD.store_id )	as	store_name
@@ -1464,13 +1464,13 @@
 		AND		 ORD.third_party_id IS NULL
 		AND		 ORD.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 		AND		 ORD.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
-		<if test="group != null and group.id != null and group.id != ''">
-			AND	 sbStore.group_id = #{group.id}
+		<if test="groupId != null and groupId != 'reset'">
+			AND	 sbStore.group_id = #{groupId}
 		</if>
-		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-			AND		 sbStore.subgroup_id in ( select id from TB_SUBGROUP where admin_id = sbStore.admin_id and group_id = sbStore.group_id and id = sbStore.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
+		<if test="subgroupId != null and subgroupId != 'reset'">
+			AND		 sbStore.subgroup_id in ( select id from TB_SUBGROUP where admin_id = sbStore.admin_id and group_id = sbStore.group_id and id = sbStore.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
 		</if>
-		<if test="storeId != null and storeId != ''">
+		<if test="storeId != null and storeId != 'reset'">
 			AND	 sbStore.store_id = #{storeId}
 		</if>
 	</select>
@@ -1478,7 +1478,7 @@
 	<!--
 	///// 2020.04.28 Store 일자별 통계페이지 관리자 버전
 	-->
-	<select id="selectStoreStatisticsByDateForAdmin" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
+	<select id="selectStoreStatisticsByDateForAdmin" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
 		<![CDATA[
 		select	 ( select store_name from TB_STORE where id = t.store_id )																							as store_name
 				,group_id
@@ -1551,20 +1551,20 @@
 					and		 a.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 			]]>
 					-- 검색 조건 추가
-					<if test="group != null and group.id != null and group.id != ''">
-						and	 b.group_id = #{group.id}
+					<if test="groupId != null and groupId != 'reset'">
+						and	 b.group_id = #{groupId}
 					</if>
-					<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-						and	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
+					<if test="subgroupId != null and subgroupId != 'reset'">
+						and	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
 					</if>
-					<if test="storeId != null and storeId != ''">
+					<if test="storeId != null and storeId != 'reset'">
 						and	 b.store_id = #{storeId}
 					</if>
 				)	t
 		group by store_id, group_id, subgroup_id
 	</select>
 
-	<select id="selectStoreStatisticsByDateForAdminAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
+	<select id="selectStoreStatisticsByDateForAdminAtTWKFC" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
 		<![CDATA[
 		select	 ( select store_name from TB_STORE where id = t.store_id )																					as store_name
 				,group_id
@@ -1664,13 +1664,13 @@
 					</choose>
 
 					-- 검색 조건 추가
-					<if test="group != null and group.id != null and group.id != ''">
-						AND	 b.group_id = #{group.id}
+					<if test="groupId != null and groupId != 'reset'">
+						AND	 b.group_id = #{groupId}
 					</if>
-					<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-						AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
+					<if test="subgroupId != null and subgroupId != 'reset'">
+						AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
 					</if>
-					<if test="storeId != null and storeId != ''">
+					<if test="storeId != null and storeId != 'reset'">
 						AND	 b.store_id = #{storeId}
 					</if>
 				)	t

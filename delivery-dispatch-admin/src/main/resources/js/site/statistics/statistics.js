@@ -36,6 +36,7 @@ $(function () {
 
 var selectId =$("#statisticsStoreList");
 var selectIdOption = $("#statisticsStoreList option:selected");
+
 function searchList(selectId, selectIdOption) {
     console.log("serchList");
 
@@ -169,6 +170,9 @@ function getGroupList() {
                     selectId = $(this);
                     selectIdOption = $('option:selected',this);
                     searchList(selectId, selectIdOption);
+                    if (selectIdOption.val() == "reset"){
+                        getStatisticsList();
+                    }
                 });
             }
         }
@@ -186,8 +190,6 @@ function getStatisticsSubGroupList(gId) {
     } else {
         selectGroupId = gId
     }
-
-    console.log(gId);
 
     $.ajax({
         url : "/getStatisticsSubGroupList",

@@ -103,8 +103,8 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     }
 
     // 주문별 통계 페이지
-    public List<Order> selectStoreStatisticsByOrderForAdmin(Order order){
-        List<Order> statistByOrder =  adminMapper.selectStoreStatisticsByOrderForAdmin(order);
+    public List<Order> selectStoreStatisticsByOrderForAdmin(SearchInfo searchInfo){
+        List<Order> statistByOrder =  adminMapper.selectStoreStatisticsByOrderForAdmin(searchInfo);
         if (statistByOrder.size() == 0) {
             return Collections.<Order>emptyList();
         }
@@ -113,8 +113,8 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     }
 
     // 매장 일자별 통계 페이지
-    public List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order){
-        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdmin(order);
+    public List<AdminByDate> selectStoreStatisticsByDateForAdmin(SearchInfo searchInfo){
+        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdmin(searchInfo);
 
         if (statistByDate.size() == 0){
             return Collections.<AdminByDate>emptyList();
@@ -124,8 +124,8 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     }
 
     // 매장 일자별 통계 페이지 TW KFC
-    public List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(Order order){
-        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdminAtTWKFC(order);
+    public List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(SearchInfo searchInfo){
+        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdminAtTWKFC(searchInfo);
 
         if (statistByDate.size() == 0){
             return Collections.<AdminByDate>emptyList();

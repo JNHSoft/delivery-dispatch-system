@@ -74,15 +74,15 @@ public interface StatisticsAdminService {
 
     /**
      * 주문별 통게페이지
-     * @param order
+     * @param searchInfo
      * @return
      * */
-    List<Order> selectStoreStatisticsByOrderForAdmin(Order order);
+    List<Order> selectStoreStatisticsByOrderForAdmin(SearchInfo searchInfo);
 
     /**
      * 매장 기간별 통계 페이지
      * */
-    List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order);
+    List<AdminByDate> selectStoreStatisticsByDateForAdmin(SearchInfo searchInfo);
 
     /**
      * 매장 누적 통계 페이지
@@ -101,7 +101,7 @@ public interface StatisticsAdminService {
     /**
      * 매장 기간별 통계 페이지 KFC
      * */
-    List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(Order order);
+    List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(SearchInfo searchInfo);
 
     /**
      * 매장 누적 통계 페이지 KFC

@@ -492,15 +492,15 @@ public interface AdminMapper {
      * 2020.04.24 통계 페이지 추가
      * */
     @Transactional(readOnly=true)
-    List<Order> selectStoreStatisticsByOrderForAdmin(Order order);
+    List<Order> selectStoreStatisticsByOrderForAdmin(SearchInfo searchInfo);
 
     /**
      * 2020.04.28 일자별 통계 페이지 추가
      * */
     @Transactional(readOnly=true)
-    List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order);
+    List<AdminByDate> selectStoreStatisticsByDateForAdmin(SearchInfo searchInfo);
     @Transactional(readOnly=true)
-    List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(Order order);
+    List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(SearchInfo searchInfo);
 
     /**
      * 누적 통계 페이지 추가 1

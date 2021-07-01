@@ -43,13 +43,6 @@ $(function () {
         }
     });
 
-    $(".select").change(function(){
-        selectId = $(this);
-        selectIdOption = $('option:selected', this);
-        searchList(selectId, selectIdOption);
-        getStoreStatisticsByDate();
-    });     //select box의 change 이벤트
-
     showTimePicker();
 });
 
@@ -153,15 +146,14 @@ function getStoreStatisticsByDate() {
         url: "/getStoreStatisticsByDateAtTWKFC",
         type: 'get',
         data: {
-            startDate: sDate,
-            endDate: eDate,
-            timeCheck: chkTime,
-            peakCheck: peakTime,
-            peakType: $('#sel_peak_time').val(),
-            groupID: $("#statisticsGroupList").val(),
-            //subGroupID: $("#statisticsSubGroupList").val(),
-            subGroupName: $("#statisticsSubGroupList").val(),
-            storeID: $("#statisticsStoreList").val(),
+            sDate : sDate,
+            eDate : eDate,
+            chkTime : chkTime,
+            peakTime : peakTime,
+            peakType : $('#sel_peak_time').val(),
+            groupId : $("#statisticsGroupList").val(),
+            subgroupId : $("#statisticsSubGroupList").val(),
+            storeId : $("#statisticsStoreList").val(),
         },
         dataType: 'json',
         success: function (data) {
@@ -616,11 +608,14 @@ function excelDownloadByDate(){
     $.fileDownload("/excelDownloadByDateAtTWKFC",{
         httpMethod:"GET",
         data : {
-            startDate : startDate,
-            endDate : endDate,
-            timeCheck: chkTime,
-            peakCheck: peakTime,
-            peakType: $('#sel_peak_time').val()
+            sDate : startDate,
+            eDate : endDate,
+            chkTime : chkTime,
+            peakTime : peakTime,
+            peakType : $('#sel_peak_time').val(),
+            groupId : $("#statisticsGroupList").val(),
+            subgroupId : $("#statisticsSubGroupList").val(),
+            storeId : $("#statisticsStoreList").val(),
         },
         successCallback: function(url){
             loading.hide();
@@ -674,8 +669,12 @@ function getGroupList() {
                 statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
-                $("#statisticsGroupList").on("change", function () {
+                $("#statisticsGroupList").off().on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
                 });
             }
         }
@@ -710,8 +709,12 @@ function getStatisticsSubGroupList(gId, subGroup) {
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
-                $("#statisticsSubGroupList").on("change", function () {
+                $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
                 });
 
             }
@@ -743,9 +746,12 @@ function getStatisticsStoreList(subId, gId) {
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
 
-                // $("#statisticsStoreList").on("change", function () {
-                //     getStoreStatisticsByDate();
-                // });
+                $("#statisticsStoreList").off().on("change", function () {
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
+                });
 
             }
         }
