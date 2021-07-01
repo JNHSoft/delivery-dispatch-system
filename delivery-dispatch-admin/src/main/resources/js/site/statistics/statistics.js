@@ -283,17 +283,6 @@ function minusTime(time1, time2) {
     return minusTime;
 }
 
-
-// function minusTime(time1, time2) {
-//     time1 += " 00:00:00";
-//     time2 += " 00:00:00";
-//     var d1 = new Date(time1);
-//     var d2 = new Date(time2);
-//     var minusTime = d2.getTime()-d1.getTime();
-//     return minusTime;
-// }
-
-
 /**
  * 날짜 계산 
  * 날짜 사이에 주문등록 날짜가 있는지

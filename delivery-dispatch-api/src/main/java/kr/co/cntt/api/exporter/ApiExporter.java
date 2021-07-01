@@ -296,7 +296,12 @@ public class ApiExporter extends ExporterSupportor implements Api {
 //    @PostMapping(value = {"/{service}", "/admin/{service}"})
     @PostMapping(value = "/{service}")
     public ResponseEntity<?> execute(HttpServletRequest request, @PathVariable String service, @RequestBody String jsonStr) throws AppTrException{
-        log.debug("execute => " + request.getRequestURI() + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
+        System.out.println("execute => " + request.getRequestURI() + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
+
+        if ((service.equals("getCheckRiderApproval") || service.equals("getRiderInfo") || service.equals("updateWorkingRider")) && !request.getRequestURI().contains("/API/v1")){
+            log.debug("이전 API로 호출이 되었습니다. => " + request.getRequestURI() + " #### " + request.getHeader("user-agent"));
+            return responseError(null, new AppTrException(getMessage(ErrorCodeEnum.S0003), ErrorCodeEnum.S0003.name()));
+        }
 
         try {
             return trServiceInvoker(ApiServiceRouter.service(service), jsonStr, request);
