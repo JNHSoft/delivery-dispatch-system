@@ -1,9 +1,9 @@
 package kr.co.cntt.core.mapper;
 
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.RankInfo;
-import kr.co.cntt.core.model.dashboard.SearchInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

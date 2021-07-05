@@ -23,7 +23,7 @@ public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
         Date currentTime = new Date();
         String dTime = formatter.format(currentTime);
 
-        String fileName = "[" + dTime + "]";
+        String fileName = "[" + dTime + "]_";
         SXSSFWorkbook workbook = new SXSSFWorkbook(1000);
 
         // 요청 하는 url 에 따라서 필요한 값을 넣어줌
@@ -34,7 +34,8 @@ public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
             String headerName = (String) model.get("typeName");
             setDashBoardDetailforExcel(workbook, dashboardDetailInfo, headerName);
             // 파일 이름은 이렇게 한다. 											Nick
-            fileName += " Date_Analysis_Report.xlsx";
+            fileName += headerName;
+            fileName += "_DashBoardData.xlsx";
 
         }
 
@@ -54,7 +55,7 @@ public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
         int rowNum = 0;
         int colNum = 0;
 
-        Sheet sheet = wb.createSheet("StoreStatisticsByDate");
+        Sheet sheet = wb.createSheet(headerName + "_DashBoard");
 
         // Title Area Cell Style
         CellStyle titleCellStyle = settTitleCell(wb);
