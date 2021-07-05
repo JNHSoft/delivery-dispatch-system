@@ -422,7 +422,48 @@ public class StatisticsController {
         searchInfo.setToken(adminInfo.getAdminAccessToken());
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminOrderBuilderServiceImpl");
         List<Order> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
-        modelAndView.addObject("selectStoreStatisticsByOrderForAdmin", storeOrderListByAdmin);
+
+
+        List<Order> filterData = storeOrderListByAdmin.stream().filter(a -> {
+            if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null) {
+                LocalDateTime reserveDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
+                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+                LocalDateTime arrivedTime = LocalDateTime.parse((a.getArrivedDatetime()).replace(" ", "T"));
+                LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+                int qtTime = 0;
+
+                try {
+                    qtTime = Integer.parseInt(a.getCookingTime());
+                }catch (Exception e){
+                    log.error("QT Time 파싱 중 오류 발생", e);
+                    qtTime = 30;
+                }
+
+                if (qtTime > 30 || qtTime < 1) qtTime = 30;
+
+                // 21.05.27 배정 시간의 규칙 변경
+                // 배정 시간이 예약 시간 - QT 시간보다 늦어진 경우에 예약 - QT 시간으로 계산한다.
+                LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
+                LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
+
+                if (ChronoUnit.MINUTES.between(assignTime, qtAssignTime) < 0){
+                    assignTime = qtAssignTime;
+                    a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
+                }
+
+                // KFC와 동일한 조건으로 만들기 위해 사용
+                if (arrivedTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
+
+
+        modelAndView.addObject("selectStoreStatisticsByOrderForAdmin", filterData);
 
         return modelAndView;
     }
