@@ -329,10 +329,6 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         Map<String, Long> intervalCount = new HashMap<>();
         Map<String, Double> sumIntervalCount = new HashMap<>();
 
-//        interval.getIntervalMinute().forEach(x->{
-//            System.out.println(x);
-//        });
-
         List<Integer> d30List = new ArrayList<>();
         List<Integer> d7List = new ArrayList<>();
 
@@ -365,10 +361,6 @@ public class StoreStatementServiceImpl extends ServiceSupport implements StoreSt
         // 데이터 토탈 개수
         intervalSize.put("d30IntervalSize", d30List.size());
         intervalSize.put("d7IntervalSize", d7List.size());
-
-
-//        System.out.println(d30Result);
-//        System.out.println(d7Result);
 
         // 7분 미만 주문의 카운트
         intervalCount.put("d30IntervalCount", d30Result.entrySet().parallelStream().filter(x->x.getKey() < 7).mapToLong(x -> x.getValue()).sum());
