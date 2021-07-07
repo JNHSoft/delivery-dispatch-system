@@ -1,6 +1,7 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 import kr.co.cntt.core.annotation.CnttMethodDescription;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.order.Order;
@@ -76,22 +77,16 @@ public class StatisticsKFCController {
     @ResponseBody
     @GetMapping("/getStoreStatisticsByOrderAtTWKFC")
     @CnttMethodDescription("관리자 주문별 통계 리스트 조회 TW KFC")
-    public List<Order> getStoreStatisticsByOrderAtTWKFC(@RequestParam(value = "startDate") String startDate
-            , @RequestParam(value = "endDate") String endDate
-            , @RequestParam(value = "groupID", required = false) String groupId
-            //, @RequestParam(value = "subGroupID", required = false) String subGroupId
-            , @RequestParam(value = "subGroupName", required = false) String subGroupName
-            , @RequestParam(value = "storeID", required = false) String storeId) {
+    public List<Order> getStoreStatisticsByOrderAtTWKFC(SearchInfo searchInfo) {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
+        searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
 
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
@@ -100,31 +95,15 @@ public class StatisticsKFCController {
                 return new ArrayList<>();
             }
 
-            order.setDays((Integer.toString(((int) (long) diffDays + 1))));
+            searchInfo.setDays((Integer.toString(((int) (long) diffDays + 1))));
 
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
 
-        if (groupId.trim() != "" && !groupId.toLowerCase().equals("reset")){
-            order.setGroup(new Group());
-            order.getGroup().setId(groupId);
-        }
-
-        // 21-01-21 서브그룹 그룹화
-        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
-            order.setSubGroup(new SubGroup());
-            order.getSubGroup().setGroupingName(subGroupName);
-        }
-
-        if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
-            order.setStoreId(storeId);
-        }
-
-
-        List<Order> statistByOrder = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+        List<Order> statistByOrder = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
 
         return statistByOrder.stream().filter(a -> {
             if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null) {
@@ -167,21 +146,19 @@ public class StatisticsKFCController {
 
     @GetMapping("/excelDownloadByOrderAtTWKFC")
     @CnttMethodDescription("관리자 주문별 통계 리스트 엑셀 출력 TW KFC")
-    public ModelAndView statisticsByOrderExcelDownloadAtTWKFC(HttpServletResponse response
-            , @RequestParam(value = "startDate") String startDate
-            , @RequestParam(value = "endDate") String endDate){
+    public ModelAndView statisticsByOrderExcelDownloadAtTWKFC(HttpServletResponse response,
+                                                              SearchInfo searchInfo){
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
+        searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
@@ -189,15 +166,15 @@ public class StatisticsKFCController {
                 return null;
             }
 
-            order.setDays(Integer.toString((int)(long) diffDays + 1));
+            searchInfo.setDays(Integer.toString((int)(long) diffDays + 1));
 
         }catch (ParseException e){
             e.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminOrderAtTWKFCBuilderServiceImpl");
-        List<Order> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(order);
+        List<Order> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
 
         List<Order> filterStoreOrderListByAdmin =
                 storeOrderListByAdmin.stream().filter(a -> {
@@ -261,38 +238,25 @@ public class StatisticsKFCController {
     @ResponseBody
     @GetMapping("/getStoreStatisticsByDateAtTWKFC")
     @CnttMethodDescription("날짜별 통계 리스트 조회 TW KFC")
-    public List<AdminByDate> getStoreStatisticsByDate(@RequestParam("startDate") String startDate
-            , @RequestParam("endDate") String endDate
-            , @RequestParam(value = "timeCheck") Boolean chkTime
-            , @RequestParam(value = "peakCheck") Boolean peakTime
-            , @RequestParam(value = "peakType") String peakType
-            , @RequestParam(value = "groupID", required = false) String groupId
-            //, @RequestParam(value = "subGroupID", required = false) String subGroupId
-            , @RequestParam(value = "subGroupName", required = false) String subGroupName
-            , @RequestParam(value = "storeID", required = false) String storeId){
+    public List<AdminByDate> getStoreStatisticsByDate(SearchInfo searchInfo){
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
-        order.setEndDate(endDate);
-        order.setChkTime(chkTime);
-        order.setChkPeakTime(peakTime);
-        order.setPeakType(peakType);
+        searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
         /**
          * 20.12.26 데이터 구하는 방식 변경
          * */
         SimpleDateFormat formatter;
 
-        if (chkTime && !peakTime){
+        if (searchInfo.getChkTime() && !searchInfo.getChkPeakTime()){
             formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }else{
             formatter = new SimpleDateFormat("yyyy-MM-dd");
         }
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
 
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24* 60 * 60 * 1000);
@@ -305,28 +269,14 @@ public class StatisticsKFCController {
                 return new ArrayList<>();
             }
 
-            order.setDays(Integer.toString((int) (long) diffDays + 1));
+            searchInfo.setDays(Integer.toString((int) (long) diffDays + 1));
         }catch (ParseException e){
             e.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
 
-        if (groupId.trim() != "" && !groupId.toLowerCase().equals("reset")){
-            order.setGroup(new Group());
-            order.getGroup().setId(groupId);
-        }
-
-        if (subGroupName.trim() != "" && !subGroupName.toLowerCase().equals("reset")){
-            order.setSubGroup(new SubGroup());
-            order.getSubGroup().setGroupingName(subGroupName);
-        }
-
-        if (storeId.trim() != "" && !storeId.toLowerCase().equals("reset")){
-            order.setStoreId(storeId);
-        }
-
-        List<AdminByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdminAtTWKFC(order);
+        List<AdminByDate> byDateList = statisticsAdminService.selectStoreStatisticsByDateForAdminAtTWKFC(searchInfo);
 
         return byDateList;
     }
@@ -334,36 +284,27 @@ public class StatisticsKFCController {
     @GetMapping("/excelDownloadByDateAtTWKFC")
     @CnttMethodDescription("관리자 기간별 통계 리스트 엑셀 출력 TW KFC")
     public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response,
-                                                      @RequestParam(value = "startDate") String startDate,
-                                                      @RequestParam(value = "endDate") String endDate,
-                                                      @RequestParam(value = "timeCheck") Boolean chkTime,
-                                                      @RequestParam(value = "peakCheck") Boolean peakTime,
-                                                      @RequestParam(value = "peakType") String peakType){
+                                                      SearchInfo searchInfo){
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        Order order = new Order();
-        order.setCurrentDatetime(startDate);
-        order.setEndDate(endDate);
-        order.setChkTime(chkTime);
-        order.setChkPeakTime(peakTime);
-        order.setPeakType(peakType);
+        searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
         /**
          * 20.12.24 데이터 구하는 방식 변경
          * */
         SimpleDateFormat formatter;
 
-        if (chkTime && !peakTime){
+        if (searchInfo.getChkTime() && !searchInfo.getChkPeakTime()){
             formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }else{
             formatter = new SimpleDateFormat("yyyy-MM-dd");
         }
 
         try {
-            Date sdfStartDate = formatter.parse(startDate);
-            Date sdfEndDate = formatter.parse(endDate);
+            Date sdfStartDate = formatter.parse(searchInfo.getSDate());
+            Date sdfEndDate = formatter.parse(searchInfo.getEDate());
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
@@ -375,15 +316,15 @@ public class StatisticsKFCController {
                 return null;
             }
 
-            order.setDays(Integer.toString((int)(long) diffDays + 1));
+            searchInfo.setDays(Integer.toString((int)(long) diffDays + 1));
 
         }catch (ParseException e){
             e.printStackTrace();
         }
 
-        order.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminByDateAtTWKFCBuilderServiceImpl");
-        List<AdminByDate> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByDateForAdminAtTWKFC(order);
+        List<AdminByDate> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByDateForAdminAtTWKFC(searchInfo);
 
         modelAndView.addObject("selectStoreStatisticsByDateForAdminAtTWKFC", storeOrderListByAdmin);
 

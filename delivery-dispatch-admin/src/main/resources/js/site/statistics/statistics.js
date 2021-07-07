@@ -23,14 +23,12 @@ $(function () {
         }
     });
 
-    $(".select").change(function () {
-        selectId = $(this);
-        selectIdOption = $('option:selected',this);
+    $("#searchButton").click(function () {
         getStatisticsList();
         searchList(selectId, selectIdOption);
     });
 
-    $("#searchButton").click(function () {
+    $("#selectStatus").off().on('change', function (){
         getStatisticsList();
         searchList(selectId, selectIdOption);
     });
@@ -38,6 +36,7 @@ $(function () {
 
 var selectId =$("#statisticsStoreList");
 var selectIdOption = $("#statisticsStoreList option:selected");
+
 function searchList(selectId, selectIdOption) {
     console.log("serchList");
 
@@ -168,6 +167,12 @@ function getGroupList() {
 
                 $("#statisticsGroupList").off().on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList(selectId, selectIdOption);
+                    if (selectIdOption.val() == "reset"){
+                        getStatisticsList();
+                    }
                 });
             }
         }
@@ -177,7 +182,7 @@ function getGroupList() {
 /**
  * 서브 그룹 List 불러오기
  */
-function getStatisticsSubGroupList(gId, subGroup) {
+function getStatisticsSubGroupList(gId) {
     var selectGroupId = null;
 
     if (gId == null) {
@@ -205,6 +210,9 @@ function getStatisticsSubGroupList(gId, subGroup) {
 
                 $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList(selectId, selectIdOption);
                 });
 
             }
@@ -233,12 +241,14 @@ function getStatisticsStoreList(subId, gId) {
             if(data) {
                 var statisticsStoreListHtml = "<option value='reset'>" + list_search_all_store + "</option>";
                 for (var i in data){
-                    statisticsStoreListHtml += "<option value='" + data[i].id  + "'>" + data[i].storeName + "</option>";
+                    statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
 
                 $("#statisticsStoreList").off().on("change", function () {
-                    getStatisticsList();
+                    selectId = $(this);
+                    selectIdOption = $('option:selected',this);
+                    searchList(selectId, selectIdOption);
                 });
 
             }
@@ -338,7 +348,6 @@ function getStatisticsList() {
         },
         dataType: 'json',
         success: function (data) {
-            console.log("getStatisticsList");
             var i = 1;
             for (var key in data) {
                 var $tmpData = new Object();
@@ -379,7 +388,6 @@ function getStatisticsList() {
                         $tmpData.origin_reg_order_id = data[key].regOrderId;
                         $tmpData.th6 = timeSet(data[key].createdDatetime);
                         $tmpData.th7 = data[key].address
-                        // $tmpData.th8 = data[key].menuName
                         $tmpData.th9 = data[key].cookingTime
 
                         if (data[key].paid != null) {
@@ -464,7 +472,6 @@ function getStatisticsList() {
                     {label: order_status, name: 'th4', width: 80, align: 'center'},
                     {label: order_created, name: 'th6', width: 80, align: 'center'},
                     {label: order_address, name: 'th7', width: 200},
-                    /*{label: order_summary, name: 'th8', width: 80},*/
                     {label: order_cooking, name: 'th9', width: 80, align: 'center'},
                     {label: order_payment, name: 'th10', width: 80, align: 'center'},
                     {label: order_assigned, name: 'th11', width: 80, align: 'center'},
@@ -580,8 +587,6 @@ function getStatisticsInfo(orderId) {
     });
 }
 
-
-
 function excelDownload(){
     let startDate = $('#startDate').val();
     let endDate = $('#endDate').val();
@@ -597,8 +602,12 @@ function excelDownload(){
     $.fileDownload("/excelDownload",{
         httpMethod:"GET",
         data : {
-            startDate : startDate,
-            endDate : endDate
+            sDate : startDate,
+            eDate : endDate,
+            groupId : $('#statisticsGroupList option:selected').val(),
+            subgroupId : $('#statisticsSubGroupList option:selected').val(),
+            storeId : $('#statisticsStoreList option:selected').val(),
+            orderStatus : $('#selectStatus option:selected').val(),
         },
         successCallback: function(url){
             loading.hide();

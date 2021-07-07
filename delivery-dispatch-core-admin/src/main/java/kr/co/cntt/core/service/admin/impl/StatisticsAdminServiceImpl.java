@@ -1,20 +1,16 @@
 package kr.co.cntt.core.service.admin.impl;
 
 import kr.co.cntt.core.mapper.AdminMapper;
-import kr.co.cntt.core.mapper.OrderMapper;
-import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.AdminByDate;
-import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
-import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
-import kr.co.cntt.core.util.Misc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,15 +85,15 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
 
     // 통계 리스트 Excel
     @Override
-    public List<Order> selectAdminStatisticsExcel(Order order) {
-        List<Order> statisticsList =  adminMapper.selectAdminStatisticsExcel(order);
+    public List<Order> selectAdminStatisticsExcel(SearchInfo searchInfo) {
+        List<Order> statisticsList =  adminMapper.selectAdminStatisticsExcel(searchInfo);
 
         return statisticsList;
     }
 
     // 주문별 통계 페이지
-    public List<Order> selectStoreStatisticsByOrderForAdmin(Order order){
-        List<Order> statistByOrder =  adminMapper.selectStoreStatisticsByOrderForAdmin(order);
+    public List<Order> selectStoreStatisticsByOrderForAdmin(SearchInfo searchInfo){
+        List<Order> statistByOrder =  adminMapper.selectStoreStatisticsByOrderForAdmin(searchInfo);
         if (statistByOrder.size() == 0) {
             return Collections.<Order>emptyList();
         }
@@ -106,8 +102,8 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     }
 
     // 매장 일자별 통계 페이지
-    public List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order){
-        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdmin(order);
+    public List<AdminByDate> selectStoreStatisticsByDateForAdmin(SearchInfo searchInfo){
+        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdmin(searchInfo);
 
         if (statistByDate.size() == 0){
             return Collections.<AdminByDate>emptyList();
@@ -117,8 +113,8 @@ public class StatisticsAdminServiceImpl implements StatisticsAdminService {
     }
 
     // 매장 일자별 통계 페이지 TW KFC
-    public List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(Order order){
-        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdminAtTWKFC(order);
+    public List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(SearchInfo searchInfo){
+        List<AdminByDate> statistByDate = adminMapper.selectStoreStatisticsByDateForAdminAtTWKFC(searchInfo);
 
         if (statistByDate.size() == 0){
             return Collections.<AdminByDate>emptyList();

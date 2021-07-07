@@ -28,16 +28,9 @@ $(function () {
         }
     });     // 종료일 이벤트
 
-    $(".select").change(function(){
-        selectId = $(this);
-        selectIdOption = $('option:selected', this);
-        searchList(selectId, selectIdOption);
-        getStoreStatistics();
-    });     //select box의 change 이벤트
-
     $('#searchButton').click(function () {
-        getStoreStatistics();
         searchList(selectId, selectIdOption);
+        getStoreStatistics();
     });     // 조건 검색 버튼
 });
 
@@ -123,19 +116,6 @@ function minusTime(time1, time2) {
     return minusTime;
 }
 
-/*function timepickerConfirm(time1 , time2, createdTime) {
-    let d1 = new Date(time1);
-    let d2 = new Date(time2);
-    d1.setHours(0,0,0);
-    d2.setHours(0,0,0);
-    d2.setDate(d2.getDate()+1);
-    let cT = new Date(createdTime);
-    if(minusTime(cT,d2)>=0 && minusTime(d1,cT)>=0){
-        return true;
-    }else{
-        return false;
-    }
-}*/
 function getStatisticsInfo(regOrderId) {
     $.ajax({
         url: "/getStatisticsInfo",
@@ -220,11 +200,11 @@ function getStoreStatistics() {
         url: "/getStoreStatisticsByOrder",
         type: 'get',
         data: {
-            startDate: $('#startDate').val(),
-            endDate: $('#endDate').val(),
-            groupID: $("#statisticsGroupList").val(),
-            subGroupName: $("#statisticsSubGroupList").val(),
-            storeID: $("#statisticsStoreList").val(),
+            sDate : $('#startDate').val(),
+            eDate : $('#endDate').val(),
+            groupId: $("#statisticsGroupList option:selected").val(),
+            subgroupId: $("#statisticsSubGroupList option:selected").val(),
+            storeId: $("#statisticsStoreList option:selected").val(),
         },
         dataType: 'json',
         success: function (data) {
@@ -451,8 +431,11 @@ function excelDownloadByOrder(){
     $.fileDownload("/excelDownloadByOrder",{
         httpMethod:"GET",
         data : {
-            startDate : startDate,
-            endDate : endDate
+            sDate : $('#startDate').val(),
+            eDate : $('#endDate').val(),
+            groupId: $("#statisticsGroupList option:selected").val(),
+            subgroupId: $("#statisticsSubGroupList option:selected").val(),
+            storeId: $("#statisticsStoreList option:selected").val(),
         },
         successCallback: function(url){
             loading.hide();
@@ -583,8 +566,12 @@ function getGroupList() {
                 statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
-                $("#statisticsGroupList").on("change", function () {
+                $("#statisticsGroupList").off().on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatistics();
                 });
             }
         }
@@ -619,8 +606,12 @@ function getStatisticsSubGroupList(gId, subGroup) {
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
-                $("#statisticsSubGroupList").on("change", function () {
+                $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatistics();
                 });
 
             }
@@ -651,6 +642,13 @@ function getStatisticsStoreList(subId, gId) {
                     statisticsStoreListHtml += "<option value='" + data[i].storeId  + "'>" + data[i].storeName + "</option>";
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
+
+                $("#statisticsStoreList").off().on('change', function (){
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatistics();
+                });
 
             }
         }

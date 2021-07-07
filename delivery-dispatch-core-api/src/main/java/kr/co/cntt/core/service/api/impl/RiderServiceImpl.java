@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.api.impl;
 
+import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
@@ -51,11 +52,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     private RiderMapper riderMapper;
 
     /**
+     * Store DAO
+     * */
+    private StoreMapper storeMapper;
+
+    /**
      * @param riderMapper USER D A O
      */
     @Autowired
-    public RiderServiceImpl(RiderMapper riderMapper) {
+    public RiderServiceImpl(RiderMapper riderMapper, StoreMapper storeMapper) {
         this.riderMapper = riderMapper;
+        this.storeMapper = storeMapper;
     }
 
     @Override
@@ -479,6 +486,23 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             }
         }
 
+        /**
+         * 21-07-07
+         * 정보 등록 시, 매장 및 관리자 ID가 정상적으로 되어 있는지 확인하는 프로세스 추가
+         * */
+        // 스토어에 대한 정보 가져오기
+        Common searchStore = new Common();
+
+        searchStore.setId(approvalInfo.getStore().getId());
+        searchStore.setRole("ROLE_SYSTEM");
+
+        Store store = storeMapper.selectStoreInfo(searchStore);
+
+        // STORE ID로 조회했으므로, 무조건 맞을거라는 가정으로 작업을 진행한다.
+        if (!(approvalInfo.getAdminId().equals(store.getAdminId()))){
+            log.debug("라이더 가입 요청 정보 중 관리자 정보가 잘못되어 강제 변경 되었습니다. => API에서 보내진 관리자 정보 및 스토어 정보" + approvalInfo.getAdminId() + " (스토어: " + approvalInfo.getStore().getId() + ")" );
+            approvalInfo.setAdminId(store.getAdminId());
+        }
 
         // 정보 등록
         riderMapper.insertApprovalInfo(approvalInfo);

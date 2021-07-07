@@ -24,13 +24,6 @@ $(function () {
             getStoreStatisticsByDate();
         }
     });
-
-    $(".select").change(function(){
-        selectId = $(this);
-        selectIdOption = $('option:selected', this);
-        searchList(selectId, selectIdOption);
-        getStoreStatisticsByDate();
-    });     //select box의 change 이벤트
 });
 
 function totalTimeSet(time) {
@@ -63,11 +56,11 @@ function getStoreStatisticsByDate() {
         url: "/getStoreStatisticsByDate",
         type: 'get',
         data: {
-            startDate: $('#startDate').val(),
-            endDate: $('#endDate').val(),
-            groupID: $("#statisticsGroupList").val(),
-            subGroupName: $("#statisticsSubGroupList").val(),
-            storeID: $("#statisticsStoreList").val(),
+            sDate: $('#startDate').val(),
+            eDate: $('#endDate').val(),
+            groupId : $("#statisticsGroupList").val(),
+            subgroupId : $("#statisticsSubGroupList").val(),
+            storeId : $("#statisticsStoreList").val(),
         },
         dataType: 'json',
         success: function (data) {
@@ -526,14 +519,16 @@ function excelDownloadByDate(){
     $.fileDownload("/excelDownloadByDate",{
         httpMethod:"GET",
         data : {
-            startDate : startDate,
-            endDate : endDate
+            sDate: $('#startDate').val(),
+            eDate: $('#endDate').val(),
+            groupId : $("#statisticsGroupList").val(),
+            subgroupId : $("#statisticsSubGroupList").val(),
+            storeId : $("#statisticsStoreList").val(),
         },
         successCallback: function(url){
             loading.hide();
         },
         failCallback: function(responseHtml,url){
-            // console.log(responseHtml);
             loading.hide();
         }
     })
@@ -582,9 +577,12 @@ function getGroupList() {
                 statisticsGroupListHtml += "<option value='none'>" + group_none + "</option>";
                 $("#statisticsGroupList").html(statisticsGroupListHtml);
 
-                $("#statisticsGroupList").on("change", function () {
-                    console.log("Group Change");
+                $("#statisticsGroupList").off().on("change", function () {
                     getStatisticsSubGroupList($("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
                 });
             }
         }
@@ -622,8 +620,12 @@ function getStatisticsSubGroupList(gId, subGroup) {
                 }
                 $("#statisticsSubGroupList").html(pstatisticsSubGroupListHtml);
 
-                $("#statisticsSubGroupList").on("change", function () {
+                $("#statisticsSubGroupList").off().on("change", function () {
                     getStatisticsStoreList($("#statisticsSubGroupList option:selected").val(),$("#statisticsGroupList option:selected").val());
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
                 });
 
             }
@@ -655,9 +657,12 @@ function getStatisticsStoreList(subId, gId) {
                 }
                 $("#statisticsStoreList").html(statisticsStoreListHtml);
 
-                // $("#statisticsStoreList").on("change", function () {
-                //     getStoreStatisticsByDate();
-                // });
+                $("#statisticsStoreList").off().on("change", function () {
+                    selectId = $(this);
+                    selectIdOption = $('option:selected', this);
+                    searchList(selectId, selectIdOption);
+                    getStoreStatisticsByDate();
+                });
 
             }
         }

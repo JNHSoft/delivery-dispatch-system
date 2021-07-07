@@ -1088,97 +1088,92 @@
 	</select>
 
 	<!-- 통계 조회 List  EXcel-->
-	<select id="selectAdminStatisticsExcel" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
-		SELECT
-			TG.name AS group_name
-		, TG.id AS group_id
-		, TG.admin_id AS group_admin_id
-		, TSG.id AS subgroup_id
-		, TSG.name AS subgroup_name
-		, TSG.admin_id AS subgroup_admin_id
-		, TSG.group_id AS subgroup_group_id
-		, SSR.store_id AS subGroupStoreRel_store_id
-		, IFNULL(TBS.store_name, concat('[DEL] ', (select ifnull(store_name, '') from TB_STORE where id = TBO.store_id and admin_id = TBO.admin_id)))		as store_name
-		, TBO.admin_id
-		, TBO.store_id
-		, TBO.rider_id
-		, TBO.status
-		, TBO.id
-		, TBO.created_datetime
-        , TBO.reservation_datetime
-        , TBO.reservation_status
-        , TBO.assigned_datetime
-		, TBO.picked_up_datetime
-		, TBO.arrived_datetime
-        , TBO.completed_datetime
-		, TBO.return_datetime
-		, TBO.menu_name
-		, TBO.cooking_time
-		, TBO.menu_price
-        , TBO.delivery_price
-        , TBO.total_price
-		, TBP.type
-        , TBO.combined_order_id
-        , TBR.name AS rider_name
-        , TBR.phone AS rider_phone
-        , TBO.message
-        , TBO.phone
-		, TBO.address
-        , TBO.detail_address
-		, TBO.paid
-		, TBO.reg_order_id
-		, TBO.latitude
-		, TBO.longitude
-		, TBO.distance
-		,case when ifnull(TBO.shared_flag, 0) = 1 then 'Y' else 'N' end	as rider_shared_status
-
-		,TBR.login_id				as rider_login_id
-		FROM TB_ORDER AS TBO
-
-		LEFT JOIN
-		TB_RIDER AS TBR
-		on TBR.id = TBO.rider_id
-		AND TBR.deleted is NULL
-
-		LEFT JOIN
-		TB_STORE AS TBS
-		on TBS.id = TBO.store_id
-		AND TBS.deleted is NULL
-
-		LEFT JOIN
-		TB_PAYMENT AS TBP
-		on TBP.order_id = TBO.id
-		AND TBP.deleted is NULL
-
-		LEFT JOIN
-		TB_SUBGROUP_STORE_REL AS SSR
-		on TBO.store_id = SSR.store_id
-		AND SSR.deleted is NULL
-
-		LEFT JOIN
-		TB_SUBGROUP AS TSG
-		on SSR.subgroup_id = TSG.id
-		AND TSG.deleted is NULL
-
-		LEFT JOIN
-		TB_GROUP AS TG
-		on SSR.group_id = TG.id
-		AND TG.deleted is NULL
-
-		WHERE
-
-		TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
-		AND TBO.status in (3,4)
-		AND date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > TBO.created_datetime
-		AND TBO.created_datetime > #{currentDatetime}
-		<!--<if test="startDate != null and startDate != ''">
-		AND start_date = #{startDate}
+	<select id="selectAdminStatisticsExcel" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultMap="selectOrderResult">
+		SELECT	 TG.name AS group_name
+				,TG.id AS group_id
+				,TG.admin_id AS group_admin_id
+				,TSG.id AS subgroup_id
+				,TSG.name AS subgroup_name
+				,TSG.admin_id AS subgroup_admin_id
+				,TSG.group_id AS subgroup_group_id
+				,SSR.store_id AS subGroupStoreRel_store_id
+				,IFNULL(TBS.store_name, concat('[DEL] ', (select ifnull(store_name, '') from TB_STORE where id = TBO.store_id and admin_id = TBO.admin_id)))		as store_name
+				,TBO.admin_id
+				,TBO.store_id
+				,TBO.rider_id
+				,TBO.status
+				,TBO.id
+				,TBO.created_datetime
+				,TBO.reservation_datetime
+				,TBO.reservation_status
+				,TBO.assigned_datetime
+				,TBO.picked_up_datetime
+				,TBO.arrived_datetime
+				,TBO.completed_datetime
+				,TBO.return_datetime
+				,TBO.menu_name
+				,TBO.cooking_time
+				,TBO.menu_price
+				,TBO.delivery_price
+				,TBO.total_price
+				,TBP.type
+				,TBO.combined_order_id
+				,TBR.name AS rider_name
+				,TBR.phone AS rider_phone
+				,TBO.message
+				,TBO.phone
+				,TBO.address
+				,TBO.detail_address
+				,TBO.paid
+				,TBO.reg_order_id
+				,TBO.latitude
+				,TBO.longitude
+				,TBO.distance
+				,case when ifnull(TBO.shared_flag, 0) = 1 then 'Y' else 'N' end	as rider_shared_status
+				,TBR.login_id				as rider_login_id
+		FROM	 TB_ORDER AS TBO
+		LEFT JOIN TB_RIDER AS TBR
+			on	 TBR.id = TBO.rider_id
+			AND	 TBR.deleted is NULL
+		LEFT JOIN TB_STORE AS TBS
+			on	 TBS.id = TBO.store_id
+			AND	 TBS.deleted is NULL
+		LEFT JOIN TB_PAYMENT AS TBP
+			on	 TBP.order_id = TBO.id
+			AND	 TBP.deleted is NULL
+		LEFT JOIN TB_SUBGROUP_STORE_REL AS SSR
+			on	 TBO.store_id = SSR.store_id
+			AND	 SSR.deleted is NULL
+		LEFT JOIN TB_SUBGROUP AS TSG
+			on	 SSR.subgroup_id = TSG.id
+			AND	 TSG.deleted is NULL
+		LEFT JOIN TB_GROUP AS TG
+			on	 SSR.group_id = TG.id
+			AND	 TG.deleted is NULL
+		WHERE	 1=1
+		AND		 TBO.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+		AND		 TBO.created_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+		<if test="groupId != null and groupId != '' and groupId != 'reset'">
+			AND		 TG.id = #{groupId}
 		</if>
-		<if test="endDate != null and endDate != ''">
-		AND end_date = #{endDate}
-		</if>-->
+		<if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
+			AND		 SUBSTRING_INDEX(TSG.name, '-', 1) = #{subgroupId}
+		</if>
+		<if test="storeId != null and storeId != '' and storeId != 'reset'">
+			AND		 TBO.store_id = #{storeId}
+		</if>
+		<choose>
+			<when test="orderStatus != null and orderStatus == 'complete'">
+				AND		 TBO.status in (3)
+			</when>
+			<when test="orderStatus != null and orderStatus == 'cancel'">
+				AND		 TBO.status in (4)
+			</when>
+			<otherwise>
+				AND		 TBO.status in (3,4)
+			</otherwise>
+		</choose>
 		ORDER BY TBO.created_datetime ASC
-
 	</select>
 
 	<!-- 통계 조회 info -->
@@ -1436,250 +1431,345 @@
 	///// 2020.04.24 Store 통계페이지의 관리자 형태로 변경
 	-->
 
-	<select id="selectStoreStatisticsByOrderForAdmin" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrderResult">
-		SELECT	 ORD.admin_id
-				,ORD.store_id
-				,( SELECT store_name FROM TB_STORE WHERE id = ORD.store_id )	as	store_name
-				,ORD.rider_id
-				,ORD.status
-				,ORD.id
-				,ORD.created_datetime
-				,ORD.cooking_time
-				,ORD.assigned_datetime
-				,ORD.picked_up_datetime
-				,ifnull(ORD.arrived_datetime, ORD.completed_datetime)			as  arrived_datetime
-				,ORD.completed_datetime
-				,ORD.return_datetime
-				,ORD.reservation_datetime
-				,ORD.reservation_status
-				,ORD.reg_order_id
-				,ORD.distance
+	<select id="selectStoreStatisticsByOrderForAdmin" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultMap="selectOrderResult">
+		select	 admin_id
+				,store_id
+				,store_name
+				,rider_id
+				,status
+				,id
+				,created_datetime
+				,cooking_time
+				,assigned_datetime
+				,picked_up_datetime
+				,arrived_datetime
+				,completed_datetime
+				,return_datetime
+				,reservation_datetime
+				,reservation_status
+				,reg_order_id
+				,distance
 				-- 검색조건을 위한 컬럼
-				,sbStore.group_id
-				,( SELECT name FROM TB_GROUP WHERE admin_id = ORD.admin_id AND id = sbStore.group_id AND deleted is null )	AS group_name
-				,sbStore.subgroup_id
-				,( SELECT name FROM TB_SUBGROUP WHERE admin_id = ORD.admin_id AND group_id = sbStore.group_id AND id = sbStore.subgroup_id AND deleted is null )	AS subgroup_name
-				,( SELECT name FROM TB_RIDER WHERE id = ORD.rider_id )		AS rider_name
-		FROM	 TB_ORDER					as ORD
-		LEFT JOIN TB_SUBGROUP_STORE_REL		as sbStore
-			ON	 ORD.admin_id = sbStore.admin_id
-			AND	 ORD.store_id = sbStore.store_id
-			AND	 sbStore.deleted is null
-		WHERE	 ORD.status in (3)
-		AND		 ORD.third_party_id IS NULL
-		AND		 ORD.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-		AND		 ORD.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
-		<if test="group != null and group.id != null and group.id != ''">
-			AND	 sbStore.group_id = #{group.id}
+				,group_id
+				,group_name
+				,subgroup_id
+				,subgroup_name
+				,rider_name
+		from	(
+					SELECT	 ORD.admin_id
+							,ORD.store_id
+							,( SELECT store_name FROM TB_STORE WHERE id = ORD.store_id )	as	store_name
+							,ORD.rider_id
+							,ORD.status
+							,ORD.id
+							,ORD.created_datetime
+							,ORD.cooking_time
+							,ORD.assigned_datetime
+							,ORD.picked_up_datetime
+							,ifnull(ORD.arrived_datetime, ORD.completed_datetime)			as  arrived_datetime
+							,ORD.completed_datetime
+							,ORD.return_datetime
+							,ORD.reservation_datetime
+							,ORD.reservation_status
+							,ORD.reg_order_id
+							,ORD.distance
+							-- 검색조건을 위한 컬럼
+							,sbStore.group_id
+							,( SELECT name FROM TB_GROUP WHERE admin_id = ORD.admin_id AND id = sbStore.group_id AND deleted is null )	AS group_name
+							,sbStore.subgroup_id
+							,( SELECT name FROM TB_SUBGROUP WHERE admin_id = ORD.admin_id AND group_id = sbStore.group_id AND id = sbStore.subgroup_id AND deleted is null )	AS subgroup_name
+							,( SELECT name FROM TB_RIDER WHERE id = ORD.rider_id )		AS rider_name
+					FROM	 TB_ORDER					as ORD
+					LEFT JOIN TB_SUBGROUP_STORE_REL		as sbStore
+						ON	 ORD.admin_id = sbStore.admin_id
+						AND	 ORD.store_id = sbStore.store_id
+						AND	 sbStore.deleted is null
+					WHERE	 ORD.status in (3)
+					AND		 ORD.third_party_id IS NULL
+					AND		 ORD.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+					AND		 ORD.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
+				)	t
+		where	 1=1
+		<if test="groupId != null and groupId != 'reset'">
+			AND	 group_id = #{groupId}
 		</if>
-		<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-			AND		 sbStore.subgroup_id in ( select id from TB_SUBGROUP where admin_id = sbStore.admin_id and group_id = sbStore.group_id and id = sbStore.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
+		<if test="subgroupId != null and subgroupId != 'reset'">
+			AND	 SUBSTRING_INDEX(subgroup_name, '-', 1) = #{subgroupId}
 		</if>
-		<if test="storeId != null and storeId != ''">
-			AND	 sbStore.store_id = #{storeId}
+		<if test="storeId != null and storeId != 'reset'">
+			AND	 store_id = #{storeId}
 		</if>
 	</select>
 
 	<!--
 	///// 2020.04.28 Store 일자별 통계페이지 관리자 버전
 	-->
-	<select id="selectStoreStatisticsByDateForAdmin" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
+	<select id="selectStoreStatisticsByDateForAdmin" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
 		<![CDATA[
-		select	 ( select store_name from TB_STORE where id = t.store_id )																							as store_name
+		select	 store_name
 				,group_id
 				,subgroup_id
-				,( select name from TB_GROUP where id = t.group_id )																								as group_name
-				,( select name from TB_SUBGROUP where group_id = t.group_id and id = t.subgroup_id )																as subgroup_name
+				,group_name
+				,subgroup_name
 
-				,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )									as order_pickup
-				,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, picked_up_datetime)) else null end )										as pickup_complete
-				,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )									as order_complete
-				,avg( case when condition1 = 1 then time_to_sec(timediff(completed_datetime, arrived_datetime)) else null end )										as stay_time
-				,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, completed_datetime)) else null end )										as complete_return
-				,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else null end )										as pickup_return
-				,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, newAssignedDatetime)) else null end )										as order_return
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_30below
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_30to40
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_40to50
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_50to60
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_60to90
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_90under
-				,count( case when condition1 = 1 or third_party_id is not null then null else 1 end )																as errtc
-				,count( case when third_party_id is not null then 1 else null end )																					as thirdtc
-				,count( case when condition1 = 1 then 1 else null end )																								as tc
-				,sum( case when condition1 = 1 then total_price else 0 end )																						as total_sales
-				,count( case when condition1 = 1 then 1 else null end )
-				/ (round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2))						as tplh
-				,sum( case when condition1 = 1 then total_price else 0 end )
-				/ (round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2 ))						as spmh
-				,sum( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else 0 end )											as total_pickup_return
-				,avg( case when condition1 = 1 then distance else null end )																						as avg_distance
+				,order_pickup
+				,pickup_complete
+				,order_complete
+				,stay_time
+				,complete_return
+				,pickup_return
+				,order_return
+				,min_30below
+				,min_30to40
+				,min_40to50
+				,min_50to60
+				,min_60to90
+				,min_90under
+				,errtc
+				,thirdtc
+				,tc
+				,total_sales
+				,tplh
+				,spmh
+				,total_pickup_return
+				,avg_distance
 		from	(
-					select	 a.store_id
-							,b.group_id
-							,b.subgroup_id
-							,a.reservation_datetime
-							,a.picked_up_datetime
-							,a.arrived_datetime
-							,a.completed_datetime
-							,a.return_datetime
-							,a.total_price
-							,a.distance
-							,a.third_party_id
-							,if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime)		as newAssignedDatetime
-							,case
-								when	 a.assigned_datetime is not null
-									and  a.picked_up_datetime is not null
-									and	 ifnull(a.arrived_datetime, a.completed_datetime) is not null
-									and	 a.return_datetime is not null
-									and	 timestampdiff(SECOND, ifnull(a.arrived_datetime, a.completed_datetime), a.return_datetime) >= 60
-									and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), ifnull(a.arrived_datetime, a.completed_datetime)) >= 0
-									and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), a.picked_up_datetime) >= 0
-									and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), a.return_datetime) >= 0
-									and  a.third_party_id is null
-								then 1
-								else 0
-							 end					as condition1
-					from	 TB_ORDER 					AS a
-					left join TB_SUBGROUP_STORE_REL 	AS b
-						on	 a.store_id = b.store_id
-						and	 a.admin_id = b.admin_id
-						and	 b.deleted is null
-					where	 a.status in (3)
-					and		 a.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
-					and		 a.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-			]]>
-					-- 검색 조건 추가
-					<if test="group != null and group.id != null and group.id != ''">
-						and	 b.group_id = #{group.id}
-					</if>
-					<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-						and	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
-					</if>
-					<if test="storeId != null and storeId != ''">
-						and	 b.store_id = #{storeId}
-					</if>
-				)	t
-		group by store_id, group_id, subgroup_id
+					select	 ( select store_name from TB_STORE where id = t.store_id )																							as store_name
+							,group_id
+							,subgroup_id
+							,store_id
+							,admin_id
+							,( select name from TB_GROUP where id = t.group_id )																								as group_name
+							,( select name from TB_SUBGROUP where group_id = t.group_id and id = t.subgroup_id )																as subgroup_name
+
+							,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )									as order_pickup
+							,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, picked_up_datetime)) else null end )										as pickup_complete
+							,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )									as order_complete
+							,avg( case when condition1 = 1 then time_to_sec(timediff(completed_datetime, arrived_datetime)) else null end )										as stay_time
+							,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, completed_datetime)) else null end )										as complete_return
+							,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else null end )										as pickup_return
+							,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, newAssignedDatetime)) else null end )										as order_return
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_30below
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_30to40
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_40to50
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_50to60
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_60to90
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																						as min_90under
+							,count( case when condition1 = 1 or third_party_id is not null then null else 1 end )																as errtc
+							,count( case when third_party_id is not null then 1 else null end )																					as thirdtc
+							,count( case when condition1 = 1 then 1 else null end )																								as tc
+							,sum( case when condition1 = 1 then total_price else 0 end )																						as total_sales
+							,count( case when condition1 = 1 then 1 else null end )
+							/ (round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2))						as tplh
+							,sum( case when condition1 = 1 then total_price else 0 end )
+							/ (round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2 ))						as spmh
+							,sum( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else 0 end )											as total_pickup_return
+							,avg( case when condition1 = 1 then distance else null end )																						as avg_distance
+					from	(
+								select	 a.store_id
+										,a.admin_id
+										,b.group_id
+										,b.subgroup_id
+										,a.reservation_datetime
+										,a.picked_up_datetime
+										,a.arrived_datetime
+										,a.completed_datetime
+										,a.return_datetime
+										,a.total_price
+										,a.distance
+										,a.third_party_id
+										,if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime)		as newAssignedDatetime
+										,case
+											when	 a.assigned_datetime is not null
+												and  a.picked_up_datetime is not null
+												and	 ifnull(a.arrived_datetime, a.completed_datetime) is not null
+												and	 a.return_datetime is not null
+												and	 timestampdiff(SECOND, ifnull(a.arrived_datetime, a.completed_datetime), a.return_datetime) >= 60
+												and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), ifnull(a.arrived_datetime, a.completed_datetime)) >= 0
+												and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), a.picked_up_datetime) >= 0
+												and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), a.return_datetime) >= 0
+												and  a.third_party_id is null
+											then 1
+											else 0
+										 end					as condition1
+								from	 TB_ORDER 					AS a
+								left join TB_SUBGROUP_STORE_REL 	AS b
+									on	 a.store_id = b.store_id
+									and	 a.admin_id = b.admin_id
+									and	 b.deleted is null
+								where	 a.status in (3)
+								and		 a.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
+								and		 a.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+						]]>
+							)	t
+					group by store_id, group_id, subgroup_id, admin_id
+				)	g
+		where	 1=1
+		-- 검색 조건 추가
+		<if test="groupId != null and groupId != 'reset'">
+			and	 group_id = #{groupId}
+		</if>
+		<if test="subgroupId != null and subgroupId != 'reset'">
+			and	 subgroup_id in ( select id from TB_SUBGROUP where admin_id = g.admin_id and group_id = g.group_id and id = g.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+		</if>
+		<if test="storeId != null and storeId != 'reset'">
+			and	 store_id = #{storeId}
+		</if>
+		order by store_id, group_id, subgroup_id
 	</select>
 
-	<select id="selectStoreStatisticsByDateForAdminAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
+	<select id="selectStoreStatisticsByDateForAdminAtTWKFC" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.statistic.AdminByDate">
 		<![CDATA[
-		select	 ( select store_name from TB_STORE where id = t.store_id )																					as store_name
+		select	 store_name
 				,group_id
 				,subgroup_id
-				,( select name from TB_GROUP where id = t.group_id )																						as group_name
-				,( select name from TB_SUBGROUP where group_id = t.group_id and id = t.subgroup_id )														as subgroup_name
+				,group_name
+				,subgroup_name
 
-				,sum( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 and condition1 = 1 then 1 else 0 end )						as d7_success
-				,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )							as order_pickup
-				,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, picked_up_datetime)) else null end )								as pickup_complete
-				,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )								as order_complete
-				,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, arrived_datetime)) else null end )								as complete_return
-				,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else null end )								as pickup_return
-				,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, newAssignedDatetime)) else null end )								as order_return
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_D7below
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_30below
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_30to40
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_40to50
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_50to60
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_60to90
-				,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 and condition1 = 1 then 1 else null end )
-				/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_90under
-				,count( case when condition1 = 1 or third_party_id is not null then null else 1 end )														as errtc
-				,count( case when third_party_id is not null then 1 else null end )																			as thirdtc
-				,count( case when condition1 = 1 then 1 else null end )																						as tc
-				,sum( case when condition1 = 1 then total_price else 0 end )																				as total_sales
-				,count( case when condition1 = 1 then 1 else null end )
-				/ (round(sum(case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end) / 60, 2))				as tplh
-				,sum( case when condition1 = 1 then total_price else null end )
-				/ (round(sum(case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end) / 60, 2))				as tplh
-				,sum( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else 0 end )									as total_pickup_return
-				,avg( case when condition1 = 1 then distance else null end )																				as avg_distance
+				,d7_success
+				,order_pickup
+				,pickup_complete
+				,order_complete
+				,complete_return
+				,pickup_return
+				,order_return
+				,min_D7below
+				,min_30below
+				,min_30to40
+				,min_40to50
+				,min_50to60
+				,min_60to90
+				,min_90under
+				,errtc
+				,thirdtc
+				,tc
+				,total_sales
+				,tplh
+				,spmh
+				,total_pickup_return
+				,avg_distance
 		from	(
-					select	 a.store_id
-							,b.group_id
-							,b.subgroup_id
-							,a.reservation_datetime
-							,a.picked_up_datetime
-							,a.arrived_datetime
-							,a.completed_datetime
-							,a.return_datetime
-							,a.total_price
-							,a.distance
-							,a.third_party_id
-							,if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime)		as newAssignedDatetime
-							,case
-								when	 a.assigned_datetime is not null
-									and  a.picked_up_datetime is not null
-									and	 ifnull(a.arrived_datetime, a.completed_datetime) is not null
-									and	 a.return_datetime is not null
-									and	 timestampdiff(SECOND, ifnull(a.arrived_datetime, a.completed_datetime), a.return_datetime) >= 60
-									and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), ifnull(a.arrived_datetime, a.completed_datetime)) >= 0
-									and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), a.picked_up_datetime) >= 0
-									and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), a.return_datetime) >= 0
-									and  a.third_party_id is null
-								then 1
-								else 0
-							end					as condition1
-					from	 TB_ORDER 					AS a
-					left join TB_SUBGROUP_STORE_REL 	AS b
-						on	 a.store_id = b.store_id
-						and	 a.admin_id = b.admin_id
-						and	 b.deleted is null
-					where	 a.status in (3)
-					and		 a.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
-			]]>
-					<choose>
-						<when test="chkTime != null and chkTime == true">
-							AND	  a.reservation_datetime >= #{currentDatetime}
-							AND	  a.reservation_datetime <![CDATA[<]]> #{endDate}
-						</when>
-						<when test="chkPeakTime != null and chkPeakTime == true">
-							AND	  a.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-							<choose>
-								<when test="peakType != null and peakType == 1">
-									AND   date_format(a.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
-								</when>
-								<when test="peakType != null and peakType == 2">
-									AND   date_format(a.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
-								</when>
-								<otherwise>
-									AND (  (date_format(a.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-										OR (date_format(a.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
-									)
-								</otherwise>
-							</choose>
-						</when>
-						<otherwise>
-							AND	  a.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
-						</otherwise>
-					</choose>
+					select	 ( select store_name from TB_STORE where id = t.store_id )																					as store_name
+							,group_id
+							,subgroup_id
+							,store_id
+							,admin_id
+							,( select name from TB_GROUP where id = t.group_id )																						as group_name
+							,( select name from TB_SUBGROUP where group_id = t.group_id and id = t.subgroup_id )														as subgroup_name
 
-					-- 검색 조건 추가
-					<if test="group != null and group.id != null and group.id != ''">
-						AND	 b.group_id = #{group.id}
-					</if>
-					<if test="subGroup != null and subGroup.groupingName != null and subGroup.groupingName != ''">
-						AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subGroup.groupingName} )
-					</if>
-					<if test="storeId != null and storeId != ''">
-						AND	 b.store_id = #{storeId}
-					</if>
-				)	t
-		group by store_id, group_id, subgroup_id
+							,sum( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 and condition1 = 1 then 1 else 0 end )					as d7_success
+							,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )							as order_pickup
+							,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, picked_up_datetime)) else null end )								as pickup_complete
+							,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )							as order_complete
+							,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, arrived_datetime)) else null end )								as complete_return
+							,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else null end )								as pickup_return
+							,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, newAssignedDatetime)) else null end )								as order_return
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_D7below
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_30below
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_30to40
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_40to50
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_50to60
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_60to90
+							,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 and condition1 = 1 then 1 else null end )
+							/ count( case when condition1 = 1 then 1 else null end ) * 100																				as min_90under
+							,count( case when condition1 = 1 or third_party_id is not null then null else 1 end )														as errtc
+							,count( case when third_party_id is not null then 1 else null end )																			as thirdtc
+							,count( case when condition1 = 1 then 1 else null end )																						as tc
+							,sum( case when condition1 = 1 then total_price else 0 end )																				as total_sales
+							,count( case when condition1 = 1 then 1 else null end )
+							/ (round(sum(case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end) / 60, 2))					as tplh
+							,sum( case when condition1 = 1 then total_price else null end )
+							/ (round(sum(case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end) / 60, 2))					as spmh
+							,sum( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else 0 end )									as total_pickup_return
+							,avg( case when condition1 = 1 then distance else null end )																				as avg_distance
+					from	(
+								select	 a.store_id
+										,a.admin_id
+										,b.group_id
+										,b.subgroup_id
+										,a.reservation_datetime
+										,a.picked_up_datetime
+										,a.arrived_datetime
+										,a.completed_datetime
+										,a.return_datetime
+										,a.total_price
+										,a.distance
+										,a.third_party_id
+										,if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime)		as newAssignedDatetime
+										,case
+											when	 a.assigned_datetime is not null
+												and  a.picked_up_datetime is not null
+												and	 ifnull(a.arrived_datetime, a.completed_datetime) is not null
+												and	 a.return_datetime is not null
+												and	 timestampdiff(SECOND, ifnull(a.arrived_datetime, a.completed_datetime), a.return_datetime) >= 60
+												and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), ifnull(a.arrived_datetime, a.completed_datetime)) >= 0
+												and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), a.picked_up_datetime) >= 0
+												and	 timestampdiff(SECOND, if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute)) < 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) < 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime), a.return_datetime) >= 0
+												and  a.third_party_id is null
+											then 1
+											else 0
+										end					as condition1
+								from	 TB_ORDER 					AS a
+								left join TB_SUBGROUP_STORE_REL 	AS b
+									on	 a.store_id = b.store_id
+									and	 a.admin_id = b.admin_id
+									and	 b.deleted is null
+								where	 a.status in (3)
+								and		 a.admin_id = ( SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token} )
+			]]>
+								<choose>
+									<when test="chkTime != null and chkTime == true">
+										AND	  a.reservation_datetime >= #{currentDatetime}
+										AND	  a.reservation_datetime <![CDATA[<]]> #{eDate}
+									</when>
+									<when test="chkPeakTime != null and chkPeakTime == true">
+										AND	  a.reservation_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+										<choose>
+											<when test="peakType != null and peakType == 1">
+												AND   date_format(a.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+											</when>
+											<when test="peakType != null and peakType == 2">
+												AND   date_format(a.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+											</when>
+											<otherwise>
+												AND (  (date_format(a.reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+													OR (date_format(a.reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+												)
+											</otherwise>
+										</choose>
+									</when>
+									<otherwise>
+										AND	  a.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
+									</otherwise>
+								</choose>
+
+							)	t
+					group by store_id, group_id, subgroup_id, admin_id
+				)	g
+		where	 1=1
+		-- 검색 조건 추가
+		<if test="groupId != null and groupId != 'reset'">
+			AND	 group_id = #{groupId}
+		</if>
+		<if test="subgroupId != null and subgroupId != 'reset'">
+			AND	 subgroup_id in ( select id from TB_SUBGROUP where admin_id = g.admin_id and group_id = g.group_id and id = g.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+		</if>
+		<if test="storeId != null and storeId != 'reset'">
+			AND	 store_id = #{storeId}
+		</if>
+		order by store_id, group_id, subgroup_id
 	</select>
 
 	<select id="selectStatisticsByInterval" parameterType="kr.co.cntt.core.model.order.Order" resultType="Integer">

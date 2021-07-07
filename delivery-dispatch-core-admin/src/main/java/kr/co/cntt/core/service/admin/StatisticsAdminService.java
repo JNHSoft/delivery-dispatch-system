@@ -1,5 +1,6 @@
 package kr.co.cntt.core.service.admin;
 
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
@@ -61,10 +62,10 @@ public interface StatisticsAdminService {
 
     /**
      * 통계 목록 Excel
-     * @param order
+     * @param searchInfo
      * @return
      */
-    public List<Order> selectAdminStatisticsExcel(Order order);
+    public List<Order> selectAdminStatisticsExcel(SearchInfo searchInfo);
 
 
     /**
@@ -73,15 +74,15 @@ public interface StatisticsAdminService {
 
     /**
      * 주문별 통게페이지
-     * @param order
+     * @param searchInfo
      * @return
      * */
-    List<Order> selectStoreStatisticsByOrderForAdmin(Order order);
+    List<Order> selectStoreStatisticsByOrderForAdmin(SearchInfo searchInfo);
 
     /**
      * 매장 기간별 통계 페이지
      * */
-    List<AdminByDate> selectStoreStatisticsByDateForAdmin(Order order);
+    List<AdminByDate> selectStoreStatisticsByDateForAdmin(SearchInfo searchInfo);
 
     /**
      * 매장 누적 통계 페이지
@@ -100,7 +101,7 @@ public interface StatisticsAdminService {
     /**
      * 매장 기간별 통계 페이지 KFC
      * */
-    List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(Order order);
+    List<AdminByDate> selectStoreStatisticsByDateForAdminAtTWKFC(SearchInfo searchInfo);
 
     /**
      * 매장 누적 통계 페이지 KFC
