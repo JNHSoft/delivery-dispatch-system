@@ -138,9 +138,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             case "1":           //// 배정 완료
                             default:
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
+                                // 21-07-05 주말에 관련 프로세스 다시 살려달라 요청
+                                return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId())).count() <= 0;
                                 // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store_id
                                 //System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
-                                return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
+                                //return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
                         }
                     }
                 })
@@ -173,6 +175,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
                         //r.setDistance(r.getDistance() - r.getDistance() % 100); // 0~100M => 0, 101M ~ 201M => 1
                         r.setDistance(r.getDistance() / 100); // 100M 범위로 변경
+                        if (r.getMinOrderStatus() == null){
+                            r.setMinOrderStatus("1");
+                        }
                     } catch (Exception e) {
                         log.error(e.getMessage());
                     }
@@ -226,7 +231,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }
                     })                  // 주문 상태 값이 픽업 또는 배달 중인 경우 삭제
                     .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.nullsLast(Comparator.reverseOrder()))       // 1순위 쉐어 내용에 따른 정렬
-                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))          // 2순위 상태값 정렬 (현재는 배정과 미배정만 나온다)
+                            //.thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))          // 2순위 상태값 정렬 (현재는 배정과 미배정만 나온다) # 상태값이 놀고 있거나, 배정이된 라이더들만 추출하므로
                             .thenComparing(Rider::getDistance)                                                                  // 3순위 거리 순
                             .thenComparing(Rider::getAssignCount)                                                               // 4순위 주문을 가지고 있는 순서
                             .thenComparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
@@ -276,14 +281,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //
 //                            })
                     )
-
-//                    .sorted(Comparator.comparing(Rider::getSharedStatus, Comparator.reverseOrder()) // 1순위 주문된 매장의 라이더가 아닌 경우 1위}) // 1순위 주문된 매장의 라이더가 아닌 경우 1위
-//                            .thenComparing(Rider::getDistance)                                      // 4순위 거리순(10미터 단위)             // 20.07.02 라이더 오더가 적은 순 부터 적용을 한다
-//                            .thenComparing(Rider::getAssignCount)                                   //3순위 라이더의 오더 개수....
-//                            .thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))
-//                            ) //5순위 라이더가 들고있는 주문(배정,픽업) 중 가장빠른 주문의 상태
-
-
                     .collect(Collectors.toList());
 
             if (!riderList.isEmpty()) {//riderList.size()!=0
