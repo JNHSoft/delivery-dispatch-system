@@ -261,8 +261,6 @@ public class StatisticsController {
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
-        System.out.println("SearchInfo => " + searchInfo);
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         try {

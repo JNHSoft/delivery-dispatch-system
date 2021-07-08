@@ -32,9 +32,6 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
         List<DashboardInfo> resultList = new ArrayList<>();
         Map resultMap = dashboardMapper.selectAllDetail(search);
 
-        // 데이터에 대하여 파싱을 진행한다.
-        System.out.println(resultMap);
-
         // 파싱할 데이터가 NULL 이면 오류가 발생하므로, 예외처리를 진행한다.
         if (resultMap != null){
             // D30 등록
@@ -366,11 +363,6 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
         double dTen = Math.pow(10, (dLen - 1));
         double dPV = Math.floorDiv((int)maxY, (int)dTen);
 
-
-        System.out.println("### => maxY => " + maxY);
-        System.out.println("### => dlen => " + dLen);
-        System.out.println("### => dTen => " + dTen);
-        System.out.println("### => dPV => " + dPV);
 
         maxY = (float)((dPV + 2) * dTen);
 

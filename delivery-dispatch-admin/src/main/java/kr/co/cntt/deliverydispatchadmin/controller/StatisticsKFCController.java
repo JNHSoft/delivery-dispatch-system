@@ -243,11 +243,6 @@ public class StatisticsKFCController {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         searchInfo.setCurrentDatetime(searchInfo.getSDate());
 
-        System.out.println(searchInfo);
-        System.out.println(searchInfo.getPeakType());
-        System.out.println(searchInfo.getChkTime());
-        System.out.println(searchInfo.getChkPeakTime());
-
         /**
          * 20.12.26 데이터 구하는 방식 변경
          * */

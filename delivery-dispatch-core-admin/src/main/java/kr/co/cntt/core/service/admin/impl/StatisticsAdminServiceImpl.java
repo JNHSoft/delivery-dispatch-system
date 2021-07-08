@@ -1,8 +1,6 @@
 package kr.co.cntt.core.service.admin.impl;
 
 import kr.co.cntt.core.mapper.AdminMapper;
-import kr.co.cntt.core.mapper.OrderMapper;
-import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
@@ -10,12 +8,9 @@ import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.AdminByDate;
-import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
-import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StatisticsAdminService;
-import kr.co.cntt.core.util.Misc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
