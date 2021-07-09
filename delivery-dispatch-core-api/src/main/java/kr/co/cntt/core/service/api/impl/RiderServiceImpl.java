@@ -33,6 +33,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -733,11 +735,18 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         Rider riderInfo = riderMapper.getRiderInfo(rider);
-        List<Order> orderList = riderMapper.getOrderForRider(rider);
+        List<Order> orderList = riderMapper.getOrderForRider(rider).stream().sorted(Comparator.comparing(Order::getReservationDatetime, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
 
         if (orderList.size() < 1){
             log.info("싸이클 정보 : " + riderInfo.getId() + " #### 라이더에게 배정된 주문이 없습니다.");
             throw new AppTrException(getMessage(ErrorCodeEnum.ERR0001), ErrorCodeEnum.ERR0001.name());
+        }
+
+        // 정보 확인을 위한 내용
+        for (Order o:orderList
+             ) {
+            System.out.println("주문 정보 리스트");
+            System.out.println(o.getId() + " => " + o);
         }
 
         List<String> storeIdList = new ArrayList<>();
@@ -994,7 +1003,26 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         continue;
                     }
 
-                    if (beforeOrderDistance > currentOrderDistance){
+                    // 시간 비교를 진행하여, 5분 이상 차이가 나는 경우 거리와 상관 없이 우선 순위가 되어야 한다.
+                    LocalDateTime currentReservation = LocalDateTime.parse(order.getReservationDatetime().replace(" ", "T"));
+                    LocalDateTime beforeReservation = LocalDateTime.parse(minOrder.getReservationDatetime().replace(" ", "T"));
+
+                    System.out.println("시간 구하기 => 현재시간 : " + currentReservation + " # 이전 주문의 시간 => " + beforeReservation);
+
+                    /**
+                     * 21-07-09
+                     * 현재 주문의 예약시간과 이전 주문의 시간 중 시간 차이가 크면 우선 순위가 될 수 있도록 적용
+                     * */
+                    boolean bTimeCheck = false;
+                    if (Math.abs(ChronoUnit.MINUTES.between(currentReservation, beforeReservation)) > 5){
+                        System.out.println("시간 차이가 5분을 초과합니다. => 아래 구문 => " + currentReservation.isBefore(beforeReservation));
+                        if (currentReservation.isBefore(beforeReservation)){
+                            bTimeCheck = true;
+                        }
+                    }
+
+                    // 거리차이가 나거나 시간 차이가 5분 이상 나는 경우 교체
+                    if (beforeOrderDistance > currentOrderDistance || bTimeCheck){
                         minOrder = order;
                         beforeOrderDistance = currentOrderDistance;
                     }
