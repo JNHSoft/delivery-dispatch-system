@@ -473,7 +473,7 @@
         order by 1
     </select>
 
-    <select id="selectD30Rank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
+    <select id="selectD30Rank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
         select	 store_id																											                            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                                        as storeName
@@ -539,7 +539,7 @@
         order by 4 desc, 3 desc, 1
     </select>
 
-    <select id="selectTPLHRank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
+    <select id="selectTPLHRank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
         select	 store_id																											            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
@@ -605,7 +605,7 @@
         order by 3 desc, 1
     </select>
 
-    <select id="selectQTRank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
+    <select id="selectQTRank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
         select	 store_id																											            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
@@ -669,7 +669,7 @@
         order by 3 desc, 1
     </select>
 
-    <select id="selectTCRank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
+    <select id="selectTCRank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
         select	 store_id																											            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
@@ -733,11 +733,11 @@
         order by 3 desc, 1
     </select>
 
-    <select id="selectOrderStackRateRank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
+    <select id="selectOrderStackRateRank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
 
     </select>
 
-    <select id="selectD7Rank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
+    <select id="selectD7Rank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
         select	 store_id																											                        as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                                    as storeName
@@ -803,7 +803,7 @@
         order by 4 desc, 3 desc, 1
     </select>
 
-    <select id="selectD14Rank" parameterType="kr.co.cntt.core.model.dashboard.RankInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
+    <select id="selectD14Rank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
         select	 store_id																											                            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                                        as storeName
@@ -867,5 +867,62 @@
                 )	t
         group by store_id
         order by 4 desc, 3 desc, 1
+    </select>
+
+    <select id="selectTimeSectionList" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.TimeSectionInfo">
+        select   admin_id                                                                                   as adminId
+        ,count(*)                                                                                                                   as orderCount
+        ,count(case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <![CDATA[<=]]> 30 then 1 else null end)       as D30
+        ,count(case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 40 then 1 else null end)       as D40
+        ,count(case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 50 then 1 else null end)       as D50
+        ,count(case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 60 then 1 else null end)       as D60
+        ,count(case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 60 then 1 else null end)                    as OverTime
+        from    (
+        select   a.admin_id
+        ,b.group_id
+        ,SUBSTRING_INDEX(( select name from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and deleted is null ), '-', 1)      as subGroupName
+        ,a.store_id
+        ,if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(a.cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime)      as newAssignedDatetime
+        ,arrived_datetime
+        from     TB_ORDER           as a
+        left join TB_SUBGROUP_STORE_REL as b
+        on   a.admin_id = b.admin_id
+        and  a.store_id = b.store_id
+        where    1=1
+        and      a.reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+        <choose>
+            <when test="peakType == 1">
+                AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+            </when>
+            <when test="peakType == 2">
+                AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+            </when>
+        </choose>
+        <choose>
+            <when test="role != null and role == 'ROLE_STORE'">
+                and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+            </when>
+            <when test="role != null and role == 'ROLE_ADMIN'">
+                and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+            </when>
+            <otherwise>
+                and 1 != 1
+            </otherwise>
+        </choose>
+        -- 시간대별 통계에 대한 조건 추가
+        AND		 assigned_datetime is not null
+        AND		 picked_up_datetime is not null
+        AND		 ifnull(arrived_datetime, completed_datetime) is not null
+        AND		 return_datetime is not null
+        AND		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        AND      third_party_id IS NULL
+        and      b.deleted is null
+        and      a.status = 3
+        )       as t
+        where   1=1
+        group by admin_id
     </select>
 </mapper>

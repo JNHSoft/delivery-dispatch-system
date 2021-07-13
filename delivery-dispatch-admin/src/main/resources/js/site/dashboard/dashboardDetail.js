@@ -18,6 +18,38 @@ $(function(){
     makeEventBind();
     getGroupList();
 
+    // D30 페이지인 경우, 배정 ~ 도착의 시간 구분별에 대한 Excel을 다운로드 할 수 있도록 버튼 생성
+    if (second_column == "D30"){
+        $("#btnExcel").before('<button class="btn-excel" style="margin-right: 5px;" id="btnTimeSectionExcel">' + 'TimeSection Excel' + '</button>');
+        $("#btnTimeSectionExcel").off().on('click', function (){
+            // 정보들을 모두 설정한다.
+            let startDate = $('#startDate').val();
+            let endDate = $('#endDate').val();
+
+            let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24));
+            if (diffDate > 31){
+                return;
+            }
+
+            $.fileDownload("/downloadTimeSectionExcel", {
+                httpMethod: "POST",
+                data: {
+                    groupId: $("#statisticsGroupList option:selected").val(),
+                    subgroupId: $("#statisticsSubGroupList option:selected").val(),
+                    storeId: $("#statisticsStoreList option:selected").val(),
+                    sDate: startDate,
+                    eDate: endDate,
+                    peakType: $("#sel_peak_time").val(),
+                },
+                successCallback: function (url){
+
+                }, failCallback: function (responseHtml, url, err){
+
+                }
+            });
+        });
+    }
+
     // 검색 조건 세팅
     if (localStorage.getItem("keepDashboard") === "Y"){
         let objSearch = JSON.parse(localStorage.getItem("objSearch"));

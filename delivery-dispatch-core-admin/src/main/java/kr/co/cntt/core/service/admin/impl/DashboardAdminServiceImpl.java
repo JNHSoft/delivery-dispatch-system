@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.RankInfo;
+import kr.co.cntt.core.model.dashboard.TimeSectionInfo;
 import kr.co.cntt.core.service.admin.DashboardAdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -248,6 +249,11 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
     @Override
     public List<RankInfo> selectD14Rank(SearchInfo search) {
         return dashboardMapper.selectD14Rank(search);
+    }
+
+    @Override
+    public List<TimeSectionInfo> selectTimeSection(SearchInfo search) {
+        return dashboardMapper.selectTimeSectionList(search);
     }
 
     private String changeValueType(Type type, String value){
