@@ -657,13 +657,13 @@
                 ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, newAssignedDatetime)) else null end )												as order_return
                 ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then case when condition1 = 1 then 1 else null end else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_30below
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 then case when condition1 = 1 then 1 else null end else null end )
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 40 then case when condition1 = 1 then 1 else null end else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_30to40
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 then case when condition1 = 1 then 1 else null end else null end )
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 50 then case when condition1 = 1 then 1 else null end else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_40to50
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 then case when condition1 = 1 then 1 else null end else null end )
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 60 then case when condition1 = 1 then 1 else null end else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_50to60
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 then case when condition1 = 1 then 1 else null end else null end )
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 90 then case when condition1 = 1 then 1 else null end else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_60to90
                 ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 then case when condition1 = 1 then 1 else null end else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																								as min_90under
@@ -727,13 +727,13 @@
                  / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_D7below
                 ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 and condition1 = 1 then 1 else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_30below
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 and condition1 = 1 then 1 else null end )
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 40 and condition1 = 1 then 1 else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_30to40
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 and condition1 = 1 then 1 else null end )
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 50 and condition1 = 1 then 1 else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_40to50
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 and condition1 = 1 then 1 else null end )
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 60 and condition1 = 1 then 1 else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_50to60
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 and condition1 = 1 then 1 else null end )
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 90 and condition1 = 1 then 1 else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_60to90
                 ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 and condition1 = 1 then 1 else null end )
                  / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_90under
