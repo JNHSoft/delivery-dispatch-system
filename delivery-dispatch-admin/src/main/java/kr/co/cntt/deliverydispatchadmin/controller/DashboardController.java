@@ -6,6 +6,7 @@ import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.RankInfo;
+import kr.co.cntt.core.model.dashboard.TimeSectionInfo;
 import kr.co.cntt.core.service.admin.DashboardAdminService;
 import kr.co.cntt.deliverydispatchadmin.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
@@ -165,8 +166,6 @@ public class DashboardController {
     @CnttMethodDescription("대시보드 상세페이지")
     public String dashboardDetail(Model model,
                                   @RequestParam("dashBoardType") String type){
-
-        System.out.println("dashBoardType => " + type);
 
         model.addAttribute("dashboardType", type);
 
@@ -329,4 +328,50 @@ public class DashboardController {
         return modelAndView;
     }
 
+    @PostMapping("/downloadTimeSectionExcel")
+    public ModelAndView timeSectionExcelDownload(HttpServletResponse response,
+                                                 SearchInfo searchInfo){
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+
+        List<TimeSectionInfo> timeSecionInfos = new ArrayList<>();
+
+        // 일자를 막도록 합시다.
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date sdfStartDate;
+        Date sdfEndDate;
+        try {
+            sdfStartDate = formatter.parse(searchInfo.getSDate());
+            sdfEndDate = formatter.parse(searchInfo.getEDate());
+
+            long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            if (diffDays > 31) {
+                return null;
+            }
+
+            searchInfo.setDays((Integer.toString(((int) (long) diffDays + 1))));
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
+        // ADMIN 정보
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        searchInfo.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setRole("ROLE_ADMIN");
+
+        timeSecionInfos = dashboardAdminService.selectTimeSection(searchInfo);
+
+        // 데이터가 없으면 return
+        if (timeSecionInfos.isEmpty()){
+            return null;
+        }
+
+        ModelAndView modelAndView = new ModelAndView("DashBoardTimeSectionExcelBuilderServiceImpl");
+        modelAndView.addObject("getTimeSectionInfo", timeSecionInfos);
+
+        return modelAndView;
+    }
 }

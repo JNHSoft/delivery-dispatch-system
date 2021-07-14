@@ -4,6 +4,7 @@ import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.dashboard.ChartInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.RankInfo;
+import kr.co.cntt.core.model.dashboard.TimeSectionInfo;
 
 import java.util.List;
 
@@ -84,4 +85,9 @@ public interface DashboardAdminService {
      * D14 스토어 랭키 조회
      * */
     List<RankInfo> selectD14Rank(SearchInfo search);
+
+    /**
+     * TimeSection 구해오기
+     * */
+    List<TimeSectionInfo> selectTimeSection(SearchInfo search);
 }

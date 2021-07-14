@@ -4,6 +4,7 @@ import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.dashboard.DashboardInfo;
 import kr.co.cntt.core.model.dashboard.RankInfo;
+import kr.co.cntt.core.model.dashboard.TimeSectionInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -105,4 +106,11 @@ public interface DashboardMapper {
      * */
     @Transactional(readOnly = true)
     List<RankInfo> selectD14Rank(SearchInfo search);
+
+    /**
+     * 배정 ~ 도착 시간의 구간 개수 구하기
+     * */
+    @Transactional(readOnly = true)
+    List<TimeSectionInfo> selectTimeSectionList(SearchInfo search);
+
 }
