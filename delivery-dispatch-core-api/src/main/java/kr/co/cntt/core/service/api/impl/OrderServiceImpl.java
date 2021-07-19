@@ -874,6 +874,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 변경되어야 될 내용 적용 ex. 배정취소
                     // 20.08.03 배정 취소 사라지게 하기
                     // 20.08.28 배정 시간을 임의로 조정
+                    // 21.07.16 QT 시간이 30분을 초과하는 경우 30분으로 변경한다.
                     /*
                      * 배정시간 조건
                      * 예약 시간 마이너스 QT 타임을 비교하여, QT 타임보다 낮은 경우에 한하여, 예약시간 - QT 타임 시간을 적용한다.
@@ -885,7 +886,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }catch (Exception e){
                         log.error(e.getMessage());
                     }finally {
-                        if (orgQT == 0){
+                        if (orgQT == 0 || orgQT > 30){
                             orgQT = 30;
                         }
                     }

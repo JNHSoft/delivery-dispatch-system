@@ -7,7 +7,6 @@ import kr.co.cntt.core.model.dashboard.RankInfo;
 import kr.co.cntt.core.model.dashboard.TimeSectionInfo;
 
 import java.util.List;
-import java.util.Map;
 
 public interface DashboardAdminService {
 
