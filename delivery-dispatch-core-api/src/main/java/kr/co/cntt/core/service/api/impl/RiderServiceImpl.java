@@ -33,6 +33,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -733,12 +735,20 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         }
 
         Rider riderInfo = riderMapper.getRiderInfo(rider);
-        List<Order> orderList = riderMapper.getOrderForRider(rider);
+        List<Order> orderList = riderMapper.getOrderForRider(rider).stream().sorted(Comparator.comparing(Order::getReservationDatetime, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
 
         if (orderList.size() < 1){
-            log.info("싸이클 정보 : " + riderInfo.getId() + " #### 라이더에게 배정된 주문이 없습니다.");
+            log.info("1. 싸이클 정보 : " + riderInfo.getId() + " #### 라이더에게 배정된 주문이 없습니다.");
             throw new AppTrException(getMessage(ErrorCodeEnum.ERR0001), ErrorCodeEnum.ERR0001.name());
         }
+
+        // 정보 확인을 위한 내용
+        log.info("주문 정보 리스트 ##### S");
+        for (Order o:orderList
+             ) {
+            log.info(o.getId() + " => " + o);
+        }
+        log.info("주문 정보 리스트 #### F");
 
         List<String> storeIdList = new ArrayList<>();
         List<String> usedStoreId = new ArrayList<>();
@@ -764,7 +774,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     .findFirst().get();
             Store storeInfo = storeList.stream().filter(x -> x.getId().equals(firstOrder.getStoreId())).findFirst().get();
 
-            log.info("싸이클 정보 : " + riderInfo.getId() + " #### 픽업 이후의 상태의 주문이 존재합니다. => " + firstOrder.getId() + " ## " + firstOrder.getRegOrderId());
+            log.info("2. 싸이클 정보 : " + riderInfo.getId() + " #### 픽업 이후의 상태의 주문이 존재합니다. => " + firstOrder.getId() + " ## " + firstOrder.getRegOrderId());
 
             // 현재 라이더 위치에서 스토어 간의 거리를 구한다
             int iDistance = 0;
@@ -772,7 +782,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             try{
                 iDistance = misc.getHaversine(rider.getLatitude(), rider.getLongitude(), storeInfo.getLatitude(), storeInfo.getLongitude());
             }catch (Exception e){
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### 거리 도출 중 오류 발생");
+                log.info("3. 싸이클 정보 : " + riderInfo.getId() + " #### 거리 도출 중 오류 발생");
                 log.error(e.getMessage());
             }
 
@@ -781,7 +791,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
             orderList.stream().filter(x -> x.getStoreId().equals(storeInfo.getId())).forEach(x -> orderID.add(x.getRegOrderId()));
 
-            log.info("싸이클 정보 : 매장정보 [" + storeInfo.getId() + " # " + storeInfo.getStoreRealName() + "]의 주문 개수 : [" + orderList.size() + "]");
+            log.info("4. 싸이클 정보 : 매장정보 [" + storeInfo.getId() + " # " + storeInfo.getStoreRealName() + "]의 주문 개수 : [" + orderList.size() + "]");
 
             for (String strID : orderID){
                 RiderRouteInfo route = new RiderRouteInfo();
@@ -808,17 +818,17 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 routeInfoList.add(route);
             }
 
-            log.info("싸이클 정보 : " + riderInfo.getId() + " #### 픽업 이후의 상태의 스토어 정보를 등록하였습니다. => [" + routeInfoList + "]");
+            log.info("5. 싸이클 정보 : " + riderInfo.getId() + " #### 픽업 이후의 상태의 스토어 정보를 등록하였습니다. => [" + routeInfoList + "]");
         }
 
         int loopCount = storeList.size() + orderList.size();
 
         // 전체 순서를 정렬한다.
         for (int i = 0; i < loopCount; i++) {
-            log.info("싸이클 정보 : " + riderInfo.getId() + "#### routeInfo의 개수를 구합니다 => " + routeInfoList.size());
+            log.info("6. 싸이클 정보 : " + riderInfo.getId() + "#### routeInfo의 개수를 구합니다 => " + routeInfoList.size());
             // 만약 첫 픽업지가 정해진 경우라면, 처음 지정은 건너뛴다.
             if (routeInfoList.size() > 0 && i == 0){
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### 첫번째 픽업지가 설정되어 있습니다.");
+                log.info("7. 싸이클 정보 : " + riderInfo.getId() + " #### 첫번째 픽업지가 설정되어 있습니다.");
                 continue;
             }
 
@@ -831,7 +841,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             // 첫 픽업지가 정해지지 않은 경우도 있을 수 있으므로
             if (i == 0){
                 int minDistance = -1;
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지를 찾는 중입니다.");
+                log.info("8. 싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지를 찾는 중입니다.");
 
                 for (Store store:storeList
                 ) {
@@ -840,7 +850,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     try{
                         distance = misc.getHaversine(rider.getLatitude(), rider.getLongitude(), store.getLatitude(), store.getLongitude());
                     } catch (Exception e){
-                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 거리 계산 중 오류 발생.");
+                        log.info("9. 싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 거리 계산 중 오류 발생.");
                         log.error(e.getMessage());
                     }
 
@@ -861,7 +871,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
                     orderList.stream().filter(x -> x.getStoreId().equals(minStoreID)).forEach(x -> orderID.add(x.getRegOrderId()));
 
-                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지 등록을 진행합니다. 매장에 대한 주문 개수. => " + orderID.size());
+                    log.info("10. 싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지 등록을 진행합니다. 매장에 대한 주문 개수. => " + orderID.size());
 
                     for (int j = 0; j < orderID.size(); j++) {
                         String strOrderID = orderID.get(j);                     // 21-04-20 요청사항에 따라, 픽업지에도 주문 상태를 넣어줘야한다.
@@ -917,7 +927,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         usedStoreId.add(minStore.getId());
                     }
 
-                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지 등록을 진행했습니다. => " + route.getRouteId());
+                    log.info("11. 싸이클 정보 : " + riderInfo.getId() + " #### i = 0 #### 첫번째 픽업지 등록을 진행했습니다. => " + route.getRouteId());
                 }
 
             }
@@ -925,14 +935,14 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             else{
                 // 이전 위치에 대한 정보를 가져온다.
                 RiderRouteInfo beforeRoute = routeInfoList.get(i - 1);
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 이전 픽업지 ID(종류) => " + beforeRoute.getRouteId() + "(" + beforeRoute.getRouteType() + ")");
+                log.info("12. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 이전 픽업지 ID(종류) => " + beforeRoute.getRouteId() + "(" + beforeRoute.getRouteType() + ")");
 
                 int beforeStoreDistance = -1;
                 int beforeOrderDistance = -1;
 
 
                 // 스토어 정보를 구한다.
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 정보 구하기 시작");
+                log.info("13. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 정보 구하기 시작");
                 for (Store store:storeList){
                     // 사용된 Store 정보라면 넘어간다.
                     if (usedStoreId.stream().filter(x -> x.equals(store.getId())).count() > 0){
@@ -944,7 +954,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     try{
                         currentStoreDistance = misc.getHaversine(beforeRoute.getLatitude(), beforeRoute.getLongitude(), store.getLatitude(), store.getLongitude());
                     }catch (Exception e){
-                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 거리 계산 중 오류 발생");
+                        log.info("14. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 거리 계산 중 오류 발생");
                         log.error(e.getMessage());
                     }
 
@@ -962,19 +972,19 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     }
                 }
 
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 정보 구하기 종료");
+                log.info("15. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 정보 구하기 종료");
 
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 정보 구하기 시작");
+                log.info("16. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 정보 구하기 시작");
                 // 주문 정보를 가져온다.
                 for (Order order:orderList) {
                     if (usedOrderId.stream().filter(x -> x.equals(order.getId())).count() > 0){
-                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 사용된 주문 번호입니다.");
+                        log.info("17. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 사용된 주문 번호입니다.");
                         continue;
                     }
 
                     // 경로 상에서 스토어를 지난 후의 주문인지 확인 한다.
                     if (!(routeInfoList.stream().filter(x -> x.getRouteId().equals(order.getRegOrderId()) && x.getRouteType().equals(0)).count() > 0)){
-                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문에 대한 스토어가 안 지났습니다.");
+                        log.info("18. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문에 대한 스토어가 안 지났습니다.");
                         continue;
                     }
 
@@ -983,7 +993,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     try{
                         currentOrderDistance = misc.getHaversine(beforeRoute.getLatitude(), beforeRoute.getLongitude(), order.getLatitude(), order.getLongitude());
                     }catch (Exception e){
-                        log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 거리 계산 중 오류발생");
+                        log.info("19. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 거리 계산 중 오류발생");
                         log.error(e.getMessage());
                     }
 
@@ -994,19 +1004,46 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         continue;
                     }
 
-                    if (beforeOrderDistance > currentOrderDistance){
+                    // 시간 비교를 진행하여, 5분 이상 차이가 나는 경우 거리와 상관 없이 우선 순위가 되어야 한다.
+                    LocalDateTime currentReservation = LocalDateTime.parse(order.getReservationDatetime().replace(" ", "T"));
+                    LocalDateTime beforeReservation = LocalDateTime.parse(minOrder.getReservationDatetime().replace(" ", "T"));
+
+                    /**
+                     * 21-07-09
+                     * 현재 주문의 예약시간과 이전 주문의 시간 중 시간 차이가 크면 우선 순위가 될 수 있도록 적용
+                     * */
+                    boolean bTimeCheck = false;
+                    if (Math.abs(ChronoUnit.MINUTES.between(currentReservation, beforeReservation)) > 5){
+                        //System.out.println("시간 차이가 5분을 초과합니다. => 아래 구문 => " + currentReservation.isBefore(beforeReservation));
+                        log.info("시간 차이가 5분을 초과하였습니다. 현재 시간 => " + currentReservation + " ## 이전 시간 => " + beforeReservation);
+                        bTimeCheck = true;
+                    }
+
+                    //System.out.println("거리를 구합니다. => " + beforeOrderDistance + " ### 현재 거리 => " + currentOrderDistance);
+                    log.info("현재 주문에 대한 거리 계산 값 => " + currentOrderDistance + " ### 이전 주문에 대한 거리 계산 값" + beforeOrderDistance);
+
+                    // 거리차이가 나거나 시간 차이가 5분 이상 나는 경우 교체
+                    if ((beforeOrderDistance > currentOrderDistance && !bTimeCheck)){
                         minOrder = order;
                         beforeOrderDistance = currentOrderDistance;
+                        log.info("거리 차이로 인하여 최소 주문의 값이 변경 되었습니다.");
+                    }else if (bTimeCheck){
+                        // 시간이 5분 이상 차이가 나는 경우 순서를 바꾼다.
+                        if (currentReservation.isBefore(beforeReservation)){
+                            minOrder = order;
+                            beforeOrderDistance = currentOrderDistance;
+                            log.info("예약 시간이 5분 이상 차이로 인하여 값이 변경 되었습니다.");
+                        }
                     }
                 }
 
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 정보 구하기 종료");
+                log.info("20. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 정보 구하기 종료");
 
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 매장과 주문 정보에 대한 내용 등록 시작");
+                log.info("21. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 매장과 주문 정보에 대한 내용 등록 시작");
 
                 // 주문 목적지의 위치가 가까운 경우 다음 루트는 주문 경로가 되어야한다.
                 if ((beforeStoreDistance > beforeOrderDistance && beforeOrderDistance > -1) || beforeStoreDistance == -1){
-                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문지 등록");
+                    log.info("22. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문지 등록");
                     // 주문정보입니다.
                     route.setRouteType(1);
                     route.setId(riderInfo.getId());
@@ -1023,11 +1060,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     route.getOrder().setStatus(minOrder.getStatus());
 
                     usedOrderId.add(minOrder.getId());
-                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 목적지 등록 => " + route.getRouteId());
+                    log.info("23. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 주문 목적지 등록 => " + route.getRouteId());
                 }
                 // 스토어 픽업지가 가까운 경우 다음 루트는 매장 경로가 되어야한다.
                 else if((beforeStoreDistance <= beforeOrderDistance && beforeStoreDistance > -1) || beforeOrderDistance == -1){
-                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 목적지 등록");
+                    log.info("24. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 목적지 등록");
                     // 매장에 대한 주문 개수를 구한다.
                     List<String> orderID = new ArrayList<>();
                     String minStoreID = minStore.getId();
@@ -1084,19 +1121,19 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         usedStoreId.add(minStore.getId());
                     }
 
-                    log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 목적지 등록 (개수) => " + minStore.getId() + "(" + orderID.size() + ")");
+                    log.info("25. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 스토어 목적지 등록 (개수) => " + minStore.getId() + "(" + orderID.size() + ")");
                 }
 
                 routeInfoList.add(route);
 
-                log.info("싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 매장과 주문 정보에 대한 내용 등록 완료");
+                log.info("26. 싸이클 정보 : " + riderInfo.getId() + " #### i = " + i + " #### 매장과 주문 정보에 대한 내용 등록 완료");
             }
         }
 
         resultMap.put("routeCount", routeInfoList.size());
         resultMap.put("routeInfo", routeInfoList);
 
-        log.info("싸이클 정보 : " + riderInfo.getId() + " #### 최종 결과물 => " + resultMap);
+        log.info("27. 싸이클 정보 : " + riderInfo.getId() + " #### 최종 결과물 => " + resultMap);
 
         return resultMap;
     }
