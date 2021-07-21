@@ -37,8 +37,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -106,8 +106,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -173,8 +173,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -238,8 +238,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -302,8 +302,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -371,8 +371,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -437,8 +437,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -504,8 +504,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -571,8 +571,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -636,8 +636,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -701,8 +701,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -772,8 +772,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -839,8 +839,8 @@
                                 else 0
                             end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
-                    left join TB_SUBGROUP_STORE_REL		as b
+                    from	 TB_ORDER					as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL		as b force index (idx_subgroup_store_rel)
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
@@ -911,8 +911,8 @@
                             ,a.store_id
                             ,if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(a.cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime)      as newAssignedDatetime
                             ,arrived_datetime
-                    from     TB_ORDER           as a
-                    left join TB_SUBGROUP_STORE_REL as b
+                    from     TB_ORDER           as a force index (idx_order_search)
+                    left join TB_SUBGROUP_STORE_REL as b force index (idx_subgroup_store_rel)
                         on   a.admin_id = b.admin_id
                         and  a.store_id = b.store_id
                     where    1=1
