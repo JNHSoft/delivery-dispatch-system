@@ -18,7 +18,7 @@
         and      b.deleted is null
         <if test="role != null and role == 'ROLE_ADMIN'">
             and      a.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
-            and      b.subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where code = #{code} and deleted is null )
+            and      b.subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select id from TB_STORE where code = #{code} ) and deleted is null )
         </if>
         <if test="role != null and role == 'ROLE_STORE'">
             and      b.subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null )
