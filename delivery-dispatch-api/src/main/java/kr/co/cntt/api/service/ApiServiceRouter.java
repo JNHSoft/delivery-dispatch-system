@@ -331,6 +331,10 @@ public enum ApiServiceRouter implements IServiceRouter {
 
 	/** 트래커 - 주문 정보 조회 */
 	TRACKER_GET("trackerService", "getTracker", Tracker.class),
+
+	// ############################################################################################ //
+	SUBGROUP_STORE_LIST("statisticsService", "getSubGroupStore", Store.class),
+
 	;
 	private String qualifierName;
 	private String method;
