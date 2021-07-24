@@ -163,4 +163,9 @@ public interface StoreAdminService {
      * 20.12.30
      * */
     Map<String, Object> storeOverTimeCount(Store store);
+
+    /**
+     * 21.07.24 대량의 신규 스토어 정보 가져오기
+     * */
+//    List<Map<String, Object>> getNewStoreInfo();
 }

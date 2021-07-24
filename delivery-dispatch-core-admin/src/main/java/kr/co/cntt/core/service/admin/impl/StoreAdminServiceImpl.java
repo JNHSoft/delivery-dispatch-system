@@ -134,4 +134,10 @@ public class StoreAdminServiceImpl implements StoreAdminService {
     public Map<String, Object> storeOverTimeCount(Store store){
         return adminMapper.selectOverTimeByStore(store);
     }
+
+    /***/
+//    @Override
+//    public List<Map<String, Object>> getNewStoreInfo() {
+//        return adminMapper.selectRegNewStoreList();
+//    }
 }

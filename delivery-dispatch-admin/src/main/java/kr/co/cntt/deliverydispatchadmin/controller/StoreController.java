@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreSession;
 import kr.co.cntt.core.service.admin.StoreAdminService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.MD5Encoder;
@@ -480,4 +481,57 @@ public class StoreController {
 
         return storeCount;
     }
+
+    /**
+     * 21.07.24 매장 일괄 등록 시, 좌표 및 Session 누락이 된 내용을 일괄적으로 추가한다.
+     * */
+//    @ResponseBody
+//    @GetMapping("/multiRegStore")
+//    public List<Map<String, Object>> multiRegStore(){
+//
+//        System.out.println("스토어 대량 등록 시작");
+//
+//        List<Map<String, Object>> storeList = storeAdminService.getNewStoreInfo();
+//
+//        System.out.println("등록할 스토어 개수 => " + storeList.size());
+//
+//        for (Map<String, Object> store:storeList
+//             ) {
+//            System.out.println("스토어 정보 => " + store);
+//            // 좌표 구하기
+//            Store info = new Store();
+//            info.setId(store.get("id").toString());
+//
+//            Geocoder geocoder = new Geocoder();
+//            try {
+//                Map<String, String> geo = geocoder.getLatLng(store.get("address").toString());
+//                info.setLatitude(geo.get("lat"));
+//                info.setLongitude(geo.get("lng"));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            // 정보 업데이트
+//            storeAdminService.updateStoreInfo(info);
+//            System.out.println("스토어 정보 업데이트 완료 => " + store);
+//
+//            Store storeSession = new Store();
+//
+//            storeAdminService.updateStoreInfo(info);
+//
+//            String storeSessionToken = tokenManager.getToken("2", store.get("login_id").toString() , store.get("login_pw").toString());
+//            storeSession.setAccessToken(storeSessionToken);
+//            storeSession.setId(info.getId());
+//            storeSession.setLoginId(store.get("login_id").toString());
+//
+//            storeAdminService.insertAdminStoreSession(storeSession);
+//
+//            System.out.println("스토어 정보 세션 생성 완료 => " + storeSession);
+//        }
+//
+//        System.out.println("스토어 정보 세션 생성 완료");
+//
+//
+//        return storeList;
+//    }
 }

@@ -2161,4 +2161,16 @@
 		and		 admin_id = #{adminID};
 	</select>
 
+<!--	<select id="selectRegNewStoreList" resultType="java.util.Map">-->
+<!--		select   a.id-->
+<!--				,a.address-->
+<!--				,a.login_id-->
+<!--				,a.login_pw-->
+<!--		from     TB_STORE           as a-->
+<!--		left join TB_STORE_SESSION  as b-->
+<!--		on a.id = b.store_id-->
+<!--		where    a.deleted is null-->
+<!--		and      b.access_token is null-->
+<!--		and      a.created_datetime > current_date()-->
+<!--	</select>-->
 </mapper>

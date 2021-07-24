@@ -539,4 +539,9 @@ public interface AdminMapper {
      * */
     @Transactional(readOnly=true)
     List<String> selectReceivedMailAccount(String adminID);
+
+    /**
+     * 21.07.24 스토어 정보 가져오기
+     * */
+//    List<Map<String, Object>> selectRegNewStoreList();
 }
