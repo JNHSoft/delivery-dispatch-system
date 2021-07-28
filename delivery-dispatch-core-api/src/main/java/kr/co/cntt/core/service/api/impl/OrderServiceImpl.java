@@ -164,6 +164,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
             log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
             log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
+
+            log.debug(">>> autoAssign_GetRiderList:::: riderList 개수: " + riderList.size());
             Misc misc = new Misc();
 
             // 21.02.21 NULL 오류 발생으로 프로세스 변경
@@ -199,12 +201,30 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius())*1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
                     .filter(a -> a.getSubGroupRiderRel() != null && a.getSubGroupRiderRel().getStoreId() != null)      // 소속된 매장 정보가 없는 경우 제외한다.
                     .filter(a -> {
+                        System.out.println("#####################################################################");
+                        System.out.println(a.getId());
+                        System.out.println(a);
+                        System.out.println(a.getSubGroupRiderRel().getStoreId() + " ### " + order.getStoreId());
+                        System.out.println(a.getSubGroupRiderRel().getSubGroupId() + " ### " + order.getSubGroupStoreRel().getSubGroupId());
+                        System.out.println(a.getSharedStoreId() + " #### " + order.getStoreId());
+                        System.out.println("#####################################################################");
+
                         if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
                             log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
                             return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
                         } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null && a.getSharedStore().equals("0")) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때 21.05.21 타 매장에서 공유 받은 라이더인 경우 조건이 부합되지 않아 별도처리
                             log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
                             log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
+
+                            // 21-07-28 특정 매장의 경우 예외 처리
+                            if ((order.getStoreId().equals("687") && (a.getSubGroupRiderRel().getStoreId().equals("24") || a.getSubGroupRiderRel().getStoreId().equals("76")))){
+                                log.debug("주문 스토어가 687이라 예외처리가 진행됩니다.");
+                                return (a.getSubGroupRiderRel().getStoreId().equals("24") || a.getSubGroupRiderRel().getStoreId().equals("76"));
+                            }else if ((order.getStoreId().equals("24") || order.getStoreId().equals("76")) && a.getSubGroupRiderRel().getStoreId().equals("687")){
+                                log.debug("주문 스토어가 24 또는 76이라 예외처리가 진행됩니다.");
+                                return (a.getSubGroupRiderRel().getStoreId().equals("687"));
+                            }
+
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
                         } else if (a.getSharedStore().equals("1") && a.getSharedStoreId() != null){
                             log.debug(">>> autoAssignRider_Stream Third_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
@@ -292,7 +312,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 // Rider ID를 가져온다.
                 for (Rider tmpRider:riderList
                      ) {
-                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude());
+                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude() + " # 거리=>" + tmpRider.getDistance());
                 }
 
                 log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);
