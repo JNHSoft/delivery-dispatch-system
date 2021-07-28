@@ -201,14 +201,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius())*1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
                     .filter(a -> a.getSubGroupRiderRel() != null && a.getSubGroupRiderRel().getStoreId() != null)      // 소속된 매장 정보가 없는 경우 제외한다.
                     .filter(a -> {
-                        System.out.println("#####################################################################");
-                        System.out.println(a.getId());
-                        System.out.println(a);
-                        System.out.println(a.getSubGroupRiderRel().getStoreId() + " ### " + order.getStoreId());
-                        System.out.println(a.getSubGroupRiderRel().getSubGroupId() + " ### " + order.getSubGroupStoreRel().getSubGroupId());
-                        System.out.println(a.getSharedStoreId() + " #### " + order.getStoreId());
-                        System.out.println("#####################################################################");
-
                         if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
                             log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
                             return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
@@ -217,12 +209,12 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
 
                             // 21-07-28 특정 매장의 경우 예외 처리
-                            if ((order.getStoreId().equals("687") && (a.getSubGroupRiderRel().getStoreId().equals("24") || a.getSubGroupRiderRel().getStoreId().equals("76")))){
-                                log.debug("주문 스토어가 687이라 예외처리가 진행됩니다.");
-                                return (a.getSubGroupRiderRel().getStoreId().equals("24") || a.getSubGroupRiderRel().getStoreId().equals("76"));
-                            }else if ((order.getStoreId().equals("24") || order.getStoreId().equals("76")) && a.getSubGroupRiderRel().getStoreId().equals("687")){
-                                log.debug("주문 스토어가 24 또는 76이라 예외처리가 진행됩니다.");
-                                return (a.getSubGroupRiderRel().getStoreId().equals("687"));
+                            if ((order.getStoreId().equals("13") && (a.getSubGroupRiderRel().getStoreId().equals("14") || a.getSubGroupRiderRel().getStoreId().equals("6")))){
+                                log.debug("주문 스토어가 13이라 예외처리가 진행됩니다.");
+                                return (a.getSubGroupRiderRel().getStoreId().equals("6") || a.getSubGroupRiderRel().getStoreId().equals("14"));
+                            }else if ((order.getStoreId().equals("6") || order.getStoreId().equals("14")) && a.getSubGroupRiderRel().getStoreId().equals("13")){
+                                log.debug("주문 스토어가 6 또는 14이라 예외처리가 진행됩니다.");
+                                return (a.getSubGroupRiderRel().getStoreId().equals("13"));
                             }
 
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
