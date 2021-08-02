@@ -1684,4 +1684,9 @@
 					and		 a.reservation_datetime > current_date()
 				)	t
 	</select>
+
+	<insert id="insertRiderSharedHistory" parameterType="kr.co.cntt.core.model.rider.RiderSharedInfo">
+		insert into TB_RIDER_SHARED_STATUS_HISTORY(rider_id, req_user, shared_type, before_status, after_status)
+		values (#{riderId}, #{reqUser}, #{sharedType}, #{beforeStatus}, #{afterStatus})
+	</insert>
 </mapper>

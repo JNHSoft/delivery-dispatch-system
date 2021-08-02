@@ -11,6 +11,7 @@ import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.rider.RiderSharedInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.deliverydispatch.security.SecurityUser;
@@ -514,6 +515,8 @@ public class RiderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         riderInfo.setToken(storeInfo.getStoreAccessToken());
 
+        boolean bSharedStatus = false;
+
         // 라이더의 원본 데이터를 가져온다.
         RiderApprovalInfo chkRiderInfo = storeRiderService.getRiderApprovalInfo(riderInfo);
 
@@ -538,6 +541,7 @@ public class RiderController {
         // 공유 상태가 다른 경우
         if (riderInfo.getSharedStatus() != null && !riderInfo.getSharedStatus().equals(chkRiderInfo.getSharedStatus())){
             chkRiderInfo.setSharedStatus(riderInfo.getSharedStatus());
+            bSharedStatus = true;
         }
 
         if (chkRiderInfo.getApprovalStatus().equals("1")){
@@ -556,7 +560,26 @@ public class RiderController {
             storeRiderService.setRiderInfo(chkRiderInfo);
         }
 
-       return true;
+        // 라이더 정보가 변경이 완료 된 후에 shared History를 반영한다.
+        if (bSharedStatus){
+            RiderSharedInfo sharedStatus = new RiderSharedInfo();
+            sharedStatus.setRiderId(chkRiderInfo.getRiderId());
+            sharedStatus.setReqUser("2");
+            sharedStatus.setSharedType(1);
+            if (chkRiderInfo.getSharedStatus().equals("0")){
+                // 반전 값을 넣기 위함임
+                sharedStatus.setBeforeStatus(1);
+                sharedStatus.setAfterStatus(0);
+            }else {
+                // 반전 값을 넣기 위함임
+                sharedStatus.setBeforeStatus(0);
+                sharedStatus.setAfterStatus(1);
+            }
+
+            storeRiderService.insertSharedHistory(sharedStatus);
+        }
+
+        return true;
     }
 
     // 라이더 Approval Row 삭제

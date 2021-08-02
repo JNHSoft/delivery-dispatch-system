@@ -403,4 +403,10 @@ public interface RiderMapper {
      * 21.05.21 매장에 할당된 타 매장의 라이더 정보 초기화
      * */
     int updateResetSharedRiderForStore();
+
+    /**
+     * 21.07.22
+     * 라이더의 공유 상태 변경 History 등록
+     * */
+    int insertRiderSharedHistory(RiderSharedInfo sharedInfo);
 }

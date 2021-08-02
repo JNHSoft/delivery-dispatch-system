@@ -345,4 +345,9 @@ public interface Api {
      * */
     String SUBGROUP_STORE_LIST = "/getSubGroupStore.do";
 
+    /**
+     * 2021-07-21 라이더 API 추가
+     * */
+    String RIDER_STAT_INFO = "/getRiderStatsInfos.do";
+
 }

@@ -7,6 +7,7 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.rider.RiderSharedInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.service.admin.StaffApprovalAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,4 +161,12 @@ public class StaffApprovalAdminServiceImpl implements StaffApprovalAdminService 
         return riderMapper.deleteSharedStoreInfo(rider);
     }
 
+    /**
+     * 21.07.22
+     * 라이더의 공유 상태 변경 History 등록
+     * */
+    @Override
+    public int insertSharedHistory(RiderSharedInfo sharedInfo) {
+        return riderMapper.insertRiderSharedHistory(sharedInfo);
+    }
 }

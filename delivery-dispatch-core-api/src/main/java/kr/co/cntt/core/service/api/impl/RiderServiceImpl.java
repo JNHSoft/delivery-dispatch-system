@@ -210,6 +210,23 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     // 출근에 대한 히스토리가 없으므로, 데이터를 입력한다.
                     riderMapper.insertRiderWorkingHistory(rider);
                     log.info("라이더의 출근 히스토리 등록 => " + rider.getToken());
+
+                    // 최초 출근 시, 라이더의 상태가 쉐어가 아닌 경우, 변경 처리할 것.
+                    rider.setSharedStatus("1");
+
+                    if (!(S_Rider.getSharedStatus().equals("1"))){
+                        riderMapper.updateRiderInfo(rider);
+
+                        RiderSharedInfo sharedStatus = new RiderSharedInfo();
+                        sharedStatus.setRiderId(S_Rider.getId());
+                        sharedStatus.setReqUser("3");
+                        sharedStatus.setSharedType(1);
+                        // 반전 값을 넣기 위함임
+                        sharedStatus.setBeforeStatus(0);
+                        sharedStatus.setAfterStatus(1);
+
+                        log.info("라이더의 첫 출근 요청 시, 쉐어 상태가 미공유여서 변경 완료 => " + riderMapper.insertRiderSharedHistory(sharedStatus));
+                    }
                 }
 
             }else if (rider.getWorking().equals("0")){

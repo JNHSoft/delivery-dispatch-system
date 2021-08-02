@@ -16,6 +16,7 @@ import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.rider.RiderSharedInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
@@ -426,4 +427,8 @@ public class StoreRiderServiceImpl extends ServiceSupport implements StoreRiderS
         return riderMapper.deleteSharedStoreInfo(rider);
     }
 
+    @Override
+    public int insertSharedHistory(RiderSharedInfo sharedInfo) {
+        return riderMapper.insertRiderSharedHistory(sharedInfo);
+    }
 }

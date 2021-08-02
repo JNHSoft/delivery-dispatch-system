@@ -5,6 +5,7 @@ import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
+import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
@@ -333,7 +334,12 @@ public enum ApiServiceRouter implements IServiceRouter {
 	TRACKER_GET("trackerService", "getTracker", Tracker.class),
 
 	// ############################################################################################ //
+	/** 통계 - 스토어의 하위 그룹 리스트 */
 	SUBGROUP_STORE_LIST("statisticsService", "getSubGroupStore", Store.class),
+
+	/** 통계 - 라이더 LOGIN id를 기준으로 통계 정보 조회 */
+	RIDER_STAT_INFO("statisticsService", "getRiderStatsInfos", SearchInfo.class);
+
 
 	;
 	private String qualifierName;
