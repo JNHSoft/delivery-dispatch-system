@@ -106,12 +106,12 @@ public class DashboardController {
             compareSearchInfo.setEDate(formatter.format(lastDate.getTime()));
 
 
-        }else if (searchInfo.getDays().equals("1")){
+        } /*else if (searchInfo.getDays().equals("1")){
             log.debug("하루 데이터 조회");
             startCal.add(Calendar.DAY_OF_MONTH, -1);
             compareSearchInfo.setSDate(formatter.format(startCal.getTime()));
             compareSearchInfo.setEDate(formatter.format(startCal.getTime()));
-        }else{
+        }*/ else{
             log.debug("조건이 없는 데이터 조회");
             int sevenValue = Math.floorDiv(Integer.parseInt(searchInfo.getDays()), 7) + 1;
             int modValue = Math.floorMod(Integer.parseInt(searchInfo.getDays()), 7);

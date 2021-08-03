@@ -2,57 +2,51 @@
 <mapper namespace="kr.co.cntt.core.mapper.DashboardMapper">
     <select id="selectAllDetail" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="java.util.Map">
         <![CDATA[
-        select	 ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end else null end ), 0) * 100 as avgD30
-                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, arrived_datetime) else null end ), 0) as detailD30
-                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end else null end ), 0) * 100 as avgD7
-                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else null end ), 0) as detailD7
-                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end else null end ), 0) * 100 as avgD14
-                ,ifnull(avg( case when condition1 = 1 then timestampdiff(second, newAssignedDatetime, picked_up_datetime) else null end ), 0) as detailD14
-                ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
-                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else null end ) / 60, 2)				as avgTPLH
-                ,ifnull(avg( case when condition1 = 1 then cooking_time else null end ), 0)																	as avgQT
-                ,sum( case when condition1 = 1 then 1 else 0 end )																							as sumTC
+        select	 ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100 as avgD30
+                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, arrived_datetime) ), 0) as detailD30
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100 as avgD7
+                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, picked_up_datetime) ), 0) as detailD7
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100 as avgD14
+                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, picked_up_datetime) ), 0) as detailD14
+                ,ifnull(count(1), 0)
+                 / round(sum(timestampdiff(MINUTE, picked_up_datetime, return_datetime) ) / 60, 2)				as avgTPLH
+                ,ifnull(avg(cooking_time), 0)																	as avgQT
+                ,count(*)																							as sumTC
         from	(
-                    select	 a.id
-                            ,a.admin_id
-                            ,a.store_id
-                            ,cooking_time
+                    select	 cooking_time
                             ,assigned_datetime
                             ,picked_up_datetime
                             ,arrived_datetime
                             ,completed_datetime
                             ,return_datetime
                             ,if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
@@ -64,11 +58,12 @@
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
                         </when>
-<!--                                <otherwise>-->
-<!--                                    AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')-->
-<!--                                        OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')-->
-<!--                                    )-->
-<!--                                </otherwise>-->
+                        <!-- 피크 타임 전체 -->
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
+                        </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
                     <if test="groupId != null and groupId != '' and groupId != 'reset'">
@@ -85,43 +80,40 @@
 
     <select id="selectD30Detail" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											            as createdDatetime
-                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end else null end ), 0) * 100  as mainValue
-                ,'%'																															            as unit
+        select	 reservation_datetime																									 as createdDatetime
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100  as mainValue
+                ,'%'																													 as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
 					        ,arrived_datetime
                             ,if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
@@ -132,6 +124,11 @@
                         </when>
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
@@ -151,41 +148,38 @@
 
     <select id="selectTPLHDetail" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											as createdDatetime
-                ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
-                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)	as mainValue
-                ,''																															    as unit
+        select	 reservation_datetime															        as createdDatetime
+                ,ifnull(count(*), 0)
+                 / round(sum( timestampdiff(MINUTE, picked_up_datetime, return_datetime) ) / 60, 2)     as mainValue
+                ,''																						as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
                             ,picked_up_datetime
                             ,return_datetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_TB_ORDER_reservation_datetime)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
                             and 1 != 1
@@ -199,6 +193,11 @@
                         </when>
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
@@ -218,42 +217,39 @@
 
     <select id="selectQTDetail" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											as createdDatetime
-                ,ifnull(avg( case when condition1 = 1 then cooking_time else null end ), 0)														as mainValue
-                ,''																															    as unit
+        select	 reservation_datetime																as createdDatetime
+                ,ifnull(avg( cooking_time ), 0)														as mainValue
+                ,''																					as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
                             ,cooking_time
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_TB_ORDER_reservation_datetime)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
@@ -264,6 +260,11 @@
                         </when>
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
@@ -283,38 +284,35 @@
 
     <select id="selectTCDetail" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											as createdDatetime
-                ,sum( case when condition1 = 1 then 1 else 0 end )																				as mainValue
-                ,''																															    as unit
+        select	 reservation_datetime																as createdDatetime
+                ,count(*)																			as mainValue
+                ,''																					as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
                             and 1 != 1
@@ -328,6 +326,11 @@
                         </when>
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
@@ -350,43 +353,40 @@
 
     <select id="selectD7Detail" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											            as createdDatetime
-                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end else null end ), 0) * 100	as mainValue
-                ,'%'																															            as unit
+        select	 reservation_datetime																									as createdDatetime
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100 as mainValue
+                ,'%'																													as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
                             ,picked_up_datetime
                             ,if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+        <![CDATA[
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+                    and		 third_party_id is null
+        ]]>
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
@@ -397,6 +397,11 @@
                         </when>
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
@@ -416,47 +421,44 @@
 
     <select id="selectD14Detail" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.DashboardInfo">
         <![CDATA[
-        select	 reservation_datetime																											            as createdDatetime
-                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end else null end ), 0) * 100	as mainValue
-                ,'%'																															            as unit
+        select	 reservation_datetime																										as createdDatetime
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100	as mainValue
+                ,'%'																														as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
                             ,picked_up_datetime
                             ,if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
-                    AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+                    AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
@@ -464,16 +466,21 @@
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
                         </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
+                        </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
                     <if test="groupId != null and groupId != '' and groupId != 'reset'">
-                        AND	 b.group_id = #{groupId}
+                        AND		 b.group_id = #{groupId}
                     </if>
                     <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
-                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                        AND		 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
                     </if>
                     <if test="storeId != null and storeId != '' and storeId != 'reset'">
-                        AND	 b.store_id = #{storeId}
+                        AND		 b.store_id = #{storeId}
                     </if>
                 )	t
         group by reservation_datetime
@@ -482,48 +489,45 @@
 
     <select id="selectD30Rank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
-        select	 store_id																											                            as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                                        as storeName
-                ,sum( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end else null end )                       as value
-                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end else null end ), 0) * 100		as achievementRate
+        select	 store_id	                                                                                                                as id
+                ,( select store_name from TB_STORE where id = store_id )                                                                    as storeName
+                ,sum( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end )                      as value
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100		as achievementRate
         from	(
-                    select	 a.store_id                                                                                                         as store_id
+                    select	 a.store_id                 as store_id
 					        ,arrived_datetime
                             ,if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
-                    AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+                    AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
@@ -531,16 +535,21 @@
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
                         </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
+                        </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
                     <if test="groupId != null and groupId != '' and groupId != 'reset'">
-                        AND	 b.group_id = #{groupId}
+                        AND		 b.group_id = #{groupId}
                     </if>
                     <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
-                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                        AND		 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
                     </if>
                     <if test="storeId != null and storeId != '' and storeId != 'reset'">
-                        AND	 b.store_id = #{storeId}
+                        AND		 b.store_id = #{storeId}
                     </if>
                 )	t
         group by store_id
@@ -549,65 +558,67 @@
 
     <select id="selectTPLHRank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
-        select	 store_id																											            as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
-                ,ifnull(count( case when condition1 = 1 then 1 else null end ), 0)
-                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else null end ) / 60, 2)	as value
+        select	 store_id																					as id
+                ,( select store_name from TB_STORE where id = store_id )                                    as storeName
+                ,ifnull(count(*), 0)
+                 / round(sum( timestampdiff(MINUTE, picked_up_datetime, return_datetime) ) / 60, 2)	        as value
         from	(
                     select	 a.store_id
                             ,picked_up_datetime
                             ,return_datetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
-                    AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+                    AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
                     <if test="groupId != null and groupId != '' and groupId != 'reset'">
-                        AND	 b.group_id = #{groupId}
+                        AND		 b.group_id = #{groupId}
                     </if>
                     <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
-                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                        AND		 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
                     </if>
                     <if test="storeId != null and storeId != '' and storeId != 'reset'">
-                        AND	 b.store_id = #{storeId}
+                        AND		 b.store_id = #{storeId}
                     </if>
                 )	t
         group by store_id
@@ -616,63 +627,65 @@
 
     <select id="selectQTRank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
-        select	 store_id																											            as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
-                ,ifnull(avg( case when condition1 = 1 then cooking_time else null end ), 0)														as value
+        select	 store_id																			as id
+                ,( select store_name from TB_STORE where id = store_id )                            as storeName
+                ,ifnull(avg( cooking_time ), 0)														as value
         from	(
                     select	 a.store_id
                             ,cooking_time
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
-                    AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+                    AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
                     <if test="groupId != null and groupId != '' and groupId != 'reset'">
-                        AND	 b.group_id = #{groupId}
+                        AND		 b.group_id = #{groupId}
                     </if>
                     <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
-                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                        AND		 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
                     </if>
                     <if test="storeId != null and storeId != '' and storeId != 'reset'">
-                        AND	 b.store_id = #{storeId}
+                        AND		 b.store_id = #{storeId}
                     </if>
                 )	t
         group by store_id
@@ -683,61 +696,62 @@
         <![CDATA[
         select	 store_id																											            as id
                 ,( select store_name from TB_STORE where id = store_id )                                                                        as storeName
-                ,sum( case when condition1 = 1 then 1 else 0 end )																				as value
-                ,ifnull(avg( case when condition1 = 1 then 1 else null end ), 0) * 100    															as achievementRate
+                ,count(*)																				                                        as value
         from	(
                     select	 a.store_id
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
-                    AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+                    AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
                     <if test="groupId != null and groupId != '' and groupId != 'reset'">
-                        AND	 b.group_id = #{groupId}
+                        AND		 b.group_id = #{groupId}
                     </if>
                     <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
-                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                        AND		 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
                     </if>
                     <if test="storeId != null and storeId != '' and storeId != 'reset'">
-                        AND	 b.store_id = #{storeId}
+                        AND		 b.store_id = #{storeId}
                     </if>
                 )	t
         group by store_id
@@ -750,65 +764,67 @@
 
     <select id="selectD7Rank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
-        select	 store_id																											                        as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                                    as storeName
-                ,sum( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end else null end )                   as value
-                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end else null end ), 0) * 100	as achievementRate
+        select	 store_id																											    as id
+                ,( select store_name from TB_STORE where id = store_id )                                                                as storeName
+                ,sum( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end )                  as value
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100 as achievementRate
         from	(
                     select	 a.store_id
                             ,picked_up_datetime
                             ,if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
-                    AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+                    AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
                     <if test="groupId != null and groupId != '' and groupId != 'reset'">
-                        AND	 b.group_id = #{groupId}
+                        AND		 b.group_id = #{groupId}
                     </if>
                     <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
-                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                        AND		 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
                     </if>
                     <if test="storeId != null and storeId != '' and storeId != 'reset'">
-                        AND	 b.store_id = #{storeId}
+                        AND		 b.store_id = #{storeId}
                     </if>
                 )	t
         group by store_id
@@ -817,65 +833,67 @@
 
     <select id="selectD14Rank" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="kr.co.cntt.core.model.dashboard.RankInfo">
         <![CDATA[
-        select	 store_id																											                            as id
-                ,( select store_name from TB_STORE where id = store_id )                                                                                        as storeName
-                ,sum( case when condition1 = 1 and timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end )                      as value
-                ,ifnull(avg( case when condition1 = 1 then case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end else null end ), 0) * 100	    as achievementRate
+        select	 store_id																											         as id
+                ,( select store_name from TB_STORE where id = store_id )                                                                     as storeName
+                ,sum( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end )                      as value
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100	 as achievementRate
         from	(
                     select	 a.store_id
                             ,picked_up_datetime
                             ,if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
         ]]>
-                    from	 TB_ORDER					as a
+                    from	 TB_ORDER					as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL		as b
                         on	 a.store_id = b.store_id
                         and	 a.admin_id = b.admin_id
                     where	 status = 3
-                    and		 third_party_id is null
                     and		 b.deleted is null
+                    and		 assigned_datetime is not null
+                    and		 picked_up_datetime is not null
+                    and		 ifnull(arrived_datetime, completed_datetime) is not null
+                    and		 return_datetime is not null
+        <![CDATA[
+                    and		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
+                    and		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
+        ]]>
+                    and		 third_party_id is null
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and		 a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and		 a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and		 1 != 1
                         </otherwise>
                     </choose>
                     <!--Search에 대한 필터를 진행하십시오.-->
-                    AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+                    AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                        </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
                         </when>
                     </choose>
                     <!-- 그룹에 대한 필터 -->
                     <if test="groupId != null and groupId != '' and groupId != 'reset'">
-                        AND	 b.group_id = #{groupId}
+                        AND		 b.group_id = #{groupId}
                     </if>
                     <if test="subgroupId != null and subgroupId != '' and subgroupId != 'reset'">
-                        AND	 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
+                        AND		 b.subgroup_id in ( select id from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id and SUBSTRING_INDEX(name, '-', 1) = #{subgroupId} )
                     </if>
                     <if test="storeId != null and storeId != '' and storeId != 'reset'">
-                        AND	 b.store_id = #{storeId}
+                        AND		 b.store_id = #{storeId}
                     </if>
                 )	t
         group by store_id
@@ -911,7 +929,7 @@
                             ,a.store_id
                             ,if(timestampdiff(minute, a.assigned_datetime, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(a.cooking_time, 30) end minute)) <![CDATA[<]]> 0, date_sub(a.reservation_datetime, interval case when ifnull(a.cooking_time, 30) > 30 or ifnull(a.cooking_time, 30) <![CDATA[<]]> 1 then 30 else ifnull(a.cooking_time, 30) end minute), a.assigned_datetime)      as newAssignedDatetime
                             ,arrived_datetime
-                    from     TB_ORDER               as a
+                    from     TB_ORDER           as a force index (idx_order_reservation_admin)
                     left join TB_SUBGROUP_STORE_REL as b
                         on   a.admin_id = b.admin_id
                         and  a.store_id = b.store_id
@@ -924,16 +942,21 @@
                         <when test="peakType == 2">
                             AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
                         </when>
+                        <when test="peakType == 3">
+                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                                )
+                        </when>
                     </choose>
                     <choose>
                         <when test="role != null and role == 'ROLE_STORE'">
-                            and a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+                            and      a.store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
                         </when>
                         <when test="role != null and role == 'ROLE_ADMIN'">
-                            and a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+                            and      a.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
                         </when>
                         <otherwise>
-                            and 1 != 1
+                            and      1 != 1
                         </otherwise>
                     </choose>
                     -- 시간대별 통계에 대한 조건 추가

@@ -50,9 +50,10 @@
       </div>
       <div class="mr-2">
         <select class="search-select" id="sel_peak_time">
-          <option value="0" th:label="${#messages.msg('peaktime.option.all')}"/>
+          <option value="0" th:label="${#messages.msg('peaktime.option.none')}"/>
           <option value="1" th:label="${#messages.msg('peaktime.option.launch')}"/>
           <option value="2" th:label="${#messages.msg('peaktime.option.dinner')}"/>
+          <option value="3" th:label="${#messages.msg('peaktime.option.all')}"/>
         </select>
       </div>
     </div>
@@ -66,7 +67,7 @@
     <!-- 엑셀 다운로드 버튼 -->
     <div class="flex items-center justify-between mb-4">
       <h4 class="text-lg font-bold text-gray-900">STORE RANKING</h4>
-      <div id="divExcelArea">
+      <div>
         <button class="btn-excel" id="btnExcel" th:text="${#messages.msg('list.excel')}" />
 <!--          <span>Export to Excel</span>-->
 <!--        </button>-->
