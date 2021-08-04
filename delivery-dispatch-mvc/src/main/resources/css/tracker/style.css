@@ -17,6 +17,7 @@ table {width:100%;border-spacing:0px;border-collapse:collapse;font-size:1em;}
 th {font-weight:normal;}
 .h390 {height:390px !important;}
 .tit_wh {font-size:35px; color:#fff;text-align:center;font-weight:bold;position:relative;top:50%;transform:translateY(-50%);}
+.tit_wh_bottom {font-size:25px; color:#fff;text-align:center;font-weight:bold;position:relative;top:60%;transform:translateY(-50%);}
 .tit_red {font-size:35px; color:#e41319;text-align:center;font-weight:bold;position:relative;top:50%;transform:translateY(-50%);}
 .tit_third {font-size:25px; color:#fff;text-align:center;font-weight:bold;position:relative;top:50%;transform:translateY(-50%);}
 .tit_third_second{font-size:17px; color:#fff;text-align:center;font-weight:bold;}
