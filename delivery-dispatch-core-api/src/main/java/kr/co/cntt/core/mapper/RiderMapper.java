@@ -119,6 +119,7 @@ public interface RiderMapper {
      * 21-03-16
      * 라이더 출근 히스토리에 데이터가 있는지 확인
      * */
+    @Transactional(readOnly=true)
     Map<String, Object> selectRiderWorkingHistory(Rider rider);
 
     /**
@@ -375,9 +376,11 @@ public interface RiderMapper {
      * */
 
     /// 라이더가 가지고 있는 주문에 대한 리스트
+    @Transactional(readOnly=true)
     List<Order> getOrderForRider(Rider rider);
 
     /// 주문에 대한 매장정보를 가져온다.
+    @Transactional(readOnly=true)
     List<Store> getStoreInfoAtOrder(String[] arrStoreID);
 
     /**
@@ -388,6 +391,7 @@ public interface RiderMapper {
 
     /// 21-03-16
     /// 라이더의 당일 활동에 필요로 하는 정보 추출
+    @Transactional(readOnly=true)
     RiderActiveInfo selectRiderActiveInfo(Rider rider);
 
     /**
