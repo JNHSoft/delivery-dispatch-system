@@ -460,8 +460,16 @@ public class StatisticsController {
             }
         }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
 
+        int groupNumber = 0;
+        // 그룹핑 정보도 보내기
+        if (searchInfo.getGroupId().equals("reset")) {
+            groupNumber = 1;
+        } else if (!searchInfo.getGroupId().equals("reset") && searchInfo.getSubgroupId().equals("reset")){
+            groupNumber = 2;
+        }
 
         modelAndView.addObject("selectStoreStatisticsByOrderForAdmin", filterData);
+        modelAndView.addObject("groupNumber", groupNumber);
 
         return modelAndView;
     }
@@ -528,7 +536,7 @@ public class StatisticsController {
     @GetMapping("/excelDownloadByDate")
     @CnttMethodDescription("관리자 기간별 통계 리스트 엑셀 출력")
     public ModelAndView statisticsByDateExcelDownload(HttpServletResponse response,
-                                                      SearchInfo searchInfo){
+                                                      SearchInfo searchInfo) {
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 
         // ADMIN 정보
@@ -543,21 +551,30 @@ public class StatisticsController {
             long diff = sdfEndDate.getTime() - sdfStartDate.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
-            if (diffDays > 31){
+            if (diffDays > 31) {
                 return null;
             }
 
-            searchInfo.setDays(Integer.toString((int)(long) diffDays + 1));
+            searchInfo.setDays(Integer.toString((int) (long) diffDays + 1));
 
-        }catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 
         searchInfo.setToken(adminInfo.getAdminAccessToken());
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminByDateBuilderServiceImpl");
         List<AdminByDate> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByDateForAdmin(searchInfo);
+        int groupNumber = 0;
 
         modelAndView.addObject("selectStoreStatisticsByDateForAdmin", storeOrderListByAdmin);
+        // 그룹핑 정보도 보내기
+        if (searchInfo.getGroupId().equals("reset")) {
+            groupNumber = 1;
+        } else if (!searchInfo.getGroupId().equals("reset") && searchInfo.getSubgroupId().equals("reset")){
+            groupNumber = 2;
+        }
+
+        modelAndView.addObject("groupNumber", groupNumber);
 
         return modelAndView;
     }

@@ -34,7 +34,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             // 필요한 리스트 controller 에서 던져주는 List 					 		Nick
             List<Order> orderStatisticsByAdminList = (List<Order>) model.get("selectStoreStatisticsByOrderForAdminAtTWKFC");
-            setOrderStatisticsByOrderExcel(workbook, orderStatisticsByAdminList);
+            setOrderStatisticsByOrderExcel(workbook, orderStatisticsByAdminList, (int)model.get("groupNumber"));
             // 파일 이름은 이렇게 한다. 											Nick
             fileName += " Order_Time_Analysis_Report.xlsx";
 
@@ -52,7 +52,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
         workbook.dispose();
     }
 
-    public void setOrderStatisticsByOrderExcel(SXSSFWorkbook wb, List<Order> orderList) {
+    public void setOrderStatisticsByOrderExcel(SXSSFWorkbook wb, List<Order> orderList, int groupNumber) {
         int rowNum = 0;
         int colNum = 0;
         Sheet sheet = wb.createSheet("StoreStatisticsByOrder");
@@ -304,7 +304,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
                 int totalCnt = orderList.size();
 
                 colNum = 0;
-                addListRow = sheet.createRow(rowNum);
+                addListRow = sheet.createRow(rowNum++);
                 Cell cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue("AVERAGE");
                 cell3.setCellStyle(dataCellStyle);
@@ -324,7 +324,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
 
                 // QT
                 cell3 = addListRow.createCell(colNum++);
-                cell3.setCellValue(qtTotalTime / totalCnt);
+                cell3.setCellValue( String.format("%.2f", Float.parseFloat(String.valueOf(qtTotalTime)) / Float.parseFloat(String.valueOf(totalCnt))));
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);
@@ -356,5 +356,88 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
                 cell3.setCellStyle(dataCellStyle);
             }
         }
+
+        // RC 또는 AC 평균을 추가한다.
+        Map<String, List<Order>> groupList = null;
+
+        if (groupNumber == 1){
+            groupList = orderList.stream().collect(Collectors.groupingBy(x -> x.getGroup().getName()));
+        }else if (groupNumber == 2){
+            groupList = orderList.stream().collect(Collectors.groupingBy(x -> x.getSubGroup().getName().split("-")[0]));
+        }
+
+        if (groupList != null && !groupList.isEmpty()){
+            for (Map.Entry<String, List<Order>> group:groupList.entrySet()) {
+
+                colNum = 0;
+                Row addListRow = sheet.createRow(rowNum++);
+                Cell cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(group.getKey() + " AVERAGE");
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue("");
+                cell3.setCellStyle(dataCellStyle);
+
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue("");
+                cell3.setCellStyle(dataCellStyle);
+
+                // 배정시간
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue("");
+                cell3.setCellStyle(dataCellStyle);
+
+                // QT
+                double dQtTotalTime = group.getValue().stream().mapToDouble(x -> Double.parseDouble(changeType(Double.class, x.getCookingTime()))).sum();
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(String.format("%.2f", (dQtTotalTime / group.getValue().size())));
+                //cell3.setCellValue(qtTotalTime / totalCnt);
+                cell3.setCellStyle(dataCellStyle);
+
+                double dOrderPickupTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getPickedUpDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dOrderPickupTime / group.getValue().size())))));
+                //cell3.setCellValue(minusChkFilter(orderPickupTime / totalCnt));
+                cell3.setCellStyle(dataCellStyle);
+
+                double dPickupCompleteTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getPickedUpDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getArrivedDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dPickupCompleteTime / group.getValue().size())))));
+                //cell3.setCellValue(minusChkFilter(pickupCompleteTime / totalCnt));
+                cell3.setCellStyle(dataCellStyle);
+
+                double dOrderCompleteTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getArrivedDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dOrderCompleteTime / group.getValue().size())))));
+                //cell3.setCellValue(minusChkFilter(orderCompleteTime / totalCnt));
+                cell3.setCellStyle(dataCellStyle);
+
+                double dCompleteReturnTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getArrivedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dCompleteReturnTime / group.getValue().size())))));
+                //cell3.setCellValue(minusChkFilter(completeReturnTime / (totalCnt - returnNullCnt)));
+                cell3.setCellStyle(dataCellStyle);
+
+                double dPickupReturnTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getPickedUpDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dPickupReturnTime / group.getValue().size())))));
+                //cell3.setCellValue(minusChkFilter(pickupReturnTime / (totalCnt - returnNullCnt)));
+                cell3.setCellStyle(dataCellStyle);
+
+                double dOrderReturnTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dOrderReturnTime / group.getValue().size())))));
+                //cell3.setCellValue(minusChkFilter(orderReturnTime / (totalCnt - returnNullCnt)));
+                cell3.setCellStyle(dataCellStyle);
+
+                double dTotalDistance = group.getValue().stream().mapToDouble(x -> Double.parseDouble(changeType(Double.class, x.getDistance()))).sum();
+                cell3 = addListRow.createCell(colNum++);
+                cell3.setCellValue(String.format("%.2f", (dTotalDistance / group.getValue().size())) + "km");
+                //cell3.setCellValue(String.format("%.2f", (totalDistance / (totalCnt - distanceNullCnt))));
+                cell3.setCellStyle(dataCellStyle);
+            }
+        }
+
     }
 }

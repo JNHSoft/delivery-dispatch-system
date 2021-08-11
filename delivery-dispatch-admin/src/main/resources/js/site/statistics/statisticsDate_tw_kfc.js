@@ -92,22 +92,6 @@ function changePeakType(){
     }
 }
 
-function totalTimeSet(time) {
-    if (time) {
-        if(time>=0){
-            let d = new Date(time);
-            return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
-        }else{
-            time = Math.abs(time);
-            let d = new Date(time);
-            return "-"+('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
-        }
-
-    } else {
-        return "-";
-    }
-}
-
 function getStoreStatisticsByDate() {
 
     let diffDate = Math.ceil((new Date($('#endDate').val()).getTime() - new Date($('#startDate').val()).getTime()) / (1000*3600*24));
@@ -157,6 +141,8 @@ function getStoreStatisticsByDate() {
         },
         dataType: 'json',
         success: function (data) {
+            let rowNum = 0;
+
             // 평균 값
             let orderPickupSum = 0;
             let pickupCompleteSum = 0;
@@ -180,10 +166,6 @@ function getStoreStatisticsByDate() {
             let spmhSum = 0;
             let totalPickupReturnSum = 0;
             let avgDistanceSum = 0;
-            // row 갯수
-            let rowCnt = 0;
-            // 정상 TC가 있는 row 갯수
-            let tcRowCnt = 0;
             // 빈값이 들어간 row 갯수
             let rowReduceCnt = 0;
             // 거리값 제외 count
@@ -194,10 +176,15 @@ function getStoreStatisticsByDate() {
             let onlyErrCnt = 0;
             // Third party 개수
             let onlyThirdCnt = 0;
+            let tcRowCnt = 0;
 
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
+
+                    let currentRow = formatInt(data[key].tc);
+
                     // 빈값 여부를 위해 chkcount
+
                     let chkCnt = 0;
                     let chkDistanceCnt = 0;
                     let chkTpSpCnt = 0;
@@ -205,7 +192,6 @@ function getStoreStatisticsByDate() {
                     let chkThirdCnt = 0;
 
                     let tmpdata = new Object();
-                    rowCnt++;
                     rowReduceCnt++;
                     distanceCnt++;
                     tpSpCnt++;
@@ -215,6 +201,7 @@ function getStoreStatisticsByDate() {
                         tcRowCnt++;
                     }
 
+                    tmpdata.No = ++rowNum;
                     tmpdata.store = data[key].storeName;
 
                     if (data[key].groupName == ''){
@@ -229,30 +216,57 @@ function getStoreStatisticsByDate() {
                         tmpdata.subGroup_name = data[key].subGroupName;
                     }
 
-                    tmpdata.orderPickup = totalTimeSet(data[key].orderPickup*1000);
-                    tmpdata.pickupComplete = totalTimeSet(data[key].pickupComplete*1000);
-                    tmpdata.orderComplete = totalTimeSet(data[key].orderComplete*1000);
-                    tmpdata.completeReturn = totalTimeSet(data[key].completeReturn*1000);
-                    tmpdata.pickupReturn = totalTimeSet(data[key].pickupReturn*1000);
-                    tmpdata.orderReturn = totalTimeSet(data[key].orderReturn*1000);
-                    tmpdata.minD7Below = formatFloat(data[key].minD7Below, 1) + "%";
-                    tmpdata.min30Below = formatFloat(data[key].min30Below, 1) + "%";
-                    tmpdata.min30To40 = formatFloat(data[key].min30To40, 1) + "%";
-                    tmpdata.min40To50 = formatFloat(data[key].min40To50, 1) + "%";
-                    tmpdata.min50To60 = formatFloat(data[key].min50To60, 1) + "%";
-                    tmpdata.min60To90 = formatFloat(data[key].min60To90, 1) + "%";
-                    tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
-                    tmpdata.totalSales = formatFloat(data[key].totalSales, 1);
+                    tmpdata.orderPickup = millisecondToTime((data[key].orderPickup / currentRow) *1000);
+                    tmpdata.orderPickups = formatInt(data[key].orderPickup);
+
+                    tmpdata.pickupComplete = millisecondToTime((data[key].pickupComplete / currentRow) * 1000);
+                    tmpdata.pickupCompletes = formatInt(data[key].pickupComplete);
+
+                    tmpdata.orderComplete = millisecondToTime((data[key].orderComplete / currentRow) * 1000);
+                    tmpdata.orderCompletes = formatInt(data[key].orderComplete)
+
+                    tmpdata.completeReturn = millisecondToTime((data[key].completeReturn / currentRow) * 1000);
+                    tmpdata.completeReturns = formatInt(data[key].completeReturn);
+
+                    tmpdata.pickupReturn = millisecondToTime((data[key].pickupReturn / currentRow) * 1000);
+                    tmpdata.pickupReturns = formatInt(data[key].pickupReturn);
+
+                    tmpdata.orderReturn = millisecondToTime((data[key].orderReturn / currentRow) * 1000);
+                    tmpdata.orderReturns = formatInt(data[key].orderReturn);
+
+                    tmpdata.minD7Below = formatFloat(data[key].d7Success / currentRow * 100, 1) + "%";
+                    tmpdata.minD7Belows = formatInt(data[key].d7Success);
+
+                    tmpdata.min30Below = formatFloat(data[key].min30Below / currentRow * 100, 1) + "%";
+                    tmpdata.min30Belows = formatInt(data[key].min30Below);
+
+                    tmpdata.min30To40 = formatFloat(data[key].min30To40 / currentRow * 100, 2) + "%";
+                    tmpdata.min30To40s = formatInt(data[key].min30To40);
+
+                    tmpdata.min40To50 = formatFloat(data[key].min40To50 / currentRow * 100, 1) + "%";
+                    tmpdata.min40To50s = formatInt(data[key].min40To50);
+
+                    tmpdata.min50To60 = formatFloat(data[key].min50To60 / currentRow * 100, 1) + "%";
+                    tmpdata.min50To60s = formatInt(data[key].min50To60);
+
+                    tmpdata.min60To90 = formatFloat(data[key].min60To90 / currentRow * 100, 1) + "%";
+                    tmpdata.min60To90s = formatInt(data[key].min60To90);
+
+                    tmpdata.min90Under = formatFloat(data[key].min90Under / currentRow * 100, 1) + "%";
+                    tmpdata.min90Unders = formatInt(data[key].min90Under);
+
+                    tmpdata.totalSales = formatFloat(data[key].totalSales / currentRow, 1);
+                    tmpdata.totalSaless = formatInt(data[key].totalSales);
 
                     if (formatInt(data[key].errtc, 0) > 0){
-                        tmpdata.errtc = formatInt(data[key].errtc, 1);
+                        tmpdata.errtc = formatInt(data[key].errtc);
                         chkErrCnt++;
                     }else{
                         tmpdata.errtc = "-"
                     }
 
                     if (formatInt(data[key].thirdtc, 0) > 0){
-                        tmpdata.thirdtc = formatInt(data[key].thirdtc, 1);
+                        tmpdata.thirdtc = formatInt(data[key].thirdtc);
                         chkThirdCnt++;
                     }else{
                         tmpdata.thirdtc = "-"
@@ -260,23 +274,25 @@ function getStoreStatisticsByDate() {
 
                     tmpdata.tc = formatInt(data[key].tc, 1);
 
-                    if(data[key].tplh){
-                        tmpdata.tplh = formatFloat(data[key].tplh, 2);
-                        tplhSum += formatFloat(data[key].tplh, 2);
+                    if(data[key].hours){
+                        tmpdata.tplh = formatFloat( currentRow / data[key].hours, 2);
+                        tmpdata.tplhs = formatFloat(data[key].hours, 2);
+                        tplhSum += formatFloat(data[key].hours, 2);
+
+                        tmpdata.spmh = formatFloat(formatInt(data[key].totalSales) / data[key].hours, 2);
+                        tmpdata.spmhs = formatFloat(data[key].hours, 2);
+                        spmhSum += formatFloat(data[key].hours, 2);
                     } else{
                         tmpdata.tplh = "-";
-                        chkTpSpCnt++;
-                    }
-
-                    if(data[key].spmh){
-                        tmpdata.spmh = formatFloat(data[key].spmh, 2);
-                        spmhSum += formatFloat(data[key].spmh, 2);
-                    } else{
                         tmpdata.spmh = "-";
                         chkTpSpCnt++;
                     }
-                    tmpdata.totalPickupReturn = totalTimeSet(data[key].totalPickupReturn*1000);
-                    tmpdata.avgDistance = (data[key].avgDistance?formatFloat(data[key].avgDistance, 1):0) +'km';
+
+                    tmpdata.totalPickupReturn = millisecondToTime(data[key].totalPickupReturn * 1000);
+                    tmpdata.totalPickupReturns = formatInt(data[key].totalPickupReturn);
+
+                    tmpdata.avgDistance = formatFloat(data[key].avgDistance / currentRow, 1) +'km';
+                    tmpdata.avgDistances = formatFloat(data[key].avgDistance, 1);
 
                     // 평균 값
                     orderPickupSum += formatFloat(data[key].orderPickup, 1);
@@ -308,11 +324,11 @@ function getStoreStatisticsByDate() {
                     }
 
                     if(tmpdata.avgDistance != "-"){
-                        avgDistanceSum += formatFloat(data[key].avgDistance?data[key].avgDistance:0, 1);
+                        avgDistanceSum += formatFloat(data[key].avgDistance, 1);
                     } else{
                         chkDistanceCnt++;
                     }
-                    minD7BelowSum += formatFloat(data[key].minD7Below, 1);
+                    minD7BelowSum += formatFloat(data[key].d7Success, 1);
                     min30BelowSum += formatFloat(data[key].min30Below, 1);
                     min30To40Sum += formatFloat(data[key].min30To40, 1);
                     min40To50Sum += formatFloat(data[key].min40To50, 1);
@@ -321,9 +337,9 @@ function getStoreStatisticsByDate() {
                     min90UnderSum += formatFloat(data[key].min90Under, 1);
                     totalSalesSum += formatFloat(data[key].totalSales, 1);
 
-                    errtcSum += formatFloat(data[key].errtc, 1);
-                    thirdtcSum += formatFloat(data[key].thirdtc, 1);
-                    tcSum += formatFloat(data[key].tc, 1);
+                    errtcSum += formatInt(data[key].errtc);
+                    thirdtcSum += formatInt(data[key].thirdtc);
+                    tcSum += formatInt(data[key].tc);
 
                     mydata.push(tmpdata);
                     if(chkCnt !=0){
@@ -346,47 +362,67 @@ function getStoreStatisticsByDate() {
                     }
                 }
             }
+
+            // 평균과 관련한 값을 생성하기 위함
+            fillteringData(mydata);
+
             // 평균 값
             let avgData = new Object();
+            avgData.No = ++rowNum;
             avgData.store = "Average" ;
 
             avgData.group_name = "";
             avgData.subGroup_name = "";
 
-            avgData.orderPickup = totalTimeSet((orderPickupSum*1000)/tcRowCnt);
-            avgData.pickupComplete = totalTimeSet((pickupCompleteSum*1000)/tcRowCnt);
-            avgData.orderComplete  = totalTimeSet((orderCompleteSum*1000)/tcRowCnt);
-            avgData.completeReturn = totalTimeSet((completeReturnSum*1000)/rowReduceCnt);
-            avgData.pickupReturn =  totalTimeSet((pickupReturnSum*1000)/rowReduceCnt);
-            avgData.orderReturn =   totalTimeSet((orderReturnSum*1000)/rowReduceCnt);
-            avgData.minD7Below = formatFloat((minD7BelowSum/tcRowCnt), 1) + "%";
-            avgData.min30Below = formatFloat((min30BelowSum/tcRowCnt), 1) +"%";
-            avgData.min30To40 =formatFloat((min30To40Sum/tcRowCnt), 1) +"%";
-            avgData.min40To50 = formatFloat((min40To50Sum/tcRowCnt), 1) +"%";
-            avgData.min50To60 = formatFloat((min50To60Sum/tcRowCnt), 1) +"%";
-            avgData.min60To90 = formatFloat((min60To90Sum/tcRowCnt), 1) +"%";
-            avgData.min90Under = formatFloat((min90UnderSum/tcRowCnt), 1) +"%";
-            avgData.totalSales = formatFloat((totalSalesSum/tcRowCnt), 1);
-            avgData.errtc = formatInt((errtcSum/onlyErrCnt), 1);
-            avgData.thirdtc = formatInt((thirdtcSum/onlyThirdCnt), 1);
-            avgData.tc = formatInt((tcSum/tcRowCnt), 1);
-
-            //avgData.d7Success = (totalD7Success / tcSum) * 100;
+            avgData.orderPickup = millisecondToTime(orderPickupSum / tcSum * 1000);
+            avgData.pickupComplete = millisecondToTime(pickupCompleteSum / tcSum * 1000);
+            avgData.orderComplete  = millisecondToTime(orderCompleteSum / tcSum * 1000);
+            avgData.completeReturn = millisecondToTime(completeReturnSum / tcSum *1000);
+            avgData.pickupReturn =  millisecondToTime(pickupReturnSum / tcSum * 1000);
+            avgData.orderReturn =   millisecondToTime(orderReturnSum / tcSum * 1000);
+            avgData.minD7Below = formatFloat((minD7BelowSum / tcSum) * 100, 1) + "%";
+            avgData.min30Below = formatFloat((min30BelowSum / tcSum) * 100, 1) +"%";
+            avgData.min30To40 =formatFloat((min30To40Sum / tcSum) * 100, 1) +"%";
+            avgData.min40To50 = formatFloat((min40To50Sum / tcSum) * 100, 1) +"%";
+            avgData.min50To60 = formatFloat((min50To60Sum / tcSum) * 100, 1) +"%";
+            avgData.min60To90 = formatFloat((min60To90Sum / tcSum) * 100, 1) +"%";
+            avgData.min90Under = formatFloat((min90UnderSum / tcSum) * 100, 1) +"%";
+            avgData.totalSales = formatFloat((totalSalesSum / tcSum), 1);
+            avgData.errtc = formatInt(errtcSum / onlyErrCnt);
+            avgData.thirdtc = formatInt(thirdtcSum / onlyThirdCnt);
+            avgData.tc = formatInt(tcSum / tcRowCnt);
 
             if(tpSpCnt!=0){
-                avgData.tplh = formatFloat((tplhSum/tpSpCnt), 2);
-                avgData.spmh = formatFloat((spmhSum/tpSpCnt), 2);
+                avgData.tplh = formatFloat(tcSum / tplhSum, 2);
+                avgData.spmh = formatFloat(totalSalesSum /spmhSum, 2);
             }else{
                 avgData.tplh = "-";
                 avgData.spmh = "-";
             }
 
-            avgData.totalPickupReturn = totalTimeSet((totalPickupReturnSum*1000)/rowReduceCnt);
-            avgData.avgDistance = formatFloat((avgDistanceSum/distanceCnt), 1) +'km';
+            avgData.totalPickupReturn = secondsToTime(totalPickupReturnSum / tcRowCnt);
+            avgData.avgDistance = formatFloat(avgDistanceSum / tcSum, 1) +'km';
 
-            // 날짜 조회시 avg 노출
-            if(rowCnt!=0){
-                mydata.push(avgData);
+            mydata.push(avgData);
+
+            // RC나 AC에 따른 마지막 데이터 추가
+            if ($("#statisticsGroupList option:selected").val() === "reset"){
+                for (const g of rcGroup) {
+                    let gData = new Object();
+                    gData.No = ++rowNum;
+                    gData.store = g[0] + " AVERAGE";
+
+                    //console.log('g data => ', g, 'dddd', g[0]);
+                    mydata.push(gData);
+                }
+            }else if ($("#statisticsGroupList option:selected").val() !== "reset" && $("#statisticsSubGroupList option:selected").val() === "reset"){
+                for (const ag of acGroup) {
+                    let agData = new Object();
+                    agData.No = ++rowNum;
+                    agData.store = ag[0] + " AVERAGE";
+
+                    mydata.push(agData);
+                }
             }
 
             if (mydata.length > 0) {
@@ -408,6 +444,7 @@ function getStoreStatisticsByDate() {
                 datatype: "local",
                 data: mydata,
                 colModel: [
+                    {label: 'No', name: 'No', width: 25, key: true, align: 'center', hidden: true},
                     {label: label_store, name: 'store', width: 80, align: 'center'},
                     {label: group_name, name: 'group_name', width: 80, align: 'center'},
                     {label: subGroup_name, name: 'subGroup_name', width: 80, align: 'center'},
@@ -439,6 +476,98 @@ function getStoreStatisticsByDate() {
                 autowidth: true,
                 rowNum: 20,
                 pager: "#jqGridPager",
+                loadComplete: function (){
+                    let ids = $("#jqGrid").getDataIDs();
+
+                    $.each(ids, function (idx, rowId){
+                        let objRowData = $("#jqGrid").getRowData(rowId);
+
+                        if ($("#statisticsGroupList option:selected").val() === "reset"){
+                            for (const rc of rcGroup) {
+                                if (objRowData.store === rc[0] + " AVERAGE"){
+                                    let rcData = rcGroup.get(rc[0]);
+
+                                    if (rcData.length > 0){
+                                        let orderCount = rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.tc), 0);
+                                        let rowCount = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.tc) > 0 ? 1 : 0), 0));
+                                        let errCount = rcData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.errtc) > 0 ? 1 : 0), 0);
+                                        let thirdCount = rcData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.thirdtc) > 0 ? 1 : 0), 0);
+
+
+
+                                        objRowData.orderPickup = secondsToTime(formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.orderPickups), 0) / orderCount));
+                                        objRowData.pickupComplete = secondsToTime(formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.pickupCompletes), 0) / orderCount));
+                                        objRowData.orderComplete  = secondsToTime(formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.orderCompletes), 0) / orderCount));
+                                        objRowData.completeReturn = secondsToTime(formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.completeReturns), 0) / orderCount));
+                                        objRowData.pickupReturn =  secondsToTime(formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.pickupReturns), 0) / orderCount));
+                                        objRowData.orderReturn =   secondsToTime(formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.orderReturns), 0) / orderCount));
+                                        objRowData.minD7Below = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.minD7Belows), 0) / orderCount * 100, 1) + "%";
+                                        objRowData.min30Below = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min30Belows), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min30To40 =formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min30To40s), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min40To50 = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min40To50s), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min50To60 = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min50To60s), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min60To90 = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min60To90s), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min90Under = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min90Unders), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.totalSales = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.totalSaless), 0) / orderCount, 1);
+                                        objRowData.errtc = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.errtc), 0) / errCount);
+                                        objRowData.thirdtc = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.thirdtc), 0) / thirdCount);
+                                        objRowData.tc = formatInt(orderCount / rowCount);
+                                        objRowData.tplh = formatFloat(orderCount / formatFloat(rcData.reduce((sum, obj) => formatFloat(sum, 2) + formatFloat(obj.tplhs, 2), 0), 2), 2);
+                                        objRowData.spmh = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.totalSaless), 0) /formatFloat(rcData.reduce((sum, obj) => formatFloat(sum, 2) + formatFloat(obj.spmhs, 2), 0), 2), 2);
+                                        objRowData.totalPickupReturn = secondsToTime(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.totalPickupReturns), 0) / rowCount);
+                                        objRowData.avgDistance = formatFloat(rcData.reduce((sum, obj) => formatFloat(sum, 2) + formatFloat(obj.avgDistances, 2), 0) / orderCount, 1) +'km';
+
+                                        $("#jqGrid").setRowData(rowId, objRowData);
+                                    }else{
+                                        $("#jqGrid").delRowData(rowId);
+                                    }
+                                }
+                            }
+                        }else if ($("#statisticsGroupList option:selected").val() !== "reset" && $("#statisticsSubGroupList option:selected").val() === "reset"){
+                            for (const ac of acGroup) {
+                                if (objRowData.store === ac[0] + " AVERAGE"){
+                                    let acData = acGroup.get(ac[0]);
+
+                                    if (acData.length > 0){
+                                        let orderCount = acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.tc), 0);
+                                        let rowCount = formatInt(acData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.tc) > 0 ? 1 : 0), 0));
+                                        let errCount = acData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.errtc) > 0 ? 1 : 0), 0);
+                                        let thirdCount = acData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.thirdtc) > 0 ? 1 : 0), 0);
+
+
+
+                                        objRowData.orderPickup = secondsToTime(formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.orderPickups), 0) / orderCount));
+                                        objRowData.pickupComplete = secondsToTime(formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.pickupCompletes), 0) / orderCount));
+                                        objRowData.orderComplete  = secondsToTime(formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.orderCompletes), 0) / orderCount));
+                                        objRowData.completeReturn = secondsToTime(formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.completeReturns), 0) / orderCount));
+                                        objRowData.pickupReturn =  secondsToTime(formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.pickupReturns), 0) / orderCount));
+                                        objRowData.orderReturn =   secondsToTime(formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.orderReturns), 0) / orderCount));
+                                        objRowData.minD7Below = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.minD7Belows), 0) / orderCount * 100, 1) + "%";
+                                        objRowData.min30Below = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min30Belows), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min30To40 =formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min30To40s), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min40To50 = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min40To50s), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min50To60 = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min50To60s), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min60To90 = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min60To90s), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.min90Under = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min90Unders), 0) / orderCount * 100, 1) +"%";
+                                        objRowData.totalSales = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.totalSaless), 0) / orderCount, 1);
+                                        objRowData.errtc = formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.errtc), 0) / errCount);
+                                        objRowData.thirdtc = formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.thirdtc), 0) / thirdCount);
+                                        objRowData.tc = formatInt(orderCount / rowCount);
+                                        objRowData.tplh = formatFloat(orderCount / formatFloat(acData.reduce((sum, obj) => formatFloat(sum, 2) + formatFloat(obj.tplhs, 2), 0), 2), 2);
+                                        objRowData.spmh = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.totalSaless), 0) /formatFloat(acData.reduce((sum, obj) => formatFloat(sum, 2) + formatFloat(obj.spmhs, 2), 0), 2), 2);
+                                        objRowData.totalPickupReturn = secondsToTime(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.totalPickupReturns), 0) / rowCount);
+                                        objRowData.avgDistance = formatFloat(acData.reduce((sum, obj) => formatFloat(sum, 2) + formatFloat(obj.avgDistances, 2), 0) / orderCount, 1) +'km';
+
+                                        $("#jqGrid").setRowData(rowId, objRowData);
+                                    }else{
+                                        $("#jqGrid").delRowData(rowId);
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                }
             });
 
             $("#jqGrid").jqGrid('destroyGroupHeader');
@@ -450,7 +579,6 @@ function getStoreStatisticsByDate() {
                     {startColumnName: 'totalSales', numberOfColumns: 8, titleText: label_productivity}
                 ]
             });
-            //$("#jqGrid").jqGrid('destroyGroupHeader', false);
 
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
             loading.hide();
@@ -626,21 +754,41 @@ function excelDownloadByDate(){
     })
 }
 
-function formatInt(sender, pointer) {
-    if (sender == null || isNaN(sender)){
-        return 0;
+function fillteringData(objData){
+    let groupOption = $("#statisticsGroupList")[0].options;
+    rcGroup = new Map();
+
+    // RC 기준의 Row 데이터 저장
+    for (const g of groupOption) {
+        if (g.value !== "reset"){
+            rcGroup.set(g.text, filterJoin1(objData, g.text));
+        }
     }
-    return parseFloat(parseInt(sender).toFixed(pointer));
+
+    let subGroupOption = $("#statisticsSubGroupList")[0].options;
+    acGroup = new Map();
+
+    // AC 기준의 Row 데이터 저장
+    for (const sg of subGroupOption) {
+        if (sg.value !== "reset"){
+            acGroup.set(sg.text, filterJoin2(objData, sg.text));
+        }
+    }
 }
 
-function formatFloat(sender, pointer) {
-    if (sender == null || isNaN(sender)){
-        return 0;
-    }
-
-    return parseFloat(parseFloat(sender).toFixed(pointer));
+// 필터 조건 1 RC 기준
+function filterJoin1(item, conditional){
+    return item.filter((obj) => {
+        return obj.group_name.toUpperCase() === conditional.toUpperCase();
+    });
 }
 
+// 필터 조건 2 AC 기준
+function filterJoin2(item, conditional){
+    return item.filter((obj) => {
+        return obj.subGroup_name.split('-')[0].toUpperCase() === conditional.toUpperCase();
+    });
+}
 
 /**
  * 2020.04.29 통계 검색 조건 관련 함수들 추가

@@ -334,7 +334,7 @@ function drawCardUI(cardInfo){
 
     if (cardInfo.hasOwnProperty('mainValue')){
         returnHtml += '<div class="text-black text-3xl font-bold mb-6">';
-        returnHtml += formatFloat(cardInfo.mainValue, 2);
+        returnHtml += formatFloat(cardInfo.mainValue, 2, true);
         returnHtml += cardInfo.unit;
         returnHtml += '</div>';
     }else{
@@ -349,13 +349,13 @@ function drawCardUI(cardInfo){
         if (cardInfo.variation < 0){
             returnHtml += '<i class="bg-arw-down w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>';
             returnHtml += '<span>';
-            returnHtml += formatFloat(cardInfo.variation, 2);
+            returnHtml += formatFloat(cardInfo.variation, 2, true);
             returnHtml += '%</span>';
             returnHtml += '</div>';
         }else if (cardInfo.variation > 0) {
             returnHtml += '<i class="bg-arw-up w-5 h-5 inline-block align-middle mr-1 bg-no-repeat"></i>';
             returnHtml += '<span>+';
-            returnHtml += formatFloat(cardInfo.variation, 2);
+            returnHtml += formatFloat(cardInfo.variation, 2, true);
             returnHtml += '%</span>';
             returnHtml += '</div>';
         } else {
@@ -368,17 +368,6 @@ function drawCardUI(cardInfo){
     returnHtml += '</div>';
 
     return returnHtml;
-}
-
-/**
- * 소수점으로 변환 및 1000자리 콤마 추가
- * */
-function formatFloat(sender, pointer) {
-    if (sender == null || isNaN(sender)){
-        return 0;
-    }
-
-    return parseFloat(parseFloat(sender).toFixed(pointer)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 /**

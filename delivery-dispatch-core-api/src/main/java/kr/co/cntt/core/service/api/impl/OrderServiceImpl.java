@@ -141,8 +141,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 // 21-07-05 주말에 관련 프로세스 다시 살려달라 요청
                                 return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId())).count() <= 0;
                                 // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store_id
-                                //System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
-                                //return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
+                                // System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
+                                // return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
                         }
                     }
                 })
@@ -164,6 +164,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
             log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
             log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
+
+            log.debug(">>> autoAssign_GetRiderList:::: riderList 개수: " + riderList.size());
             Misc misc = new Misc();
 
             // 21.02.21 NULL 오류 발생으로 프로세스 변경
@@ -196,7 +198,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
             riderList = riderList.stream()
                     .filter(a -> Integer.parseInt(a.getAssignCount()) < Integer.parseInt(order.getStore().getAssignmentLimit()))//해당 주문의 상점 기준 최대 오더 개수 안넘는 라이더만 ***** 해당 라이더 상점의 최대 주문개수가 아님(바꿔야하나)
-//                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius())*1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
+//                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius()) * 1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
                     .filter(a -> a.getSubGroupRiderRel() != null && a.getSubGroupRiderRel().getStoreId() != null)      // 소속된 매장 정보가 없는 경우 제외한다.
                     .filter(a -> {
                         if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
@@ -292,7 +294,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 // Rider ID를 가져온다.
                 for (Rider tmpRider:riderList
                      ) {
-                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude());
+                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude() + " # 거리=>" + tmpRider.getDistance());
                 }
 
                 log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);

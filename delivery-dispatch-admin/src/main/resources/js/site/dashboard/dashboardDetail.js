@@ -434,7 +434,7 @@ function makeBarChart(objData){
                     color: '#6b57ec',
                     padding: 8,
                     formatter: function (val, cont){
-                        return formatFloat(val, 2) + '%';
+                        return formatFloat(val, 2, true) + '%';
                     }
                 }
             },
@@ -451,7 +451,7 @@ function makeBarChart(objData){
                    ticks: {
                        count: objData.intervalY,
                        callback: function (val, index, values){
-                           return formatFloat(val, 2) + '%';
+                           return formatFloat(val, 2, true) + '%';
                        }
                    }
                 }
@@ -538,7 +538,7 @@ function makeLineChart(objData){
                     borderRadius: 1,
                     padding: 8,
                     formatter: function (val, cont){
-                        return formatFloat(val, 2);
+                        return formatFloat(val, 2, true);
                     }
                 }
             },
@@ -555,7 +555,7 @@ function makeLineChart(objData){
                     ticks: {
                         count: objData.intervalY,
                         callback: function (val, index, values){
-                            return formatFloat(val, 2);
+                            return formatFloat(val, 2, true);
                         }
                     }
                 }
@@ -595,12 +595,12 @@ function makeTableRow(objData){
             resultHtml += objData[key].storeName;
             resultHtml += "</td>";
             resultHtml += "<td>";
-            resultHtml += formatFloat(objData[key].value, 2);
+            resultHtml += formatFloat(objData[key].value, 2, true);
             resultHtml += "</td>";
 
             if (objData[key].hasOwnProperty("achievementRate")){
                 resultHtml += "<td>";
-                resultHtml += formatFloat(objData[key].achievementRate, 2) + '%';
+                resultHtml += formatFloat(objData[key].achievementRate, 2, true) + '%';
                 resultHtml += "</td>";
 
                 if (bFirst){
@@ -619,17 +619,6 @@ function makeTableRow(objData){
     $("#rankHeader").append(headerHtml);
 
     return resultHtml;
-}
-
-/**
- * 소수점으로 변환 및 1000자리 콤마 추가
- * */
-function formatFloat(sender, pointer) {
-    if (sender == null || isNaN(sender)){
-        return 0;
-    }
-
-    return parseFloat(parseFloat(sender).toFixed(pointer)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 /**
