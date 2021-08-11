@@ -1484,7 +1484,6 @@
 		select   ( select store_name from TB_STORE where id = t.store_id )                                                                  as store_name
 				,group_id
 				,subgroup_id
-				,store_id
 				,( select name from TB_GROUP where id = t.group_id )                                                                     			as group_name
 				,( select name from TB_SUBGROUP where group_id = t.group_id and id = t.subgroup_id )                                             	as subgroup_name
 
@@ -1563,7 +1562,6 @@
 		select	 ( select store_name from TB_STORE where id = t.store_id )																			as store_name
 				,group_id
 				,subgroup_id
-				,store_id
 				,( select name from TB_GROUP where id = t.group_id )																				as group_name
 				,( select name from TB_SUBGROUP where group_id = t.group_id and id = t.subgroup_id )												as subgroup_name
 
