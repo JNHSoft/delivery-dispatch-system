@@ -2,16 +2,16 @@
 <mapper namespace="kr.co.cntt.core.mapper.DashboardMapper">
     <select id="selectAllDetail" parameterType="kr.co.cntt.core.model.common.SearchInfo" resultType="java.util.Map">
         <![CDATA[
-        select	 ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100 as avgD30
-                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, arrived_datetime) ), 0) as detailD30
-                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100 as avgD7
-                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, picked_up_datetime) ), 0) as detailD7
-                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100 as avgD14
-                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, picked_up_datetime) ), 0) as detailD14
-                ,ifnull(count(1), 0)
-                 / round(sum(timestampdiff(MINUTE, picked_up_datetime, return_datetime) ) / 60, 2)				as avgTPLH
-                ,ifnull(avg(cooking_time), 0)																	as avgQT
-                ,count(*)																							as sumTC
+        select	 ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else 0 end ), 0) * 100     as avgD30
+                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, arrived_datetime) ), 0)                                             as detailD30
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end ), 0) * 100     as avgD7
+                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, picked_up_datetime) ), 0)                                           as detailD7
+                ,ifnull(avg( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 14 then 1 else 0 end ), 0) * 100    as avgD14
+                ,ifnull(avg( timestampdiff(second, newAssignedDatetime, picked_up_datetime) ), 0)                                           as detailD14
+                ,ifnull(count(*), 0)
+                 / round(sum(timestampdiff(second, picked_up_datetime, return_datetime) ) / 3600, 2)				                        as avgTPLH
+                ,ifnull(avg(cooking_time), 0)																	                            as avgQT
+                ,count(*)																							                        as sumTC
         from	(
                     select	 cooking_time
                             ,assigned_datetime
@@ -150,7 +150,7 @@
         <![CDATA[
         select	 reservation_datetime															        as createdDatetime
                 ,ifnull(count(*), 0)
-                 / round(sum( timestampdiff(MINUTE, picked_up_datetime, return_datetime) ) / 60, 2)     as mainValue
+                 / round(sum( timestampdiff(second, picked_up_datetime, return_datetime) ) / 3600, 2)     as mainValue
                 ,''																						as unit
         from	(
                     select	 date_format(reservation_datetime, '%Y-%m-%d')						as reservation_datetime
@@ -561,7 +561,7 @@
         select	 store_id																					as id
                 ,( select store_name from TB_STORE where id = store_id )                                    as storeName
                 ,ifnull(count(*), 0)
-                 / round(sum( timestampdiff(MINUTE, picked_up_datetime, return_datetime) ) / 60, 2)	        as value
+                 / round(sum( timestampdiff(second, picked_up_datetime, return_datetime) ) / 3600, 2)	        as value
         from	(
                     select	 a.store_id
                             ,picked_up_datetime

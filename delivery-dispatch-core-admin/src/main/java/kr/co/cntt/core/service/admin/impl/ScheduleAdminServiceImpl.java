@@ -141,7 +141,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
         List<Order> orderList = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
-        orderStatisctics.setOrderStatisticsByOrderExcel(wb, orderList);
+        orderStatisctics.setOrderStatisticsByOrderExcel(wb, orderList, 1);
 
         return getDataSourceForExcel(wb);
     }
@@ -159,7 +159,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
         List<AdminByDate> dateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(searchInfo);
-        dateStatisctics.setStoreStatisticsByDateExcel(wb, dateList);
+        dateStatisctics.setStoreStatisticsByDateExcel(wb, dateList, 1);
 
         return getDataSourceForExcel(wb);
     }
@@ -250,7 +250,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
                 }).collect(Collectors.toList());
 
 
-        orderStatiscticsAtKFC.setOrderStatisticsByOrderExcel(wb, filterOrderList);
+        orderStatiscticsAtKFC.setOrderStatisticsByOrderExcel(wb, filterOrderList, 1);
 
         return getDataSourceForExcel(wb);
     }
@@ -268,7 +268,7 @@ public class ScheduleAdminServiceImpl implements ScheduleAdminService {
 
         SXSSFWorkbook wb = new SXSSFWorkbook(1000);
         List<AdminByDate> dateList = statisticsAdminService.selectStoreStatisticsByDateForAdmin(searchInfo);
-        dateStatiscticsAtKFC.setStoreStatisticsByDateExcel(wb, dateList);
+        dateStatiscticsAtKFC.setStoreStatisticsByDateExcel(wb, dateList, 1);
 
         return getDataSourceForExcel(wb);
     }

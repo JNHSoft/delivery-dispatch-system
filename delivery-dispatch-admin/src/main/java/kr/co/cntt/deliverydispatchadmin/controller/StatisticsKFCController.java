@@ -223,7 +223,16 @@ public class StatisticsKFCController {
                     }
                 }).collect(Collectors.toList());
 
+        int groupNumber = 0;
+        // 그룹핑 정보도 보내기
+        if (searchInfo.getGroupId().equals("reset")) {
+            groupNumber = 1;
+        } else if (!searchInfo.getGroupId().equals("reset") && searchInfo.getSubgroupId().equals("reset")){
+            groupNumber = 2;
+        }
+
         modelAndView.addObject("selectStoreStatisticsByOrderForAdminAtTWKFC", filterStoreOrderListByAdmin);
+        modelAndView.addObject("groupNumber", groupNumber);
 
         return modelAndView;
     }
@@ -326,7 +335,16 @@ public class StatisticsKFCController {
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminByDateAtTWKFCBuilderServiceImpl");
         List<AdminByDate> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByDateForAdminAtTWKFC(searchInfo);
 
+        int groupNumber = 0;
+        // 그룹핑 정보도 보내기
+        if (searchInfo.getGroupId().equals("reset")) {
+            groupNumber = 1;
+        } else if (!searchInfo.getGroupId().equals("reset") && searchInfo.getSubgroupId().equals("reset")){
+            groupNumber = 2;
+        }
+
         modelAndView.addObject("selectStoreStatisticsByDateForAdminAtTWKFC", storeOrderListByAdmin);
+        modelAndView.addObject("groupNumber", groupNumber);
 
         return modelAndView;
     }

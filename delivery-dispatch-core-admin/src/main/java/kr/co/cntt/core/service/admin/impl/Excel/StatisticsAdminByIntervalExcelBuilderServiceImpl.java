@@ -140,7 +140,7 @@ public class StatisticsAdminByIntervalExcelBuilderServiceImpl extends ExcelComm 
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString() + "%");
+            cell.setCellValue(storeStatisticsByInterval.getIntervalMinuteCounts().get(i)[0].toString());
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);

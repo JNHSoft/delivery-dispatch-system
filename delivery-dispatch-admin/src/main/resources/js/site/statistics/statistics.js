@@ -256,18 +256,6 @@ function getStatisticsStoreList(subId, gId) {
     });
 }
 
-/**
- * 시간변환
- */
-function timeSet(time) {
-    if(time != null){
-        var d = new Date(time);
-        return $.datepicker.formatDate('mm-dd ', d) + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
-    }else{
-        return "-";
-    }
-}
-
 
 /**
  * 경과시간 적용
@@ -386,7 +374,7 @@ function getStatisticsList() {
                         }
                         $tmpData.th5 = regOrderIdReduce(data[key].regOrderId);
                         $tmpData.origin_reg_order_id = data[key].regOrderId;
-                        $tmpData.th6 = timeSet(data[key].createdDatetime);
+                        $tmpData.th6 = dateStringToDateTime(data[key].createdDatetime);
                         $tmpData.th7 = data[key].address
                         $tmpData.th9 = data[key].cookingTime
 
@@ -404,30 +392,30 @@ function getStatisticsList() {
                         if (!data[key].assignedDatetime) {
                             $tmpData.th11 = "-";
                         } else {
-                            $tmpData.th11 = timeSet(data[key].assignedDatetime);
+                            $tmpData.th11 = dateStringToDateTime(data[key].assignedDatetime);
                         }
 
                         if (!data[key].pickedUpDatetime) {
                             $tmpData.th12 = "-";
                         } else {
-                            $tmpData.th12 = timeSet(data[key].pickedUpDatetime);
+                            $tmpData.th12 = dateStringToDateTime(data[key].pickedUpDatetime);
                         }
 
                         // 20.07.15 arrived datetime 추가
                         if (!data[key].arrivedDatetime){
                             $tmpData.th18 = "-";
                         }else{
-                            $tmpData.th18 = timeSet(data[key].arrivedDatetime);
+                            $tmpData.th18 = dateStringToDateTime(data[key].arrivedDatetime);
                         }
 
                         if(!data[key].reservationDatetime){
                             $tmpData.th13 = "-";
                         }else if(data[key].reservationStatus==1){
-                            $tmpData.th13 = timeSet(data[key].reservationDatetime);
+                            $tmpData.th13 = dateStringToDateTime(data[key].reservationDatetime);
                         }else if(data[key].reservationStatus==0){
                             if(map_region){
                                 if(map_region=="tw"){
-                                    $tmpData.th13 = '<span style="color: red">' + timeSet(data[key].reservationDatetime) + '</span>';
+                                    $tmpData.th13 = '<span style="color: red">' + dateStringToDateTime(data[key].reservationDatetime) + '</span>';
                                 }else{
                                     $tmpData.th13 = "-";
                                 }
@@ -537,11 +525,11 @@ function getStatisticsInfo(orderId) {
 
             $('.tit').attr("orderId", data.regOrderId);
 
-            $('#createdDatetime').html(timeSet(data.createdDatetime));
-            $('#reservationDatetime').html(timeSet(data.reservationDatetime));
-            $('#assignedDatetime').html(timeSet(data.assignedDatetime));
-            $('#pickedUpDatetime').html(timeSet(data.pickedUpDatetime));
-            $('#completedDatetime').html(timeSet(data.completedDatetime));
+            $('#createdDatetime').html(dateStringToDateTime(data.createdDatetime));
+            $('#reservationDatetime').html(dateStringToDateTime(data.reservationDatetime));
+            $('#assignedDatetime').html(dateStringToDateTime(data.assignedDatetime));
+            $('#pickedUpDatetime').html(dateStringToDateTime(data.pickedUpDatetime));
+            $('#completedDatetime').html(dateStringToDateTime(data.completedDatetime));
             $('#passtime').html(minusTimeSet(data.createdDatetime, data.completedDatetime));
             $('#menuName').html(data.menuName);
             $('#cookingTime').html(data.cookingTime);

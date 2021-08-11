@@ -672,9 +672,9 @@
                 ,count( case when condition1 = 1 then 1 else null end )																										as tc
                 ,sum( case when condition1 = 1 then total_price else 0 end )																								as total_sales
                 ,count( case when condition1 = 1 then 1 else null end )
-                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)								as tplh
+                 / round(sum( case when condition1 = 1 then timestampdiff(second, picked_up_datetime, return_datetime) else 0 end ) / 3600, 2)								as tplh
                 ,sum( case when condition1 = 1 then total_price else 0 end )
-                 / round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2)								as spmh
+                 / round(sum( case when condition1 = 1 then timestampdiff(second, picked_up_datetime, return_datetime) else 0 end ) / 3600, 2)								as spmh
                 ,sum( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else 0 end )													as total_pickup_return
                 ,avg( case when condition1 = 1 then distance else null end )																								as avg_distance
         FROM	(
@@ -742,9 +742,9 @@
                 ,count( case when condition1 = 1 then 1 else null end )																						as tc
                 ,sum( case when condition1 = 1 then total_price else 0 end )																				as total_sales
                 ,count( case when condition1 = 1 then 1 else null end )
-                 / (round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2))				as tplh
+                 / (round(sum( case when condition1 = 1 then timestampdiff(second, picked_up_datetime, return_datetime) else 0 end ) / 3600, 2))				as tplh
                 ,sum( case when condition1 = 1 then total_price else 0 end )
-                 / (round(sum( case when condition1 = 1 then timestampdiff(MINUTE, picked_up_datetime, return_datetime) else 0 end ) / 60, 2))				as spmh
+                 / (round(sum( case when condition1 = 1 then timestampdiff(second, picked_up_datetime, return_datetime) else 0 end ) / 3600, 2))				as spmh
                 ,sum( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else 0 end )									as total_pickup_return
                 ,avg( case when condition1 = 1 then distance else null end )																				as avg_distance
         from	(

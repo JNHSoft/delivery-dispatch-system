@@ -3,6 +3,11 @@ let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></d
 var selectId =$("#statisticsStoreList");
 var selectIdOption = $("#statisticsStoreList option:selected");
 
+// RC 기준의 Row 데이터 저장
+let rcGroup;
+// AC 기준의 Row 데이터 저장
+let acGroup;
+
 $(function () {
     /// 데이터 정보 조회
     let date = $.datepicker.formatDate('yy-mm-dd', new Date);
@@ -34,49 +39,33 @@ $(function () {
     });     // 조건 검색 버튼
 });
 
-function timeSet(time) {
-    if (time) {
-        let d = new Date(time);
-        return $.datepicker.formatDate('mm-dd ', d) + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
-    } else {
-        return "-";
-    }
-}
-
-function timeSetDate(time) {
-    if (time) {
-        let d = new Date(time);
-        return $.datepicker.formatDate('yy.mm.dd ', d);
-    } else {
-        return "-";
-    }
-}
-
-function    totalTimeSet(time) {
-    if (time) {
-        let d = new Date(time);
-        return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
-    } else {
-        return "-";
-    }
-}
-
 function averageTimeSet(time,i) {
     if (time && i) {
         let d = new Date(time/i);
-        return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+        if (d.getUTCHours() < 10){
+            return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+        }else{
+            return d.getUTCHours() + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
+        }
+
     } else {
         return "-";
     }
 }
-
 
 function minusTimeSet(time1, time2) {
     if (time2) {
         let d1 = new Date(time1);
         let d2 = new Date(time2);
         let minusTime = new Date(d2.getTime() - d1.getTime());
-        return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2);
+
+        if (minusTime.getUTCHours() < 10){
+            return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2);
+        }else {
+            return minusTime.getUTCHours() + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2);
+        }
+
+
     } else {
         return "-";
     }
@@ -87,10 +76,23 @@ function minusTimeSet2(time1, time2) {
     let d2 = new Date(time2);
     if(d2.getTime() - d1.getTime() >=0){
         let minusTime = new Date(d2.getTime() - d1.getTime());
-        return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
+
+        if (minusTime.getUTCHours() < 10){
+            return ('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
+        }else{
+            return minusTime.getUTCHours() + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
+        }
+
+
     }else{
         let minusTime = new Date(Math.abs(d2.getTime() - d1.getTime()));
-        return "-"+('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
+        if (minusTime.getUTCHours() < 10){
+            return "-"+('0' + minusTime.getUTCHours()).slice(-2) + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
+        }else{
+            return minusTime.getUTCHours() + ':' + ('0' + minusTime.getUTCMinutes()).slice(-2) + ':' + ('0' + minusTime.getUTCSeconds()).slice(-2);
+        }
+
+
     }
 }
 
@@ -135,12 +137,11 @@ function getStatisticsInfo(regOrderId) {
             $('.tit').html('<h2>' + order_detail + ' - ' + regOrderIdReduce(regOrderId) + '</h2>' + $status);
             $('.tit').attr("orderId", data.regOrderId);
 
-            $('#createdDatetime').html(timeSet(data.createdDatetime));
-            $('#reservationDatetime').html(timeSet(data.reservationDatetime));
-            $('#assignedDatetime').html(timeSet(data.assignedDatetime));
-            $('#pickedUpDatetime').html(timeSet(data.pickedUpDatetime));
-            $('#completedDatetime').html(timeSet(data.completedDatetime));
-            //$('#passtime').html(minusTimeSet(data.createdDatetime, data.completedDatetime));
+            $('#createdDatetime').html(dateStringToDateTime(data.createdDatetime));
+            $('#reservationDatetime').html(dateStringToDateTime(data.reservationDatetime));
+            $('#assignedDatetime').html(dateStringToDateTime(data.assignedDatetime));
+            $('#pickedUpDatetime').html(dateStringToDateTime(data.pickedUpDatetime));
+            $('#completedDatetime').html(dateStringToDateTime(data.completedDatetime));
             $('#passtime').html(minusTimeSet(data.assignedDatetime, data.completedDatetime));
             $('#menuName').html(data.menuName);
             $('#cookingTime').html(data.cookingTime);
@@ -227,31 +228,32 @@ function getStoreStatistics() {
                     tmpData.reg_order_id = regOrderIdReduce(data[key].regOrderId);
                     tmpData.id = data[key].id;
                     tmpData.origin_reg_order_id = data[key].regOrderId;
-                    tmpData.orderDate = timeSetDate(data[key].createdDatetime);
-                    //tmpData.orderPickup1 = minusTimeSet2(data[key].createdDatetime, data[key].pickedUpDatetime);
+                    tmpData.orderDate = dateStringToDate(data[key].createdDatetime);
                     tmpData.orderPickup1 = minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime);
+                    tmpData.orderPickup1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
 
                     // 배정 ~ 픽업 시간이 1분 미만인 경우 파란색으로 표시
                     tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                    tmpData.orderPickup1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
 
                     tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
+                    tmpData.pickupComplete1s =  timeToSeconds(minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime));
 
                     if (data[key].arrivedDatetime){
                         // 도착 ~ 완료 시간이 1분 미만인 경우 파란색으로 표시
                         tmpData.riderStayTime = diffTimeBlue(data[key].arrivedDatetime, data[key].completedDatetime, minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime));
+                        tmpData.riderStayTimes = timeToSeconds(minusTimeSet2(data[key].arrivedDatetime, data[key].completedDatetime));
                         riderStayTimeSum += minusTime(data[key].arrivedDatetime, data[key].completedDatetime);
                     }else{
                         tmpData.riderStayTime = "-";
+                        tmpData.riderStayTimes = 0;
                     }
 
-                    //tmpData.orderComplete1 = minusTimeSet2(data[key].createdDatetime, data[key].arrivedDatetime);
                     tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
-                    
-                    //orderPickupSum += minusTime(data[key].createdDatetime, data[key].pickedUpDatetime);
-                    //orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
+                    tmpData.orderComplete1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime));
+
                     orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);   // 예약 시간에서 30분을 제외한 값
                     pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
-                    //orderCompleteSum += minusTime(data[key].createdDatetime, data[key].arrivedDatetime);
                     orderCompleteSum += minusTime(data[key].assignedDatetime, data[key].arrivedDatetime);
 
                     // 검색 조건을 위한 데이터 입력
@@ -271,44 +273,53 @@ function getStoreStatistics() {
 
 
                     if(data[key].returnDatetime){
-                        //tmpData.completeReturn1 = minusTimeSet2(data[key].arrivedDatetime, data[key].returnDatetime);
                         tmpData.completeReturn1 = minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime);           // 21.05.17 완료 시간 ~ 복귀 시간으로 변경
                         tmpData.pickupReturn1 = minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        //tmpData.orderReturn1 = minusTimeSet2(data[key].createdDatetime, data[key].returnDatetime);
                         tmpData.orderReturn1 = minusTimeSet2(data[key].assignedDatetime, data[key].returnDatetime);
-                        //completeReturnSum += minusTime(data[key].arrivedDatetime, data[key].returnDatetime);
+                        tmpData.completeReturn1s = timeToSeconds(minusTimeSet2(data[key].completedDatetime, data[key].returnDatetime));           // 21.05.17 완료 시간 ~ 복귀 시간으로 변경
+                        tmpData.pickupReturn1s = timeToSeconds(minusTimeSet2(data[key].pickedUpDatetime, data[key].returnDatetime));
+                        tmpData.orderReturn1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].returnDatetime));
+
                         completeReturnSum += minusTime(data[key].completedDatetime, data[key].returnDatetime);              // 21.05.17 완료 시간 ~ 복귀 시간으로 변경
                         pickupReturnSum += minusTime(data[key].pickedUpDatetime, data[key].returnDatetime);
-                        //orderReturnSum += minusTime(data[key].createdDatetime, data[key].returnDatetime);
                         orderReturnSum += minusTime(data[key].assignedDatetime, data[key].returnDatetime);
                     }else{
+                        tmpData.completeReturn1s = 0;
+                        tmpData.pickupReturn1s = 0;
+                        tmpData.orderReturn1s = 0;
                         chkReturnTimeCnt++;
                     }
 
                     if(data[key].distance){
                         tmpData.distance = parseFloat(data[key].distance).toFixed(2) + 'km';
+                        tmpData.distances = parseFloat(data[key].distance).toFixed(2);
                         distanceSum += parseFloat(data[key].distance);
                     }else{
+                        tmpData.distances = 0;
                         chkDistanceCnt++;
                     }
 
                     myData.push(tmpData);
                 }
             }
+
+            // 데이터 필터링을 위한 값 전송
+            fillteringData(myData);
+
             let totalData = new Object();
             totalData.No = rowNum+1;
             totalData.reg_order_id = "TOTAL";
             totalData.id = "";
             totalData.origin_reg_order_id = "";
             totalData.orderDate = "";
-            totalData.orderPickup1 = totalTimeSet(orderPickupSum);
-            totalData.pickupComplete1 = totalTimeSet(pickupCompleteSum);
-            totalData.orderComplete1 = totalTimeSet(orderCompleteSum);
-            totalData.riderStayTime = totalTimeSet(riderStayTimeSum);
-            totalData.completeReturn1 = totalTimeSet(completeReturnSum);
-            totalData.pickupReturn1 = totalTimeSet(pickupReturnSum);
-            totalData.orderReturn1 = totalTimeSet(orderReturnSum);
-            totalData.distance = (distanceSum ==0?0:parseFloat(distanceSum).toFixed(2)) + 'km';
+            totalData.orderPickup1 = secondsToTime(orderPickupSum / 1000);
+            totalData.pickupComplete1 = secondsToTime(pickupCompleteSum / 1000);
+            totalData.orderComplete1 = secondsToTime(orderCompleteSum / 1000);
+            totalData.riderStayTime = secondsToTime(riderStayTimeSum / 1000);
+            totalData.completeReturn1 = secondsToTime(completeReturnSum / 1000);
+            totalData.pickupReturn1 = secondsToTime(pickupReturnSum / 1000);
+            totalData.orderReturn1 = secondsToTime(orderReturnSum / 1000);
+            totalData.distance = formatFloat(distanceSum, 2) + 'km';
 
             // 검색 조건을 위한 데이터 입력
             totalData.store_name = "";
@@ -341,6 +352,28 @@ function getStoreStatistics() {
 
             myData.push(averageData);
 
+            rowNum = rowNum+2;
+
+            // RC나 AC에 따른 마지막 데이터 추가
+            if ($("#statisticsGroupList option:selected").val() === "reset"){
+                for (const g of rcGroup) {
+                    let gData = new Object();
+                    gData.No = ++rowNum;
+                    gData.reg_order_id = g[0] + " AVERAGE";
+
+                    //console.log('g data => ', g, 'dddd', g[0]);
+                    myData.push(gData);
+                }
+            }else if ($("#statisticsGroupList option:selected").val() !== "reset" && $("#statisticsSubGroupList option:selected").val() === "reset"){
+                for (const ag of acGroup) {
+                    let agData = new Object();
+                    agData.No = ++rowNum;
+                    agData.reg_order_id = ag[0] + " AVERAGE";
+
+                    myData.push(agData);
+                }
+            }
+
             if (myData != null) {
                 jQuery('#jqGrid').jqGrid('clearGridData');
                 jQuery('#jqGrid').jqGrid('setGridParam', {data: myData, page: 1});
@@ -371,11 +404,9 @@ function getStoreStatistics() {
                     {label: subGroup_name, name: 'subGroup_name', width: 80, align: 'center', hidden: true},
                     {label: rider_name, name: 'rider_name', width: 80, align: 'center', hidden: true}
                 ],
-                // minHeight: 400,
                 height: 680,
                 autowidth: true,
                 rowNum: 20,
-                // footerrow: true,
                 pager: "#jqGridPager",
                 ondblClickRow: function (rowid, icol, cellcontent, e) {
                     let rowData = jQuery(this).getRowData(rowid);
@@ -388,20 +419,59 @@ function getStoreStatistics() {
                             $(window).trigger('resize');
                         }, 300)//그리드 리사이즈
                     }
+                },
+                loadComplete: function (){
+                    let ids = $("#jqGrid").getDataIDs();
+
+                    $.each(ids, function (idx, rowId){
+                        let objRowData = $("#jqGrid").getRowData(rowId);
+
+                        if ($("#statisticsGroupList option:selected").val() === "reset"){
+                            for (const rc of rcGroup) {
+                                if (objRowData.reg_order_id === rc[0] + " AVERAGE"){
+                                    let rcData = rcGroup.get(rc[0]);
+
+                                    if (rcData.length > 0){
+                                        objRowData.orderPickup1 = secondsToTime(parseInt(rcData.reduce((sum, obj) => sum + formatInt(obj.orderPickup1s), 0)) / rcData.length);
+                                        objRowData.pickupComplete1 = secondsToTime(parseInt(rcData.reduce((sum, obj) => sum + formatInt(obj.pickupComplete1s), 0)) / rcData.length);
+                                        objRowData.orderComplete1 = secondsToTime(parseInt(rcData.reduce((sum, obj) => sum + formatInt(obj.orderComplete1s), 0)) / rcData.length);
+                                        objRowData.riderStayTime = secondsToTime(parseInt(rcData.reduce((sum, obj) => sum + formatInt(obj.riderStayTimes), 0)) / rcData.length);
+                                        objRowData.completeReturn1 = secondsToTime(parseInt(rcData.reduce((sum, obj) => sum + formatInt(obj.completeReturn1s), 0)) / rcData.length);
+                                        objRowData.pickupReturn1 = secondsToTime(parseInt(rcData.reduce((sum, obj) => sum + formatInt(obj.pickupReturn1s), 0)) / rcData.length);
+                                        objRowData.orderReturn1 = secondsToTime(parseInt(rcData.reduce((sum, obj) => sum + formatInt(obj.orderReturn1s), 0)) / rcData.length);
+                                        objRowData.distance = formatFloat(rcData.reduce((sum, obj) => sum + parseFloat(obj.distances), 0) / rcData.length, 2) + 'km';
+
+                                        $("#jqGrid").setRowData(rowId, objRowData);
+                                    }else{
+                                        $("#jqGrid").delRowData(rowId);
+                                    }
+                                }
+                            }
+                        }else if ($("#statisticsGroupList option:selected").val() !== "reset" && $("#statisticsSubGroupList option:selected").val() === "reset"){
+                            for (const ac of acGroup) {
+                                if (objRowData.reg_order_id === ac[0] + " AVERAGE"){
+                                    let acData = acGroup.get(ac[0]);
+
+                                    if (acData.length > 0){
+                                        objRowData.orderPickup1 = secondsToTime(parseInt(acData.reduce((sum, obj) => sum + formatInt(obj.orderPickup1s), 0)) / acData.length);
+                                        objRowData.pickupComplete1 = secondsToTime(parseInt(acData.reduce((sum, obj) => sum + formatInt(obj.pickupComplete1s), 0)) / acData.length);
+                                        objRowData.orderComplete1 = secondsToTime(parseInt(acData.reduce((sum, obj) => sum + formatInt(obj.orderComplete1s), 0)) / acData.length);
+                                        objRowData.riderStayTime = secondsToTime(parseInt(acData.reduce((sum, obj) => sum + formatInt(obj.riderStayTimes), 0)) / acData.length);
+                                        objRowData.completeReturn1 = secondsToTime(parseInt(acData.reduce((sum, obj) => sum + formatInt(obj.completeReturn1s), 0)) / acData.length);
+                                        objRowData.pickupReturn1 = secondsToTime(parseInt(acData.reduce((sum, obj) => sum + formatInt(obj.pickupReturn1s), 0)) / acData.length);
+                                        objRowData.orderReturn1 = secondsToTime(parseInt(acData.reduce((sum, obj) => sum + formatInt(obj.orderReturn1s), 0)) / acData.length);
+                                        objRowData.distance = formatFloat(acData.reduce((sum, obj) => sum + parseFloat(obj.distances), 0) / acData.length, 2) + 'km';
+
+                                        $("#jqGrid").setRowData(rowId, objRowData);
+                                    }else{
+                                        $("#jqGrid").delRowData(rowId);
+                                    }
+                                }
+                            }
+                        }
+
+                    });
                 }
-                // ,loadComplete: function (data) {
-                //     let ids = $("#jqGrid").getDataIDs();
-                //
-                //     $.each(ids, function (idx, rowId) {
-                //         let objRowData = $("#jqGrid").getRowData(rowId);
-                //
-                //         if (objRowData.approvalStatus == "2" || objRowData.approvalStatus == "3"){
-                //             $("#jqGrid").setRowData(rowId, false, {background: '#FFAA55'});
-                //         }else if (objRowData.approvalStatus == "4"){
-                //             $("#jqGrid").setRowData(rowId, false, {background: '#f5c717'});
-                //         }
-                //     });
-                // }
             });
 
             resizeJqGrid('#jqGrid'); //그리드 리사이즈
@@ -445,6 +515,47 @@ function excelDownloadByOrder(){
         }
     })
 }
+
+function fillteringData(objData){
+    let groupOption = $("#statisticsGroupList")[0].options;
+    rcGroup = new Map();
+
+    // RC 기준의 Row 데이터 저장
+    for (const g of groupOption) {
+        if (g.value !== "reset" && g.value !== "none" ){
+            rcGroup.set(g.text, filterJoin1(objData, g.text));
+        }
+    }
+
+    let subGroupOption = $("#statisticsSubGroupList")[0].options;
+    acGroup = new Map();
+
+    // AC 기준의 Row 데이터 저장
+    for (const sg of subGroupOption) {
+        if (sg.value !== "reset" && sg.value !== "none" ){
+            acGroup.set(sg.text, filterJoin2(objData, sg.text));
+        }
+    }
+}
+
+// 필터 조건 1 RC 기준
+function filterJoin1(item, conditional){
+
+    //console.log("item = ", item, "conditonal = ", conditional);
+
+    return item.filter((obj) => {
+       return obj.group_name.toUpperCase() === conditional.toUpperCase();
+    });
+}
+
+// 필터 조건 2 AC 기준
+function filterJoin2(item, conditional){
+
+    return item.filter((obj) => {
+        return obj.subGroup_name.split('-')[0].toUpperCase() === conditional.toUpperCase();
+    });
+}
+
 
 // 21.05.13
 function diffTimeBlue(time1, time2, time3){
@@ -613,7 +724,6 @@ function getStatisticsSubGroupList(gId, subGroup) {
                     searchList(selectId, selectIdOption);
                     getStoreStatistics();
                 });
-
             }
         }
     });

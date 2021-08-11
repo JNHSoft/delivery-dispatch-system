@@ -128,7 +128,7 @@ function getStoreList() {
                     }
 
                     // 20.12.30 마지막 주문으로부터 오버된 시간
-                    $tmpData.th14 = totalTimeSet(data[key].orderDiff*1000)
+                    $tmpData.th14 = millisecondToTime(data[key].orderDiff*1000)
                     $tmpData.th15 = data[key].order != undefined ? data[key].order.createdDatetime : "-";
 
                     $mydata.push($tmpData);
@@ -596,22 +596,6 @@ function resetStorePw() {
     });
 }
 
-function totalTimeSet(time) {
-    if (time) {
-        if(time>=0){
-            let d = new Date(time);
-            return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
-        }else{
-            time = Math.abs(time);
-            let d = new Date(time);
-            return "-"+('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
-        }
-
-    } else {
-        return "-";
-    }
-}
-
 /**
  * 20.12.30 초과 된 주문이 있는지 확인
  * */
@@ -666,7 +650,7 @@ function realOverTime(){
         let objRowData = $("#jqGrid").getRowData(rowId);
         let diffTime = new Date().getTime() - new Date(objRowData.th15.replace(' ', 'T')).getTime();
 
-        $("#jqGrid").jqGrid('setCell', rowId, "th14", totalTimeSet(diffTime));
+        $("#jqGrid").jqGrid('setCell', rowId, "th14", millisecondToTime(diffTime));
     });
 }
 
