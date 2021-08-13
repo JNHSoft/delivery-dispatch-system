@@ -299,6 +299,7 @@ public interface AdminMapper {
      * @param common
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Store> selectStores(Common common);
 
 
