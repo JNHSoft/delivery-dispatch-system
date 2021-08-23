@@ -74,6 +74,11 @@ public class RiderController {
     public List<Rider> getMyRiderList(Common common){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         common.setToken(storeInfo.getStoreAccessToken());
+
+        // 21-07-28 스토어의 ID를 넣는다.
+        common.setId(String.valueOf(storeInfo.getStoreSeq()));
+
+
         return storeRiderService.getRiderNow(common);
     }
 
