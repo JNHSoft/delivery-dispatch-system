@@ -208,7 +208,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
                             log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
 
-                            // 21-07-28 특정 매장의 경우 예외 처리
+                            // 21-07-28 특정 매장의 경우 예외 처리 (UAT)
                             if ((order.getStoreId().equals("13") && (a.getSubGroupRiderRel().getStoreId().equals("14") || a.getSubGroupRiderRel().getStoreId().equals("6")))){
                                 log.debug("주문 스토어가 13이라 예외처리가 진행됩니다.");
                                 return (a.getSubGroupRiderRel().getStoreId().equals("6") || a.getSubGroupRiderRel().getStoreId().equals("14"));
@@ -216,6 +216,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 log.debug("주문 스토어가 6 또는 14이라 예외처리가 진행됩니다.");
                                 return (a.getSubGroupRiderRel().getStoreId().equals("13"));
                             }
+
+//                            // 21-07-28 특정 매장의 경우 예외 처리 (REAL)
+//                            if ((order.getStoreId().equals("386") && (a.getSubGroupRiderRel().getStoreId().equals("39") || a.getSubGroupRiderRel().getStoreId().equals("67")))){
+//                                log.debug("주문 스토어가 386(JK)이라 예외처리가 진행됩니다.");
+//                                return (a.getSubGroupRiderRel().getStoreId().equals("39") || a.getSubGroupRiderRel().getStoreId().equals("67"));
+//                            }else if ((order.getStoreId().equals("39") || order.getStoreId().equals("67")) && a.getSubGroupRiderRel().getStoreId().equals("386")){
+//                                log.debug("주문 스토어가 39(CK) 또는 67(RZ) 예외처리가 진행됩니다.");
+//                                return (a.getSubGroupRiderRel().getStoreId().equals("386"));
+//                            }
 
                             return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
                         } else if (a.getSharedStore().equals("1") && a.getSharedStoreId() != null){
