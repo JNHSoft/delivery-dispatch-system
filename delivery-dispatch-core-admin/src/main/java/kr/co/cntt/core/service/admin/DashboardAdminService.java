@@ -52,6 +52,11 @@ public interface DashboardAdminService {
     ChartInfo selectD14Detail(SearchInfo search);
 
     /**
+     * D16 데이터 조회 (16분 20초)
+     * */
+    ChartInfo selectD16Detail(SearchInfo search);
+
+    /**
      * D30 스토어 랭키 조회
      * */
     List<RankInfo> selectD30Rank(SearchInfo search);
@@ -85,6 +90,11 @@ public interface DashboardAdminService {
      * D14 스토어 랭키 조회
      * */
     List<RankInfo> selectD14Rank(SearchInfo search);
+
+    /**
+     * D16 스토어 랭키 조회 (16분 20초)
+     * */
+    List<RankInfo> selectD16Rank(SearchInfo search);
 
     /**
      * TimeSection 구해오기

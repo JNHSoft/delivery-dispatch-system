@@ -48,8 +48,8 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             }
             
             // D30 평균 Value 입력
-            if (resultMap.containsKey("detailD30")){
-                infoD30.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailD30").toString())));
+            if (resultMap.containsKey("detailArrived")){
+                infoD30.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailArrived").toString())));
             }else{
                 infoD30.setAvgValue(0l);
             }
@@ -68,8 +68,8 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             }
 
             // D7 의 평균 Value
-            if (resultMap.containsKey("detailD7")){
-                infoD7.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailD7").toString())));
+            if (resultMap.containsKey("detailPickedUp")){
+                infoD7.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailPickedUp").toString())));
             }else{
                 infoD7.setAvgValue(0l);
             }
@@ -87,10 +87,29 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             }
 
             // D14 의 평균 Value
-            if (resultMap.containsKey("detailD14")){
-                infoD14.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailD14").toString())));
+            if (resultMap.containsKey("detailPickedUp")){
+                infoD14.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailPickedUp").toString())));
             }else{
                 infoD14.setAvgValue(0l);
+            }
+
+            // D16 등록 (16분 20초)
+            DashboardInfo infoD16 = new DashboardInfo();
+            infoD16.setDashBoardType("D16");
+            infoD16.setUnit("%");
+
+            // D16의 메인 Value 입력
+            if (resultMap.containsKey("avgD16")){
+                infoD16.setMainValue(Float.parseFloat(changeValueType(Float.class, resultMap.get("avgD16").toString())));
+            }else{
+                infoD16.setMainValue(0f);
+            }
+
+            // D16 의 평균 Value
+            if (resultMap.containsKey("detailPickedUp")){
+                infoD16.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailPickedUp").toString())));
+            }else{
+                infoD16.setAvgValue(0l);
             }
 
             // TPLH 등록
@@ -130,6 +149,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             resultList.add(infoD30);
             resultList.add(infoD7);
             resultList.add(infoD14);
+            resultList.add(infoD16);
             resultList.add(infoTPLH);
             resultList.add(infoQT);
             resultList.add(infoTC);
@@ -184,7 +204,6 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
 
     @Override
     public ChartInfo selectOrderStackRateDetail(SearchInfo search) {
-        ChartInfo result = new ChartInfo();
         List<DashboardInfo> detail = dashboardMapper.selectOrderStackRateDetail(search);
 
         if (detail == null || detail.isEmpty()){
@@ -208,6 +227,17 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
     @Override
     public ChartInfo selectD14Detail(SearchInfo search) {
         List<DashboardInfo> detail = dashboardMapper.selectD14Detail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeBarChartInfo(detail, Integer.parseInt(search.getDays()), 5);
+    }
+
+    @Override
+    public ChartInfo selectD16Detail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectD16Detail(search);
 
         if (detail == null || detail.isEmpty()){
             return null;
@@ -249,6 +279,11 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
     @Override
     public List<RankInfo> selectD14Rank(SearchInfo search) {
         return dashboardMapper.selectD14Rank(search);
+    }
+
+    @Override
+    public List<RankInfo> selectD16Rank(SearchInfo search) {
+        return dashboardMapper.selectD16Rank(search);
     }
 
     @Override

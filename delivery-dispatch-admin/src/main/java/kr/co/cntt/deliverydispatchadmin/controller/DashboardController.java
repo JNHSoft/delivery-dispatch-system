@@ -147,6 +147,7 @@ public class DashboardController {
         }else{
             // 피자헛 외적인 경우
             currentDetail.removeIf(x -> x.getDashBoardType().equals("D14"));
+            currentDetail.removeIf(x -> x.getDashBoardType().equals("D16"));
         }
 
         /**
@@ -231,6 +232,10 @@ public class DashboardController {
             case "D14":
                 info = dashboardAdminService.selectD14Detail(searchInfo);
                 storeRank = dashboardAdminService.selectD14Rank(searchInfo);
+                break;
+            case "D16":
+                info = dashboardAdminService.selectD16Detail(searchInfo);
+                storeRank = dashboardAdminService.selectD16Rank(searchInfo);
                 break;
             case "TPLH":
                 info = dashboardAdminService.selectTPLHDetail(searchInfo);

@@ -66,6 +66,12 @@ public interface DashboardMapper {
     List<DashboardInfo> selectD14Detail(SearchInfo search);
 
     /**
+     * D16 데이터 조회 (16분 20초)
+     * */
+    @Transactional(readOnly=true)
+    List<DashboardInfo> selectD16Detail(SearchInfo search);
+
+    /**
      * D30 스토어 랭크 조회
      * */
     @Transactional(readOnly = true)
@@ -106,6 +112,12 @@ public interface DashboardMapper {
      * */
     @Transactional(readOnly = true)
     List<RankInfo> selectD14Rank(SearchInfo search);
+
+    /**
+     * D16 스토어 랭크 조회 (16분 20초)
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectD16Rank(SearchInfo search);
 
     /**
      * 배정 ~ 도착 시간의 구간 개수 구하기
