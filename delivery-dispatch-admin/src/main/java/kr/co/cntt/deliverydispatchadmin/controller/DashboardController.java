@@ -308,6 +308,9 @@ public class DashboardController {
             case "D14":
                 storeRank = dashboardAdminService.selectD14Rank(searchInfo);
                 break;
+            case "D16":
+                storeRank = dashboardAdminService.selectD16Rank(searchInfo);
+                break;
             case "TPLH":
                 storeRank = dashboardAdminService.selectTPLHRank(searchInfo);
                 break;
