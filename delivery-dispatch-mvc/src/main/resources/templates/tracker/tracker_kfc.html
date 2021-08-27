@@ -77,9 +77,9 @@
      * */
     $(document).ready(function(){
         // if this windows is not iframe, we return error page;
-        // if(self === top){
-        //    location.href ="/error/error-tracker";
-        // }
+        if(self === top){
+           location.href ="/error/error-tracker";
+        }
 
         // Waiting Process
         $("#progressbar").progressbar({
