@@ -69,6 +69,9 @@
 
     let overlay;                        // google overLayview Copy
 
+    // initMap 초기화 성공 유무
+    let chkMap = false;
+
     var durationTime;
     var routeArray = [];
 
@@ -407,7 +410,7 @@
             map: map,
             suppressMarkers: true,//길찾기시 마커 재적용하려면 필요
             preserveViewport : true,//길찾기시 맵 중심 수동지정하려면 필요
-            polylineOptions : {visible: true}//길찾기시 선 제거
+            polylineOptions : {visible: false}//길찾기시 선 제거
         };
 
         // 길찾기 등의 화면 표기 용도
@@ -564,7 +567,11 @@
                         $(".mapCtrl").attr("id","");
                         $(".visual_area_kfc").attr("id","map");
                         $("#map").addClass('blurMap');
+                    }
+
+                    if (!chkMap){
                         initMap();
+                        chkMap = true;
                     }
 
                     if(overlay){
