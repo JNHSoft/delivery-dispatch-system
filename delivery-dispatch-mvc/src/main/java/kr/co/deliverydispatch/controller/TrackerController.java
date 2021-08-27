@@ -100,10 +100,10 @@ public class TrackerController {
                 String decBase1 = CustomEncryptUtil.decodeBase64(aseValue);
                 String decAes1 = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(aseValue));
 
-                System.out.println("#####################################################");
-                System.out.println("decBase1 = " + decBase1);
-                System.out.println("decAes1 = " + decAes1);
-                System.out.println("#####################################################");
+//                System.out.println("#####################################################");
+//                System.out.println("decBase1 = " + decBase1);
+//                System.out.println("decAes1 = " + decAes1);
+//                System.out.println("#####################################################");
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -139,10 +139,6 @@ public class TrackerController {
             long rqDate = LocalDateTime.parse(trackerResult.getRequestDate(), DATEFORMATTER).atZone(timeZone.toZoneId()).toInstant().toEpochMilli();
             long localNow = LocalDateTime.now(timeZone.toZoneId()).atZone(timeZone.toZoneId()).toInstant().toEpochMilli();
             long abs = Math.abs(rqDate - localNow) / 60000;
-
-//            System.out.println("LocalDateTime.now(timeZone.toZoneId()) = "+LocalDateTime.now(timeZone.toZoneId()));
-//            System.out.println("getRequestDate = "+trackerResult.getRequestDate());
-//            System.out.println("abs = "+abs);
 
             if (trackerResult.getRiderLatitude() != null) {
                 Misc misc = new Misc();
