@@ -14,10 +14,7 @@
 		</div>
 	</div>
 	<div class="progress-background" style="display: none;"><span>餐點準備中</span><div id="progressbar"><div class="progress-label"></div></div><br/></div>
-	<div class="visual_area">
-		<!--<div id="messageBox" style="display: none;"></div>
-		<div id="progressbar" style="display: none;"></div>-->
-	</div>
+	<div class="visual_area"></div>
 	<div id="map" class="mapCtrl" hidden="hidden"></div>
 	<div class="tracker-bottom">
 		<table>
@@ -44,837 +41,852 @@
 </div>
 
 <script layout:fragment="script" th:inline="javascript">
-/*<![CDATA[*/
-var createdDatetime = /*[[${tracker.createdDatetime}]]*/ 'createdDatetime';
-var reservationDatetime = /*[[${tracker.reservationDatetime}]]*/ 'reservationDatetime';
-var latitude = /*[[${tracker.latitude}]]*/ 'latitude';
-var longitude = /*[[${tracker.longitude}]]*/ 'longitude';
-var storeName = /*[[${tracker.storeName}]]*/ 'storeName';
-var storeLatitude = /*[[${tracker.storeLatitude}]]*/ 'storeLatitude';
-var storeLongitude = /*[[${tracker.storeLongitude}]]*/ 'storeLongitude';
-var distance = /*[[${tracker.distance}]]*/ 'distance';
-var encParam = /*[[${encParam}]]*/ 'encParam';
+	/*<![CDATA[*/
+	let tracker = /*[[${tracker}]]*/ 'tracker';
+	let encParam = /*[[${encParam}]]*/ 'encParam';
 
-var map;
-var marker = [];
-var directionsDisplay;
-var directionsService;
-var checkEnter = 0;
-var checkTime;
-var checkReserveTime;
-var checkProgressValue = 0;
-var durationTime;
-var beforeDurationTime = 60;
-var routeArray = [];
-var AllDurationTime = [];
-let trackerStatus = -1;
-let deliveryThird = undefined;
+	let map;
+	let refreshMillis = 20 * 1000;      // 새로고침 할 밀리세컨드 시간
 
-function setUI() {
-    $.ajax({
-        url:"/trackerInfo",
-        type:'get',
-        data : {
-            encParam : encParam
-        },
-        dataType : 'json',
-        success : function(data) {
-           console.log(data);
+	let riderMarker;      // 라이더 마커
+	let orderMarker;      // 주문지 마커
+	let storeMarker;      // 스토어 마커
 
-            trackerStatus = data.status;
-            deliveryThird = data.thirdPartyId;
+	let directionsDisplay;   // google DirectionsDisplay
+	let directionsService;   // google DircetionsService
 
-            if (data.reservationDatetime) {
-                var arriveTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
-                var createTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
-				$('#reservedTime').text(setHourMin(arriveTime.getHours()) + ':' + setHourMin(arriveTime.getMinutes()));
-                var nowTime = new Date();
-                checkTime = arriveTime.getTime()-nowTime.getTime();
-				checkReserveTime = arriveTime.getTime()-createTime.getTime();
-                checkProgressValue = 100-Math.round((checkTime/checkReserveTime)*100);
-                if(checkProgressValue == 0){
-                    checkProgressValue = 1;
-				}
-            }
+	let trackerStatus = -1;            // Rider Status Check
+	let deliveryThird = undefined;      // Third Party Rider Check
 
-            if((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && checkReserveTime - 3600 * 1000 <= 0){//예약시간과 등록시간이 1시간이내인지 체크
-                localStorage.setItem('checkStep','true');
-            }
-            if(data.storeName){
-                $('#storeName').text(data.storeName);
-            }
+	let checkTime;                      // Reservation Time - Current Time
+	let checkReserveTime;               // Reservation Time - Create Time
 
-            $('.state > span').removeClass('on');
+	let processValue;                   // Process Bar Value
 
-            if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1) && !localStorage.getItem('checkStep')/*!$.cookie('checkStep')*/) {
-                $('.progress-background').hide();
-                $('#tNew').addClass('on');
-				if($(".visual_area").has('#map').prevObject.length){
-                    $(".mapCtrl").attr("id","map");
-                    $(".visual_area").attr("id","");
-					$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
-				}
+	let overlay;                        // google overLayview Copy
 
-				if(checkTime - 1800 * 1000 <= 0){//예약시간과 현재시간이 30분 이내인지 체크
-                    localStorage.setItem('checkStep','true');
-                    setUI();
-				}
+	// initMap 초기화 성공 유무
+	let chkMap = false;
 
-            } else if ((trackerStatus == 0 || trackerStatus == 5 || trackerStatus == 1)&& localStorage.getItem('checkStep')/*$.cookie('checkStep')*/) {
-                $('#tNew').addClass('on line');
-                $('#tAssign').addClass('on');
-                if(checkEnter==0){
-                    $(".mapCtrl").attr("id","");
-                    $(".visual_area").attr("id","map");
-                    $("#map").addClass('blurMap');
-                    initMap();
-				}
-				checkEnter = 1;
-                startEndPoint();
-                $('.progress-background').show();
+	var durationTime;
+	var routeArray = [];
 
-            } else if (trackerStatus == 2 && !localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/) {
-                $('.progress-background').hide();
-                $('#tNew').addClass('on line');
-                $('#tAssign').addClass('on');
-                if(checkEnter==0||checkEnter==1){
-                    $(".mapCtrl").attr("id","");
-                    $(".visual_area").attr("id","map");
-                    $("#map").addClass('blurMap');
-                    initMap();
-                }
-                checkEnter =1;
-                startEndPoint();
-                $('.progress-background').show();
-				var plusProgress = setInterval(function(){
-				    checkProgressValue++;
-//                    console.log(checkProgressValue);
-				    $("#progressbar").progressbar("value", checkProgressValue);
-                    if(checkProgressValue==100){
-                        clearInterval(plusProgress);
-                    }
-				}, 100);
- 			} else if ((trackerStatus == 2 || trackerStatus == 6) && localStorage.getItem('chkProgress')/*$.cookie('chkProgress')*/) {
-                $('.progress-background').hide();
-                $('#tNew').addClass('on line');
-                $('#tAssign').addClass('on line');
-                $('#tPickup').addClass('on');
-                if(checkEnter==0||checkEnter==1){
-                    $(".mapCtrl").attr("id","");
-                    $(".visual_area").attr("id","map");
-                    $("#map").removeClass('blurMap');
-                    initMap();
-				}
-                checkEnter =2;
-                //                $.removeCookie('checkStep');
-                localStorage.removeItem('checkStep');
-                calculateAndDisplayRoute(directionsService, directionsDisplay);
+	/**
+	 * Page Loaded events
+	 * */
+	$(document).ready(function(){
+		// if this windows is not iframe, we return error page;
+		if(self === top){
+		   location.href ="/error/error-tracker";
+		}
 
-            } else if(trackerStatus == 3) {
-                $('.progress-background').hide();
-                $('#tNew').addClass('on line');
-                $('#tAssign').addClass('on line');
-                $('#tPickup').addClass('on line');
-                $('#tComplete').addClass('on');
-                $('.t_red').text('');
-                $(".visual_area").attr("id","");
-                $(".mapCtrl").attr("id","map");
-				if (deliveryThird != undefined && deliveryThird.toString().trim().length > 0) {
-					$(".visual_area").html('<p class="tit_third">由於外送訂單較多，<br/>您的訂單將由第三方外送夥伴安排配送，<br/>完成配對後，將發送簡訊通知。<br/><span class="tit_third_second">謝謝您的耐心等待。<br/>如有疑問，請聯絡門市。</span></p>');
-				}else {
-					$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
-				}
+		// Waiting Process
+		$("#progressbar").progressbar({
+			value: processValue,
+			change: function() {
+				$(".progress-label").html('');
+			},
+			complete: function() {
 
-				/*                $.removeCookie('checkStep');
-                $.removeCookie('chkProgress');*/
-                localStorage.clear();
-            } else if(trackerStatus == 4){
-                location.href ="/error/error-tracker";
-			}
+				console.log("프로그래스바 complete");
 
-            if(data.storeDetailAddress) {
-                $('#storeAddress').text(data.storeDetailAddress);
-            }
-//    $('#riderName').text(riderName?riderName:"-");
-        }
-    });
-}
-
-$(document).ready(function(){
-    /*if(navigator.cookieEnabled){
-        alert("쿠키허용됨");
-    }else{
-        alert("쿠키차단됨");
-    }*/
-    if(self == top){
-        location.href ="/error/error-tracker";
-    }
-
-    $("#progressbar").progressbar({
-        value: checkProgressValue,
-        change: function() {
-            $(".progress-label").html('');
-        },
-        complete: function() {
-            $(".progress-label").text('');
-            if(!localStorage.getItem('chkProgress')/*!$.cookie('chkProgress')*/){
-                localStorage.setItem('chkProgress','true');
-//                $.cookie('chkProgress','true',{expires:1});
-				setUI();
-			}
-        }
-    });
-
-    setUI();
-	setInterval('setUI()', 20000);
-});
-
-function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 1,
-        center: new google.maps.LatLng((parseFloat(latitude)+parseFloat(storeLatitude))/2 + '', (parseFloat(longitude)+parseFloat(storeLongitude))/2 + ''),
-//        mapTypeControl: false,
-        disableDefaultUI: true,
-		styles: [
-            {
-                "featureType": "administrative",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#d6e2e6"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#cfd4d5"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#7492a8"
-                    }
-                ]
-            },
-            {
-                "featureType": "administrative.neighborhood",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "lightness": 25
-                    }
-                ]
-            },
-            {
-                "featureType": "landscape.man_made",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#dde2e3"
-                    }
-                ]
-            },
-            {
-                "featureType": "landscape.man_made",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#cfd4d5"
-                    }
-                ]
-            },
-            {
-                "featureType": "landscape.natural",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#dde2e3"
-                    }
-                ]
-            },
-            {
-                "featureType": "landscape.natural",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#7492a8"
-                    }
-                ]
-            },
-            {
-                "featureType": "landscape.natural.terrain",
-                "elementType": "all",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#dde2e3"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#588ca4"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "labels.icon",
-                "stylers": [
-                    {
-                        "saturation": -100
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.park",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#a9de83"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.park",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#bae6a1"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.sports_complex",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#c6e8b3"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.sports_complex",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#bae6a1"
-                    }
-                ]
-            },
-            {
-                "featureType": "road",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#41626b"
-                    }
-                ]
-            },
-            {
-                "featureType": "road",
-                "elementType": "labels.icon",
-                "stylers": [
-                    {
-                        "saturation": -45
-                    },
-                    {
-                        "lightness": 10
-                    },
-                    {
-                        "visibility": "on"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#c1d1d6"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    {
-                        "color": "#a6b5bb"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "labels.icon",
-                "stylers": [
-                    {
-                        "visibility": "on"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway.controlled_access",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#9fb6bd"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.arterial",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#ffffff"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.local",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#ffffff"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit",
-                "elementType": "labels.icon",
-                "stylers": [
-                    {
-                        "saturation": -70
-                    }
-                ]
-            },
-            {
-                "featureType": "transit.line",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#b4cbd4"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit.line",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#588ca4"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit.station",
-                "elementType": "all",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit.station",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#008cb5"
-                    },
-                    {
-                        "visibility": "on"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit.station.airport",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "saturation": -100
-                    },
-                    {
-                        "lightness": -5
-                    }
-                ]
-            },
-            {
-                "featureType": "water",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    {
-                        "color": "#a6cbe3"
-                    }
-                ]
-            }
-        ]
-    });
-    myOverlay.prototype = new google.maps.OverlayView();
-
-    var rendererOptions = {
-        map: map,
-        suppressMarkers: true,//길찾기시 마커 재적용하려면 필요
-        preserveViewport : true,//길찾기시 맵 중심 수동지정하려면 필요
-        polylineOptions : {visible: false}//길찾기시 선 제거
-    };
-
-    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-    directionsService = new google.maps.DirectionsService;
-
-    if(trackerStatus == 2 || trackerStatus == 6){
-        directionsDisplay.setMap(map);
-//        calculateAndDisplayRoute(directionsService, directionsDisplay);
-    }
-
-    var bounds = new google.maps.LatLngBounds();
-//    bounds.extend(new google.maps.LatLng(latitude>storeLatitude?parseFloat(latitude)+0.003:parseFloat(latitude)-0.003,parseFloat(longitude)));
-    bounds.extend(new google.maps.LatLng(parseFloat(latitude),parseFloat(longitude)));
-    bounds.extend(new google.maps.LatLng(parseFloat(storeLatitude), parseFloat(storeLongitude)));
-
-	map.fitBounds(bounds);
-    map.panToBounds(bounds);
-
-	/*var zoomChangeBoundsListener =
-			google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
-				if ( this.getZoom() ){   // or set a minimum
-					this.setZoom(this.getZoom() +1);  // set zoom here
-				}
-			});
-
-	setTimeout(function(){google.maps.event.removeListener(zoomChangeBoundsListener)}, 2000);*/
-}
-var overlay;
-function myOverlay(marker,content, map) {
-    this.marker_ = marker;
-    this.content_ = content;
-    this.map_ = map;
-
-    this.div_ = null;
-
-    this.setMap(this.map_);
-}
-function startEndPoint() {
-	$.ajax({
-        url:"/trackerInfo",
-        type:'get',
-        data : {
-            encParam : encParam
-        },
-        dataType : 'json',
-        success : function(data) {
-        	// console.log(data.brandCode);
-
-        	// switch (data.brandCode) {
-        	// 	case "1":
-			// 		$(".progress-background").addClass("kfc");
-        	// 		break;
-			// 	default:
-			// 		break;
-			// }
-
-            if(overlay){
-                myOverlay.prototype.onRemove = function () {
-                    if(this.div_ && this.div_.parentNode){
-                        this.div_.parentNode.removeChild(this.div_);
-                    }
-                    //this.div_ = null;
-                }
-                overlay.onRemove();
-                overlay == null;
-            }
-
-            for (var i = 0; i < marker.length; i++) {
-                marker[i].setMap(null);
-            }
-            $("#progressbar").progressbar( "value", checkProgressValue>100?100:checkProgressValue);
-        }
-	});
-}
-
-function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-	$.ajax({
-		url: "/trackerInfo",
-		type: 'get',
-		data: {
-			encParam: encParam
-		},
-		dataType: 'json',
-		success: function (data) {
-//            $(".messageBox").remove();
-
-			myOverlay.prototype.onRemove = function () {
-				if (this.div_ && this.div_.parentNode) {
-					this.div_.parentNode.removeChild(this.div_);
-				}
-//                            this.div_ = null;
-			}
-			if (overlay) {
-				if ($('.bigText')) {
-					$('.bigText').remove();
-				}
-				overlay.onRemove();
-			}
-			trackerStatus = data.status;
-			if(trackerStatus!=2 && trackerStatus!=6){
-				setUI();
-			}else{
-				// // 이미지 경로 저장
-				// let imgRiderLeft;
-				// let imgRiderRight;
-				//
-				// // 브랜드 코드에 따른 이미지 추출
-				// switch (data.brandCode) {
-				// 	case "1":
-				// 		imgRiderLeft = '/resources/images/tracker/pin_moto_left1.png?ver=0.4';
-				// 		imgRiderRight = '/resources/images/tracker/pin_moto_right1.png?ver=0.4';
-				// 		break;
-				// 	default:
-				// 		imgRiderLeft = '/resources/images/tracker/pin_moto_left.png?ver=0.4';
-				// 		imgRiderRight = '/resources/images/tracker/pin_moto_right.png?ver=0.4';
-				// 		break;
+				$(".progress-label").text('');
+				// if (processValue >= 100) {
+				//    $("#progressbar").hide();
+				//    setUI();
 				// }
+			}
+		});
 
-				var selectedMode = 'DRIVING';
-				//		var selectedMode = 'TRANSIT';
-				//      var selectedMode = 'WALKING';
-				directionsService.route({
-//                    origin: marker[2]?new google.maps.LatLng(marker[2].gm_accessors_.animationPosition.gd.position.lat(), marker[2].gm_accessors_.animationPosition.gd.position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
-					origin: marker[2]?new google.maps.LatLng(marker[2].position.lat(), marker[2].position.lng()):new google.maps.LatLng(data.riderLatitude, data.riderLongitude),  // Haight.
-					destination: new google.maps.LatLng(data.latitude, data.longitude),
-//                    destination: new google.maps.LatLng(data.riderLatitude, data.riderLongitude),
-					// Note that Javascript allows us to access the constant
-					// using square brackets and a string value as its
-					// "property."
-					travelMode: google.maps.TravelMode[selectedMode],
-					drivingOptions: {
-						departureTime: new Date(),
-						trafficModel: 'bestguess'
-					},
-					optimizeWaypoints : true,
-					waypoints: [{location : new google.maps.LatLng(data.riderLatitude, data.riderLongitude)
-						,stopover:true}]
-				}, function(response, status) {
-					if (status == 'OK') {
-						console.log(response)
-						routeArray.forEach(function(route){
-							return clearTimeout(route);
-						})
+		setUI();
+		// 일정 시간마다 화면을 갱신해 준다.
+		setInterval(setUI, refreshMillis);
+	});
 
-						routeArray = [];
-						AllDurationTime = [];
-						var route = response.routes[0].legs[0];
-						var route2 = response.routes[0].legs[1];
-
-						var durationInTraffic = response.routes[0].legs.reduce(function (sum, leg) {
-							return sum + leg.duration.value
-						},0)/60;
-
-						durationTime = Math.round(durationInTraffic);
-
-						if (beforeDurationTime - durationTime < -2){
-							durationTime = beforeDurationTime;
+	/**
+	 * Google Map Init
+	 * */
+	function initMap() {
+		map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 18,
+			center: new google.maps.LatLng((parseFloat(tracker.latitude)+parseFloat(tracker.storeLatitude))/2 + '', (parseFloat(tracker.longitude)+parseFloat(tracker.storeLongitude))/2 + ''),
+			disableDefaultUI: true,
+			styles: [
+				{
+					"featureType": "administrative",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#d6e2e6"
 						}
-						if (localStorage.getItem('restCheckTime')){
-							durationTime = 0;
+					]
+				},
+				{
+					"featureType": "administrative",
+					"elementType": "geometry.stroke",
+					"stylers": [
+						{
+							"color": "#cfd4d5"
 						}
-						var contentString = '<div class="messageBox">'+
-								'<span class="bigText">'+ (durationTime<10?'&nbsp;'+durationTime:durationTime) + '</span>' +
-								'<div><p class="grayText">分鐘</p>'+
-								'<p class="grayText">預計到達時間</p></div></div>';
-						beforeDurationTime = Math.round(durationInTraffic);
-//                        var arriveTrafficTime = new Date((new Date).getTime()+route.duration_in_traffic.value*1000);
-						var arriveTrafficTime = new Date((new Date).getTime()+durationInTraffic*60*1000);
+					]
+				},
+				{
+					"featureType": "administrative",
+					"elementType": "labels.text.fill",
+					"stylers": [
+						{
+							"color": "#7492a8"
+						}
+					]
+				},
+				{
+					"featureType": "administrative.neighborhood",
+					"elementType": "labels.text.fill",
+					"stylers": [
+						{
+							"lightness": 25
+						}
+					]
+				},
+				{
+					"featureType": "landscape.man_made",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#dde2e3"
+						}
+					]
+				},
+				{
+					"featureType": "landscape.man_made",
+					"elementType": "geometry.stroke",
+					"stylers": [
+						{
+							"color": "#cfd4d5"
+						}
+					]
+				},
+				{
+					"featureType": "landscape.natural",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#dde2e3"
+						}
+					]
+				},
+				{
+					"featureType": "landscape.natural",
+					"elementType": "labels.text.fill",
+					"stylers": [
+						{
+							"color": "#7492a8"
+						}
+					]
+				},
+				{
+					"featureType": "landscape.natural.terrain",
+					"elementType": "all",
+					"stylers": [
+						{
+							"visibility": "off"
+						}
+					]
+				},
+				{
+					"featureType": "poi",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#dde2e3"
+						}
+					]
+				},
+				{
+					"featureType": "poi",
+					"elementType": "labels.text.fill",
+					"stylers": [
+						{
+							"color": "#588ca4"
+						}
+					]
+				},
+				{
+					"featureType": "poi",
+					"elementType": "labels.icon",
+					"stylers": [
+						{
+							"saturation": -100
+						}
+					]
+				},
+				{
+					"featureType": "poi.park",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#a9de83"
+						}
+					]
+				},
+				{
+					"featureType": "poi.park",
+					"elementType": "geometry.stroke",
+					"stylers": [
+						{
+							"color": "#bae6a1"
+						}
+					]
+				},
+				{
+					"featureType": "poi.sports_complex",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#c6e8b3"
+						}
+					]
+				},
+				{
+					"featureType": "poi.sports_complex",
+					"elementType": "geometry.stroke",
+					"stylers": [
+						{
+							"color": "#bae6a1"
+						}
+					]
+				},
+				{
+					"featureType": "road",
+					"elementType": "labels.text.fill",
+					"stylers": [
+						{
+							"color": "#41626b"
+						}
+					]
+				},
+				{
+					"featureType": "road",
+					"elementType": "labels.icon",
+					"stylers": [
+						{
+							"saturation": -45
+						},
+						{
+							"lightness": 10
+						},
+						{
+							"visibility": "on"
+						}
+					]
+				},
+				{
+					"featureType": "road.highway",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#c1d1d6"
+						}
+					]
+				},
+				{
+					"featureType": "road.highway",
+					"elementType": "geometry.stroke",
+					"stylers": [
+						{
+							"color": "#a6b5bb"
+						}
+					]
+				},
+				{
+					"featureType": "road.highway",
+					"elementType": "labels.icon",
+					"stylers": [
+						{
+							"visibility": "on"
+						}
+					]
+				},
+				{
+					"featureType": "road.highway.controlled_access",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#9fb6bd"
+						}
+					]
+				},
+				{
+					"featureType": "road.arterial",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#ffffff"
+						}
+					]
+				},
+				{
+					"featureType": "road.local",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#ffffff"
+						}
+					]
+				},
+				{
+					"featureType": "transit",
+					"elementType": "labels.icon",
+					"stylers": [
+						{
+							"saturation": -70
+						}
+					]
+				},
+				{
+					"featureType": "transit.line",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#b4cbd4"
+						}
+					]
+				},
+				{
+					"featureType": "transit.line",
+					"elementType": "labels.text.fill",
+					"stylers": [
+						{
+							"color": "#588ca4"
+						}
+					]
+				},
+				{
+					"featureType": "transit.station",
+					"elementType": "all",
+					"stylers": [
+						{
+							"visibility": "off"
+						}
+					]
+				},
+				{
+					"featureType": "transit.station",
+					"elementType": "labels.text.fill",
+					"stylers": [
+						{
+							"color": "#008cb5"
+						},
+						{
+							"visibility": "on"
+						}
+					]
+				},
+				{
+					"featureType": "transit.station.airport",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"saturation": -100
+						},
+						{
+							"lightness": -5
+						}
+					]
+				},
+				{
+					"featureType": "water",
+					"elementType": "geometry.fill",
+					"stylers": [
+						{
+							"color": "#a6cbe3"
+						}
+					]
+				}
+			]
+		});
 
-						$('#reservedTime').text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
-						if(!marker[0]){
-							marker[0] = new google.maps.Marker({
-								position: response.routes[0].legs[response.routes[0].legs.length-1].end_location,
+		myOverlay.prototype = new google.maps.OverlayView();
+
+		// 길찾기 표시
+		var rendererOptions = {
+			map: map,
+			suppressMarkers: true,//길찾기시 마커 재적용하려면 필요
+			preserveViewport : true,//길찾기시 맵 중심 수동지정하려면 필요
+			polylineOptions : {visible: false}//길찾기시 선 제거
+		};
+
+		// 길찾기 등의 화면 표기 용도
+		directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+
+		// 길찾기 API 호출 함수
+		directionsService = new google.maps.DirectionsService;
+
+		var bounds = new google.maps.LatLngBounds();
+
+		bounds.extend(new google.maps.LatLng(parseFloat(tracker.latitude),parseFloat(tracker.longitude)));
+		bounds.extend(new google.maps.LatLng(parseFloat(tracker.storeLatitude), parseFloat(tracker.storeLongitude)));
+
+		map.fitBounds(bounds);
+		// 좌표값들이 모두 보이도록 적용
+		map.panToBounds(bounds);
+	}
+
+	/**
+	 * 화면 그림 그리기
+	 * */
+	function setUI() {
+		$.ajax({
+			url:"/trackerInfo",
+			type:'get',
+			data : {
+				encParam : encParam
+			},
+			dataType : 'json',
+			success : function(data) {
+				var orderStatus = parseInt(data.status);          // 현재 주문의 상태
+				var thirdDelivery = data.thirdPartyId;  // 제 3자 배송
+
+				// 예약 시간이 있는 경우에만 프로세스 작업을 한다.
+				console.log("data.reservationDatetime => ", data.reservationDatetime);
+				if (data.reservationDatetime){
+					var bookingTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
+					var createdTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
+					var nowTime = new Date();
+
+					// 예약 시간이 현재 시간보다 5분 미만으로 남은 경우, 예약 시간을 변경한다.
+					// 5분전까지 픽업이 안되는 경우, 예약 시간을 10분 연장하며, 픽업 전 까지 반복한다. 상태는 신규주문 또는 배정까지
+					if (bookingTime.getTime() - nowTime.getTime() <= 300000 && (orderStatus === 0 || orderStatus === 5 || orderStatus === 1) ){
+						console.log("시간 계산 시작 before", bookingTime);
+						var diffMin = parseInt(Math.abs((bookingTime.getTime() - nowTime.getTime()) / 60000));
+
+						var tenValue = parseInt(diffMin / 10);
+						var tenRemainder = diffMin % 10;
+
+						var fiveValue = parseInt(tenRemainder / 5);
+
+						var addMinuteValue = (tenValue + fiveValue + 1) * 10;
+
+						bookingTime.setMinutes(bookingTime.getMinutes() + addMinuteValue);
+
+						console.log("시간을 계산해 보았습니다.", bookingTime);
+					}
+
+					// 예약 시간을 입력한다.
+					$("#reservedTime").text(setHourMin(bookingTime.getHours()) + ':' + setHourMin(bookingTime.getMinutes()));
+
+					// 예약 - 현재시간
+					checkTime = bookingTime.getTime() - nowTime.getTime();
+
+					// 예약 - 등록 시간
+					checkReserveTime = bookingTime.getTime() - createdTime.getTime();
+
+					// 프로세스 비율 저장
+					processValue = 100 - Math.round((checkTime / checkReserveTime) * 100);
+
+					if (processValue === 0){
+						processValue = 1;
+					}
+				}
+
+				// 매장명 등록
+				if (data.storeName){
+					$("#storeName").text(data.storeName);
+				}
+
+				// 매장 주소를 화면에 뿌려준다.
+				if (data.storeDetailAddress){
+					$("#storeAddress").text(data.storeDetailAddress);
+				}
+
+				// Step 표기 class 제거
+				$('.state > span').removeClass('on');
+
+				if (orderStatus === 4){
+					// 주문 상태가 취소인 경우
+					location.href = "/error/error-tracker";
+				}
+				else if (orderStatus === 3) {
+					// 주문 상태가 완료인 경우
+					$('.progress-background').hide();
+					$('#tNew').addClass('on line');
+					$('#tAssign').addClass('on line');
+					$('#tPickup').addClass('on line');
+					$('#tComplete').addClass('on');
+					$('.t_red').text('');
+					$(".visual_area").attr("id","");
+					$(".mapCtrl").attr("id","map");
+					if (thirdDelivery !== undefined && thirdDelivery.toString().trim().length > 0) {
+						$(".visual_area").html('<p class="tit_third">由於外送訂單較多，<br/>您的訂單將由第三方外送夥伴安排配送，<br/>完成配對後，將發送簡訊通知。<br/><span class="tit_third_second">謝謝您的耐心等待。<br/>如有疑問，請聯絡門市。</span></p>');
+					}else {
+						$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
+					}
+				}
+				else if ((orderStatus === 0 || orderStatus === 5) && (checkReserveTime - 3600000 > 0 && checkTime - 1800000 > 0)) {
+					// 예약시간 - 등록 시간이 1시간이 넘으면서 부킹 - 현재 시간이 30분을 초과 하는 경우
+					$('.progress-background').hide();
+					$('#tNew').addClass('on');
+					if($(".visual_area").has('#map').prevObject.length){
+						$(".mapCtrl").attr("id","map");
+						$(".visual_area").attr("id","");
+						$(".visual_area").removeClass('blurMap');
+						$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
+					}
+				}
+				else if ((orderStatus === 0 || orderStatus === 5) && (checkReserveTime - 3600000 <= 0 || checkTime - 1800000 <= 0)) {
+					// 예약시간 - 등록 시간이 1시간 미만이거나 부킹 - 현재 시간이 30분 미만인 경우
+					$('#tNew').addClass('on');
+
+					if(!$("#map").hasClass('visual_area')){
+						$(".mapCtrl").attr("id","");
+						$(".visual_area").attr("id","map");
+						$("#map").addClass('blurMap');
+					}
+
+					if(overlay){
+						myOverlay.prototype.onRemove = function () {
+							if(this.div_ && this.div_.parentNode){
+								this.div_.parentNode.removeChild(this.div_);
+							}
+						}
+						overlay.onRemove();
+						overlay == null;
+					}
+
+					$("#progressbar").progressbar( "value", processValue > 100 ? 100 : processValue);
+					if ($(".progress-background").css('display') === 'none'){
+						$('.progress-background').show();
+					}
+				}
+				else if (orderStatus === 1) {
+
+					console.log("order Status = 1");
+
+					// 현재 배정 상태
+					$('#tNew').addClass('on line');
+					$('#tAssign').addClass('on');
+
+					if(!$("#map").hasClass('visual_area')){
+						$(".mapCtrl").attr("id","");
+						$(".visual_area").attr("id","map");
+						$("#map").addClass('blurMap');
+					}
+
+					if (!chkMap){
+						initMap();
+						chkMap = true;
+					}
+
+					if(overlay){
+						myOverlay.prototype.onRemove = function () {
+							if(this.div_ && this.div_.parentNode){
+								this.div_.parentNode.removeChild(this.div_);
+							}
+						}
+						overlay.onRemove();
+						overlay == null;
+					}
+
+					$("#progressbar").progressbar( "value", processValue > 100 ? 100 : processValue);
+					if ($(".progress-background").css('display') === 'none'){
+						$('.progress-background').show();
+					}
+				}
+				else if (orderStatus === 2 || orderStatus === 6){
+					// 픽업 완료 및 도착 완료 상태인 경우, 즉 배달 중인 경우
+					$('.progress-background').hide();
+					$('#tNew').addClass('on line');
+					$('#tAssign').addClass('on line');
+					$('#tPickup').addClass('on');
+
+					if(!$("#map").hasClass('visual_area')){
+						$(".mapCtrl").attr("id","");
+						$(".visual_area").attr("id","map");
+						$("#map").addClass('blurMap');
+					}
+
+					if ($(".progress-background").css('display') !== 'none') {
+
+						if (!$("#map").hasClass('blurMap')){
+							$("#map").addClass('blurMap');
+						}
+
+						console.log("processValue => ", processValue);
+
+						if(overlay){
+							myOverlay.prototype.onRemove = function () {
+								if(this.div_ && this.div_.parentNode){
+									this.div_.parentNode.removeChild(this.div_);
+								}
+							}
+							overlay.onRemove();
+							overlay == null;
+						}
+
+						// 프로그레스 바가 표기된 상태라면, 타이머를 실행 시킨다.
+						var plusProgress = setInterval(function () {
+							processValue++;
+
+							$("#progressbar").progressbar("value", processValue);
+
+							if (processValue >= 100){
+								clearInterval(plusProgress);
+							}
+						}, 100);
+					}else {
+
+						if ($("#map").hasClass('blurMap')){
+							$("#map").removeClass('blurMap');
+							initMap();
+						}
+
+						console.log("orderMarker", orderMarker);
+
+						if (!orderMarker){
+							orderMarker = new google.maps.Marker({
+								position: new google.maps.LatLng(parseFloat(tracker.latitude), parseFloat(tracker.longitude)),
 								map: map,
-								zIndex:101,
-								/*label:{fontWeight: "bold",
-                                    text:tracker_destination},*/
+								zIndex: 103,
 								icon: {
-									url:'/resources/images/tracker/pin_home.png?ver=0.4',
-									scaledSize: new google.maps.Size(30, 40)
+									url: '/resources/images/tracker/pin_home.png?ver=0.4',
+									scaledSize: new google.maps.Size(35, 40)
 								}
 							});
 						}
-						if(!marker[1]){
-							marker[1] = new google.maps.Marker({
-								position: new google.maps.LatLng(data.storeLatitude, data.storeLongitude),
+
+						console.log("storeMarker", storeMarker);
+
+						if (!storeMarker){
+							storeMarker = new google.maps.Marker({
+								position: new google.maps.LatLng(parseFloat(tracker.storeLatitude), parseFloat(tracker.storeLongitude)),
 								map: map,
-								zIndex:103,
-								/*label:{fontWeight: "bold", text:data.storeName},*/
+								zIndex: 101,
 								icon: {
-									url:'/resources/images/tracker/pin_store0.png?ver=0.4',
-									// url: data.brandImg,
+									url: '/resources/images/tracker/pin_store0.png?ver=0.4',
 									scaledSize: new google.maps.Size(35, 35)
 								}
 							});
 						}
 
-						if(!marker[2]){
-							marker[2] = new SlidingMarker({
-								// position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng() + (data.distance>0.1?0.00000:0.00100)),
-								position: new google.maps.LatLng(route.start_location.lat(), route.start_location.lng()),
-								map: map,
-								zIndex:102,
-								icon: {
-									// url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
-									url: data.longitude>data.riderLongitude?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4',
+						// 프로그레스 바가 표기가 안된 상태라면, 배달 경로 화면을 뿌려준다.
+						drawRiderRoute(data);
+					}
+				}
+
+			}
+		});
+	}
+
+	/**
+	 * 라이더 경로를 표기해준다.
+	 * */
+	function drawRiderRoute(info){
+		myOverlay.prototype.onRemove = function (){
+			if (this.div_ && this.div_.parentNode){
+				this.div_.parentNode.removeChild(this.div_);
+			}
+		}
+
+		if (overlay){
+			if ($('.bigText')){
+				// bigText class가 있는 경우 삭제한다
+				$('.bigText').remove();
+			}
+
+			overlay.onRemove();
+		}
+
+		//// google Directions Service 작업 시작
+		var selectedMode = 'DRIVING';
+
+		directionsService.route({
+			origin: riderMarker ? new google.maps.LatLng(riderMarker.position.toJSON()) : new google.maps.LatLng(info.riderLatitude, info.riderLongitude),
+			destination: new google.maps.LatLng(orderMarker.position.toJSON()),
+			travelMode: google.maps.TravelMode[selectedMode],
+			drivingOptions: {
+				departureTime: new Date(),
+				trafficModel: 'bestguess'
+			},
+			optimizeWaypoints: true,
+			waypoints: [{
+				location: new google.maps.LatLng(info.riderLatitude, info.riderLongitude),
+				stopover: true
+			}]
+		}, function (response, status){
+			console.log("map response => ");
+			console.log(response);
+			if (status === 'OK'){
+				// 이전에 처리하지 못한 타이머 이벤트를 모두 중단 시킨다.
+				routeArray.forEach(function (route){
+					clearTimeout(route);
+				});
+
+				routeArray = [];            // route Array를 초기화 시킨다
+				var firstRoute = response.routes[0].legs[0];            // 이전 위치에서 현재 라이더 위치까지의 경로
+				var secondRoute = response.routes[0].legs[1];           // 현재 라이더 위치에서 주문지까지의 경로
+
+				var durationInTraffic = response.routes[0].legs.reduce((sum, leg) => sum + leg.duration.value, 0);      // 모든 경로의 시간 표기 (초)
+
+				durationTime = Math.round(durationInTraffic / 60);          // 분단위로 값 저장
+
+				// 지도 내에 표기할 문구 생성
+				var contentString = '<div class="messageBox">';
+				contentString += '<span class="bigText">';
+				contentString += durationTime < 10 ? '&nbsp;' + durationTime : durationTime;
+				contentString += '</span><div><p class="grayText">分鐘</p><p class="grayText">預計到達時間</p></div></div>';
+
+				// 현재 시간 + 경로의 전체 시간
+				var arriveTrafficTime = new Date((new Date).getTime() + durationInTraffic * 1000);
+
+				// 화면의 배달 완료 예정 시간을 변경한다.
+				$("#reservedTime").text(setHourMin(arriveTrafficTime.getHours()) + ':' + setHourMin(arriveTrafficTime.getMinutes()));
+
+				// 라이더 위치 값을 표기한다. (움직이는 내용 추가
+				if (!riderMarker){
+					riderMarker = new SlidingMarker({
+						position: firstRoute.start_location,
+						map: map,
+						zIndex: 102,
+						icon: {
+							url: info.longitude > info.riderLongitude ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
+							scaledSize: new google.maps.Size(40, 49)
+						},
+						duration: durationInTraffic * 1000,
+						easing: "linear"
+					});
+				}
+				else{
+					var routeTimeout = function (durationCheckTime, pointLocation, direction, stepTime, AllTime){
+						var routeTimer = setTimeout(function () {
+							riderMarker.setDuration(durationCheckTime);
+							console.log("라이더 마커 있음");
+							console.log(pointLocation);
+
+							if (direction !== 'keep'){
+								riderMarker.setIcon({
+									url: (direction === 'right') ? '/resources/images/tracker/pin_moto_right.png?ver=0.4' : '/resources/images/tracker/pin_moto_left.png?ver=0.4',
 									scaledSize: new google.maps.Size(40, 49)
-								},
-								duration: durationInTraffic*60*1000,
-//								duration: (route.duration_in_traffic).value * 1000,
-								easing: "linear"
-//								easing: "easeOutCirc"
-// 								easing: "easeOutExpo"
-							});
-						}else {
-							var tempDurationTime = 0;
-							var routeTimeout = function(durationCheckTime, pointLocation, direction, restStepTime, AllTime){
-								var routeSetTime = setTimeout(function () {
-									marker[2].setDuration(durationCheckTime);
-									if(direction != 'keep'){
-										// marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-										marker[2].setIcon({url:(direction == 'right')?'/resources/images/tracker/pin_moto_right.png?ver=0.4':'/resources/images/tracker/pin_moto_left.png?ver=0.4', scaledSize: new google.maps.Size(40, 49)});
-									}
-									marker[2].setPosition(pointLocation);
-									if(restStepTime == 0){
-										localStorage.setItem('restCheckTime','true');
-									}
-									$('.bigText').html(restStepTime<10?'&nbsp;'+restStepTime:restStepTime);
-								},AllTime);
-								routeArray.push(routeSetTime);
-							};
-
-							if(data.distance > 0.1 && !localStorage.getItem('restCheckTime')){
-								var stepTimes = route.steps.concat(route2.steps).reduce(function (total, step, index) {
-									return total.concat(step.lat_lngs.map(function(lat_lng){
-										return JSON.stringify({duration : step.duration.value, index : index});// 배열안의 객체 비교 편하게 하려고 문자열로 변환
-									}));
-								},[]);// 구간별 걸리는 시간
-
-								var restStepTime = stepTimes.map(function (stepTime1) {
-										return stepTimes.filter(function(step, index) {
-											return stepTimes.indexOf(step) === index;
-										}).reduce(function (total, stepTime2) {
-											if(JSON.parse(stepTime1).index > JSON.parse(stepTime2).index){
-												return total;
-											}else {
-												return total + JSON.parse(stepTime2).duration;
-											}
-										},0);
-								});// 구간별 남은 누적 시간
-
-								var allRoute = route.steps.reduce(function (total, step) {
-									return total.concat(step.lat_lngs);
-								},[]).concat(route.end_location); // 총 경로
-
-								var turnTime = 50 * 1000/ allRoute.length; //각 경로당 이동시간
-
-								// console.log(allRoute.map(route => {return {lat : route.lat(), lng : route.lng()} }))
-								allRoute.some(function (route, index) {
-									var direction = allRoute[index + 1] && allRoute[index + 1].lng() > route.lng() ? 'right':(allRoute[index + 1] && allRoute[index + 1].lng() < route.lng()?'left':'keep'); //마커 방향
-
-									routeTimeout(turnTime, route, direction, Math.round(restStepTime[index]/60), AllDurationTime[index - 1]);
-									tempDurationTime += turnTime;
-									AllDurationTime[index] = tempDurationTime;
-
-									return index + 1 == allRoute.length;
 								});
 							}
-						}
-						myOverlay.prototype.onAdd = function () {
-							var div = document.createElement('div');
-							div.style.borderStyle = 'none';
-							div.style.position = 'absolute';
-							div.style.width = '140px';
 
-							div.innerHTML = this.content_;
+							riderMarker.setPosition(pointLocation);
 
-							this.div_ = div;
-							var panes = this.getPanes();
-							panes.overlayLayer.appendChild(div);
-//                            panes.floatPane.appendChild(div);
-						}
-						myOverlay.prototype.draw = function () {
-							var overlayProjection = this.getProjection();
+							$('.bigText').html((stepTime < 10 ? '&nbsp;' : '') + stepTime );
 
-							var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
+							var bounds = new google.maps.LatLngBounds();
 
-							var div = this.div_;
+							bounds.extend(orderMarker.position);
+							bounds.extend(pointLocation);
 
-							div.style.left = data.longitude>data.storeLongitude?ne.x - 160 + 'px':ne.x + 18+ 'px';
-							if(data.longitude>data.storeLongitude){
-								div.style.top = data.latitude<data.storeLatitude?ne.y + 92 + 'px':ne.y - 150 + 'px';
-							}else{
-								div.style.top = data.latitude<data.storeLatitude?ne.y + 79 + 'px':ne.y - 150 + 'px';
-							}
-						}
+							map.fitBounds(bounds);
+							// 좌표값들이 모두 보이도록 적용
+							map.panToBounds(bounds);
+						}, AllTime);
 
-						overlay = new myOverlay(marker[0],contentString,map);
-
-						directionsDisplay.setDirections(response);
-					} else {
-						window.alert('Directions request failed due to ' + status);
+						routeArray.push(routeTimer);
 					}
-				});
+
+					console.log("routeTimeout 성공 ", info.distance);
+
+					// 길찾기 이벤트 작동하도록 작업 (이동 해야될 구간만 가져온다)
+					var firstAllRoute = firstRoute.steps.reduce((total, step) => total.concat(step.lat_lngs), []).concat(firstRoute.end_location);
+					var secondTimers = secondRoute.steps.reduce((sum, step) => sum + step.duration.value, 0);
+					//var restTimers = durationInTraffic;
+
+					var turnTime = refreshMillis / firstAllRoute.length;
+
+					var allDurationTime = 0;        // setTimerout이 작동될 시간을 설정한다.
+
+					console.log("firstAllRoute => ", firstAllRoute.length, " secondTimers => ", secondTimers);
+
+					// 라이더의 이전 위치에서 현재 위치까지 뺑뻉이를 돌린다.
+					firstAllRoute.some(function (route, index){
+						// Marker 방향 지정
+						var direction = firstAllRoute[index + 1] && firstAllRoute[index + 1].lng() > route.lng() ? 'right' : (firstAllRoute[index + 1] && firstAllRoute[index + 1].lng() < route.lng() ? 'left' : 'keep');
+
+						routeTimeout(turnTime, route, direction, Math.round(secondTimers / 60), allDurationTime);
+						allDurationTime += turnTime;
+
+						return index + 1 === firstAllRoute.length;
+					});
+				}
+
+				// 구글맵에 내용 추가
+				myOverlay.prototype.onAdd = function () {
+					var div = document.createElement('div');
+					div.style.borderStyle = 'none';
+					div.style.position = 'absolute';
+					div.style.widows = '140px';
+
+					div.innerHTML = this.content_;
+
+					this.div_ = div;
+
+					var panes = this.getPanes();
+					panes.overlayLayer.appendChild(div);
+				}
+
+				myOverlay.prototype.draw = function () {
+					var overlayProjection = this.getProjection();
+					var ne = overlayProjection.fromLatLngToDivPixel(this.map_.getCenter());
+					var div = this.div_;
+
+					div.style.left = info.longitude > info.storeLongitude ? ne.x - 160 + 'px' : ne.x + 18+ 'px';
+					if(info.longitude > info.storeLongitude){
+						div.style.top = info.latitude < info.storeLatitude ? ne.y + 92 + 'px' : ne.y - 150 + 'px';
+					}else{
+						div.style.top = info.latitude < info.storeLatitude ? ne.y + 79 + 'px' : ne.y - 150 + 'px';
+					}
+				}
+
+				overlay = new myOverlay(orderMarker, contentString, map);
+
+				directionsDisplay.setDirections(response);
 			}
-		}/*,
-        error : function (request,status,error) {
-            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        }*/
-	})
-}
-
-function setHourMin(time1) {
-//    console.log(time1);
-    if(time1==0){
-        return "00";
-	}else{
-        return (time1+'').length>1?time1:'0'+time1;
+			// status !== 'OK'
+			else{
+				alert('Directions request failed due to ' + status);
+			}
+		});
 	}
-}
 
-function safariSetDate(time) {
-	time = time.replace(' ', 'T') + 'Z';
+	function myOverlay(marker,content, map) {
+		this.marker_ = marker;
+		this.content_ = content;
+		this.map_ = map;
 
-	var changeDate = new Date(time);
+		this.div_ = null;
 
-	var yyyy = changeDate.getUTCFullYear().toString();
-	var mm = (changeDate.getUTCMonth() + 1).toString();
-	var dd = changeDate.getUTCDate().toString();
+		this.setMap(this.map_);
+	}
 
-	var hh = changeDate.getUTCHours().toString();
-	var nn = changeDate.getUTCMinutes().toString();
-	var ss = changeDate.getUTCSeconds().toString();
 
-	return yyyy + '/' + (mm[1] ? mm : '0' + mm[0]) + '/' + (dd[1]?dd:'0' + dd[0]) + ' '+
-			(hh[1] ? hh : '0' + hh[0]) + ':' + (nn[1] ? nn : '0' + nn[0]) + ':' + (ss[1] ? ss : '0' + ss[0]);
-}
+	function setHourMin(time1) {
+		if(time1===0){
+			return "00";
+		}else{
+			return (time1+'').length>1?time1:'0'+time1;
+		}
+	}
 
-/*]]>*/
+	function safariSetDate(time) {
+		time = time.replace(' ', 'T') + 'Z';
+
+		var changeDate = new Date(time);
+
+		var yyyy = changeDate.getUTCFullYear().toString();
+		var mm = (changeDate.getUTCMonth() + 1).toString();
+		var dd = changeDate.getUTCDate().toString();
+
+		var hh = changeDate.getUTCHours().toString();
+		var nn = changeDate.getUTCMinutes().toString();
+		var ss = changeDate.getUTCSeconds().toString();
+
+		return yyyy + '/' + (mm[1] ? mm : '0' + mm[0]) + '/' + (dd[1]?dd:'0' + dd[0]) + ' '+
+				(hh[1] ? hh : '0' + hh[0]) + ':' + (nn[1] ? nn : '0' + nn[0]) + ':' + (ss[1] ? ss : '0' + ss[0]);
+	}
+
+	/*]]>*/
 </script>
 
 <script type="text/javascript" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyDjTHhFpKViBPzb7VQ21kh9Dp6KOhtOTBo,language=${#messages.msg('map.language')},region=${#messages.msg('map.region')},callback=initMap)}" layout:fragment="script2" ></script>
