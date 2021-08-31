@@ -883,6 +883,7 @@
 							,status
 							,latitude
 							,longitude
+							,reservation_datetime
 					from	 TB_ORDER
 					where	 created_datetime > CURRENT_DATE()
 					and		 status in (1)
@@ -895,6 +896,7 @@
 							,store_id
 							,latitude
 							,longitude
+							,reservation_datetime
 					from	 TB_ORDER
 					where	 id = #{id}
 				)	as B

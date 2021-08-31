@@ -158,9 +158,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 List<Rider> removeRider = riderList.stream().filter(x ->{
                     // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
                     // 20.07.23 대만 요청으로 배달 제한 수 추가
-                    if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()) || x.getMinOrderStatus() == null)){
+                    if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()))){
+                        System.out.println("################# x Data minOrderStatus 가 NULL 또는 개수 초과 입니다.=>");
+                        System.out.println(x.getId() + " # " + x);
                         return true;
                     }else{
+                        if (x.getMinOrderStatus() == null){
+                            x.setMinOrderStatus("");
+                        }
+
+
                         switch (x.getMinOrderStatus()){
                             case "0":           /// 신규주문
                             case "2":           //// 픽업 완료
@@ -168,6 +175,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             case "4":           //// 주문 취소
                             case "5":           //// 신규주문
                             case "6":           //// 도착
+                                System.out.println("################# x Data minOrderStatus의 주문 상태가 메롱 입니다=>");
+                                System.out.println(x.getId() + " # " + x);
                                 return true;
                             case "1":           //// 배정 완료
                             default:
@@ -176,8 +185,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                                    x.setMyWorkCount("1");
 //                                }
 
+                                System.out.println("################# x Data=>");
+                                System.out.println(x.getId() + " # " + x);
+
                                 // 우선 순위에서 배제된 내용은 삭제 된 우선 배정이므로,
-                                if (firstAssignedRider.stream().noneMatch(y -> y.getRiderId().equals(x.getId())) && x.getMyWorkCount().equals("1") ){
+                                if (firstAssignedRider.stream().noneMatch(y -> y.getRiderId().equals(x.getId())) && x.getMyWorkCount() != null && x.getMyWorkCount().equals("1")){
                                     x.setMyWorkCount("2");
                                 }else {
                                     x.setMyWorkCount("1");
@@ -306,51 +318,21 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             .thenComparing(Rider::getDistance)                                                                  // 4순위 거리 순
                             .thenComparing(Rider::getAssignCount)                                                               // 5순위 주문을 가지고 있는 순서
                             .thenComparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
-                                int sameStore1 = o1.getStoreId() == order.getStoreId() ? 1 : 2;
-                                int sameStore2 = o2.getStoreId() == order.getStoreId() ? 1 : 2;
+                                int sameStore1 = o1.getStoreId().equals(order.getStoreId()) ? 1 : 2;
+                                int sameStore2 = o2.getStoreId().equals(order.getStoreId()) ? 1 : 2;
+
+                                System.out.println("############## 매장 정렬 S");
+                                System.out.println(order.getStoreId() + " # rider id # " + o1.getId() + " # o2.getId()" + o2.getId());
+                                System.out.println("##############");
+                                System.out.println(o1);
+                                System.out.println(sameStore1);
+                                System.out.println(o2);
+                                System.out.println(sameStore2);
+                                System.out.println(sameStore1 > sameStore2 ? 2 : (sameStore1 == sameStore2 ? 0 : 1));
+                                System.out.println("############## 매장 정렬 F");
 
                                 return sameStore1 > sameStore2 ? 2 : (sameStore1 == sameStore2 ? 1 : 0);
                             })                                                                                                  // 6순위 주문이 들어간 매장의 라이더가 먼저 배정 될 수 있도록 적용
-//                            .thenComparing(Rider->Rider, (o1, o2) -> {
-//                                int iResult;
-//
-//                                // Rider의 값을 전체적으로 비교하여 정렬한다. 기본 주문 상태
-//                                int minStatus1;
-//                                switch (o1.getMinOrderStatus())
-//                                {
-//                                    case "2":           // 픽업 상태
-//                                        minStatus1 = 3;
-//                                        break;
-//                                    case "6":           //  도착 상태
-//                                        minStatus1 = 4;
-//                                        break;
-//                                    default:            // 위 3가지 상황 이외의 상태
-//                                        minStatus1 = 1;
-//                                        break;
-//                                }
-//
-//                                int minStatus2;
-//                                switch (o2.getMinOrderStatus()){
-//                                    case "2":           // 픽업 상태
-//                                        minStatus2 = 3;
-//                                        break;
-//                                    case "6":           //  도착 상태
-//                                        minStatus2 = 4;
-//                                        break;
-//                                    default:            // 위 3가지 상황 이외의 상태
-//                                        minStatus2 = 1;
-//                                        break;
-//                                }
-//
-//                                // iResult 값 정하기
-//                                if (minStatus1 == minStatus2 && minStatus1 == 1){
-//                                    //
-//                                }
-//
-//                                return minStatus1 < minStatus2 ? 0 : (minStatus1 == minStatus2 ? 1 : 2);
-//
-//
-//                            })
                     )
                     .collect(Collectors.toList());
 
@@ -363,7 +345,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 // Rider ID를 가져온다.
                 for (Rider tmpRider:riderList
                      ) {
-                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude() + " # 거리=>" + tmpRider.getDistance());
+                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude() + " # 거리=>" + tmpRider.getDistance() + " # 우선순위=>" + tmpRider.getMyWorkCount() + " # 쉐어상태=>" + tmpRider.getSharedStatus() + " # 주문개수=>" + tmpRider.getAssignCount());
                 }
 
                 log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);
