@@ -91,9 +91,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         RequestMatcher trackerMatcher = new AntPathRequestMatcher("/tracker");
+        RequestMatcher trackerErrorMatcher = new AntPathRequestMatcher("/error/error-tracker");
         RequestMatcher trackerTestMatcher = new AntPathRequestMatcher("/tracker-test");
         List<RequestMatcher> whiteList = new ArrayList<>();
         whiteList.add(trackerMatcher);
+        whiteList.add(trackerErrorMatcher);
         whiteList.add(trackerTestMatcher);
         DelegatingRequestMatcherHeaderWriter headerWriter = new DelegatingRequestMatcherHeaderWriter(
                 new NegatedRequestMatcher(
