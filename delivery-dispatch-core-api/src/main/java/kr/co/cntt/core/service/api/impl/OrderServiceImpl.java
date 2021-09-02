@@ -131,20 +131,38 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 예약 시간이 현재 시간과 30분 미만이 된 경우
                     if (ChronoUnit.MINUTES.between(reserveDatetime, currentDatetime) < 30){
 
-                        // 300M 내 라이더가 주문을 가지고 있고 기 주문과 현 주문의 예약 차이가 5분 이내인 경우 300M 라이더에서 제거
-                        List<Order> tempNonFirst = firstAssignedRider.stream().filter(x -> (Integer.parseInt(x.getCookingTime()) > 0 && Integer.parseInt(x.getCookingTime()) < 5 ) || (Integer.parseInt(x.getCookingTime()) < 0 && Integer.parseInt(x.getCookingTime()) > -5 )).collect(Collectors.toList());
+                        // 300M에 적용이 되나, 우선권을 못 주는 경우
+                        List<Order> tempFirst = firstAssignedRider.stream().filter(x -> (Integer.parseInt(x.getCookingTime()) < 0)).collect(Collectors.toList());
+
+                        System.out.println("# => tempNonFirst count === " + tempFirst.size());
+
+                        firstAssignedRider.forEach(x -> {
+                            System.out.println("################################################################################################ firstAssignedRider ##########################################################################");
+                            System.out.println(x.getId());
+                            System.out.println(x);
+                            System.out.println(tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getRiderId())));
+                            System.out.println("################################################################################################ firstAssignedRider  ##########################################################################");
+                        });
+
 
                         // 신규 주문과 기존 주문의 갭 차이가 5분 이내인 경우가 있으므로,
-                        if (tempNonFirst.size() > 0){
+                        if (tempFirst.size() > 0){
+
+                            System.out.println("들어왔습니다@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
                             riderList.forEach(x -> {
-                                if (tempNonFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId()))){
+                                System.out.println("riderList x => " + x.getId() + " ##################### === " + tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId())));
+
+                                if (tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId()))){
                                     x.setMyWorkCount("1");
                                 }
                             });
                         }
 
                         // 우선 순위에서 제외 되었다면, 우선 배정에서도 제외 되도록 변경
-                        firstAssignedRider.removeAll(tempNonFirst);
+                        //firstAssignedRider.removeAll(tempNonFirst);
+
+                        System.out.println("# => tempNonFirst count 22222222 === " + tempFirst.size());
                     }
 
 
@@ -164,7 +182,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         return true;
                     }else{
                         if (x.getMinOrderStatus() == null){
-                            x.setMinOrderStatus("");
+                            x.setMinOrderStatus("1");
                         }
 
 
@@ -188,20 +206,26 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 System.out.println("################# x Data=>");
                                 System.out.println(x.getId() + " # " + x);
 
-                                // 우선 순위에서 배제된 내용은 삭제 된 우선 배정이므로,
-                                if (firstAssignedRider.stream().noneMatch(y -> y.getRiderId().equals(x.getId())) && x.getMyWorkCount() != null && x.getMyWorkCount().equals("1")){
+//                                // 제외 되어야 될 우선 순위 라이더들은 모두 사라졌으므로, 남은 라이더들이 최 우선적으로 적용되어야 한다.
+//                                if (firstAssignedRider.stream().allMatch(y -> y.getRiderId().equals(x.getId())) && x.getMyWorkCount() != null && x.getMyWorkCount().equals("1")){
+//                                    x.setMyWorkCount("2");
+//                                }else {
+//                                    x.setMyWorkCount("1");
+//                                }
+//
+//                                return false;
+
+                                if (firstAssignedRider.stream().anyMatch(y -> y.getRiderId().equals(x.getId())) && (x.getMyWorkCount() == null)){
                                     x.setMyWorkCount("2");
                                 }else {
                                     x.setMyWorkCount("1");
                                 }
 
                                 return false;
-
-
                                 // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
                                 // 21-07-05 주말에 관련 프로세스 다시 살려달라 요청 (복원 시 다음 reutrn 값 복원)
-                                //return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId())).count() <= 0;
-                                // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store_id
+                                //return firstAssignedRider.stream().noneMatch(y -> y.getRiderId().equals(x.getId()));
+                                // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store _id
                                 // System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
                                 // return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
                         }
@@ -328,10 +352,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 System.out.println(sameStore1);
                                 System.out.println(o2);
                                 System.out.println(sameStore2);
-                                System.out.println(sameStore1 > sameStore2 ? 2 : (sameStore1 == sameStore2 ? 0 : 1));
                                 System.out.println("############## 매장 정렬 F");
 
-                                return sameStore1 > sameStore2 ? 2 : (sameStore1 == sameStore2 ? 1 : 0);
+                                //return sameStore1 > sameStore2 ? 2 : (sameStore1 == sameStore2 ? 1 : 0);
+                                return sameStore1 + sameStore2;
                             })                                                                                                  // 6순위 주문이 들어간 매장의 라이더가 먼저 배정 될 수 있도록 적용
                     )
                     .collect(Collectors.toList());
