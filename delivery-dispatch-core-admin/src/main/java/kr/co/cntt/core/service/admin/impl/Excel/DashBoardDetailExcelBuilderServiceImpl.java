@@ -105,7 +105,11 @@ public class DashBoardDetailExcelBuilderServiceImpl extends ExcelComm {
 
             cell = addListRow.createCell(colNum++);
             if (dashboardList.get(i).getValue() != null){
-                cell.setCellValue(String.format("%.2f", dashboardList.get(i).getValue()));
+                if (headerName.equals("D30T")){
+                    cell.setCellValue(minusChkFilter(String.valueOf(dashboardList.get(i).getValue())));
+                }else {
+                    cell.setCellValue(String.format("%.2f", dashboardList.get(i).getValue()));
+                }
             }else{
                 cell.setCellValue(0);
             }

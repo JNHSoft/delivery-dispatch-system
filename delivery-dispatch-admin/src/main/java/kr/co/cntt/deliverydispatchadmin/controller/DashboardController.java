@@ -225,6 +225,10 @@ public class DashboardController {
                 info = dashboardAdminService.selectD30Detail(searchInfo);
                 storeRank = dashboardAdminService.selectD30Rank(searchInfo);
                 break;
+            case "D30T":
+                info = dashboardAdminService.selectD30TDetail(searchInfo);
+                storeRank = dashboardAdminService.selectD30TRank(searchInfo);
+                break;
             case "D7":
                 info = dashboardAdminService.selectD7Detail(searchInfo);
                 storeRank = dashboardAdminService.selectD7Rank(searchInfo);
@@ -301,6 +305,9 @@ public class DashboardController {
         switch (type){
             case "D30":
                 storeRank = dashboardAdminService.selectD30Rank(searchInfo);
+                break;
+            case "D30T":
+                storeRank = dashboardAdminService.selectD30TRank(searchInfo);
                 break;
             case "D7":
                 storeRank = dashboardAdminService.selectD7Rank(searchInfo);

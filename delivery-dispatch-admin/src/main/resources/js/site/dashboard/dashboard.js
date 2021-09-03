@@ -324,7 +324,7 @@ function drawCardUI(cardInfo){
 
     if (cardInfo.hasOwnProperty('avgValue')){
         returnHtml += '<div class="absolute right-9 top-2.5 rounded-2xl bg-gray-200 py-1 px-2 text-xs">';
-        returnHtml += changeTime(cardInfo.avgValue * 1000);
+        returnHtml += secondsToTimeByUnit(cardInfo.avgValue, 'h', 'm', 's');
         returnHtml += '</div>';
     }
 
@@ -334,7 +334,15 @@ function drawCardUI(cardInfo){
 
     if (cardInfo.hasOwnProperty('mainValue')){
         returnHtml += '<div class="text-black text-3xl font-bold mb-6">';
-        returnHtml += formatFloat(cardInfo.mainValue, 2, true);
+        if (cardInfo.hasOwnProperty("mainValueType")){
+            if (cardInfo.mainValueType === "times"){
+                returnHtml += secondsToTimeByUnit(cardInfo.mainValue, 'h', 'm', 's');
+            }else {
+                returnHtml += formatFloat(cardInfo.mainValue, 2, true);
+            }
+        }else {
+            returnHtml += formatFloat(cardInfo.mainValue, 2, true);
+        }
         returnHtml += cardInfo.unit;
         returnHtml += '</div>';
     }else{

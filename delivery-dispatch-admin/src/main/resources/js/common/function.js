@@ -10,17 +10,88 @@
     // 시간(초)를 hh:mm:ss 형식으로 변경한다. 24시간 이상 시 hh는 3자리로 표기가 될 수 있다. 밀리세컨드는 x
     function secondsToTime(seconds){
         let result = "-";
+        let hour = 0;
+        let min = 0;
+        let sec = 0;
 
-        if (seconds > 0){
-            let hour = parseInt(seconds / 3600);
-            let min = parseInt((seconds % 3600) / 60);
-            let sec = parseInt(seconds % 60);
 
-            if (hour < 10){
-                hour = ('0' + hour).slice(-2);
+        if (seconds){
+            if (seconds > 0){
+                hour = parseInt(seconds / 3600);
+                min = parseInt((seconds % 3600) / 60);
+                sec = parseInt(seconds % 60);
+
+                if (hour < 10){
+                    hour = ('0' + hour).slice(-2);
+                }
+            } else {
+                hour = parseInt(Math.abs(seconds) / 3600);
+                min = parseInt((Math.abs(seconds) % 3600) / 60);
+                sec = parseInt(Math.abs(seconds) % 60);
+
+                if (hour < 10){
+                    hour = ('0' + hour).slice(-2);
+                }
+
+                hour = "-" + hour;
             }
 
             result = hour + ':' + ('0' + min).slice(-2) + ':' + ('0' + sec).slice(-2);
+        }
+
+        return result;
+    }
+
+    // 시간(초)를 단위 표기로 작성한다. hh'h' mm'm' ss's'
+    function secondsToTimeByUnit(seconds, hourUnit, minUnit, secondUnit){
+        let result = "-";
+
+        let hour = 0;
+        let min = 0;
+        let sec = 0;
+
+
+        if (seconds){
+            if (seconds > 0){
+                hour = parseInt(seconds / 3600);
+                min = parseInt((seconds % 3600) / 60);
+                sec = parseInt(seconds % 60);
+
+                if (hour < 10){
+                    hour = ('0' + hour).slice(-2);
+                }
+            } else {
+                hour = parseInt(Math.abs(seconds) / 3600);
+                min = parseInt((Math.abs(seconds) % 3600) / 60);
+                sec = parseInt(Math.abs(seconds) % 60);
+
+                if (hour < 10){
+                    hour = ('0' + hour).slice(-2);
+                }
+
+                hour = "-" + hour;
+            }
+
+
+            if (parseInt(hour) === 0){
+                hour = "";
+            }else {
+                hour = hour + hourUnit;
+            }
+
+            if (parseInt(hour) === 0 && min === 0){
+                min = "";
+            }else {
+                min = ('0' + min).slice(-2) + minUnit;
+            }
+
+            if (parseInt(hour) === 0 && min === 0 && sec === 0){
+                sec = "0" + secondUnit;
+            }else {
+                sec = ('0' + sec).slice(-2) + secondUnit;
+            }
+
+            result = hour  + min + sec;
         }
 
         return result;
@@ -49,18 +120,7 @@
 
     // 밀리세컨드로 시간 형태로 변경하기
     function millisecondToTime(millisecond){
-        if (millisecond) {
-            if(millisecond>=0){
-                let d = new Date(millisecond);
-                return ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
-            }else{
-                millisecond = Math.abs(millisecond);
-                let d = new Date(millisecond);
-                return "-"+('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2) + ':' + ('0' + d.getUTCSeconds()).slice(-2);
-            }
-        } else {
-            return "-";
-        }
+        return secondsToTime(millisecond / 1000);
     }
     
     // 날짜 형식의 string으로 받은 경우 날짜로 변환하기 mm-dd hh:mm

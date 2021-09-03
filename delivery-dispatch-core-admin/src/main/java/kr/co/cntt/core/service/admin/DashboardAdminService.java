@@ -20,7 +20,13 @@ public interface DashboardAdminService {
      * @param search 검색 조건
      * */
     ChartInfo selectD30Detail(SearchInfo search);
-    
+
+    /**
+     * D30 데이터 평균 시간
+     * @param search 검색 조건
+     * */
+    ChartInfo selectD30TDetail(SearchInfo search);
+
     /**
      * TPLH 데이터 조회
      * */
@@ -60,6 +66,11 @@ public interface DashboardAdminService {
      * D30 스토어 랭키 조회
      * */
     List<RankInfo> selectD30Rank(SearchInfo search);
+
+    /**
+     * D30 평균 시간 대 스토어 랭키 조회
+     * */
+    List<RankInfo> selectD30TRank(SearchInfo search);
 
     /**
      * TPLH 스토어 랭키 조회
