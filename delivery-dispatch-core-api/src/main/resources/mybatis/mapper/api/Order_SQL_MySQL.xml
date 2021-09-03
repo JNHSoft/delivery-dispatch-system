@@ -243,7 +243,7 @@
 				,A.third_party_id
 				,(select name from TB_THIRD_PARTY where id = A.third_party_id and deleted is null )	as third_party_name
 				,C.code																			as store_code
-		from	 TB_ORDER	A
+		from	 TB_ORDER	A force index (idx_order_reservation_admin, idx_order_created_admin, reg_order_id_UNIQUE, web_order_id_UNIQUE, `PRIMARY`)
 		left join TB_SUBGROUP_STORE_REL	B
 			ON	 A.store_id = B.store_id
 			AND	 B.deleted is null
@@ -739,7 +739,7 @@
 	<select id="selectFooterOrders" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
 		SELECT
 		A.status, count(*)as count
-		FROM TB_ORDER AS A
+		FROM TB_ORDER AS A force index (idx_order_reservation_admin, idx_order_created_admin, reg_order_id_UNIQUE, web_order_id_UNIQUE, `PRIMARY`)
 		LEFT JOIN TB_RIDER AS B
 		ON A.rider_id = B.id
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
