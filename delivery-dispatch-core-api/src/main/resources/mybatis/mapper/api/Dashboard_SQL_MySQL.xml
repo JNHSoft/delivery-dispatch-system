@@ -53,15 +53,15 @@
                     AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <!-- 피크 타임 전체 -->
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -120,14 +120,14 @@
                     AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -189,14 +189,14 @@
                     AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -256,14 +256,14 @@
                     AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -322,14 +322,14 @@
                     AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -393,14 +393,14 @@
                     AND	  reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -461,14 +461,14 @@
                     AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -529,14 +529,14 @@
         AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
         <choose>
             <when test="peakType == 1">
-                AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
             </when>
             <when test="peakType == 2">
-                AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
             </when>
             <when test="peakType == 3">
-                AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                 )
             </when>
         </choose>
@@ -598,14 +598,14 @@
                     AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -667,14 +667,14 @@
                     AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -734,14 +734,14 @@
                     AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -800,14 +800,14 @@
                     AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -873,14 +873,14 @@
                     AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -942,14 +942,14 @@
                     AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND		 date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>
@@ -1011,14 +1011,14 @@
         AND		 reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
         <choose>
             <when test="peakType == 1">
-                AND		 date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                AND		 date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
             </when>
             <when test="peakType == 2">
-                AND		 date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                AND		 date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
             </when>
             <when test="peakType == 3">
-                AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                 )
             </when>
         </choose>
@@ -1074,14 +1074,14 @@
                     and      a.reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
                     <choose>
                         <when test="peakType == 1">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30'
                         </when>
                         <when test="peakType == 2">
-                            AND   date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30'
+                            AND   date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30'
                         </when>
                         <when test="peakType == 3">
-                            AND (  (date_format(reservation_datetime, "%H:%i:%s") between '11:30' and '13:30')
-                                OR (date_format(reservation_datetime, "%H:%i:%s") between '17:30' and '19:30')
+                            AND (  (date_format(reservation_datetime, '%H:%i:%s') between '11:30' and '13:30')
+                                OR (date_format(reservation_datetime, '%H:%i:%s') between '17:30' and '19:30')
                                 )
                         </when>
                     </choose>

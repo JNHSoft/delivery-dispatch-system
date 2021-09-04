@@ -37,7 +37,7 @@ public interface OrderMapper {
      * @param order
      * @return
      */
-    @Transactional(readOnly=true)
+//    @Transactional(readOnly=true)
     List<Order> selectOrders(Order order);
 
     /**
@@ -50,7 +50,6 @@ public interface OrderMapper {
 
     /**
      * <p> Order 정보 조회
-     * 혹시라도 백업 서버에 적용이 안된 경우 중복 유무를 체크할 방법이 없으므로, readOnly는 제외한다.
      * @param common
      * @return
      */
@@ -79,7 +78,7 @@ public interface OrderMapper {
      * @param order
      * @return
      */
-    @Transactional(readOnly=true)
+//    @Transactional(readOnly=true)
     int selectOrderIsCompletedIsCanceled(Order order);
 
     /**
@@ -113,7 +112,7 @@ public interface OrderMapper {
      * @param order
      * @return
      */
-    @Transactional(readOnly=true)
+//    @Transactional(readOnly=true)
     List<OrderCheckAssignment> selectOrderDeny(Order order);
 
     /**
@@ -129,7 +128,7 @@ public interface OrderMapper {
      * <p> 자동 배정 관련 주문 목록
      * @return
      */
-    @Transactional(readOnly=true)
+//    @Transactional(readOnly=true)
     List<Order> selectForAssignOrders(Map locale);
 
     /**
@@ -174,7 +173,7 @@ public interface OrderMapper {
      * @param order
      * @return
      */
-    @Transactional(readOnly=true)
+//    @Transactional(readOnly=true)
     int selectCountOderAdmit(Order order);
 
 
@@ -193,13 +192,13 @@ public interface OrderMapper {
      * @param order
      * @return
      */
-    @Transactional(readOnly=true)
+//    @Transactional(readOnly=true)
     int selectOrderIsThirdPartyStatus(Order order);
 
     /**
      * <p> 배정할 주문의 목적지와 가까운 주문을 가진 Rider 정보를 가져온다
      * */
-    @Transactional(readOnly=true)
+//    @Transactional(readOnly=true)
     List<Order> selectNearOrderRider(Map searchMap);
 
 }
