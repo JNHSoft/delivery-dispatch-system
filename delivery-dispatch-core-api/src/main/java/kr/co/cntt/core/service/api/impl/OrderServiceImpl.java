@@ -346,16 +346,17 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 int sameStore2 = o2.getStoreId().equals(order.getStoreId()) ? 1 : 2;
 
                                 System.out.println("############## 매장 정렬 S");
-                                System.out.println(order.getStoreId() + " # rider id # " + o1.getId() + " # o2.getId()" + o2.getId());
+                                System.out.println(order.getStoreId() + " # rider id # " + o1.getStoreId() + " # o2.getId()" + o2.getStoreId());
                                 System.out.println("##############");
                                 System.out.println(o1);
                                 System.out.println(sameStore1);
                                 System.out.println(o2);
                                 System.out.println(sameStore2);
                                 System.out.println("############## 매장 정렬 F");
+                                //System.out.println("# return => " + (sameStore1 + sameStore2));
+                                System.out.println("# return => " + (Integer.compare(sameStore1, sameStore2)));;
 
-                                //return sameStore1 > sameStore2 ? 2 : (sameStore1 == sameStore2 ? 1 : 0);
-                                return sameStore1 + sameStore2;
+                                return Integer.compare(sameStore1, sameStore2);
                             })                                                                                                  // 6순위 주문이 들어간 매장의 라이더가 먼저 배정 될 수 있도록 적용
                     )
                     .collect(Collectors.toList());
@@ -369,7 +370,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 // Rider ID를 가져온다.
                 for (Rider tmpRider:riderList
                      ) {
-                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude() + " # 거리=>" + tmpRider.getDistance() + " # 우선순위=>" + tmpRider.getMyWorkCount() + " # 쉐어상태=>" + tmpRider.getSharedStatus() + " # 주문개수=>" + tmpRider.getAssignCount());
+                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude() + " # 거리=>" + tmpRider.getDistance() + " # 우선순위=>" + tmpRider.getMyWorkCount() + " # 쉐어상태=>" + tmpRider.getSharedStatus() + " # 주문개수=>" + tmpRider.getAssignCount()+ " # 스토어 정보=>" + tmpRider.getSubGroupRiderRel().getStoreId());
                 }
 
                 log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);
