@@ -132,7 +132,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     if (ChronoUnit.MINUTES.between(reserveDatetime, currentDatetime) < 30){
 
                         // 300M에 적용이 되나, 우선권을 못 주는 경우
-                        List<Order> tempFirst = firstAssignedRider.stream().filter(x -> (Integer.parseInt(x.getCookingTime()) < 0)).collect(Collectors.toList());
+                        List<Order> tempFirst = firstAssignedRider.stream().filter(x -> (Integer.parseInt(x.getCookingTime()) < 0) || (Integer.parseInt(x.getCookingTime()) > 5)).collect(Collectors.toList());
 
                         System.out.println("# => tempNonFirst count === " + tempFirst.size());
 
@@ -155,12 +155,13 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
                                 if (tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId()))){
                                     x.setMyWorkCount("1");
+                                    //x.setMyWorkCount("-1");
                                 }
                             });
                         }
 
                         // 우선 순위에서 제외 되었다면, 우선 배정에서도 제외 되도록 변경
-                        //firstAssignedRider.removeAll(tempNonFirst);
+                        firstAssignedRider.removeAll(tempFirst);
 
                         System.out.println("# => tempNonFirst count 22222222 === " + tempFirst.size());
                     }
@@ -193,27 +194,11 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             case "4":           //// 주문 취소
                             case "5":           //// 신규주문
                             case "6":           //// 도착
-                                System.out.println("################# x Data minOrderStatus의 주문 상태가 메롱 입니다=>");
-                                System.out.println(x.getId() + " # " + x);
                                 return true;
                             case "1":           //// 배정 완료
                             default:
-                                // 21-08-30 배정 프로세스 변경 우선 순위를 넣기 위해 MyWorkCount 함수를 사용하도록 하겠습니다.
-//                                if (x.getMyWorkCount().isEmpty()){
-//                                    x.setMyWorkCount("1");
-//                                }
-
                                 System.out.println("################# x Data=>");
                                 System.out.println(x.getId() + " # " + x);
-
-//                                // 제외 되어야 될 우선 순위 라이더들은 모두 사라졌으므로, 남은 라이더들이 최 우선적으로 적용되어야 한다.
-//                                if (firstAssignedRider.stream().allMatch(y -> y.getRiderId().equals(x.getId())) && x.getMyWorkCount() != null && x.getMyWorkCount().equals("1")){
-//                                    x.setMyWorkCount("2");
-//                                }else {
-//                                    x.setMyWorkCount("1");
-//                                }
-//
-//                                return false;
 
                                 if (firstAssignedRider.stream().anyMatch(y -> y.getRiderId().equals(x.getId())) && (x.getMyWorkCount() == null)){
                                     x.setMyWorkCount("2");
