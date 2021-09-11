@@ -63,6 +63,9 @@ public class OrderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
 
+        // Store ID를 입력한다.
+        order.setStoreId(String.valueOf(storeInfo.getStoreSeq()));
+
         List<Order> orderList = storeOrderService.getOrders(order);
         return orderList;
     }
@@ -73,6 +76,11 @@ public class OrderController {
     public Order getOrderDetail(Common common){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         common.setToken(storeInfo.getStoreAccessToken());
+
+        // 21-09-11 스토어의 ID를 넣는다.
+//        common.setId(String.valueOf(storeInfo.getStoreSeq()));
+
+
         Order order = storeOrderService.getOrderInfo(common);
         return order;
     }
