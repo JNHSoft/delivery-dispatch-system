@@ -270,19 +270,19 @@
 				and		 B.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) AND deleted is null)
 				and	(	(B.subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = A.admin_id and store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null))
 					<!--		UAT 적용-->
-					<!--		<if test="storeId != null and storeId == '13'">-->
-					<!--			or	(B.store_id in (6, 14))-->
-					<!--		</if>-->
-					<!--		<if test="storeId != null and (storeId == '6' or storeId == '14')">-->
-					<!--			or	(B.store_id in (13))-->
-					<!--		</if>-->
+					<if test="storeId != null and storeId == '13'">
+						or	(B.store_id in (6, 14))
+					</if>
+					<if test="storeId != null and (storeId == '6' or storeId == '14')">
+						or	(B.store_id in (13))
+					</if>
 					<!--		REAL 적용-->
-					<if test="storeId != null and storeId == '386'">
-						or	(B.store_id in (39, 67))
-					</if>
-					<if test="storeId != null and (storeId == '39' or storeId == '67')">
-						or	(B.store_id in (386))
-					</if>
+<!--					<if test="storeId != null and storeId == '386'">-->
+<!--						or	(B.store_id in (39, 67))-->
+<!--					</if>-->
+<!--					<if test="storeId != null and (storeId == '39' or storeId == '67')">-->
+<!--						or	(B.store_id in (386))-->
+<!--					</if>-->
 					)
 			</when>
 			<!--서브그룹이 없을때 오류 적용 Nick-->
