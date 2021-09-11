@@ -268,7 +268,22 @@
 			<when test="role != null and role == 'ROLE_STORE'">
 				<!--Store에서 보여져야 될 내용 - 기존과 동일, 다른 관리자 소속의 매장 주문 미 노출-->
 				and		 B.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) AND deleted is null)
-				and		 B.subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = A.admin_id and store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null)
+				and	(	(B.subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = A.admin_id and store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null))
+					<!--		UAT 적용-->
+					<!--		<if test="storeId != null and storeId == '13'">-->
+					<!--			or	(B.store_id in (6, 14))-->
+					<!--		</if>-->
+					<!--		<if test="storeId != null and (storeId == '6' or storeId == '14')">-->
+					<!--			or	(B.store_id in (13))-->
+					<!--		</if>-->
+					<!--		REAL 적용-->
+					<if test="storeId != null and storeId == '386'">
+						or	(B.store_id in (39, 67))
+					</if>
+					<if test="storeId != null and (storeId == '39' or storeId == '67')">
+						or	(B.store_id in (386))
+					</if>
+					)
 			</when>
 			<!--서브그룹이 없을때 오류 적용 Nick-->
 			<when test="role != null and role == 'ROLE_RIDER'">
@@ -391,9 +406,9 @@
 			<choose>
 				<when test="role != null and role == 'ROLE_STORE'">
 					AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
-					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1) IS NOT NULL
-						, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1)
-						, C.subgroup_id IS NULL AND D.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+<!--					AND IF((SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1) IS NOT NULL-->
+<!--						, C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1)-->
+<!--						, C.subgroup_id IS NULL AND D.id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))-->
 					<!--AND C.deleted IS NULL-->
 				</when>
 				<!--서브그룹이 없을때 오류 적용 Nick-->
