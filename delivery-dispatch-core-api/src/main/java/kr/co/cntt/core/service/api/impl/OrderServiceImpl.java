@@ -134,24 +134,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         // 300M에 적용이 되나, 우선권을 못 주는 경우
                         List<Order> tempFirst = firstAssignedRider.stream().filter(x -> (Integer.parseInt(x.getCookingTime()) < 0) || (Integer.parseInt(x.getCookingTime()) > 5)).collect(Collectors.toList());
 
-                        System.out.println("# => tempNonFirst count === " + tempFirst.size());
+                        log.info("# => tempNonFirst count === " + tempFirst.size());
 
                         firstAssignedRider.forEach(x -> {
-                            System.out.println("################################################################################################ firstAssignedRider ##########################################################################");
-                            System.out.println(x.getId());
-                            System.out.println(x);
-                            System.out.println(tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getRiderId())));
-                            System.out.println("################################################################################################ firstAssignedRider  ##########################################################################");
+                            log.info("################################################################################################ firstAssignedRider ##########################################################################");
+                            log.info(x.getId());
+                            log.info(x.toString());
+                            log.info("noneMatch => " + tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getRiderId())));
+                            log.info("################################################################################################ firstAssignedRider  ##########################################################################");
                         });
 
 
                         // 신규 주문과 기존 주문의 갭 차이가 5분 이내인 경우가 있으므로,
                         if (tempFirst.size() > 0){
 
-                            System.out.println("들어왔습니다@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
                             riderList.forEach(x -> {
-                                System.out.println("riderList x => " + x.getId() + " ##################### === " + tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId())));
+                                log.info("riderList x => " + x.getId() + " ##################### === " + tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId())));
 
                                 if (tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId()))){
                                     x.setMyWorkCount("1");
@@ -163,7 +161,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         // 우선 순위에서 제외 되었다면, 우선 배정에서도 제외 되도록 변경
                         firstAssignedRider.removeAll(tempFirst);
 
-                        System.out.println("# => tempNonFirst count 22222222 === " + tempFirst.size());
+                        log.info("# => tempNonFirst count 22222222 === " + tempFirst.size());
                     }
 
 
@@ -178,8 +176,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
                     // 20.07.23 대만 요청으로 배달 제한 수 추가
                     if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()))){
-                        System.out.println("################# x Data minOrderStatus 가 NULL 또는 개수 초과 입니다.=>");
-                        System.out.println(x.getId() + " # " + x);
+                        log.info("################# x Data minOrderStatus 가 NULL 또는 개수 초과 입니다.=>");
+                        log.info(x.getId() + " # " + x);
                         return true;
                     }else{
                         if (x.getMinOrderStatus() == null){
@@ -197,8 +195,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                 return true;
                             case "1":           //// 배정 완료
                             default:
-                                System.out.println("################# x Data=>");
-                                System.out.println(x.getId() + " # " + x);
+                                log.info("################# x Data=>");
+                                log.info(x.getId() + " # " + x);
 
                                 if (firstAssignedRider.stream().anyMatch(y -> y.getRiderId().equals(x.getId())) && (x.getMyWorkCount() == null)){
                                     x.setMyWorkCount("2");
@@ -247,16 +245,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
                         //r.setDistance(r.getDistance() - r.getDistance() % 100); // 0~100M => 0, 101M ~ 201M => 1
 
-                        // 21.09.15 요청 건으로 라이더와 매장의 반경이 500M를 초과하는 경우 제외 될 수 있도록 적용
-                        System.out.println("############ 거리 => "  + r.getId() + " ###### " + r.getDistance());
-                        if (r.getDistance() <= 500){
-                            System.out.println("############ 거리 적용 => "  + r.getId() + " ###### " + r.getDistance());
+                        // 21.09.15 요청 건으로 라이더와 매장의 반경이 800M를 초과하는 경우 제외 될 수 있도록 적용
+                        log.info("############ 거리 => "  + r.getId() + " ###### " + r.getDistance());
+                        if (r.getDistance() <= 800){
+                            log.info("############ 거리 적용 => "  + r.getId() + " ###### " + r.getDistance());
                             r.setDistance(r.getDistance() / 100); // 100M 범위로 변경
                             if (r.getMinOrderStatus() == null){
                                 r.setMinOrderStatus("1");
                             }
                         }else {
-                            System.out.println("############ 거리 제거 => "  + r.getId() + " ###### " + r.getDistance());
+                            log.info("############ 거리 제거 => "  + r.getId() + " ###### " + r.getDistance());
                             deleteRiderList.add(r);
                         }
                     } catch (Exception e) {
@@ -338,17 +336,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                             .thenComparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
                                 int sameStore1 = o1.getStoreId().equals(order.getStoreId()) ? 1 : 2;
                                 int sameStore2 = o2.getStoreId().equals(order.getStoreId()) ? 1 : 2;
-
-                                System.out.println("############## 매장 정렬 S");
-                                System.out.println(order.getStoreId() + " # rider id # " + o1.getStoreId() + " # o2.getId()" + o2.getStoreId());
-                                System.out.println("##############");
-                                System.out.println(o1);
-                                System.out.println(sameStore1);
-                                System.out.println(o2);
-                                System.out.println(sameStore2);
-                                System.out.println("############## 매장 정렬 F");
-                                //System.out.println("# return => " + (sameStore1 + sameStore2));
-                                System.out.println("# return => " + (Integer.compare(sameStore1, sameStore2)));;
 
                                 return Integer.compare(sameStore1, sameStore2);
                             })                                                                                                  // 6순위 주문이 들어간 매장의 라이더가 먼저 배정 될 수 있도록 적용
