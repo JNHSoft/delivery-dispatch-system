@@ -246,9 +246,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     try {
                         r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
                         //r.setDistance(r.getDistance() - r.getDistance() % 100); // 0~100M => 0, 101M ~ 201M => 1
-                        r.setDistance(r.getDistance() / 100); // 100M 범위로 변경
-                        if (r.getMinOrderStatus() == null){
-                            r.setMinOrderStatus("1");
+
+                        // 21.09.15 요청 건으로 라이더와 매장의 반경이 500M를 초과하는 경우 제외 될 수 있도록 적용
+                        System.out.println("############ 거리 => "  + r.getId() + " ###### " + r.getDistance());
+                        if (r.getDistance() <= 500){
+                            System.out.println("############ 거리 적용 => "  + r.getId() + " ###### " + r.getDistance());
+                            r.setDistance(r.getDistance() / 100); // 100M 범위로 변경
+                            if (r.getMinOrderStatus() == null){
+                                r.setMinOrderStatus("1");
+                            }
+                        }else {
+                            System.out.println("############ 거리 제거 => "  + r.getId() + " ###### " + r.getDistance());
+                            deleteRiderList.add(r);
                         }
                     } catch (Exception e) {
                         log.error(e.getMessage());
