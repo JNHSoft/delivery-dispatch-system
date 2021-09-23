@@ -39,6 +39,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             DashboardInfo infoD30 = new DashboardInfo();
             infoD30.setDashBoardType("D30");
             infoD30.setUnit("%");
+            infoD30.setMainValueType("percent");
 
             // D30 메인 Value 입력
             if (resultMap.containsKey("avgD30")){
@@ -47,11 +48,24 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
                 infoD30.setMainValue(0f);
             }
             
-            // D30 평균 Value 입력
+//            // D30 평균 Value 입력
+//            if (resultMap.containsKey("detailArrived")){
+//                infoD30.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailArrived").toString())));
+//            }else{
+//                infoD30.setAvgValue(0l);
+//            }
+
+            // D30 평균 시간 카드로 변경할 것
+            // TPLH 등록
+            DashboardInfo infoD30T = new DashboardInfo();
+            infoD30T.setDashBoardType("D30T");
+            infoD30T.setUnit("");
+            infoD30T.setMainValueType("times");
+
             if (resultMap.containsKey("detailArrived")){
-                infoD30.setAvgValue(Long.parseLong(changeValueType(Long.class, resultMap.get("detailArrived").toString())));
+                infoD30T.setMainValue(Float.parseFloat(changeValueType(Float.class, resultMap.get("detailArrived").toString())));
             }else{
-                infoD30.setAvgValue(0l);
+                infoD30T.setMainValue(0f);
             }
 
 
@@ -59,6 +73,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             DashboardInfo infoD7 = new DashboardInfo();
             infoD7.setDashBoardType("D7");
             infoD7.setUnit("%");
+            infoD7.setMainValueType("percent");
 
             // D7의 메인 Value 입력
             if (resultMap.containsKey("avgD7")){
@@ -78,6 +93,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             DashboardInfo infoD14 = new DashboardInfo();
             infoD14.setDashBoardType("D14");
             infoD14.setUnit("%");
+            infoD14.setMainValueType("percent");
 
             // D14의 메인 Value 입력
             if (resultMap.containsKey("avgD14")){
@@ -97,6 +113,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             DashboardInfo infoD16 = new DashboardInfo();
             infoD16.setDashBoardType("D16");
             infoD16.setUnit("%");
+            infoD16.setMainValueType("percent");
 
             // D16의 메인 Value 입력
             if (resultMap.containsKey("avgD16")){
@@ -116,6 +133,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             DashboardInfo infoTPLH = new DashboardInfo();
             infoTPLH.setDashBoardType("TPLH");
             infoTPLH.setUnit("");
+            infoTPLH.setMainValueType("number");
 
             if (resultMap.containsKey("avgTPLH")){
                 infoTPLH.setMainValue(Float.parseFloat(changeValueType(Float.class, resultMap.get("avgTPLH").toString())));
@@ -127,6 +145,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             DashboardInfo infoQT = new DashboardInfo();
             infoQT.setDashBoardType("QT");
             infoQT.setUnit("mins");
+            infoQT.setMainValueType("number");
 
             if (resultMap.containsKey("avgQT")){
                 infoQT.setMainValue(Float.parseFloat(changeValueType(Float.class, resultMap.get("avgQT").toString())));
@@ -138,6 +157,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             DashboardInfo infoTC = new DashboardInfo();
             infoTC.setDashBoardType("TC");
             infoTC.setUnit("");
+            infoTC.setMainValueType("number");
 
             if (resultMap.containsKey("sumTC")){
                 infoTC.setMainValue(Float.parseFloat(changeValueType(Float.class, resultMap.get("sumTC").toString())));
@@ -147,6 +167,7 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
 
             // 정렬에 맞게 데이터를 넣어준다.
             resultList.add(infoD30);
+            resultList.add(infoD30T);
             resultList.add(infoD7);
             resultList.add(infoD14);
             resultList.add(infoD16);
@@ -167,6 +188,17 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
         }
 
         return makeBarChartInfo(detail, Integer.parseInt(search.getDays()), 5);
+    }
+
+    @Override
+    public ChartInfo selectD30TDetail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectD30TDetail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeLineChartInfo(detail, Integer.parseInt(search.getDays()), 5);
     }
 
     @Override
@@ -249,6 +281,11 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
     @Override
     public List<RankInfo> selectD30Rank(SearchInfo search) {
         return dashboardMapper.selectD30Rank(search);
+    }
+
+    @Override
+    public List<RankInfo> selectD30TRank(SearchInfo search) {
+        return dashboardMapper.selectD30TRank(search);
     }
 
     @Override

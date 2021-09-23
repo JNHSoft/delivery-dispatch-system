@@ -342,12 +342,19 @@ function getDashBoardDetail(){
                 if (data["chartInfo"] != undefined){
                     let config = null;
 
-                    if (data["chartInfo"].chartType === 1){
-                        // Line 차트
-                        config = makeLineChart(data["chartInfo"]);
-                    }else{
-                        // 기본적으로 Bar 차트를 보여준다.
-                        config = makeBarChart(data["chartInfo"]);
+                    if (second_column === "D30T"){
+                        if (data["chartInfo"].chartType === 1){
+                            // Line 차트
+                            config = makeLineChartByTimes(data["chartInfo"]);
+                        }
+                    }else {
+                        if (data["chartInfo"].chartType === 1){
+                            // Line 차트
+                            config = makeLineChart(data["chartInfo"]);
+                        }else{
+                            // 기본적으로 Bar 차트를 보여준다.
+                            config = makeBarChart(data["chartInfo"]);
+                        }
                     }
 
                     objChart = new Chart(ctx, config);
@@ -400,6 +407,7 @@ function makeBarChart(objData){
         if (objData.detail[frankI].hasOwnProperty('createdDatetime')){
             if (objData.detail[frankI].createdDatetime === addDate){
                 arrData.push(objData.detail[frankI].mainValue);
+
                 frankI++;
             }else {
                 arrData.push(0);
@@ -566,6 +574,119 @@ function makeLineChart(objData){
     return config;
 }
 
+// Line 차트 만들기
+function makeLineChartByTimes(objData){
+    let config = Object;
+    let bodyData = Object;
+    let frankI = 0;
+
+    let arrLabel = [];
+    let arrData = [];
+
+    let startDate = new Date(objData.minX);
+    let endDate = new Date(objData.maxX);
+    let diffDate = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000*3600*24)) + 1;
+
+    startDate.setDate(startDate.getDate() - 1);
+
+    // 하루치인 경우에는 앞 뒤로 1일씩 추가하여, 중앙에 표시 될 수 있도록 적용한다.
+    if (diffDate == 1){
+        let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
+
+        arrLabel.push(addDate);
+        arrData.push(NaN);
+    }
+
+    for (let i = 0; i < diffDate; i++) {
+        startDate.setDate(startDate.getDate() + 1);
+        let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
+
+        arrLabel.push(addDate);
+
+        // Row 데이터 추가
+        if (objData.detail[frankI].hasOwnProperty('createdDatetime')){
+            if (objData.detail[frankI].createdDatetime === addDate){
+                arrData.push(objData.detail[frankI].mainValue);
+                frankI++;
+            }else {
+                arrData.push(NaN);
+            }
+        }
+    }
+
+    // 하루치인 경우에는 앞 뒤로 1일씩 추가하여, 중앙에 표시 될 수 있도록 적용한다.
+    if (diffDate == 1){
+        startDate.setDate(startDate.getDate() + 1);
+        let addDate = $.datepicker.formatDate('yy-mm-dd', startDate);
+
+        arrLabel.push(addDate);
+        arrData.push(NaN);
+    }
+
+    bodyData = {
+        labels: arrLabel,
+        datasets:[{
+            label: '',
+            data: arrData,
+            borderColor: '#6b57ec',
+            datalabels: {
+                align: 'end',
+                anchor: 'end'
+            }
+        }]
+    };
+
+    config = {
+        plugins: [ChartDataLabels],
+        type: 'line',
+        data: bodyData,
+        options: {
+            //// 그래프 위에 글씨 설정
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                datalabels: {
+                    color: '#6b57ec',
+                    borderRadius: 1,
+                    padding: 8,
+                    formatter: function (val){
+                        return secondsToTimeByUnit(val, 'h', 'm', 's');
+                        //return formatFloat(val, 2, true);
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false,
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    min: objData.minY,
+                    max: objData.maxY,
+                    ticks: {
+                        count: objData.intervalY,
+                        callback: function (val){
+                            //return formatFloat(val, 2, true);
+                            if (parseInt(val) === 0){
+                                return "00s";
+                            }else {
+                                return secondsToTimeByUnit(val, 'h', 'm', 's');
+                            }
+
+                        }
+                    }
+                }
+            }
+        },
+    };
+
+    return config;
+}
+
+
 // 테이블 내용 세팅
 function makeTableRow(objData){
     let resultHtml = "";
@@ -595,7 +716,11 @@ function makeTableRow(objData){
             resultHtml += objData[key].storeName;
             resultHtml += "</td>";
             resultHtml += "<td>";
-            resultHtml += formatFloat(objData[key].value, 2, true);
+            if (second_column === "D30T"){
+                resultHtml += secondsToTime(objData[key].value);
+            }else {
+                resultHtml += formatFloat(objData[key].value, 2, true);
+            }
             resultHtml += "</td>";
 
             if (objData[key].hasOwnProperty("achievementRate")){
@@ -621,24 +746,6 @@ function makeTableRow(objData){
     return resultHtml;
 }
 
-/**
- * 시간 형식 변환
- * */
-function changeTime(time){
-    if (time) {
-        let d = new Date(time);
-
-        if(time>=(60 * 60 * 1000)) {
-            return ('0' + d.getUTCHours()).slice(-2) + 'h ' + ('0' + d.getUTCMinutes()).slice(-2) + 'm ' + ('0' + d.getUTCSeconds()).slice(-2) + 's';
-        }else if (time >= (60 * 1000)) {
-            return ('0' + d.getUTCMinutes()).slice(-2) + 'm ' + ('0' + d.getUTCSeconds()).slice(-2) + 's';
-        }else if (time >= 1000){
-            return ('0' + d.getUTCSeconds()).slice(-2) + 's';
-        }
-    } else {
-        return "-";
-    }
-}
 
 /**
  * 검색 조건에 대한 이벤트

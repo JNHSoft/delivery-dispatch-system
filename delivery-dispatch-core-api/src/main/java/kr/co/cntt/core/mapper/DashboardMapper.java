@@ -30,6 +30,12 @@ public interface DashboardMapper {
     List<DashboardInfo> selectD30Detail(SearchInfo search);
 
     /**
+     * D30 데이터 타임 조회
+     * */
+    @Transactional(readOnly=true)
+    List<DashboardInfo> selectD30TDetail(SearchInfo search);
+
+    /**
      * TPLH 데이터 조회
      * */
     @Transactional(readOnly=true)
@@ -76,6 +82,12 @@ public interface DashboardMapper {
      * */
     @Transactional(readOnly = true)
     List<RankInfo> selectD30Rank(SearchInfo search);
+
+    /**
+     * D30 스토어 타임 랭크 조회
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectD30TRank(SearchInfo search);
 
     /**
      * TPLH 스토어 랭크 조회

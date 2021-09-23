@@ -887,6 +887,7 @@
 				,A.status
 				,(6371 * acos(cos(radians(B.latitude)) * cos(radians(A.latitude)) * cos(radians(A.longitude) - radians(B.longitude))
 					+ sin(radians(B.latitude)) * sin(radians(A.latitude))) * 1000)		as distance
+				,timestampdiff(minute, A.reservation_datetime, B.reservation_datetime)	as cooking_time
 		from	(
 					select	 id
 							,admin_id
@@ -897,6 +898,7 @@
 							,status
 							,latitude
 							,longitude
+							,reservation_datetime
 					from	 TB_ORDER
 					where	 created_datetime > CURRENT_DATE()
 					and		 status in (1)
@@ -909,6 +911,7 @@
 							,store_id
 							,latitude
 							,longitude
+							,reservation_datetime
 					from	 TB_ORDER
 					where	 id = #{id}
 				)	as B
