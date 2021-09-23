@@ -104,13 +104,13 @@
                 ,web_order_id                                                           as webOrderId
                 ,store_id                                                               as storeId
                 ,( select store_name from TB_STORE where id = a.store_id )              as storeName
-                ,created_datetime                                                       as createdDatetime
-                ,reservation_datetime                                                   as reservationDatetime
-                ,assigned_datetime                                                      as assignedDatetime
-                ,picked_up_datetime                                                     as pickedUpDatetime
-                ,arrived_datetime                                                       as arrivedDatetime
-                ,completed_datetime                                                     as completedDatetime
-                ,return_datetime                                                        as returnDatetime
+                ,date_format(created_datetime, '%Y-%m-%d %H:%i:%s')                     as createdDatetime
+                ,date_format(reservation_datetime, '%Y-%m-%d %H:%i:%s')                 as reservationDatetime
+                ,date_format(assigned_datetime, '%Y-%m-%d %H:%i:%s')                    as assignedDatetime
+                ,date_format(picked_up_datetime, '%Y-%m-%d %H:%i:%s')                   as pickedUpDatetime
+                ,date_format(arrived_datetime, '%Y-%m-%d %H:%i:%s')                     as arrivedDatetime
+                ,date_format(completed_datetime, '%Y-%m-%d %H:%i:%s')                   as completedDatetime
+                ,date_format(return_datetime, '%Y-%m-%d %H:%i:%s')                      as returnDatetime
         from     TB_ORDER       as a
         where    1=1
         and      third_party_id is null
