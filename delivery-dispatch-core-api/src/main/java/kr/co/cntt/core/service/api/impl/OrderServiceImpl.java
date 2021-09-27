@@ -99,6 +99,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         Map<String, String> localeMap = new HashMap<>();
         localeMap.put("locale", locale.toString());
         List<Order> orderList = orderMapper.selectForAssignOrders(localeMap);
+        // 21.09.27 거리 체크 (미터)
+        int assignedDistance = 800;
 
         log.debug(">>> autoAssign_GetOrderList:::: orderList: " + orderList);
 
@@ -110,189 +112,203 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             denyOrderIdChkMap.put("storeId", order.getStore().getId());
             // 추가되어 있는 인덱스를 활용하여 조회 속도 업
             denyOrderIdChkMap.put("adminId", order.getStore().getAdminId());
-            List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
 
-            // 20.05.29 주문 번호를 이용하여, 거리 측정 및 라이더 ID 가져오기.
-            Map<String, String> searchMap = new HashMap<>();
-            searchMap.put("id", order.getId());
-            searchMap.put("distance", "300");        // 목적지 반경 거리 (단위 : 미터)
+            // 21.09.27 반경 조회 프로세스를 늘리기 위한 프로세스 작업
+        extendDistance:
+            while (true){
+                List<Rider> riderList = riderMapper.selectForAssignRiders(denyOrderIdChkMap);
 
-            List<Order> firstAssignedRider = orderMapper.selectNearOrderRider(searchMap);
+                // 20.05.29 주문 번호를 이용하여, 거리 측정 및 라이더 ID 가져오기.
+                Map<String, String> searchMap = new HashMap<>();
+                searchMap.put("id", order.getId());
+                searchMap.put("distance", "300");        // 목적지 반경 거리 (단위 : 미터)
 
-            /// 20.05.29 반경 범위의 라이더가 존재하는 경우 작업
-            if (firstAssignedRider.size() > 0){
+                List<Order> firstAssignedRider = orderMapper.selectNearOrderRider(searchMap);
 
-                // 21.08.30 300M 반경 라이더들이 존재하고, 다음 조건에 만족하는 경우 기본 프로세스를 타도록 반경한다.
-                try {
-                    //// 우선권 부여를 위한 작업 시작
-                    LocalDateTime reserveDatetime = LocalDateTime.parse((order.getReservationDatetime()).replace(" ", "T"));
-                    LocalDateTime currentDatetime = LocalDateTime.now();
-
-                    // 예약 시간이 현재 시간과 30분 미만이 된 경우
-                    if (ChronoUnit.MINUTES.between(reserveDatetime, currentDatetime) < 30){
-
-                        // 300M에 적용이 되나, 우선권을 못 주는 경우
-                        List<Order> tempFirst = firstAssignedRider.stream().filter(x -> (Integer.parseInt(x.getCookingTime()) < 0) || (Integer.parseInt(x.getCookingTime()) > 5)).collect(Collectors.toList());
-
-                        log.info("# => tempNonFirst count === " + tempFirst.size());
-
-                        firstAssignedRider.forEach(x -> {
-                            log.info("################################################################################################ firstAssignedRider ##########################################################################");
-                            log.info(x.getId());
-                            log.info(x.toString());
-                            log.info("noneMatch => " + tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getRiderId())));
-                            log.info("################################################################################################ firstAssignedRider  ##########################################################################");
-                        });
-
-
-                        // 신규 주문과 기존 주문의 갭 차이가 5분 이내인 경우가 있으므로,
-                        if (tempFirst.size() > 0){
-
-                            riderList.forEach(x -> {
-                                log.info("riderList x => " + x.getId() + " ##################### === " + tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId())));
-
-                                if (tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId()))){
-                                    x.setMyWorkCount("1");
-                                    //x.setMyWorkCount("-1");
-                                }
-                            });
-                        }
-
-                        // 우선 순위에서 제외 되었다면, 우선 배정에서도 제외 되도록 변경
-                        firstAssignedRider.removeAll(tempFirst);
-
-                        log.info("# => tempNonFirst count 22222222 === " + tempFirst.size());
-                    }
-
-
-
-                } catch (Exception e){
-                    log.error(e.getMessage());
-                }
-
-
-                // 라이더 범위에서 제외가 되어야될 아이들을 추출한다.
-                List<Rider> removeRider = riderList.stream().filter(x ->{
-                    // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
-                    // 20.07.23 대만 요청으로 배달 제한 수 추가
-                    if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()))){
-                        log.info("################# x Data minOrderStatus 가 NULL 또는 개수 초과 입니다.=>");
-                        log.info(x.getId() + " # " + x);
-                        return true;
-                    }else{
-                        if (x.getMinOrderStatus() == null){
-                            x.setMinOrderStatus("1");
-                        }
-
-
-                        switch (x.getMinOrderStatus()){
-                            case "0":           /// 신규주문
-                            case "2":           //// 픽업 완료
-                            case "3":           //// 복귀 완료
-                            case "4":           //// 주문 취소
-                            case "5":           //// 신규주문
-                            case "6":           //// 도착
-                                return true;
-                            case "1":           //// 배정 완료
-                            default:
-                                log.info("################# x Data=>");
-                                log.info(x.getId() + " # " + x);
-
-                                if (firstAssignedRider.stream().anyMatch(y -> y.getRiderId().equals(x.getId())) && (x.getMyWorkCount() == null)){
-                                    x.setMyWorkCount("2");
-                                }else {
-                                    x.setMyWorkCount("1");
-                                }
-
-                                return false;
-                                // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
-                                // 21-07-05 주말에 관련 프로세스 다시 살려달라 요청 (복원 시 다음 reutrn 값 복원)
-                                //return firstAssignedRider.stream().noneMatch(y -> y.getRiderId().equals(x.getId()));
-                                // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store _id
-                                // System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
-                                // return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
-                        }
-                    }
-                })
-                .collect(Collectors.toList());
-
-                for (Rider rmR:removeRider
-                     ) {
-                    firstAssignedRider.removeIf(x ->x.getRiderId().equals(rmR.getId()));
-                }
-
+                /// 20.05.29 반경 범위의 라이더가 존재하는 경우 작업
                 if (firstAssignedRider.size() > 0){
-                    for (Rider rmR:removeRider
-                    ) {
-                        riderList.removeIf(x ->x.getId().equals(rmR.getId()));
-                    }
-                }
-            }
 
-            log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
-            log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
-            log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
-
-            log.debug(">>> autoAssign_GetRiderList:::: riderList 개수: " + riderList.size());
-            Misc misc = new Misc();
-
-            // 21.02.21 NULL 오류 발생으로 프로세스 변경
-            List<Rider> deleteRiderList = new ArrayList<>();
-
-            for (Rider r : riderList) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
-                if (r.getLatitude() != null && r.getLongitude() != null) {
+                    // 21.08.30 300M 반경 라이더들이 존재하고, 다음 조건에 만족하는 경우 기본 프로세스를 타도록 반경한다.
                     try {
-                        r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
-                        //r.setDistance(r.getDistance() - r.getDistance() % 100); // 0~100M => 0, 101M ~ 201M => 1
+                        //// 우선권 부여를 위한 작업 시작
+                        LocalDateTime reserveDatetime = LocalDateTime.parse((order.getReservationDatetime()).replace(" ", "T"));
+                        LocalDateTime currentDatetime = LocalDateTime.now();
 
-                        // 21.09.15 요청 건으로 라이더와 매장의 반경이 800M를 초과하는 경우 제외 될 수 있도록 적용
-                        log.info("############ 거리 => "  + r.getId() + " ###### " + r.getDistance());
-                        if (r.getDistance() <= 800){
-                            log.info("############ 거리 적용 => "  + r.getId() + " ###### " + r.getDistance());
-                            r.setDistance(r.getDistance() / 100); // 100M 범위로 변경
-                            if (r.getMinOrderStatus() == null){
-                                r.setMinOrderStatus("1");
+                        // 예약 시간이 현재 시간과 30분 미만이 된 경우
+                        if (ChronoUnit.MINUTES.between(reserveDatetime, currentDatetime) < 30){
+
+                            // 300M에 적용이 되나, 우선권을 못 주는 경우
+                            List<Order> tempFirst = firstAssignedRider.stream().filter(x -> (Integer.parseInt(x.getCookingTime()) < 0) || (Integer.parseInt(x.getCookingTime()) > 5)).collect(Collectors.toList());
+
+                            log.info("# => tempNonFirst count === " + tempFirst.size());
+
+                            firstAssignedRider.forEach(x -> {
+                                log.info("################################################################################################ firstAssignedRider ##########################################################################");
+                                log.info(x.getId());
+                                log.info(x.toString());
+                                log.info("noneMatch => " + tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getRiderId())));
+                                log.info("################################################################################################ firstAssignedRider  ##########################################################################");
+                            });
+
+
+                            // 신규 주문과 기존 주문의 갭 차이가 5분 이내인 경우가 있으므로,
+                            if (tempFirst.size() > 0){
+
+                                riderList.forEach(x -> {
+                                    log.info("riderList x => " + x.getId() + " ##################### === " + tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId())));
+
+                                    if (tempFirst.stream().noneMatch(y -> y.getRiderId().equals(x.getId()))){
+                                        x.setMyWorkCount("1");
+                                        //x.setMyWorkCount("-1");
+                                    }
+                                });
                             }
-                        }else {
-                            log.info("############ 거리 제거 => "  + r.getId() + " ###### " + r.getDistance());
-                            deleteRiderList.add(r);
+
+                            // 우선 순위에서 제외 되었다면, 우선 배정에서도 제외 되도록 변경
+                            firstAssignedRider.removeAll(tempFirst);
+
+                            log.info("# => tempNonFirst count 22222222 === " + tempFirst.size());
                         }
-                    } catch (Exception e) {
+
+
+
+                    } catch (Exception e){
                         log.error(e.getMessage());
                     }
 
-                } else {
-                    deleteRiderList.add(r);
+
+                    // 라이더 범위에서 제외가 되어야될 아이들을 추출한다.
+                    List<Rider> removeRider = riderList.stream().filter(x ->{
+                                // 20.07.02 케인 요청으로 배달 제한 수는 제거 할 것
+                                // 20.07.23 대만 요청으로 배달 제한 수 추가
+                                if ((Integer.parseInt(x.getAssignCount()) >= Integer.parseInt(order.getStore().getAssignmentLimit()))){
+                                    log.info("################# x Data minOrderStatus 가 NULL 또는 개수 초과 입니다.=>");
+                                    log.info(x.getId() + " # " + x);
+                                    return true;
+                                }else{
+                                    if (x.getMinOrderStatus() == null){
+                                        x.setMinOrderStatus("1");
+                                    }
+
+
+                                    switch (x.getMinOrderStatus()){
+                                        case "0":           /// 신규주문
+                                        case "2":           //// 픽업 완료
+                                        case "3":           //// 복귀 완료
+                                        case "4":           //// 주문 취소
+                                        case "5":           //// 신규주문
+                                        case "6":           //// 도착
+                                            return true;
+                                        case "1":           //// 배정 완료
+                                        default:
+                                            log.info("################# x Data=>");
+                                            log.info(x.getId() + " # " + x);
+
+                                            if (firstAssignedRider.stream().anyMatch(y -> y.getRiderId().equals(x.getId())) && (x.getMyWorkCount() == null)){
+                                                x.setMyWorkCount("2");
+                                            }else {
+                                                x.setMyWorkCount("1");
+                                            }
+
+                                            return false;
+                                        // 특정 구역 범위 내에 이미 배정이 된 라이더가 존재하는지 확인
+                                        // 21-07-05 주말에 관련 프로세스 다시 살려달라 요청 (복원 시 다음 reutrn 값 복원)
+                                        //return firstAssignedRider.stream().noneMatch(y -> y.getRiderId().equals(x.getId()));
+                                        // 21.04.26 소속된 라이더의 스토어와 주문의 스토어가 같은지 확인하는 절차가 필요로 한다. subGroupRiderRel_store _id
+                                        // System.out.println("################### => 라이더 정보 " + x.getSubGroupRiderRel().getStoreId());
+                                        // return firstAssignedRider.stream().filter(y -> y.getRiderId().equals(x.getId()) && y.getStoreId().equals(x.getSubGroupRiderRel().getStoreId())).count() <= 0;
+                                    }
+                                }
+                            })
+                            .collect(Collectors.toList());
+
+                    for (Rider rmR:removeRider
+                    ) {
+                        firstAssignedRider.removeIf(x ->x.getRiderId().equals(rmR.getId()));
+                    }
+
+                    if (firstAssignedRider.size() > 0){
+                        for (Rider rmR:removeRider
+                        ) {
+                            riderList.removeIf(x ->x.getId().equals(rmR.getId()));
+                        }
+                    }
                 }
-            }
 
-            // 21.02.21 삭제해야될 라이더가 있는 경우, List에서 제외하기
-            if (deleteRiderList.size() > 0){
-                riderList.removeAll(deleteRiderList);
-            }
+                log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
+                log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
+                log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
 
-            log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList);
+                log.debug(">>> autoAssign_GetRiderList:::: riderList 개수: " + riderList.size());
+                Misc misc = new Misc();
 
-            riderList = riderList.stream()
-                    .filter(a -> Integer.parseInt(a.getAssignCount()) < Integer.parseInt(order.getStore().getAssignmentLimit()))//해당 주문의 상점 기준 최대 오더 개수 안넘는 라이더만 ***** 해당 라이더 상점의 최대 주문개수가 아님(바꿔야하나)
-//                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius()) * 1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
-                    .filter(a -> a.getSubGroupRiderRel() != null && a.getSubGroupRiderRel().getStoreId() != null)      // 소속된 매장 정보가 없는 경우 제외한다.
-                    .filter(a -> {
-                        if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
-                            log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
-                            return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
-                        } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null && a.getSharedStore().equals("0")) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때 21.05.21 타 매장에서 공유 받은 라이더인 경우 조건이 부합되지 않아 별도처리
-                            log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
-                            log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
+                // 21.02.21 NULL 오류 발생으로 프로세스 변경
+                List<Rider> deleteRiderList = new ArrayList<>();
 
-                            // 21-07-28 특정 매장의 경우 예외 처리 (UAT)
-                            if ((order.getStoreId().equals("13") && (a.getSubGroupRiderRel().getStoreId().equals("14") || a.getSubGroupRiderRel().getStoreId().equals("6")))){
-                                log.debug("주문 스토어가 13이라 예외처리가 진행됩니다.");
-                                return (a.getSubGroupRiderRel().getStoreId().equals("6") || a.getSubGroupRiderRel().getStoreId().equals("14"));
-                            }else if ((order.getStoreId().equals("6") || order.getStoreId().equals("14")) && a.getSubGroupRiderRel().getStoreId().equals("13")){
-                                log.debug("주문 스토어가 6 또는 14이라 예외처리가 진행됩니다.");
-                                return (a.getSubGroupRiderRel().getStoreId().equals("13"));
+                for (Rider r : riderList) { //iterator를 써야 for문 안에서 리스트 제거가능, map 과 fillter로 이동 고려
+                    if (r.getLatitude() != null && r.getLongitude() != null) {
+                        try {
+                            r.setDistance(misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), r.getLatitude(), r.getLongitude()));
+                            //r.setDistance(r.getDistance() - r.getDistance() % 100); // 0~100M => 0, 101M ~ 201M => 1
+
+                            // 21.09.15 요청 건으로 라이더와 매장의 반경이 800M를 초과하는 경우 제외 될 수 있도록 적용
+                            log.info("############ 거리 => "  + r.getId() + " ###### " + r.getDistance());
+
+                            if (r.getDistance() > assignedDistance && order.getStore().getStoreShared() > 1){
+                                log.info("############ 거리 제거 => "  + r.getId() + " ###### " + r.getDistance());
+                                deleteRiderList.add(r);
+                            }else {
+                                // 비쉐어의 경우 800M 초과 시에는 배정 프로세스에서 제외한다. (단, 쉐어 매장 기준임)
+                                if (order.getStore().getStoreShared() > 1 && r.getDistance() > 800 && !r.getSharedStatus().equals("1")){
+                                    log.info("############ 비쉐어 라이더의 배정 프로세스 제거 => "  + r.getId() + " ###### " + r.getDistance());
+                                    log.info("라이더 정보 => " + r);
+                                    log.info("############ 비쉐어 라이더의 배정 프로세스 제거 => "  + r.getId() + " ###### " + r.getDistance());
+                                    deleteRiderList.add(r);
+                                }else {
+                                    log.info("############ 거리 적용 => "  + r.getId() + " ###### " + r.getDistance());
+                                    r.setDistance(r.getDistance() / 100); // 100M 범위로 변경
+                                    if (r.getMinOrderStatus() == null){
+                                        r.setMinOrderStatus("1");
+                                    }
+                                }
                             }
+
+                        } catch (Exception e) {
+                            log.error(e.getMessage());
+                        }
+
+                    } else {
+                        deleteRiderList.add(r);
+                    }
+                }
+
+                // 21.02.21 삭제해야될 라이더가 있는 경우, List에서 제외하기
+                if (deleteRiderList.size() > 0){
+                    riderList.removeAll(deleteRiderList);
+                }
+
+                log.debug(">>> autoAssignGetRider_Iterator_RiderList:::: Iterator_riderList: " + riderList);
+
+                riderList = riderList.stream()
+                        .filter(a -> Integer.parseInt(a.getAssignCount()) < Integer.parseInt(order.getStore().getAssignmentLimit()))//해당 주문의 상점 기준 최대 오더 개수 안넘는 라이더만 ***** 해당 라이더 상점의 최대 주문개수가 아님(바꿔야하나)
+//                    .filter(a->a.getDistance() <= Integer.parseInt(order.getStore().getRadius()) * 1000)// 해당 주문의 상점기준 1키로 반경 내 라이더만
+                        .filter(a -> a.getSubGroupRiderRel() != null && a.getSubGroupRiderRel().getStoreId() != null)      // 소속된 매장 정보가 없는 경우 제외한다.
+                        .filter(a -> {
+                            if (a.getSubGroupRiderRel().getSubGroupId() == null) {//해당 라이더의 서브그룹이 존재x -> getSubGroupRiderRel()은 storeId를 가지고 있기 때문에 항상존재, 해당 주문의 스토어에 해당하는 라이더
+                                log.debug(">>> autoAssignRider_Stream First:::: Stream Boolean: " + a.getSubGroupRiderRel().getSubGroupId());
+                                return a.getSubGroupRiderRel().getStoreId().equals(order.getStoreId());
+                            } else if (order.getSubGroupStoreRel() != null && a.getReturnTime() == null && a.getSharedStore().equals("0")) {//해당 라이더의 서브그룹이 존재, 해당주문의 상점 서브그룹 존재 -> 해당 주문의 상점 서브그룹과 같을 때, 라이더 재배치 상태가 아닐 때 21.05.21 타 매장에서 공유 받은 라이더인 경우 조건이 부합되지 않아 별도처리
+                                log.debug(">>> autoAssignRider_Stream Second_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
+                                log.debug(">>> autoAssignRider_Stream Second_2:::: Stream Boolean: " + a.getReturnTime());
+
+                                // 21-07-28 특정 매장의 경우 예외 처리 (UAT)
+                                if ((order.getStoreId().equals("13") && (a.getSubGroupRiderRel().getStoreId().equals("14") || a.getSubGroupRiderRel().getStoreId().equals("6")))){
+                                    log.debug("주문 스토어가 13이라 예외처리가 진행됩니다.");
+                                    return (a.getSubGroupRiderRel().getStoreId().equals("6") || a.getSubGroupRiderRel().getStoreId().equals("14"));
+                                }else if ((order.getStoreId().equals("6") || order.getStoreId().equals("14")) && a.getSubGroupRiderRel().getStoreId().equals("13")){
+                                    log.debug("주문 스토어가 6 또는 14이라 예외처리가 진행됩니다.");
+                                    return (a.getSubGroupRiderRel().getStoreId().equals("13"));
+                                }
 
 //                            // 21-07-28 특정 매장의 경우 예외 처리 (REAL)
 //                            if ((order.getStoreId().equals("386") && (a.getSubGroupRiderRel().getStoreId().equals("39") || a.getSubGroupRiderRel().getStoreId().equals("67")))){
@@ -303,63 +319,71 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //                                return (a.getSubGroupRiderRel().getStoreId().equals("386"));
 //                            }
 
-                            return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
-                        } else if (a.getSharedStore().equals("1") && a.getSharedStoreId() != null){
-                            log.debug(">>> autoAssignRider_Stream Third_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
-                            log.debug(">>> autoAssignRider_Stream Third_2:::: Stream Boolean: " + a.getReturnTime());
+                                return a.getSubGroupRiderRel().getSubGroupId().equals(order.getSubGroupStoreRel().getSubGroupId());
+                            } else if (a.getSharedStore().equals("1") && a.getSharedStoreId() != null){
+                                log.debug(">>> autoAssignRider_Stream Third_1:::: Stream Boolean: " + order.getSubGroupStoreRel());
+                                log.debug(">>> autoAssignRider_Stream Third_2:::: Stream Boolean: " + a.getReturnTime());
 
-                            return a.getSharedStoreId().equals(order.getStoreId());
-                        } else {
-                            log.debug(">>> autoAssignRider_Stream False:::: Stream False:::: ");
-                            return false;
-                        }
-                    })
-                    .filter(a -> !order.getId().equals((a.getOrderCheckAssignment() == null) ? "" : a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
-                    .filter(a -> {
-                        if (a.getMinOrderStatus() == null){
-                            return true;
-                        }
-
-                        switch (a.getMinOrderStatus()){
-                            case "2":       // 픽업
-                            case "6":       // 도착
+                                return a.getSharedStoreId().equals(order.getStoreId());
+                            } else {
+                                log.debug(">>> autoAssignRider_Stream False:::: Stream False:::: ");
                                 return false;
-                            default:
+                            }
+                        })
+                        .filter(a -> !order.getId().equals((a.getOrderCheckAssignment() == null) ? "" : a.getOrderCheckAssignment().getOrderId()))//5분 이내에 거절한 오더인지 확인
+                        .filter(a -> {
+                            if (a.getMinOrderStatus() == null){
                                 return true;
-                        }
-                    })                  // 주문 상태 값이 픽업 또는 배달 중인 경우 삭제
-                    .sorted(Comparator.comparing(Rider::getMyWorkCount, Comparator.nullsLast(Comparator.reverseOrder()))       // 1순위 우선 순위를 부여 받은 라이더에게 최 우선으로 배정 (쉐어 상관 없음)
-                                    .thenComparing(Rider::getSharedStatus, Comparator.nullsLast(Comparator.reverseOrder()))     // 2등 쉐어 내용에 따른 정렬
-                            //.thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))          // 3순위 상태값 정렬 (현재는 배정과 미배정만 나온다) # 상태값이 놀고 있거나, 배정이된 라이더들만 추출하므로
-                            .thenComparing(Rider::getDistance)                                                                  // 4순위 거리 순
-                            .thenComparing(Rider::getAssignCount)                                                               // 5순위 주문을 가지고 있는 순서
-                            .thenComparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
-                                int sameStore1 = o1.getStoreId().equals(order.getStoreId()) ? 1 : 2;
-                                int sameStore2 = o2.getStoreId().equals(order.getStoreId()) ? 1 : 2;
+                            }
 
-                                return Integer.compare(sameStore1, sameStore2);
-                            })                                                                                                  // 6순위 주문이 들어간 매장의 라이더가 먼저 배정 될 수 있도록 적용
-                    )
-                    .collect(Collectors.toList());
+                            switch (a.getMinOrderStatus()){
+                                case "2":       // 픽업
+                                case "6":       // 도착
+                                    return false;
+                                default:
+                                    return true;
+                            }
+                        })                  // 주문 상태 값이 픽업 또는 배달 중인 경우 삭제
+                        .sorted(Comparator.comparing(Rider::getMyWorkCount, Comparator.nullsLast(Comparator.reverseOrder()))       // 1순위 우선 순위를 부여 받은 라이더에게 최 우선으로 배정 (쉐어 상관 없음)
+                                .thenComparing(Rider::getSharedStatus, Comparator.nullsLast(Comparator.reverseOrder()))     // 2등 쉐어 내용에 따른 정렬
+                                //.thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))          // 3순위 상태값 정렬 (현재는 배정과 미배정만 나온다) # 상태값이 놀고 있거나, 배정이된 라이더들만 추출하므로
+                                .thenComparing(Rider::getDistance)                                                                  // 4순위 거리 순
+                                .thenComparing(Rider::getAssignCount)                                                               // 5순위 주문을 가지고 있는 순서
+                                .thenComparing(Rider::getSubGroupRiderRel, (o1, o2) -> {
+                                    int sameStore1 = o1.getStoreId().equals(order.getStoreId()) ? 1 : 2;
+                                    int sameStore2 = o2.getStoreId().equals(order.getStoreId()) ? 1 : 2;
 
-            if (!riderList.isEmpty()) {//riderList.size()!=0
-                map.put("rider", riderList.get(0));
+                                    return Integer.compare(sameStore1, sameStore2);
+                                })                                                                                                  // 6순위 주문이 들어간 매장의 라이더가 먼저 배정 될 수 있도록 적용
+                        )
+                        .collect(Collectors.toList());
+
+                if (!riderList.isEmpty() && riderList.size() != 0) {//riderList.size()!=0
+                    map.put("rider", riderList.get(0));
 
 
-                log.debug(">>> autoAssign_GetRiderList::::: riderListMap: " + riderList.get(0) + " Current OrderID & RegID =>" + order.getId() + " (" + order.getRegOrderId() + ")");
+                    log.debug(">>> autoAssign_GetRiderList::::: riderListMap: " + riderList.get(0) + " Current OrderID & RegID =>" + order.getId() + " (" + order.getRegOrderId() + ")");
 
-                // Rider ID를 가져온다.
-                for (Rider tmpRider:riderList
-                     ) {
-                    log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude() + " # 거리=>" + tmpRider.getDistance() + " # 우선순위=>" + tmpRider.getMyWorkCount() + " # 쉐어상태=>" + tmpRider.getSharedStatus() + " # 주문개수=>" + tmpRider.getAssignCount()+ " # 스토어 정보=>" + tmpRider.getSubGroupRiderRel().getStoreId());
+                    // Rider ID를 가져온다.
+                    for (Rider tmpRider:riderList
+                    ) {
+                        log.debug(">>> autoAssign_GetRiderList:::: 라이더ID 정렬 순서: " + tmpRider.getId() + " 위경도 : => " + tmpRider.getLatitude() + " # " + tmpRider.getLongitude() + " # 거리=>" + tmpRider.getDistance() + " # 우선순위=>" + tmpRider.getMyWorkCount() + " # 쉐어상태=>" + tmpRider.getSharedStatus() + " # 주문개수=>" + tmpRider.getAssignCount()+ " # 스토어 정보=>" + tmpRider.getSubGroupRiderRel().getStoreId());
+                    }
+
+                    log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);
+                    log.debug(">>> autoAssign_GetRiderList_OrderId:::: riderListMap_OrderId: " + order.getId());
+                    this.autoAssignOrderProc(map);
+                    break extendDistance;
                 }
-
-                log.debug(">>> autoAssign_GetRiderList:::: riderListMap: " + riderList);
-                log.debug(">>> autoAssign_GetRiderList_OrderId:::: riderListMap_OrderId: " + order.getId());
-                this.autoAssignOrderProc(map);
-            }
-            else {
-                log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: " + order.getId());
+                else {
+                    log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: " + order.getId());
+                    // 반경 4km가 넘거나, 비쉐어 매장인 경우에는 배정 완료 후에도 작업 실패로 간주하여 종료 시킨다.
+                    if (assignedDistance >= 4000 || order.getStore().getStoreShared() < 2){
+                        log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: 조건 만료 종료 " + order.getId() + " assignedDistance => " + assignedDistance + "m 주문 매장 개수 :  " + order.getStore().getStoreShared());
+                        assignedDistance = 800;
+                        break extendDistance;
+                    }
+                }
             }
         }
     }

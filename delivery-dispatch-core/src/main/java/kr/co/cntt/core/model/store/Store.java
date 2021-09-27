@@ -58,5 +58,10 @@ public class Store extends User implements Dto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String isAdmin;
 
+    // 21.09.27 소속 된 매장이 Shared 매장인지 Non Shared 매장인지 확인할 Flag
+    // Shared와 Non Shared 기준은 AC 내 스토어가 2개 이상인 경우 Shared 스토어로 바라본다. (본인 매장 포함)
+    // false = Non Shared Store # true = Shared Store
+    private Integer storeShared;
+
 }
 
