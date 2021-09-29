@@ -112,6 +112,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             denyOrderIdChkMap.put("storeId", order.getStore().getId());
             // 추가되어 있는 인덱스를 활용하여 조회 속도 업
             denyOrderIdChkMap.put("adminId", order.getStore().getAdminId());
+            
+            // 특정 매장의 경우 AC가 다르게 설정되었어도 쉐어 매장으로 인식하도록 적용 UAT 적용
+            if (order.getStore().getId().equals("13") || order.getStore().getId().equals("6") || order.getStore().getId().equals("4")){
+                order.getStore().setStoreShared(3);
+            }
+
+//            // 특정 매장의 경우 AC가 다르게 설정되었어도 쉐어 매장으로 인식하도록 적용 REAL 적용
+//            if (order.getStore().getId().equals("386") || order.getStore().getId().equals("39") || order.getStore().getId().equals("67")){
+//                order.getStore().setStoreShared(3);
+//            }
 
             // 21.09.27 반경 조회 프로세스를 늘리기 위한 프로세스 작업
         extendDistance:
@@ -376,12 +386,22 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     break extendDistance;
                 }
                 else {
-                    log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: " + order.getId());
+                    log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: " + order.getId() + " Check Distance => " + assignedDistance);
                     // 반경 4km가 넘거나, 비쉐어 매장인 경우에는 배정 완료 후에도 작업 실패로 간주하여 종료 시킨다.
+
                     if (assignedDistance >= 4000 || order.getStore().getStoreShared() < 2){
                         log.debug(">>> autoAssign_GetRiderList Else:::: riderList_Else: 조건 만료 종료 " + order.getId() + " assignedDistance => " + assignedDistance + "m 주문 매장 개수 :  " + order.getStore().getStoreShared());
                         assignedDistance = 800;
                         break extendDistance;
+                    }
+
+                    switch (assignedDistance){
+                        case 800:
+                            assignedDistance = 2000;
+                            break;
+                        case 2000:
+                            assignedDistance = 4000;
+                            break;
                     }
                 }
             }
