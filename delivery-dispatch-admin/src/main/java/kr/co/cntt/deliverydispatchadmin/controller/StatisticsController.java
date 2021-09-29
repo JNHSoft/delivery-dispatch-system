@@ -371,7 +371,7 @@ public class StatisticsController {
                 // 배정 시간이 예약 시간 - QT 시간보다 늦어진 경우에 예약 - QT 시간으로 계산한다.
                 LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
                 LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
-                
+
                 // 초 단위로 비교하여, 예약 시간 - QT가 될 수 있도록 적용한다
                 if (ChronoUnit.SECONDS.between(assignTime, qtAssignTime) < 0){
                     assignTime = qtAssignTime;
