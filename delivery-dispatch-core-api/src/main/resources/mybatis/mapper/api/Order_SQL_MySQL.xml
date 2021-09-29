@@ -56,6 +56,8 @@
 			<result property="storeDistanceSort" column="store_distance_sort" />
 			<result property="brandCode" column="brand_code" />
 			<result property="code" column="store_code" />
+
+			<result property="storeShared" column="storeShared" />
 		</association>
 
 		<association property="thirdParty" column="thirdParty" javaType="kr.co.cntt.core.model.thirdParty.ThirdParty">
@@ -785,10 +787,14 @@
 				,B.admin_id
 				,B.store_name
 				,A.address
-				,( select subgroup_id from TB_SUBGROUP_STORE_REL where admin_id = A.admin_id and store_id = A.store_id and deleted is null )		as subgroup_id
-		from	 TB_ORDER	A
+				,C.subgroup_id          as subgroup_id
+				,( select count(*) from TB_SUBGROUP_STORE_REL where deleted is null and admin_id = C.admin_id and group_id = C.group_id and subgroup_id = C.subgroup_id )   as storeShared
+		from	 TB_ORDER	A use index (idx_order_created_admin, idx_order_reservation_admin, `PRIMARY`)
 		left join TB_STORE	B
 			ON	 B.id = A.store_id
+		left join TB_SUBGROUP_STORE_REL C
+			on   B.id = C.store_id
+			and  C.deleted is null
 		where	 A.created_datetime > current_date()
 		and		 A.status in (0, 5)
 		and		 B.deleted is null
