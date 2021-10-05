@@ -93,14 +93,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
      *  #변경 => 하위 그룹 중 매장 or 관리자에서 공유를 허용한 라이더만 쉐어
      *  # 라이더 자동 배정 순위 변경은 다음과 같이 진행 될 예정
      *    --> ???
+     * 21.10.05
+     *  PZH 와 KFC 간의 배정 방식 변경
      **********************************************/
     @Override
     public void autoAssignOrder() throws AppTrException {
         Map<String, String> localeMap = new HashMap<>();
         localeMap.put("locale", locale.toString());
         List<Order> orderList = orderMapper.selectForAssignOrders(localeMap);
+        Misc misc = new Misc();
         // 21.09.27 거리 체크 (미터)
         int assignedDistance = 800;
+        int distanceOrderToStore = 0;
 
         log.debug(">>> autoAssign_GetOrderList:::: orderList: " + orderList);
 
@@ -117,6 +121,15 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             if (order.getStore().getId().equals("13") || order.getStore().getId().equals("6") || order.getStore().getId().equals("4")){
                 order.getStore().setStoreShared(3);
             }
+
+            // 매장 ~ 주문지 간의 거리를 구한다 (단위 : M)
+            try {
+                distanceOrderToStore = misc.getHaversine(order.getStore().getLatitude(), order.getStore().getLongitude(), order.getLatitude(), order.getLongitude());
+            } catch (Exception e){
+                distanceOrderToStore = 9999;
+                log.error(e.getMessage());
+            }
+
 
 //            // 특정 매장의 경우 AC가 다르게 설정되었어도 쉐어 매장으로 인식하도록 적용 REAL 적용
 //            if (order.getStore().getId().equals("386") || order.getStore().getId().equals("39") || order.getStore().getId().equals("67")){
@@ -245,12 +258,21 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }
                 }
 
+                // 21.10.05 주문 ~ 매장 간의 거리가 300M 이내인 경우 비쉐어가 우선 순위가 되도록 한다. (KFC 로직)
+                if (order.getStore().getBrandCode().equals("1") && distanceOrderToStore <= 300){
+                    riderList.forEach(x -> {
+                        // 라이더가 비공유일 경우 우선 순위를 준다.
+                        if (!x.getSharedStatus().equals("1")){
+                            x.setMyWorkCount("3");
+                        }
+                    });
+                }
+
                 log.debug(">>> autoAssign_GetRiderList:::: riderList: " + riderList);
                 log.debug(">>> autoAssign_GetOrderId:::: orderId: " + order.getId());
                 log.debug(">>> autoAssign_GetStoreId:::: storeId: " + order.getStore().getId());
 
                 log.debug(">>> autoAssign_GetRiderList:::: riderList 개수: " + riderList.size());
-                Misc misc = new Misc();
 
                 // 21.02.21 NULL 오류 발생으로 프로세스 변경
                 List<Rider> deleteRiderList = new ArrayList<>();
@@ -354,9 +376,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                                     return true;
                             }
                         })                  // 주문 상태 값이 픽업 또는 배달 중인 경우 삭제
-                        .sorted(Comparator.comparing(Rider::getMyWorkCount, Comparator.nullsLast(Comparator.reverseOrder()))       // 1순위 우선 순위를 부여 받은 라이더에게 최 우선으로 배정 (쉐어 상관 없음)
-                                .thenComparing(Rider::getSharedStatus, Comparator.nullsLast(Comparator.reverseOrder()))     // 2등 쉐어 내용에 따른 정렬
-                                //.thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))          // 3순위 상태값 정렬 (현재는 배정과 미배정만 나온다) # 상태값이 놀고 있거나, 배정이된 라이더들만 추출하므로
+                        .sorted(Comparator.comparing(Rider::getMyWorkCount, Comparator.nullsLast(Comparator.reverseOrder()))        // 1순위 우선 순위를 부여 받은 라이더에게 최 우선으로 배정 (쉐어 상관 없음)
+                                .thenComparing(Rider::getSharedStatus, Comparator.nullsLast(Comparator.reverseOrder()))             // 2등 쉐어 내용에 따른 정렬
+                                //.thenComparing(Rider::getMinOrderStatus, Comparator.nullsFirst(Comparator.naturalOrder()))        // 3순위 상태값 정렬 (현재는 배정과 미배정만 나온다) # 상태값이 놀고 있거나, 배정이된 라이더들만 추출하므로
                                 .thenComparing(Rider::getDistance)                                                                  // 4순위 거리 순
                                 .thenComparing(Rider::getAssignCount)                                                               // 5순위 주문을 가지고 있는 순서
                                 .thenComparing(Rider::getSubGroupRiderRel, (o1, o2) -> {

@@ -789,6 +789,7 @@
 				,A.address
 				,C.subgroup_id          as subgroup_id
 				,( select count(*) from TB_SUBGROUP_STORE_REL where deleted is null and admin_id = C.admin_id and group_id = C.group_id and subgroup_id = C.subgroup_id )   as storeShared
+				,ifnull(B.brand_code, 0)		as brand_code
 		from	 TB_ORDER	A use index (idx_order_created_admin, idx_order_reservation_admin, `PRIMARY`)
 		left join TB_STORE	B
 			ON	 B.id = A.store_id
