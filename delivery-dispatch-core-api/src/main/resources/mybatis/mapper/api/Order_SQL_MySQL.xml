@@ -38,6 +38,7 @@
             <result property="name" column="rider_name" />
 			<result property="latitude" column="rider_latitude" />
 			<result property="longitude" column="rider_longitude" />
+			<result property="sharedStatus" column="sharedStatus" />
         </association>
 
 		<association property="subGroupStoreRel" column="subGroupStoreRel" javaType="kr.co.cntt.core.model.group.SubGroupStoreRel">
@@ -241,6 +242,8 @@
 				-- 2020.05.14 배달 시간 확인을 위한 데이터 추가
 				,( select latitude from TB_RIDER where id = A.rider_id and deleted is null)		as rider_latitude
 				,( select longitude from TB_RIDER where id = A.rider_id and deleted is null)		as rider_longitude
+				-- 2021-10-09 라이더 쉐어 플래그를 가져온다. (단 라이더의 상태값이 바뀔 수 있으므로, 주문 정보에 있는 것으로 추출하기)
+				,A.shared_flag																	as sharedStatus
 
 				,A.third_party_id
 				,(select name from TB_THIRD_PARTY where id = A.third_party_id and deleted is null )	as third_party_name

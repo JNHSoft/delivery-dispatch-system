@@ -544,7 +544,11 @@ DDELib.Orders.prototype = {
         } else if (!ev.rider) {
             str = "-";
         } else {
-            str = ev.rider.name;
+            if (ev.rider.sharedStore === '1'){
+                str = '<span style="color: red">' + ev.rider.name + '</span>';
+            }else {
+                str = ev.rider.name;
+            }
         }
         return str;
     },
