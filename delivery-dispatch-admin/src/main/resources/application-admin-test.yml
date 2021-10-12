@@ -45,12 +45,12 @@ cntt.restPool:
   hosts:
     -
       scheme: http
-      host: dev-api.cntt.co.kr
+      host: dev-api.jrgtw.com
       port: 8091
       maxPerRoute: 20
     -
       scheme: https
-      host: dev-api.cntt.co.kr
+      host: dev-api.jrgtw.com
       port: 443
       maxPerRoute: 20
 
@@ -69,4 +69,4 @@ api.upload.path.alarm: /home/ddetest/dde-upload/alarm
 api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav
 ---
 # Web socket
-websocket.localhost: https://dev-store.cntt.co.kr
+websocket.localhost: https://dev-store.jrgtw.com

@@ -160,7 +160,8 @@ cntt.restPool:
     -
 #      [DDE-TW-MAIN]
       scheme: http
-      host: ddetw-api.cntt.co.kr
+      #host: ddetw-api.cntt.co.kr
+      host: dde-api.jrgtw.com
       port: 8091
       maxPerRoute: 20
 
@@ -179,7 +180,8 @@ cntt.restPool:
     -
 #      [DDE-TW-MAIN]
       scheme: https
-      host: ddetw-api.cntt.co.kr
+      #host: ddetw-api.cntt.co.kr
+      host: dde-api.jrgtw.com
       port: 443
       maxPerRoute: 20
 

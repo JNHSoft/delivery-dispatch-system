@@ -41,13 +41,13 @@ cntt.restPool:
   hosts:
     -
       scheme: http
-      host: dev-api.cntt.co.kr
+      host: dev-api.jrgtw.com
       port: 8091
       maxPerRoute: 20
 
     -
       scheme: https
-      host: dev-api.cntt.co.kr
+      host: dev-api.jrgtw.com
       port: 443
       maxPerRoute: 20
 
