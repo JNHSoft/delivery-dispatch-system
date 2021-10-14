@@ -69,4 +69,4 @@ api.upload.path.alarm: /home/ddetest/dde-upload/alarm
 api.default.alarms: newAlarm.wav,assignAlarm.wav,assignedCancelAlarm.wav,completeAlarm.wav,cancelAlarm.wav
 ---
 # Web socket
-websocket.localhost: https://dev-store.jrgtw.com
+websocket.localhost: https://newdev-store.jrgtw.com

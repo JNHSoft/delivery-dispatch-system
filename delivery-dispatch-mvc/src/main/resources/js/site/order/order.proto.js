@@ -544,7 +544,7 @@ DDELib.Orders.prototype = {
         } else if (!ev.rider) {
             str = "-";
         } else {
-            if (ev.rider.sharedStore === '1' && !(ev.status === '0' || ev.status === '5' || ev.status === '3' || ev.status === '4')){
+            if (ev.rider.sharedStatus !== '1' && !(ev.status === '0' || ev.status === '5' || ev.status === '3' || ev.status === '4')){
                 str = '<span style="color: red">' + ev.rider.name + '</span>';
             }else {
                 str = ev.rider.name;
