@@ -33,7 +33,7 @@ datasource:
     username: devuser
     password: devuserpw!
 
-#    url: jdbc:mysql://104.199.200.242:3306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+#    url: jdbc:mysql://104.199.200.242:3306/devdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false
 #    username: devuser
 #    password: devuserpw!
 #    url: jdbc:mysql://104.199.182.29:3306/twdb?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC

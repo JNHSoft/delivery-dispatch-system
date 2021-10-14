@@ -448,7 +448,7 @@
 				var thirdDelivery = data.thirdPartyId;  // 제 3자 배송
 
 				// 예약 시간이 있는 경우에만 프로세스 작업을 한다.
-				console.log("data.reservationDatetime => ", data.reservationDatetime);
+				//console.log("data.reservationDatetime => ", data.reservationDatetime);
 				if (data.reservationDatetime){
 					var bookingTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
 					var createdTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
@@ -457,7 +457,7 @@
 					// 예약 시간이 현재 시간보다 5분 미만으로 남은 경우, 예약 시간을 변경한다.
 					// 5분전까지 픽업이 안되는 경우, 예약 시간을 10분 연장하며, 픽업 전 까지 반복한다. 상태는 신규주문 또는 배정까지
 					if (bookingTime.getTime() - nowTime.getTime() <= 300000 && (orderStatus === 0 || orderStatus === 5 || orderStatus === 1) ){
-						console.log("시간 계산 시작 before", bookingTime);
+						//console.log("시간 계산 시작 before", bookingTime);
 						var diffMin = parseInt(Math.abs((bookingTime.getTime() - nowTime.getTime()) / 60000));
 
 						var tenValue = parseInt(diffMin / 10);
@@ -469,7 +469,7 @@
 
 						bookingTime.setMinutes(bookingTime.getMinutes() + addMinuteValue);
 
-						console.log("시간을 계산해 보았습니다.", bookingTime);
+						//console.log("시간을 계산해 보았습니다.", bookingTime);
 					}
 
 					// 예약 시간을 입력한다.
@@ -516,10 +516,16 @@
 					$('.t_red').text('');
 					$(".visual_area").attr("id","");
 					$(".mapCtrl").attr("id","map");
+
+					// 21.10.14 Background 이미지 변경
+					$(".visual_area").removeClass('visual_area_ready');
+					$(".visual_area").addClass('visual_area_complete');
+
 					if (thirdDelivery !== undefined && thirdDelivery.toString().trim().length > 0) {
 						$(".visual_area").html('<p class="tit_third">由於外送訂單較多，<br/>您的訂單將由第三方外送夥伴安排配送，<br/>完成配對後，將發送簡訊通知。<br/><span class="tit_third_second">謝謝您的耐心等待。<br/>如有疑問，請聯絡門市。</span></p>');
 					}else {
-						$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
+						//$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
+						$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/>#就愛一起HOT</p>');
 					}
 				}
 				else if ((orderStatus === 0 || orderStatus === 5) && (checkReserveTime - 3600000 > 0 && checkTime - 1800000 > 0)) {
@@ -530,6 +536,9 @@
 						$(".mapCtrl").attr("id","map");
 						$(".visual_area").attr("id","");
 						$(".visual_area").removeClass('blurMap');
+						// 21.10.14 Background 이미지 변경
+						$(".visual_area").removeClass('visual_area_complete');
+						$(".visual_area").addClass('visual_area_ready');
 						$(".visual_area").html('<p class="tit_wh">已安排餐廳製作</p>');
 					}
 				}
@@ -539,6 +548,8 @@
 
 					if(!$("#map").hasClass('visual_area')){
 						$(".mapCtrl").attr("id","");
+						$(".visual_area").removeClass('visual_area_complete');
+						$(".visual_area").addClass('visual_area_ready');
 						$(".visual_area").attr("id","map");
 						$("#map").addClass('blurMap');
 					}
@@ -568,6 +579,8 @@
 
 					if(!$("#map").hasClass('visual_area')){
 						$(".mapCtrl").attr("id","");
+						$(".visual_area").removeClass('visual_area_complete');
+						$(".visual_area").addClass('visual_area_ready');
 						$(".visual_area").attr("id","map");
 						$("#map").addClass('blurMap');
 					}
@@ -759,8 +772,8 @@
 					var routeTimeout = function (durationCheckTime, pointLocation, direction, stepTime, AllTime){
 						var routeTimer = setTimeout(function () {
 							riderMarker.setDuration(durationCheckTime);
-							console.log("라이더 마커 있음");
-							console.log(pointLocation);
+							// console.log("라이더 마커 있음");
+							// console.log(pointLocation);
 
 							if (direction !== 'keep'){
 								riderMarker.setIcon({
@@ -786,7 +799,7 @@
 						routeArray.push(routeTimer);
 					}
 
-					console.log("routeTimeout 성공 ", info.distance);
+					//console.log("routeTimeout 성공 ", info.distance);
 
 					// 길찾기 이벤트 작동하도록 작업 (이동 해야될 구간만 가져온다)
 					var firstAllRoute = firstRoute.steps.reduce((total, step) => total.concat(step.lat_lngs), []).concat(firstRoute.end_location);
@@ -797,7 +810,7 @@
 
 					var allDurationTime = 0;        // setTimerout이 작동될 시간을 설정한다.
 
-					console.log("firstAllRoute => ", firstAllRoute.length, " secondTimers => ", secondTimers);
+					// console.log("firstAllRoute => ", firstAllRoute.length, " secondTimers => ", secondTimers);
 
 					// 라이더의 이전 위치에서 현재 위치까지 뺑뻉이를 돌린다.
 					firstAllRoute.some(function (route, index){
