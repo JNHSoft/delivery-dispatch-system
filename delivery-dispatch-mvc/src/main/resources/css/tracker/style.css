@@ -46,7 +46,9 @@ th {font-weight:normal;}
 .tracker-bottom tr:first-child td,
 .tracker-bottom tr:first-child th {border-bottom:1px solid #d8d8d8}
 .tracker-bottom td ,.tracker-bottom th{/*word-break:break-all;*/padding:12px 5px;}
-.visual_area {position:relative;height:300px;background:url('../../images/tracker/visual_img.jpg?ver=0.4') center center no-repeat;background-size:cover;}
+.visual_area {position:relative;height:300px;}
+.visual_area_ready {background:url('../../images/tracker/pz_bg_wait.jpg?ver=0.4') center center no-repeat;background-size:cover;}
+.visual_area_complete {background:url('../../images/tracker/pz_bg_complete.jpg?ver=0.4') center center no-repeat;background-size:cover;}
 .visual_area_kfc {position:relative;height:300px;background:url('../../images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat;background-size:cover;}
 .map_info img{vertical-align:middle;margin-right:3px;}
 .map_info span{margin:0 3px;vertical-align: middle;}
@@ -139,11 +141,12 @@ th {font-weight:normal;}
     height: 300px;
     z-index: 2;
 }
-.progress-background:before {content:"";display:block; width:100%; height:300px; background-color: #000;opacity: 0.5;position:absolute;display:block;top:0;}
+.progress-background:before {content:"";display:block; width:100%; height:300px; opacity: 0.5;position:absolute;display:block;top:0;}
 .progress-background:after {content:"";display:block;width:180px;height:180px;background:url('../../images/tracker/pizza-2.png?ver=0.4')0 0 no-repeat; margin: 8px auto; background-size: cover; z-index: 10;  position: relative; }
 .progress-background span {z-index: 10;position:relative;padding-top:20px;display:inline-block;font-size:22px;padding-bottom:26px }
 
 /*progress 배경화면 이미지 변경*/
+.progress-background.kfc:before {content:"";display:block; width:100%; height:300px; background-color: #000;opacity: 0.5;position:absolute;display:block;top:0;}
 .progress-background.kfc:after {content:"";display:block;width:138px;height:180px;background:url('../../images/tracker/chicken-2.png?ver=0.4')0 0 no-repeat; margin: 8px auto; background-size: 139px 180px; z-index: 10;  position: relative; }
 
 .blurMap {filter:blur(2px);}
