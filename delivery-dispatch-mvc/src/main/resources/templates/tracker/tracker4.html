@@ -535,7 +535,7 @@
 					if($(".visual_area").has('#map').prevObject.length){
 						$(".mapCtrl").attr("id","map");
 						$(".visual_area").attr("id","");
-						$(".visual_area").removeClass('blurMap');
+						//$(".visual_area").removeClass('blurMap');
 						// 21.10.14 Background 이미지 변경
 						$(".visual_area").removeClass('visual_area_complete');
 						$(".visual_area").addClass('visual_area_ready');
@@ -551,7 +551,8 @@
 						$(".visual_area").removeClass('visual_area_complete');
 						$(".visual_area").addClass('visual_area_ready');
 						$(".visual_area").attr("id","map");
-						$("#map").addClass('blurMap');
+						//$("#map").addClass('blurMap');
+						//$("#map").removeClass('blurMap');
 					}
 
 					$("#progressbar").progressbar( "value", processValue > 100 ? 100 : processValue);
@@ -590,14 +591,15 @@
 					if(!$("#map").hasClass('visual_area')){
 						$(".mapCtrl").attr("id","");
 						$(".visual_area").attr("id","map");
-						$("#map").addClass('blurMap');
+						//$("#map").addClass('blurMap');
+						//$("#map").removeClass('blurMap');
 					}
 
 					if ($(".progress-background").css('display') !== 'none') {
 
-						if (!$("#map").hasClass('blurMap')){
-							$("#map").addClass('blurMap');
-						}
+						// if (!$("#map").hasClass('blurMap')){
+						// 	$("#map").addClass('blurMap');
+						// }
 
 						console.log("processValue => ", processValue);
 
@@ -623,8 +625,13 @@
 						}, 100);
 					}else {
 
-						if ($("#map").hasClass('blurMap') || !chkMap){
-							$("#map").removeClass('blurMap');
+						// if ($("#map").hasClass('blurMap') || !chkMap){
+						// 	$("#map").removeClass('blurMap');
+						// 	initMap();
+						// 	chkMap = true;
+						// }
+
+						if (!chkMap){
 							initMap();
 							chkMap = true;
 						}
