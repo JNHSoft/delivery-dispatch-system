@@ -49,13 +49,13 @@ cntt.restPool:
   hosts:
     -
       scheme: http
-      host: dev-api.cntt.co.kr
+      host: dev-api.jrgtw.com
       port: 8091
       maxPerRoute: 20
 
     -
       scheme: https
-      host: dev-api.cntt.co.kr
+      host: dev-api.jrgtw.com
       port: 443
       maxPerRoute: 20
 
@@ -74,8 +74,8 @@ api.upload.path.alarm: /home/ddetest/dde-upload/alarm
 
 ---
 # Web socket
-websocket.localhost: https://dev-store.cntt.co.kr
+websocket.localhost: https://newdev-store.jrgtw.com
 
 ---
 #cors domain
-api.cors.origin: http://dev-api.cntt.co.kr
+api.cors.origin: http://dev-api.jrgtw.com

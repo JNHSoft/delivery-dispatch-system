@@ -165,7 +165,8 @@ cntt.restPool:
     -
 #      [DDE-TW-MAIN]
       scheme: http
-      host: ddetw-api.cntt.co.kr
+      #host: ddetw-api.cntt.co.kr
+      host: dde-api.jrgtw.com
       port: 8091
       maxPerRoute: 20
 
@@ -184,7 +185,8 @@ cntt.restPool:
     -
 #      [DDE-TW-MAIN]
       scheme: https
-      host: ddetw-api.cntt.co.kr
+      #host: ddetw-api.cntt.co.kr
+      host: dde-api.jrgtw.com
       port: 443
       maxPerRoute: 20
 
@@ -241,7 +243,7 @@ api.upload.path.alarm: /root/dde-upload/alarm
 
 ---
 #[DDE-TW-MAIN]
-websocket.localhost: https://ddetw-store.cntt.co.kr
+websocket.localhost: https://dde-store.jrgtw.com
 
 #[DDE-HK-MAIN]
 #websocket.localhost: https://ddehk-store.cntt.co.kr
