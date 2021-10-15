@@ -569,6 +569,7 @@
 
 					if(!$("#map").hasClass('visual_area')){
 						$(".mapCtrl").attr("id","");
+						$(".visual_area").html("");
 						$(".visual_area").removeClass('visual_area_complete');
 						$(".visual_area").addClass('visual_area_ready');
 						$(".visual_area").attr("id","map");
@@ -622,9 +623,10 @@
 						}, 100);
 					}else {
 
-						if ($("#map").hasClass('blurMap')){
+						if ($("#map").hasClass('blurMap') || !chkMap){
 							$("#map").removeClass('blurMap');
 							initMap();
+							chkMap = true;
 						}
 
 						console.log("orderMarker", orderMarker);
