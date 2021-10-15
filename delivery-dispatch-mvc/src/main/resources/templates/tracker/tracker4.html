@@ -525,7 +525,7 @@
 						$(".visual_area").html('<p class="tit_third">由於外送訂單較多，<br/>您的訂單將由第三方外送夥伴安排配送，<br/>完成配對後，將發送簡訊通知。<br/><span class="tit_third_second">謝謝您的耐心等待。<br/>如有疑問，請聯絡門市。</span></p>');
 					}else {
 						//$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
-						$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/>#就愛一起HOT</p>');
+						$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/><span class="tit_third_second">#就愛一起HOT</span></p>');
 					}
 				}
 				else if ((orderStatus === 0 || orderStatus === 5) && (checkReserveTime - 3600000 > 0 && checkTime - 1800000 > 0)) {
@@ -554,16 +554,6 @@
 						$("#map").addClass('blurMap');
 					}
 
-					if(overlay){
-						myOverlay.prototype.onRemove = function () {
-							if(this.div_ && this.div_.parentNode){
-								this.div_.parentNode.removeChild(this.div_);
-							}
-						}
-						overlay.onRemove();
-						overlay == null;
-					}
-
 					$("#progressbar").progressbar( "value", processValue > 100 ? 100 : processValue);
 					if ($(".progress-background").css('display') === 'none'){
 						$('.progress-background').show();
@@ -582,22 +572,6 @@
 						$(".visual_area").removeClass('visual_area_complete');
 						$(".visual_area").addClass('visual_area_ready');
 						$(".visual_area").attr("id","map");
-						$("#map").addClass('blurMap');
-					}
-
-					if (!chkMap){
-						initMap();
-						chkMap = true;
-					}
-
-					if(overlay){
-						myOverlay.prototype.onRemove = function () {
-							if(this.div_ && this.div_.parentNode){
-								this.div_.parentNode.removeChild(this.div_);
-							}
-						}
-						overlay.onRemove();
-						overlay == null;
 					}
 
 					$("#progressbar").progressbar( "value", processValue > 100 ? 100 : processValue);
