@@ -33,32 +33,32 @@
 					<span class="lbl" th:text="${#messages.msg('status.canceled')}"/>
 				</label>
 			</div>
-			<div class="right">
-				<div>
-					<label class="checkbox"><input name="myStoreChk" type="checkbox" th:object="${store}" th:value="*{id}" id="orderMyStoreChk" checked="checked"/><i></i>
-						<span class="lbl" th:text="${#messages.msg('order.mine')}"/>
-					</label>
-					<span class="inblock">
-					<select name="searchSelect" id="searchSelect" class="select">
-						<option value="all" th:text="${#messages.msg('list.search.all')}"/>
-						<!--<option value="id" th:text="${#messages.msg('list.search.id')}"/>-->
-						<option value="address" th:text="${#messages.msg('list.search.address')}"/>
-						<option value="reg_order_id" th:text="${#messages.msg('order.reg.order.id')}"/>
-						<option value="rider" th:text="${#messages.msg('list.search.rider')}"/>
-					</select>
-					<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
-					<button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}"/></button>
-					</span>
-				</div>
-				<div class="f_right">
-					<span class="inblock" th:text="${#messages.msg('order.count.new')}" /><span id="new" />
-					<span class="inblock" th:text="${#messages.msg('order.count.assigned')}" /><span id="assigned"/>
-					<span class="inblock" th:text="${#messages.msg('order.count.arrived')}" /><span id="arrived"/>
-					<span class="inblock" th:text="${#messages.msg('order.count.completed')}" /><span id="completed"/>
-					<span class="inblock" th:text="${#messages.msg('order.count.canceled')}" /><span id="canceled"/>
-				</div>
 
+			<div class="right">
+				<label class="checkbox"><input name="myStoreChk" type="checkbox" th:object="${store}" th:value="*{id}" id="orderMyStoreChk" checked="checked"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('order.mine')}"/>
+				</label>
+				<span class="inblock">
+				<select name="searchSelect" id="searchSelect" class="select">
+					<option value="all" th:text="${#messages.msg('list.search.all')}"/>
+					<!--<option value="id" th:text="${#messages.msg('list.search.id')}"/>-->
+					<option value="address" th:text="${#messages.msg('list.search.address')}"/>
+					<option value="reg_order_id" th:text="${#messages.msg('order.reg.order.id')}"/>
+					<option value="rider" th:text="${#messages.msg('list.search.rider')}"/>
+				</select>
+				<input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
+				<button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}"/></button>
+				</span>
 			</div>
+
+			<div class="order_stat_count">
+				<span class="inblock" th:text="${#messages.msg('order.count.new')}" /><span id="new" />
+				<span class="inblock" th:text="${#messages.msg('order.count.assigned')}" /><span id="assigned"/>
+				<span class="inblock" th:text="${#messages.msg('order.count.arrived')}" /><span id="arrived"/>
+				<span class="inblock" th:text="${#messages.msg('order.count.completed')}" /><span id="completed"/>
+				<span class="inblock" th:text="${#messages.msg('order.count.canceled')}" /><span id="canceled"/>
+			</div>
+
 		</div>
 		<div id="contents">
 			<div class="state_wrap">
