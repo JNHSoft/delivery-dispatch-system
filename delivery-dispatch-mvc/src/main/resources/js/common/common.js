@@ -124,6 +124,8 @@ function footerOrders() {
                 var arrivedCnt = 0;
                 var completedCnt = 0;
                 var canceledCnt = 0;
+                var totalCnt = 0;
+
                 for (i =0; i <data.length; i++){
                     if(data[i].status=="0"){
                         newCnt += parseInt(data[i].count);
@@ -141,11 +143,15 @@ function footerOrders() {
                         arrivedCnt += parseInt(data[i].count);
                     }
                 }
+
+                totalCnt = newCnt + assignedCnt + completedCnt + canceledCnt + arrivedCnt;
+
                 $('#new').text(newCnt);
                 $('#assigned').text(assignedCnt);
                 $('#arrived').text(arrivedCnt);
                 $('#completed').text(completedCnt);
                 $('#canceled').text(canceledCnt);
+                $('#total').text(totalCnt);
             }
         }
     });

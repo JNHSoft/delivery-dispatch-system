@@ -52,6 +52,7 @@
 			</div>
 
 			<div class="order_stat_count">
+				<span class="inblock" th:text="${#messages.msg('order.count.total')}" /><span id="total" />
 				<span class="inblock" th:text="${#messages.msg('order.count.new')}" /><span id="new" />
 				<span class="inblock" th:text="${#messages.msg('order.count.assigned')}" /><span id="assigned"/>
 				<span class="inblock" th:text="${#messages.msg('order.count.arrived')}" /><span id="arrived"/>
