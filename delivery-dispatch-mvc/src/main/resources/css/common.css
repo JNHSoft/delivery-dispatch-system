@@ -655,3 +655,37 @@ body .ui-tooltip{font-size:12px;border-width:1px;box-shadow:none}
 	left: 10px;
 	position: relative;
 }
+
+/* =================================================================
+   별점 시스템을 위한 style 적용
+   ================================================================= */
+.point_stars {
+	border: solid 1px #ccc;
+	display: flex;
+	flex-direction: row-reverse;
+	font-size: 1.5em;
+	justify-content: space-around;
+	padding: 0 0.2em;
+	text-align: center;
+	width: 5em;
+}
+
+.point_stars input{
+	display: none;
+}
+
+.point_stars label {
+	color:green;
+	cursor:pointer;
+}
+
+/* 별점 클릭이 완료 된 후의 색상을 표기한다. */
+.point_stars :checked ~ label {
+	color: #f90;
+}
+
+/* 클릭할 별점의 위치에 마크 표기를 한다. */
+.point_stars label:hover,
+.point_stars label:hover ~ label {
+	color: #fc0;
+}

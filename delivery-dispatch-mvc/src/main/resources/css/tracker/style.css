@@ -151,3 +151,37 @@ th {font-weight:normal;}
 
 .blurMap {filter:blur(2px);}
 .tracker-bottom table {word-break: normal;}
+
+/* =================================================================
+   별점 시스템을 위한 style 적용
+   ================================================================= */
+.point_stars {
+    border: none;
+    display: flex;
+    flex-direction: row-reverse;
+    font-size: 2.5em;
+    justify-content: space-around;
+    padding: 0 0.2em;
+    text-align: center;
+    width: 5em;
+}
+
+.point_stars input{
+    display: none;
+}
+
+.point_stars label {
+    color: gray;
+    cursor: pointer;
+}
+
+/* 별점 클릭이 완료 된 후의 색상을 표기한다. */
+.point_stars :checked ~ label {
+    color: #C9AE00;
+}
+
+/* 클릭할 별점의 위치에 마크 표기를 한다. */
+.point_stars label:hover,
+.point_stars label:hover ~ label {
+    color: #FFF612;
+}
