@@ -164,6 +164,8 @@ th {font-weight:normal;}
     padding: 0 4em;
     text-align: center;
     width: 5em;
+    margin: 0 auto;
+    padding-left: 1.3em;
 }
 
 .point_stars input{
@@ -204,5 +206,4 @@ th {font-weight:normal;}
 
 .btnStarPoint{
     font-size: 0.7em;
-    margin-left: 14em;
 }
