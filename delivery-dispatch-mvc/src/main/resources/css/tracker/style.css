@@ -159,9 +159,9 @@ th {font-weight:normal;}
     border: none;
     display: flex;
     flex-direction: row-reverse;
-    font-size: 2.5em;
+    font-size: 1.5em;
     justify-content: space-around;
-    padding: 0 0.2em;
+    padding: 0 4em;
     text-align: center;
     width: 5em;
 }
@@ -171,7 +171,7 @@ th {font-weight:normal;}
 }
 
 .point_stars label {
-    color: gray;
+    color: white;
     cursor: pointer;
 }
 
@@ -184,4 +184,25 @@ th {font-weight:normal;}
 .point_stars label:hover,
 .point_stars label:hover ~ label {
     color: #FFF612;
+}
+
+/* 별점 시스템의 위치를 변경한다. */
+.divStarPoint{
+    margin: 0;
+    padding: 0;
+}
+
+.tit_star_point{
+    font-size: 1.7em;
+    color:#fff;
+    text-align:center;
+    font-weight:bold;
+    position:relative;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.btnStarPoint{
+    font-size: 0.7em;
+    margin-left: 14em;
 }

@@ -85,6 +85,8 @@
 				,ifnull(B.brand_code, '')	as brand_code
 				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = B.brand_code )	as brand_name
 				,A.third_party_id
+				,A.delivery_star_point					as deliveryPoint
+				,A.del_speed_star_point					as speedPoint
 		FROM 	 TB_ORDER AS A
 		LEFT JOIN TB_STORE AS B
 			ON 	 A.store_id = B.id

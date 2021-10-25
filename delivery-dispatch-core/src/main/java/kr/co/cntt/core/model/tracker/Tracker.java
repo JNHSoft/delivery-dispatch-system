@@ -57,4 +57,8 @@ public class Tracker implements Dto {
 
     //제 3자배송인지 확인하기 위함
     private String thirdPartyId;
+
+    // 설문조사를 완료 했는지 확인하기
+    private String deliveryPoint;       // 배달 직원 점수
+    private String speedPoint;          // 배달 속도 점수
 }
