@@ -554,7 +554,7 @@
 					}else {
 						//$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
 
-						//$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/><span class="tit_third_second">#就愛一起HOT</span></p>');
+						$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/><span class="tit_third_second">#就愛一起HOT</span></p>');
 						// 2021-10-25 별점 시스템 추가
 						// if (!isNaN(data.deliveryPoint) && !isNaN(data.speedPoint)){
 						// 	// 2개 모두 점수가 있는 경우 정상적으로 완료한 것으로 본다.
@@ -583,7 +583,7 @@
 						// 	starPointHtml += '<input type="radio" id="delSpeedStarPoint1" name="delSpeedStarPoint" value="1" /><label for="delSpeedStarPoint1" class="star">&#9733;</label>';
 						// 	starPointHtml += '</div>';
 						//
-						// 	starPointHtml += '<input type="button" onclick="javascript:alert(\'버튼 클릭\');" value="Submit" class="btnStarPoint" />'
+						// 	starPointHtml += '<input type="button" onclick="javascript:saveStarPoint();" value="保存" class="btnStarPoint" />'
 						//
 						// 	starPointHtml += '</div>';
 						//
@@ -952,6 +952,18 @@
 
 		return yyyy + '/' + (mm[1] ? mm : '0' + mm[0]) + '/' + (dd[1]?dd:'0' + dd[0]) + ' '+
 				(hh[1] ? hh : '0' + hh[0]) + ':' + (nn[1] ? nn : '0' + nn[0]) + ':' + (ss[1] ? ss : '0' + ss[0]);
+	}
+
+	function saveStarPoint(){
+		var deliveryStarPoint = $("input:radio[name=delStarPoint]:checked").val();
+		var speedStarPoint = $("input:radio[name=delSpeedStarPoint]:checked").val();
+
+		if (isNaN(deliveryStarPoint) || isNaN(speedStarPoint)){
+			alert('請選擇全部評分。');
+			return;
+		}
+
+
 	}
 
 	/*]]>*/
