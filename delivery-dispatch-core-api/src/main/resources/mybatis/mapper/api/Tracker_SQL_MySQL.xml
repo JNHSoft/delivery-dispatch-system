@@ -71,6 +71,8 @@
 	<!-- selectTracker -->
 	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
 		SELECT	 A.created_datetime
+				,A.reg_order_id
+				,A.web_order_id
 				,A.status
 				,A.latitude
 				,A.longitude
@@ -95,6 +97,19 @@
 		WHERE 	 A.web_order_id = #{webOrderId}
 		AND 	 B.code = #{code}
 	</select>
+
+	<update id="updateOrderStarPoint" parameterType="kr.co.cntt.core.model.tracker.Tracker">
+		update   TB_ORDER
+		set      star_point_reg_datetime = now()
+			<if test="deliveryPoint != null and deliveryPoint > 0">
+				,delivery_star_point = #{deliveryPoint}
+			</if>
+			<if test="speedPoint != null and speedPoint > 0">
+				,del_speed_star_point = #{speedPoint}
+			</if>
+		where    status = 3
+		and      web_order_id = #{webOrderId}
+	</update>
 
 </mapper>
  

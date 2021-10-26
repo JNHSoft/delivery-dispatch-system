@@ -554,50 +554,50 @@
 					}else {
 						//$(".visual_area").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p>');
 
-						$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/><span class="tit_third_second">#就愛一起HOT</span></p>');
+						//$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/><span class="tit_third_second">#就愛一起HOT</span></p>');
 						// 2021-10-25 별점 시스템 추가
-						// if (!isNaN(data.deliveryPoint) && !isNaN(data.speedPoint)){
-						// 	// 2개 모두 점수가 있는 경우 정상적으로 완료한 것으로 본다.
-						// 	$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/><span class="tit_third_second">#就愛一起HOT</span></p>');
-						// }else {
-						//
-						// 	var starPointHtml = '';
-						//
-						// 	starPointHtml += '<div id="divStarPoint" class="tit_star_point">';
-						//
-						// 	starPointHtml += '<span>&#9830; 您對外送員的服務滿意度？</span>';
-						// 	starPointHtml += '<div class="point_stars">';
-						// 	starPointHtml += '<input type="radio" id="delStarPoint5" name="delStarPoint" value="5" /><label for="delStarPoint5" class="star">&#9733;</label>';
-						// 	starPointHtml += '<input type="radio" id="delStarPoint4" name="delStarPoint" value="4" /><label for="delStarPoint4" class="star">&#9733;</label>';
-						// 	starPointHtml += '<input type="radio" id="delStarPoint3" name="delStarPoint" value="3" /><label for="delStarPoint3" class="star">&#9733;</label>';
-						// 	starPointHtml += '<input type="radio" id="delStarPoint2" name="delStarPoint" value="2" /><label for="delStarPoint2" class="star">&#9733;</label>';
-						// 	starPointHtml += '<input type="radio" id="delStarPoint1" name="delStarPoint" value="1" /><label for="delStarPoint1" class="star">&#9733;</label>';
-						// 	starPointHtml += '</div>';
-						//
-						// 	starPointHtml += '<span>&#9830; 您對外送員的速度滿意度？</span>';
-						// 	starPointHtml += '<div class="point_stars">';
-						// 	starPointHtml += '<input type="radio" id="delSpeedStarPoint5" name="delSpeedStarPoint" value="5" /><label for="delSpeedStarPoint5" class="star">&#9733;</label>';
-						// 	starPointHtml += '<input type="radio" id="delSpeedStarPoint4" name="delSpeedStarPoint" value="4" /><label for="delSpeedStarPoint4" class="star">&#9733;</label>';
-						// 	starPointHtml += '<input type="radio" id="delSpeedStarPoint3" name="delSpeedStarPoint" value="3" /><label for="delSpeedStarPoint3" class="star">&#9733;</label>';
-						// 	starPointHtml += '<input type="radio" id="delSpeedStarPoint2" name="delSpeedStarPoint" value="2" /><label for="delSpeedStarPoint2" class="star">&#9733;</label>';
-						// 	starPointHtml += '<input type="radio" id="delSpeedStarPoint1" name="delSpeedStarPoint" value="1" /><label for="delSpeedStarPoint1" class="star">&#9733;</label>';
-						// 	starPointHtml += '</div>';
-						//
-						// 	starPointHtml += '<input type="button" onclick="javascript:saveStarPoint();" value="保存" class="btnStarPoint" />'
-						//
-						// 	starPointHtml += '</div>';
-						//
-						//
-						// 	$(".visual_area").html(starPointHtml);
-						//
-						// 	if (data.deliveryPoint){
-						// 		$("input:radio[name=delStarPoint][value='" + data.deliveryPoint + "']").attr('checked', true);
-						// 	}
-						//
-						// 	if (data.speedPoint){
-						// 		$("input:radio[name=delSpeedStarPoint][value='" + data.speedPoint + "']").attr('checked', true);
-						// 	}
-						// }
+						if (!isNaN(data.deliveryPoint) && !isNaN(data.speedPoint)){
+							// 2개 모두 점수가 있는 경우 정상적으로 완료한 것으로 본다.
+							$(".visual_area").html('<p class="tit_wh">請享用最美味的餐點<br/><span class="tit_third_second">#就愛一起HOT</span></p>');
+						}else {
+
+							var starPointHtml = '';
+
+							starPointHtml += '<div id="divStarPoint" class="tit_star_point">';
+
+							starPointHtml += '<span>&#9830; 您對外送員的服務滿意度？</span>';
+							starPointHtml += '<div class="point_stars">';
+							starPointHtml += '<input type="radio" id="delStarPoint5" name="delStarPoint" value="5" /><label for="delStarPoint5" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delStarPoint4" name="delStarPoint" value="4" /><label for="delStarPoint4" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delStarPoint3" name="delStarPoint" value="3" /><label for="delStarPoint3" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delStarPoint2" name="delStarPoint" value="2" /><label for="delStarPoint2" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delStarPoint1" name="delStarPoint" value="1" /><label for="delStarPoint1" class="star">&#9733;</label>';
+							starPointHtml += '</div>';
+
+							starPointHtml += '<span>&#9830; 您對外送員的速度滿意度？</span>';
+							starPointHtml += '<div class="point_stars">';
+							starPointHtml += '<input type="radio" id="delSpeedStarPoint5" name="delSpeedStarPoint" value="5" /><label for="delSpeedStarPoint5" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delSpeedStarPoint4" name="delSpeedStarPoint" value="4" /><label for="delSpeedStarPoint4" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delSpeedStarPoint3" name="delSpeedStarPoint" value="3" /><label for="delSpeedStarPoint3" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delSpeedStarPoint2" name="delSpeedStarPoint" value="2" /><label for="delSpeedStarPoint2" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delSpeedStarPoint1" name="delSpeedStarPoint" value="1" /><label for="delSpeedStarPoint1" class="star">&#9733;</label>';
+							starPointHtml += '</div>';
+
+							starPointHtml += '<input type="button" onclick="javascript:saveStarPoint();" value="保存" class="btnStarPoint" />'
+
+							starPointHtml += '</div>';
+
+
+							$(".visual_area").html(starPointHtml);
+
+							if (data.deliveryPoint){
+								$("input:radio[name=delStarPoint][value='" + data.deliveryPoint + "']").attr('checked', true);
+							}
+
+							if (data.speedPoint){
+								$("input:radio[name=delSpeedStarPoint][value='" + data.speedPoint + "']").attr('checked', true);
+							}
+						}
 					}
 				}
 				else if ((orderStatus === 0 || orderStatus === 5) && (checkReserveTime - 3600000 > 0 && checkTime - 1800000 > 0)) {
@@ -962,6 +962,32 @@
 			alert('請選擇全部評分。');
 			return;
 		}
+
+		$.ajax({
+			url: '/regStarPoint',
+			type: 'get',
+			dataType: 'json',
+			data: {
+				encParam: encParam,
+				deliveryPoint: deliveryStarPoint,
+				speedPoint: speedStarPoint
+			},
+			success: function (obj){
+				console.log('obj => ', obj);
+				if (obj.result){
+					alert(obj.message);
+				}
+			},
+			error: function (e){
+				//console.log('error');
+				alert('系統錯誤');
+			},
+			complete: function (){
+				console.log('complete');
+				setUI();
+			}
+		});
+
 
 
 	}
