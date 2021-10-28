@@ -38,6 +38,7 @@
             <result property="name" column="rider_name" />
 			<result property="latitude" column="rider_latitude" />
 			<result property="longitude" column="rider_longitude" />
+			<result property="sharedStatus" column="sharedStatus" />
         </association>
 
 		<association property="subGroupStoreRel" column="subGroupStoreRel" javaType="kr.co.cntt.core.model.group.SubGroupStoreRel">
@@ -241,6 +242,8 @@
 				-- 2020.05.14 배달 시간 확인을 위한 데이터 추가
 				,( select latitude from TB_RIDER where id = A.rider_id and deleted is null)		as rider_latitude
 				,( select longitude from TB_RIDER where id = A.rider_id and deleted is null)		as rider_longitude
+				-- 2021-10-09 라이더 쉐어 플래그를 가져온다. (단 라이더의 상태값이 바뀔 수 있으므로, 주문 정보에 있는 것으로 추출하기)
+				,A.shared_flag																	as sharedStatus
 
 				,A.third_party_id
 				,(select name from TB_THIRD_PARTY where id = A.third_party_id and deleted is null )	as third_party_name
@@ -763,8 +766,7 @@
 		ON A.store_id = C.store_id
 		LEFT JOIN TB_STORE AS D
 		ON A.store_id = D.id
-		WHERE	A.created_datetime > current_date()
-		AND A.status IN (0,1,2,3,4,5)
+		WHERE	A.reservation_datetime > current_date()
 		AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) and deleted is null limit 1)
 		AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1)
 		AND C.deleted IS NULL group by A.status;
@@ -789,6 +791,7 @@
 				,A.address
 				,C.subgroup_id          as subgroup_id
 				,( select count(*) from TB_SUBGROUP_STORE_REL where deleted is null and admin_id = C.admin_id and group_id = C.group_id and subgroup_id = C.subgroup_id )   as storeShared
+				,ifnull(B.brand_code, 0)		as brand_code
 		from	 TB_ORDER	A use index (idx_order_created_admin, idx_order_reservation_admin, `PRIMARY`)
 		left join TB_STORE	B
 			ON	 B.id = A.store_id

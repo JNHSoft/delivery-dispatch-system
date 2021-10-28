@@ -264,3 +264,16 @@
 	.rider_wrap > .chat_wrap.active{right:0;}
 	.chat_wrap .close{display:inline-block;}
 }
+
+/* =======================================================================================
+   Order Status Count Style
+   ======================================================================================= */
+.order_stat_count {
+	text-align: center;
+}
+
+@media (max-width: 700px) {
+	.order_stat_count {
+		margin-top: 10vh;
+	}
+}

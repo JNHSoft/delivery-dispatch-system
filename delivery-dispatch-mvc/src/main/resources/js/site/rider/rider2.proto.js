@@ -426,9 +426,9 @@ DDELib.Riders.prototype = {
                 //
                 updateMarker(objData);
             }
-            if(data.match('order_')=='order_'){
-                footerOrders();
-            }
+            // if(data.match('order_')=='order_'){
+            //     footerOrders();
+            // }
             if(data.match('notice_')=='notice_'){
                 noticeAlarm();
             }
