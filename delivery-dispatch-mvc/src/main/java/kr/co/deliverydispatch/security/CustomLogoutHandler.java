@@ -2,7 +2,6 @@ package kr.co.deliverydispatch.security;
 
 import kr.co.cntt.core.model.store.StorePerformanceHistory;
 import kr.co.cntt.core.service.api.StoreService;
-import kr.co.cntt.core.service.api.impl.StoreServiceImpl;
 import kr.co.deliverydispatch.config.DeliveryDispatchStoreAudit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

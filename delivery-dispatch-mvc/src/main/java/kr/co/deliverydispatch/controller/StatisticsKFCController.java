@@ -3,7 +3,6 @@ package kr.co.deliverydispatch.controller;
 import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.ByDate;
-import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreStatementService;
