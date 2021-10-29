@@ -1,8 +1,5 @@
 package kr.co.cntt.core.service.admin;
 
-
-
-
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;

@@ -14,8 +14,6 @@ import kr.co.cntt.core.util.MediaTypeUtils;
 import kr.co.cntt.core.util.ShaEncoder;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreNoticeService;
-import kr.co.deliverydispatch.service.StoreOrderService;
-import kr.co.deliverydispatch.service.StoreRiderService;
 import kr.co.deliverydispatch.service.StoreSettingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

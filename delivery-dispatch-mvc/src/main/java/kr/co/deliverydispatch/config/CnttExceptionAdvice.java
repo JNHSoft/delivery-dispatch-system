@@ -13,15 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.HandlerMethod;
 
-import com.google.gson.Gson;
-
 import kr.co.deliverydispatch.controller.ErrorController;
-import kr.co.cntt.core.concurrent.task.ILogSupport;
-import kr.co.cntt.core.concurrent.task.LogService;
-//import kr.co.cntt.core.concurrent.task.LogTask;
 import kr.co.cntt.core.controller.CnttBaseExceptionHandler;
-import kr.co.cntt.core.model.web.ErrorLog;
-//import kr.co.cntt.core.trace.NotMonitor;
 import lombok.extern.slf4j.Slf4j;
 
 /**

@@ -1,0 +1,124 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "//mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cntt.core.mapper.StatisticsMapper">
+
+    <select id="selectSubgroupStoreList" parameterType="kr.co.cntt.core.model.store.Store" resultType="java.util.Map">
+        select   b.group_id             as groupId
+                ,( select name from TB_GROUP where admin_id = b.admin_id and id = b.group_id )        as groupName
+                ,b.subgroup_id          as subGroupid
+                ,( select name from TB_SUBGROUP where admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id )  as subGroupName
+                ,a.brand_code           as brandCode
+                ,( select cd_value from TB_CODE_MASTER where used_flag = 1 and title = 'brand_code' and code = a.brand_code ) as brandName
+                ,a.id
+                ,a.store_name           as storeName
+        from     TB_STORE               as a
+                ,TB_SUBGROUP_STORE_REL  as b
+        where    a.id = b.store_id
+        and      a.admin_id = b.admin_id
+        and      a.deleted is null
+        and      b.deleted is null
+        <if test="role != null and role == 'ROLE_ADMIN'">
+            and      a.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
+            and      b.subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select id from TB_STORE where code = #{code} ) and deleted is null )
+        </if>
+        <if test="role != null and role == 'ROLE_STORE'">
+            and      b.subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = ( select store_id from TB_STORE_SESSION where access_token = #{token} ) and deleted is null )
+        </if>
+
+    </select>
+
+    <select id="selectRiderInfoByLoginId" parameterType="java.util.Map" resultType="java.util.Map">
+        select   a.id
+                ,a.admin_id                                 as adminId
+                ,d.store_id                                 as storeId
+                ,a.login_id                                 as loginId
+                ,a.name
+                ,a.phone
+                ,date_format(b.accept_datetime, '%Y-%m-%d %H:%i:%s')                            as acceptDatetime
+                ,date_format(ifnull(c.expiry_datetime, b.exp_datetime), '%Y-%m-%d %H:%i:%s')    as expiryDatetime
+                ,( select count(*) from TB_ORDER where reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day) and admin_id = a.admin_id and rider_id = a.id and status = 3 and third_party_id is null )                            as totalOrderCount
+                ,( select count(*) from TB_ORDER where reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day) and admin_id = a.admin_id and rider_id = a.id and status = 3 and third_party_id is null and store_id = d.store_id  )                  as myStoreOrderCount
+                ,( select count(*) from TB_ORDER where reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day) and admin_id = a.admin_id and rider_id = a.id and status = 3 and third_party_id is null and store_id <![CDATA[<>]]> d.store_id )  as sharedStoreOrderCount
+                ,a.working                                  as currentWorkingStatus
+                ,ifnull(a.shared_flag, 0)                   as currentsharedStatus
+        from     TB_RIDER               as a
+                ,TB_REQ_REGIST_RIDER    as b
+                ,TB_RIDER_SESSION       as c
+                ,TB_SUBGROUP_RIDER_REL  as d
+        where    1=1
+        and      a.id = b.rider_id
+        and      a.id = c.rider_id
+        and      a.id = d.rider_id
+        and      a.deleted is null
+        and      d.deleted is null
+        and      b.req_status = 1
+        and      a.login_id = #{loginId}
+    </select>
+
+    <select id="selectOrgStoreInfoByRider" parameterType="java.util.Map" resultType="java.util.Map">
+        select   brand_code                                                                                                                         as brandCode
+                ,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = a.brand_code and used_flag = 1 )                       as brandName
+                ,b.group_id                                                                                                                         as groupId
+                ,( select name from TB_GROUP where deleted is null and admin_id = b.admin_id and id = b.group_id )                                  as groupName
+                ,b.subgroup_id                                                                                                                      as subGroupId
+                ,( select name from TB_SUBGROUP where deleted is null and admin_id = b.admin_id and group_id = b.group_id and id = b.subgroup_id)   as subGroupName
+                ,a.id                                                                                                                               as storeId
+                ,a.store_name                                                                                                                       as storeName
+        from     TB_STORE               as a
+                ,TB_SUBGROUP_STORE_REL  as b
+        where    1=1
+        and      a.id = b.store_id
+        and      b.deleted is null
+        and      a.deleted is null
+        and      a.admin_id = #{adminId}
+        and      a.id = #{storeId}
+    </select>
+
+    <select id="selectRiderWorkingInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        select   cast(@rowid:=@rowid+1 AS unsigned integer)         as seq
+                ,date_format(working_on, '%Y-%m-%d %H:%i:%s')       as workingOnDatetime
+                ,date_format(working_off, '%Y-%m-%d %H:%i:%s')      as workingOffDatetime
+        from     TB_RIDER_WORKING_HISTORY           as a
+                ,( select @rowid:=0 )               as b
+        where    1=1
+        and      rider_id = #{id}
+        and      working_on between #{sDate} and date_add(#{eDate}, interval 1 day)
+        order by working_on
+    </select>
+
+    <select id="selectRiderSharedInfoList" parameterType="java.util.Map" resultType="java.util.Map">
+        select   cast(@rowid:=@rowid+1 AS unsigned integer)             as seq
+                ,before_status                                          as beforeStatus
+                ,after_status                                           as afterStatus
+                ,req_user                                               as reqUser
+                ,date_format(change_datetime, '%Y-%m-%d %H:%i:%s')      as changeDatetime
+        from     TB_RIDER_SHARED_STATUS_HISTORY         as a
+                ,( select @rowid:=0 )                   as b
+        where    1=1
+        and      rider_id = #{id}
+        and      change_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+        order by change_datetime
+    </select>
+
+    <select id="selectSharedOrderInfos" parameterType="java.util.Map" resultType="java.util.Map">
+        select   reg_order_id                                                           as regOrderId
+                ,web_order_id                                                           as webOrderId
+                ,store_id                                                               as storeId
+                ,( select store_name from TB_STORE where id = a.store_id )              as storeName
+                ,date_format(created_datetime, '%Y-%m-%d %H:%i:%s')                     as createdDatetime
+                ,date_format(reservation_datetime, '%Y-%m-%d %H:%i:%s')                 as reservationDatetime
+                ,date_format(assigned_datetime, '%Y-%m-%d %H:%i:%s')                    as assignedDatetime
+                ,date_format(picked_up_datetime, '%Y-%m-%d %H:%i:%s')                   as pickedUpDatetime
+                ,date_format(arrived_datetime, '%Y-%m-%d %H:%i:%s')                     as arrivedDatetime
+                ,date_format(completed_datetime, '%Y-%m-%d %H:%i:%s')                   as completedDatetime
+                ,date_format(return_datetime, '%Y-%m-%d %H:%i:%s')                      as returnDatetime
+        from     TB_ORDER       as a
+        where    1=1
+        and      third_party_id is null
+        and      status = 3
+        and      reservation_datetime between #{sDate} and date_add(#{eDate}, interval 1 day)
+        and      admin_id = #{adminId}
+        and      store_id <![CDATA[<>]]> #{storeId}
+        and      rider_id = #{id}
+        order by id
+    </select>
+</mapper>

@@ -18,11 +18,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
 
 import kr.co.cntt.api.security.SecurityConfigurer;
 import kr.co.cntt.api.config.ApiConfig;
-//import kr.co.cntt.core.concurrent.ConcurrentConfig;
 import kr.co.cntt.rest.config.RestConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;

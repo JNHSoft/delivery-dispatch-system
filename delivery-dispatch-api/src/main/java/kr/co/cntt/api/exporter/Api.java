@@ -339,4 +339,15 @@ public interface Api {
      */
     String ALIVE_TEST = "/aliveTest";
 
+    // ############################################################################################ //
+    /**
+     * 2021-07-19 통계용 API 추가
+     * */
+    String SUBGROUP_STORE_LIST = "/getSubGroupStore.do";
+
+    /**
+     * 2021-07-21 라이더 API 추가
+     * */
+    String RIDER_STAT_INFO = "/getRiderStatsInfos.do";
+
 }

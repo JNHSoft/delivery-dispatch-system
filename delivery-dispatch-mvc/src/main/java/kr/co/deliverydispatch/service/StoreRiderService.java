@@ -7,6 +7,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
 import kr.co.cntt.core.model.rider.RiderSession;
+import kr.co.cntt.core.model.rider.RiderSharedInfo;
 import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
@@ -113,4 +114,9 @@ public interface StoreRiderService {
      * 21.05.21 라이더가 소속되어 있던 타 매장 정보 삭제
      * */
     int deleteSharedStoreInfo(Rider rider);
+
+    /**
+     * 21.07.22 라이더 쉐어 상태 변경에 따른 history 저장
+     * */
+    int insertSharedHistory(RiderSharedInfo sharedInfo);
 }

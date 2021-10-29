@@ -4,14 +4,10 @@ import kr.co.cntt.core.model.common.SearchInfo;
 import kr.co.cntt.core.model.group.Group;
 import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
-import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.order.Order;
-import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.statistic.AdminByDate;
-import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.Interval;
 import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
-import kr.co.cntt.core.model.store.Store;
 
 import java.util.List;
 import java.util.Map;
