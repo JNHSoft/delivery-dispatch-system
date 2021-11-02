@@ -37,6 +37,8 @@
 			</tr>
 			</tbody>
 		</table>
+		<div id="divServey" class="divSurvey">
+		</div>
 	</div>
 
 <!--	<div id="divStarPoint">-->
@@ -475,6 +477,8 @@
 				var orderStatus = parseInt(data.status);          // 현재 주문의 상태
 				var thirdDelivery = data.thirdPartyId;  // 제 3자 배송
 
+				$("#divServey").empty();				// 설문조사 버튼 표기 div 값 초기화
+
 				// 예약 시간이 있는 경우에만 프로세스 작업을 한다.
 				//console.log("data.reservationDatetime => ", data.reservationDatetime);
 				if (data.reservationDatetime){
@@ -565,6 +569,8 @@
 
 							starPointHtml += '<div id="divStarPoint" class="tit_star_point">';
 
+							starPointHtml += '<p style="margin-bottom: 25px;">為我們的外送服務給予好評。</p>';
+
 							starPointHtml += '<span>&#9830; 您對外送員的服務滿意度？</span>';
 							starPointHtml += '<div class="point_stars">';
 							starPointHtml += '<input type="radio" id="delStarPoint5" name="delStarPoint" value="5" /><label for="delStarPoint5" class="star">&#9733;</label>';
@@ -598,6 +604,12 @@
 								$("input:radio[name=delSpeedStarPoint][value='" + data.speedPoint + "']").attr('checked', true);
 							}
 						}
+
+
+						var surveyHtml = '<input type="button" id="btnServey" class="btnSurvey" onclick="javascript:gotoSurvey(\'' + data.regOrderId + '\')" value="為我們的追蹤系統評分給予好評" />'
+
+						$("#divServey").html(surveyHtml);
+
 					}
 				}
 				else if ((orderStatus === 0 || orderStatus === 5) && (checkReserveTime - 3600000 > 0 && checkTime - 1800000 > 0)) {
@@ -928,7 +940,6 @@
 		this.setMap(this.map_);
 	}
 
-
 	function setHourMin(time1) {
 		if(time1===0){
 			return "00";
@@ -990,6 +1001,13 @@
 
 
 
+	}
+
+	// 설문조사 탭 띄우기
+	function gotoSurvey(regOrderId){
+		if (regOrderId){
+			window.open('https://www.surveycake.com/s/NrnDx?ssn1='+regOrderId);
+		}
 	}
 
 	/*]]>*/
