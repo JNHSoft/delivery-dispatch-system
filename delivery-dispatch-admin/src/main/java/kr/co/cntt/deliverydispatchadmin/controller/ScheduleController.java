@@ -1,6 +1,8 @@
 package kr.co.cntt.deliverydispatchadmin.controller;
 
 
+import kr.co.cntt.core.model.redis.Content;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.admin.ScheduleAdminService;
 import kr.co.cntt.core.service.admin.StoreAdminService;
