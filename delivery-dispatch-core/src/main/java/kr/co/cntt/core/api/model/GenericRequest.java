@@ -1,7 +1,5 @@
 package kr.co.cntt.core.api.model;
 
-import java.util.List;
-
 import kr.co.cntt.core.model.Dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

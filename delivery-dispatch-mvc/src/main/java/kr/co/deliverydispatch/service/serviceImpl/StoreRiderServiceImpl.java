@@ -11,7 +11,6 @@ import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.fcm.FcmBody;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.notification.Notification;
-import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.rider.RiderApprovalInfo;
@@ -20,9 +19,6 @@ import kr.co.cntt.core.model.rider.RiderSharedInfo;
 import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
-import kr.co.cntt.core.util.Geocoder;
-import kr.co.cntt.core.util.Misc;
-import kr.co.deliverydispatch.service.StoreOrderService;
 import kr.co.deliverydispatch.service.StoreRiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +26,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service("storeRiderService")

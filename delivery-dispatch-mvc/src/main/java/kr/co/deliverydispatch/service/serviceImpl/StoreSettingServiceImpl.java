@@ -1,7 +1,9 @@
 package kr.co.deliverydispatch.service.serviceImpl;
 
 import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
-import kr.co.cntt.core.mapper.*;
+import kr.co.cntt.core.mapper.NoticeMapper;
+import kr.co.cntt.core.mapper.RiderMapper;
+import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
 import kr.co.cntt.core.model.common.Common;
@@ -21,7 +23,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

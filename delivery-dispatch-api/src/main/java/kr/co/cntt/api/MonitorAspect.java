@@ -1,11 +1,9 @@
 package kr.co.cntt.api;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-
+import com.google.gson.Gson;
+import kr.co.cntt.core.model.web.ErrorLog;
+import kr.co.cntt.core.model.web.TrLog;
+import kr.co.cntt.core.util.DateUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -21,16 +19,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.google.gson.Gson;
-
-//import kr.co.cntt.core.concurrent.service.ServerTaskExecuteService;
-import kr.co.cntt.core.concurrent.task.ILogSupport;
-import kr.co.cntt.core.concurrent.task.LogService;
-//import kr.co.cntt.core.concurrent.task.LogTask;
-import kr.co.cntt.core.model.web.ErrorLog;
-import kr.co.cntt.core.model.web.TrLog;
-//import kr.co.cntt.core.trace.NotMonitor;
-import kr.co.cntt.core.util.DateUtil;
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
+import java.util.Map;
 
 @Aspect
 public class MonitorAspect {

@@ -2,9 +2,6 @@ package kr.co.cntt.core.model.notice;
 
 
 import kr.co.cntt.core.model.Dto;
-import kr.co.cntt.core.model.group.Group;
-import kr.co.cntt.core.model.group.SubGroup;
-import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.login.User;
 import lombok.Getter;
 import lombok.Setter;
