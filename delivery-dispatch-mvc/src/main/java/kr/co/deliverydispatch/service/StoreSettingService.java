@@ -2,7 +2,6 @@ package kr.co.deliverydispatch.service;
 
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.alarm.Alarm;
-import kr.co.cntt.core.model.chat.Chat;
 import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.rider.Rider;

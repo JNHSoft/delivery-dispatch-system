@@ -1,12 +1,6 @@
 package kr.co.cntt.deliverydispatchadmin.config;
 
-import com.google.gson.Gson;
-import kr.co.cntt.core.concurrent.task.ILogSupport;
-import kr.co.cntt.core.concurrent.task.LogService;
-//import kr.co.cntt.core.concurrent.task.LogTask;
 import kr.co.cntt.core.controller.CnttBaseExceptionHandler;
-import kr.co.cntt.core.model.web.ErrorLog;
-//import kr.co.cntt.core.trace.NotMonitor;
 import kr.co.cntt.deliverydispatchadmin.controller.ErrorController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

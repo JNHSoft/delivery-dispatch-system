@@ -1,7 +1,6 @@
 package kr.co.cntt.api.exporter;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import kr.co.cntt.api.config.IServiceRouter;

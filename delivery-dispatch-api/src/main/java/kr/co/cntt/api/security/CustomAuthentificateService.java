@@ -1,18 +1,12 @@
 package kr.co.cntt.api.security;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Value;
+import kr.co.cntt.core.service.ServiceSupport;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import kr.co.cntt.core.enums.ErrorCodeEnum;
-import kr.co.cntt.core.exception.AppTrException;
-import kr.co.cntt.core.service.ServiceSupport;
-import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 // TODO : service key property로 읽어서 list로 가지고 있자!!

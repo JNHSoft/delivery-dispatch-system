@@ -1,11 +1,7 @@
 package kr.co.deliverydispatch.service;
 
 import kr.co.cntt.core.model.common.Common;
-import kr.co.cntt.core.model.group.Group;
-import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.rider.Rider;
-import kr.co.cntt.core.model.rider.RiderSession;
-import kr.co.cntt.core.model.store.Store;
 
 public interface CommInfoService {
 

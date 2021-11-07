@@ -3,7 +3,6 @@ package kr.co.cntt.core.model.rider;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.login.User;
-import kr.co.cntt.core.model.store.Store;
 import lombok.Getter;
 import lombok.Setter;
 

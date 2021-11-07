@@ -1,8 +1,7 @@
 package kr.co.cntt.core.model.login;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import kr.co.cntt.core.model.common.Common;
 import kr.co.cntt.core.model.Dto;
+import kr.co.cntt.core.model.common.Common;
 import lombok.Getter;
 import lombok.Setter;
 
