@@ -25,6 +25,8 @@ import kr.co.cntt.core.service.api.OrderService;
 import kr.co.cntt.core.util.Geocoder;
 import kr.co.cntt.core.util.Misc;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.internal.http2.ErrorCode;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -714,6 +717,24 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     + "00";
             order.setReservationDatetime(nowDate);
         }
+
+        /// 예약 시간이 등록 시간보다 과거로 표기되는 경우 등록 오류로 리턴하기. 일자만 비교함
+
+        try {
+            LocalDateTime bookingTime = LocalDateTime.parse(order.getReservationDatetime().replace(' ', 'T'));
+            LocalDateTime currentTime = LocalDateTime.now();
+
+            if (bookingTime.isAfter(currentTime)) {
+                log.info("regID => " + order.getRegOrderId() + " # 예약일자 => " + bookingTime + " # 비교 시간 => " + currentTime);
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
+            }
+
+        } catch (Exception e){
+            log.error("regID => " + order.getRegOrderId(), e);
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
+        }
+
+
 
         // regOrder 중복 체크
         int hasRegOrder = orderMapper.selectRegOrderIdCheck(order);
