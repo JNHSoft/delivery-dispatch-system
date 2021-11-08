@@ -718,10 +718,18 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         /// 예약 시간이 등록 시간보다 과거로 표기되는 경우 등록 오류로 리턴하기. 일자만 비교함
 
         try {
-            LocalDateTime bookingTime = LocalDateTime.parse(order.getReservationDatetime().replace(' ', 'T'));
+            //Date bookingDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());
+            LocalDateTime bookingTime;
+
+            try {
+                bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+            } catch (Exception e){
+                bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+            }
+
             LocalDateTime currentTime = LocalDateTime.now();
 
-            if (bookingTime.isAfter(currentTime)) {
+            if (bookingTime.isBefore(currentTime)) {
                 log.info("regID => " + order.getRegOrderId() + " # 예약일자 => " + bookingTime + " # 비교 시간 => " + currentTime);
                 throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
             }
