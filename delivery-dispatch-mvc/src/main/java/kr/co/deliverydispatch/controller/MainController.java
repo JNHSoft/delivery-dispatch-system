@@ -122,6 +122,10 @@ public class MainController {
         Order order = new Order();
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
+        // Store ID를 입력한다.
+        order.setStoreId(String.valueOf(storeInfo.getStoreSeq()));
+
         return storeOrderService.getFooterOrders(order);
     }
 
