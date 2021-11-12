@@ -112,13 +112,13 @@ function getStoreStatisticsByDate() {
                     tmpdata.No = ++rowNum;
                     tmpdata.store = data[key].storeName;
 
-                    if (data[key].groupName == ''){
+                    if (!data[key].groupName || data[key].groupName == ''){
                         tmpdata.group_name = group_none;
                     }else{
                         tmpdata.group_name = data[key].groupName;
                     }
 
-                    if (data[key].subGroup_name == ''){
+                    if (!data[key].subGroupName || data[key].subGroupName == ''){
                         tmpdata.subGroup_name = group_none;
                     }else{
                         tmpdata.subGroup_name = data[key].subGroupName;
