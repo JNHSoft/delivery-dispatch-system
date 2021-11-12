@@ -757,19 +757,36 @@
 
 	<!-- selectFooterOrders -->
 	<select id="selectFooterOrders" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
-		SELECT
-		A.status, count(*)as count
-		FROM TB_ORDER AS A force index (idx_order_reservation_admin, idx_order_created_admin, reg_order_id_UNIQUE, web_order_id_UNIQUE, `PRIMARY`)
+		SELECT	 A.status
+				,count(*)as count
+		FROM	 TB_ORDER	AS	A force index (idx_order_reservation_admin, idx_order_created_admin, reg_order_id_UNIQUE, web_order_id_UNIQUE, `PRIMARY`)
 		LEFT JOIN TB_RIDER AS B
-		ON A.rider_id = B.id
+			ON	 A.rider_id = B.id
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS C
-		ON A.store_id = C.store_id
+			ON	 A.store_id = C.store_id
 		LEFT JOIN TB_STORE AS D
-		ON A.store_id = D.id
-		WHERE	A.reservation_datetime > current_date()
-		AND A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) and deleted is null limit 1)
-		AND C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1)
-		AND C.deleted IS NULL group by A.status;
+			ON	 A.store_id = D.id
+		WHERE	 A.reservation_datetime > current_date()
+		and		 date_format(date_add(now(), interval 2 hour), '%Y-%m-%d %H:%i') > date_format(ifnull(A.reservation_datetime, now()), '%Y-%m-%d %H:%i')
+		AND		 A.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) and deleted is null limit 1)
+		AND	(	(C.subgroup_id = (SELECT subgroup_id FROM TB_SUBGROUP_STORE_REL WHERE store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token} order by created_datetime desc limit 1) ORDER BY created_datetime DESC LIMIT 1))
+			<!--		UAT 적용-->
+<!--			<if test="storeId != null and storeId == '13'">-->
+<!--				or	(C.store_id in (6, 14))-->
+<!--			</if>-->
+<!--			<if test="storeId != null and (storeId == '6' or storeId == '14')">-->
+<!--				or	(C.store_id in (13))-->
+<!--			</if>-->
+			<!--		REAL 적용-->
+			<if test="storeId != null and storeId == '386'">
+				or	(C.store_id in (39, 67))
+			</if>
+			<if test="storeId != null and (storeId == '39' or storeId == '67')">
+				or	(C.store_id in (386))
+			</if>
+			)
+		AND		 C.deleted IS NULL
+		group by A.status;
 	</select>
 
 	<!-- selectForAssignOrders -->
