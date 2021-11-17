@@ -117,6 +117,14 @@ public class OrderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
 
+
+        System.out.println(storeInfo.getStoreSeq() + " ### brand Code = " + storeInfo.getStoreBrandCode() + " #### store id => " + order.getStoreId());
+
+        // 2021-11-17 KFC 매장 쉐어인 경우에도 라이더 및 정보 변경이 가능하도록 적용
+        order.setStoreId(String.valueOf(storeInfo.getStoreSeq()));
+        order.setStore(new Store());
+        order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
+
         int oderAdmitCount = storeOrderService.getCountOderAdmit(order);
         if(oderAdmitCount>0){
             storeOrderService.putOrderAssigned(order);
@@ -152,6 +160,15 @@ public class OrderController {
     public boolean putOrderAssignCancle(Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
+        System.out.println(storeInfo.getStoreSeq() + " ### brand Code = " + storeInfo.getStoreBrandCode() + " #### store id => " + order.getStoreId());
+
+        // 2021-11-17 KFC 매장 쉐어인 경우에도 라이더 및 정보 변경이 가능하도록 적용
+        order.setStoreId(String.valueOf(storeInfo.getStoreSeq()));
+        order.setStore(new Store());
+        order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
+
+
         storeOrderService.putOrderAssignCanceled(order);
         return true;
     }

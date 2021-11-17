@@ -604,7 +604,16 @@
 			</when>
 			<when test="role != null and role == 'ROLE_STORE'">
 				WHERE reg_order_id = #{id}
-				AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+<!--				AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})-->
+				<!-- 2021-11-17 라이더 등의 정보 변경 시, 쉐어 매장 간의 수정 허용 -->
+				<choose>
+					<when test="store != null and store.brandCode == 1">
+						and store_id in ( select store_id from TB_SUBGROUP_STORE_REL where subgroup_id in ( select subgroup_id from TB_SUBGROUP_STORE_REL where store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}) and deleted is null ) and deleted is null)
+					</when>
+					<otherwise>
+						AND store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})
+					</otherwise>
+				</choose>
 			</when>
 			<when test="role != null and role == 'ROLE_RIDER'">
 				WHERE reg_order_id = #{id}
