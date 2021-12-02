@@ -400,15 +400,16 @@ DDELib.Orders.prototype = {
                 {label: order_message, name: 'message', width: 80, align: 'center'},
                 {label: order_customer_phone, name: 'phone', width: 80, align: 'center'},
                 {label: order_cooking, name: 'time2', width: 80, align: 'center'},
-                {label: order_payment, name: 'pay', width: 80, align: 'center', hidden:regionLocale == "zh_HK"?true:false},
+                {label: order_payment, name: 'pay', width: 80, align: 'center', hidden:regionLocale === "zh_HK"},
+                {label: order_total_price, name: 'order_total_price', width: 80, align: 'center', hidden:my_store.brandCode !== "1"},
                 {label: order_assigned, name: 'time3', width: 80, align: 'center'},
                 {label: order_pickedup, name: 'time4', width: 80, align: 'center'},
                 {label: order_arrived, name: 'time8', width: 80, align: 'center'},
-                {label: order_completed, name: 'time5', width: 80, align: 'center', hidden:my_store.brandCode == "1"?true:false},
+                {label: order_completed, name: 'time5', width: 80, align: 'center', hidden:my_store.brandCode === "1"},
                 {label: order_return, name: 'time6', width: 80, align: 'center'},
                 {label: order_reserved, name: 'time7', width: 80, align: 'center'},
                 {label: rider_name, name: 'rider', width: 80, align: 'center'},
-                {label: order_assigned_advance, name: 'button', width: 80, align: 'center'},
+                {label: order_assigned_advance, name: 'button', width: 80, align: 'center', hidden:my_store.brandCode === "1"},
                 {label: store_code, name: 'storeCode', width: 80, align: 'center'},
                 {label: "", name: 'orderbystatus', width: 80, align: 'center'},
                 {label: "", name: 'assignedFirst', width: 80, align: 'center'}
@@ -471,6 +472,9 @@ DDELib.Orders.prototype = {
         tmpdata.origin_reg_order_id = (ev.regOrderId)?ev.regOrderId:'-';
         tmpdata.time2 = ev.cookingTime;
         tmpdata.pay = this.getPayInfo(ev.paid);
+        // 21.12.02 메뉴 요금 추가
+        tmpdata.order_total_price = ev.totalPrice?ev.totalPrice:0;
+
         tmpdata.message = (!ev.message)?"-":ev.message;
         tmpdata.phone = (!ev.phone)?"-":ev.phone;
         tmpdata.time3 = (!ev.assignedDatetime )?"-":timeSet2(ev.assignedDatetime);
