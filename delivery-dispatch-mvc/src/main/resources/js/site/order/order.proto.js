@@ -16,6 +16,21 @@ DDELib.Orders.prototype = {
     },
     init: function () {
         this.log("init");
+
+        // 내 매장보기 체크박스에 대한 역할 분기처리 시작
+        var bMyStoreChk = true;
+
+        if (my_store.brandCode === "1"){
+            bMyStoreChk = false;
+
+            if (localStorage.getItem('myStoreChk') === 'true'){
+                bMyStoreChk = true;
+            }
+        }
+
+        $("#orderMyStoreChk").prop("checked", bMyStoreChk);
+
+
         this.initVar();
         this.bindEvent();
         this.makeWebSocket();
@@ -236,6 +251,10 @@ DDELib.Orders.prototype = {
             this.log("Other checkValus:"+ this.checkStatusValus());
         } else if( el.is(this.checkBoxs.myStoreChk) ){
             this.log("MyStoreChk checkbox change:"+el.attr("id"));
+
+            // 내 매장보기 체크박스에 대한 역할 분기처리 시작
+            localStorage.setItem('myStoreChk', el.is(":checked"));
+
             this.getOrderList();
         }
         this.onCloseDetail();
