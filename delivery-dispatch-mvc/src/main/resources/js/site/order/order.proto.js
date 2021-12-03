@@ -891,10 +891,11 @@ DDELib.Orders.prototype = {
             return;
         }
 
-        var combinedOrderId = $('#selectCombined').val();
+        var combinedOrderId = "";
         var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
             isCombined = true;
+            combinedOrderId = $('#selectCombined').val();
         } else {
             isCombined = false;
         }
@@ -919,9 +920,6 @@ DDELib.Orders.prototype = {
             success: function (data) {
                 self.getOrderDetail(selectedOriginOrder.regOrderId);
                 self.getOrderList();
-
-                alert('작업 완료 => ' + regOrderId);
-
             }
         });
     },
@@ -937,10 +935,11 @@ DDELib.Orders.prototype = {
         var menuPrice = $('#menuPrice').val() ? $('#menuPrice').val() : 0;
         var deliveryPrice = $('#deliveryPrice').val() ? $('#deliveryPrice').val() : 0;
         var paid = $('#selectPaid').val();
-        var combinedOrderId = combinedOrderId = $('#selectCombined').val();
+        var combinedOrderId = "";
         var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
             isCombined = true;
+            combinedOrderId = $('#selectCombined').val();
         } else {
             isCombined = false;
         }
@@ -1066,10 +1065,11 @@ DDELib.Orders.prototype = {
             return;
         }
         var id = $('.tit').attr("orderId");
-        var combinedOrderId = $('#selectCombined').val();
+        var combinedOrderId = "";
         var isCombined = "";
         if ($('#combinedChk').prop("checked")) {
             isCombined = true;
+            combinedOrderId = $('#selectCombined').val()
         } else {
             isCombined = false;
         }
