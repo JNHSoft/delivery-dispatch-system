@@ -91,8 +91,12 @@ public class OrderController {
     public boolean putOrderThirdParty(@RequestBody Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
         // 서드파티 배정 된 상태에서도 배정할수있도록 변경 Nick
         if(order.getStatus().equals("0") || order.getStatus().equals("1") || order.getStatus().equals("5")){
+            // 수동 배정에 대한 값을 추가한다.
+            order.setAssignedType("3");
+
             storeOrderService.putOrderThirdParty(order);
             return true;
         } else {
@@ -128,11 +132,6 @@ public class OrderController {
 
         // 수동 배정에 대한 값을 추가한다.
         order.setAssignedType("2");
-
-        System.out.println("======================");
-        System.out.println(order);
-        System.out.println("======================");
-
 
         int oderAdmitCount = storeOrderService.getCountOderAdmit(order);
         if(oderAdmitCount>0){

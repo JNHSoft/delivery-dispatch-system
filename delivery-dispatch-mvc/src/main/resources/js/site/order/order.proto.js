@@ -920,6 +920,8 @@ DDELib.Orders.prototype = {
                 self.getOrderDetail(selectedOriginOrder.regOrderId);
                 self.getOrderList();
 
+                alert('작업 완료 => ' + regOrderId);
+
             }
         });
     },

@@ -448,6 +448,14 @@
 			, combined_order_id = NULL
 		</if>
 
+		<!-- 21.12.03 배정 Type에 대한 값을 추가한다 -->
+		<if test="assignedType != null and assignedType != '' and assignedType != '-1'">
+			, assigned_type = #{assignedType}
+		</if>
+		<if test="assignedType != null and assignedType == '-1'">
+			, assigned_type = null
+		</if>
+
 		<choose>
 			<when test="role != null and role == 'ROLE_SYSTEM'">
 				WHERE reg_order_id = #{id}
