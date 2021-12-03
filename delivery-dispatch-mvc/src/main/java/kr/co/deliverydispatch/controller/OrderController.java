@@ -106,6 +106,7 @@ public class OrderController {
     public boolean putAssignedAdvanceFirst(Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
         storeOrderService.putOrderAssignedFirst(order);
         return true;
     }
@@ -125,6 +126,14 @@ public class OrderController {
         order.setStore(new Store());
         order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
 
+        // 수동 배정에 대한 값을 추가한다.
+        order.setAssignedType("2");
+
+        System.out.println("======================");
+        System.out.println(order);
+        System.out.println("======================");
+
+
         int oderAdmitCount = storeOrderService.getCountOderAdmit(order);
         if(oderAdmitCount>0){
             storeOrderService.putOrderAssigned(order);
@@ -140,6 +149,7 @@ public class OrderController {
     public boolean putOrder(Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
         storeOrderService.putOrderInfo(order);
         return true;
     }
@@ -168,6 +178,8 @@ public class OrderController {
         order.setStore(new Store());
         order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
 
+        // 2021-12-03 배정 종류에 대한 값을 초기화 시킨다
+        order.setAssignedType("-1");
 
         storeOrderService.putOrderAssignCanceled(order);
         return true;

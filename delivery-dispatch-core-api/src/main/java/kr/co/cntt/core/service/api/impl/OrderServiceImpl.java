@@ -110,6 +110,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         for (Order order : orderList) {
             Map map = new HashMap();
+
+            // 21-12-03 자동 배정 값 추가
+            order.setAssignedType("1");
+
             map.put("order", order);
             Map denyOrderIdChkMap = new HashMap();
             denyOrderIdChkMap.put("orderId", order.getId());
@@ -2407,6 +2411,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssignCanceled.setId(order.getId());
         orderAssignCanceled.setStatus("5");
         orderAssignCanceled.setRiderId("-1");
+        // 21-12-03 주문 변경 발생 후 라이더 배정이 취소 되는 경우에도 배정을 취소하도록 한다.
+        orderAssignCanceled.setAssignedType("-1");
         orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
 
         // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
@@ -2427,6 +2433,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssignCanceled.setId(order.getCombinedOrderId());
             combinedOrderAssignCanceled.setStatus("5");
             combinedOrderAssignCanceled.setRiderId("-1");
+            // 21-12-03 주문 변경 발생 후 라이더 배정이 취소 되는 경우에도 배정을 취소하도록 한다.
+            combinedOrderAssignCanceled.setAssignedType("-1");
+
             combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
             // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
             if (order.getAssignedDatetime() != null && order.getAssignedDatetime().equals("-1")){
