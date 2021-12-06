@@ -35,7 +35,7 @@
 			</div>
 
 			<div class="right">
-				<label class="checkbox"><input name="myStoreChk" type="checkbox" th:object="${store}" th:value="*{id}" id="orderMyStoreChk" checked="checked"/><i></i>
+				<label class="checkbox"><input name="myStoreChk" type="checkbox" th:object="${store}" th:value="*{id}" id="orderMyStoreChk" /><i></i>
 					<span class="lbl" th:text="${#messages.msg('order.mine')}"/>
 				</label>
 				<span class="inblock">
@@ -295,6 +295,12 @@
         var order_confirm_thirdparty_status = /*[[#{order.confirm.thirdparty.status}]]*/ 'order_confirm_thirdparty_status';
         var order_confirm_thirdparty = /*[[#{order.confirm.thirdparty}]]*/ 'order_confirm_thirdparty';
         var store_code = /*[[#{store.code}]]*/ 'store_code';
+
+		var order_total_price = /*[[#{order.total.price}]]*/ 'order_total_price';
+		var assigned_type_title = /*[[#{assigned.type.title}]]*/ 'assigned_type';
+		var assigned_type_auto = /*[[#{assigned.type.auto}]]*/ 'assigned_type_auto';
+		var assigned_type_manual = /*[[#{assigend.type.manual}]]*/ 'assigned_type_manual';
+		var assigned_type_third = /*[[#{assigend.type.third}]]*/ 'assigned_type_third';
         /*]]>*/
 	</script>
 </html>

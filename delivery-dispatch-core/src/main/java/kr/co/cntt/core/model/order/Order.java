@@ -29,6 +29,7 @@ public class Order extends Common implements Dto {
     private String storeId;
     private String riderId;
     private String combinedOrderId;
+    private String assignedType;            // 2021.12.03 배정에 대한 Type 1=Auto, 2=Manual
     private String status;
     private String address;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

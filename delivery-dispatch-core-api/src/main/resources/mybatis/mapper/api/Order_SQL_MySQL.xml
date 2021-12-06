@@ -228,6 +228,7 @@
 				,A.completed_datetime
 				,A.return_datetime
 				,A.menu_price
+				,A.total_price
 				,A.assigned_first
 				,A.combined_order_id
 				,A.phone
