@@ -222,12 +222,26 @@ function getStoreStatistics() {
                     // 배정 ~ 픽업 시간이 1분 미만인 경우 파란색으로 표기
                     tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
 
-                    tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
-                    tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
+                    if (data[key].pickedUpDatetime && data[key].arrivedDatetime) {
+                        tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
+                    }
 
-                    orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
-                    pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
-                    orderCompleteSum += minusTime(data[key].assignedDatetime, data[key].arrivedDatetime);
+                    if (data[key].assignedDatetime && data[key].arrivedDatetime) {
+                        tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
+                    }
+
+                    if (data[key].assignedDatetime && data[key].pickedUpDatetime) {
+                        orderPickupSum += minusTime(data[key].assignedDatetime, data[key].pickedUpDatetime);
+                    }
+
+                    if (data[key].pickedUpDatetime && data[key].arrivedDatetime) {
+                        pickupCompleteSum += minusTime(data[key].pickedUpDatetime, data[key].arrivedDatetime);
+                    }
+
+                    if (data[key].assignedDatetime && data[key].arrivedDatetime) {
+                        orderCompleteSum += minusTime(data[key].assignedDatetime, data[key].arrivedDatetime);
+                    }
+
                     QTTimerSum += Number(data[key].cookingTime);
 
                     if(data[key].returnDatetime){

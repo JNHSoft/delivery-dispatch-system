@@ -123,14 +123,16 @@ public class StatisticsKFCController {
 
                 // 21.05.27 배정 시간의 규칙 변경
                 // 배정 시간이 예약 시간 - QT 시간보다 늦어진 경우에 예약 - QT 시간으로 계산한다.
+            if (a.getAssignedDatetime() != null) {
                 LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
                 LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
 
                 // 초 단위로 비교하여, 예약 시간 - QT가 될 수 있도록 적용한다
-                if (ChronoUnit.SECONDS.between(assignTime, qtAssignTime) < 0){
+                if (ChronoUnit.SECONDS.between(assignTime, qtAssignTime) < 0) {
                     assignTime = qtAssignTime;
                     a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
                 }
+            }
 
                 // 19.08.26 페이지에서 음수가 나오는 오류 사항 변경
 //                if (arrivedTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)) {

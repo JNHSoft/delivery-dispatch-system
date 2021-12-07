@@ -229,14 +229,20 @@ function getStoreStatistics() {
                     tmpData.assignedDate = dateStringToDateTime(data[key].assignedDatetime);
                     tmpData.qtTimes = data[key].cookingTime;
 
-                    tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
-                    tmpData.orderPickup1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                    if (data[key].assignedDatetime && data[key].pickedUpDatetime) {
+                        tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                        tmpData.orderPickup1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                    }
 
-                    tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
-                    tmpData.pickupComplete1s =  timeToSeconds(minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime));
+                    if (data[key].pickedUpDatetime && data[key].arrivedDatetime){
+                        tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
+                        tmpData.pickupComplete1s =  timeToSeconds(minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime));
+                    }
 
-                    tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
-                    tmpData.orderComplete1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime));
+                    if (data[key].assignedDatetime && data[key].arrivedDatetime) {
+                        tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
+                        tmpData.orderComplete1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime));
+                    }
 
                     // 검색 조건을 위한 데이터 입력
                     tmpData.rider_name = data[key].rider.name;
