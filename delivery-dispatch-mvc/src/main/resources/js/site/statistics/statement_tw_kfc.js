@@ -220,7 +220,9 @@ function getStoreStatistics() {
                     tmpData.qtTimes = data[key].cookingTime;
 
                     // 배정 ~ 픽업 시간이 1분 미만인 경우 파란색으로 표기
-                    tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                    if (data[key].assignedDatetime && data[key].pickedUpDatetime){
+                        tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                    }
 
                     if (data[key].pickedUpDatetime && data[key].arrivedDatetime) {
                         tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
