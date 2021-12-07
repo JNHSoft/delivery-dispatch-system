@@ -4,6 +4,7 @@ import kr.co.cntt.core.annotation.CnttMethodDescription;
 import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.statistic.IntervalAtTWKFC;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.deliverydispatch.security.SecurityUser;
 import kr.co.deliverydispatch.service.StoreStatementService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,8 @@ public class StatisticsKFCController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         Order order = new Order();
         order.setCurrentDatetime(startDate);
+        order.setStore(new Store());
+        order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date sdfStartDate = formatter.parse(startDate);
@@ -123,6 +126,8 @@ public class StatisticsKFCController {
         Order order = new Order();
         order.setToken(storeInfo.getStoreAccessToken());
         order.setCurrentDatetime(startDate);
+        order.setStore(new Store());
+        order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {

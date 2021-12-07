@@ -100,6 +100,7 @@ public class StatisticsKFCController {
         }
 
         searchInfo.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setBrandCode(adminInfo.getAdminBrandCode());
 
         List<Order> statistByOrder = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
 
@@ -172,6 +173,7 @@ public class StatisticsKFCController {
         }
 
         searchInfo.setToken(adminInfo.getAdminAccessToken());
+        searchInfo.setBrandCode(adminInfo.getAdminBrandCode());
         ModelAndView modelAndView = new ModelAndView("StatisticsAdminOrderAtTWKFCBuilderServiceImpl");
         List<Order> storeOrderListByAdmin = statisticsAdminService.selectStoreStatisticsByOrderForAdmin(searchInfo);
 

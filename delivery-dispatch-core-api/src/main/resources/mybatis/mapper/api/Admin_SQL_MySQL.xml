@@ -1461,7 +1461,9 @@
 			AND	 ORD.store_id = sbStore.store_id
 			AND	 sbStore.deleted is null
 		WHERE	 ORD.status in (3)
+		<if test="brandCode == null or brandCode != 1">
 		AND		 ORD.third_party_id IS NULL
+		</if>
 		AND		 ORD.created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
 		AND		 ORD.admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token} )
 		<if test="groupId != null and groupId != 'reset'">
