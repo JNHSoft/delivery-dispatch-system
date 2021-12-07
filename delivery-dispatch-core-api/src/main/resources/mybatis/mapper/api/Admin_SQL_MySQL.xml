@@ -998,6 +998,26 @@
 			AND deleted IS NULL
 	</update>
 
+	<select id="selectThirdPartyStoreList" parameterType="kr.co.cntt.core.model.thirdParty.ThirdParty" resultType="kr.co.cntt.core.model.store.Store">
+		select   id
+				,admin_id
+				,third_party
+				,store_name
+		from     TB_STORE
+		where    1=1
+		and      deleted is null
+		and      admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
+		and      third_party like concat('%', #{id},'%')
+	</select>
+
+	<update id="updateThirdPartyStoreInfo" parameterType="kr.co.cntt.core.model.store.Store">
+		update   TB_STORE
+		set      third_party = #{thirdParty}
+		where    1=1
+		and      deleted is null
+		and      admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{token})
+		and      id = #{id}
+	</update>
 
 	<!-- insertAlarm -->
 	<insert id="insertAlarm" parameterType="kr.co.cntt.core.model.alarm.Alarm">

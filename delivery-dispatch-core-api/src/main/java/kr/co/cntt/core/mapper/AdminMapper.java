@@ -348,6 +348,12 @@ public interface AdminMapper {
      */
     public int deleteThirdParty(ThirdParty thirdParty);
 
+    // 21.12.07 관리자에서 서드파티를 삭제 시, 설정된 스토어의 정보를 가져와 관련 서드파티만 삭제할 수 있도록 적용한다.
+    List<Store> selectThirdPartyStoreList(ThirdParty thirdParty);
+
+    // 21.12.07 관리자에서 서드파티를 삭제 시, 설정된 스토어의 정보를 가져와 관련 서드파티만 삭제할 수 있도록 적용한다.
+    int updateThirdPartyStoreInfo(Store store);
+
     /**
      * <p> 알림음 추가
      *

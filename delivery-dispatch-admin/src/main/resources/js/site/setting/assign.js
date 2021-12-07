@@ -214,7 +214,7 @@ $(document).on('click', 'button[name="thirdPartySave"]', function() {
 
 // 서드 파티 추가
 function postThirdParty() {
-    if ($('#inpThirdParty').val() == null || $('#inpThirdParty').val() == '') {
+    if ($('#inpThirdParty').val() == null || $('#inpThirdParty').val().trim() == '') {
         alert(none_parameter);
         return false;
     }
@@ -234,6 +234,11 @@ function postThirdParty() {
 }
 // 서드 파티 수정
 function putThirdParty($target,param) {
+    if (param.name == null || param.name.trim() === '') {
+        alert(none_parameter);
+        return false;
+    }
+
     $.ajax({
         url: "/putThirdParty",
         type: 'put',

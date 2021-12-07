@@ -248,7 +248,8 @@
 				,A.shared_flag																	as sharedStatus
 
 				,A.third_party_id
-				,(select name from TB_THIRD_PARTY where id = A.third_party_id and deleted is null )	as third_party_name
+				-- ,(select name from TB_THIRD_PARTY where id = A.third_party_id and deleted is null )	as third_party_name
+				,(select name from TB_THIRD_PARTY where id = A.third_party_id )					as third_party_name
 				,C.code																			as store_code
 
 				-- 2021.12.03 배정 타입에 대한 정보 추가

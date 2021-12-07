@@ -92,6 +92,11 @@ public class OrderController {
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
 
+        // 배달 대행 ID 값이 NULL 인 경우에 실패로 떨구기
+        if (order.getThirdParty() == null || order.getThirdParty().getId() == null){
+            return false;
+        }
+
         // 서드파티 배정 된 상태에서도 배정할수있도록 변경 Nick
         if(order.getStatus().equals("0") || order.getStatus().equals("1") || order.getStatus().equals("5")){
             // 수동 배정에 대한 값을 추가한다.
