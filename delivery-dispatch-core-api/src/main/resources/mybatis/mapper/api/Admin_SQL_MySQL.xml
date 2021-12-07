@@ -1970,8 +1970,8 @@
 							AND	  O.created_datetime between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
 						</otherwise>
 					</choose>
-					AND		 THIRD_PARTY_ID IS NULL
 					-- 시간대별 통계에 대한 조건 추가
+<!--		AND		 THIRD_PARTY_ID IS NULL-->
 <!--					AND		 assigned_datetime is not null-->
 <!--					AND		 picked_up_datetime is not null-->
 <!--					AND		 ifnull(arrived_datetime, completed_datetime) is not null-->
