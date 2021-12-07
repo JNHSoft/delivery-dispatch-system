@@ -905,8 +905,16 @@ DDELib.Orders.prototype = {
             alert(order_confirm_completed);
             return;
         }
-        var result = confirm('['+ $('#selectedThirdParty option:selected').text()+'] ' + order_confirm_thirdparty);
-        if(!result){
+
+        var selectedThirdpartyName = $('#selectedThirdParty option:selected').text();
+
+        if (selectedThirdpartyName != ''){
+            var result = confirm('[' + selectedThirdpartyName + ']' + order_confirm_thirdparty);
+            if(!result){
+                return;
+            }
+        }else {
+            alert(alert_no_selected_thirdparty);
             return;
         }
 
