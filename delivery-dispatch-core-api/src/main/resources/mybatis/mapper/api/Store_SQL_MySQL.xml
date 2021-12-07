@@ -713,40 +713,45 @@
     </select>
 
     <!-- 20.06.04 대만 KFC 요청으로 인하여 분리 작업 -->
+    <!-- 21.12.07 KFC 오류 TC 항목도 집계에 포함, 동시에 제3자배송도 모두 집계되도록 변경됨 -->
     <select id="selectStoreStatisticsByDateAtTWKFC" parameterType="kr.co.cntt.core.model.order.Order" resultType="kr.co.cntt.core.model.statistic.ByDate">
         <![CDATA[
         select	 ( select store_name from TB_STORE where id = t.store_id )																					as store_name
-                ,sum( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 and condition1 = 1 then 1 else 0 end )					as d7_success
-                ,avg( case when condition1 = 1 then time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)) else null end )							as order_pickup
-                ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, picked_up_datetime)) else null end )								as pickup_complete
-                ,avg( case when condition1 = 1 then time_to_sec(timediff(arrived_datetime, newAssignedDatetime)) else null end )							as order_complete
-                ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, arrived_datetime)) else null end )								as complete_return
-                ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else null end )								as pickup_return
-                ,avg( case when condition1 = 1 then time_to_sec(timediff(return_datetime, newAssignedDatetime)) else null end )								as order_return
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 and condition1 = 1 then 1 else null end )
-                 / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_D7below
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 and condition1 = 1 then 1 else null end )
-                 / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_30below
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 and condition1 = 1 then 1 else null end )
-                 / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_30to40
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 and condition1 = 1 then 1 else null end )
-                 / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_40to50
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 and condition1 = 1 then 1 else null end )
-                 / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_50to60
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 and condition1 = 1 then 1 else null end )
-                 / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_60to90
-                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 and condition1 = 1 then 1 else null end )
-                 / count( case when condition1 = 1 then 1 else null end ) * 100																				as min_90under
-                ,count( case when condition1 = 1 or third_party_id is not null then null else 1 end )														as errtc
+                ,sum( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else 0 end )					                    as d7_success
+                ,avg(time_to_sec(timediff(picked_up_datetime, newAssignedDatetime)))							                                            as order_pickup
+                ,avg(time_to_sec(timediff(arrived_datetime, picked_up_datetime)))								                                            as pickup_complete
+                ,avg(time_to_sec(timediff(arrived_datetime, newAssignedDatetime)))							                                                as order_complete
+                ,avg(time_to_sec(timediff(return_datetime, arrived_datetime)))								                                                as complete_return
+                ,avg(time_to_sec(timediff(return_datetime, picked_up_datetime)))								                                            as pickup_return
+                ,avg(time_to_sec(timediff(return_datetime, newAssignedDatetime)))								                                            as order_return
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, picked_up_datetime) < 7 then 1 else null end )
+                 / count(*) * 100																				                                            as min_D7below
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) <= 30 then 1 else null end )
+                 / count(*) * 100																				                                            as min_30below
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 31 and 41 then 1 else null end )
+                 / count(*) * 100																				                                            as min_30to40
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 41 and 51 then 1 else null end )
+                 / count(*) * 100																				                                            as min_40to50
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 51 and 61 then 1 else null end )
+                 / count(*) * 100																				                                            as min_50to60
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) between 61 and 91 then 1 else null end )
+                 / count(*) * 100																				                                            as min_60to90
+                ,count( case when timestampdiff(MINUTE, newAssignedDatetime, arrived_datetime) > 90 then 1 else null end )
+                 / count(*) * 100																				                                            as min_90under
+                -- ,count( case when condition1 = 1 or third_party_id is not null then null else 1 end )														as errtc
+                -- 2021-12-07 배정 모드에 대한 집계 추가
+                ,count( case when assigned_type = 1 then 1 else null end )                                                                                  as assigned_auto
+                ,count( case when assigned_type = 2 then 1 else null end )                                                                                  as assigned_manual
                 ,count( case when third_party_id is not null then 1 else null end )																			as thirdtc
-                ,count( case when condition1 = 1 then 1 else null end )																						as tc
-                ,sum( case when condition1 = 1 then total_price else 0 end )																				as total_sales
-                ,count( case when condition1 = 1 then 1 else null end )
-                 / (round(sum( case when condition1 = 1 then timestampdiff(second, picked_up_datetime, return_datetime) else 0 end ) / 3600, 2))				as tplh
-                ,sum( case when condition1 = 1 then total_price else 0 end )
-                 / (round(sum( case when condition1 = 1 then timestampdiff(second, picked_up_datetime, return_datetime) else 0 end ) / 3600, 2))				as spmh
-                ,sum( case when condition1 = 1 then time_to_sec(timediff(return_datetime, picked_up_datetime)) else 0 end )									as total_pickup_return
-                ,avg( case when condition1 = 1 then distance else null end )																				as avg_distance
+                -- 2021-12-07 써드파티도 TC에 포함
+                ,count(*)																						                                            as tc
+                ,sum(total_price)																				                                            as total_sales
+                ,count(*)
+                 / (round(sum(timestampdiff(second, picked_up_datetime, return_datetime)) / 3600, 2))				                                        as tplh
+                ,sum(total_price)
+                 / (round(sum(timestampdiff(second, picked_up_datetime, return_datetime)) / 3600, 2))				                                        as spmh
+                ,sum(time_to_sec(timediff(return_datetime, picked_up_datetime)))									                                        as total_pickup_return
+                ,avg(distance)																				                                                as avg_distance
         from	(
                     select	 store_id
                             ,cooking_time
@@ -758,20 +763,8 @@
                             ,total_price
                             ,distance
                             ,third_party_id
+                            ,assigned_type
                             ,if(timestampdiff(second, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime)		as newAssignedDatetime
-                            ,case
-                                when	 assigned_datetime is not null
-                                    and  picked_up_datetime is not null
-                                    and	 ifnull(arrived_datetime, completed_datetime) is not null
-                                    and	 return_datetime is not null
-                                    and	 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                                    and	 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                                    and  third_party_id is null
-                                then 1
-                                else 0
-                            end					as condition1
                     FROM	 TB_ORDER
                     WHERE	 status in (3)
                     AND		 store_id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token})

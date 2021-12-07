@@ -67,10 +67,14 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
             Row titleRow = sheet.createRow(rowNum++);
 
             sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
+
+            // 평균 시간 영역 title
             sheet.addMergedRegion(new CellRangeAddress(0,0,1,6));
 
+            // 배달 완료율 영역 title
             sheet.addMergedRegion(new CellRangeAddress(0,0,7,locale.toString().equals("zh_TW")?8:13));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?14:21));
+            // 성능 및 생산성 영역 title
+            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?15:22));
 
             sheet.setColumnWidth(colNum, 15*256);
             Cell addTitle = titleRow.createCell(colNum++);
@@ -138,6 +142,10 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
 
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellStyle(titleCellStyle);
+
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellStyle(titleCellStyle);
+
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellStyle(titleCellStyle);
             //
@@ -225,9 +233,19 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
 
             }
 
+//            sheet.setColumnWidth(colNum, 17*256);
+//            addTitle = titleRow.createCell(colNum++);
+//            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.errtc",null, locale));
+//            addTitle.setCellStyle(titleCellStyle);
+
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.errtc",null, locale));
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.assigned.mode.auto",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.assigned.mode.manual",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
             sheet.setColumnWidth(colNum, 17*256);
@@ -281,7 +299,10 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
         float min60To90 = 0f;
         float min90Under = 0f;
         float totalSales = 0f;
-        float errtc = 0f;
+        //float errtc = 0f;
+        // 배정 모드 수량
+        float autotc = 0f;
+        float manualtc = 0f;
         float thirdtc = 0f;
         float tc = 0f;
         float tplh = 0f;
@@ -300,7 +321,7 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
         int returnNullCnt = 0;
         int tpSpNullCnt = 0;
         int distanceNullCnt = 0;
-        int onlyErrCnt = 0;
+        //int onlyErrCnt = 0;
         int onlyThirdCnt = 0;
 
         for(int i = 0, r = storeStatisticsByDateList.size(); i<r; i++) {
@@ -308,7 +329,7 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
             int chkCnt = 0;
             int chkTpSpCnt = 0;
             int chkDistanceCnt = 0;
-            int chkErrCnt = 0;
+            //int chkErrCnt = 0;
             int chkThirdCnt = 0;
 
             orderPickupTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderPickup())) * 1000;
@@ -343,10 +364,8 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
             min90Under += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getMin90Under()));
             totalSales += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTotalSales()));
 
-            if (storeStatisticsByDateList.get(i).getErrtc() != null){
-                errtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()));
-                chkErrCnt++;
-            }
+            autotc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getAssignedAuto()));
+            manualtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getAssignedManual()));
 
             if (storeStatisticsByDateList.get(i).getThirdtc() != null){
                 thirdtc += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getThirdtc()));
@@ -449,8 +468,16 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
                 cell.setCellStyle(dataCellStyle);
             }
 
+//            cell = addListRow.createCell(colNum++);
+//            cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()))));
+//            cell.setCellStyle(dataCellStyle);
+
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getErrtc()))));
+            cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getAssignedAuto()))));
+            cell.setCellStyle(dataCellStyle);
+
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(String.format("%.0f", Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getAssignedManual()))));
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
@@ -492,11 +519,6 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
 
             if(chkDistanceCnt == 0){
                 distanceNullCnt++;
-            }
-
-            // 정상 개수가 없는 경우에만 err랑 제3자를 센다
-            if (chkErrCnt > 0){
-                onlyErrCnt++;
             }
 
             if (chkThirdCnt > 0){
@@ -627,9 +649,24 @@ public class StoreStatisticsByDateAtTWKFCExcelBuilderServiceImpl extends CommExc
                     cell2.setCellStyle(dataCellStyle);
                 }
 
+//                cell2 = addListRow.createCell(colNum++);
+//                if (errtc > 0 && onlyErrCnt > 0){
+//                    cell2.setCellValue(String.format("%.0f",errtc/onlyErrCnt));
+//                }else{
+//                    cell2.setCellValue("0");
+//                }
+
                 cell2 = addListRow.createCell(colNum++);
-                if (errtc > 0 && onlyErrCnt > 0){
-                    cell2.setCellValue(String.format("%.0f",errtc/onlyErrCnt));
+                if (autotc > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(String.format("%.0f",autotc/tcRowCnt));
+                }else{
+                    cell2.setCellValue("0");
+                }
+                cell2.setCellStyle(dataCellStyle);
+
+                cell2 = addListRow.createCell(colNum++);
+                if (manualtc > 0 && tcRowCnt > 0){
+                    cell2.setCellValue(String.format("%.0f",manualtc/tcRowCnt));
                 }else{
                     cell2.setCellValue("0");
                 }

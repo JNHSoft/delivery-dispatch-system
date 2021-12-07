@@ -170,7 +170,6 @@ function getStoreStatisticsByDate() {
             let totalSalesSum = 0;
             let totalD7Success = 0;
 
-            let errtcSum = 0;
             let thirdtcSum = 0;
             let tcSum = 0;
             let tplhSum = 0;
@@ -187,11 +186,13 @@ function getStoreStatisticsByDate() {
             let distanceCnt = 0;
             // tpsp 제외 count
             let tpSpCnt = 0;
-            // Error 개수
-            let onlyErrCnt = 0;
             // Third party 개수
             let onlyThirdCnt = 0;
 
+            // 배정 모드 Auto
+            let assignedAutoCnt = 0;
+            // 배정 모드 Manual
+            let assignedManualCnt = 0;
 
             for (let key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -199,7 +200,6 @@ function getStoreStatisticsByDate() {
                     let chkCnt = 0;
                     let chkDistanceCnt = 0;
                     let chkTpSpCnt = 0;
-                    let chkErrCnt = 0;
                     let chkThirdCnt = 0;
 
                     let tmpdata = new Object();
@@ -229,13 +229,6 @@ function getStoreStatisticsByDate() {
                     tmpdata.min90Under = formatFloat(data[key].min90Under, 1) + "%";
                     tmpdata.totalSales = formatInt(data[key].totalSales, 1);
 
-                    if (formatInt(data[key].errtc) > 0){
-                        tmpdata.errtc = formatInt(data[key].errtc);
-                        chkErrCnt++;
-                    }else{
-                        tmpdata.errtc = "-"
-                    }
-
                     if (formatInt(data[key].thirdtc) > 0){
                         tmpdata.thirdtc = formatInt(data[key].thirdtc);
                         chkThirdCnt++;
@@ -244,6 +237,10 @@ function getStoreStatisticsByDate() {
                     }
 
                     tmpdata.tc = formatInt(data[key].tc);
+
+                    // 배정 모드 Auto
+                    tmpdata.assignedAuto = formatInt(data[key].assignedAuto);
+                    tmpdata.assignedManual = formatInt(data[key].assignedManual);
 
                     if(data[key].tplh){
                         tmpdata.tplh = formatFloat(data[key].tplh, 2);
@@ -309,9 +306,13 @@ function getStoreStatisticsByDate() {
                     // D7 성공 개수
                     totalD7Success += formatInt(data[key].d7Success, 1);
 
-                    errtcSum += formatInt(data[key].errtc, 1);
                     thirdtcSum += formatInt(data[key].thirdtc, 1);
                     tcSum += formatInt(data[key].tc, 1);
+
+                    // 배정 개수 오토
+                    assignedAutoCnt += formatInt(data[key].assignedAuto);
+                    // 배정 개수 수동
+                    assignedManualCnt += formatInt(data[key].assignedManual);
 
                     mydata.push(tmpdata);
                     if(chkCnt !=0){
@@ -322,11 +323,6 @@ function getStoreStatisticsByDate() {
                     }
                     if(chkTpSpCnt !=0){
                         tpSpCnt--;
-                    }
-
-                    // 정상 개수가 없는 경우 에러와 제 3자를 제외
-                    if (chkErrCnt != 0){
-                        onlyErrCnt++;
                     }
 
                     if (chkThirdCnt != 0){
@@ -353,9 +349,13 @@ function getStoreStatisticsByDate() {
             avgData.min60To90 = formatFloat((min60To90Sum/tcRowCnt), 1) +"%";
             avgData.min90Under = formatFloat((min90UnderSum/tcRowCnt), 1) +"%";
             avgData.totalSales = formatInt((totalSalesSum/tcRowCnt), 1);
-            avgData.errtc = formatInt((errtcSum/onlyErrCnt), 1);
             avgData.thirdtc = formatInt((thirdtcSum/onlyThirdCnt), 1);
             avgData.tc = formatInt((tcSum/tcRowCnt), 1);
+
+            // 배정 모드
+            avgData.assignedAuto = formatInt((assignedAutoCnt / tcRowCnt), 1);
+            avgData.assignedManual = formatInt((assignedManualCnt / tcRowCnt), 1);
+
 
             if(tpSpCnt!=0){
                 avgData.tplh = formatFloat((tplhSum/tpSpCnt), 2);
@@ -403,7 +403,10 @@ function getStoreStatisticsByDate() {
                     {label: '<=90 MINS %', name: 'min60To90', index: 'min60To90', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
-                    {label: label_errtc, name: 'errtc', index: 'errtc', width: 50, align: 'center'},
+                    // {label: label_errtc, name: 'errtc', index: 'errtc', width: 50, align: 'center'},
+                    // 배정 모드
+                    {label: assigned_mode_auto, name: 'assignedAuto', index: 'assignedAuto', width: 50, align: 'center'},
+                    {label: assigned_mode_manual, name: 'assignedManual', index: 'assignedManual', width: 50, align: 'center'},
                     {label: label_third_party, name: 'thirdtc', index: 'thirdtc', width: 50, align: 'center'},
                     {label: label_tc, name: 'tc', index: 'tc', width: 50, align: 'center'},
                     {label: label_tplh, name: 'tplh', index: 'tplh', width: 80, align: 'center'},
@@ -424,7 +427,7 @@ function getStoreStatisticsByDate() {
                 groupHeaders:[
                     {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: label_average_time},
                     {startColumnName: 'minD7Below', numberOfColumns: 7, titleText: label_percent_completed},
-                    {startColumnName: 'totalSales', numberOfColumns: 8, titleText: label_productivity}
+                    {startColumnName: 'totalSales', numberOfColumns: 9, titleText: label_productivity}
                 ]
             });
             resizeJqGrid('#jqGrid'); //그리드 리사이즈

@@ -188,6 +188,12 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
         Store S_Store = storeMapper.selectStoreInfo(order);
         order.setId(tmpRegOrderId);
 
+
+        System.out.println("################################################");
+        System.out.println(tmpRegOrderId);
+        System.out.println(tmpCombinedOrderId);
+        System.out.println("################################################");
+
         // 오더상태값 가져오는 쿼리
         int selectThirdPartyStatus = orderMapper.selectOrderIsThirdPartyStatus(order);
         if (selectThirdPartyStatus != 0){

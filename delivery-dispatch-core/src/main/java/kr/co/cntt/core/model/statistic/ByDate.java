@@ -39,4 +39,7 @@ public class ByDate implements Dto {
     private String avgDistance;             // 평균
 
     private String d7Success;               // 개수
+    
+    private String assignedAuto;            // 자동 배정 개수
+    private String assignedManual;          // 수동 배정 개수
 }

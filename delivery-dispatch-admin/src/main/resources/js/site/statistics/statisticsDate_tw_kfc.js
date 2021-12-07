@@ -159,7 +159,13 @@ function getStoreStatisticsByDate() {
             let min90UnderSum = 0;
             let totalSalesSum = 0;
 
-            let errtcSum = 0;
+            //let errtcSum = 0;
+            // 배정모드
+            // 배정 모드 Auto
+            let assignedAutoCnt = 0;
+            // 배정 모드 Manual
+            let assignedManualCnt = 0;
+
             let thirdtcSum = 0;
             let tcSum = 0;
             let tplhSum = 0;
@@ -173,7 +179,7 @@ function getStoreStatisticsByDate() {
             // tpsp 제외 count
             let tpSpCnt = 0;
             // Error 개수
-            let onlyErrCnt = 0;
+            //let onlyErrCnt = 0;
             // Third party 개수
             let onlyThirdCnt = 0;
             let tcRowCnt = 0;
@@ -188,7 +194,7 @@ function getStoreStatisticsByDate() {
                     let chkCnt = 0;
                     let chkDistanceCnt = 0;
                     let chkTpSpCnt = 0;
-                    let chkErrCnt = 0;
+                    //let chkErrCnt = 0;
                     let chkThirdCnt = 0;
 
                     let tmpdata = new Object();
@@ -258,12 +264,17 @@ function getStoreStatisticsByDate() {
                     tmpdata.totalSales = formatFloat(data[key].totalSales / currentRow, 1);
                     tmpdata.totalSaless = formatInt(data[key].totalSales);
 
-                    if (formatInt(data[key].errtc, 0) > 0){
-                        tmpdata.errtc = formatInt(data[key].errtc);
-                        chkErrCnt++;
-                    }else{
-                        tmpdata.errtc = "-"
-                    }
+                    // if (formatInt(data[key].errtc, 0) > 0){
+                    //     tmpdata.errtc = formatInt(data[key].errtc);
+                    //     chkErrCnt++;
+                    // }else{
+                    //     tmpdata.errtc = "-"
+                    // }
+
+                    // 배정 모드 Auto
+                    tmpdata.assignedAuto = formatInt(data[key].assignedAuto);
+                    tmpdata.assignedManual = formatInt(data[key].assignedManual);
+
 
                     if (formatInt(data[key].thirdtc, 0) > 0){
                         tmpdata.thirdtc = formatInt(data[key].thirdtc);
@@ -337,7 +348,10 @@ function getStoreStatisticsByDate() {
                     min90UnderSum += formatFloat(data[key].min90Under, 1);
                     totalSalesSum += formatFloat(data[key].totalSales, 1);
 
-                    errtcSum += formatInt(data[key].errtc);
+                    //errtcSum += formatInt(data[key].errtc);
+                    // 배정 모드
+                    assignedAutoCnt += formatInt(data[key].assignedAuto);
+                    assignedManualCnt += formatInt(data[key].assignedManual);
                     thirdtcSum += formatInt(data[key].thirdtc);
                     tcSum += formatInt(data[key].tc);
 
@@ -350,11 +364,6 @@ function getStoreStatisticsByDate() {
                     }
                     if(chkTpSpCnt !=0){
                         tpSpCnt--;
-                    }
-
-                    // 정상 개수가 없는 경우 에러와 제 3자를 제외
-                    if (chkErrCnt != 0){
-                        onlyErrCnt++;
                     }
 
                     if (chkThirdCnt != 0){
@@ -388,9 +397,12 @@ function getStoreStatisticsByDate() {
             avgData.min60To90 = formatFloat((min60To90Sum / tcSum) * 100, 1) +"%";
             avgData.min90Under = formatFloat((min90UnderSum / tcSum) * 100, 1) +"%";
             avgData.totalSales = formatFloat((totalSalesSum / tcSum), 1);
-            avgData.errtc = formatInt(errtcSum / onlyErrCnt);
             avgData.thirdtc = formatInt(thirdtcSum / onlyThirdCnt);
             avgData.tc = formatInt(tcSum / tcRowCnt);
+
+            // 배정 모드
+            avgData.assignedAuto = formatInt((assignedAutoCnt / tcRowCnt), 1);
+            avgData.assignedManual = formatInt((assignedManualCnt / tcRowCnt), 1);
 
             if(tpSpCnt!=0){
                 avgData.tplh = formatFloat(tcSum / tplhSum, 2);
@@ -463,7 +475,8 @@ function getStoreStatisticsByDate() {
                     {label: '<=90 MINS %', name: 'min60To90', index: 'min60To90', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: '>90 MINS %', name: 'min90Under', index: 'min90Under', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
                     {label: label_sales, name: 'totalSales', index: 'totalSales', width: 80, align: 'center' , hidden: regionLocale.country == "TW"?true:false},
-                    {label: label_errtc, name: 'errtc', index: 'errtc', width: 50, align: 'center'},
+                    {label: assigned_mode_auto, name: 'assignedAuto', index: 'assignedAuto', width: 50, align: 'center'},
+                    {label: assigned_mode_manual, name: 'assignedManual', index: 'assignedManual', width: 50, align: 'center'},
                     {label: label_third_party, name: 'thirdtc', index: 'thirdtc', width: 50, align: 'center'},
                     {label: label_tc, name: 'tc', index: 'tc', width: 50, align: 'center'},
                     {label: label_tplh, name: 'tplh', index: 'tplh', width: 80, align: 'center'},
@@ -490,10 +503,7 @@ function getStoreStatisticsByDate() {
                                     if (rcData.length > 0){
                                         let orderCount = rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.tc), 0);
                                         let rowCount = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.tc) > 0 ? 1 : 0), 0));
-                                        let errCount = rcData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.errtc) > 0 ? 1 : 0), 0);
                                         let thirdCount = rcData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.thirdtc) > 0 ? 1 : 0), 0);
-
-
 
                                         objRowData.orderPickup = secondsToTime(formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.orderPickups), 0) / orderCount));
                                         objRowData.pickupComplete = secondsToTime(formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.pickupCompletes), 0) / orderCount));
@@ -509,7 +519,9 @@ function getStoreStatisticsByDate() {
                                         objRowData.min60To90 = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min60To90s), 0) / orderCount * 100, 1) +"%";
                                         objRowData.min90Under = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min90Unders), 0) / orderCount * 100, 1) +"%";
                                         objRowData.totalSales = formatFloat(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.totalSaless), 0) / orderCount, 1);
-                                        objRowData.errtc = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.errtc), 0) / errCount);
+                                        // objRowData.errtc = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.errtc), 0) / errCount);
+                                        objRowData.assignedAuto = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.assignedAuto), 0) / rowCount);
+                                        objRowData.assignedManual = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.assignedManual), 0) / rowCount);
                                         objRowData.thirdtc = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.thirdtc), 0) / thirdCount);
                                         objRowData.tc = formatInt(orderCount / rowCount);
                                         objRowData.tplh = formatFloat(orderCount / formatFloat(rcData.reduce((sum, obj) => formatFloat(sum, 2) + formatFloat(obj.tplhs, 2), 0), 2), 2);
@@ -531,7 +543,6 @@ function getStoreStatisticsByDate() {
                                     if (acData.length > 0){
                                         let orderCount = acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.tc), 0);
                                         let rowCount = formatInt(acData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.tc) > 0 ? 1 : 0), 0));
-                                        let errCount = acData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.errtc) > 0 ? 1 : 0), 0);
                                         let thirdCount = acData.reduce((sum, obj) => formatInt(sum) + (formatInt(obj.thirdtc) > 0 ? 1 : 0), 0);
 
 
@@ -550,7 +561,8 @@ function getStoreStatisticsByDate() {
                                         objRowData.min60To90 = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min60To90s), 0) / orderCount * 100, 1) +"%";
                                         objRowData.min90Under = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.min90Unders), 0) / orderCount * 100, 1) +"%";
                                         objRowData.totalSales = formatFloat(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.totalSaless), 0) / orderCount, 1);
-                                        objRowData.errtc = formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.errtc), 0) / errCount);
+                                        objRowData.assignedAuto = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.assignedAuto), 0) / rowCount);
+                                        objRowData.assignedManual = formatInt(rcData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.assignedManual), 0) / rowCount);
                                         objRowData.thirdtc = formatInt(acData.reduce((sum, obj) => formatInt(sum) + formatInt(obj.thirdtc), 0) / thirdCount);
                                         objRowData.tc = formatInt(orderCount / rowCount);
                                         objRowData.tplh = formatFloat(orderCount / formatFloat(acData.reduce((sum, obj) => formatFloat(sum, 2) + formatFloat(obj.tplhs, 2), 0), 2), 2);
@@ -576,7 +588,7 @@ function getStoreStatisticsByDate() {
                 groupHeaders:[
                     {startColumnName: 'orderPickup', numberOfColumns: 6, titleText: label_average_time},
                     {startColumnName: 'minD7Below', numberOfColumns: 7, titleText: label_percent_completed},
-                    {startColumnName: 'totalSales', numberOfColumns: 8, titleText: label_productivity}
+                    {startColumnName: 'totalSales', numberOfColumns: 9, titleText: label_productivity}
                 ]
             });
 
