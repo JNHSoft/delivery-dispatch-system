@@ -858,18 +858,18 @@
                 AND	  created_datetime between #{currentDatetime} and date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)
             </otherwise>
         </choose>
-        <![CDATA[
-        -- 시간대별 통계에 대한 조건 추가
-        AND		 assigned_datetime is not null
-        AND		 picked_up_datetime is not null
-        AND		 ifnull(arrived_datetime, completed_datetime) is not null
-        AND		 return_datetime is not null
-        AND		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-        AND      third_party_id IS NULL
-        ]]>
+<!--        <![CDATA[-->
+<!--        &#45;&#45; 시간대별 통계에 대한 조건 추가-->
+<!--        AND		 assigned_datetime is not null-->
+<!--        AND		 picked_up_datetime is not null-->
+<!--        AND		 ifnull(arrived_datetime, completed_datetime) is not null-->
+<!--        AND		 return_datetime is not null-->
+<!--        AND		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60-->
+<!--        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0-->
+<!--        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0-->
+<!--        AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0-->
+<!--        AND      third_party_id IS NULL-->
+<!--        ]]>-->
     </select>
 
     <!-- 통계 조회 List3 - 배달완료율 30분 미만 목록-->
@@ -1040,18 +1040,18 @@
                         AND	  O.created_datetime between #{currentDatetime} and DATE_ADD(#{currentDatetime}, INTERVAL (#{days} + 1) - 1 DAY)
                     </otherwise>
                 </choose>
-                AND		 THIRD_PARTY_ID IS NULL
-                -- 시간대별 통계에 대한 조건 추가
-                AND		 assigned_datetime is not null
-                AND		 picked_up_datetime is not null
-                AND		 ifnull(arrived_datetime, completed_datetime) is not null
-                AND		 return_datetime is not null
-                <![CDATA[
-                AND		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60
-                AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0
-                AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0
-                AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0
-                ]]>
+<!--                AND		 THIRD_PARTY_ID IS NULL-->
+<!--                &#45;&#45; 시간대별 통계에 대한 조건 추가-->
+<!--                AND		 assigned_datetime is not null-->
+<!--                AND		 picked_up_datetime is not null-->
+<!--                AND		 ifnull(arrived_datetime, completed_datetime) is not null-->
+<!--                AND		 return_datetime is not null-->
+<!--                <![CDATA[-->
+<!--                AND		 timestampdiff(SECOND, ifnull(arrived_datetime, completed_datetime), return_datetime) >= 60-->
+<!--                AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), ifnull(arrived_datetime, completed_datetime)) >= 0-->
+<!--                AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), picked_up_datetime) >= 0-->
+<!--                AND		 timestampdiff(SECOND, if(timestampdiff(minute, assigned_datetime, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute)) < 0, date_sub(reservation_datetime, interval case when ifnull(cooking_time, 30) > 30 or ifnull(cooking_time, 30) < 1 then 30 else ifnull(cooking_time, 30) end minute), assigned_datetime), return_datetime) >= 0-->
+<!--                ]]>-->
                 GROUP BY day_to_day
             )	B
             ON	 A.DATE = B.day_to_day

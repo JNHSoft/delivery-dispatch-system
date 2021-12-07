@@ -74,13 +74,13 @@ public class StatisticsKFCController {
         order.setToken(storeInfo.getStoreAccessToken());
         List<Order> statisticsList = storeStatementService.getStoreStatisticsByOrder(order);
         return statisticsList.stream().filter(a->{
-            if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
+//            if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null  && a.getReturnDatetime() != null){
                 LocalDateTime reserveDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
-                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
-                // 배달 도착 시간
-                LocalDateTime arrivedTime = LocalDateTime.parse((a.getArrivedDatetime()).replace(" ", "T"));
-                //LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
-                LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+//                LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+//                // 배달 도착 시간
+//                LocalDateTime arrivedTime = LocalDateTime.parse((a.getArrivedDatetime()).replace(" ", "T"));
+//                //LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+//                LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
                 int qtTime = 0;
 
                 try {
@@ -105,14 +105,14 @@ public class StatisticsKFCController {
 
                 // 19.08.26 페이지에서 음수가 나오는 오류 사항 변경
                 // 20.05.22 기준 시간 변경
-                if(arrivedTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+//                if(arrivedTime.until(returnTime, ChronoUnit.SECONDS)>=60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
                     return true;
-                }else{
-                    return false;
-                }
-            }else{
-                return false;
-            }
+//                }else{
+//                    return false;
+//                }
+//            }else{
+//                return false;
+//            }
         }).collect(Collectors.toList());//서비스로 빼면 안됨(해당 스트림 필터는 해당 컨트롤러에서만 필요)
     }
 
@@ -150,16 +150,16 @@ public class StatisticsKFCController {
         List<Order> filerStoreStatisticsByOrderList =
                 storeStatisticsByOrderList.stream().filter(a -> {
                     // 다음 4가지의 모든 시간이 NULL 이 아닌 경우만 가져온다
-                    if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null){
+//                    if (a.getAssignedDatetime() != null && a.getPickedUpDatetime() != null && a.getCompletedDatetime() != null && a.getReturnDatetime() != null){
                         LocalDateTime reserveDatetime = LocalDateTime.parse((a.getReservationDatetime()).replace(" ", "T"));
                         // 픽업 시간
-                        LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
-                        // 배달 도착 시간
-                        LocalDateTime arrivedTime = LocalDateTime.parse((a.getArrivedDatetime()).replace(" ", "T"));
-                        // 배달 완료 시간
-                        //LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
-                        // 기사 복귀 시간
-                        LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
+//                        LocalDateTime pickupTime = LocalDateTime.parse((a.getPickedUpDatetime()).replace(" ", "T"));
+//                        // 배달 도착 시간
+//                        LocalDateTime arrivedTime = LocalDateTime.parse((a.getArrivedDatetime()).replace(" ", "T"));
+//                        // 배달 완료 시간
+//                        //LocalDateTime completeTime = LocalDateTime.parse((a.getCompletedDatetime()).replace(" ", "T"));
+//                        // 기사 복귀 시간
+//                        LocalDateTime returnTime = LocalDateTime.parse((a.getReturnDatetime()).replace(" ", "T"));
                         int qtTime = 0;
 
                         try {
@@ -180,14 +180,14 @@ public class StatisticsKFCController {
                             a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
                         }
 
-                        if (arrivedTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
+//                        if (arrivedTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
                             return  true;
-                        }else {
-                            return  false;
-                        }
-                    }else{
-                        return  false;
-                    }
+//                        }else {
+//                            return  false;
+//                        }
+//                    }else{
+//                        return  false;
+//                    }
                 }).collect(Collectors.toList());
 
         modelAndView.addObject("getStoreStatisticsByOrderAtTWKFCExcel", filerStoreStatisticsByOrderList);
