@@ -150,10 +150,16 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
         int distanceNullCnt = 0;
 
         for (int i = 0, r = orderList.size(); i < r; i++) {
-            LocalDateTime pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
+            LocalDateTime pickupTime = LocalDateTime.MIN;
+            if (orderList.get(i).getPickedUpDatetime() != null){
+                pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
+            }
 
             // Assign Time
-            LocalDateTime assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+            LocalDateTime assignTime = LocalDateTime.MIN;
+            if (orderList.get(i).getAssignedDatetime() != null){
+                assignTime = LocalDateTime.parse((orderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+            }
 
             LocalDateTime returnTime = LocalDateTime.MIN;
             if (orderList.get(i).getReturnDatetime() != null) {
@@ -168,7 +174,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
             }
 
 
-            long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
+            long orderPickup = pickupTime != LocalDateTime.MIN ? assignTime.until(pickupTime, ChronoUnit.MILLIS) : 0l;
             long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
@@ -241,7 +247,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             cell = addListRow.createCell(colNum++);
             //cell.setCellValue(String.format("%.2f", Float.parseFloat(nullCheck(orderList.get(i).getDistance()))));
-            cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, orderList.get(i).getDistance()))));
+            cell.setCellValue(String.format("%.2f", Float.parseFloat(changeType(Float.class, orderList.get(i).getDistance()))) + " km");
             cell.setCellStyle(dataCellStyle);
 
             rowNum++;
@@ -351,7 +357,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);
-                cell3.setCellValue(String.format("%.2f", (totalDistance / (totalCnt - distanceNullCnt))));
+                cell3.setCellValue(String.format("%.2f", (totalDistance / (totalCnt - distanceNullCnt))) + "km");
                 cell3.setCellStyle(dataCellStyle);
             }
         }
@@ -394,37 +400,74 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
                 //cell3.setCellValue(qtTotalTime / totalCnt);
                 cell3.setCellStyle(dataCellStyle);
 
-                double dOrderPickupTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getPickedUpDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                double dOrderPickupTime = dOrderPickupTime = group.getValue().stream().mapToDouble(x -> {
+
+                    if (x.getAssignedDatetime() != null && x.getPickedUpDatetime() != null) {
+                        return LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getPickedUpDatetime().replace(" ", "T")), ChronoUnit.MILLIS);
+                    }else{
+                        return 0d;
+                    }
+                }).sum();
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dOrderPickupTime / group.getValue().size())))));
                 //cell3.setCellValue(minusChkFilter(orderPickupTime / totalCnt));
                 cell3.setCellStyle(dataCellStyle);
 
-                double dPickupCompleteTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getPickedUpDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getArrivedDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                double dPickupCompleteTime = group.getValue().stream().mapToDouble(x -> {
+                    if (x.getPickedUpDatetime() != null && x.getArrivedDatetime() != null){
+                        return LocalDateTime.parse((x.getPickedUpDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getArrivedDatetime().replace(" ", "T")), ChronoUnit.MILLIS);
+                    } else {
+                        return 0d;
+                    }
+                }).sum();
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dPickupCompleteTime / group.getValue().size())))));
                 //cell3.setCellValue(minusChkFilter(pickupCompleteTime / totalCnt));
                 cell3.setCellStyle(dataCellStyle);
 
-                double dOrderCompleteTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getArrivedDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                double dOrderCompleteTime = group.getValue().stream().mapToDouble(x -> {
+                    if (x.getAssignedDatetime() != null && x.getArrivedDatetime() != null){
+                        return LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getArrivedDatetime().replace(" ", "T")), ChronoUnit.MILLIS);
+                    }else {
+                        return 0d;
+                    }
+                }).sum();
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dOrderCompleteTime / group.getValue().size())))));
                 //cell3.setCellValue(minusChkFilter(orderCompleteTime / totalCnt));
                 cell3.setCellStyle(dataCellStyle);
 
-                double dCompleteReturnTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getArrivedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                double dCompleteReturnTime = group.getValue().stream().mapToDouble(x -> {
+                    if (x.getArrivedDatetime() != null && x.getReturnDatetime() != null){
+                        return LocalDateTime.parse((x.getArrivedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS);
+                    } else {
+                        return 0d;
+                    }
+                }).sum();
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dCompleteReturnTime / group.getValue().size())))));
                 //cell3.setCellValue(minusChkFilter(completeReturnTime / (totalCnt - returnNullCnt)));
                 cell3.setCellStyle(dataCellStyle);
 
-                double dPickupReturnTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getPickedUpDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                double dPickupReturnTime = group.getValue().stream().mapToDouble(x -> {
+                    if (x.getPickedUpDatetime() != null && x.getReturnDatetime() != null){
+                        return LocalDateTime.parse((x.getPickedUpDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS);
+                    } else {
+                        return 0d;
+                    }
+                }).sum();
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dPickupReturnTime / group.getValue().size())))));
                 //cell3.setCellValue(minusChkFilter(pickupReturnTime / (totalCnt - returnNullCnt)));
                 cell3.setCellStyle(dataCellStyle);
 
-                double dOrderReturnTime = group.getValue().stream().mapToDouble(x -> LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS)).sum();
+                double dOrderReturnTime = group.getValue().stream().mapToDouble(x -> {
+                    if (x.getAssignedDatetime() != null && x.getReturnDatetime() != null){
+                        return LocalDateTime.parse((x.getAssignedDatetime().replace(" ", "T"))).until(LocalDateTime.parse(x.getReturnDatetime().replace(" ", "T")), ChronoUnit.MILLIS);
+                    }else {
+                        return 0d;
+                    }
+                }).sum();
                 cell3 = addListRow.createCell(colNum++);
                 cell3.setCellValue(minusChkFilter(Long.parseLong(changeType(Long.class, String.valueOf(dOrderReturnTime / group.getValue().size())))));
                 //cell3.setCellValue(minusChkFilter(orderReturnTime / (totalCnt - returnNullCnt)));
