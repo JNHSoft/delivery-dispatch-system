@@ -164,6 +164,14 @@ public class OrderController {
     public boolean putOrderCancel(Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
+        log.info("주문 취소 요청자 정보 => token " + storeInfo.getStoreAccessToken() + " # id = " + storeInfo.getStoreSeq() + " # 주문 ID = " + order.getId());
+
+        // 2021-11-17 KFC 매장 쉐어인 경우에도 라이더 및 정보 변경이 가능하도록 적용
+        order.setStoreId(String.valueOf(storeInfo.getStoreSeq()));
+        order.setStore(new Store());
+        order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
+
         storeOrderService.putOrderCanceled(order);
         return true;
     }
