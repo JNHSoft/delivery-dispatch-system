@@ -34,7 +34,16 @@ th {font-weight:normal;}
 .tracker-top .state span.step4:before {background-image:url('../../images/tracker/ico_step4.png?ver=0.4');}
 
 /* 브랜드별 css 추가 */
-.tracker-top .state span.kfc:before{background-image:url('../../images/tracker/ico_step2_kfc.png?ver=0.4');}
+.tracker-top .state span.kfc:before {content:"";display:block;width:32px; height:32px; background:url('../../images/tracker/ico_step1_kfc.png?ver=0.4') 0 0 no-repeat;background-size:cover;margin:0 auto 6px;}
+.tracker-top .state span.step2.kfc:before{background-image:url('../../images/tracker/ico_step2_kfc_off.png?ver=0.4');}
+.tracker-top .state span.step3.kfc:before {background-image:url('../../images/tracker/ico_step3_kfc_off.png?ver=0.4');}
+.tracker-top .state span.step4.kfc:before {background-image:url('../../images/tracker/ico_step4_kfc_off.png?ver=0.4');}
+
+/* KFC의 경우 ON 이미지로 대체할 수 있도록 변경 */
+.tracker-top .state span.step2.kfc.active:before {background-image:url('../../images/tracker/ico_step2_kfc.png?ver=0.4');}
+.tracker-top .state span.step3.kfc.active:before {background-image:url('../../images/tracker/ico_step3_kfc.png?ver=0.4');}
+.tracker-top .state span.step4.kfc.active:before {background-image:url('../../images/tracker/ico_step4_kfc.png?ver=0.4');}
+
 
 .tracker-top .state span.on,
 .tracker-top .state span.line + i {opacity:1}
@@ -46,10 +55,15 @@ th {font-weight:normal;}
 .tracker-bottom tr:first-child td,
 .tracker-bottom tr:first-child th {border-bottom:1px solid #d8d8d8}
 .tracker-bottom td ,.tracker-bottom th{/*word-break:break-all;*/padding:12px 5px;}
+/* 피자헛용 배경화면 */
 .visual_area {position:relative;height:300px;}
 .visual_area_ready {background:url('../../images/tracker/pz_bg_wait.jpg?ver=0.4') center center no-repeat;background-size:cover;}
 .visual_area_complete {background:url('../../images/tracker/pz_bg_complete.jpg?ver=0.4') center center no-repeat;background-size:cover;}
+/* KFC용 배경화면 */
 .visual_area_kfc {position:relative;height:300px;background:url('../../images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat;background-size:cover;}
+.visual_area_kfc_delivery {background:url('../../images/tracker/kfc_bg_delivery.jpg?ver=0.4') center center no-repeat;background-size:cover;}
+.visual_area_kfc_complete {background:url('../../images/tracker/kfc_bg_complete.jpg?ver=0.4') center center no-repeat;background-size:cover;}
+
 .map_info img{vertical-align:middle;margin-right:3px;}
 .map_info span{margin:0 3px;vertical-align: middle;}
 .loading {position:absolute;top:50%;left:50%;margin-left:-50px; margin-top:-50px;background:url('../../images/tracker/loading.gif?ver=0.4') 0 0 no-repeat;width:100px; height:100px; background-size:cover;}
