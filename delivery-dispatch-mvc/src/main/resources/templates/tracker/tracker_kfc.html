@@ -549,19 +549,19 @@
                     $(".visual_area_kfc").addClass('visual_area_kfc_complete');
 
                     if (thirdDelivery !== undefined && thirdDelivery.toString().trim().length > 0) {
-                        $(".visual_area_kfc").html('<p class="tit_third" style="filter:drop-shadow(2px 4px 6px black);">由於外送訂單較多，<br/>您的訂單將由第三方外送夥伴安排配送，<br/>完成配對後，將發送簡訊通知。<br/><span class="tit_third_second">謝謝您的耐心等待。<br/>如有疑問，請聯絡門市。</span></p>');
+                        $(".visual_area_kfc").html('<p class="tit_third" style="filter:drop-shadow(2px 4px 6px black);color: #8eb3f7;">由於外送訂單較多，<br/>您的訂單將由第三方外送夥伴安排配送，<br/>完成配對後，將發送簡訊通知。<br/><span class="tit_third_second" style="color: #8eb3f7;">謝謝您的耐心等待。<br/>如有疑問，請聯絡門市。</span></p>');
                     }else {
                         //$(".visual_area_kfc").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p><p class="tit_wh_bottom">訂購服務專線 (02)412-8000</p>');
 
                         // 2021-10-25 별점 시스템 추가
                         if (!isNaN(data.deliveryPoint) && !isNaN(data.speedPoint)){
                             // 2개 모두 점수가 있는 경우 정상적으로 완료한 것으로 본다.
-                            $(".visual_area_kfc").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p><p class="tit_wh_bottom">訂購服務專線 (02)412-8000</p>');
+                            $(".visual_area_kfc").html('<p class="tit_wh" style="color: #8eb3f7;">請享用熱騰騰<br/>的美味餐點</p><p class="tit_wh_bottom" style="color: #8eb3f7;">訂購服務專線 (02)412-8000</p>');
                         }else {
 
                             var starPointHtml = '';
 
-                            starPointHtml += '<div id="divStarPoint" class="tit_star_point">';
+                            starPointHtml += '<div id="divStarPoint" class="tit_star_point" style="color: #8eb3f7;">';
 
                             starPointHtml += '<p style="margin-bottom: 25px;">為我們的外送服務給予好評。</p>';
 
@@ -611,7 +611,7 @@
                         // 21.12.12 Background 이미지 변경
                         $(".visual_area_kfc").removeClass('visual_area_kfc_complete');
                         $(".visual_area_kfc").removeClass('visual_area_kfc_delivery');
-                        $(".visual_area_kfc").html('<p class="tit_wh">已安排餐廳製作</p>');
+                        $(".visual_area_kfc").html('<p class="tit_wh" style="color: #8eb3f7;">已安排餐廳製作</p>');
                     }
                 }
                 else if ((orderStatus === 0 || orderStatus === 5) && (checkReserveTime - 3600000 <= 0 || checkTime - 1800000 <= 0)) {
