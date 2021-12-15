@@ -403,6 +403,7 @@ DDELib.Orders.prototype = {
                 {label: order_payment, name: 'pay', width: 80, align: 'center', hidden:regionLocale === "zh_HK"},
                 {label: order_total_price, name: 'order_total_price', width: 80, align: 'center', hidden:my_store.brandCode !== "1"},
                 {label: order_assigned, name: 'time3', width: 80, align: 'center'},
+                {label: order_rider_arrived_store, name: 'riderArrivedStore', width: 80, align: 'center', hidden:my_store.brandCode !== "1"},
                 {label: order_pickedup, name: 'time4', width: 80, align: 'center'},
                 {label: order_arrived, name: 'time8', width: 80, align: 'center'},
                 {label: order_completed, name: 'time5', width: 80, align: 'center', hidden:my_store.brandCode === "1"},
@@ -480,6 +481,10 @@ DDELib.Orders.prototype = {
         tmpdata.message = (!ev.message)?"-":ev.message;
         tmpdata.phone = (!ev.phone)?"-":ev.phone;
         tmpdata.time3 = (!ev.assignedDatetime )?"-":timeSet2(ev.assignedDatetime);
+
+        // 2021.12.15 라이더가 매장에 도착한 시간 추가
+        tmpdata.riderArrivedStore = (!ev.riderArrivedStoreDatetime)? "-":timeSet2(ev.riderArrivedStoreDatetime);
+
         tmpdata.time4 = (!ev.pickedUpDatetime )?"-":timeSet2(ev.pickedUpDatetime);
 
         // Order Completed
@@ -512,16 +517,19 @@ DDELib.Orders.prototype = {
                 tmpdata.orderbystatus = 1;
                 break;
             case '2':
-                tmpdata.orderbystatus = 2;
+                tmpdata.orderbystatus = 3;
                 break;
             case '3':
-                tmpdata.orderbystatus = 4;
-                break;
-            case '4':
                 tmpdata.orderbystatus = 5;
                 break;
+            case '4':
+                tmpdata.orderbystatus = 6;
+                break;
             case '6':
-                tmpdata.orderbystatus = 3;
+                tmpdata.orderbystatus = 4;
+                break;
+            case '7':
+                tmpdata.orderbystatus = 2;
                 break;
             default:
                 tmpdata.orderbystatus = 7;
@@ -601,6 +609,10 @@ DDELib.Orders.prototype = {
         }
         else if (status == 1) {
             str = '<i class="ic_txt ic_blue">' + status_assigned + '</i>';
+        }
+        // 2021.12.15 라이더가 매장에 도착한 시간 플래그 추가
+        else if (status == 7){
+            str = '<i class="ic_txt ic_blue">' + status_rider_arrived_store + '</i>'
         }
         else if (status == 2) {
             str = '<i class="ic_txt ic_blue">' + status_pickedup + '</i>';

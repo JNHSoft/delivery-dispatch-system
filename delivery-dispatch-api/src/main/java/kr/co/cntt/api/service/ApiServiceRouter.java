@@ -250,6 +250,9 @@ public enum ApiServiceRouter implements IServiceRouter {
 	/** Order 강제 배정 */
 	ORDER_ASSIGNED("orderService", "putOrderAssigned", Order.class),
 
+	/** 21.12.15 Order Rider Arrived Store 라이더가 매장에 도착한 시간 */
+	ORDER_RIDER_ARRIVED_STORE("orderService", "putOrderRiderArrivedStore", Order.class),
+
 	/** Order 픽업 */
 	ORDER_PICKEDUP("orderService", "putOrderPickedUp", Order.class),
 

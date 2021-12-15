@@ -1690,9 +1690,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         return ret;
     }
 
+    /** 21.12.15 라이더가 스토어에 도착한 시간 */
     @Secured("ROLE_RIDER")
     @Override
-    public int putOrderPickedUp(Order order) throws AppTrException {
+    public int putOrderRiderArrivedStore(Order order) throws AppTrException {
         order.setRole("ROLE_RIDER");
         Order orderInfo = orderMapper.selectOrderInfo(order);
 
@@ -1702,8 +1703,98 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         }else if (orderInfo.getStatus().toString().equals("3") || orderInfo.getStatus().toString().equals("4")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
         }else if (!(orderInfo.getStatus().toString().equals("1"))){
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00056), ErrorCodeEnum.E00056.name());
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00063), ErrorCodeEnum.E00063.name());
         }
+
+        // 라이더 위치 업데이트
+        try {
+            Rider rider = new Rider();
+            rider.setAccessToken(order.getToken());
+            rider.setLatitude(order.getLatitude());
+            rider.setLongitude(order.getLongitude());
+
+            riderMapper.updateRiderLocation(rider);
+
+            log.info("매장 도착 버튼 클릭으로 라이더 위치 업데이트 완료 token = " +  rider.getAccessToken());
+
+        }catch (Exception e){
+            log.error("매장 도착 버튼 클릭으로 라이더 위치 업데이트 중 오류 발생", e);
+        }
+
+
+        Order orderRiderArrivedStore = new Order();
+
+        orderRiderArrivedStore.setToken(order.getToken());
+        orderRiderArrivedStore.setId(order.getId());
+        orderRiderArrivedStore.setStatus("7");
+        orderRiderArrivedStore.setRiderArrivedStoreDatetime(LocalDateTime.now().toString());
+        orderRiderArrivedStore.setRiderArriveStoreXy(order.getLatitude() + "|" + order.getLongitude());
+
+        Order combinedOrderRiderArrivedStore = new Order();
+
+        if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
+            combinedOrderRiderArrivedStore.setToken(order.getToken());
+            combinedOrderRiderArrivedStore.setId(order.getCombinedOrderId());
+            combinedOrderRiderArrivedStore.setStatus("7");
+            combinedOrderRiderArrivedStore.setRiderArrivedStoreDatetime(LocalDateTime.now().toString());
+            combinedOrderRiderArrivedStore.setRiderArriveStoreXy(order.getLatitude() + "|" + order.getLongitude());
+
+
+            int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
+            int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
+
+            if (selectCombinedOrderIsApprovalCompleted != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+            }
+
+            if (selectCombinedOrderIsCompletedIsCanceled != 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+            }
+
+            this.putOrder(combinedOrderRiderArrivedStore);
+        }
+
+        int result = this.putOrder(orderRiderArrivedStore);
+
+        String tmpOrderId = orderRiderArrivedStore.getId();
+
+        orderRiderArrivedStore.setId(order.getId());
+        orderRiderArrivedStore.setRole("ROLE_RIDER");
+
+        Order S_Order = orderMapper.selectOrderInfo(orderRiderArrivedStore);
+
+        Store storeDTO = new Store();
+        storeDTO.setAccessToken(order.getToken());
+        storeDTO.setToken(order.getToken());
+        storeDTO.setIsAdmin("0");
+        storeDTO.setId(S_Order.getStoreId());
+        Store S_Store = storeMapper.selectStoreInfo(storeDTO);
+
+        if (result != 0) {
+            if (S_Store.getSubGroup() != null) {
+                redisService.setPublisher(Content.builder().type("order_rider_arrived_store").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).subGroupId(S_Store.getSubGroup().getId()).build());
+            } else {
+                redisService.setPublisher(Content.builder().type("order_rider_arrived_store").id(tmpOrderId).orderId(order.getId()).adminId(S_Store.getAdminId()).storeId(S_Order.getStoreId()).build());
+            }
+        }
+
+        return result;
+    }
+
+    @Secured("ROLE_RIDER")
+    @Override
+    public int putOrderPickedUp(Order order) throws AppTrException {
+        order.setRole("ROLE_RIDER");
+        Order orderInfo = orderMapper.selectOrderInfo(order);
+
+        if (orderInfo.getStatus().toString().equals("0")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00025), ErrorCodeEnum.E00025.name());
+        }else if (orderInfo.getStatus().toString().equals("3") || orderInfo.getStatus().toString().equals("4")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00026), ErrorCodeEnum.E00026.name());
+        }
+//        else if (!(orderInfo.getStatus().toString().equals("1"))){
+//            throw new AppTrException(getMessage(ErrorCodeEnum.E00056), ErrorCodeEnum.E00056.name());
+//        }
 
         // 라이더 위치 업데이트
         try {
@@ -1736,7 +1827,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderPickedUp.setStatus("2");
             combinedOrderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
             combinedOrderPickedUp.setToken(order.getToken());
-//            combinedOrderPickedUp.setPickupXy(order.getPickupXy());
             combinedOrderPickedUp.setPickupXy(order.getLatitude() + "|" + order.getLongitude());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
@@ -1816,14 +1906,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderArrived.setId(order.getId());
         orderArrived.setStatus("6");
         orderArrived.setArrivedDatetime(LocalDateTime.now().toString());
+        orderArrived.setArriveXy(order.getLatitude() + "|" + order.getLongitude());
 
         Order combinedOrderArrived = new Order();
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
+            combinedOrderArrived.setToken(order.getToken());
             combinedOrderArrived.setId(order.getCombinedOrderId());
             combinedOrderArrived.setStatus("6");
             combinedOrderArrived.setArrivedDatetime(LocalDateTime.now().toString());
-            combinedOrderArrived.setToken(order.getToken());
+            combinedOrderArrived.setArriveXy(order.getLatitude() + "|" + order.getLongitude());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);
@@ -2424,6 +2516,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
 
         orderAssignCanceled.setPickedUpDatetime("-1");
+        // 2021.12.15 매장 도착 시간도 초기화 하자
+        orderAssignCanceled.setRiderArriveStoreXy("-1");
         orderAssignCanceled.setArrivedDatetime("-1");
         orderAssignCanceled.setToken(order.getToken());
 
@@ -2445,6 +2539,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             }
 
             combinedOrderAssignCanceled.setPickedUpDatetime("-1");
+            // 2021.12.15 매장 도착 시간도 초기화 하자
+            combinedOrderAssignCanceled.setRiderArrivedStoreDatetime("-1");
             combinedOrderAssignCanceled.setArrivedDatetime("-1");
             combinedOrderAssignCanceled.setToken(order.getToken());
 

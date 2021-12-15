@@ -3,7 +3,7 @@ spring:
   profiles: api-local
   profiles.include: api
   mvc:
-    locale: ko_KR
+    locale: zh_TW
 
 # logging
 logging:

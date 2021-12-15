@@ -23,6 +23,7 @@
         <result property="reservationDatetime" column="reservation_datetime" />
         <result property="reservationStatus" column="reservation_status" />
         <result property="assignedDatetime" column="assigned_datetime" />
+		<result property="riderArrivedStoreDatetime" column="rider_arrived_store_datetime" />
         <result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="arrivedDatetime" column="arrived_datetime" />
 		<result property="completedDatetime" column="completed_datetime" />
@@ -93,6 +94,8 @@
 		<result property="reservationDatetime" column="reservation_datetime" />
 		<result property="reservationStatus" column="reservation_status" />
 		<result property="assignedDatetime" column="assigned_datetime" />
+		<!-- 2021.12.15 라이더가 매장에 도착한 시간 추가 -->
+		<result property="riderArriveStoreXy" column="rider_arrived_store_datetime" />
 		<result property="pickedUpDatetime" column="picked_up_datetime" />
 		<result property="arrivedDatetime" column="arrived_datetime" />
 		<result property="completedDatetime" column="completed_datetime" />
@@ -223,7 +226,7 @@
 				,A.reservation_datetime
 				,A.reservation_status
 				,A.assigned_datetime
-				,A.arrived_datetime
+				,A.rider_arrived_store_datetime
 				,A.picked_up_datetime
 				,A.arrived_datetime
 				,A.completed_datetime
@@ -378,6 +381,7 @@
             , A.reservation_datetime
             , A.reservation_status
             , A.assigned_datetime
+			, A.rider_arrived_store_datetime
             , A.picked_up_datetime
 			, A.arrived_datetime
             , A.completed_datetime
@@ -566,6 +570,13 @@
 		<if test="assignedDatetime == '-1'">
 			, assigned_datetime = NULL
 		</if>
+		<!-- 2021.12.15 라이더가 매장에 도착한 시간 -->
+		<if test="riderArrivedStoreDatetime != null and riderArrivedStoreDatetime != '' and riderArrivedStoreDatetime != '-1'">
+			, rider_arrived_store_datetime = #{riderArrivedStoreDatetime}
+		</if>
+		<if test="riderArrivedStoreDatetime == '-1'">
+			, rider_arrived_store_datetime = NULL
+		</if>
 		<if test="pickedUpDatetime != null and pickedUpDatetime != '' and pickedUpDatetime != '-1'">
 			, picked_up_datetime = #{pickedUpDatetime}
 		</if>
@@ -608,8 +619,15 @@
 		<if test="assignXy != null and assignXy != '' and assignXy == 'none'">
 			, assign_xy = NULL
 		</if>
+		<!-- 2021.12.15 라이더가 매장에 도착한 좌표를 표기한다. -->
+		<if test="riderArriveStoreXy != null and riderArriveStoreXy != ''">
+			, rider_arrived_store_xy = #{riderArriveStoreXy}
+		</if>
 		<if test="pickupXy != null and pickupXy != ''">
 			, pickup_xy = #{pickupXy}
+		</if>
+		<if test="arriveXy != null and arriveXy != ''">
+			, arrive_xy = #{arriveXy}
 		</if>
 		<if test="completeXy != null and completeXy != ''">
 			, complete_xy = #{completeXy}

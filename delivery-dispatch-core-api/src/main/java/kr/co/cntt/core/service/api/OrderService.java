@@ -75,6 +75,16 @@ public interface OrderService {
     public int putOrderAssigned(Order order) throws AppTrException;
 
     /**
+     * <p> putOrderRiderArrivedStore
+     * 21.12.15
+     * @param order
+     * @return
+     * @throws AppTrException
+     */
+    int putOrderRiderArrivedStore(Order order) throws AppTrException;
+
+
+    /**
      * <p> putOrderPickedUp
      *
      * @param order

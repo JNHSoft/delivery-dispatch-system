@@ -20,6 +20,10 @@
 				<label class="checkbox"><input name="srchChk" type="checkbox" value="1" id="orderAssignChk" checked="checked" disabled="true"/><i></i>
 					<span class="lbl" th:text="${#messages.msg('status.assigned')}"/>
 				</label>
+				<!-- 21.12.15 KFC에서 사용할 매장 도착 버튼 추가 -->
+				<label th:if="${store.brandCode.toString().equals('1')}" class="checkbox"><input name="srchChk" type="checkbox" value="7" id="orderRiderArrStoreChk" checked="checked" disabled="true"/><i></i>
+					<span class="lbl" th:text="${#messages.msg('status.rider.arrived.store')}"/>
+				</label>
 				<label class="checkbox"><input name="srchChk" type="checkbox" value="2" id="orderPickupChk" checked="checked" disabled="true"/><i></i>
 					<span class="lbl" th:text="${#messages.msg('status.pickedup')}"/>
 				</label>
@@ -257,6 +261,7 @@
         var status_all = /*[[#{status.all}]]*/ 'status_all';
         var status_new = /*[[#{status.new}]]*/ 'status_new';
         var status_assigned = /*[[#{status.assigned}]]*/ 'status_assigned';
+		var status_rider_arrived_store = /*[[#{status.rider.arrived.store}]]*/ 'status_rider_arrived_store';
         var status_pickedup = /*[[#{status.pickedup}]]*/ 'status_pickedup';
 		var status_arrived = /*[[#{status.arrived}]]*/ 'status_arrived';
         var status_completed = /*[[#{status.completed}]]*/ 'status_completed';
@@ -272,6 +277,7 @@
         var order_cooking = /*[[#{order.cooking}]]*/ 'order_cooking';
         var order_payment = /*[[#{order.payment}]]*/ 'order_payment';
         var order_assigned = /*[[#{order.assigned}]]*/ 'order_assigned';
+		var order_rider_arrived_store = /*[[#{order.rider.arrived}]]*/ 'order_rider_arrived_store';
         var order_pickedup = /*[[#{order.pickedup}]]*/ 'order_pickedup';
         var order_completed = /*[[#{order.completed}]]*/ 'order_completed';
         var order_arrived = /*[[#{order.arrived}]]*/ 'order_arrived';

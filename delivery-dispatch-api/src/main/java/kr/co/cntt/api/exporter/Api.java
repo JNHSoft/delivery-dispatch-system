@@ -247,6 +247,9 @@ public interface Api {
     /** Order 강제 배정 */
     String ORDER_ASSIGNED = "/putOrderAssigned.json";
 
+    /** 21.12.15 Order Rider Arrived Store 라이더가 매장에 도착한 시간 */
+    String ORDER_RIDER_ARRIVED_STORE = "/putOrderRiderArrivedStore.json";
+
     /** Order 픽업 */
     String ORDER_PICKEDUP = "/putOrderPickedUp.json";
 
