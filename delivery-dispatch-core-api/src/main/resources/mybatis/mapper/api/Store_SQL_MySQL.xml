@@ -640,7 +640,7 @@
         AND		 status in (3)
         AND		 date_add(#{currentDatetime}, interval (#{days} + 1) - 1 day)  > created_datetime
         AND		 created_datetime > #{currentDatetime}
-    <if test="store = null or store.brandCode == null or store.brandCode != 1">
+    <if test="store == null or store.brandCode == null or store.brandCode != 1">
         AND		 third_party_id IS NULL
     </if>
 
