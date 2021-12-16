@@ -106,6 +106,10 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         for (Order order : orderList) {
             Map map = new HashMap();
+
+            // 21-12-03 자동 배정 값 추가
+            order.setAssignedType("1");
+
             map.put("order", order);
             Map denyOrderIdChkMap = new HashMap();
             denyOrderIdChkMap.put("orderId", order.getId());
@@ -693,6 +697,31 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             order.setReservationDatetime(nowDate);
         }
 
+        /// 예약 시간이 등록 시간보다 과거로 표기되는 경우 등록 오류로 리턴하기. 일자만 비교함
+        try {
+            //Date bookingDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());
+            LocalDateTime bookingTime;
+
+            try {
+                bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+            } catch (Exception e){
+                bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+            }
+
+            LocalDateTime currentTime = LocalDateTime.now();
+
+            if (bookingTime.isBefore(currentTime)) {
+                log.info("regID => " + order.getRegOrderId() + " # 예약일자 => " + bookingTime + " # 비교 시간 => " + currentTime);
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
+            }
+
+        } catch (Exception e){
+            log.error("regID => " + order.getRegOrderId(), e);
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
+        }
+
+
+
         // regOrder 중복 체크
         int hasRegOrder = orderMapper.selectRegOrderIdCheck(order);
 
@@ -1021,6 +1050,31 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //            e.printStackTrace();
             log.error(e.getMessage());
         }
+
+        /// 예약 시간이 등록 시간보다 과거로 표기되는 경우 등록 오류로 리턴하기. 일자만 비교함
+        try {
+            //Date bookingDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());
+            LocalDateTime bookingTime;
+
+            try {
+                bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+            } catch (Exception e){
+                bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+            }
+
+            LocalDateTime currentTime = LocalDateTime.now();
+
+            if (bookingTime.isBefore(currentTime)) {
+                log.info("update regID => " + order.getRegOrderId() + " # 예약일자 => " + bookingTime + " # 비교 시간 => " + currentTime);
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
+            }
+
+        } catch (Exception e){
+            log.error("update regID => " + order.getRegOrderId(), e);
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
+        }
+
+
 
         if (order.getMenuPrice() == null || order.getMenuPrice().equals("")) {
             order.setMenuPrice("0");
@@ -2335,6 +2389,8 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderAssignCanceled.setId(order.getId());
         orderAssignCanceled.setStatus("5");
         orderAssignCanceled.setRiderId("-1");
+        // 21-12-03 주문 변경 발생 후 라이더 배정이 취소 되는 경우에도 배정을 취소하도록 한다.
+        orderAssignCanceled.setAssignedType("-1");
         orderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
 
         // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
@@ -2355,6 +2411,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderAssignCanceled.setId(order.getCombinedOrderId());
             combinedOrderAssignCanceled.setStatus("5");
             combinedOrderAssignCanceled.setRiderId("-1");
+            // 21-12-03 주문 변경 발생 후 라이더 배정이 취소 되는 경우에도 배정을 취소하도록 한다.
+            combinedOrderAssignCanceled.setAssignedType("-1");
+
             combinedOrderAssignCanceled.setModifiedDatetime(LocalDateTime.now().toString());
             // 20.08.03 원본에서 취소 시, assign 값도 취소될 수 있도록 설정
             if (order.getAssignedDatetime() != null && order.getAssignedDatetime().equals("-1")){

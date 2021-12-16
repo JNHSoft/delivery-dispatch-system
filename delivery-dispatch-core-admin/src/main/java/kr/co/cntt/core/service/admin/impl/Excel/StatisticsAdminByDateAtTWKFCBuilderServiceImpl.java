@@ -73,7 +73,8 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
             sheet.addMergedRegion(new CellRangeAddress(0,0,1,6));
 
             sheet.addMergedRegion(new CellRangeAddress(0,0,7,locale.toString().equals("zh_TW")?8:13));
-            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?14:21));
+
+            sheet.addMergedRegion(new CellRangeAddress(0,0,locale.toString().equals("zh_TW")?9:14,locale.toString().equals("zh_TW")?15:22));
 
 
             sheet.setColumnWidth(colNum, 15*256);
@@ -101,6 +102,7 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
             //
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellStyle(titleCellStyle);
+
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
@@ -152,6 +154,9 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
             addTitle = titleRow.createCell(colNum++);
             addTitle.setCellStyle(titleCellStyle);
 
+
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellStyle(titleCellStyle);
 
             titleRow = sheet.createRow(rowNum++);
             colNum = 1;
@@ -229,10 +234,21 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             }
 
+//            sheet.setColumnWidth(colNum, 17*256);
+//            addTitle = titleRow.createCell(colNum++);
+//            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.errtc",null, locale));
+//            addTitle.setCellStyle(titleCellStyle);
+
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
-            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.errtc",null, locale));
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.assigned.mode.auto",null, locale));
             addTitle.setCellStyle(titleCellStyle);
+
+            sheet.setColumnWidth(colNum, 17*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("statistics.2nd.label.assigned.mode.manual",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
 
             sheet.setColumnWidth(colNum, 17*256);
             addTitle = titleRow.createCell(colNum++);
@@ -285,7 +301,10 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
         float min60To90 = 0f;
         float min90Under = 0f;
         float totalSales = 0f;
-        int errtc = 0;
+
+
+        int autotc = 0;
+        int manualtc = 0;
         int thirdtc = 0;
         int tc = 0;
         float tplh = 0f;
@@ -298,14 +317,12 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
         // 정상 주문 개수
         long tcCount = storeStatisticsByDateList.stream().filter(x -> Integer.parseInt(changeType(Integer.class, x.getTc())) > 0).count();
 
-        int onlyErrCnt = 0;
         int onlyThirdCnt = 0;
 
         for(int i = 0, r = storeStatisticsByDateList.size(); i<r; i++) {
 
             int currentTC = Integer.parseInt(changeType(Integer.class, storeStatisticsByDateList.get(i).getTc()));
 
-            int chkErrCnt = 0;
             int chkThirdCnt = 0;
 
             orderPickupTime += Long.parseLong(changeType(Long.class, storeStatisticsByDateList.get(i).getOrderPickup()));
@@ -335,11 +352,14 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             totalSales += Float.parseFloat(changeType(Float.class, storeStatisticsByDateList.get(i).getTotalSales()));
 
-            if (storeStatisticsByDateList.get(i).getErrtc() != null){
-                errtc += Integer.parseInt(changeType(Integer.class, storeStatisticsByDateList.get(i).getErrtc()));
-                if (Integer.parseInt(changeType(Integer.class, storeStatisticsByDateList.get(i).getErrtc())) > 0){
-                    chkErrCnt++;
-                }
+
+            // 배정 모드
+            if (storeStatisticsByDateList.get(i).getAssignedAuto() != null){
+                autotc += Integer.parseInt(changeType(Integer.class, storeStatisticsByDateList.get(i).getAssignedAuto()));
+            }
+
+            if (storeStatisticsByDateList.get(i).getAssignedManual() != null){
+                manualtc += Integer.parseInt(changeType(Integer.class, storeStatisticsByDateList.get(i).getAssignedManual()));
             }
 
             if (storeStatisticsByDateList.get(i).getThirdtc() != null){
@@ -486,10 +506,20 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
                 cell.setCellStyle(dataCellStyle);
             }
 
+//            cell = addListRow.createCell(colNum++);
+//            cell.setCellValue(changeType(Integer.class, storeStatisticsByDateList.get(i).getErrtc()));
+//            cell.setCellStyle(dataCellStyle);
+
+            // 배정 모드
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(changeType(Integer.class, storeStatisticsByDateList.get(i).getErrtc()));
+            cell.setCellValue(changeType(Integer.class, storeStatisticsByDateList.get(i).getAssignedAuto()));
             cell.setCellStyle(dataCellStyle);
 
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(changeType(Integer.class, storeStatisticsByDateList.get(i).getAssignedManual()));
+            cell.setCellStyle(dataCellStyle);
+
+            //
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(changeType(Integer.class, storeStatisticsByDateList.get(i).getThirdtc()));
             cell.setCellStyle(dataCellStyle);
@@ -529,12 +559,6 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
-
-
-            // 정상 개수가 없는 경우에만 err랑 제3자를 센다
-            if (chkErrCnt > 0){
-                onlyErrCnt++;
-            }
 
             if (chkThirdCnt > 0){
                 onlyThirdCnt++;
@@ -664,13 +688,23 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
                     cell2.setCellStyle(dataCellStyle);
                 }
 
+                // 배정 모드
                 cell2 = addListRow.createCell(colNum++);
-                if (errtc > 0 && onlyErrCnt > 0){
-                    cell2.setCellValue(String.format("%.0f", Float.parseFloat(Integer.toString(errtc)) / onlyErrCnt));
+                if (autotc > 0 && tcSum > 0){
+                    cell2.setCellValue(String.format("%.0f", Float.parseFloat(Integer.toString(autotc)) / tcSum));
                 }else{
                     cell2.setCellValue("0");
                 }
                 cell2.setCellStyle(dataCellStyle);
+
+                cell2 = addListRow.createCell(colNum++);
+                if (manualtc > 0 && tcSum > 0){
+                    cell2.setCellValue(String.format("%.0f", Float.parseFloat(Integer.toString(manualtc)) / tcSum));
+                }else{
+                    cell2.setCellValue("0");
+                }
+                cell2.setCellStyle(dataCellStyle);
+
 
                 cell2 = addListRow.createCell(colNum++);
                 if (thirdtc > 0 && onlyThirdCnt > 0){
@@ -745,7 +779,6 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             for (Map.Entry<String, List<AdminByDate>> group: groupList.entrySet()) {
                 long tOrderCount = group.getValue().stream().mapToInt(x -> Integer.parseInt(changeType(Integer.class, x.getTc()))).sum();
-                long tErrCount = group.getValue().stream().mapToInt(x -> Integer.parseInt(changeType(Integer.class, x.getErrtc()))).sum();
                 long tThirdCount = group.getValue().stream().mapToInt(x -> Integer.parseInt(changeType(Integer.class, x.getThirdtc()))).sum();
 
                 colNum = 0;
@@ -885,10 +918,30 @@ public class StatisticsAdminByDateAtTWKFCBuilderServiceImpl extends ExcelComm {
                     cell2.setCellStyle(dataCellStyle);
                 }
 
-                long errCnt = group.getValue().stream().filter(x -> Integer.parseInt(changeType(Integer.class, x.getErrtc())) > 0).count();
+//                long errCnt = group.getValue().stream().filter(x -> Integer.parseInt(changeType(Integer.class, x.getErrtc())) > 0).count();
+//                cell2 = addListRow.createCell(colNum++);
+//                if (tErrCount > 0 && errCnt > 0){
+//                    cell2.setCellValue(changeType(Integer.class, String.valueOf(Float.parseFloat(String.valueOf(tErrCount)) / Float.parseFloat(String.valueOf(errCnt)) + 0.5)));
+//                }else{
+//                    cell2.setCellValue("0");
+//                }
+//                cell2.setCellStyle(dataCellStyle);
+
+                // 배정모드 - 자동
+                long autoCnt = group.getValue().stream().filter(x -> Integer.parseInt(changeType(Integer.class, x.getAssignedAuto())) > 0).count();
                 cell2 = addListRow.createCell(colNum++);
-                if (tErrCount > 0 && errCnt > 0){
-                    cell2.setCellValue(changeType(Integer.class, String.valueOf(Float.parseFloat(String.valueOf(tErrCount)) / Float.parseFloat(String.valueOf(errCnt)) + 0.5)));
+                if (tOrderCount > 0 && autoCnt > 0){
+                    cell2.setCellValue(changeType(Integer.class, String.valueOf(Float.parseFloat(String.valueOf(tOrderCount)) / Float.parseFloat(String.valueOf(autoCnt)) + 0.5)));
+                }else{
+                    cell2.setCellValue("0");
+                }
+                cell2.setCellStyle(dataCellStyle);
+
+                // 배정모드 - 수동
+                long manualCnt = group.getValue().stream().filter(x -> Integer.parseInt(changeType(Integer.class, x.getAssignedManual())) > 0).count();
+                cell2 = addListRow.createCell(colNum++);
+                if (tOrderCount > 0 && manualCnt > 0){
+                    cell2.setCellValue(changeType(Integer.class, String.valueOf(Float.parseFloat(String.valueOf(tOrderCount)) / Float.parseFloat(String.valueOf(manualCnt)) + 0.5)));
                 }else{
                     cell2.setCellValue("0");
                 }

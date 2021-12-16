@@ -30,6 +30,9 @@ public class SearchInfo extends Common implements Dto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<String> riderIds;      // 라이더 쉐어 히스토리를 구하기 위한 조건 API 전용
 
+    // 대시보드에서 특정 조건은 브랜드별로 다르게 검출하기 위함
+    private String brandCode;
+
     public SearchInfo deapCopy(){
         SearchInfo search = new SearchInfo();
 
@@ -43,6 +46,8 @@ public class SearchInfo extends Common implements Dto {
         search.setRole(this.getRole());
         search.setDays(this.getDays());
         search.setOrderStatus(this.getOrderStatus());
+
+        search.setBrandCode(this.getBrandCode());
 
         return search;
     }

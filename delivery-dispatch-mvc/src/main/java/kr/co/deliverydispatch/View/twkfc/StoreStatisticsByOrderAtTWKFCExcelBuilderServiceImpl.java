@@ -141,9 +141,17 @@ public class StoreStatisticsByOrderAtTWKFCExcelBuilderServiceImpl extends CommEx
         int distanceNullCnt = 0;
 
         for(int i = 0, r = storeStatisticsByOrderList.size(); i<r; i++) {
-            LocalDateTime pickupTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
+            LocalDateTime pickupTime = LocalDateTime.MIN;
+
+            if (storeStatisticsByOrderList.get(i).getPickedUpDatetime() != null){
+                pickupTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
+            }
+
             // Assign Time
-            LocalDateTime assignTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+            LocalDateTime assignTime = LocalDateTime.MIN;
+            if (storeStatisticsByOrderList.get(i).getAssignedDatetime() != null){
+                assignTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getAssignedDatetime()).replace(" ", "T"));
+            }
 
             LocalDateTime returnTime = LocalDateTime.MIN;
             if(storeStatisticsByOrderList.get(i).getReturnDatetime()!=null){
@@ -155,10 +163,10 @@ public class StoreStatisticsByOrderAtTWKFCExcelBuilderServiceImpl extends CommEx
             LocalDateTime arrivedTime = LocalDateTime.MIN;
             // 컬럼추가
             if (storeStatisticsByOrderList.get(i).getArrivedDatetime()!=null){
-                arrivedTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getArrivedDatetime()).replace(" ", "T"));;
+                arrivedTime = LocalDateTime.parse((storeStatisticsByOrderList.get(i).getArrivedDatetime()).replace(" ", "T"));
             }
 
-            long orderPickup = assignTime.until(pickupTime, ChronoUnit.MILLIS);
+            long orderPickup = pickupTime != LocalDateTime.MIN ? assignTime.until(pickupTime, ChronoUnit.MILLIS) : 0l;
             long pickupComplete = arrivedTime != LocalDateTime.MIN ? pickupTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long orderComplete = arrivedTime != LocalDateTime.MIN ? assignTime.until(arrivedTime, ChronoUnit.MILLIS) : 0l;
             long completeReturn = returnTime != LocalDateTime.MIN && arrivedTime != LocalDateTime.MIN ? arrivedTime.until(returnTime, ChronoUnit.MILLIS) : 0l;
@@ -226,7 +234,7 @@ public class StoreStatisticsByOrderAtTWKFCExcelBuilderServiceImpl extends CommEx
             cell.setCellStyle(dataCellStyle);
 
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(String.format("%.2f",Float.parseFloat(nullCheck(storeStatisticsByOrderList.get(i).getDistance()))));
+            cell.setCellValue(String.format("%.2f",Float.parseFloat(nullCheck(storeStatisticsByOrderList.get(i).getDistance()))) + " km");
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;
@@ -328,7 +336,7 @@ public class StoreStatisticsByOrderAtTWKFCExcelBuilderServiceImpl extends CommEx
                 cell3.setCellStyle(dataCellStyle);
 
                 cell3 = addListRow.createCell(colNum++);
-                cell3.setCellValue(String.format("%.2f",(totalDistance/(totalCnt-distanceNullCnt))));
+                cell3.setCellValue(String.format("%.2f",(totalDistance/(totalCnt-distanceNullCnt))) + "km");
                 cell3.setCellStyle(dataCellStyle);
             }
         }

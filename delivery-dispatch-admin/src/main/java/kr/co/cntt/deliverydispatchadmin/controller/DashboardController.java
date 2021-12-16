@@ -81,6 +81,7 @@ public class DashboardController {
 
         searchInfo.setToken(adminInfo.getAdminAccessToken());
         searchInfo.setRole("ROLE_ADMIN");
+        searchInfo.setBrandCode(adminInfo.getAdminBrandCode());
 
         // 관리자 토큰까지 저장 후, 데이터를 Copy한다.
         SearchInfo compareSearchInfo = searchInfo.deapCopy();
@@ -216,6 +217,7 @@ public class DashboardController {
 
         searchInfo.setToken(adminInfo.getAdminAccessToken());
         searchInfo.setRole("ROLE_ADMIN");
+        searchInfo.setBrandCode(adminInfo.getAdminBrandCode());
         // platform 대시보드에서는 대시보드 종류로 이용한다.
         searchInfo.setPlatform(type);
 
@@ -298,6 +300,7 @@ public class DashboardController {
 
         searchInfo.setToken(adminInfo.getAdminAccessToken());
         searchInfo.setRole("ROLE_ADMIN");
+        searchInfo.setBrandCode(adminInfo.getAdminBrandCode());
         // platform 대시보드에서는 대시보드 종류로 이용한다.
         searchInfo.setPlatform(type);
 
@@ -376,6 +379,7 @@ public class DashboardController {
 
         searchInfo.setToken(adminInfo.getAdminAccessToken());
         searchInfo.setRole("ROLE_ADMIN");
+        searchInfo.setBrandCode(adminInfo.getAdminBrandCode());
 
         timeSecionInfos = dashboardAdminService.selectTimeSection(searchInfo);
 

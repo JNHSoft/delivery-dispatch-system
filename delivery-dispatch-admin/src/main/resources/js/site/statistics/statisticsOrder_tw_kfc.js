@@ -55,7 +55,7 @@ function averageTimeSet(time,i) {
 
 
 function minusTimeSet(time1, time2) {
-    if (time2) {
+    if (time1 && time2) {
         let d1 = new Date(time1);
         let d2 = new Date(time2);
         let minusTime = new Date(d2.getTime() - d1.getTime());
@@ -70,6 +70,10 @@ function minusTimeSet(time1, time2) {
 }
 
 function minusTimeSet2(time1, time2) {
+    if (!(time1 && time2)){
+        return 0;
+    }
+
     let d1 = new Date(time1);
     let d2 = new Date(time2);
     if(d2.getTime() - d1.getTime() >=0){
@@ -105,10 +109,16 @@ function initMap() {
 }
 
 function minusTime(time1, time2) {
-    let d1 = new Date(time1);
-    let d2 = new Date(time2);
-    let minusTime = d2.getTime() - d1.getTime();
-    return minusTime;
+
+    // NULL 인 경우 return
+    if (time1 && time2){
+        let d1 = new Date(time1);
+        let d2 = new Date(time2);
+        return d2.getTime() - d1.getTime();
+    } else {
+        return 0;
+    }
+
 }
 
 function getStatisticsInfo(regOrderId) {
@@ -229,14 +239,20 @@ function getStoreStatistics() {
                     tmpData.assignedDate = dateStringToDateTime(data[key].assignedDatetime);
                     tmpData.qtTimes = data[key].cookingTime;
 
-                    tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
-                    tmpData.orderPickup1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                    if (data[key].assignedDatetime && data[key].pickedUpDatetime) {
+                        tmpData.orderPickup1 = diffTimeBlue(data[key].assignedDatetime, data[key].pickedUpDatetime, minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                        tmpData.orderPickup1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].pickedUpDatetime));
+                    }
 
-                    tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
-                    tmpData.pickupComplete1s =  timeToSeconds(minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime));
+                    if (data[key].pickedUpDatetime && data[key].arrivedDatetime){
+                        tmpData.pickupComplete1 =  minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime);
+                        tmpData.pickupComplete1s =  timeToSeconds(minusTimeSet2(data[key].pickedUpDatetime, data[key].arrivedDatetime));
+                    }
 
-                    tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
-                    tmpData.orderComplete1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime));
+                    if (data[key].assignedDatetime && data[key].arrivedDatetime) {
+                        tmpData.orderComplete1 = minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime);
+                        tmpData.orderComplete1s = timeToSeconds(minusTimeSet2(data[key].assignedDatetime, data[key].arrivedDatetime));
+                    }
 
                     // 검색 조건을 위한 데이터 입력
                     tmpData.rider_name = data[key].rider.name;

@@ -411,8 +411,10 @@ DDELib.Orders.prototype = {
                 {label: rider_name, name: 'rider', width: 80, align: 'center'},
                 {label: order_assigned_advance, name: 'button', width: 80, align: 'center', hidden:my_store.brandCode === "1"},
                 {label: store_code, name: 'storeCode', width: 80, align: 'center'},
+                {label: assigned_type_title, name: "assignedTypeValue", width: 80, align: 'center', hidden: my_store.brandCode !== "1"},
                 {label: "", name: 'orderbystatus', width: 80, align: 'center'},
-                {label: "", name: 'assignedFirst', width: 80, align: 'center'}
+                {label: "", name: 'assignedFirst', width: 80, align: 'center'},
+                {label: "", name: 'assignedType', width: 80, align: 'center'},
             ],
             height: 680,
             autowidth: true,
@@ -445,7 +447,7 @@ DDELib.Orders.prototype = {
     reloadGrid : function(){
         this.log("reloadGrid");
         this.htLayer.grid.clearGridData();
-        this.htLayer.grid.jqGrid('hideCol',["orderbystatus","assignedFirst"])
+        this.htLayer.grid.jqGrid('hideCol',["orderbystatus","assignedFirst","assignedType"])
         this.htLayer.grid.jqGrid('setGridParam', {data:this.mydata , multiSort:true})
             .jqGrid('sortGrid', 'orderbystatus', true, 'asc')
             .jqGrid('sortGrid', 'assignedFirst', true, 'desc')
@@ -541,6 +543,23 @@ DDELib.Orders.prototype = {
                 //     this.arrivedTimeCheck(ev, directionsService);
                 // }
                 // break;
+        }
+
+        // 2021.12.03 Add Assigned Type
+        tmpdata.assignedType = ev.assignedType;
+
+        switch (ev.assignedType){
+            case '1':
+                tmpdata.assignedTypeValue = assigned_type_auto;
+                break;
+            case '2':
+                tmpdata.assignedTypeValue = assigned_type_manual;
+                break;
+            case '3':
+                tmpdata.assignedTypeValue = assigned_type_third;
+                break;
+            default:
+                tmpdata.assignedTypeValue = "-";
         }
 
         return tmpdata;
@@ -886,8 +905,16 @@ DDELib.Orders.prototype = {
             alert(order_confirm_completed);
             return;
         }
-        var result = confirm('['+ $('#selectedThirdParty option:selected').text()+'] ' + order_confirm_thirdparty);
-        if(!result){
+
+        var selectedThirdpartyName = $('#selectedThirdParty option:selected').text();
+
+        if (selectedThirdpartyName != ''){
+            var result = confirm('[' + selectedThirdpartyName + ']' + order_confirm_thirdparty);
+            if(!result){
+                return;
+            }
+        }else {
+            alert(alert_no_selected_thirdparty);
             return;
         }
 

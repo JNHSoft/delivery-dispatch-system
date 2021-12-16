@@ -7,6 +7,7 @@ import kr.co.cntt.core.mapper.RiderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.reason.Reason;
+import kr.co.cntt.core.model.store.Store;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.admin.AssignAdminService;
@@ -16,7 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("assignAdminService")
@@ -106,7 +109,37 @@ public class AssignAdminServiceImpl implements AssignAdminService {
             thirdParty.setRole("ROLE_ADMIN");
         }
 
-        return adminMapper.deleteThirdParty(thirdParty);
+        int result = adminMapper.deleteThirdParty(thirdParty);
+
+        if (result > 0){
+            // store의 Third Party 정보를 가져온다.
+            List<Store> updateStoreInfoList = adminMapper.selectThirdPartyStoreList(thirdParty);
+
+            for (Store storeInfo:updateStoreInfoList
+                 ) {
+                // 배열로 변환한다.
+                List<String> thirdPartyList = Arrays.stream(storeInfo.getThirdParty().split("|")).collect(Collectors.toList());
+
+                thirdPartyList.removeIf(x -> x.equals("|"));
+
+                long findThirdParty = thirdPartyList.stream().filter(x -> x.equals(thirdParty.getId())).count();
+
+                if (findThirdParty > 0){
+                    log.info("스토어에서 삭제 전 storeInfo.id = " + storeInfo.getId() + "Third Party List => " + storeInfo.getThirdParty());
+                    String updateThirdPartyList = String.join("|", thirdPartyList.stream().filter(x -> !x.equals(thirdParty.getId())).collect(Collectors.toList()));
+
+                    // 스토어의 ThirdParty 값 변경
+                    storeInfo.setThirdParty(updateThirdPartyList);
+                    storeInfo.setToken(thirdParty.getToken());
+
+                    result += adminMapper.updateThirdPartyStoreInfo(storeInfo);
+
+                    System.out.println("스토어에서 삭제 후 storeInfo.id = " + storeInfo.getId() + "updateThirdPartyList => " + updateThirdPartyList);
+                }
+            }
+        }
+
+        return result;
     }
 
     // 서드파티 리스트

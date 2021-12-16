@@ -91,8 +91,17 @@ public class OrderController {
     public boolean putOrderThirdParty(@RequestBody Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
+        // 배달 대행 ID 값이 NULL 인 경우에 실패로 떨구기
+        if (order.getThirdParty() == null || order.getThirdParty().getId() == null){
+            return false;
+        }
+
         // 서드파티 배정 된 상태에서도 배정할수있도록 변경 Nick
         if(order.getStatus().equals("0") || order.getStatus().equals("1") || order.getStatus().equals("5")){
+            // 수동 배정에 대한 값을 추가한다.
+            order.setAssignedType("3");
+
             storeOrderService.putOrderThirdParty(order);
             return true;
         } else {
@@ -106,6 +115,7 @@ public class OrderController {
     public boolean putAssignedAdvanceFirst(Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
         storeOrderService.putOrderAssignedFirst(order);
         return true;
     }
@@ -125,6 +135,9 @@ public class OrderController {
         order.setStore(new Store());
         order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
 
+        // 수동 배정에 대한 값을 추가한다.
+        order.setAssignedType("2");
+
         int oderAdmitCount = storeOrderService.getCountOderAdmit(order);
         if(oderAdmitCount>0){
             storeOrderService.putOrderAssigned(order);
@@ -140,6 +153,7 @@ public class OrderController {
     public boolean putOrder(Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
         storeOrderService.putOrderInfo(order);
         return true;
     }
@@ -150,6 +164,14 @@ public class OrderController {
     public boolean putOrderCancel(Order order){
         SecurityUser storeInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setToken(storeInfo.getStoreAccessToken());
+
+        log.info("주문 취소 요청자 정보 => token " + storeInfo.getStoreAccessToken() + " # id = " + storeInfo.getStoreSeq() + " # 주문 ID = " + order.getId());
+
+        // 2021-11-17 KFC 매장 쉐어인 경우에도 라이더 및 정보 변경이 가능하도록 적용
+        order.setStoreId(String.valueOf(storeInfo.getStoreSeq()));
+        order.setStore(new Store());
+        order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
+
         storeOrderService.putOrderCanceled(order);
         return true;
     }
@@ -168,6 +190,8 @@ public class OrderController {
         order.setStore(new Store());
         order.getStore().setBrandCode(storeInfo.getStoreBrandCode());
 
+        // 2021-12-03 배정 종류에 대한 값을 초기화 시킨다
+        order.setAssignedType("-1");
 
         storeOrderService.putOrderAssignCanceled(order);
         return true;
