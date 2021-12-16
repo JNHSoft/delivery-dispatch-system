@@ -179,6 +179,7 @@ public class StatisticsKFCController {
                         if (qtTime > 30 || qtTime < 1) qtTime = 30;
 
                         // 주문 등록 시간
+                    if (a.getAssignedDatetime() != null){
                         LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
                         LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
 
@@ -186,6 +187,7 @@ public class StatisticsKFCController {
                             assignTime = qtAssignTime;
                             a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
                         }
+                    }
 
 //                        if (arrivedTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(assignTime.until(arrivedTime, ChronoUnit.SECONDS) < 0 || assignTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || assignTime.until(returnTime, ChronoUnit.SECONDS) < 0)){
                             return  true;

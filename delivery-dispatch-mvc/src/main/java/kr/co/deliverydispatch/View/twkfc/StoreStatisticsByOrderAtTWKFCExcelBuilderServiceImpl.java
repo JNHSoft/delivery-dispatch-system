@@ -201,7 +201,12 @@ public class StoreStatisticsByOrderAtTWKFCExcelBuilderServiceImpl extends CommEx
 
             // 배정시간
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(storeStatisticsByOrderList.get(i).getAssignedDatetime());
+            if (storeStatisticsByOrderList.get(i).getAssignedDatetime() != null){
+                cell.setCellValue(storeStatisticsByOrderList.get(i).getAssignedDatetime());
+            }else {
+                cell.setCellValue("-");
+            }
+
             cell.setCellStyle(dataCellStyle);
 
             // QT

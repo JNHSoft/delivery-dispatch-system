@@ -150,6 +150,7 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
         int distanceNullCnt = 0;
 
         for (int i = 0, r = orderList.size(); i < r; i++) {
+
             LocalDateTime pickupTime = LocalDateTime.MIN;
             if (orderList.get(i).getPickedUpDatetime() != null){
                 pickupTime = LocalDateTime.parse((orderList.get(i).getPickedUpDatetime()).replace(" ", "T"));
@@ -213,7 +214,12 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             // 배정시간
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderList.get(i).getAssignedDatetime());
+            if (orderList.get(i).getAssignedDatetime() != null) {
+                cell.setCellValue(orderList.get(i).getAssignedDatetime());
+            } else {
+                cell.setCellValue("-");
+            }
+
             cell.setCellStyle(dataCellStyle);
 
             // QT
