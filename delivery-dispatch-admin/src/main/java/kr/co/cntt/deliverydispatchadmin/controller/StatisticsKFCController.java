@@ -152,6 +152,8 @@ public class StatisticsKFCController {
                                                               SearchInfo searchInfo){
         response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 
+        System.out.println("엑셀 다운로드 호출 성공");
+
         // ADMIN 정보
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         searchInfo.setCurrentDatetime(searchInfo.getSDate());
@@ -206,6 +208,7 @@ public class StatisticsKFCController {
 
                         // 21.05.27 배정 시간의 규칙 변경
                         // 배정 시간이 예약 시간 - QT 시간보다 늦어진 경우에 예약 - QT 시간으로 계산한다.
+                    if (a.getAssignedDatetime() != null){
                         LocalDateTime assignTime = LocalDateTime.parse((a.getAssignedDatetime()).replace(" ", "T"));
                         LocalDateTime qtAssignTime = reserveDatetime.minusMinutes(qtTime);
 
@@ -214,6 +217,7 @@ public class StatisticsKFCController {
                             assignTime = qtAssignTime;
                             a.setAssignedDatetime(assignTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")));
                         }
+                    }
 
                         // 다음 조건에 부합한 경우만 표기되도록 적용
                         //if (completeTime.until(returnTime, ChronoUnit.SECONDS) >= 60 && !(createdTime.until(completeTime, ChronoUnit.SECONDS) < 0 || createdTime.until(pickupTime, ChronoUnit.SECONDS) < 0 || createdTime.until(returnTime, ChronoUnit.SECONDS) < 0)){

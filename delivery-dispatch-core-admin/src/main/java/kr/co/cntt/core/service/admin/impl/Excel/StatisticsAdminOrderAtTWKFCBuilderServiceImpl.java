@@ -213,7 +213,12 @@ public class StatisticsAdminOrderAtTWKFCBuilderServiceImpl extends ExcelComm {
 
             // 배정시간
             cell = addListRow.createCell(colNum++);
-            cell.setCellValue(orderList.get(i).getAssignedDatetime());
+            if (orderList.get(i).getAssignedDatetime() != null) {
+                cell.setCellValue(orderList.get(i).getAssignedDatetime());
+            } else {
+                cell.setCellValue("-");
+            }
+
             cell.setCellStyle(dataCellStyle);
 
             // QT
