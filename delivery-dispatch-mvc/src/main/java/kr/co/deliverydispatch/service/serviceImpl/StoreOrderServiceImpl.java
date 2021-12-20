@@ -470,7 +470,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                 }).collect(Collectors.toList()));
 
                 // old android push
-                if (iosMap.size() > 0){
+                if (oldMap.size() > 0){
                     try {
                         ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -691,7 +691,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -793,7 +793,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                         }).collect(Collectors.toList()));
 
                         // old android push
-                        if (iosMap.size() > 0){
+                        if (oldMap.size() > 0){
                             try {
                                 ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -960,7 +960,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -1062,7 +1062,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                         }).collect(Collectors.toList()));
 
                         // old android push
-                        if (iosMap.size() > 0){
+                        if (oldMap.size() > 0){
                             try {
                                 ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -1240,7 +1240,7 @@ public class StoreOrderServiceImpl extends ServiceSupport implements StoreOrderS
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 

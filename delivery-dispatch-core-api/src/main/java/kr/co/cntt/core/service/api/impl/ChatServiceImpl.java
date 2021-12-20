@@ -216,7 +216,7 @@ public class ChatServiceImpl extends ServiceSupport implements ChatService {
                 }).collect(Collectors.toList()));
 
                 // old android push
-                if (iosMap.size() > 0){
+                if (oldMap.size() > 0){
                     try {
                         ArrayList<String> oldTokenValue = new ArrayList<>();
 
