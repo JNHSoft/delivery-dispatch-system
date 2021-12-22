@@ -1014,6 +1014,32 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 
         order.setAddress(address);
 
+        // 예약 시간이 현재보다 이전 인 경우 예외처리
+        /// 예약 시간이 등록 시간보다 과거로 표기되는 경우 등록 오류로 리턴하기. 일자만 비교함
+        if (!StringUtils.isNullOrEmpty(order.getReservationDatetime())){
+            try {
+                //Date bookingDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());
+                LocalDateTime bookingTime;
+
+                try {
+                    bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+                } catch (Exception e){
+                    bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                }
+
+                LocalDateTime currentTime = LocalDateTime.now();
+
+                if (bookingTime.isBefore(currentTime)) {
+                    log.info("update regID => " + order.getRegOrderId() + " # 예약일자 => " + bookingTime + " # 비교 시간 => " + currentTime);
+                    throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
+                }
+
+            } catch (Exception e){
+                log.error("update regID => " + order.getRegOrderId(), e);
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
+            }
+        }
+
         order.setRole("ROLE_STORE");
         // 20.07.01 주문 예약 시간 변동 시, 라이더 배정 취소 프로세스 추가
         Order orgOrd = getOrderInfo(order);     // 변경 전 주문 정보 추출
@@ -1072,31 +1098,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
 //            e.printStackTrace();
             log.error(e.getMessage());
         }
-
-        /// 예약 시간이 등록 시간보다 과거로 표기되는 경우 등록 오류로 리턴하기. 일자만 비교함
-        try {
-            //Date bookingDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());
-            LocalDateTime bookingTime;
-
-            try {
-                bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-            } catch (Exception e){
-                bookingTime = LocalDateTime.parse(order.getReservationDatetime(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-            }
-
-            LocalDateTime currentTime = LocalDateTime.now();
-
-            if (bookingTime.isBefore(currentTime)) {
-                log.info("update regID => " + order.getRegOrderId() + " # 예약일자 => " + bookingTime + " # 비교 시간 => " + currentTime);
-                throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
-            }
-
-        } catch (Exception e){
-            log.error("update regID => " + order.getRegOrderId(), e);
-            throw new AppTrException(getMessage(ErrorCodeEnum.E00062), ErrorCodeEnum.E00062.name());
-        }
-
-
 
         if (order.getMenuPrice() == null || order.getMenuPrice().equals("")) {
             order.setMenuPrice("0");
