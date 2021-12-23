@@ -606,7 +606,7 @@
 						}
 
 
-						var surveyHtml = '<input type="button" id="btnServey" class="btnSurvey" onclick="javascript:gotoSurvey(\'' + data.regOrderId + '\')" value="為我們的追蹤系統評分給予好評" />'
+						var surveyHtml = '<input type="button" id="btnServey" class="btnSurvey" onclick="javascript:gotoSurvey(\'' + data.webOrderId + '\')" value="為我們的追蹤系統評分給予好評" />'
 
 						$("#divServey").html(surveyHtml);
 
@@ -1004,9 +1004,9 @@
 	}
 
 	// 설문조사 탭 띄우기
-	function gotoSurvey(regOrderId){
-		if (regOrderId){
-			window.open('https://www.surveycake.com/s/NYmMe?ssn44='+regOrderId);
+	function gotoSurvey(webOrderId){
+		if (webOrderId){
+			window.open('https://www.surveycake.com/s/NYmMe?ssn44='+webOrderId);
 		}
 	}
 
