@@ -103,6 +103,9 @@
 	var durationTime;
 	var routeArray = [];
 
+	// 타이머 중단할 수 있도록 변경
+	var refreshTimer;
+
 	/**
 	 * Page Loaded events
 	 * */
@@ -130,7 +133,7 @@
 
 		setUI();
 		// 일정 시간마다 화면을 갱신해 준다.
-		setInterval(setUI, refreshMillis);
+		refreshTimer = setInterval(setUI, refreshMillis);
 	});
 
 	/**
@@ -573,7 +576,7 @@
 
 							starPointHtml += '<span>&#9830; 您對外送員的服務滿意度？</span>';
 							starPointHtml += '<div class="point_stars">';
-							starPointHtml += '<input type="radio" id="delStarPoint5" name="delStarPoint" value="5" /><label for="delStarPoint5" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delStarPoint5" name="delStarPoint" value="5" checked="checked" /><label for="delStarPoint5" class="star">&#9733;</label>';
 							starPointHtml += '<input type="radio" id="delStarPoint4" name="delStarPoint" value="4" /><label for="delStarPoint4" class="star">&#9733;</label>';
 							starPointHtml += '<input type="radio" id="delStarPoint3" name="delStarPoint" value="3" /><label for="delStarPoint3" class="star">&#9733;</label>';
 							starPointHtml += '<input type="radio" id="delStarPoint2" name="delStarPoint" value="2" /><label for="delStarPoint2" class="star">&#9733;</label>';
@@ -582,7 +585,7 @@
 
 							starPointHtml += '<span>&#9830; 您對外送員的速度滿意度？</span>';
 							starPointHtml += '<div class="point_stars">';
-							starPointHtml += '<input type="radio" id="delSpeedStarPoint5" name="delSpeedStarPoint" value="5" /><label for="delSpeedStarPoint5" class="star">&#9733;</label>';
+							starPointHtml += '<input type="radio" id="delSpeedStarPoint5" name="delSpeedStarPoint" value="5" checked="checked" /><label for="delSpeedStarPoint5" class="star">&#9733;</label>';
 							starPointHtml += '<input type="radio" id="delSpeedStarPoint4" name="delSpeedStarPoint" value="4" /><label for="delSpeedStarPoint4" class="star">&#9733;</label>';
 							starPointHtml += '<input type="radio" id="delSpeedStarPoint3" name="delSpeedStarPoint" value="3" /><label for="delSpeedStarPoint3" class="star">&#9733;</label>';
 							starPointHtml += '<input type="radio" id="delSpeedStarPoint2" name="delSpeedStarPoint" value="2" /><label for="delSpeedStarPoint2" class="star">&#9733;</label>';
@@ -603,6 +606,8 @@
 							if (data.speedPoint){
 								$("input:radio[name=delSpeedStarPoint][value='" + data.speedPoint + "']").attr('checked', true);
 							}
+
+							clearInterval(refreshTimer);
 						}
 
 
