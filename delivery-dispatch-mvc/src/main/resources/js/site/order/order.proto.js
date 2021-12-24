@@ -420,7 +420,7 @@ DDELib.Orders.prototype = {
             height: 680,
             autowidth: true,
             viewrecords: true,
-            rowNum: 20,
+            rowNum: my_store.brandCode === "1" ? 40 : 20,
             rownumbers: true, // show row numbers
             rownumWidth: 25, // the width of the row numbers columns
             pager: "#jqGridPager",
