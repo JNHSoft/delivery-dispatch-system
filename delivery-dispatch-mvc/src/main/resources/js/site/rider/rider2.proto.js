@@ -23,6 +23,20 @@ DDELib.Riders.prototype = {
     },
     init: function () {
         this.log("init");
+
+        // 2021-12-23 KFC에서만 MyRider 체크 해지를 디폴트로 하기
+        var bMyRiderChk = true;
+
+        if (my_store.brandCode === "1"){
+            bMyRiderChk = false;
+
+            if (localStorage.getItem('myRiderChk') === 'true'){
+                bMyRiderChk = true;
+            }
+        }
+
+        $("#myStoreChk").prop("checked", bMyRiderChk);
+
         this.initVar();
         this.bindEvent();
         this.makeWebSocket();
@@ -134,6 +148,10 @@ DDELib.Riders.prototype = {
         this.log("getRiderList");
         var self = this;
         this.htLayer.list.html(null);
+
+        // 내매장 소속 라이더만 보기의 옵션 저장
+        localStorage.setItem('myRiderChk', $("#myStoreChk").is(":checked"));
+
         $.ajax({
             url: "/getRiderList",
             type: 'get',

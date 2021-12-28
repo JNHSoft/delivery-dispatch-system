@@ -552,7 +552,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -1207,7 +1207,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -1309,7 +1309,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }).collect(Collectors.toList()));
 
                         // old android push
-                        if (iosMap.size() > 0){
+                        if (oldMap.size() > 0){
                             try {
                                 ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -1541,7 +1541,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -1644,7 +1644,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -2068,7 +2068,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -2233,7 +2233,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -2338,7 +2338,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                         }).collect(Collectors.toList()));
 
                         // old android push
-                        if (iosMap.size() > 0){
+                        if (oldMap.size() > 0){
                             try {
                                 ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -2557,7 +2557,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                     }).collect(Collectors.toList()));
 
                     // old android push
-                    if (iosMap.size() > 0){
+                    if (oldMap.size() > 0){
                         try {
                             ArrayList<String> oldTokenValue = new ArrayList<>();
 
@@ -2778,7 +2778,7 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
                 }).collect(Collectors.toList()));
 
                 // old android push
-                if (iosMap.size() > 0){
+                if (oldMap.size() > 0){
                     try {
                         ArrayList<String> oldTokenValue = new ArrayList<>();
 
