@@ -1,6 +1,8 @@
 /*<![CDATA[*/
 let loading = $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 let orderArray = [];
+// 2021-12-30 케인 요청으로 상세 내용이 떠 있는 경우, Refresh 막기
+let alarmPass = false;
 
 if(typeof DDELib === 'undefined'){
     DDELib = {};
@@ -110,6 +112,9 @@ DDELib.Orders.prototype = {
 
         var self = this;
         $('.state_wrap .btn_close').click(function (e) {
+            // 2021-12-30 주문 상세 페이지를 닫는 경우 상태값 변경하기
+            self.getOrderList();
+
             e.preventDefault();
             self.onCloseDetail();
         });
@@ -194,7 +199,10 @@ DDELib.Orders.prototype = {
                     });
                     socket.on('message', function(data){
                         //data.match를 type 으로 바꿔야 합니다
-                        self.orderAlarmMessage(data);
+                        // 2021-12-30 상세 페이지 Open 시 소켓 정보 처리를 PASS 한다.
+                        if (!alarmPass){
+                            self.orderAlarmMessage(data);
+                        }
                     });
                 } else {
                     alert('It is a browser that does not support Websocket');
@@ -701,6 +709,9 @@ DDELib.Orders.prototype = {
             },
             dataType: 'json',
             success: function (data) {
+                // 2021-12-30 상세 페이지를 보는 동안, 소켓 통신 처리를 막기
+                alarmPass = true;
+
                 selectedOriginOrder = data;
 
                 var status = self.getStatusInfo(data.status);
@@ -1129,6 +1140,8 @@ DDELib.Orders.prototype = {
         });
     },
     onCloseDetail:function(){
+        // 2021-12-30 주문 상세 페이지를 닫는 경우 상태값 변경하기
+        alarmPass = false;
         $('.state_wrap').removeClass('on');
         setTimeout(function () {
             $(window).trigger('resize');
