@@ -834,7 +834,8 @@ DDELib.Orders.prototype = {
                     if (data.hasOwnProperty(key)) {
                         var ev = data[key];
                         if (ev.working == "1") {
-                            if ($("input[name=myStoreChk]:checkbox").prop("checked")) {
+                            // 2021-12-30 KFC에서는 MyRider Check 시에도 공유된 라이더가 표시 될 수 있도록 적용
+                            if ($("input[name=myStoreChk]:checkbox").prop("checked") && my_store.brandCode !== "1") {
                                 if (ev.subGroupRiderRel) {
                                     if ((ev.subGroupRiderRel.storeId === $('#orderMyStoreChk').val())
                                         || (ev.sharedStore !== undefined && ev.sharedStore === "Y" && ev.sharedStoreId === $('#orderMyStoreChk').val())) {
