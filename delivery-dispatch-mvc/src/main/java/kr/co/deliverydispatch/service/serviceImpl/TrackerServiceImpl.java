@@ -94,5 +94,10 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
         }
         return tracker;
     }
+
+    @Override
+    public int regStarPoint(Tracker tracker) throws AppTrException {
+        return trackerMapper.updateOrderStarPoint(tracker);
+    }
 }
 

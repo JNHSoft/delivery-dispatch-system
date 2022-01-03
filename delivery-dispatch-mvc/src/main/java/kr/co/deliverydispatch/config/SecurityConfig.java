@@ -92,10 +92,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         RequestMatcher trackerMatcher = new AntPathRequestMatcher("/tracker");
         RequestMatcher trackerErrorMatcher = new AntPathRequestMatcher("/error/error-tracker");
         RequestMatcher trackerTestMatcher = new AntPathRequestMatcher("/tracker-test");
+        RequestMatcher trackerStarPoint = new AntPathRequestMatcher("/regStarPoint");
         List<RequestMatcher> whiteList = new ArrayList<>();
         whiteList.add(trackerMatcher);
         whiteList.add(trackerErrorMatcher);
         whiteList.add(trackerTestMatcher);
+        whiteList.add(trackerStarPoint);
         DelegatingRequestMatcherHeaderWriter headerWriter = new DelegatingRequestMatcherHeaderWriter(
                 new NegatedRequestMatcher(
                         new OrRequestMatcher(
@@ -115,6 +117,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/tracker-test").permitAll()    // 트래커 페이지
                 .antMatchers("/trackerInfo").permitAll()    // 트래커 정보요청
                 .antMatchers("/error/error-tracker").permitAll()    // 트래커 페이지
+                .antMatchers("/regStarPoint").permitAll()           // 별점 시스템 등록
                 // 슈퍼, 개발자만 허용
                 .antMatchers("/admin/list/**").access("hasRole('SUPER') or hasRole('GOD')")
                 .antMatchers("/admin/delete/**").access("hasRole('SUPER') or hasRole('GOD')")

@@ -61,4 +61,8 @@ public interface TrackerMapper {
     @Transactional(readOnly=true)
     public Tracker selectTracker(Tracker tracker);
 
+    /**
+     * 별점 등록
+     * */
+    int updateOrderStarPoint(Tracker tracker);
 }
