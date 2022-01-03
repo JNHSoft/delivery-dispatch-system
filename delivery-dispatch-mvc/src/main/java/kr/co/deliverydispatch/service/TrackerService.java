@@ -14,4 +14,9 @@ public interface TrackerService {
      */
     public Tracker getTracker(String encParam) throws AppTrException;
 
+    /**
+     * 별점 등록
+     * */
+    int regStarPoint(Tracker tracker) throws AppTrException;
+
 }

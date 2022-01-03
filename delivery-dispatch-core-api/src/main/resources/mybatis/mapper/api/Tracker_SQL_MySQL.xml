@@ -3,15 +3,18 @@
 
 	<!-- selectLoginTracker -->
 	<select id="selectLoginTracker" parameterType="kr.co.cntt.core.model.login.User" resultType="Map">
-		SELECT A.login_id AS loginId
-		, B.access_token AS accessToken
-		FROM TB_TRACKER AS A
-		LEFT JOIN TB_TRACKER_SESSION AS B
-		ON A.id = B.tracker_id
-		WHERE 1=1
-		AND login_id = #{loginId}
-		AND login_pw = #{loginPw}
-		limit 1
+		SELECT	 A.login_id				AS loginId
+				,B.access_token			AS accessToken
+				,null					as brandCode
+				,null					as brandName
+		FROM	 TB_TRACKER				AS A
+		LEFT JOIN TB_TRACKER_SESSION	AS B
+		ON	 A.id = B.tracker_id
+		WHERE	 1=1
+		AND		 deleted is null
+		AND		 login_id = #{loginId}
+		AND		 login_pw = #{loginPw}
+		limit	 1
 	</select>
 
 
@@ -68,6 +71,8 @@
 	<!-- selectTracker -->
 	<select id="selectTracker" parameterType="kr.co.cntt.core.model.tracker.Tracker" resultType="kr.co.cntt.core.model.tracker.Tracker">
 		SELECT	 A.created_datetime
+				,A.reg_order_id
+				,A.web_order_id
 				,A.status
 				,A.latitude
 				,A.longitude
@@ -82,6 +87,8 @@
 				,ifnull(B.brand_code, '')	as brand_code
 				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = B.brand_code )	as brand_name
 				,A.third_party_id
+				,A.delivery_star_point					as deliveryPoint
+				,A.del_speed_star_point					as speedPoint
 		FROM 	 TB_ORDER AS A
 		LEFT JOIN TB_STORE AS B
 			ON 	 A.store_id = B.id
@@ -90,6 +97,19 @@
 		WHERE 	 A.web_order_id = #{webOrderId}
 		AND 	 B.code = #{code}
 	</select>
+
+	<update id="updateOrderStarPoint" parameterType="kr.co.cntt.core.model.tracker.Tracker">
+		update   TB_ORDER
+		set      star_point_reg_datetime = now()
+			<if test="deliveryPoint != null and deliveryPoint > 0">
+				,delivery_star_point = #{deliveryPoint}
+			</if>
+			<if test="speedPoint != null and speedPoint > 0">
+				,del_speed_star_point = #{speedPoint}
+			</if>
+		where    status = 3
+		and      web_order_id = #{webOrderId}
+	</update>
 
 </mapper>
  

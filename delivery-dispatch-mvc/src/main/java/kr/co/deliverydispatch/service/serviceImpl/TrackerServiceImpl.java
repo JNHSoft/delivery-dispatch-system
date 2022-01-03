@@ -6,7 +6,6 @@ import kr.co.cntt.core.model.tracker.Tracker;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.util.AES256Util;
 import kr.co.cntt.core.util.CustomEncryptUtil;
-import kr.co.cntt.core.util.StringUtil;
 import kr.co.deliverydispatch.service.TrackerService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -16,10 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import javax.activation.MimetypesFileTypeMap;
-import java.io.Console;
-import java.io.File;
 
 @Slf4j
 @Service("mvcTrackerService")
@@ -48,11 +43,9 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             AES256Util aesUtil = new AES256Util(tKey);
 
             String decParam = aesUtil.aesDecode(CustomEncryptUtil.decodeBase64(encParam));
-//            System.out.println(decParam);
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(decParam);
 
-//            String regOrderId = jsonObject.get("regOrderId").toString();
             String webOrderId = jsonObject.get("webOrderId").toString();
             String code = jsonObject.get("code").toString();
             String requestDate = jsonObject.get("reqDate").toString();
@@ -100,6 +93,11 @@ public class TrackerServiceImpl extends ServiceSupport implements TrackerService
             return null;
         }
         return tracker;
+    }
+
+    @Override
+    public int regStarPoint(Tracker tracker) throws AppTrException {
+        return trackerMapper.updateOrderStarPoint(tracker);
     }
 }
 

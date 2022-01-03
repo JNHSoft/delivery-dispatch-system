@@ -41,6 +41,36 @@
             </tbody>
         </table>
     </div>
+
+    <!--	<div id="divStarPoint">-->
+    <!--		<span>&#9830; 您對外送員的服務滿意度？</span>-->
+    <!--		<div class="point_stars">-->
+    <!--			<input type="radio" id="5point" name="pointStars" value="5" />-->
+    <!--			<label for="5point" class="star">&#9733;</label>-->
+    <!--			<input type="radio" id="4point" name="pointStars" value="4" />-->
+    <!--			<label for="4point" class="star">&#9733;</label>-->
+    <!--			<input type="radio" id="3point" name="pointStars" value="3" />-->
+    <!--			<label for="3point" class="star">&#9733;</label>-->
+    <!--			<input type="radio" id="2point" name="pointStars" value="2" />-->
+    <!--			<label for="2point" class="star">&#9733;</label>-->
+    <!--			<input type="radio" id="1point" name="pointStars" value="1" />-->
+    <!--			<label for="1point" class="star">&#9733;</label>-->
+    <!--		</div>-->
+
+    <!--		<span>&#9830; 您對外送員的速度滿意度？</span>-->
+    <!--		<div class="point_stars">-->
+    <!--			<input type="radio" id="5point-1" name="pointStars-1" value="5" />-->
+    <!--			<label for="5point-1" class="star">&#9733;</label>-->
+    <!--			<input type="radio" id="4point-1" name="pointStars-1" value="4" />-->
+    <!--			<label for="4point-1" class="star">&#9733;</label>-->
+    <!--			<input type="radio" id="3point-1" name="pointStars-1" value="3" />-->
+    <!--			<label for="3point-1" class="star">&#9733;</label>-->
+    <!--			<input type="radio" id="2point-1" name="pointStars-1" value="2" />-->
+    <!--			<label for="2point-1" class="star">&#9733;</label>-->
+    <!--			<input type="radio" id="1point-1" name="pointStars-1" value="1" />-->
+    <!--			<label for="1point-1" class="star">&#9733;</label>-->
+    <!--		</div>-->
+    <!--	</div>-->
 </div>
 
 
@@ -75,6 +105,9 @@
     var durationTime;
     var routeArray = [];
 
+    // 타이머 중단할 수 있도록 변경
+    var refreshTimer;
+
     /**
      * Page Loaded events
      * */
@@ -97,7 +130,7 @@
 
         setUI();
         // 일정 시간마다 화면을 갱신해 준다.
-        setInterval(setUI, refreshMillis);
+        refreshTimer = setInterval(setUI, refreshMillis);
     });
 
     /**
@@ -445,7 +478,7 @@
                 var thirdDelivery = data.thirdPartyId;  // 제 3자 배송
 
                 // 예약 시간이 있는 경우에만 프로세스 작업을 한다.
-                console.log("data.reservationDatetime => ", data.reservationDatetime);
+                //console.log("data.reservationDatetime => ", data.reservationDatetime);
                 if (data.reservationDatetime){
                     var bookingTime = new Date(Date.parse(safariSetDate(data.reservationDatetime)));
                     var createdTime = new Date(Date.parse(safariSetDate(data.createdDatetime)));
@@ -454,7 +487,7 @@
                     // 예약 시간이 현재 시간보다 5분 미만으로 남은 경우, 예약 시간을 변경한다.
                     // 5분전까지 픽업이 안되는 경우, 예약 시간을 10분 연장하며, 픽업 전 까지 반복한다. 상태는 신규주문 또는 배정까지
                     if (bookingTime.getTime() - nowTime.getTime() <= 300000 && (orderStatus === 0 || orderStatus === 5 || orderStatus === 1) ){
-                        console.log("시간 계산 시작 before", bookingTime);
+                        //console.log("시간 계산 시작 before", bookingTime);
                         var diffMin = parseInt(Math.abs((bookingTime.getTime() - nowTime.getTime()) / 60000));
 
                         var tenValue = parseInt(diffMin / 10);
@@ -466,7 +499,7 @@
 
                         bookingTime.setMinutes(bookingTime.getMinutes() + addMinuteValue);
 
-                        console.log("시간을 계산해 보았습니다.", bookingTime);
+                        //console.log("시간을 계산해 보았습니다.", bookingTime);
                     }
 
                     // 예약 시간을 입력한다.
@@ -516,7 +549,56 @@
                     if (thirdDelivery !== undefined && thirdDelivery.toString().trim().length > 0) {
                         $(".visual_area_kfc").html('<p class="tit_third" style="filter:drop-shadow(2px 4px 6px black);">由於外送訂單較多，<br/>您的訂單將由第三方外送夥伴安排配送，<br/>完成配對後，將發送簡訊通知。<br/><span class="tit_third_second">謝謝您的耐心等待。<br/>如有疑問，請聯絡門市。</span></p>');
                     }else {
-                        $(".visual_area_kfc").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p><p class="tit_wh_bottom">訂購服務專線 (02)412-8000</p>');
+                        //$(".visual_area_kfc").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p><p class="tit_wh_bottom">訂購服務專線 (02)412-8000</p>');
+
+                        // 2021-10-25 별점 시스템 추가
+                        if (!isNaN(data.deliveryPoint) && !isNaN(data.speedPoint)){
+                            // 2개 모두 점수가 있는 경우 정상적으로 완료한 것으로 본다.
+                            $(".visual_area_kfc").html('<p class="tit_wh">請享用熱騰騰<br/>的美味餐點</p><p class="tit_wh_bottom">訂購服務專線 (02)412-8000</p>');
+                        }else {
+
+                            var starPointHtml = '';
+
+                            starPointHtml += '<div id="divStarPoint" class="tit_star_point">';
+
+                            starPointHtml += '<p style="margin-bottom: 25px;">為我們的外送服務給予好評。</p>';
+
+                            starPointHtml += '<span>&#9830; 您對外送員的服務滿意度？</span>';
+                            starPointHtml += '<div class="point_stars">';
+                            starPointHtml += '<input type="radio" id="delStarPoint5" name="delStarPoint" value="5" checked="checked" /><label for="delStarPoint5" class="star">&#9733;</label>';
+                            starPointHtml += '<input type="radio" id="delStarPoint4" name="delStarPoint" value="4" /><label for="delStarPoint4" class="star">&#9733;</label>';
+                            starPointHtml += '<input type="radio" id="delStarPoint3" name="delStarPoint" value="3" /><label for="delStarPoint3" class="star">&#9733;</label>';
+                            starPointHtml += '<input type="radio" id="delStarPoint2" name="delStarPoint" value="2" /><label for="delStarPoint2" class="star">&#9733;</label>';
+                            starPointHtml += '<input type="radio" id="delStarPoint1" name="delStarPoint" value="1" /><label for="delStarPoint1" class="star">&#9733;</label>';
+                            starPointHtml += '</div>';
+
+                            starPointHtml += '<span>&#9830; 您對外送員的速度滿意度？</span>';
+                            starPointHtml += '<div class="point_stars">';
+                            starPointHtml += '<input type="radio" id="delSpeedStarPoint5" name="delSpeedStarPoint" value="5" checked="checked" /><label for="delSpeedStarPoint5" class="star">&#9733;</label>';
+                            starPointHtml += '<input type="radio" id="delSpeedStarPoint4" name="delSpeedStarPoint" value="4" /><label for="delSpeedStarPoint4" class="star">&#9733;</label>';
+                            starPointHtml += '<input type="radio" id="delSpeedStarPoint3" name="delSpeedStarPoint" value="3" /><label for="delSpeedStarPoint3" class="star">&#9733;</label>';
+                            starPointHtml += '<input type="radio" id="delSpeedStarPoint2" name="delSpeedStarPoint" value="2" /><label for="delSpeedStarPoint2" class="star">&#9733;</label>';
+                            starPointHtml += '<input type="radio" id="delSpeedStarPoint1" name="delSpeedStarPoint" value="1" /><label for="delSpeedStarPoint1" class="star">&#9733;</label>';
+                            starPointHtml += '</div>';
+
+                            starPointHtml += '<input type="button" onclick="javascript:saveStarPoint();" value="保存" class="btnStarPoint" />'
+
+                            starPointHtml += '</div>';
+
+
+                            $(".visual_area_kfc").html(starPointHtml);
+
+                            if (data.deliveryPoint){
+                                $("input:radio[name=delStarPoint][value='" + data.deliveryPoint + "']").attr('checked', true);
+                            }
+
+                            if (data.speedPoint){
+                                $("input:radio[name=delSpeedStarPoint][value='" + data.speedPoint + "']").attr('checked', true);
+                            }
+
+                            // 새로고침이 안되도록 설정한다.
+                            clearInterval(refreshTimer);
+                        }
                     }
                 }
                 else if ((orderStatus === 0 || orderStatus === 5) && (checkReserveTime - 3600000 > 0 && checkTime - 1800000 > 0)) {
@@ -756,8 +838,8 @@
                     var routeTimeout = function (durationCheckTime, pointLocation, direction, stepTime, AllTime){
                         var routeTimer = setTimeout(function () {
                             riderMarker.setDuration(durationCheckTime);
-                            console.log("라이더 마커 있음");
-                            console.log(pointLocation);
+                            // console.log("라이더 마커 있음");
+                            // console.log(pointLocation);
 
                             if (direction !== 'keep'){
                                 riderMarker.setIcon({
@@ -783,7 +865,7 @@
                         routeArray.push(routeTimer);
                     }
 
-                    console.log("routeTimeout 성공 ", info.distance);
+                    //console.log("routeTimeout 성공 ", info.distance);
 
                     // 길찾기 이벤트 작동하도록 작업 (이동 해야될 구간만 가져온다)
                     var firstAllRoute = firstRoute.steps.reduce((total, step) => total.concat(step.lat_lngs), []).concat(firstRoute.end_location);
@@ -794,7 +876,7 @@
 
                     var allDurationTime = 0;        // setTimerout이 작동될 시간을 설정한다.
 
-                    console.log("firstAllRoute => ", firstAllRoute.length, " secondTimers => ", secondTimers);
+                    // console.log("firstAllRoute => ", firstAllRoute.length, " secondTimers => ", secondTimers);
 
                     // 라이더의 이전 위치에서 현재 위치까지 뺑뻉이를 돌린다.
                     firstAllRoute.some(function (route, index){
@@ -881,6 +963,44 @@
 
         return yyyy + '/' + (mm[1] ? mm : '0' + mm[0]) + '/' + (dd[1]?dd:'0' + dd[0]) + ' '+
             (hh[1] ? hh : '0' + hh[0]) + ':' + (nn[1] ? nn : '0' + nn[0]) + ':' + (ss[1] ? ss : '0' + ss[0]);
+    }
+
+    function saveStarPoint(){
+        var deliveryStarPoint = $("input:radio[name=delStarPoint]:checked").val();
+        var speedStarPoint = $("input:radio[name=delSpeedStarPoint]:checked").val();
+
+        if (isNaN(deliveryStarPoint) || isNaN(speedStarPoint)){
+            alert('請選擇全部評分。');
+            return;
+        }
+
+        $.ajax({
+            url: '/regStarPoint',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                encParam: encParam,
+                deliveryPoint: deliveryStarPoint,
+                speedPoint: speedStarPoint
+            },
+            success: function (obj){
+                console.log('obj => ', obj);
+                if (obj.result){
+                    alert(obj.message);
+                }
+            },
+            error: function (e){
+                //console.log('error');
+                alert('系統錯誤');
+            },
+            complete: function (){
+                console.log('complete');
+                setUI();
+            }
+        });
+
+
+
     }
 
     /*]]>*/

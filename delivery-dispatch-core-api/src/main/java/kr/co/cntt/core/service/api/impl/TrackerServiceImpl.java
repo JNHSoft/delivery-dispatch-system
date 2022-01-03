@@ -1,6 +1,5 @@
 package kr.co.cntt.core.service.api.impl;
 
-import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.enums.ErrorCodeEnum;
 import kr.co.cntt.core.exception.AppTrException;
 import kr.co.cntt.core.mapper.TrackerMapper;

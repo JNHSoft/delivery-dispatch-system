@@ -3,6 +3,7 @@ package kr.co.cntt.core.mapper;
 import kr.co.cntt.core.annotation.DeliveryDispatchMapper;
 import kr.co.cntt.core.model.login.User;
 import kr.co.cntt.core.model.tracker.Tracker;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -56,4 +57,8 @@ public interface TrackerMapper {
      */
     public Tracker selectTracker(Tracker tracker);
 
+    /**
+     * 별점 등록
+     * */
+    int updateOrderStarPoint(Tracker tracker);
 }
