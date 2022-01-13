@@ -232,8 +232,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
     // rider 위치 정보 전송
+    // 2022-01-11 라이더 현재 위치 좌표, 목적지에 대한 좌표, 주문 ID
+    // 2022-01-11 Return 라이더가 소속된 매장에서 알림을 적용하는 반경, 라이더 앱에 반영할 리플레시 타임
     @Override
-    public int updateRiderLocation(Rider rider) throws AppTrException {
+    public Map<String, Object> updateRiderLocation(Rider rider) throws AppTrException {
         // Role 확인 token 으로 권한 확인
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
@@ -242,12 +244,72 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             rider.setAccessToken(null);
         }
 
+        System.out.println("##################################### 22-01-13");
+        if (rider.getOrder() != null) {
+            System.out.println(rider.getOrder().getId());
+            System.out.println(rider.getOrder().getLatitude());
+            System.out.println(rider.getOrder().getLongitude());
+
+            log.info(rider.getOrder().getId());
+            log.info(rider.getOrder().getLatitude());
+            log.info(rider.getOrder().getLongitude());
+        }
+        System.out.println("#####################################");
+
         int nRet = riderMapper.updateRiderLocation(rider);
 
         Rider S_Rider = riderMapper.getRiderInfo(rider);
 
+        /**
+         * 2022-01-11
+         * 라이더에게 줄 Return Map 만들기
+         * */
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("result", "fail");
 
         if (nRet != 0) {
+
+            returnMap.put("result", "success");
+
+            // Miter
+            returnMap.put("pushRadius", 200);
+            // Seconds
+            returnMap.put("locationRefreshTime", 60);
+
+            /**
+             * 2022-01-11
+             * PUSH를 전송할 수 있는 프로세스 추가
+             * 주문 정보가 있는 경우에 한하여, 반경 계산 후 PUSH를 전송하자.
+             * */
+            if (rider.getOrder() != null) {
+                Misc misc = new Misc();
+
+                // 현재 라이더 위치에서 스토어 간의 거리를 구한다
+                int riderToOrder = 0;
+
+                try{
+                    riderToOrder = misc.getHaversine(rider.getLatitude(), rider.getLongitude(), rider.getOrder().getLatitude(), rider.getOrder().getLongitude());
+
+                    // 반경 체크
+                    if (riderToOrder <= S_Rider.getDistance()) {
+                        // PUSH 발송 유무 확인
+
+                        // PUSH를 발송한다
+                        System.out.println(rider.getOrder().getId() + " => ###################################### 푸쉬 발송 ##################################");
+                        log.info(rider.getOrder().getId() + " => ###################################### 푸쉬 발송 ##################################");
+
+                        // PUSH 전송 상태 업데이트
+                    }
+
+                } catch (Exception e) {
+                    log.info("라이더 ~ 스토어의 위치를 구하는 중 오류 발생 ### " + rider.getToken() + " #### 거리 도출 중 오류 발생");
+                    log.error(e.getMessage());
+                }
+            }
+
+
+
+
             if (S_Rider.getSubGroupStoreRel() != null) {
                 redisService.setPublisher(Content.builder().type("rider_location_updated").id(S_Rider.getId()).adminId(S_Rider.getAdminId()).storeId(S_Rider.getStore().getId()).subGroupId(S_Rider.getSubGroupStoreRel().getSubGroupId()).latitude(S_Rider.getLatitude()).longitude(S_Rider.getLongitude()).build());
             } else {
@@ -255,7 +317,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             }
         }
 
-        return nRet;
+        return returnMap;
     }
 
     // rider 가 자기 위치 정보 조회

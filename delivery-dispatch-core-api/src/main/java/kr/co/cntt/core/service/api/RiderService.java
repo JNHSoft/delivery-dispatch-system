@@ -88,7 +88,7 @@ public interface RiderService {
      * @return
      * @throws AppTrException
      */
-    public int updateRiderLocation(Rider rider) throws AppTrException ;
+    public Map<String, Object> updateRiderLocation(Rider rider) throws AppTrException ;
 
     /**
      * Rider 위치 정보 조회
