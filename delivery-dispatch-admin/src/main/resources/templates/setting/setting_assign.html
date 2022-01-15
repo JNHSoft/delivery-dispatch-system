@@ -30,6 +30,12 @@
 								<label class="checkbox"><input name="assignRider" type="checkbox" value="2" th:checked="${#strings.contains(adminInfo.assignmentStatus, '2')}" /><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.rider')}" />
 								</label>
+
+
+								<label th:if="*{adminInfo.brandCode.toString()} eq 1" class="checkbox"><input name="assignHalf" type="checkbox" value="3" th:checked="${#strings.contains(adminInfo.assignmentStatus, '3')}" /><i></i>
+									<!-- KFC 전용 -->
+									<span class="lbl" th:text="${#messages.msg('order.assign.mode.halfauto')}" />
+								</label>
 							</div>
 						</li>
 						<li>

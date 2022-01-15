@@ -55,6 +55,8 @@ public class StoreController {
         log.info("===============> adminInfo.getAdminAccessToken()    : {}", adminInfo.getAdminAccessToken());
         store.setToken(adminInfo.getAdminAccessToken());
 
+        model.addAttribute("adminBrand", adminInfo.getAdminBrandCode());
+
         return "/store/store";
     }
 

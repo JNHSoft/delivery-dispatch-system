@@ -30,6 +30,11 @@
 								<label class="radio"><input name="assign" value="2" type="radio" th:checked="${store.assignmentStatus} == 2" th:disabled="${!#strings.contains(store.adminAssignmentStatus, '2')}"/><i></i>
 									<span class="lbl" th:text="${#messages.msg('order.assign.mode.manual.rider')}" />
 								</label>
+
+								<label th:if="${store.brandCode.toString()} eq 1" class="radio"><input name="assign" value="3" type="radio" th:checked="${store.assignmentStatus} == 3" th:disabled="${!#strings.contains(store.adminAssignmentStatus, '3')}"/><i></i>
+									<!-- KFC 전용 -->
+									<span class="lbl" th:text="${#messages.msg('order.assign.mode.halfauto')}" />
+								</label>
 							</div>
 						</li>
 						<li>

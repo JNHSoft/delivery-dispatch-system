@@ -144,7 +144,8 @@ public class SettingController {
     public String putAdminAssign(Admin admin
             , @RequestParam(value = "assignAuto", required = false) String assignAuto
             , @RequestParam(value = "assignStore", required = false) String assignStore
-            , @RequestParam(value = "assignRider", required = false) String assignRider) {
+            , @RequestParam(value = "assignRider", required = false) String assignRider
+            , @RequestParam(value = "assignHalf", required = false) String assignHalf) {
         SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
         admin.setToken(adminInfo.getAdminAccessToken());
 
@@ -159,8 +160,11 @@ public class SettingController {
         if (assignRider != null) {
             tmpAssignMod.add(assignRider);
         }
+        if (assignHalf != null) {
+            tmpAssignMod.add(assignHalf);
+        }
 
-        if (assignAuto == null && assignStore == null && assignRider == null) {
+        if (assignAuto == null && assignStore == null && assignRider == null && assignHalf == null) {
             admin.setAssignmentStatus("none");
         } else {
             admin.setAssignmentStatus(String.join("|", tmpAssignMod));

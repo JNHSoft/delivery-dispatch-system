@@ -3,6 +3,7 @@
 <script type="text/javascript" th:src="@{/resources/js/site/store/store.js}" layout:fragment="script2"></script>
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
+	var admin_brand = /*[[${adminBrand}]]*/ 'admin_brand';
     var gnb_store = /*[[#{gnb.store}]]*/ 'gnb_store';
     var list_search_all = /*[[#{list.search.all}]]*/ 'list_search_all';
     var list_search_placeholder = /*[[#{list.search.placeholder}]]*/ 'list_search_placeholder';
@@ -169,6 +170,7 @@
 								<option value="0" th:text="${#messages.msg('order.assign.mode.store')}"></option>
 								<option value="1" th:text="${#messages.msg('order.assign.mode.auto')}"></option>
 								<option value="2" th:text="${#messages.msg('order.assign.mode.rider')}"></option>
+								<option th:if="*{adminBrand.toString()} eq 1" value="3" th:text="${#messages.msg('order.assign.mode.halfauto')}"></option>
 							</select>
 						</td>
 					</tr>
@@ -254,6 +256,7 @@
 								<option value="0" th:text="${#messages.msg('order.assign.mode.store')}"></option>
 								<option value="1" th:text="${#messages.msg('order.assign.mode.auto')}"></option>
 								<option value="2" th:text="${#messages.msg('order.assign.mode.rider')}"></option>
+								<option th:if="*{adminBrand.toString()} eq 1" value="3" th:text="${#messages.msg('order.assign.mode.halfauto')}"></option>
 							</select>
 						</td>
 					</tr>
