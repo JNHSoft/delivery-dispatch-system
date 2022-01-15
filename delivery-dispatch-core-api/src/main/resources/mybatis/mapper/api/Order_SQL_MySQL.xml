@@ -868,7 +868,9 @@
 		where	 A.created_datetime > current_date()
 		and		 A.status in (0, 5)
 		and		 B.deleted is null
-		and		 assignment_status = 1
+		and (   (assignment_status = 1)
+			or  (assignment_status = 4 and ifnull(brand_code, 0) = 1 and (date_format(now(), '%H:%i') not between '11:00' and '13:30' and date_format(now(), '%H:%i') not between '16:30' and '19:30') )
+			)
 		<choose>
 			<when test="locale eq 'zh_TW'">
 				and		 timestampdiff(second, now(), A.reservation_datetime) <![CDATA[<=]]> (case when cooking_time <![CDATA[<]]> 30 then cooking_time else 30 end) * 60
