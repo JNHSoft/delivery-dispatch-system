@@ -126,7 +126,7 @@ function getStoreList() {
                     else if (data[key].assignmentStatus == "2"){
                         $tmpData.th11 = order_assign_mode_rider
                     }
-                    else if (data[key].assignmentStatus == "4"){
+                    else if (data[key].assignmentStatus == "3"){
                         $tmpData.th11 = order_assign_mode_halfauto
                     }
 
