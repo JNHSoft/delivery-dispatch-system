@@ -126,6 +126,9 @@ function getStoreList() {
                     else if (data[key].assignmentStatus == "2"){
                         $tmpData.th11 = order_assign_mode_rider
                     }
+                    else if (data[key].assignmentStatus == "4"){
+                        $tmpData.th11 = order_assign_mode_halfauto
+                    }
 
                     // 20.12.30 마지막 주문으로부터 오버된 시간
                     $tmpData.th14 = millisecondToTime(data[key].orderDiff*1000)
