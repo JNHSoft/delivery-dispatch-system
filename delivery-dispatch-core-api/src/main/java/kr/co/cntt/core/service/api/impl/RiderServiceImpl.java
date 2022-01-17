@@ -1473,6 +1473,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                         log.info("라이더가 Self popup 실행 PUSH 전송 완료 " + riderMapper.insertSendRiderPushInfo(searchMap));
                     }catch (Exception e){
                         log.error(e.getMessage());
+                        throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH001), ErrorCodeEnum.ERRPUSH001.name());
                     }
                 } else {
                     throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH003), ErrorCodeEnum.ERRPUSH003.name());
