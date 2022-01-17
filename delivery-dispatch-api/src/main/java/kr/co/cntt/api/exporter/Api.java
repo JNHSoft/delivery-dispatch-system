@@ -198,6 +198,11 @@ public interface Api {
 
     String RIDER_ACTIVE_INFO = "/getRiderActiveInfo.json";
 
+    /** 22.01.17 라이더가 본인에게 PUSH를 전달할 수 있도록 진행 */
+    String SEND_SELF_PUSH = "/sendSelfPush.json";
+
+    String REG_NEAR_ORDER_PUSH = "/regNearOrderPush.json";
+
     // ############################################################################################ //
 
     /** Store 정보 조회 */

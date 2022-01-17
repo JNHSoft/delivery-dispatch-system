@@ -176,6 +176,10 @@ public class AndroidPushNotificationsService {
 
             request = new HttpEntity<>(new Gson().toJson(fcmBody), headers);
 
+            System.out.println("############################################");
+            System.out.println(new Gson().toJson(fcmBody));
+            System.out.println("############################################");
+
             RestTemplate restTemplate = new RestTemplate();
 
             ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();

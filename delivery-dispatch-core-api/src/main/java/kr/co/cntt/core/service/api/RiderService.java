@@ -198,4 +198,16 @@ public interface RiderService {
      * 라이더의 당일 활동 내역
      * */
     RiderActiveInfo getRiderActiveInfo(Rider rider) throws AppTrException;
+
+    /**
+     * 22-01-17
+     * 라이더가 본인에게 PUSH를 전달할 수 있도록 진행
+     * */
+    int sendSelfPush(Map<String, Object> map) throws AppTrException;
+
+    /**
+     * 22-01-17
+     * 라이더가 도착지 근처에 도착한 경우 PUSH 전송 요청 건
+     * */
+    int regNearOrderPush(Map<String, Object> map) throws AppTrException;
 }

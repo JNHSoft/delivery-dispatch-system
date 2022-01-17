@@ -27,4 +27,7 @@ public class User extends Common implements Dto {
 
     // 브랜드 이미지 경로
     private String brandImg;
+
+    // 2022-01-17 라이더 앱에서 위치 변경을 호출할 간격 확인 (단위 : 초)
+    private Integer locationRefreshTime;
 }

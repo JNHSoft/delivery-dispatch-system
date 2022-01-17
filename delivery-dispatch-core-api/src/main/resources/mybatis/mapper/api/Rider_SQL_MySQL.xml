@@ -47,6 +47,11 @@
 		<result property="sharedStoreCode" column="shared_store_code" />
 		<result property="sharedStoreName" column="shared_store_name" />
 
+		<!-- 2022-01.17 라이더 PUSH 관련 기능 추가 -->
+		<result property="pushToken" column="push_token" />
+		<result property="pushRadius" column="push_radius" />
+		<result property="locationRefreshTime" column="location_refresh_time" />
+
 		<association property="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
 			<result property="name" column="group_name" />
@@ -329,97 +334,94 @@
 
 	<!--rider 정보 조회 -->
 	<select id="getRiderInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectSubgroupRiderRelsResult">
-	  SELECT
-		TR.created_datetime
-		, TR.modified_datetime
-		, TR.last_access
-		, TR.admin_id
-		, TR.chat_user_id
-		, TR.id
-		, TR.name
-		, TR.phone
-		, TS.store_name
-		, TS.id AS store_id
-		, TR.login_id
-		, TR.login_pw
-		, TR.code
-		, TR.employment_type
-		, TR.working
-		, TR.status
-		, TR.latitude
-		, TR.longitude
-		, TR.location_updated
-		, TR.vehicle_number
-		, TR.working_hours
-		, TR.rest_hours
-		, TSG.id AS subgroup_id
-		, TSG.group_id AS subgroup_group_id
-		, TG.name AS group_name
-		, TSG.name AS subgroup_name
-		, TSG.admin_id AS subgroup_admin_id
-		, TG.id AS group_id
-		, TG.admin_id AS group_admin_id
-		, SRR.id AS subGroupRiderRel_id
-		, SRR.admin_id AS subGroupRiderRel_admin_id
-		, SRR.group_id AS subGroupRiderRel_group_id
-		, SRR.subgroup_id AS subGroupRiderRel_subgroup_id
-		, SRR.store_id AS subGroupRiderRel_store_id
-		, SRR.rider_id AS subGroupRiderRel_rider_id
+		SELECT 	 TR.created_datetime
+				,TR.modified_datetime
+				,TR.last_access
+				,TR.admin_id
+				,TR.chat_user_id
+				,TR.id
+				,TR.name
+				,TR.phone
+				,TS.store_name
+				,TS.id AS store_id
+				,TR.login_id
+				,TR.login_pw
+				,TR.code
+				,TR.employment_type
+				,TR.working
+				,TR.status
+				,TR.latitude
+				,TR.longitude
+				,TR.location_updated
+				,TR.vehicle_number
+				,TR.working_hours
+				,TR.rest_hours
+				,TSG.id AS subgroup_id
+				,TSG.group_id AS subgroup_group_id
+				,TG.name AS group_name
+				,TSG.name AS subgroup_name
+				,TSG.admin_id AS subgroup_admin_id
+				,TG.id AS group_id
+				,TG.admin_id AS group_admin_id
+				,SRR.id AS subGroupRiderRel_id
+				,SRR.admin_id AS subGroupRiderRel_admin_id
+				,SRR.group_id AS subGroupRiderRel_group_id
+				,SRR.subgroup_id AS subGroupRiderRel_subgroup_id
+				,SRR.store_id AS subGroupRiderRel_store_id
+				,SRR.rider_id AS subGroupRiderRel_rider_id
 
-		,ifnull(TS.brand_code, ( select brand_code from TB_ADMIN where id = TS.admin_id ))	as brandCode
-		,(select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = ifnull(TS.brand_code, ( select brand_code from TB_ADMIN where id = TS.admin_id )))	as brandName
+				,ifnull(TS.brand_code, AD.brand_code)   as brandCode
+				,(select cd_value from TB_CODE_MASTER where title = 'brand_code' and used_flag = 1 and code = ifnull(TS.brand_code, AD.brand_code))	as brandName
 
-		,( select os from TB_RIDER_SESSION where rider_id = TR.id order by expiry_datetime desc limit 1 )		as os
-		,ifnull(shared_flag, 0)					as rider_shared_status
+				,( select os from TB_RIDER_SESSION where rider_id = TR.id order by expiry_datetime desc limit 1 )		as os
+				,ifnull(shared_flag, 0)					as rider_shared_status
 
-		,case when IFNULL(TR.store_shared, 0) = 1 then 'Y' else 'N' end																														as shared_store
-		,(select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1)													as shared_store_id
-		,(select code from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1))			as shared_store_code
-		,(select store_name from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1))		as shared_store_name
+				,case when IFNULL(TR.store_shared, 0) = 1 then 'Y' else 'N' end																														as shared_store
+				,(select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1)													as shared_store_id
+				,(select code from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1))			as shared_store_code
+				,(select store_name from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1))		as shared_store_name
 
-		FROM TB_RIDER TR
+				,(select push_token from TB_RIDER_SESSION where rider_id = TR.id and access_token = #{token})			as push_token
+				,ifnull(AD.push_radius, 200)                        as push_radius
+				,ifnull(AD.location_refresh_time, 60)               as location_refresh_time
 
-		left join
-		TB_SUBGROUP_RIDER_REL AS SRR
-		on TR.id = SRR.rider_id
-		AND SRR.deleted is NULL
-
-		left join
-		TB_STORE AS TS
-		on SRR.store_id = TS.id
-		AND TS.deleted is NULL
-
-		left join
-		TB_SUBGROUP AS TSG
-		on SRR.group_id=TSG.id
-		AND TSG.deleted is NULL
-
-		left join
-		TB_GROUP AS TG
-		on SRR.group_id = TG.id
-		AND TG.deleted is NULL
-
-		WHERE 1=1
-		and   TR.deleted is null
+				,(select os from TB_RIDER_SESSION where rider_id = TR.id and access_token = #{token})			as os
+		FROM     TB_RIDER TR
+		left join TB_SUBGROUP_RIDER_REL AS SRR
+			on   TR.id = SRR.rider_id
+			AND  SRR.deleted is NULL
+		left join TB_STORE AS TS
+			on   SRR.store_id = TS.id
+			AND  TS.deleted is NULL
+		left join TB_SUBGROUP AS TSG
+			on   SRR.group_id=TSG.id
+			AND  TSG.deleted is NULL
+		left join TB_GROUP AS TG
+			on   SRR.group_id = TG.id
+			AND  TG.deleted is NULL
+		left join TB_ADMIN as AD
+			on   TR.admin_id = AD.id
+		WHERE    1=1
+		and      TR.deleted is null
 		<choose>
 			<when test="id != null and id != ''">
 				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 0">
-					AND TR.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
+					AND      TR.admin_id = (SELECT admin_id FROM TB_STORE WHERE id = (SELECT store_id FROM TB_STORE_SESSION WHERE access_token = #{token}))
 				</if>
 				<if test="(isAdmin != null and isAdmin != '') and isAdmin == 1">
-					AND TR.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
+					AND      TR.admin_id = (SELECT admin_id FROM TB_ADMIN_SESSION WHERE access_token = #{token})
 				</if>
-				AND TR.id = #{id}
+				AND      TR.id = #{id}
 			</when>
 			<otherwise>
-				AND TR.admin_id in (SELECT admin_id FROM TB_RIDER WHERE id in (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token} and date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d') AND rider_id = TR.id))
-				AND TR.id in (
-					SELECT rider_id
-					FROM TB_RIDER_SESSION
-					WHERE access_token=#{token}
-					AND   date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
-					AND   rider_id = TR.id
-				)
+				AND      TR.admin_id in (SELECT admin_id FROM TB_RIDER WHERE id in (SELECT rider_id FROM TB_RIDER_SESSION WHERE access_token = #{token} and date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d') AND rider_id = TR.id))
+				AND      TR.id in (
+									SELECT 	 rider_id
+									FROM     TB_RIDER_SESSION
+									WHERE    access_token=#{token}
+									AND      date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+									AND      rider_id = TR.id
+					      )
 			</otherwise>
 		</choose>
 	</select>
@@ -1712,5 +1714,24 @@
 	<insert id="insertRiderSharedHistory" parameterType="kr.co.cntt.core.model.rider.RiderSharedInfo">
 		insert into TB_RIDER_SHARED_STATUS_HISTORY(rider_id, req_user, shared_type, before_status, after_status)
 		values (#{riderId}, #{reqUser}, #{sharedType}, #{beforeStatus}, #{afterStatus})
+	</insert>
+
+	<!-- 22.01.17 라이더 PUSH 히스토리 Check -->
+	<select id="selectSendRiderPushInfo" parameterType="hashmap" resultType="String">
+		select   ifnull(push_target, 'unknown')		as push_target
+		from     TB_CHECK_RIDER_PUSH_INFO
+		where    1=1
+		and      rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
+		and      order_id = #{orderId}
+	</select>
+
+	<!-- 22.01.17 라이더 PUSH 히스토리 저장 -->
+	<insert id="insertSendRiderPushInfo" parameterType="hashmap">
+		insert into TB_CHECK_RIDER_PUSH_INFO(rider_id, order_id, push_target)
+		select   rider_id
+				,#{orderId}
+				,#{pushTarget}
+		from     TB_RIDER_SESSION
+		where    access_token = #{token}
 	</insert>
 </mapper>
