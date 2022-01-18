@@ -268,7 +268,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             returnMap.put("result", "success");
 
             // Miter
-            returnMap.put("pushRadius", S_Rider.getPushRadius() == null? 200 : S_Rider.getPushRadius());
+            returnMap.put("pushRadius", S_Rider.getPushRadius() == null? 20 : S_Rider.getPushRadius());
             // Seconds
             returnMap.put("locationRefreshTime", S_Rider.getLocationRefreshTime() == null ? 60 : S_Rider.getLocationRefreshTime());
 
@@ -296,6 +296,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
                             pushInfo.put("token", rider.getToken());
                             pushInfo.put("orderId", order.getId());
+                            pushInfo.put("riderLatitude", rider.getLatitude());
+                            pushInfo.put("riderLongitude", rider.getLongitude());
 
 
                             String checkPush = checkSendRiderPush(pushInfo);
@@ -317,8 +319,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                                     fcmBody.setData(obj);
                                     fcmBody.setPriority("high");
 
-                                    fcmBody.getNotification().setTitle(noti.getType());
-                                    fcmBody.getNotification().setBody(noti.getType());
+                                    fcmBody.getNotification().setTitle(getMessage("PUSH.RIDER.NEAR.ORDER"));
+                                    fcmBody.getNotification().setBody(getMessage("PUSH.RIDER.NEAR.ORDER"));
 
                                     log.info(order.getId() + " => ###################################### 푸쉬 발송 ##################################");
 
@@ -1373,8 +1375,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             fcmBody.setData(obj);
             fcmBody.setPriority("high");
 
-            fcmBody.getNotification().setTitle(noti.getType());
-            fcmBody.getNotification().setBody(noti.getType());
+            fcmBody.getNotification().setTitle(getMessage("PUSH.USER.SELF"));
+            fcmBody.getNotification().setBody(getMessage("PUSH.USER.SELF"));
 
             log.info("Self Push 발송 => ", S_Rider.getId());
 
@@ -1422,12 +1424,23 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Override
     public int regNearOrderPush(Map<String, Object> map) throws AppTrException {
 
-        if (!map.containsKey("orders")){
+        if (!map.containsKey("orders") || ((List<String>) map.get("orders")).isEmpty()){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
         List<String> orderIds = (List<String>) map.get("orders");
         String sToken = map.get("token").toString();
+        String riderLatitude = null;
+        String riderLongitude = null;
+
+        if (map.containsKey("latitude")){
+            riderLatitude = map.get("latitude").toString();
+        }
+
+        if (map.containsKey("longitude")){
+            riderLongitude = map.get("longitude").toString();
+        }
+
         int alreadyPush = 0;
 
         Common rider = new Common();
@@ -1440,6 +1453,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             Map<String, Object> searchMap = new HashMap<>();
             searchMap.put("token", sToken);
             searchMap.put("orderId", orderId);
+
+            // 라이더의 현재 위치 추가
+            searchMap.put("riderLatitude", riderLatitude);
+            searchMap.put("riderLongitude", riderLongitude);
 
             if (checkSendRiderPush(searchMap) == null){
 
@@ -1457,8 +1474,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     fcmBody.setData(obj);
                     fcmBody.setPriority("high");
 
-                    fcmBody.getNotification().setTitle(noti.getType());
-                    fcmBody.getNotification().setBody(noti.getType());
+                    fcmBody.getNotification().setTitle(getMessage("PUSH.RIDER.NEAR.ORDER"));
+                    fcmBody.getNotification().setBody(getMessage("PUSH.RIDER.NEAR.ORDER"));
 
                     log.info(orderId + " => ###################################### 라이더가 직접 푸쉬 발송 ##################################");
 

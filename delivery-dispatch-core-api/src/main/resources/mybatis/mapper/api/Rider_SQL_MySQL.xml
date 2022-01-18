@@ -382,7 +382,7 @@
 				,(select store_name from TB_STORE where id = (select store_id from TB_RIDER_SHARED_INFO where created_datetime > current_date() and admin_id = TR.admin_id and rider_id = TR.id and deleted is null order by created_datetime desc limit 1))		as shared_store_name
 
 				,(select push_token from TB_RIDER_SESSION where rider_id = TR.id and access_token = #{token})			as push_token
-				,ifnull(AD.push_radius, 200)                        as push_radius
+				,ifnull(AD.push_radius, 20)                        as push_radius
 				,ifnull(AD.location_refresh_time, 60)               as location_refresh_time
 
 				,(select os from TB_RIDER_SESSION where rider_id = TR.id and access_token = #{token})			as os
@@ -1727,10 +1727,12 @@
 
 	<!-- 22.01.17 라이더 PUSH 히스토리 저장 -->
 	<insert id="insertSendRiderPushInfo" parameterType="hashmap">
-		insert into TB_CHECK_RIDER_PUSH_INFO(rider_id, order_id, push_target)
+		insert into TB_CHECK_RIDER_PUSH_INFO(rider_id, order_id, push_target, latitude, longitude)
 		select   rider_id
 				,#{orderId}
 				,#{pushTarget}
+				,#{riderLatitude}
+				,#{riderLongitude}
 		from     TB_RIDER_SESSION
 		where    access_token = #{token}
 	</insert>
