@@ -424,7 +424,14 @@ function getStatisticsList() {
                             }
                         }
 
-                        $tmpData.th14 = data[key].rider.name
+                        $tmpData.th14 = data[key].rider.name;
+
+                        // 라이더의 공유 상태 추가
+                        $tmpData.th20 = data[key].rider.sharedStatus;
+                        
+                        // 배달원의 서비스와 배달 속도 평점 표기
+                        $tmpData.riderService = parseFloat(data[key].deliveryPoint);
+                        $tmpData.riderSpeed = parseFloat(data[key].speedPoint);
 
                         if($('#selectStatus option:selected').val()=="all"){
                             $mydata.push($tmpData);
@@ -433,9 +440,6 @@ function getStatisticsList() {
                         }else if ($('#selectStatus option:selected').val()=="cancel" && data[key].status =="4"){
                             $mydata.push($tmpData);
                         }
-
-                        // 라이더의 공유 상태 추가
-                        $tmpData.th20 = data[key].rider.sharedStatus;
                     }
                 }
             }
@@ -467,7 +471,9 @@ function getStatisticsList() {
                     {label: order_arrived, name: 'th18', width: 80, align: 'center'},
                     {label: order_reserved, name: 'th13', width: 80, align: 'center'},
                     {label: rider_name, name: 'th14', width: 80, align: 'center'},
-                    {label: rider_shared, name: 'th20', width: 80, align: 'center'}
+                    {label: rider_shared, name: 'th20', width: 80, align: 'center'},
+                    {label: star_point_rider_service, name: 'riderService', width: 80, align: 'center'},
+                    {label: star_point_rider_speed, name: 'riderSpeed', width: 80, align: 'center'}
                 ],
                 height: 680,
                 autowidth: true,

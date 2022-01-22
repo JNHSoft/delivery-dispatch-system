@@ -240,6 +240,18 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             addTitle.setCellValue(messageSource.getMessage("rider.approval.login.id",null, locale));
             addTitle.setCellStyle(titleCellStyle);
 
+            // 22.01.22 라이더 서비스 만족도 별점
+            sheet.setColumnWidth(colNum, 15*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("star.point.rider.service",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
+            // 22.01.22 라이더 배달 속도 만족도 별점
+            sheet.setColumnWidth(colNum, 15*256);
+            addTitle = titleRow.createCell(colNum++);
+            addTitle.setCellValue(messageSource.getMessage("star.point.rider.speed",null, locale));
+            addTitle.setCellStyle(titleCellStyle);
+
             rowNum++;
         }
         // 내용 부분
@@ -383,6 +395,16 @@ public class StatisticsAdminExcelBuilderServiceImpl extends AbstractView {
             // 21.04.15 직원 login id 추가
             cell = addListRow.createCell(colNum++);
             cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getRider().getLoginId()));
+            cell.setCellStyle(dataCellStyle);
+
+            // 22.01.22 라이더 서비스 만족도 별점
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getDeliveryPoint()));
+            cell.setCellStyle(dataCellStyle);
+
+            // 22.01.22 라이더 배달 속도 만족도 별점
+            cell = addListRow.createCell(colNum++);
+            cell.setCellValue(nullCheck(orderStatisticsByAdminList.get(i).getSpeedPoint()));
             cell.setCellStyle(dataCellStyle);
 
             rowNum ++;

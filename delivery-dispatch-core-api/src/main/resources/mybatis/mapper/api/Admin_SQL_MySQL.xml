@@ -120,6 +120,9 @@
 		<result property="regOrderId" column="reg_order_id" />
 		<result property="distance" column="distance" />
 
+		<result property="deliveryPoint" column="delivery_star_point" />
+		<result property="speedPoint" column="del_speed_star_point" />
+
 		<association property="store" column="store" javaType="kr.co.cntt.core.model.store.Store">
 			<result property="storeName" column="store_name" />
 		</association>
@@ -1081,6 +1084,9 @@
 				,TBO.paid
 				,TBO.reg_order_id
 				,case when ifnull(TBO.shared_flag, 0) = 1 then 'Y' else 'N' end	as rider_shared_status
+
+				,delivery_star_point
+				,del_speed_star_point
 		FROM	 TB_ORDER AS TBO
 		LEFT JOIN  TB_RIDER AS TBR
 			on	 TBR.id = TBO.rider_id
@@ -1151,6 +1157,9 @@
 				,TBO.distance
 				,case when ifnull(TBO.shared_flag, 0) = 1 then 'Y' else 'N' end	as rider_shared_status
 				,TBR.login_id				as rider_login_id
+
+				,delivery_star_point
+				,del_speed_star_point
 		FROM	 TB_ORDER AS TBO
 		LEFT JOIN TB_RIDER AS TBR
 			on	 TBR.id = TBO.rider_id

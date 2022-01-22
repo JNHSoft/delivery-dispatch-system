@@ -101,4 +101,8 @@ public class Order extends Common implements Dto {
     // 20.02.03 봇 사용으로 인한 필드 추가
     private String item_XA12;           //latitude
     private String item_XA11;           //longitude
+
+    // 설문조사 점수 가져오기
+    private String deliveryPoint;       // 배달 직원 점수
+    private String speedPoint;          // 배달 속도 점수
 }
