@@ -216,39 +216,6 @@ public class TrackerController {
     }
 
 
-    /**
-     * 21-10-26 트래커 별점 업데이트
-     * */
-    @ResponseBody
-    @GetMapping("/regStarPoint")
-    @CnttMethodDescription("트래커 별점 적용")
-    public Map<String, Object> regStarPoint(@RequestParam(required = false) String encParam, String deliveryPoint, String speedPoint) throws Exception {
-
-        Map<String, Object> resultMap = new HashMap<>();
-
-        if (encParam.isEmpty() || deliveryPoint.isEmpty() || speedPoint.isEmpty()){
-            resultMap.put("message", messageSource.getMessage("result.none", null, locale));
-        }else {
-            Tracker trackerResult = trackerService.getTracker(encParam);
-            trackerResult.setDeliveryPoint(deliveryPoint);
-            trackerResult.setSpeedPoint(speedPoint);
-
-            if (!trackerResult.getStatus().equals("3")){
-                log.info("Tracker Star point Apply Failed => web order -id = " + trackerResult.getWebOrderId() + " Failed = 완료 상태 아님");
-                resultMap.put("message", messageSource.getMessage("tracker.alert.survey.nochange", null, locale));
-            } else {
-                int iResult = trackerService.regStarPoint(trackerResult);
-                log.info("Tracker Star Point Apply => web_order_id = " + trackerResult.getWebOrderId() + ", delivery point = " + trackerResult.getDeliveryPoint() + ", spped Point = " + trackerResult.getSpeedPoint() + ", Result = " + iResult);
-
-                resultMap.put("result", true);
-                resultMap.put("message", messageSource.getMessage("tracker.alert.message", null, locale));
-            }
-        }
-
-        return resultMap;
-
-    }
-
    /* @GetMapping("/trackerTest")
     public String getTestTracker(){
         return "/tracker/tracker_test";
