@@ -193,7 +193,7 @@ th {font-weight:normal;}
 
 /* 별점 클릭이 완료 된 후의 색상을 표기한다. */
 .point_stars :checked ~ label {
-    color: #C9AE00;
+    color: #FFF612;
 }
 
 /* 클릭할 별점의 위치에 마크 표기를 한다. */
