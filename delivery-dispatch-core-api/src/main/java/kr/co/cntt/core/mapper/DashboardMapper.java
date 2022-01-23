@@ -78,6 +78,18 @@ public interface DashboardMapper {
     List<DashboardInfo> selectD16Detail(SearchInfo search);
 
     /**
+     * 배달원 서비스 만족도 별점
+     * */
+    @Transactional(readOnly = true)
+    List<DashboardInfo> selectRiderServicePointDetail(SearchInfo search);
+
+    /**
+     * 배달 속도 만족도 별점
+     * */
+    @Transactional(readOnly = true)
+    List<DashboardInfo> selectRiderSpeedPointDetail(SearchInfo search);
+
+    /**
      * D30 스토어 랭크 조회
      * */
     @Transactional(readOnly = true)
@@ -131,6 +143,18 @@ public interface DashboardMapper {
     @Transactional(readOnly = true)
     List<RankInfo> selectD16Rank(SearchInfo search);
 
+    /**
+     * 배달원 서비스 만족도
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectRiderServicePointRank(SearchInfo search);
+
+    /**
+     * 배달 속도 만족도
+     * */
+    @Transactional(readOnly = true)
+    List<RankInfo> selectRiderSpeedPointRank(SearchInfo search);
+    
     /**
      * 배정 ~ 도착 시간의 구간 개수 구하기
      * */

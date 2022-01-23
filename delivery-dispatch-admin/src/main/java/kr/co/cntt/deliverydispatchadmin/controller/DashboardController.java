@@ -255,6 +255,14 @@ public class DashboardController {
                 info = dashboardAdminService.selectTCDetail(searchInfo);
                 storeRank = dashboardAdminService.selectTCRank(searchInfo);
                 break;
+            case "Service Point":
+                info = dashboardAdminService.selectRiderServicePointDetail(searchInfo);
+                storeRank = dashboardAdminService.selectRiderServicePointRank(searchInfo);
+                break;
+            case "Speed Point":
+                info = dashboardAdminService.selectRiderSpeedPointDetail(searchInfo);
+                storeRank = dashboardAdminService.selectRiderSpeedPointRank(searchInfo);
+                break;
             default:
                 break;
         }
@@ -329,6 +337,12 @@ public class DashboardController {
                 break;
             case "TC":
                 storeRank = dashboardAdminService.selectTCRank(searchInfo);
+                break;
+            case "Service Point":
+                storeRank = dashboardAdminService.selectRiderServicePointRank(searchInfo);
+                break;
+            case "Speed Point":
+                storeRank = dashboardAdminService.selectRiderSpeedPointRank(searchInfo);
                 break;
             default:
                 break;

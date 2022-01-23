@@ -165,6 +165,30 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
                 infoTC.setMainValue(0f);
             }
 
+            // 2022-01-23 배달원의 서비스 만족도
+            DashboardInfo infoService = new DashboardInfo();
+            infoService.setDashBoardType("Service Point");
+            infoService.setUnit("");
+            infoService.setMainValueType("number");
+
+            if (resultMap.containsKey("avgRiderService")) {
+                infoService.setMainValue(Float.parseFloat(changeValueType(Float.class, resultMap.get("avgRiderService").toString())));
+            } else {
+                infoService.setMainValue(0f);
+            }
+
+            // 2022-01-23 배달 속도 만족도
+            DashboardInfo infoSpeed = new DashboardInfo();
+            infoSpeed.setDashBoardType("Speed Point");
+            infoSpeed.setUnit("");
+            infoSpeed.setMainValueType("number");
+
+            if (resultMap.containsKey("avgRiderSpeed")) {
+                infoSpeed.setMainValue(Float.parseFloat(changeValueType(Float.class, resultMap.get("avgRiderSpeed").toString())));
+            } else {
+                infoSpeed.setMainValue(0f);
+            }
+
             // 정렬에 맞게 데이터를 넣어준다.
             resultList.add(infoD30);
             resultList.add(infoD30T);
@@ -174,6 +198,8 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
             resultList.add(infoTPLH);
             resultList.add(infoQT);
             resultList.add(infoTC);
+            resultList.add(infoService);
+            resultList.add(infoSpeed);
         }
 
         return resultList;
@@ -279,6 +305,28 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
     }
 
     @Override
+    public ChartInfo selectRiderServicePointDetail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectRiderServicePointDetail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeDoughnutChartInfo(detail, Integer.parseInt(search.getDays()), 5);
+    }
+
+    @Override
+    public ChartInfo selectRiderSpeedPointDetail(SearchInfo search) {
+        List<DashboardInfo> detail = dashboardMapper.selectRiderSpeedPointDetail(search);
+
+        if (detail == null || detail.isEmpty()){
+            return null;
+        }
+
+        return makeDoughnutChartInfo(detail, Integer.parseInt(search.getDays()), 5);
+    }
+
+    @Override
     public List<RankInfo> selectD30Rank(SearchInfo search) {
         return dashboardMapper.selectD30Rank(search);
     }
@@ -321,6 +369,24 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
     @Override
     public List<RankInfo> selectD16Rank(SearchInfo search) {
         return dashboardMapper.selectD16Rank(search);
+    }
+
+    /**
+     * 22-01-23
+     * 배달원 서비스 만족도 랭킹 (별점 평균)
+     * */
+    @Override
+    public List<RankInfo> selectRiderServicePointRank(SearchInfo search) {
+        return dashboardMapper.selectRiderServicePointRank(search);
+    }
+
+    /**
+     * 22-01-23
+     * 배달 속도 만족도 랭킹 (별점 평균)
+     * */
+    @Override
+    public List<RankInfo> selectRiderSpeedPointRank(SearchInfo search) {
+        return dashboardMapper.selectRiderSpeedPointRank(search);
     }
 
     @Override
@@ -455,5 +521,38 @@ public class DashboardAdminServiceImpl implements DashboardAdminService {
         result.setIntervalX(Math.floorDiv(xValue, 10) + 1);
 
         return  result;
+    }
+
+    // 도넛 모양의 Chart
+    // x좌표는 라벨, y좌표는 결과값
+    private ChartInfo makeDoughnutChartInfo(List<DashboardInfo> dashboardInfo, int xValue, int yValue) {
+        ChartInfo result = new ChartInfo();
+
+        result.setDetail(dashboardInfo);
+
+        result.setChartType(2);                         // 도넛 그래프
+
+        // Y 좌표 정보
+        float minY = 0;
+        float maxY = (dashboardInfo.stream().max(Comparator.comparing(DashboardInfo::getMainValue)).get().getMainValue());
+
+        maxY = (int)maxY;
+
+        double dLen = String.valueOf((int)maxY).length();
+        double dTen = Math.pow(10, (dLen - 1));
+        double dPV = Math.floorDiv((int)maxY, (int)dTen);
+
+
+        maxY = (float)((dPV + 2) * dTen);
+
+        result.setMinY(minY);
+        result.setMaxY(maxY);
+        result.setIntervalY((float) (dPV + 3));
+
+        result.setMinX(dashboardInfo.stream().min((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());
+        result.setMaxX(dashboardInfo.stream().max((o1, o2) -> o1.getCreatedDatetime().compareToIgnoreCase(o2.getCreatedDatetime())).get().getCreatedDatetime());
+        result.setIntervalX(Math.floorDiv(xValue, 10) + 1);
+
+        return result;
     }
 }

@@ -315,7 +315,6 @@ function getDashBoardDetail(){
         return;
     }
 
-    console.log(objChart);
     if (objChart !== undefined){
         objChart.destroy();
     }
@@ -338,6 +337,9 @@ function getDashBoardDetail(){
         success : function(data) {
             console.log(data);
 
+            // 결과가 없을 수 있으므로, 결과 변경
+            $("#myChart").css("height", 200);
+            
             if (data != undefined && data["status"] === "OK"){
                 if (data["chartInfo"] != undefined){
                     let config = null;
@@ -351,6 +353,9 @@ function getDashBoardDetail(){
                         if (data["chartInfo"].chartType === 1){
                             // Line 차트
                             config = makeLineChart(data["chartInfo"]);
+                        } else if (data["chartInfo"].chartType === 2) {
+                            $("#myChart").css("height", 400);
+                            config = makeDoughnutChart(data["chartInfo"]);
                         }else{
                             // 기본적으로 Bar 차트를 보여준다.
                             config = makeBarChart(data["chartInfo"]);
@@ -686,6 +691,56 @@ function makeLineChartByTimes(objData){
     return config;
 }
 
+// Doughnut 차트 만들기
+function makeDoughnutChart(objData) {
+    let config = Object;
+    let bodyData = Object;
+    //let frankI = 0;
+
+    let arrLabel = [];
+    let arrData = [];
+    let arrColor = ['rgb(165, 102, 255)', 'rgb(243, 97, 220)', 'rgb(217, 65, 140)', 'rgb(166, 166, 166)'
+                   ,'rgb(70, 65, 217)', 'rgb(159, 201, 60)', 'rgb(29, 219, 22)'];
+
+    let maxValue = objData.detail.length;
+
+    // 도넛 모양은 Label <-> Value 형식이므로 순차는 중요하지 않다.
+    for (let i = 0; i < maxValue; i++) {
+
+        console.log("For 문 시작 ", i);
+
+        // 라벨 추가
+        arrLabel.push(objData.detail[i].createdDatetime);
+        arrData.push(objData.detail[i].mainValue);
+    }
+
+
+    bodyData = {
+        labels: arrLabel,
+        datasets:[{
+            label: '',
+            data: arrData,
+            backgroundColor: arrColor,
+        }]
+    };
+
+    config = {
+        plugins: [ChartDataLabels],
+        type: 'doughnut',
+        data: bodyData,
+        options: {
+            //responsive: false,
+            maintainAspectRatio: false,
+            plugins: {
+                legend:{
+                    display: false,
+                }
+            }
+        },
+    };
+
+    return config;
+}
 
 // 테이블 내용 세팅
 function makeTableRow(objData){

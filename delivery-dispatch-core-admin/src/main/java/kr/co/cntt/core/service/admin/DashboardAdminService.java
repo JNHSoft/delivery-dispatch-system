@@ -63,6 +63,16 @@ public interface DashboardAdminService {
     ChartInfo selectD16Detail(SearchInfo search);
 
     /**
+     * 라이더 서비스 만족도
+     * */
+    ChartInfo selectRiderServicePointDetail(SearchInfo search);
+
+    /**
+     * 배달 속도 만족도
+     * */
+    ChartInfo selectRiderSpeedPointDetail(SearchInfo search);
+
+    /**
      * D30 스토어 랭키 조회
      * */
     List<RankInfo> selectD30Rank(SearchInfo search);
@@ -106,6 +116,16 @@ public interface DashboardAdminService {
      * D16 스토어 랭키 조회 (16분 20초)
      * */
     List<RankInfo> selectD16Rank(SearchInfo search);
+
+    /**
+     * 배달원 서비스 만족도 랭킹 (별점 평균)
+     * */
+    List<RankInfo> selectRiderServicePointRank(SearchInfo search);
+
+    /**
+     * 배달 속도 만족도 랭킹 (별점 평균)
+     * */
+    List<RankInfo> selectRiderSpeedPointRank(SearchInfo search);
 
     /**
      * TimeSection 구해오기
