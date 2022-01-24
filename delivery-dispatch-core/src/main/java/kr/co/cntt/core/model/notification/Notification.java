@@ -105,7 +105,7 @@ public class Notification {
         // 22.01.17 서버에서 라이더에게 도착지에 근접했다고 알림
         public static String RIDER_NEAR_ORDER = "rider_near_order";
         // 22.01.17 라이더가 자기 자신에게 PUSH를 보낼 때 사용
-        public static String USER_SELF_PUSH = "user_self_push";
+        public static String BEACON_PUSH = "beacon_push";
     }
 }
 

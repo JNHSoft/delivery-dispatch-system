@@ -9,6 +9,7 @@ import kr.co.cntt.core.model.order.Order;
 import kr.co.cntt.core.model.rider.Rider;
 import kr.co.cntt.core.model.statistic.ByDate;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreBeacon;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -279,4 +280,10 @@ public interface StoreMapper {
      * */
     @Transactional(readOnly=true)
     List<Store> selectSharedStoreList(Rider rider);
+    
+    /**
+     * 매장의 Beacon 정보 가져오기
+     * */
+    @Transactional(readOnly = true)
+    StoreBeacon selectStoreBeaconInfo(Common common);
 }

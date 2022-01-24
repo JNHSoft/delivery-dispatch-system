@@ -425,4 +425,9 @@ public interface RiderMapper {
      * 라이더  PUSH 발송 후에 DB 값 저장
      * */
     int insertSendRiderPushInfo(Map<String, Object> push);
+
+    /**
+     * 22.01.23
+     * 비콘 PUSH
+     * */
 }

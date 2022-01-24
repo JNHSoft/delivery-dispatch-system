@@ -191,7 +191,7 @@ public enum ApiServiceRouter implements IServiceRouter {
 	RIDER_ACTIVE_INFO("riderService", "getRiderActiveInfo", Rider.class),
 
 	/** 22.01.17 라이더가 본인에게 PUSH를 전달할 수 있도록 진행 */
-	SEND_SELF_PUSH("riderService", "sendSelfPush", Map.class),
+	SEND_SELF_PUSH("riderService", "reqBeaconPush", Map.class),
 
 	/** 22.01.17 라이더가 주문지 근처에 도착한 경우 셀프 팝업을 호출한 경우 */
 	REG_NEAR_ORDER_PUSH("riderService", "regNearOrderPush", Map.class),

@@ -16,6 +16,7 @@ import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.*;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreBeacon;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
@@ -248,6 +249,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
             rider.setAccessToken(rider.getToken());
+            rider.setRole("ROLE_RIDER");
         } else if (authentication.getAuthorities().toString().equals("[ROLE_USER]")) {
             rider.setAccessToken(null);
         }
@@ -271,6 +273,14 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             returnMap.put("pushRadius", S_Rider.getPushRadius() == null? 20 : S_Rider.getPushRadius());
             // Seconds
             returnMap.put("locationRefreshTime", S_Rider.getLocationRefreshTime() == null ? 60 : S_Rider.getLocationRefreshTime());
+
+            // 라이더가 소속된 매장의 Beacon 정보를 제공하기
+            //StoreBeacon beaconInfo = storeMapper.selectStoreBeaconInfo(rider);
+
+            //returnMap.put("beaconInfo", beaconInfo);
+
+            returnMap.put("rssi", -70);
+            returnMap.put("nextTimes", 0);
 
             /**
              * 2022-01-11
@@ -1339,18 +1349,14 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     /**
      * 22-01-17
      * 라이더의 당일 활동에 따른 주문 내역 (DB 기록 없음)
+     * 22-01-23
+     * API 명칭 및 프로세스 변경
      * */
     @Override
-    public int sendSelfPush(Map<String, Object> map) throws AppTrException {
+    public int reqBeaconPush(Map<String, Object> map) throws AppTrException {
 
-        int delayTime = 0;
-
-        if (map.containsKey("delayTime")){
-            try {
-                delayTime = Integer.parseInt(map.get("delayTime").toString());
-            } catch (Exception e){
-                delayTime = 0;
-            }
+        if (!map.containsKey("uuid") || !map.containsKey("major") || !map.containsKey("minor") || !map.containsKey("rssi")){
+            throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
         Common rider = new Common();
@@ -1360,11 +1366,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         if (S_Rider.getPushToken() != null){
             Notification noti = new Notification();
-            noti.setType(Notification.NOTI.USER_SELF_PUSH);
-
-            if (map.containsKey("callBackMessage")) {
-                noti.setMessage(map.get("callBackMessage").toString());
-            }
+            noti.setType(Notification.NOTI.BEACON_PUSH);
 
             // PUSH 객체로 변환 후 전달
             FcmBody fcmBody = new FcmBody();
@@ -1375,42 +1377,29 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             fcmBody.setData(obj);
             fcmBody.setPriority("high");
 
-            fcmBody.getNotification().setTitle(getMessage("PUSH.USER.SELF"));
-            fcmBody.getNotification().setBody(getMessage("PUSH.USER.SELF"));
+            fcmBody.getNotification().setTitle(getMessage("PUSH.BEACON"));
+            fcmBody.getNotification().setBody(getMessage("PUSH.BEACON"));
 
-            log.info("Self Push 발송 => ", S_Rider.getId());
+            log.info("Reqeust Beacon Push 발송 => ", S_Rider.getId());
 
             try {
                 fcmBody.setTo(S_Rider.getPushToken());
 
-                int finalDelayTime = delayTime;
 
-                if (delayTime > 0) {
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(finalDelayTime * 1000);             // 배정 프로세스가 5초 뒤에 실행 될 수 있도록 적용 # 신규 주문 신호 후 바로 전송 시 화면 갱신 오류 발생
-                            CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(fcmBody, "server");
-                            checkFcmResponse(pushNotification);
+                try {
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(fcmBody, "server");
+                    checkFcmResponse(pushNotification);
 
-                            log.info("finalDelayTime => " + finalDelayTime + " # Self Push 발송 성공 => " + S_Rider.getId());
-                        } catch (Exception e){
-                            log.error(e.getMessage());
-                        }
-                    }).start();
-                } else {
-                    try {
-                        CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(fcmBody, "server");
-                        checkFcmResponse(pushNotification);
-
-                        log.info("Self Push 발송 성공 => " + S_Rider.getId());
-                    } catch (Exception e){
-                        log.error(e.getMessage());
-                        throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH001), ErrorCodeEnum.ERRPUSH001.name());
-                    }
+                    log.info("Request Beacon Push 발송 성공 => " + S_Rider.getId());
+                } catch (Exception e){
+                    log.error(e.getMessage());
+                    throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH001), ErrorCodeEnum.ERRPUSH001.name());
                 }
             }catch (Exception e) {
                 log.error(e.getMessage());
             }
+        } else {
+            throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH003), ErrorCodeEnum.ERRPUSH003.name());
         }
 
         return 1;
@@ -1424,11 +1413,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Override
     public int regNearOrderPush(Map<String, Object> map) throws AppTrException {
 
-        if (!map.containsKey("orders") || ((List<String>) map.get("orders")).isEmpty()){
+        if (!map.containsKey("order") || map.get("order").toString().isEmpty()){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
-        List<String> orderIds = (List<String>) map.get("orders");
+        String orderId = map.get("order").toString();
         String sToken = map.get("token").toString();
         String riderLatitude = null;
         String riderLongitude = null;
@@ -1441,70 +1430,58 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             riderLongitude = map.get("longitude").toString();
         }
 
-        int alreadyPush = 0;
-
         Common rider = new Common();
         rider.setToken(sToken);
 
         Rider S_Rider = riderMapper.getRiderInfo(rider);
 
-        for (String orderId:orderIds
-             ) {
-            Map<String, Object> searchMap = new HashMap<>();
-            searchMap.put("token", sToken);
-            searchMap.put("orderId", orderId);
+        Map<String, Object> searchMap = new HashMap<>();
+        searchMap.put("token", sToken);
+        searchMap.put("orderId", orderId);
 
-            // 라이더의 현재 위치 추가
-            searchMap.put("riderLatitude", riderLatitude);
-            searchMap.put("riderLongitude", riderLongitude);
+        // 라이더의 현재 위치 추가
+        searchMap.put("riderLatitude", riderLatitude);
+        searchMap.put("riderLongitude", riderLongitude);
 
-            if (checkSendRiderPush(searchMap) == null){
+        if (checkSendRiderPush(searchMap) == null){
+            if (S_Rider.getPushToken() != null){
+                Notification noti = new Notification();
+                noti.setType(Notification.NOTI.RIDER_NEAR_ORDER);
+                noti.setId(orderId);
 
-                if (S_Rider.getPushToken() != null){
-                    Notification noti = new Notification();
-                    noti.setType(Notification.NOTI.RIDER_NEAR_ORDER);
-                    noti.setId(orderId);
+                // PUSH 객체로 변환 후 전달
+                FcmBody fcmBody = new FcmBody();
 
-                    // PUSH 객체로 변환 후 전달
-                    FcmBody fcmBody = new FcmBody();
+                Map<String, Object> obj = new HashMap<>();
+                obj.put("obj", noti);
 
-                    Map<String, Object> obj = new HashMap<>();
-                    obj.put("obj", noti);
+                fcmBody.setData(obj);
+                fcmBody.setPriority("high");
 
-                    fcmBody.setData(obj);
-                    fcmBody.setPriority("high");
+                fcmBody.getNotification().setTitle(getMessage("PUSH.RIDER.NEAR.ORDER"));
+                fcmBody.getNotification().setBody(getMessage("PUSH.RIDER.NEAR.ORDER"));
 
-                    fcmBody.getNotification().setTitle(getMessage("PUSH.RIDER.NEAR.ORDER"));
-                    fcmBody.getNotification().setBody(getMessage("PUSH.RIDER.NEAR.ORDER"));
+                log.info(orderId + " => ###################################### 라이더가 직접 푸쉬 발송 ##################################");
 
-                    log.info(orderId + " => ###################################### 라이더가 직접 푸쉬 발송 ##################################");
+                try {
+                    fcmBody.setTo(S_Rider.getPushToken());
 
-                    try {
-                        fcmBody.setTo(S_Rider.getPushToken());
+                    CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(fcmBody, "server");
+                    checkFcmResponse(pushNotification);
 
-                        CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(fcmBody, "server");
-                        checkFcmResponse(pushNotification);
-
-                        searchMap.put("pushTarget", S_Rider.getPlatform());
-                        // PUSH 전송 상태 업데이트
-                        log.info("라이더가 Self popup 실행 PUSH 전송 완료 " + riderMapper.insertSendRiderPushInfo(searchMap));
-                    }catch (Exception e){
-                        log.error(e.getMessage());
-                        throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH001), ErrorCodeEnum.ERRPUSH001.name());
-                    }
-                } else {
-                    throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH003), ErrorCodeEnum.ERRPUSH003.name());
+                    searchMap.put("pushTarget", S_Rider.getPlatform());
+                    // PUSH 전송 상태 업데이트
+                    log.info("라이더가 Self popup 실행 PUSH 전송 완료 " + riderMapper.insertSendRiderPushInfo(searchMap));
+                }catch (Exception e){
+                    log.error(e.getMessage());
+                    throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH001), ErrorCodeEnum.ERRPUSH001.name());
                 }
-            }else {
-                //throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH002), ErrorCodeEnum.ERRPUSH002.name());
-                alreadyPush++;
+            } else {
+                throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH003), ErrorCodeEnum.ERRPUSH003.name());
             }
-        }
-
-        if (alreadyPush == orderIds.size()) {
+        } else {
             throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH002), ErrorCodeEnum.ERRPUSH002.name());
         }
-
 
         return 1;
     }

@@ -1,8 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "//mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.StoreMapper">
 
-
-
     <!-- selectStoresResult -->
     <resultMap id="selectStoreResult" type="kr.co.cntt.core.model.store.Store">
         <result property="id" column="id" />
@@ -116,6 +114,16 @@
             <result property="name" column="subgroup_name" />
             <result property="adminId" column="subgroup_admin_id" />
         </association>
+    </resultMap>
+
+    <!-- selectStoreBeaconResult -->
+    <resultMap id="selectStoreBeaconResult" type="kr.co.cntt.core.model.store.StoreBeacon">
+        <result property="id" column="id" />
+        <result property="name" column="store_name" />
+        <result property="uuid" column="beaconId" />
+        <result property="major" column="major" />
+        <result property="minor" column="minor" />
+        <result property="power" column="power" />
     </resultMap>
 
     <!-- loginStoreInfo -->
@@ -1302,6 +1310,42 @@
             </otherwise>
         </choose>
         and		 a.id not in (select store_id from TB_SUBGROUP_RIDER_REL where rider_id = #{id})
+    </select>
+
+    <!-- Store에 대한 Beacon 정보 출력 -->
+    <select id="selectStoreBeaconInfo" parameterType="kr.co.cntt.core.model.common.Common" resultMap="selectStoreBeaconResult">
+        select   a.id
+                ,a.store_name
+                ,a.beaconId
+                ,a.major
+                ,a.minor
+                ,a.power
+        from     TB_STORE       as a
+        where    1=1
+        and      deleted is null
+        <choose>
+            <when test="role != null and role == 'ROLE_RIDER'">
+                and      id = (
+                                select   store_id
+                                from     TB_SUBGROUP_RIDER_REL      as b
+                                where    1=1
+                                and      deleted is null
+                                and      admin_id = a.admin_id
+                                and      store_id = a.id
+                                and      rider_id = (
+                                                        SELECT 	 rider_id
+                                                        FROM     TB_RIDER_SESSION
+                                                        WHERE    1=1
+                                                        AND      rider_id = b.rider_id
+                                                        AND      date_format(ifnull(expiry_datetime, now()), '%Y-%m-%d') >= date_format(now(), '%Y-%m-%d')
+                                                        AND      access_token=#{token}
+                                                    )
+                             )
+            </when>
+            <otherwise>
+                and      1 <![CDATA[<>]]> 1
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>

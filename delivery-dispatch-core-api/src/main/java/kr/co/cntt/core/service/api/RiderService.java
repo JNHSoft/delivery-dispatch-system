@@ -203,7 +203,7 @@ public interface RiderService {
      * 22-01-17
      * 라이더가 본인에게 PUSH를 전달할 수 있도록 진행
      * */
-    int sendSelfPush(Map<String, Object> map) throws AppTrException;
+    int reqBeaconPush(Map<String, Object> map) throws AppTrException;
 
     /**
      * 22-01-17
