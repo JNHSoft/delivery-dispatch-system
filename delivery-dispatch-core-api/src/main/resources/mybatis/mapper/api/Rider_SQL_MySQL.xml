@@ -1792,10 +1792,10 @@
 			on   a.admin_id = b.admin_id
 			and  a.id = b.rider_id
 		where    1=1
-		and      a.id = ( select id from TB_RIDER_SESSION where access_token = #{token})
-		and      a.created_datetime > current_date()
-		and (   (a.status = 6)
-			or  (a.status = 3 and ifnull(a.return_time, now()) >= date_sub(current_timestamp(), interval 1 minute))
+		and      a.id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
+		and      b.created_datetime > current_date()
+		and (   (b.status = 6)
+			or  (b.status = 3 and ifnull(b.return_datetime, now()) >= date_sub(current_timestamp(), interval 1 minute))
 			)
 		and      b.store_id in ( select id from TB_STORE where deleted is null and admin_id = a.admin_id and beaconId = #{uuid} and major = #{major} and minor = #{minor} )
 	</select>
