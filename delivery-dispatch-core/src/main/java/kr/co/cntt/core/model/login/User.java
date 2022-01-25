@@ -30,4 +30,10 @@ public class User extends Common implements Dto {
 
     // 2022-01-17 라이더 앱에서 위치 변경을 호출할 간격 확인 (단위 : 초)
     private Integer locationRefreshTime;
+
+    // 2022-01-25 비콘의 TxPower(RSSI) 기본 세팅 값
+    private Integer rssi;
+
+    // 2022-01-25 비콘 주기 (단위 : 초)
+    private Integer beaconCycle;
 }

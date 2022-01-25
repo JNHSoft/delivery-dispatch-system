@@ -183,5 +183,6 @@ public enum ErrorCodeEnum {
 	ERRPUSH001,
 	ERRPUSH002,
 	ERRPUSH003,
+	ERRPUSH004,
 	;
 }

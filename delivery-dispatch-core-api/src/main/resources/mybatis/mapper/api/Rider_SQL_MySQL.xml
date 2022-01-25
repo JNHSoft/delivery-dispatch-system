@@ -52,6 +52,10 @@
 		<result property="pushRadius" column="push_radius" />
 		<result property="locationRefreshTime" column="location_refresh_time" />
 
+		<!-- 2022-01-25 비콘 관련 변수 추가 -->
+		<result property="rssi" column="rssi" />
+		<result property="beaconCycle" column="beacon_cycle" />
+
 		<association property="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
 			<result property="name" column="group_name" />
@@ -386,6 +390,9 @@
 				,ifnull(AD.location_refresh_time, 60)               as location_refresh_time
 
 				,(select os from TB_RIDER_SESSION where rider_id = TR.id and access_token = #{token})			as os
+
+				,ifnull(AD.rssi, -70)																			as rssi
+				,ifnull(AD.beacon_cycle, 0)																		as beacon_cycle
 		FROM     TB_RIDER TR
 		left join TB_SUBGROUP_RIDER_REL AS SRR
 			on   TR.id = SRR.rider_id
@@ -1736,4 +1743,60 @@
 		from     TB_RIDER_SESSION
 		where    access_token = #{token}
 	</insert>
+
+	<!-- 22.01.25 비콘에 근접하여 PUSH를 전송했는지 확인 -->
+	<select id="checkBeaonPush" parameterType="hashmap" resultType="Integer">
+		select   count(*)
+		from     TB_CHECK_BEACON_PUSH_HISTORY
+		where    1=1
+		and      sendDatetime > date_sub(current_date(), interval 1 day)
+		and      rider_id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
+		and      beaconId = #{uuid}
+		and      major = #{major}
+		and      minor = #{minor}
+		and      check_next_push = 1
+		and      sendDatetime >= date_sub(current_timestamp(), interval 10 minute)
+	</select>
+
+	<insert id="insertBeaconPushHistory" parameterType="hashmap">
+		insert into TB_CHECK_BEACON_PUSH_HISTORY(
+			 rider_id
+			,beaconId
+			,major
+			,minor
+			,rssi
+			,push_target
+			,sendDatetime
+			,latitude
+			,longitude
+			,check_next_push
+		) values (
+			 ( select rider_id from TB_RIDER_SESSION where access_token = #{token} )
+			,#{uuid}
+			,#{major}
+			,#{minor}
+			,#{rssi}
+			,#{pushTarget}
+			,now()
+			,#{latitude}
+			,#{longitude}
+			,1
+		)
+	</insert>
+
+	<!-- 라이더가 배달 중이었는지 확인하기 -->
+	<select id="checkRiderDelivery" parameterType="hashmap" resultType="Integer">
+		select   count(*)
+		from     TB_RIDER               as a
+		left join TB_ORDER              as b
+			on   a.admin_id = b.admin_id
+			and  a.id = b.rider_id
+		where    1=1
+		and      a.id = ( select id from TB_RIDER_SESSION where access_token = #{token})
+		and      a.created_datetime > current_date()
+		and (   (a.status = 6)
+			or  (a.status = 3 and ifnull(a.return_time, now()) >= date_sub(current_timestamp(), interval 1 minute))
+			)
+		and      b.store_id in ( select id from TB_STORE where deleted is null and admin_id = a.admin_id and beaconId = #{uuid} and major = #{major} and minor = #{minor} )
+	</select>
 </mapper>

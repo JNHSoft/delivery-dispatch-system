@@ -279,8 +279,8 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
             //returnMap.put("beaconInfo", beaconInfo);
 
-            returnMap.put("rssi", -70);
-            returnMap.put("nextTimes", 0);
+            returnMap.put("rssi", S_Rider.getRssi());
+            returnMap.put("nextTimes", S_Rider.getBeaconCycle());
 
             /**
              * 2022-01-11
@@ -1347,15 +1347,13 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     }
 
     /**
-     * 22-01-17
-     * 라이더의 당일 활동에 따른 주문 내역 (DB 기록 없음)
      * 22-01-23
      * API 명칭 및 프로세스 변경
      * */
     @Override
     public int reqBeaconPush(Map<String, Object> map) throws AppTrException {
 
-        if (!map.containsKey("uuid") || !map.containsKey("major") || !map.containsKey("minor") || !map.containsKey("rssi")){
+        if (!map.containsKey("uuid") || !map.containsKey("major") || !map.containsKey("minor") || !map.containsKey("rssi") || !(map.get("rssi") instanceof Integer)){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
@@ -1365,6 +1363,29 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
         Rider S_Rider = riderMapper.getRiderInfo(rider);
 
         if (S_Rider.getPushToken() != null){
+
+            // 특정 조건에 의해 이미 발송이 된 경우
+            int chkSend = riderMapper.checkBeaonPush(map);
+
+            // 0이 아닌 경우에는 이미 발송 처리가 된 케이스
+            if (chkSend > 0) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH002), ErrorCodeEnum.ERRPUSH002.name());
+            }
+
+            // 비콘 세기에 대한 내용 정의 후 오류 리턴 필요
+            int iRssi = Integer.parseInt(map.get("rssi").toString());
+
+            if (iRssi < -70) {
+                throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH004), ErrorCodeEnum.ERRPUSH004.name());
+            }
+
+            // 라이더 상태가 배달 중인지, 완료인지 체크 UUID, MARJOR, MINOR 등을 이용하여, 해당 매장의 주문이 있는 경우 한정
+            int chkDelivery = riderMapper.checkRiderDelivery(map);
+
+            if (chkDelivery < 1) {
+                return 1;
+            }
+
             Notification noti = new Notification();
             noti.setType(Notification.NOTI.BEACON_PUSH);
 
@@ -1385,12 +1406,12 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             try {
                 fcmBody.setTo(S_Rider.getPushToken());
 
-
                 try {
                     CompletableFuture<FirebaseResponse> pushNotification = androidPushNotificationsService.sendGroup(fcmBody, "server");
                     checkFcmResponse(pushNotification);
 
-                    log.info("Request Beacon Push 발송 성공 => " + S_Rider.getId());
+                    map.put("pushTarget", S_Rider.getPlatform());
+                    log.info("Request Beacon Push 발송 성공 => " + S_Rider.getId() + " # " + riderMapper.insertBeaconPushHistory(map));
                 } catch (Exception e){
                     log.error(e.getMessage());
                     throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH001), ErrorCodeEnum.ERRPUSH001.name());
@@ -1408,12 +1429,12 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     
     /**
      * 2022-01-17
-     * 라이더가 도착지 근처에 도달한 경우 스스로 Push한 경우
+     * 라이더가 도착지 근처에 도달하여 스스로 Push한 경우
      * */
     @Override
     public int regNearOrderPush(Map<String, Object> map) throws AppTrException {
 
-        if (!map.containsKey("order") || map.get("order").toString().isEmpty()){
+        if (!map.containsKey("order") || map.get("order").toString().isEmpty() || !(map.get("order") instanceof String || map.get("order") instanceof Integer)){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
@@ -1488,7 +1509,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     
     /**
      * 2022-01-17
-     * 라이더에게 전송된 PUSH인지 Check
+     * 라이더에게 전송된 PUSH인지 Check 주문 Part 용
      * */
     private String checkSendRiderPush(Map<String, Object> rider) {
 

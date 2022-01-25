@@ -428,6 +428,18 @@ public interface RiderMapper {
 
     /**
      * 22.01.23
-     * 비콘 PUSH
+     * 비콘 PUSH 체크
      * */
+    int checkBeaonPush(Map<String, Object> beacon);
+
+    /**
+     * 비콘 History Insert
+     * */
+    int insertBeaconPushHistory(Map<String, Object> beacon);
+    
+    /**
+     * 22.01.26
+     * 비콘 정보를 이용하여, 라이더가 배달 중이었던 매장이 맞는지 체크하기
+     * */
+    int checkRiderDelivery(Map<String, Object> beacon);
 }
