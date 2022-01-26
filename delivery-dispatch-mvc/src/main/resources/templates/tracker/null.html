@@ -3,42 +3,27 @@
 
 <div class="tracker" layout:fragment="content">
 	<div class="tracker-top">
-		<div class="state">
+		<div id="state_pzh" class="state">
 			<span id="tNew" class="step1 on" th:text="${#messages.msg('tracker.new')}" />
 			<i></i>
-			<span id="tAssign" style="display: none" class="step2" th:text="${#messages.msg('tracker.assign')}"/>
-			<span id="tAssign_kfc" style="display: none" class="kfc" th:text="${#messages.msg('tracker.assign')}"/>
+			<span id="tAssign" class="step2" th:text="${#messages.msg('tracker.assign')}"/>
 			<i></i>
 			<span id="tPickup" class="step3" th:text="${#messages.msg('tracker.pickedup')}"/>
 			<i></i>
 			<span id="tComplete" class="step4" th:text="${#messages.msg('tracker.completed')}"/>
 		</div>
+		<div id="state_kfc" class="state">
+			<span id="tNew_kfc" class="step1 kfc on" th:text="${#messages.msg('tracker.new')}" />
+			<i></i>
+			<span id="tAssign_kfc" class="step2 kfc" th:text="${#messages.msg('tracker.assign')}"/>
+			<i></i>
+			<span id="tPickup_kfc" class="step3 kfc" th:text="${#messages.msg('tracker.pickedup')}"/>
+			<i></i>
+			<span id="tComplete_kfc" class="step4 kfc" th:text="${#messages.msg('tracker.completed')}"/>
+		</div>
 	</div>
 	<div class="visual_area h390" style="display: none">
-		<!--<div class="loading"></div>-->
 	</div>
-	<!--<div class="tracker-bottom">
-		<table>
-			<colgroup>
-				<col style="width:12%"/>
-				<col />
-				<col style="width:12%"/>
-				<col style="width:18%"/>
-			</colgroup>
-			<tbody>
-				<tr>
-					<th scope="row"></th>
-					<td></td>
-					<th scope="row" class="t_red"></th>
-					<td class="t_red bold"></td>
-				</tr>
-				<tr>
-					<th scope="row"></th>
-					<td rowspan="3"></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>-->
 </div>
 <script layout:fragment="script" th:inline="javascript">
 /*<![CDATA[*/
@@ -56,26 +41,25 @@ $(document).ready(function(){
     }
 
     if (brandCode == "1"){
-		$('#tAssign_kfc').css('display', '');
+		$("#state_pzh").css('display', 'none');
+		$("#state_kfc").css('display', '');
 		$(".visual_area").removeClass('visual_area_complete');
 		$(".visual_area").removeClass('visual_area_ready');
 		$(".visual_area").css({"position":"relative","height":"300px","background":"url('../resources/images/tracker/visual_img1.jpg?ver=0.4') center center no-repeat","background-size":"cover"});
-		$('#tAssign').css('display', 'none');
 		$('.visual_area').css('display', '');
+		$(".visual_area").html('<p class="tit_wh" style="color: #000000;">' + ErrorMsg + '</p>');
 	}else{
-		$('#tAssign').css('display', '');
-		$('#tAssign_kfc').css('display', 'none');
+		$("#state_pzh").css('display', '');
+		$("#state_kfc").css('display', 'none');
 		$(".visual_area").removeClass('visual_area_complete');
 		$(".visual_area").addClass('visual_area_ready');
 		$('.visual_area').css('display', '');
+		$(".visual_area").html('<p class="tit_wh">' + ErrorMsg + '</p>');
 	}
 
 	if(encParam){
         setInterval('returnPage()', 30000);
 	}
-
-	$(".visual_area").html('<p class="tit_wh">' + ErrorMsg + '</p>');
-
 })
 function returnPage() {
     return location.href = "/tracker?encParam="+encParam;
