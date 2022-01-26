@@ -391,7 +391,7 @@
 
 				,(select os from TB_RIDER_SESSION where rider_id = TR.id and access_token = #{token})			as os
 
-				,ifnull(AD.rssi, -70)																			as rssi
+				,ifnull(ifnull(TS.rssi, AD.rssi), -70)															as rssi
 				,ifnull(AD.beacon_cycle, 0)																		as beacon_cycle
 		FROM     TB_RIDER TR
 		left join TB_SUBGROUP_RIDER_REL AS SRR
@@ -1755,7 +1755,7 @@
 		and      major = #{major}
 		and      minor = #{minor}
 		and      check_next_push = 1
-		and      sendDatetime >= date_sub(current_timestamp(), interval 10 minute)
+		and      sendDatetime >= date_sub(current_timestamp(), interval 1 minute)
 	</select>
 
 	<insert id="insertBeaconPushHistory" parameterType="hashmap">
@@ -1794,9 +1794,7 @@
 		where    1=1
 		and      a.id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
 		and      b.created_datetime > current_date()
-		and (   (b.status = 6)
-			or  (b.status = 3 and ifnull(b.return_datetime, now()) >= date_sub(current_timestamp(), interval 1 minute))
-			)
+		and (   (b.status = 3 and ifnull(b.return_datetime, now()) >= date_sub(current_timestamp(), interval 1 minute)) )
 		and      b.store_id in ( select id from TB_STORE where deleted is null and admin_id = a.admin_id and beaconId = #{uuid} and major = #{major} and minor = #{minor} )
 	</select>
 </mapper>

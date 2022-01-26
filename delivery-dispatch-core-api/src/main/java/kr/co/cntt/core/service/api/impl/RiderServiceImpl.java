@@ -1,7 +1,9 @@
 package kr.co.cntt.core.service.api.impl;
 
+import com.github.pagehelper.util.StringUtil;
 import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
 import kr.co.cntt.core.fcm.FirebaseResponse;
+import kr.co.cntt.core.mapper.OrderMapper;
 import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.fcm.FcmBody;
 import kr.co.cntt.core.model.login.User;
@@ -24,6 +26,7 @@ import kr.co.cntt.core.util.Misc;
 import kr.co.cntt.core.util.ShaEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,6 +67,11 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
      * */
     private StoreMapper storeMapper;
 
+    /**
+     * Order DAO
+     * */
+    private OrderMapper orderMapper;
+
     @Autowired
     AndroidPushNotificationsService androidPushNotificationsService;
 
@@ -71,9 +79,10 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
      * @param riderMapper USER D A O
      */
     @Autowired
-    public RiderServiceImpl(RiderMapper riderMapper, StoreMapper storeMapper) {
+    public RiderServiceImpl(RiderMapper riderMapper, StoreMapper storeMapper, OrderMapper orderMapper) {
         this.riderMapper = riderMapper;
         this.storeMapper = storeMapper;
+        this.orderMapper = orderMapper;
     }
 
     @Override
@@ -1350,10 +1359,13 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
      * 22-01-23
      * API 명칭 및 프로세스 변경
      * */
+    @Secured({"ROLE_RIDER"})
     @Override
     public int reqBeaconPush(Map<String, Object> map) throws AppTrException {
 
-        if (!map.containsKey("uuid") || !map.containsKey("major") || !map.containsKey("minor") || !map.containsKey("rssi") || !(map.get("rssi") instanceof Integer)){
+
+        if (!map.containsKey("uuid") || !map.containsKey("major") || !map.containsKey("minor")
+                || !map.containsKey("rssi") || !(map.get("rssi") instanceof Integer) || !map.containsKey("ids")){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
@@ -1375,7 +1387,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             // 비콘 세기에 대한 내용 정의 후 오류 리턴 필요
             int iRssi = Integer.parseInt(map.get("rssi").toString());
 
-            if (iRssi < -70) {
+            if (iRssi < S_Rider.getRssi()) {
                 throw new AppTrException(getMessage(ErrorCodeEnum.ERRPUSH004), ErrorCodeEnum.ERRPUSH004.name());
             }
 
@@ -1383,8 +1395,46 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             int chkDelivery = riderMapper.checkRiderDelivery(map);
 
             if (chkDelivery < 1) {
+                log.info("라이더의 상태 중 복귀를 위한 주문이 없습니다.");
                 return 1;
             }
+
+            // PUSH 전송 전에 주문 상태 값들을 변경 후 작업을 진행하자.
+            if (map.get("ids") instanceof Iterable){
+                for (String orderId:(List<String>)map.get("ids")) {
+
+                    log.info("Beacon Push Update Rider Return => id " + orderId);
+
+                    Order order = new Order();
+                    order.setToken(map.get("token").toString());
+                    order.setId(orderId);
+
+                    order.setRole("ROLE_RIDER");
+                    Order needOrderId = orderMapper.selectOrderInfo(order);
+
+                    order.setReturnDatetime(LocalDateTime.now().toString());
+                    order.setStatus("3");
+
+                    int ret = this.putOrder(order);
+                    log.info("Beacon Push Rider Update Return Finish => id = " + orderId + " # " + ret);
+
+                    Store storeDTO = new Store();
+                    storeDTO.setId(needOrderId.getStoreId());
+
+                    storeDTO = storeMapper.selectStoreInfo(storeDTO);
+
+                    if (ret != 0) {
+                        if (storeDTO.getSubGroup() != null) {
+                            System.out.println("소켓 전달 1");
+                            redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
+                        } else {
+                            System.out.println("소켓 전달 2");
+                            redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
+                        }
+                    }
+                }
+            }
+
 
             Notification noti = new Notification();
             noti.setType(Notification.NOTI.BEACON_PUSH);
@@ -1434,7 +1484,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
     @Override
     public int regNearOrderPush(Map<String, Object> map) throws AppTrException {
 
-        if (!map.containsKey("order") || map.get("order").toString().isEmpty() || !(map.get("order") instanceof String || map.get("order") instanceof Integer)){
+        if (!map.containsKey("order") || map.get("order").toString().isEmpty() || !(map.get("order") instanceof String)){
             throw new AppTrException(getMessage(ErrorCodeEnum.E00040), ErrorCodeEnum.E00040.name());
         }
 
@@ -1515,6 +1565,23 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
         // 22-01-17 PUSH 정보 체크
         return riderMapper.selectSendRiderPushInfo(rider);
+    }
+
+    /**
+     * <p> putOrder
+     */
+    private int putOrder(Order order) throws AppTrException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().toString().equals("[ROLE_STORE]")) {
+            order.setRole("ROLE_STORE");
+        } else if (authentication.getAuthorities().toString().equals("[ROLE_RIDER]")) {
+            order.setRole("ROLE_RIDER");
+        }
+
+        int S_Order = orderMapper.updateOrder(order);
+
+        return S_Order;
     }
 }
 
