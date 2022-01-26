@@ -113,7 +113,7 @@ DDELib.Orders.prototype = {
         var self = this;
         $('.state_wrap .btn_close').click(function (e) {
             // 2021-12-30 주문 상세 페이지를 닫는 경우 상태값 변경하기
-            self.getOrderList();
+            //self.getOrderList();
 
             e.preventDefault();
             self.onCloseDetail();

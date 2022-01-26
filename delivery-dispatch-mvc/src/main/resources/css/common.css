@@ -681,11 +681,11 @@ body .ui-tooltip{font-size:12px;border-width:1px;box-shadow:none}
 
 /* 별점 클릭이 완료 된 후의 색상을 표기한다. */
 .point_stars :checked ~ label {
-	color: #f90;
+	color: #FFF612;
 }
 
 /* 클릭할 별점의 위치에 마크 표기를 한다. */
 .point_stars label:hover,
 .point_stars label:hover ~ label {
-	color: #fc0;
+	color: #FFF612;
 }
