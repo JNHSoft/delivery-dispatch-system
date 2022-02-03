@@ -563,4 +563,14 @@ public class SettingController {
             response.sendError(404, "잘못된 접근입니다.");
         }
     }
+
+    /**
+     * 2022-02-02 Beacon Setting Page
+     * */
+    @GetMapping("/setting-beacon")
+    @CnttMethodDescription("비콘 환경설정 페이지")
+    public String settingBeacon() {
+        return "/setting/setting_beacon";
+    }
+
 }
