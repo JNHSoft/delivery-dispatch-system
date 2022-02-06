@@ -9,7 +9,7 @@
             <li><a href="/setting-assign.html" th:text="${#messages.msg('gnb.setting.assign')}" /></li>
             <li><a href="/setting-alarm.html" th:text="${#messages.msg('gnb.setting.alarm')}" /></li>
             <li><a href="/setting-notice.html" th:text="${#messages.msg('gnb.notice')}" /></li>
-            <li class="on"><a href="/setting-beacon.html" th:text="|Beacon Setting|" /></li>
+            <li class="on"><a href="/setting-beacon.html" th:text="${#messages.msg('gnb.setting.beacon')}" /></li>
         </ul>
     </div>
 
@@ -31,7 +31,7 @@
 <!--                    <button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" ></i></button>-->
 <!--                </div>-->
                 <div class="right">
-                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}" onclick="popUpSaveData()"></a>
+                    <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}" onclick="saveBeaconInfos()"></a>
                 </div>
             </div>
 
@@ -53,6 +53,12 @@
     /*<![CDATA[*/
     var store_code = /*[[#{store.code}]]*/ 'store_code';
     var store_name = /*[[#{store.name}]]*/ 'store_name';
+    var beaconId = /*[[#{beacon.setting.title.uuid}]]*/ 'beaconId';
+    var titMajor = /*[[#{beacon.setting.title.major}]]*/ 'titMajor';
+    var titMinor = /*[[#{beacon.setting.title.minor}]]*/ 'titMinor';
+    var titRssi = /*[[#{beacon.setting.title.rssi}]]*/ 'titRssi';
+    var titChkApply = /*[[#{beacon.setting.title.chk.apply}]]*/ 'titChkApply';
+    var msgSaveCompleted = /*[[#{beacon.setting.msg.save.completed}]]*/ 'msgSaveCompleted';
     /*]]>*/
 </script>
 

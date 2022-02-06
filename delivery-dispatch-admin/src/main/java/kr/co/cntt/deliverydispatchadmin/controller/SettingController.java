@@ -8,6 +8,8 @@ import kr.co.cntt.core.model.group.SubGroup;
 import kr.co.cntt.core.model.group.SubGroupStoreRel;
 import kr.co.cntt.core.model.notice.Notice;
 import kr.co.cntt.core.model.reason.Reason;
+import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreBeacon;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.service.admin.*;
 import kr.co.cntt.core.util.FileUtil;
@@ -571,6 +573,32 @@ public class SettingController {
     @CnttMethodDescription("비콘 환경설정 페이지")
     public String settingBeacon() {
         return "/setting/setting_beacon";
+    }
+    
+    /**
+     * 2022-02-06 Beacon 정보 저장 프로세스
+     * */
+    @PostMapping("/setBeaconInfo")
+    @ResponseBody
+    @CnttMethodDescription("비콘 정보 업데이트")
+    public Map<String, Object> setBeaconInfo(@RequestBody ArrayList<StoreBeacon> beaconList) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        resultMap.put("result", "Failed");
+
+        for (StoreBeacon beacon: beaconList
+             ) {
+
+            beacon.setAccessToken(adminInfo.getAdminAccessToken());
+            beacon.setRole("ROLE_ADMIN");
+
+            assignAdminService.updateStoreBeaonInfo(beacon);
+        }
+
+        resultMap.put("result", "true");
+
+        return resultMap;
     }
 
 }

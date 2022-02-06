@@ -283,11 +283,6 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             // Seconds
             returnMap.put("locationRefreshTime", S_Rider.getLocationRefreshTime() == null ? 60 : S_Rider.getLocationRefreshTime());
 
-            // 라이더가 소속된 매장의 Beacon 정보를 제공하기
-            //StoreBeacon beaconInfo = storeMapper.selectStoreBeaconInfo(rider);
-
-            //returnMap.put("beaconInfo", beaconInfo);
-
             returnMap.put("rssi", S_Rider.getRssi());
             returnMap.put("nextTimes", S_Rider.getBeaconCycle());
 

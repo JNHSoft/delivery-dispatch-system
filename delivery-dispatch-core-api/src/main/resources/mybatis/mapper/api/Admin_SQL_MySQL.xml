@@ -80,6 +80,13 @@
 			<result property="createdDatetime" column="order_createdDatetime" />
 		</association>
 
+		<association property="beacon" column="beacon" javaType="kr.co.cntt.core.model.store.StoreBeacon">
+			<result property="uuid" column="beaconId" />
+			<result property="major" column="major" />
+			<result property="minor" column="minor" />
+			<result property="rssi" column="rssi" />
+		</association>
+
 	</resultMap>
 
 
@@ -812,6 +819,10 @@
 				,E.store_id
 				-- ,time_to_sec(timediff(now(), ifnull(E.created_datetime, concat(current_date(), ' 09:00:00'))))		as orderDiff
 				,ifnull(E.created_datetime, concat(current_date(), ' 09:00:00'))			as order_createdDatetime
+				,A.beaconId
+				,A.major
+				,A.minor
+				,ifnull(ifnull(A.rssi, ( select rssi from TB_ADMIN where id = A.admin_id )), -70)			as rssi
 		FROM	 TB_STORE AS A
 		LEFT JOIN TB_SUBGROUP_STORE_REL AS B
 			ON	 A.id = B.store_id

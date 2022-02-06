@@ -280,10 +280,9 @@ public interface StoreMapper {
      * */
     @Transactional(readOnly=true)
     List<Store> selectSharedStoreList(Rider rider);
-    
+
     /**
-     * 매장의 Beacon 정보 가져오기
+     * 매장 beacon 정보 업데이트
      * */
-    @Transactional(readOnly = true)
-    StoreBeacon selectStoreBeaconInfo(Common common);
+    int updateStoreBeaconInfo(StoreBeacon beacon);
 }
