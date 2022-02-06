@@ -94,7 +94,7 @@ function saveBeaconInfos() {
 
     var beaconList = $("#jqGrid").jqGrid("getRowData").filter(x => x.chkSave === "Yes");
 
-    if (beaconList.size() > 0) {
+    if (beaconList.length > 0) {
         $.ajax({
             url: '/setBeaconInfo',
             type: 'post',
