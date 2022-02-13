@@ -55,6 +55,7 @@
 		<!-- 2022-01-25 비콘 관련 변수 추가 -->
 		<result property="rssi" column="rssi" />
 		<result property="beaconCycle" column="beacon_cycle" />
+		<result property="uuid" column="beaconId" />
 
 		<association property="group" javaType="kr.co.cntt.core.model.group.Group">
 			<result property="id" column="group_id" />
@@ -393,6 +394,7 @@
 
 				,ifnull(ifnull(TS.rssi, AD.rssi), -70)															as rssi
 				,ifnull(AD.beacon_cycle, 0)																		as beacon_cycle
+				,ifnull(TS.beaconId, AD.beaconId)																as beaconId
 		FROM     TB_RIDER TR
 		left join TB_SUBGROUP_RIDER_REL AS SRR
 			on   TR.id = SRR.rider_id

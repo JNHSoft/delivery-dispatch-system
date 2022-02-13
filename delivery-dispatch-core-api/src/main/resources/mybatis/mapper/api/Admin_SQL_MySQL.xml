@@ -819,7 +819,7 @@
 				,E.store_id
 				-- ,time_to_sec(timediff(now(), ifnull(E.created_datetime, concat(current_date(), ' 09:00:00'))))		as orderDiff
 				,ifnull(E.created_datetime, concat(current_date(), ' 09:00:00'))			as order_createdDatetime
-				,A.beaconId
+				,ifnull(A.beaconId, ( select beaconId from TB_ADMIN where id = A.admin_id ))					as beaconId
 				,A.major
 				,A.minor
 				,ifnull(ifnull(A.rssi, ( select rssi from TB_ADMIN where id = A.admin_id )), -70)			as rssi
@@ -2082,6 +2082,39 @@
 		from	 TB_MAIL_LIST
 		where	 acc_status = 1
 		and		 admin_id = #{adminID};
+	</select>
+
+	<update id="updateBeaconInfo" parameterType="kr.co.cntt.core.model.admin.Admin">
+		update   TB_ADMIN
+		set      modified_datetime = now()
+			<if test="uuid != null and uuid != ''">
+				,beaconId = #{uuid}
+			</if>
+			<if test="rssi != null and rssi != '' and rssi.toString() != '0'">
+				,rssi = #{rssi}
+			</if>
+			<if test="beaconCycle != null and beaconCycle != ''">
+				,beacon_cycle = #{beaconCycle}
+			</if>
+		where    1=1
+		and      deleted is null
+		and      id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{accessToken});
+	</update>
+	
+	<select id="selectBeaconCommInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
+		select   id
+				,name
+				,brand_code
+				,login_id
+				,push_radius
+				,location_refresh_time
+				,rssi
+				,beacon_cycle
+				,beaconId                   as uuid
+		from     TB_ADMIN
+		where    1=1
+		and      deleted is null
+		and      id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{accessToken})
 	</select>
 
 <!--	<select id="selectRegNewStoreList" resultType="java.util.Map">-->

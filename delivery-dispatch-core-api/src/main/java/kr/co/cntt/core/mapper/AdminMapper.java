@@ -545,6 +545,16 @@ public interface AdminMapper {
     List<String> selectReceivedMailAccount(String adminID);
 
     /**
+     * 22.02.11 Beacon 공통 정보 가져오기
+     * */
+    Admin selectBeaconCommInfo(Admin adminInfo);
+
+    /**
+     * 22.02.11 Beacon 정보 변경
+     * */
+    int updateBeaconInfo(Admin adminInfo);
+
+    /**
      * 21.07.24 스토어 정보 가져오기
      * */
 //    List<Map<String, Object>> selectRegNewStoreList();

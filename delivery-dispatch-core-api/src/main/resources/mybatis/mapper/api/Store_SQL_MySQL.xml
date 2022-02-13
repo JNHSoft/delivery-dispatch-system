@@ -1314,7 +1314,7 @@
 
     <update id="updateStoreBeaconInfo" parameterType="kr.co.cntt.core.model.store.StoreBeacon">
         update   TB_STORE
-        set      beaconId = #{uuid}
+        set      modified_datetime = now()
             <if test="major != null and major != '' and major != 0">
                 ,major = #{major}
             </if>
@@ -1324,7 +1324,6 @@
             <if test="rssi != null and rssi != '' and rssi != 0">
                 ,rssi = #{rssi}
             </if>
-                ,modified_datetime = now()
         where    1=1
         and      deleted is null
         <choose>

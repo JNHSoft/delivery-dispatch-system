@@ -124,7 +124,16 @@ public interface AssignAdminService {
     /**
      * <p>Beacon 정보 업데이트</p>
      * */
-    int updateStoreBeaonInfo(StoreBeacon beacon);
+    int updateStoreBeaconInfo(StoreBeacon beacon);
 
+    /**
+     * <p> Beacon 공통 정보 가져오기 - 관리자 </p>
+     * */
+    Admin getBeaconCommInfo(Admin adminInfo);
+
+    /**
+     * <p>Beacon 공통 정보 업데이트 - 관리자 정보</p>
+     * */
+    int updateAdminBeaconInfo(Admin adminInfo);
 
 }

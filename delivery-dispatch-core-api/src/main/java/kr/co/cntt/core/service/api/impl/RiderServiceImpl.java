@@ -1,6 +1,5 @@
 package kr.co.cntt.core.service.api.impl;
 
-import com.github.pagehelper.util.StringUtil;
 import kr.co.cntt.core.fcm.AndroidPushNotificationsService;
 import kr.co.cntt.core.fcm.FirebaseResponse;
 import kr.co.cntt.core.mapper.OrderMapper;
@@ -18,7 +17,6 @@ import kr.co.cntt.core.model.redis.Content;
 import kr.co.cntt.core.model.rider.*;
 import kr.co.cntt.core.model.sms.SmsApplyInfo;
 import kr.co.cntt.core.model.store.Store;
-import kr.co.cntt.core.model.store.StoreBeacon;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.ServiceSupport;
 import kr.co.cntt.core.service.api.RiderService;
@@ -26,7 +24,6 @@ import kr.co.cntt.core.util.Misc;
 import kr.co.cntt.core.util.ShaEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Role;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -285,6 +282,9 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
 
             returnMap.put("rssi", S_Rider.getRssi());
             returnMap.put("nextTimes", S_Rider.getBeaconCycle());
+            
+            // 라이더 Beacon UUID 전송
+            returnMap.put("uuid", S_Rider.getUuid());
 
             /**
              * 2022-01-11

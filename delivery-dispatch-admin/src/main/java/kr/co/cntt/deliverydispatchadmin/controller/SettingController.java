@@ -593,12 +593,52 @@ public class SettingController {
             beacon.setAccessToken(adminInfo.getAdminAccessToken());
             beacon.setRole("ROLE_ADMIN");
 
-            assignAdminService.updateStoreBeaonInfo(beacon);
+            assignAdminService.updateStoreBeaconInfo(beacon);
         }
 
         resultMap.put("result", "true");
 
         return resultMap;
+    }
+
+    /**
+     * 2022-02-11 Beacon 공통 정보 가져오기 (관리자)
+     * */
+    @GetMapping("/getBeaconCommInfo")
+    @ResponseBody
+    @CnttMethodDescription("관리자에 저장된 비콘 정보 등을 가져오기")
+    public Admin getBeaconCommInfo() throws Exception {
+
+        SecurityUser admin = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Admin adminInfo = new Admin();
+
+        adminInfo.setRole("ROLE_ADMIN");
+        adminInfo.setAccessToken(admin.getAdminAccessToken());
+
+        adminInfo = assignAdminService.getBeaconCommInfo(adminInfo);
+
+        return adminInfo;
+
+    }
+    
+    /**
+     * 2022-02-11 Beacon 공통 정보 저장하기
+     * */
+    @PostMapping("/setBeaconCommInfo")
+    @ResponseBody
+    @CnttMethodDescription("비콘 공통 정보 저장")
+    public int setBeaconCommInfo(Admin admin) throws Exception {
+
+        SecurityUser adminInfo = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        admin.setAccessToken(adminInfo.getAdminAccessToken());
+        admin.setRole("ROLE_ADMIN");
+        
+        // 관리자 정보에 저장하기
+        assignAdminService.updateAdminBeaconInfo(admin);
+
+
+        return 1;
     }
 
 }

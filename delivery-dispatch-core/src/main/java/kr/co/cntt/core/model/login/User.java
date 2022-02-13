@@ -1,9 +1,11 @@
 package kr.co.cntt.core.model.login;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.common.Common;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONPropertyName;
 
 @Getter
 @Setter
@@ -36,4 +38,8 @@ public class User extends Common implements Dto {
 
     // 2022-01-25 비콘 주기 (단위 : 초)
     private Integer beaconCycle;
+
+    // 2022-02-11 Beacon UUID
+    @JsonProperty(defaultValue = "uuid")
+    private String uuid;
 }

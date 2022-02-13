@@ -16,21 +16,19 @@
     <div id="contents">
         <div class="cont_box">
             <div class="search_box">
-<!--                <div class="left">-->
-<!--                    &lt;!&ndash;전체 /소속 그룹/ 매장명 / 매장 코드 / 점장명 / 주소 / 아이디&ndash;&gt;-->
-<!--                    <select name="" class="select" id="searchSelect">-->
-<!--                        <option value="all" th:text="${#messages.msg('list.search.all')}"></option>-->
-<!--                        <option value="th1" th:text="${#messages.msg('store.belong.group')}"></option>-->
-<!--                        <option value="th3" th:text="${#messages.msg('store.name')}"></option>-->
-<!--                        <option value="th4" th:text="${#messages.msg('store.code')}"></option>-->
-<!--                        &lt;!&ndash;<option value="th3" th:text="${#messages.msg('store.manager.name')}"></option>&ndash;&gt;-->
-<!--                        <option value="th8" th:text="${#messages.msg('store.address')}"></option>-->
-<!--                        <option value="th10" th:text="${#messages.msg('login.id')}"></option>-->
-<!--                    </select>-->
-<!--                    <input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>-->
-<!--                    <button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" ></i></button>-->
-<!--                </div>-->
+                <div class="left">
+                    <!--전체 /소속 그룹/ 매장명 / 매장 코드 / 점장명 / 주소 / 아이디-->
+                    <select name="" class="select" id="searchSelect">
+                        <option value="all" th:text="${#messages.msg('list.search.all')}"></option>
+                        <option value="name" th:text="${#messages.msg('store.name')}"></option>
+                        <option value="storeCode" th:text="${#messages.msg('store.code')}"></option>
+                    </select>
+                    <input type="text" class="input" id="searchText" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
+                    <button class="button" id="searchButton"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}" ></i></button>
+                </div>
                 <div class="right">
+                    <a href="#" class="button h30 btn_pink" th:text="${#messages.msg('beacon.setting.btn.change.comminfo')}" onclick="openPopupUUID()"></a>
+                    &nbsp;
                     <a href="#" class="button h30 btn_gray" th:text="${#messages.msg('btn.save')}" onclick="saveBeaconInfos()"></a>
                 </div>
             </div>
@@ -48,6 +46,43 @@
 </section>
 <!-- //컨텐츠 영역 -->
 
+
+<!--  신규 매장 등록 팝업영역 -->
+<div id="popStore" class="pop_wrap" layout:fragment="popup">
+    <article class="popup">
+        <div class="pop_head">
+            <h1 th:text="${#messages.msg('beacon.setting.btn.change.comminfo')}"></h1>
+        </div>
+        <div class="pop_cont">
+            <div class="tbl_wrap">
+                <table class="table tbl_left">
+                    <colgroup>
+                        <col width="20%" />
+                        <col width="80%" />
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th th:text="${#messages.msg('beacon.setting.title.uuid')}" style="text-align: center"></th>
+                        <td>
+                            <input type="text" name="" id="txtBeaconId" class="input w_100" value="" />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="pop_foot">
+            <div class="left"><a href="#" class="button h30 btn_gray pop_close" th:text="${#messages.msg('btn.cancel')}"></a></div>
+            <div class="right">
+                <a href="#" class="button h30 btn_blue" onClick="javascript:regBeacon()" th:text="${#messages.msg('btn.confirm')}"></a>
+            </div>
+        </div>
+        <a href="#" class="btn_close pop_close" th:text="${#messages.msg('btn.close.pop')}"></a>
+    </article>
+</div>
+<!-- //팝업영역 -->
+
+
 <script type="text/javascript" th:src="@{/resources/js/site/setting/beacon.js}" layout:fragment="script2"/>
 <script layout:fragment="script" th:inline="javascript">
     /*<![CDATA[*/
@@ -59,6 +94,7 @@
     var titRssi = /*[[#{beacon.setting.title.rssi}]]*/ 'titRssi';
     var titChkApply = /*[[#{beacon.setting.title.chk.apply}]]*/ 'titChkApply';
     var msgSaveCompleted = /*[[#{beacon.setting.msg.save.completed}]]*/ 'msgSaveCompleted';
+    var msgInputBeacon = /*[[#{beacon.setting.msg.error}]]*/ 'msgInputBeacon';
     /*]]>*/
 </script>
 

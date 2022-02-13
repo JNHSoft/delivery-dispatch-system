@@ -2,8 +2,50 @@
 let loading= $('<div id="loading"><div><p style="background-color: #838d96"/></div></div>').appendTo(document.body).hide();
 
 $(document).ready(function() {
+    makeButtonEvent();
     getStoreList();
 });
+
+function makeButtonEvent() {
+    // 조건 검색 이벤트
+    $("#searchButton").click(function () {
+        // 입력받는 text 값 가져온다
+        var searchText = $("#searchText").val();
+        // 필터 설정
+        var filter = {
+            groupOp: "OR",
+            rules: []
+        };
+        // 검색 select 박스 변경 시 값 전송
+        var select = $("#searchSelect option:selected").val();
+
+        // html option 값의 value에 jq 그리드에 name 값을 넣어서 매칭시킨다.
+        if(select === 'all'){
+            filter.rules.push({
+                field : 'storeCode',
+                op : "cn",
+                data : searchText
+            });
+
+            filter.rules.push({
+                field : 'name',
+                op : "cn",
+                data : searchText
+            });
+        }else{
+            filter.rules.push({
+                field : select,
+                op : "cn",
+                data : searchText
+            });
+        }
+        var grid = jQuery('#jqGrid');
+        grid[0].p.search = filter.rules.length > 0;
+        $.extend(grid[0].p.postData, { filters: JSON.stringify(filter) });
+        grid.trigger("reloadGrid", [{ page: 1 }]);
+    });
+
+}
 
 function getStoreList(){
     var $mydata = [];
@@ -58,7 +100,7 @@ function getStoreList(){
                     {label:'No', name:'id', width:25, align:'center', hidden:true},
                     {label:store_name, name:'name', width:80, align:'center'},
                     {label:store_code, name:'storeCode', width:60, align:'center'},
-                    {label:beaconId, name:'uuid', width:60, align:'center', editable: true, edittype: 'text'},
+                    {label:beaconId, name:'uuid', width:60, align:'center'},
                     {label:titMajor, name:'major', width:60, align:'center', editable: true, edittype: 'text', editrules:{number:true}},
                     {label:titMinor, name:'minor', width:60, align:'center', editable: true, edittype: 'text', editrules:{number:true}},
                     {label:titChkApply, name:'chkSave', width:30, align:'center', editable: true, edittype: 'checkbox'},
@@ -112,6 +154,60 @@ function saveBeaconInfos() {
         });
     }
 
+}
+
+/**
+ * 2022-02-11 Beacon UUID 저장하기
+ * */
+function regBeacon(){
+    var txtUUID = $("#txtBeaconId").val();
+
+    if (!txtUUID) {
+        alert(msgInputBeacon);
+        return;
+    }
+
+    // 비콘 ID가 변경된 경우에만 적용하기
+    $.ajax({
+        url: '/setBeaconCommInfo',
+        type: 'post',
+        data: {
+            uuid: txtUUID
+        },
+        dataType: 'json',
+        success: function (data, e) {
+            alert(msgSaveCompleted);
+            popClose("#popStore");
+
+            getStoreList();
+
+        },
+        error: function (e) {
+
+        }
+    });
+
+
+}
+
+/**
+ * 2022-02-11 Beacon UUID 설정 Popup 호출
+ * */
+function openPopupUUID() {
+    $("#txtBeaconId").val("");
+
+    $.ajax({
+        url: '/getBeaconCommInfo',
+        type: 'get',
+        dataType: 'json',
+        success: function (data, e) {
+            console.log(data);
+
+            $("#txtBeaconId").val(data.uuid);
+
+            popOpen("#popStore");
+        }
+    });
 }
 
 /*]]>*/

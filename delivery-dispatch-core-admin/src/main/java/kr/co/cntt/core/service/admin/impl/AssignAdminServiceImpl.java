@@ -254,7 +254,27 @@ public class AssignAdminServiceImpl implements AssignAdminService {
      * Beacon 정보 업데이트
      * */
     @Override
-    public int updateStoreBeaonInfo(StoreBeacon beacon) {
+    public int updateStoreBeaconInfo(StoreBeacon beacon) {
         return storeMapper.updateStoreBeaconInfo(beacon);
+    }
+
+    /**
+     * Beacon 공통 정보
+     * */
+    @Override
+    public Admin getBeaconCommInfo(Admin adminInfo){
+        return adminMapper.selectBeaconCommInfo(adminInfo);
+    }
+
+    /**
+     * 비콘 공통 정보 업데이트
+     * */
+    @Override
+    public int updateAdminBeaconInfo(Admin adminInfo) {
+        
+        log.info("관리자의 Beacon 정보 변경하기");
+        adminMapper.updateBeaconInfo(adminInfo);
+        
+        return 1;
     }
 }
