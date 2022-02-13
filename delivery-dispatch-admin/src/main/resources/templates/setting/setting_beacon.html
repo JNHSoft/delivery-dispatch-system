@@ -58,13 +58,37 @@
                 <table class="table tbl_left">
                     <colgroup>
                         <col width="20%" />
-                        <col width="80%" />
+                        <col width="30%" />
+                        <col width="20%" />
+                        <col width="50%" />
                     </colgroup>
                     <tbody>
                     <tr>
+                        <!-- Beacon UUID S -->
                         <th th:text="${#messages.msg('beacon.setting.title.uuid')}" style="text-align: center"></th>
-                        <td>
+                        <td colspan="3">
                             <input type="text" name="" id="txtBeaconId" class="input w_100" value="" />
+                        </td>
+                        <!-- Beacon UUID F -->
+                    </tr>
+                    <tr>
+                        <th th:utext="${#messages.msg('beacon.setting.txt.beacon.rssi')}" style="text-align: center"></th>
+                        <td>
+                            <input type="number" name="" id="txtBeaconRssi" class="input w_100" th:max="-1" value="" />
+                        </td>
+                        <th th:utext="${#messages.msg('beacon.setting.txt.push.api.call.timer')}" style="text-align: center"></th>
+                        <td>
+                            <input type="number" name="" id="txtCallerTimer" class="input w_100" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th th:utext="${#messages.msg('beacon.setting.txt.push.range')}" style="text-align: center"></th>
+                        <td>
+                            <input type="number" name="" id="txtPushRadius" class="input w_100" value="" />
+                        </td>
+                        <th th:utext="${#messages.msg('beacon.setting.txt.location.call.timer')}" style="text-align: center"></th>
+                        <td>
+                            <input type="number" name="" id="txtLocationTime" class="input w_100" value="" />
                         </td>
                     </tr>
                     </tbody>
@@ -92,9 +116,11 @@
     var titMajor = /*[[#{beacon.setting.title.major}]]*/ 'titMajor';
     var titMinor = /*[[#{beacon.setting.title.minor}]]*/ 'titMinor';
     var titRssi = /*[[#{beacon.setting.title.rssi}]]*/ 'titRssi';
+    var msgRssi = /*[[#{beacon.setting.txt.beacon.rssi}]]*/ 'msgRssi';
     var titChkApply = /*[[#{beacon.setting.title.chk.apply}]]*/ 'titChkApply';
     var msgSaveCompleted = /*[[#{beacon.setting.msg.save.completed}]]*/ 'msgSaveCompleted';
     var msgInputBeacon = /*[[#{beacon.setting.msg.error}]]*/ 'msgInputBeacon';
+    var rssiOverflow = /*[[#{beacon.setting.msg.error.number.overflow}]]*/ 'rssiOverflow';
     /*]]>*/
 </script>
 

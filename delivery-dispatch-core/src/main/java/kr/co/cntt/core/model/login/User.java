@@ -5,7 +5,6 @@ import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.common.Common;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.JSONPropertyName;
 
 @Getter
 @Setter
@@ -34,6 +33,7 @@ public class User extends Common implements Dto {
     private Integer locationRefreshTime;
 
     // 2022-01-25 비콘의 TxPower(RSSI) 기본 세팅 값
+    @JsonProperty(defaultValue = "rssi")
     private Integer rssi;
 
     // 2022-01-25 비콘 주기 (단위 : 초)

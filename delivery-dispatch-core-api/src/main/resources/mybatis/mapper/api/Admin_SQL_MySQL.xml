@@ -2096,6 +2096,12 @@
 			<if test="beaconCycle != null and beaconCycle != ''">
 				,beacon_cycle = #{beaconCycle}
 			</if>
+			<if test="locationRefreshTime != null and locationRefreshTime != '' and locationRefreshTime.toString() != '0'">
+				,location_refresh_time = #{locationRefreshTime}
+			</if>
+			<if test="pushRadius != null and pushRadius != ''">
+				,push_radius = #{pushRadius}
+			</if>
 		where    1=1
 		and      deleted is null
 		and      id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{accessToken});

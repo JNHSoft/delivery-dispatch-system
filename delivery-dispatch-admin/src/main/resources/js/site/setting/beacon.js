@@ -161,9 +161,16 @@ function saveBeaconInfos() {
  * */
 function regBeacon(){
     var txtUUID = $("#txtBeaconId").val();
+    var pushRadius = $("#txtPushRadius").val();
+    var locationTime = $("#txtLocationTime").val();
+    var rssi = $("#txtBeaconRssi").val();
+    var beaconCycle = $("#txtCallerTimer").val();
 
     if (!txtUUID) {
         alert(msgInputBeacon);
+        return;
+    } else if (rssi >= 0) {
+        alert(rssiOverflow .replace("{0}", msgRssi));
         return;
     }
 
@@ -172,7 +179,11 @@ function regBeacon(){
         url: '/setBeaconCommInfo',
         type: 'post',
         data: {
-            uuid: txtUUID
+            uuid: txtUUID,
+            pushRadius: pushRadius,
+            locationRefreshTime: locationTime,
+            rssi: rssi,
+            beaconCycle: beaconCycle
         },
         dataType: 'json',
         success: function (data, e) {
@@ -204,6 +215,10 @@ function openPopupUUID() {
             console.log(data);
 
             $("#txtBeaconId").val(data.uuid);
+            $("#txtPushRadius").val(data.pushRadius);
+            $("#txtLocationTime").val(data.locationRefreshTime);
+            $("#txtBeaconRssi").val(data.rssi);
+            $("#txtCallerTimer").val(data.beaconCycle);
 
             popOpen("#popStore");
         }

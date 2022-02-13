@@ -637,7 +637,6 @@ public class SettingController {
         // 관리자 정보에 저장하기
         assignAdminService.updateAdminBeaconInfo(admin);
 
-
         return 1;
     }
 
