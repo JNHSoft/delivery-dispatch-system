@@ -58,7 +58,7 @@ function getStoreList(){
             var storeCount = 0;
             for(var key in data) {
                 storeCount++;
-                var $tmpData = new Object();
+                var $tmpData = {};
                 if (data.hasOwnProperty(key)) {
                     $tmpData.count = storeCount;
                     $tmpData.id = data[key].id;
@@ -143,12 +143,12 @@ function saveBeaconInfos() {
             contentType: 'application/json',
             data: JSON.stringify(beaconList),
             dataType: 'json',
-            success: function (data, e) {
+            success: function () {
                 alert(msgSaveCompleted);
 
                 getStoreList();
             },
-            error: function (e) {
+            error: function () {
 
             }
         });
@@ -179,21 +179,21 @@ function regBeacon(){
         url: '/setBeaconCommInfo',
         type: 'post',
         data: {
-            uuid: txtUUID,
+            uuid: txtUUID.toUpperCase(),
             pushRadius: pushRadius,
             locationRefreshTime: locationTime,
             rssi: rssi,
             beaconCycle: beaconCycle
         },
         dataType: 'json',
-        success: function (data, e) {
+        success: function () {
             alert(msgSaveCompleted);
             popClose("#popStore");
 
             getStoreList();
 
         },
-        error: function (e) {
+        error: function () {
 
         }
     });
@@ -211,7 +211,7 @@ function openPopupUUID() {
         url: '/getBeaconCommInfo',
         type: 'get',
         dataType: 'json',
-        success: function (data, e) {
+        success: function (data) {
             console.log(data);
 
             $("#txtBeaconId").val(data.uuid);
