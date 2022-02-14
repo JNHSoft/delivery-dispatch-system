@@ -231,11 +231,12 @@
 				,B.access_token		as accessToken
 				,( select brand_code from TB_STORE where id = C.store_id )		as brandCode
 				,( select cd_value from TB_CODE_MASTER where title = 'brand_code' and code = ( select brand_code from TB_STORE where id = C.store_id ) )	as brandName
+				,( select ifnull(beaconId, ( select beaconId from TB_ADMIN where id = A.admin_id )) from TB_STORE where admin_id = A.admin_id and id = C.store_id )	as uuid
 		from	 TB_RIDER			as A
 		left join TB_RIDER_SESSION	as B
-		on	 A.id = B.rider_id
+			on	 A.id = B.rider_id
 		left join TB_SUBGROUP_RIDER_REL	as C
-		on	 A.id = C.rider_id
+			on	 A.id = C.rider_id
 		where	 A.deleted is null
 		and		 C.deleted is null
 		and		 date_format(ifnull(B.expiry_datetime, now()), '%Y-%m-%d') <![CDATA[>=]]> date_format(now(), '%Y-%m-%d')
