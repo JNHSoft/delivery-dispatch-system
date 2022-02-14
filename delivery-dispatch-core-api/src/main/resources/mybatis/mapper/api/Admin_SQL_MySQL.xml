@@ -2106,7 +2106,21 @@
 		and      deleted is null
 		and      id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{accessToken});
 	</update>
-	
+
+	<update id="updateBeaconInfoForStores" parameterType="kr.co.cntt.core.model.admin.Admin">
+		update   TB_STORE
+		set      modified_datetime = now()
+			<if test="uuid != null and uuid != ''">
+				,beaconId = #{uuid}
+			</if>
+			<if test="rssi != null and rssi != '' and rssi.toString() != '0'">
+				,rssi = #{rssi}
+			</if>
+		where    1=1
+		and      deleted is null
+		and      admin_id in ( select admin_id from TB_ADMIN_SESSION where access_token = #{accessToken} )
+	</update>
+
 	<select id="selectBeaconCommInfo" parameterType="kr.co.cntt.core.model.admin.Admin" resultType="kr.co.cntt.core.model.admin.Admin">
 		select   id
 				,name

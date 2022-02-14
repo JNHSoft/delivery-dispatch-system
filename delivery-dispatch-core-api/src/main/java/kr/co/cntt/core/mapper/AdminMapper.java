@@ -555,6 +555,11 @@ public interface AdminMapper {
     int updateBeaconInfo(Admin adminInfo);
 
     /**
+     * 22.02.14 모든 매장에 대해 공통 정보를 업데이트 한다.
+     * */
+    int updateBeaconInfoForStores(Admin adminInfo);
+
+    /**
      * 21.07.24 스토어 정보 가져오기
      * */
 //    List<Map<String, Object>> selectRegNewStoreList();

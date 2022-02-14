@@ -274,6 +274,9 @@ public class AssignAdminServiceImpl implements AssignAdminService {
         
         log.info("관리자의 Beacon 정보 변경하기");
         adminMapper.updateBeaconInfo(adminInfo);
+
+        log.info("Store의 모든 공통 정보 변경하기");
+        adminMapper.updateBeaconInfoForStores(adminInfo);
         
         return 1;
     }
