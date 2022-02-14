@@ -524,10 +524,10 @@
 		<if test="detailAddress != null and detailAddress != ''">
 			, detail_address = #{detailAddress}
 		</if>
-		<if test="latitude != null and latitude != ''">
+		<if test="latitude != null and latitude != '' and role != 'ROLE_RIDER'">
 			, latitude = #{latitude}
 		</if>
-		<if test="longitude != null and longitude != ''">
+		<if test="longitude != null and longitude != '' and role != 'ROLE_RIDER'">
 			, longitude = #{longitude}
 		</if>
 		<if test="status != null and status != ''">
