@@ -5,6 +5,7 @@
     <resultMap id="selectOrdersResult" type="kr.co.cntt.core.model.order.Order">
         <result property="id" column="id" />
         <result property="regOrderId" column="reg_order_id" />
+		<result property="webOrderId" column="web_order_id" />
         <result property="createdDatetime" column="created_datetime" />
 		<result property="modifiedDatetime" column="modified_datetime" />
         <result property="storeId" column="store_id" />
@@ -996,5 +997,24 @@
 			ON	 A.store_id = B.store_id
 		having distance <![CDATA[<]]> #{distance}
 	</select>
+
+	<select id="selectWebOrderIdCheck" parameterType="kr.co.cntt.core.model.order.Order" resultMap="selectOrdersResult">
+		select   id
+				,created_datetime
+				,reg_order_id
+				,web_order_id
+		from     TB_ORDER
+		where    1=1
+		and      web_order_id = #{webOrderId}
+	</select>
+
+	<update id="updateWebOrderId" parameterType="kr.co.cntt.core.model.order.Order">
+		update   TB_ORDER
+		SET      web_order_id = #{webOrderId}
+				,modified_datetime = now()
+		where    id = #{id}
+		and      reg_order_id = #{regOrderId}
+	</update>
+
 </mapper>
  

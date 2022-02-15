@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -750,6 +751,37 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         if (hasRegOrder > 0) {
             throw new AppTrException(getMessage(ErrorCodeEnum.E00039), ErrorCodeEnum.E00039.name());
         }
+
+        /**
+         * 22-02-15 WebOrderId 중복 프로세스 추가
+         * 중복 발생 시, 이전 주문의 WebOrderId를 변경한다.
+         * 규칙 : 뒤에 @ + YYMMDD 형식으로 값 붙이기
+         * */
+        Order doubleWebOrder = orderMapper.selectWebOrderIdCheck(order);
+
+        if (doubleWebOrder != null) {
+            LocalDateTime createdDatetime;
+            log.info("Web Order Id 중복 => " + doubleWebOrder.getWebOrderId());
+
+            try {
+                createdDatetime = LocalDateTime.parse(doubleWebOrder.getCreatedDatetime().replace(" ", "T"));
+            } catch (Exception e){
+                createdDatetime = null;
+            }
+
+            if (createdDatetime != null && createdDatetime.toLocalDate().equals(LocalDate.now())) {
+                log.info("Web Order Id 중복 당일 등록 => " + doubleWebOrder.getWebOrderId());
+                throw new AppTrException(getMessage(ErrorCodeEnum.E00064), ErrorCodeEnum.E00064.name());
+            } else {
+                // 중복이므로 기존 주문의 정보를 변경하자
+                doubleWebOrder.setWebOrderId(doubleWebOrder.getWebOrderId().concat("@").concat(LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"))));
+                //System.out.println("############ Web Order Id 중복" + doubleWebOrder.getWebOrderId());
+
+                log.info("Web Order Id 중복 변경 => " + doubleWebOrder.getWebOrderId() + " # result = " + orderMapper.updateWebOrderId(doubleWebOrder));
+            }
+        }
+
+
 
         if (order.getWebOrderId() == null || order.getWebOrderId().equals("")) {
             order.setWebOrderId(order.getRegOrderId());

@@ -139,6 +139,7 @@ public enum ErrorCodeEnum {
 	E00061,
 	E00062,
 	E00063,
+	E00064,
 
 	/* 라이더 승인 프로세스 중 오류 */
 	E00040,

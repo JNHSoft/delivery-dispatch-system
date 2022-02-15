@@ -201,4 +201,14 @@ public interface OrderMapper {
 //    @Transactional(readOnly=true)
     List<Order> selectNearOrderRider(Map searchMap);
 
+    /**
+     * 22-02-15 Web Order ID 중복 체크
+     * */
+    Order selectWebOrderIdCheck(Order order);
+    
+    /**
+     * 22-02-15 Web Order Id 중복 변경
+     * */
+    int updateWebOrderId(Order order);
+    
 }
