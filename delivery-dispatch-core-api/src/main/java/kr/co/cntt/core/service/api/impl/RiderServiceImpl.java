@@ -333,8 +333,18 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                                     fcmBody.setData(obj);
                                     fcmBody.setPriority("high");
 
-                                    fcmBody.getNotification().setTitle(getMessage("PUSH.RIDER.NEAR.ORDER"));
-                                    fcmBody.getNotification().setBody(getMessage("PUSH.RIDER.NEAR.ORDER"));
+                                    // 문자열 자르기
+                                    String regOrderId;
+
+                                    try {
+                                        String[] ids = order.getId().split("-");
+                                        regOrderId = Arrays.stream(ids).skip(ids.length - 2).collect(Collectors.joining("-"));
+                                    } catch (Exception e){
+                                        regOrderId = order.getId();
+                                    }
+
+                                    fcmBody.getNotification().setTitle(getMessage("PUSH.RIDER.NEAR.ORDER.TITLE"));
+                                    fcmBody.getNotification().setBody(getMessage("PUSH.RIDER.NEAR.ORDER.BODY", regOrderId));
 
                                     log.info(order.getId() + " => ###################################### 푸쉬 발송 ##################################");
 
@@ -1524,8 +1534,19 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                 fcmBody.setData(obj);
                 fcmBody.setPriority("high");
 
-                fcmBody.getNotification().setTitle(getMessage("PUSH.RIDER.NEAR.ORDER"));
-                fcmBody.getNotification().setBody(getMessage("PUSH.RIDER.NEAR.ORDER"));
+                // 문자열 자르기
+                String regOrderId;
+
+                try {
+                    String[] ids = orderId.split("-");
+                    regOrderId = Arrays.stream(ids).skip(ids.length - 2).collect(Collectors.joining("-"));
+                } catch (Exception e){
+                    e.printStackTrace();
+                    regOrderId = orderId;
+                }
+
+                fcmBody.getNotification().setTitle(getMessage("PUSH.RIDER.NEAR.ORDER.TITLE"));
+                fcmBody.getNotification().setBody(getMessage("PUSH.RIDER.NEAR.ORDER.BODY", regOrderId));
 
                 log.info(orderId + " => ###################################### 라이더가 직접 푸쉬 발송 ##################################");
 
