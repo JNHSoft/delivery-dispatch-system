@@ -18,8 +18,8 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreBeacon extends User implements Dto {
 
-    private String uuid;                // Beacon의 UUID
+    //private String uuid;                // Beacon의 UUID
     private Integer major;              // Beacon의 major
     private Integer minor;              // Beacon의 minor
-    private Integer rssi;              // Beacon의 Px Power, 시그널 강도
+    //private Integer rssi;              // Beacon의 Px Power, 시그널 강도
 }
