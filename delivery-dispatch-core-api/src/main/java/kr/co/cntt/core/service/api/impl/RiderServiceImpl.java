@@ -1397,6 +1397,7 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
             }
 
             // 라이더 상태가 배달 중인지, 완료인지 체크 UUID, MARJOR, MINOR 등을 이용하여, 해당 매장의 주문이 있는 경우 한정
+            // 22.02.18 라이더가 배달 중인지만 체크, 매장 유형 상관 없음
             int chkDelivery = riderMapper.checkRiderDelivery(map);
 
             if (chkDelivery < 1) {
@@ -1420,22 +1421,26 @@ public class RiderServiceImpl extends ServiceSupport implements RiderService {
                     order.setReturnDatetime(LocalDateTime.now().toString());
                     order.setStatus("3");
 
-                    int ret = this.putOrder(order);
-                    log.info("Beacon Push Rider Update Return Finish => id = " + orderId + " # " + ret);
+                    if (needOrderId != null && needOrderId.getRiderId().equals(S_Rider.getId()) && needOrderId.getStatus().equals("3") && needOrderId.getReturnDatetime() == null) {
+                        int ret = this.putOrder(order);
+                        log.info("Beacon Push Rider Update Return Finish => id = " + orderId + " # " + ret);
 
-                    Store storeDTO = new Store();
-                    storeDTO.setId(needOrderId.getStoreId());
+                        Store storeDTO = new Store();
+                        storeDTO.setId(needOrderId.getStoreId());
 
-                    storeDTO = storeMapper.selectStoreInfo(storeDTO);
+                        storeDTO = storeMapper.selectStoreInfo(storeDTO);
 
-                    if (ret != 0) {
-                        if (storeDTO.getSubGroup() != null) {
-                            System.out.println("소켓 전달 1");
-                            redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
-                        } else {
-                            System.out.println("소켓 전달 2");
-                            redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
+                        if (ret != 0) {
+                            if (storeDTO.getSubGroup() != null) {
+                                System.out.println("소켓 전달 1");
+                                redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).subGroupId(storeDTO.getSubGroup().getId()).build());
+                            } else {
+                                System.out.println("소켓 전달 2");
+                                redisService.setPublisher(Content.builder().type("order_denied").id(needOrderId.getId()).adminId(storeDTO.getAdminId()).storeId(storeDTO.getId()).build());
+                            }
                         }
+                    } else {
+                        log.info("##### Beacon Push Rider Not Update Order Info # ID = " + orderId);
                     }
                 }
             }

@@ -1797,7 +1797,9 @@
 		where    1=1
 		and      a.id = ( select rider_id from TB_RIDER_SESSION where access_token = #{token})
 		and      b.created_datetime > current_date()
-		and (   (b.status = 3 and ifnull(b.return_datetime, now()) >= date_sub(current_timestamp(), interval 1 minute)) )
-		and      b.store_id in ( select id from TB_STORE where deleted is null and admin_id = a.admin_id and beaconId = #{uuid} and major = #{major} and minor = #{minor} )
+		and (   (b.status = 3 and b.return_datetime is null) )
+<!--		&#45;&#45; 2022-02-18 라이더가 다른 매장으로도 복귀할 가능성이 있음 스토어 체크는 제외하기-->
+<!--		&#45;&#45; and (   (b.status = 3 and ifnull(b.return_datetime, now()) >= date_sub(current_timestamp(), interval 1 minute)) )-->
+<!--		&#45;&#45; and      b.store_id in ( select id from TB_STORE where deleted is null and admin_id = a.admin_id and beaconId = #{uuid} and major = #{major} and minor = #{minor} )-->
 	</select>
 </mapper>
