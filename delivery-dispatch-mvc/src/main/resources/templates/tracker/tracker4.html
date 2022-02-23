@@ -737,6 +737,18 @@
 									scaledSize: new google.maps.Size(35, 40)
 								}
 							});
+
+							// 라이더의 현재 위치 ~ 주문지까지의 줌을 설정하자
+							// 좌표가 안 움직이더라도, 화면에 최대한 보이게 하기
+							var bounds = new google.maps.LatLngBounds();
+
+							bounds.extend(orderMarker.position);
+							bounds.extend(new google.maps.LatLng(parseFloat(data.riderLatitude), parseFloat(data.riderLongitude)));
+
+							map.fitBounds(bounds);
+							// 좌표값들이 모두 보이도록 적용
+							map.panToBounds(bounds);
+
 						}
 
 						console.log("storeMarker", storeMarker);
@@ -783,6 +795,25 @@
 
 		//// google Directions Service 작업 시작
 		var selectedMode = 'DRIVING';
+
+		/// 2022-02-23 마지막 위치와 현재의 위치가 같은 경우에는 요청을 보내지 않도록 처리
+		if (riderMarker) {
+			// 일정 거리 미만인 경우 API 호출 못하게 막기 (이전 거리~현재거리) 3 Miter 미만
+			var riderDistance = calcDistance(riderMarker.position.lat(), riderMarker.position.lng(), info.riderLatitude, info.riderLongitude);
+			if (riderDistance < 1.7) {
+				console.log("Rider Distance => ", riderDistance);
+				return;
+			}
+		}
+		// 2022-02-23 현재 위치 ~ 주문지까지의 거리가 3 Miter 미만인 경우 갱신 못하게 하기
+		var orderDistance = calcDistance(info.riderLatitude, info.riderLongitude, orderMarker.position.lat(), orderMarker.position.lng());
+		// if (orderDistance < 3) {
+		//     console.log("Order Distance => ", orderDistance);
+		//     return;
+		// }
+
+		console.log('rider Distance = ', riderDistance, "order Distance = ", orderDistance);
+
 
 		directionsService.route({
 			origin: riderMarker ? new google.maps.LatLng(riderMarker.position.toJSON()) : new google.maps.LatLng(info.riderLatitude, info.riderLongitude),
