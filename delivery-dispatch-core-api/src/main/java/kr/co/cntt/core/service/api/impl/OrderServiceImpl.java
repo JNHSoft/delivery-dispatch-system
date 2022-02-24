@@ -757,31 +757,41 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
          * 중복 발생 시, 이전 주문의 WebOrderId를 변경한다.
          * 규칙 : 뒤에 @ + YYMMDD 형식으로 값 붙이기
          * */
-        Order doubleWebOrder = orderMapper.selectWebOrderIdCheck(order);
+        List<Order> doubleWebOrder = orderMapper.selectWebOrderIdCheck(order);
 
-        if (doubleWebOrder != null) {
-            LocalDateTime createdDatetime;
-            log.info("Web Order Id 중복 => " + doubleWebOrder.getWebOrderId());
+        if (doubleWebOrder != null && doubleWebOrder.size() > 0) {
 
-            try {
-                createdDatetime = LocalDateTime.parse(doubleWebOrder.getCreatedDatetime().replace(" ", "T"));
-            } catch (Exception e){
-                createdDatetime = null;
-            }
+            // 마지막의 doubleWebOrder를 구하여 해당 값만 변경하도록 하자
+            String strToday = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+            Order lastDoubleOrder = doubleWebOrder.stream().filter(x -> x.getWebOrderId().equals(order.getWebOrderId())).findFirst().get();
+            long duplicationCount = doubleWebOrder.stream().filter(x -> x.getWebOrderId().split("@").length > 1 && x.getWebOrderId().split("@")[1].substring(0, 6).contains(strToday)).count() + 1;
 
-            if (createdDatetime != null && createdDatetime.toLocalDate().equals(LocalDate.now())) {
-                log.info("Web Order Id 중복 당일 등록 => " + doubleWebOrder.getWebOrderId());
-                throw new AppTrException(getMessage(ErrorCodeEnum.E00064), ErrorCodeEnum.E00064.name());
-            } else {
-                // 중복이므로 기존 주문의 정보를 변경하자
-                doubleWebOrder.setWebOrderId(doubleWebOrder.getWebOrderId().concat("@").concat(LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"))));
-                //System.out.println("############ Web Order Id 중복" + doubleWebOrder.getWebOrderId());
+            log.info("Web Order Id 중복 => " + lastDoubleOrder.getWebOrderId() + " ### 중복의 순번 = " + duplicationCount);
 
-                log.info("Web Order Id 중복 변경 => " + doubleWebOrder.getWebOrderId() + " # result = " + orderMapper.updateWebOrderId(doubleWebOrder));
-            }
+            // 중복이므로 기존 주문의 정보를 변경하자
+            lastDoubleOrder.setWebOrderId(lastDoubleOrder.getWebOrderId().concat("@").concat(LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"))).concat(String.valueOf(duplicationCount)));
+            //System.out.println("############ Web Order Id 중복" + doubleWebOrder.getWebOrderId());
+
+            log.info("Web Order Id 중복 변경 => " + lastDoubleOrder.getWebOrderId() + " # result = " + orderMapper.updateWebOrderId(lastDoubleOrder));
+
+//            LocalDateTime createdDatetime;
+//
+//            try {
+//                createdDatetime = LocalDateTime.parse(lastDoubleOrder.getCreatedDatetime().replace(" ", "T"));
+//            } catch (Exception e){
+//                createdDatetime = null;
+//            }
+//            if (createdDatetime != null && createdDatetime.toLocalDate().equals(LocalDate.now())) {
+//                log.info("Web Order Id 중복 당일 등록 => " + lastDoubleOrder.getWebOrderId());
+//                throw new AppTrException(getMessage(ErrorCodeEnum.E00064), ErrorCodeEnum.E00064.name());
+//            } else {
+//                // 중복이므로 기존 주문의 정보를 변경하자
+//                lastDoubleOrder.setWebOrderId(lastDoubleOrder.getWebOrderId().concat("@").concat(LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"))).concat(String.valueOf(duplicationCount)));
+//                //System.out.println("############ Web Order Id 중복" + doubleWebOrder.getWebOrderId());
+//
+//                log.info("Web Order Id 중복 변경 => " + lastDoubleOrder.getWebOrderId() + " # result = " + orderMapper.updateWebOrderId(lastDoubleOrder));
+//            }
         }
-
-
 
         if (order.getWebOrderId() == null || order.getWebOrderId().equals("")) {
             order.setWebOrderId(order.getRegOrderId());

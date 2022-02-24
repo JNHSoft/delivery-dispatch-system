@@ -203,8 +203,9 @@ public interface OrderMapper {
 
     /**
      * 22-02-15 Web Order ID 중복 체크
+     * 22-02-24 중복이 다수 나올 수 있으므로, 횟수 추가
      * */
-    Order selectWebOrderIdCheck(Order order);
+    List<Order> selectWebOrderIdCheck(Order order);
     
     /**
      * 22-02-15 Web Order Id 중복 변경
