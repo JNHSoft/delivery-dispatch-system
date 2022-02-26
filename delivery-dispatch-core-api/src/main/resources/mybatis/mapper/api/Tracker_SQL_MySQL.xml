@@ -94,7 +94,6 @@
 			ON 	 A.store_id = B.id
 		LEFT JOIN TB_RIDER AS C
 			ON 	 A.rider_id = C.id
-		-- WHERE 	 A.web_order_id = #{webOrderId}
 		WHERE 	 A.web_order_id like concat(#{webOrderId}, '%')
 		AND 	 B.code = #{code}
 		ORDER BY A.created_datetime desc
