@@ -1,8 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "//mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.cntt.core.mapper.StoreMapper">
 
-
-
     <!-- selectStoresResult -->
     <resultMap id="selectStoreResult" type="kr.co.cntt.core.model.store.Store">
         <result property="id" column="id" />
@@ -116,6 +114,16 @@
             <result property="name" column="subgroup_name" />
             <result property="adminId" column="subgroup_admin_id" />
         </association>
+    </resultMap>
+
+    <!-- selectStoreBeaconResult -->
+    <resultMap id="selectStoreBeaconResult" type="kr.co.cntt.core.model.store.StoreBeacon">
+        <result property="id" column="id" />
+        <result property="name" column="store_name" />
+        <result property="uuid" column="beaconId" />
+        <result property="major" column="major" />
+        <result property="minor" column="minor" />
+        <result property="rssi" column="rssi" />
     </resultMap>
 
     <!-- loginStoreInfo -->
@@ -1303,6 +1311,36 @@
         </choose>
         and		 a.id not in (select store_id from TB_SUBGROUP_RIDER_REL where rider_id = #{id})
     </select>
+
+    <update id="updateStoreBeaconInfo" parameterType="kr.co.cntt.core.model.store.StoreBeacon">
+        update   TB_STORE
+        set      modified_datetime = now()
+            <if test="major != null and major != '' and major != 0">
+                ,major = #{major}
+            </if>
+            <if test="minor != null and minor != '' and minor != 0">
+                ,minor = #{minor}
+            </if>
+            <if test="rssi != null and rssi != '' and rssi != 0">
+                ,rssi = #{rssi}
+            </if>
+        where    1=1
+        and      deleted is null
+        <choose>
+            <when test="role == 'ROLE_ADMIN'">
+                and      admin_id = ( select admin_id from TB_ADMIN_SESSION where access_token = #{accessToken} )
+                and      id = #{id}
+            </when>
+            <when test="role == 'ROLE_STORE'">
+                and      admin_id = ( select admin_id from TB_STORE where id = ( select store_id from TB_STORE_SESSION where access_token = #{accessToken} ))
+                and      id = ( select store_id from TB_STORE_SESSION where access_token = #{accessToken} )
+            </when>
+            <otherwise>
+                and      1 != 1
+            </otherwise>
+        </choose>
+
+    </update>
 
 </mapper>
  

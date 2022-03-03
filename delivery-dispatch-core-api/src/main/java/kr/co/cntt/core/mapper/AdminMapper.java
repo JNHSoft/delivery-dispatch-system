@@ -531,4 +531,18 @@ public interface AdminMapper {
     @Transactional(readOnly=true)
     List<SubGroupStoreRel> selectSubgrouGroupingStoreRels(SubGroupStoreRel subGroupStoreRel);
 
+    /**
+     * 22.02.11 Beacon 공통 정보 가져오기
+     * */
+    Admin selectBeaconCommInfo(Admin adminInfo);
+
+    /**
+     * 22.02.11 Beacon 정보 변경
+     * */
+    int updateBeaconInfo(Admin adminInfo);
+
+    /**
+     * 22.02.14 모든 매장에 대해 공통 정보를 업데이트 한다.
+     * */
+    int updateBeaconInfoForStores(Admin adminInfo);
 }

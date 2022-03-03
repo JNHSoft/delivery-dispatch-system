@@ -63,5 +63,8 @@ public class Store extends User implements Dto {
     // false = Non Shared Store # true = Shared Store
     private Integer storeShared;
 
+    // Beacon 정보를 가지도록 변경
+    private StoreBeacon beacon;
+
 }
 

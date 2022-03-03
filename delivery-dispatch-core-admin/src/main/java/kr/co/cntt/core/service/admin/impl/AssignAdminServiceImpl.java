@@ -8,6 +8,7 @@ import kr.co.cntt.core.mapper.StoreMapper;
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.reason.Reason;
 import kr.co.cntt.core.model.store.Store;
+import kr.co.cntt.core.model.store.StoreBeacon;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 import kr.co.cntt.core.redis.service.RedisService;
 import kr.co.cntt.core.service.admin.AssignAdminService;
@@ -249,7 +250,34 @@ public class AssignAdminServiceImpl implements AssignAdminService {
         return adminMapper.deleteRejectReason(reason);
     }
 
+    /**
+     * Beacon 정보 업데이트
+     * */
+    @Override
+    public int updateStoreBeaconInfo(StoreBeacon beacon) {
+        return storeMapper.updateStoreBeaconInfo(beacon);
+    }
 
+    /**
+     * Beacon 공통 정보
+     * */
+    @Override
+    public Admin getBeaconCommInfo(Admin adminInfo){
+        return adminMapper.selectBeaconCommInfo(adminInfo);
+    }
 
+    /**
+     * 비콘 공통 정보 업데이트
+     * */
+    @Override
+    public int updateAdminBeaconInfo(Admin adminInfo) {
 
+        log.info("관리자의 Beacon 정보 변경하기");
+        adminMapper.updateBeaconInfo(adminInfo);
+
+        log.info("Store의 모든 공통 정보 변경하기");
+        adminMapper.updateBeaconInfoForStores(adminInfo);
+
+        return 1;
+    }
 }

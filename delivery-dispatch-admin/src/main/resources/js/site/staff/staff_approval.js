@@ -487,7 +487,7 @@ function searchRiderApprovalDetail(rowID){
                 minDate: new Date,
                 onSelect: function (selectDate, obj){
                     if(checkExpDate(selectDate, obj)){
-                        updateExpDate(selectDate, rowID);
+                        updateExpDate(selectDate);
                     }
                 }
             });
@@ -548,6 +548,10 @@ function dateFormat(date){
 function updateExpDate(date, rowid){
     loading.show();
     let status = $('#jqGrid').getRowData($('#jqGrid').getGridParam('selrow')).approvalStatus;
+
+    if (!rowid) {
+        rowid = $("#approvalID").val();
+    }
 
     $.ajax({
         url: "/setRiderExpDate",

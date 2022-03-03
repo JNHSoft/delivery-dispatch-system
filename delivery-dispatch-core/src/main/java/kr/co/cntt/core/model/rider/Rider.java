@@ -88,4 +88,7 @@ public class Rider extends User implements Dto {
     private String sharedStoreCode;
     // 21.02.16 라이더 쉐어가 되어 있는 경우, 해당 매장 이름
     private String sharedStoreName;
+
+    // 22.01.17 라이더 좌표 변경 시, 주문과 관련한 좌표들을 제공하여 필드 추가
+    private List<Order> Orders;
 }

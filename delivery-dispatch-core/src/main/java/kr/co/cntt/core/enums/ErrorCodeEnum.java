@@ -139,6 +139,7 @@ public enum ErrorCodeEnum {
 	E00061,
 	E00062,
 	E00063,
+	E00064,
 
 	/* 라이더 승인 프로세스 중 오류 */
 	E00040,
@@ -178,5 +179,11 @@ public enum ErrorCodeEnum {
 
 	/* 라이더 경로 최적화 중 오류 코드 */
 	ERR0001,
+
+	/* 라이더 PUSH 전송 오류 */
+	ERRPUSH001,
+	ERRPUSH002,
+	ERRPUSH003,
+	ERRPUSH004,
 	;
 }

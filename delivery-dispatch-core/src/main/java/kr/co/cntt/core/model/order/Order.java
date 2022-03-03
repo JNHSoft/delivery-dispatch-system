@@ -55,6 +55,7 @@ public class Order extends Common implements Dto {
     private String phone;
     private String reservationDatetime;
     private String assignedDatetime;
+    private String riderArrivedStoreDatetime; // 2021.12.15 라이더가 매장에 도착한 시간
     private String pickedUpDatetime;
     private String arrivedDatetime;         // 2020.05.08 배달지 문앞도착
     private String completedDatetime;
@@ -63,7 +64,9 @@ public class Order extends Common implements Dto {
     private String distance;
     private String assignedFirst;
     private String assignXy;
+    private String riderArriveStoreXy;         // 2021.12.15 라이더가 매장에 도착한 위치
     private String pickupXy;
+    private String arriveXy;                   // 배달지 문앞 도착 좌표
     private String completeXy;
     private String reservationStatus;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -98,4 +101,8 @@ public class Order extends Common implements Dto {
     // 20.02.03 봇 사용으로 인한 필드 추가
     private String item_XA12;           //latitude
     private String item_XA11;           //longitude
+
+    // 설문조사 점수 가져오기
+    private String deliveryPoint;       // 배달 직원 점수
+    private String speedPoint;          // 배달 속도 점수
 }

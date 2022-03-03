@@ -163,6 +163,15 @@ public class ApiExporter extends ExporterSupportor implements Api {
             response.put("brandCode", userSelectLoginMap.get("brandCode"));
             response.put("brandName", userSelectLoginMap.get("brandName"));
 
+            // 2022-02-14 AOS에서 getToken에 UUID를 추가 요청
+            if (level.equals("3")){
+                if (userSelectLoginMap.containsKey("uuid")){
+                    response.put("uuid", userSelectLoginMap.get("uuid"));
+                }else {
+                    response.put("uuid", null);
+                }
+            }
+
             // Token을 Insert
             if (level.equals("3")) {
                 if (userSelectLoginMap.get("accessToken") == null || userSelectLoginMap.get("accessToken").equals("")) {

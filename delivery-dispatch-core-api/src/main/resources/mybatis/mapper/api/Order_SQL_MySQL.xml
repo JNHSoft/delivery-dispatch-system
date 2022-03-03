@@ -520,10 +520,10 @@
 		<if test="detailAddress != null and detailAddress != ''">
 			, detail_address = #{detailAddress}
 		</if>
-		<if test="latitude != null and latitude != ''">
+		<if test="latitude != null and latitude != '' and role != 'ROLE_RIDER'">
 			, latitude = #{latitude}
 		</if>
-		<if test="longitude != null and longitude != ''">
+		<if test="longitude != null and longitude != '' and role != 'ROLE_RIDER'">
 			, longitude = #{longitude}
 		</if>
 		<if test="status != null and status != ''">
@@ -610,6 +610,9 @@
 		</if>
 		<if test="pickupXy != null and pickupXy != ''">
 			, pickup_xy = #{pickupXy}
+		</if>
+		<if test="arriveXy != null and arriveXy != ''">
+			, arrive_xy = #{arriveXy}
 		</if>
 		<if test="completeXy != null and completeXy != ''">
 			, complete_xy = #{completeXy}

@@ -413,4 +413,33 @@ public interface RiderMapper {
      * 라이더의 공유 상태 변경 History 등록
      * */
     int insertRiderSharedHistory(RiderSharedInfo sharedInfo);
+
+    /**
+     * 22.01.17
+     * 라이더에게 전송된 PUSH인지 Check
+     * */
+    String selectSendRiderPushInfo(Map<String, Object> rider);
+
+    /**
+     * 22.01.17
+     * 라이더  PUSH 발송 후에 DB 값 저장
+     * */
+    int insertSendRiderPushInfo(Map<String, Object> push);
+
+    /**
+     * 22.01.23
+     * 비콘 PUSH 체크
+     * */
+    int checkBeaonPush(Map<String, Object> beacon);
+
+    /**
+     * 비콘 History Insert
+     * */
+    int insertBeaconPushHistory(Map<String, Object> beacon);
+
+    /**
+     * 22.01.26
+     * 비콘 정보를 이용하여, 라이더가 배달 중이었던 매장이 맞는지 체크하기
+     * */
+    int checkRiderDelivery(Map<String, Object> beacon);
 }

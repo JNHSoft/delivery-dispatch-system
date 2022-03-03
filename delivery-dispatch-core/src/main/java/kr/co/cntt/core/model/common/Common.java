@@ -43,4 +43,7 @@ public class Common implements Dto {
 
     // 20.12.30 마지막 주문으로 부터 경과된 시간
     private String orderDiff;
+
+    // 22.01.17 주문지~라이더의 PUSH 전송 반경을 확인할 변수 추가 (단위 : M)
+    private Integer pushRadius;
 }

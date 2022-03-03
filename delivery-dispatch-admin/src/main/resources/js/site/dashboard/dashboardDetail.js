@@ -315,7 +315,6 @@ function getDashBoardDetail(){
         return;
     }
 
-    console.log(objChart);
     if (objChart !== undefined){
         objChart.destroy();
     }

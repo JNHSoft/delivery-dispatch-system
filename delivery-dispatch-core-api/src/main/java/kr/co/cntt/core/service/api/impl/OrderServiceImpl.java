@@ -1715,7 +1715,6 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
             combinedOrderPickedUp.setStatus("2");
             combinedOrderPickedUp.setPickedUpDatetime(LocalDateTime.now().toString());
             combinedOrderPickedUp.setToken(order.getToken());
-//            combinedOrderPickedUp.setPickupXy(order.getPickupXy());
             combinedOrderPickedUp.setPickupXy(order.getLatitude() + "|" + order.getLongitude());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
@@ -1795,14 +1794,16 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         orderArrived.setId(order.getId());
         orderArrived.setStatus("6");
         orderArrived.setArrivedDatetime(LocalDateTime.now().toString());
+        orderArrived.setArriveXy(order.getLatitude() + "|" + order.getLongitude());
 
         Order combinedOrderArrived = new Order();
 
         if (order.getCombinedOrderId() != null && !order.getCombinedOrderId().equals("")) {
+            combinedOrderArrived.setToken(order.getToken());
             combinedOrderArrived.setId(order.getCombinedOrderId());
             combinedOrderArrived.setStatus("6");
             combinedOrderArrived.setArrivedDatetime(LocalDateTime.now().toString());
-            combinedOrderArrived.setToken(order.getToken());
+            combinedOrderArrived.setArriveXy(order.getLatitude() + "|" + order.getLongitude());
 
             int selectCombinedOrderIsApprovalCompleted = orderMapper.selectOrderIsApprovalCompleted(order);
             int selectCombinedOrderIsCompletedIsCanceled = orderMapper.selectOrderIsCompletedIsCanceled(order);

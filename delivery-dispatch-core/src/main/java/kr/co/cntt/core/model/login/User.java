@@ -1,5 +1,6 @@
 package kr.co.cntt.core.model.login;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.co.cntt.core.model.Dto;
 import kr.co.cntt.core.model.common.Common;
 import lombok.Getter;
@@ -27,4 +28,18 @@ public class User extends Common implements Dto {
 
     // 브랜드 이미지 경로
     private String brandImg;
+
+    // 2022-01-17 라이더 앱에서 위치 변경을 호출할 간격 확인 (단위 : 초)
+    private Integer locationRefreshTime;
+
+    // 2022-01-25 비콘의 TxPower(RSSI) 기본 세팅 값
+    @JsonProperty(defaultValue = "rssi")
+    private Integer rssi;
+
+    // 2022-01-25 비콘 주기 (단위 : 초)
+    private Integer beaconCycle;
+
+    // 2022-02-11 Beacon UUID
+    @JsonProperty(defaultValue = "uuid")
+    private String uuid;
 }

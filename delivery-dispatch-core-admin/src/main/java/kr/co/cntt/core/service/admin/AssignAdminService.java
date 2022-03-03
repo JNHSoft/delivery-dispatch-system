@@ -2,6 +2,7 @@ package kr.co.cntt.core.service.admin;
 
 import kr.co.cntt.core.model.admin.Admin;
 import kr.co.cntt.core.model.reason.Reason;
+import kr.co.cntt.core.model.store.StoreBeacon;
 import kr.co.cntt.core.model.thirdParty.ThirdParty;
 
 import java.util.List;
@@ -120,7 +121,19 @@ public interface AssignAdminService {
     public int deleteRejectReason(Reason reason);
 
 
+    /**
+     * <p>Beacon 정보 업데이트</p>
+     * */
+    int updateStoreBeaconInfo(StoreBeacon beacon);
 
+    /**
+     * <p> Beacon 공통 정보 가져오기 - 관리자 </p>
+     * */
+    Admin getBeaconCommInfo(Admin adminInfo);
 
+    /**
+     * <p>Beacon 공통 정보 업데이트 - 관리자 정보</p>
+     * */
+    int updateAdminBeaconInfo(Admin adminInfo);
 
 }
