@@ -1023,7 +1023,9 @@ public class OrderServiceImpl extends ServiceSupport implements OrderService {
         Order orgOrd = getOrderInfo(order);     // 변경 전 주문 정보 추출
         try {
             // 예약 시간이 입력이 되었는지 유무가 기준이 된다.
-            if (!StringUtils.isNullOrEmpty(order.getReservationDatetime()) && !StringUtils.isNullOrEmpty(orgOrd.getRiderId())){
+            // 2022-03-10 배정 취소 후에 주문이 수정되어도 배정 시간이 초기화 되도록 적용
+            // && !StringUtils.isNullOrEmpty(orgOrd.getRiderId())
+            if (!StringUtils.isNullOrEmpty(order.getReservationDatetime())){
                 Date changeDate = new SimpleDateFormat("yyyyMMddHHmmss").parse(order.getReservationDatetime());             // 변경될 예약 시간의 형식 변경
                 Date orgDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orgOrd.getReservationDatetime());          // 기존에 적용된 예약 시간
 
