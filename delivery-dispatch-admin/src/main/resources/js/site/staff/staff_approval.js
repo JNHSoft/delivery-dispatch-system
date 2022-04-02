@@ -15,7 +15,6 @@ $(function (){
 function makeObjectEvent(){
     // 검색 버튼 클릭 이벤트
     $("#searchButton").off().on('click', function(){
-        console.log("승인 목록에서 라이더 검색 버튼 클릭");
         let searchText = $("#searchText").val();
 
         // 신규 데이터를 갱신할 수 있도록 추가
@@ -32,6 +31,18 @@ function makeObjectEvent(){
         selectIdOption = $('option:selected', this);
         searchList();
     });
+
+    // Shared Store POPUP Search Button Event
+    $("#btnSharedStore").off().on('click', function () {
+        searchSharedStorePopup();
+    });
+
+    // Shared Store POPUP Input KeyDown Event
+    $("#inputSharedStore").off().on('keyup', function (obj) {
+        if (obj.keyCode === 13 || obj.key === 'Enter') {
+            searchSharedStorePopup();
+        }
+    })
 }
 
 function searchList(){
@@ -756,6 +767,8 @@ function sharedStoreInfo(){
                 jQuery('#jqGridSharedStore').jqGrid('setGridParam', {data: data, page: 1});
                 jQuery('#jqGridSharedStore').trigger('reloadGrid');
                 alert(alertNoStore);
+
+                // 그리드가 정상적으로 표시 될 수 있도록 먼저 1회 열어준다
                 popOpen("#popStoreShared");
                 return;
             }
@@ -773,6 +786,8 @@ function sharedStoreInfo(){
                     gridData.push(tmpObj);
                 }
             }
+
+            // 그리드가 정상적으로 표시 될 수 있도록 먼저 1회 열어준다
             popOpen("#popStoreShared");
         },
         error: function (err){
@@ -780,6 +795,8 @@ function sharedStoreInfo(){
         },
         complete: function (data) {
             makeSharedStoreGrid(gridData);
+            $("#inputSharedStore").val("");
+            searchSharedStorePopup();
             popOpen("#popStoreShared");
             loading.hide();
         }
@@ -805,6 +822,7 @@ function makeSharedStoreGrid(data){
         height: 330,
         autowidth: true,
         rowNum: 20,
+        search: false,
         pager: "#jqGridPagerSharedStore",
         ondblClickRow: function (rowid, iRow, iCol){
             let sharedStoreId = $("#sharedStoreId").val();
@@ -836,6 +854,38 @@ function makeSharedStoreGrid(data){
     });
 
     resizeJqGrid("#jqGridSharedStore");
+}
+
+/**
+ * 2022-04-02 Share Store POPUP Search Event
+ * */
+function searchSharedStorePopup() {
+    let txtSharedStore = $("#inputSharedStore").val();
+
+    let filter = {
+        groupOp : "OR",
+        rules : []
+    };
+
+    filter.rules.push({
+        field: 'code',
+        op: "cn",
+        data: txtSharedStore
+    });
+
+    filter.rules.push({
+        field: 'storeName',
+        op: "cn",
+        data: txtSharedStore
+    });
+
+    // 필터 선택이 완료 되었다면, 그리드를 갱신하자
+    let gridSharedStore = $("#jqGridSharedStore");
+    //grid[0].p.search = filter.rules.length > 0;
+    gridSharedStore[0].p.search = true;
+    $.extend(gridSharedStore[0].p.postData, { filters: JSON.stringify(filter) });
+    gridSharedStore.trigger("reloadGrid", [{ page: 1 }]);
+
 }
 
 /**
@@ -893,6 +943,7 @@ function regSharedStore(storeid){
         complete: function (data){
             loading.hide();
             getApprovalRiderList();
+            $("#inputSharedStore").val("");
             popClose("#popStoreShared");
             popClose("#popRiderInfo");
         }

@@ -145,6 +145,19 @@
             <div class="pop_head">
                 <h1 th:text="${#messages.msg('rider.approval.popup.shared.store.title')}"></h1>
             </div>
+
+            <div class="search_box">
+                <div class="left">
+                    <span class="lbl" th:text="${#messages.msg('rider.approval.title')}" style="font-size: 15px; font-weight: bold; color:black" />
+                </div>
+                <div class="right">
+            <span>
+                <input type="text" class="input" id="inputSharedStore" th:placeholder="${#messages.msg('list.search.placeholder')}"/>
+                <button class="button" id="btnSharedStore"><i class="fa fa-search" aria-hidden="true" th:text="'&nbsp;' + ${#messages.msg('list.search')}"/></button>
+            </span>
+                </div>
+            </div>
+
             <div class="pop_cont">
                 <div class="tbl_wrap">
                     <div class="jq_grid">
